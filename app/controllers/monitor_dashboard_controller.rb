@@ -1,0 +1,2 @@
+class MonitorDashboardController < ApplicationController
+end
