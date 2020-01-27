@@ -37,6 +37,8 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.string "email"
     t.string "phone"
     t.integer "responder_id"
+    t.integer "creator_id"
+    t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["responder_id"], name: "index_patients_on_responder_id"
   end
 

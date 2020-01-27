@@ -12,6 +12,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :email
       t.string :phone
       t.integer :responder_id, index: true
+      t.integer :creator_id, index: true
     end
   end
 end
