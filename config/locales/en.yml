@@ -30,4 +30,15 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  helpers:
+    label:
+      patient:
+        first_name: "First name"
+        last_name: "Last name"
+        residence_line_1: "First line of residence address (e.g. 1 Main St.)"
+        residence_line_2: "Second line of residence address (e.g. Apt. 42)"
+        residence_city: "City of residence"
+        residence_county: "County of residence"
+        residence_state: "State of residence"
+        email: "Email"
+        phone: "Phone number"

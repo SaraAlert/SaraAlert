@@ -1,0 +1,21 @@
+<%= form_for @patient do |f| %>
+    <%= f.label :first_name %>
+    <%= f.text_field :first_name %><br />
+    <%= f.label :last_name %>
+    <%= f.text_field :last_name %><br />
+    <%= f.label :residence_line_1 %>
+    <%= f.text_field :residence_line_1 %><br />
+    <%= f.label :residence_line_2 %>
+    <%= f.text_field :residence_line_2 %><br />
+    <%= f.label :residence_city %>
+    <%= f.text_field :residence_city %><br />
+    <%= f.label :residence_county %>
+    <%= f.text_field :residence_county %><br />
+    <%= f.label :residence_state %>
+    <%= f.text_field :residence_state %><br />
+    <%= f.label :email %>
+    <%= f.email_field :email %><br />
+    <%= f.label :phone %>
+    <%= f.telephone_field :phone %><br />
+    <%= f.submit "Create" %>
+<% end %>
