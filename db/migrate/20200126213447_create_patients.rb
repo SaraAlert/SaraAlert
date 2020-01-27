@@ -1,5 +1,7 @@
 class CreatePatients < ActiveRecord::Migration[6.0]
   def change
+    # TODO: reconsider the lack of a group table (allows better separation of PII in the patients table)
+    # TODO: consider generalizing the labels for names, address, etc. e.g. name1, name2, name3 (helps localization)
     create_table :patients do |t|
       t.timestamps
       t.string :first_name
