@@ -15,6 +15,15 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "assessments", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "status"
+    t.bigint "patient_id"
+    t.index ["patient_id"], name: "index_assessments_on_patient_id"
+    t.index ["status"], name: "index_assessments_on_status"
+  end
+
   create_table "patients", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -29,15 +38,6 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.string "phone"
     t.integer "responder_id"
     t.index ["responder_id"], name: "index_patients_on_responder_id"
-  end
-
-  create_table "reports", force: :cascade do |t|
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.string "status"
-    t.bigint "patient_id"
-    t.index ["patient_id"], name: "index_reports_on_patient_id"
-    t.index ["status"], name: "index_reports_on_status"
   end
 
   create_table "roles", force: :cascade do |t|
