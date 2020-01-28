@@ -4,6 +4,8 @@ class HomeController < ApplicationController
   def index
     if current_user.has_role? :enroller
       redirect_to patients_url
+    elsif current_user.has_role? :monitor
+      redirect_to monitor_dashboard_url
     end
   end
 

@@ -5,9 +5,10 @@ Rails.application.routes.draw do
 
   resources :patients, only: [:index, :new, :create, :show]
 
-  get '/monitor_dashboard', to: 'monitor_dashboard#index'
   resources :patients do
     resources :assessments, only: [:create, :new, :index]
   end
+
+  get '/monitor_dashboard', to: 'monitor_dashboard#index', as: :monitor_dashboard
 
 end
