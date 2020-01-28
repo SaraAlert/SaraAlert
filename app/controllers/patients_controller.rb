@@ -2,11 +2,11 @@ class PatientsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    return unless current_user.can_view_patient?
+    redirect_to root_url unless current_user.can_view_patient?
   end
 
   def show
-    return unless current_user.can_view_patient?
+    redirect_to root_url unless current_user.can_view_patient?
     # Retrieve Patient by id, but only check patients that current_user created
     @patient = current_user.created_patients.find_by_id(params.permit(:id)[:id])
     # Or that the current user is monitoring
@@ -19,12 +19,12 @@ class PatientsController < ApplicationController
   end
 
   def new
-    return unless current_user.can_create_patient?
+    redirect_to root_url unless current_user.can_create_patient?
     @patient = Patient.new
   end
 
   def create
-    return unless current_user.can_create_patient?
+    redirect_to root_url unless current_user.can_create_patient?
 
     # Add patient details that were collected from the form
     @patient = Patient.new(params[:patient].permit(:first_name,
