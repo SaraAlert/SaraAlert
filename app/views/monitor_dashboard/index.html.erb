@@ -1,0 +1,45 @@
+<div class="container">
+
+  <h1>Patients Reporting Symptoms</h1>
+
+  <%# TODO: Refactor these two tables if they wind up staying the same %>
+  
+  <table class="table">
+
+    <thead>
+      <tr>
+        <th>Name</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @symptomatic_patients.each do |patient| -%>
+        <tr>
+          <td><%= patient.first_name %> <%= patient.last_name %></td>
+        </tr>
+      <% end -%>
+    </tbody>
+
+  </table>
+
+  <h1>Patients Who Have Not Reported</h1>
+
+    <table class="table">
+
+    <thead>
+      <tr>
+        <th>Name</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @non_reporting_patients.each do |patient| -%>
+        <tr>
+          <td><%= patient.first_name %> <%= patient.last_name %></td>
+        </tr>
+      <% end -%>
+    </tbody>
+
+  </table>
+
+</div>
