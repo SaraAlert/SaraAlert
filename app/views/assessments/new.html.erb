@@ -1,0 +1,6 @@
+<h1>Daily Patient Assessment</h1>
+<%= form_with model: Assessment.new, url: patient_assessments_path do |f| %>
+  <%= f.label :showing_symptoms %>
+  <%= f.check_box :showing_symptoms %>
+  <%= f.submit "Submit" %>
+<% end %>

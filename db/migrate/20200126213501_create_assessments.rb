@@ -5,6 +5,7 @@ class CreateAssessments < ActiveRecord::Migration[6.0]
       # TODO: For eventual performance we may want a status table
       t.string :status, index: true
       t.references :patient, index: true
+      t.boolean :showing_symptoms
     end
   end
 end
