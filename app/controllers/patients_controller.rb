@@ -51,6 +51,7 @@ class PatientsController < ApplicationController
 
         # Attempt to save and continue; else if failed redirect to index
         if @patient.save
+            PatientMailer.enrollment_email(@patient).deliver_now
             redirect_to @patient
         else
             redirect_to action: 'index'

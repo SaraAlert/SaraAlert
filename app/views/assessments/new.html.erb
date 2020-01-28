@@ -1,0 +1,24 @@
+<h1>Daily Patient Assessment</h1>
+<%= form_with model: Assessment.new, url: patient_assessments_path do |f| %>
+  <%= f.label :temperature %>
+  <%= f.number_field :temperature %>
+  <%= f.label :felt_feverish %>
+  <%= f.check_box :felt_feverish %>
+  <%= f.label :cough %>
+  <%= f.check_box :cough %>
+  <%= f.label :sore_throat %>
+  <%= f.check_box :sore_throat %>
+  <%= f.label :difficulty_breathing %>
+  <%= f.check_box :difficulty_breathing %>
+  <%= f.label :muscle_aches %>
+  <%= f.check_box :muscle_aches %>
+  <%= f.label :headache %>
+  <%= f.check_box :headache %>
+  <%= f.label :abdominal_discomfort %>
+  <%= f.check_box :abdominal_discomfort %>
+  <%= f.label :vomiting %>
+  <%= f.check_box :vomiting %>
+  <%= f.label :diarrhea %>
+  <%= f.check_box :diarrhea %>
+  <%= f.submit "Submit" %>
+<% end %>
