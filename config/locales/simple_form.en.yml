@@ -1,0 +1,31 @@
+en:
+  simple_form:
+    "yes": 'Yes'
+    "no": 'No'
+    required:
+      text: 'required'
+      mark: '*'
+    error_notification:
+      default_message: "Please review the problems below:"
+    labels:
+      patient:
+        first_name: "First Name"
+        middle_name: "Middle Name"
+        last_name: "Last Name"
+        suffix: "Suffix"
+        sex: "Sex"
+        dob: "Date Of Birth"
+        age: "Age"
+        suffix: "Suffix"
+        race: "Race"
+        ethnicity: "Ethnicity"
+        langauge: "Language"
+        residence_line_1: "First Line of Residence Address (e.g. 1 Main St.)"
+        residence_line_2: "Second Line of Residence Address (e.g. Apt. 42)"
+        residence_city: "City of Residence"
+        residence_county: "County of Residence"
+        residence_state: "State of Residence"
+        residence_country: "Country of Residence"
+        email: "Email"
+        primary_phone: "Primary Phone Number"
+        secondary_phone: "Secondary Phone Number"

@@ -23,14 +23,25 @@ class PatientsController < ApplicationController
 
         # Add patient details that were collected from the form
         @patient = Patient.new(params[:patient].permit(:first_name,
+                                                       :middle_name,
                                                        :last_name,
+                                                       :suffix,
+                                                       :sex,
+                                                       :dob,
+                                                       :age,
+                                                       :race,
+                                                       :ethnicity,
+                                                       :language,
                                                        :residence_line_1,
                                                        :residence_line_2,
                                                        :residence_city,
                                                        :residence_county,
                                                        :residence_state,
+                                                       :residence_country,
                                                        :email,
-                                                       :phone))
+                                                       :primary_phone,
+                                                       :secondary_phone))
+
 
         # Set the responder for this patient as that patient
         @patient.responder = @patient
@@ -40,7 +51,7 @@ class PatientsController < ApplicationController
 
         # Attempt to save and continue; else if failed redirect to index
         if @patient.save
-          redirect_to @patient
+            redirect_to @patient
         else
             redirect_to action: 'index'
         end

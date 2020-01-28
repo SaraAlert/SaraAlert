@@ -27,6 +27,10 @@ gem 'devise'
 gem 'cancancan'
 gem 'rolify'
 
+# Simple form for better forms
+gem 'simple_form'
+gem 'country_select'
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 

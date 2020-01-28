@@ -1,11 +1,20 @@
-<h1>Patient details:</h1>
-
-<%= t('helpers.label.patient.first_name') %>: <b><%= @patient.first_name %></b><br />
-<%= t('helpers.label.patient.last_name') %>: <b><%= @patient.last_name %></b><br />
-<%= t('helpers.label.patient.residence_line_1') %>: <b><%= @patient.residence_line_1 %></b><br />
-<%= t('helpers.label.patient.residence_line_2') %>: <b><%= @patient.residence_line_2 %></b><br />
-<%= t('helpers.label.patient.residence_city') %>: <b><%= @patient.residence_city %></b><br />
-<%= t('helpers.label.patient.residence_county') %>: <b><%= @patient.residence_county %></b><br />
-<%= t('helpers.label.patient.residence_state') %>: <b><%= @patient.residence_state %></b><br />
-<%= t('helpers.label.patient.email') %>: <b><%= @patient.email %></b><br />
-<%= t('helpers.label.patient.phone') %>: <b><%= @patient.phone %></b><br />
+<h1>Patient details</h1>
+<%= t('simple_form.labels.patient.first_name') %>: <b><%= @patient.first_name %></b><br />
+<%= t('simple_form.labels.patient.middle_name') %>: <b><%= @patient.middle_name %></b><br />
+<%= t('simple_form.labels.patient.last_name') %>: <b><%= @patient.last_name %></b><br />
+<%= t('simple_form.labels.patient.suffix') %>: <b><%= @patient.suffix %></b><br />
+<%= t('simple_form.labels.patient.sex') %>: <b><%= @patient.sex %></b><br />
+<%= t('simple_form.labels.patient.dob') %>: <b><%= @patient.dob %></b><br />
+<%= t('simple_form.labels.patient.age') %>: <b><%= @patient.age %></b><br />
+<%= t('simple_form.labels.patient.race') %>: <b><%= @patient.first_name %></b><br />
+<%= t('simple_form.labels.patient.ethnicity') %>: <b><%= @patient.first_name %></b><br />
+<%= t('simple_form.labels.patient.language') %>: <b><%= @patient.language %></b><br />
+<%= t('simple_form.labels.patient.residence_line_1') %>: <b><%= @patient.residence_line_1 %></b><br />
+<%= t('simple_form.labels.patient.residence_line_2') %>: <b><%= @patient.residence_line_2 %></b><br />
+<%= t('simple_form.labels.patient.residence_city') %>: <b><%= @patient.residence_city %></b><br />
+<%= t('simple_form.labels.patient.residence_county') %>: <b><%= @patient.residence_county %></b><br />
+<%= t('simple_form.labels.patient.residence_state') %>: <b><%= @patient.residence_state %></b><br />
+<%= t('simple_form.labels.patient.residence_country') %>: <b><%= @patient.residence_country %></b><br />
+<%= t('simple_form.labels.patient.email') %>: <b><%= @patient.email %></b><br />
+<%= t('simple_form.labels.patient.primary_phone') %>: <b><%= @patient.primary_phone %></b><br />
+<%= t('simple_form.labels.patient.secondary_phone') %>: <b><%= @patient.secondary_phone %></b><br />
