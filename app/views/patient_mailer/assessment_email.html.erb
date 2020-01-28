@@ -6,7 +6,6 @@
    
    <body>
       <h1>This is your reminder to complete your daily assessment.</h1>
-      <p>http://localhost:3000/patients/<%= @patient.id %>/assessments/new</p>
-      
+      <p><%=root_url%>patients/<%=@patient.id%>/assessments/new</p>
    </body>
 </html>
