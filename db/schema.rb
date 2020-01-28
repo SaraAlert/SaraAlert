@@ -20,7 +20,16 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "status"
     t.bigint "patient_id"
-    t.boolean "showing_symptoms"
+    t.string "temperature"
+    t.boolean "felt_feverish"
+    t.boolean "cough"
+    t.boolean "sore_throat"
+    t.boolean "difficulty_breathing"
+    t.boolean "muscle_aches"
+    t.boolean "headache"
+    t.boolean "abdominal_discomfort"
+    t.boolean "vomiting"
+    t.boolean "diarrhea"
     t.index ["patient_id"], name: "index_assessments_on_patient_id"
     t.index ["status"], name: "index_assessments_on_status"
   end
