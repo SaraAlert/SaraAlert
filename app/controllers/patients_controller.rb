@@ -9,6 +9,11 @@ class PatientsController < ApplicationController
         return unless current_user.can_view_patient?
         # Retrieve Patient by id, but only check patients that current_user created
         @patient = current_user.created_patients.find_by_id(params.permit(:id)[:id])
+        # Or that the current user is monitoring
+        # TODO: Once we have jurisdictions we need to specify access control rules in the cancan ability file
+        if (current_user.has_role?(:monitor))
+          @patient ||= Patient.find_by_id(params.permit(:id)[:id])
+        end
         # If we failed to find a patient given the id, redirect to index
         redirect_to action: 'index' if @patient.nil?
     end
