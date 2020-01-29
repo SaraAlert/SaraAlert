@@ -1,15 +1,15 @@
 <div class="container">
 
-  <h1>Patients Who Have Reported Symptoms</h1>
+  <h3 class="pb-4">Patients Who Have Reported Symptoms</h3>
 
   <%= render partial: "patients", locals: { patients: @symptomatic_patients } %>
 
   <%# TODO: Make the reporting timeout configurable %>
-  <h1>Patients Who Have Not Reported in Last 2 Minutes</h1>
+  <h3 class="pb-4">Patients Who Have Not Reported in Last 2 Minutes</h3>
 
   <%= render partial: "patients", locals: { patients: @non_reporting_patients } %>
 
-  <h1>Compliant Patients With no Reported Symptoms</h1>
+  <h3 class="pb-4">Compliant Patients With no Reported Symptoms</h3>
 
   <%= render partial: "patients", locals: { patients: @asymptomatic_patients } %>
 
