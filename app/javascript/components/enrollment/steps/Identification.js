@@ -5,12 +5,11 @@ class Identification extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { ...this.props };
+    this.state = { ...this.props, ...this.props.currentState };
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(event) {
-    debugger
     let value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
     this.setState({[event.target.id]: value}, () => {
       this.props.setEnrollmentState({ ...this.state });
@@ -21,7 +20,7 @@ class Identification extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-5 card-square">
-          <Card.Header as="h4">Patient Identification</Card.Header>
+          <Card.Header as="h4">Subject Identification</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row className="pt-2">
