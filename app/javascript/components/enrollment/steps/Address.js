@@ -7,12 +7,25 @@ class Address extends React.Component {
     super(props);
     this.state = { ...this.props, ...this.props.currentState };
     this.handleChange = this.handleChange.bind(this);
+    this.whereMonitoredSameAsHome = this.whereMonitoredSameAsHome.bind(this);
   }
 
   handleChange(event) {
     let value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
     this.setState({[event.target.id]: value}, () => {
       this.props.setEnrollmentState({ ...this.state });
+    });
+  }
+
+  whereMonitoredSameAsHome() {
+    let currentState = this.state;
+    this.setState({
+      monitored_address_line_1: currentState.address_line_1,
+      monitored_address_city: currentState.address_city,
+      monitored_address_state: currentState.address_state,
+      monitored_address_line_2: currentState.address_line_2,
+      monitored_address_zip: currentState.address_zip,
+      monitored_address_county: currentState.address_county
     });
   }
 
@@ -44,15 +57,53 @@ class Address extends React.Component {
                       <Form.Label className="nav-input-label">ADDRESS 2</Form.Label>
                       <Form.Control size="lg" className="form-square" value={this.state.address_line_2 || ''} onChange={this.handleChange} />
                     </Form.Group>
-                    <Form.Group as={Col} md={4} controlId="zip">
+                    <Form.Group as={Col} md={4} controlId="address_zip">
                       <Form.Label className="nav-input-label">ZIP</Form.Label>
                       <Form.Control size="lg" className="form-square" value={this.state.address_zip || ''} onChange={this.handleChange} />
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-2">
-                    <Form.Group as={Col} md={8} controlId="county">
+                    <Form.Group as={Col} md={8} controlId="address_county">
                       <Form.Label className="nav-input-label">COUNTY</Form.Label>
                       <Form.Control size="lg" className="form-square" value={this.state.address_county || ''} onChange={this.handleChange} />
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row className="pt-5 h-100">
+                    <Form.Group as={Col} md={8} className="my-auto">
+                      <Form.Label className="nav-input-label">Address at Destination Where Monitored</Form.Label>
+                    </Form.Group>
+                    <Form.Group as={Col} md={16} className="my-auto">
+                      <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.whereMonitoredSameAsHome}>Same as Home Address</Button>
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row className="pt-4">
+                    <Form.Group as={Col} controlId="monitored_address_line_1">
+                      <Form.Label className="nav-input-label">ADDRESS 1</Form.Label>
+                      <Form.Control size="lg" className="form-square" value={this.state.monitored_address_line_1 || ''} onChange={this.handleChange} />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="monitored_address_city">
+                      <Form.Label className="nav-input-label">TOWN/CITY</Form.Label>
+                      <Form.Control size="lg" className="form-square" value={this.state.monitored_address_city || ''} onChange={this.handleChange} />
+                    </Form.Group>
+                    <Form.Group as={Col} controlId="monitored_address_state">
+                      <Form.Label className="nav-input-label">STATE</Form.Label>
+                      <Form.Control size="lg" className="form-square" value={this.state.monitored_address_state || ''} onChange={this.handleChange} />
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row className="pt-2">
+                    <Form.Group as={Col} md={8} controlId="monitored_address_line_2">
+                      <Form.Label className="nav-input-label">ADDRESS 2</Form.Label>
+                      <Form.Control size="lg" className="form-square" value={this.state.monitored_address_line_2 || ''} onChange={this.handleChange} />
+                    </Form.Group>
+                    <Form.Group as={Col} md={4} controlId="monitored_address_zip">
+                      <Form.Label className="nav-input-label">ZIP</Form.Label>
+                      <Form.Control size="lg" className="form-square" value={this.state.monitored_address_zip || ''} onChange={this.handleChange} />
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row className="pt-2 pb-3">
+                    <Form.Group as={Col} md={8} controlId="monitored_address_county">
+                      <Form.Label className="nav-input-label">COUNTY</Form.Label>
+                      <Form.Control size="lg" className="form-square" value={this.state.monitored_address_county || ''} onChange={this.handleChange} />
                     </Form.Group>
                   </Form.Row>
                 </Form>

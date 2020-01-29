@@ -22,7 +22,7 @@ class Enrollment extends React.Component {
   }
 
   setEnrollmentState(state) {
-    this.setState(state);
+    this.setState( {...state} );
   }
 
   next() {
@@ -45,32 +45,33 @@ class Enrollment extends React.Component {
   }
 
   render () {
+    let {index, ...strippedState} = this.state; // "strippedState" is "this.state" without "index"
     return (
       <React.Fragment>
-        <Carousel controls={false} indicators={false} interval={null} keyboard={false} activeIndex={this.state.index} direction={this.state.direction}>
+        <Carousel controls={false} indicators={false} interval={null} keyboard={false} activeIndex={this.state.index} direction={this.state.direction} onSelect={() => {}}>
           <Carousel.Item>
-            <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={this.state} />
+            <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Address goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state} />
+            <Address goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Contact goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state} />
+            <Contact goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Arrival goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state} />
+            <Arrival goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
           </Carousel.Item>
           <Carousel.Item>
-            <AdditionalPlannedTravel goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state} />
+            <AdditionalPlannedTravel goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Exposure goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state} />
+            <Exposure goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Risk goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state} />
+            <Risk goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Review goto={this.goto} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state} />
+            <Review goto={this.goto} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
           </Carousel.Item>
         </Carousel>
       </React.Fragment>
