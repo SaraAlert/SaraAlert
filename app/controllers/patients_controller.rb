@@ -55,8 +55,18 @@ class PatientsController < ApplicationController
 
     # Attempt to save and continue; else if failed redirect to index
     if @patient.save
+      # TODO: Switch on preffered primary contact
       if @patient.email.present?
-        PatientMailer.enrollment_email(@patient).deliver_now
+        # deliver_later forces the use of ActiveJob
+        # sidekiq and redis should be running for this to work
+        # If these are not running, all jobs will be completed when services start
+        PatientMailer.enrollment_email(@patient).deliver_later
+      end
+      if @patient.primary_phone.present?
+        # deliver_later forces the use of ActiveJob
+        # sidekiq and redis should be running for this to work
+        # If these are not running, all jobs will be completed when services start
+        PatientMailer.enrollment_sms(@patient).deliver_later
       end
       redirect_to @patient
     else
