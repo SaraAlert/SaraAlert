@@ -58,8 +58,10 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.string "secondary_phone"
     t.integer "responder_id"
     t.integer "creator_id"
+    t.string "submission_token"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["responder_id"], name: "index_patients_on_responder_id"
+    t.index ["submission_token"], name: "index_patients_on_submission_token"
   end
 
   create_table "roles", force: :cascade do |t|

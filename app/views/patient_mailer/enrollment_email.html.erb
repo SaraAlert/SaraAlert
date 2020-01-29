@@ -1,13 +1,12 @@
 <html>
-   
-   <head>
-      <meta content = 'text/html; charset = UTF-8' http-equiv = 'Content-Type' />
-   </head>
-   
-   <body>
-      <h1>Welcome to the DiseaseTrakker System</h1>
-      <h2>Use the link below to complete your daily assessments.</h2>
-      <p><%=root_url%>patients/<%=@patient.id%>/assessments/new</p>
-      
-   </body>
+
+  <head>
+    <meta content = 'text/html; charset = UTF-8' http-equiv = 'Content-Type' />
+  </head>
+
+  <body>
+    <h1>Welcome to the DiseaseTrakker System</h1>
+    <p>Please provide your daily assessment <a href="<%= new_patient_assessment_url(@patient.submission_token) %>">using our online assessment tool</a>.</p>
+  </body>
+
 </html>

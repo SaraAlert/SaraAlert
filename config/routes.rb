@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   resources :patients, only: [:index, :new, :create, :show]
 
-  resources :patients do
+  resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]
   end
 
