@@ -26,6 +26,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :secondary_phone
       t.integer :responder_id, index: true
       t.integer :creator_id, index: true
+      t.string :submission_token, index: true
     end
   end
 end

@@ -1,11 +1,12 @@
 <html>
    
-   <head>
-      <meta content = 'text/html; charset = UTF-8' http-equiv = 'Content-Type' />
-   </head>
+  <head>
+    <meta content = 'text/html; charset = UTF-8' http-equiv = 'Content-Type' />
+  </head>
    
-   <body>
-      <h1>This is your reminder to complete your daily assessment.</h1>
-      <p><%=root_url%>patients/<%=@patient.id%>/assessments/new</p>
-   </body>
+  <body>
+    <h1>This is your reminder to complete your daily assessment</h1>
+    <p>Please provide your daily assessment <a href="<%= new_patient_assessment_url(@patient.submission_token) %>">using our online assessment tool</a>.</p>
+  </body>
+
 </html>

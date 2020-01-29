@@ -27,7 +27,7 @@ class PatientsController < ApplicationController
     redirect_to root_url unless current_user.can_create_patient?
 
     # Add patient details that were collected from the form
-    @patient = Patient.new(params[:patient].permit(:first_name,
+    patient = Patient.new(params[:patient].permit(:first_name,
                                                    :middle_name,
                                                    :last_name,
                                                    :suffix,
@@ -48,27 +48,34 @@ class PatientsController < ApplicationController
                                                    :secondary_phone))
 
     # Set the responder for this patient as that patient
-    @patient.responder = @patient
+    patient.responder = patient
 
     # Set the creator as the current user
-    @patient.creator = current_user
+    patient.creator = current_user
+
+    # Create a secure random token to act as the subject's password when they submit assessments; this gets
+    # included in the URL sent to the subject to allow them to report without having to type in a password
+    # TODO: This currently a notional solution, and any final solution will require a security review
+    patient.submission_token = SecureRandom.hex(20) # 160 bits
 
     # Attempt to save and continue; else if failed redirect to index
-    if @patient.save
-      # TODO: Switch on preffered primary contact
-      if @patient.email.present?
+    if patient.save
+      # TODO: An error should be raised to the user if no email/text was delivered (e.g. if redis is not running)
+      # TODO: Also consider recording on the patient whether an email/text was sent and run a regular job to retry sending unsent
+      # TODO: Switch on preferred primary contact
+      if patient.email.present?
         # deliver_later forces the use of ActiveJob
         # sidekiq and redis should be running for this to work
         # If these are not running, all jobs will be completed when services start
-        PatientMailer.enrollment_email(@patient).deliver_later
+        PatientMailer.enrollment_email(patient).deliver_later
       end
-      if @patient.primary_phone.present?
+      if patient.primary_phone.present?
         # deliver_later forces the use of ActiveJob
         # sidekiq and redis should be running for this to work
         # If these are not running, all jobs will be completed when services start
-        PatientMailer.enrollment_sms(@patient).deliver_later
+        PatientMailer.enrollment_sms(patient).deliver_later
       end
-      redirect_to @patient
+      redirect_to patient
     else
       redirect_to action: 'index'
     end

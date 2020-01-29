@@ -5,6 +5,7 @@ namespace :mailers do
         test_patient = Patient.new(creator: user)
         test_patient.responder = test_patient
         test_patient.email = "mmayer@mitre.org"
+        test_patient.submission_token = SecureRandom.hex(20)
         test_patient.save!
         PatientMailer.assessment_email(test_patient).deliver_now
     end
@@ -15,6 +16,7 @@ namespace :mailers do
         test_patient = Patient.new(creator: user)
         test_patient.responder = test_patient
         test_patient.email = "mmayer@mitre.org"
+        test_patient.submission_token = SecureRandom.hex(20)
         test_patient.save!
         PatientMailer.enrollment_email(test_patient).deliver_now
     end
