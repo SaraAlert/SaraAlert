@@ -25,10 +25,6 @@ gem 'devise'
 gem 'cancancan'
 gem 'rolify'
 
-# Simple form for better forms
-gem 'simple_form'
-gem 'country_select'
-
 # Better React integration
 gem 'react-rails'
 

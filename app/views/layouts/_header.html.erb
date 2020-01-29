@@ -2,9 +2,9 @@
   <a class="navbar-brand text-white">DiseaseTrakker</a>
   <% unless current_user.nil? %>
     <form class="form-inline ml-auto">
-      <a class="nav-link night-nav-link text-white"><span class="fas fa-user"></span>&nbsp;&nbsp;<%= current_user.email %></a>
+      <a class="nav-link night-nav-link text-white"><i class="fas fa-user"></i>&nbsp;&nbsp;<%= current_user.email %></a>
       <a class="white-border-right"></a>
-      <a class="nav-link night-nav-link text-white" href="<%= destroy_user_session_path %>" data-method="DELETE"><span class="fas fa-sign-out-alt"></span>&nbsp;&nbsp;Logout</a>
+      <a class="nav-link night-nav-link text-white" href="<%= destroy_user_session_path %>" data-method="DELETE"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout</a>
     </form>
   <% end %>
 </nav>

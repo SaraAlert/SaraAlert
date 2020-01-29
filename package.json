@@ -14,9 +14,9 @@
     "popper": "^1.0.1",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
+    "react-albus": "^2.0.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
-    "react-step-wizard": "^5.3.0",
     "react_ujs": "^2.6.1"
   },
   "version": "0.1.0",
