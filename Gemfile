@@ -21,6 +21,8 @@ gem 'jbuilder', '~> 2.7'
 # gem 'bcrypt', '~> 3.1.7'
 # Twillio gem for sending SMS and robo calls
 gem 'twilio-ruby'
+# Sidekiq for queueing
+gem 'sidekiq'
 
 # Devise, cancancan, and rolify for authC/Z
 gem 'devise'

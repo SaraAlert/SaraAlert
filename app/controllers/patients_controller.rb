@@ -57,12 +57,16 @@ class PatientsController < ApplicationController
     if @patient.save
       # TODO: Switch on preffered primary contact
       if @patient.email.present?
-        # TODO: Dispatch as active job
-        PatientMailer.enrollment_email(@patient).deliver_now
+        # deliver_later forces the use of ActiveJob
+        # sidekiq and redis should be running for this to work
+        # If these are not running, all jobs will be completed when services start
+        PatientMailer.enrollment_email(@patient).deliver_later
       end
       if @patient.primary_phone.present?
-        # TODO: Dispatch as active job
-        TwillioHelper.send_enrollment_sms(@patient)
+        # deliver_later forces the use of ActiveJob
+        # sidekiq and redis should be running for this to work
+        # If these are not running, all jobs will be completed when services start
+        PatientMailer.enrollment_sms(@patient).deliver_later
       end
       redirect_to @patient
     else
