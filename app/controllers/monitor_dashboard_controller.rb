@@ -18,7 +18,7 @@ class MonitorDashboardController < ApplicationController
     # and 3) who have not reported recently
 
     # TODO: There should be a configurable lag until we care about reporting
-    time_boundary = 5.minutes.ago
+    time_boundary = 2.minutes.ago
     @non_reporting_patients = patients.reject do |p|
       (p.created_at >= time_boundary || # Created more recently than our time boundary, so not expected to have reported yet
        p.latest_assessment&.status == 'symptomatic' || # Symptomatic, handled in a different list

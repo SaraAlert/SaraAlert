@@ -5,7 +5,7 @@
   <%= render partial: "patients", locals: { patients: @symptomatic_patients } %>
 
   <%# TODO: Make the reporting timeout configurable %>
-  <h1>Patients Who Have Not Reported in Last 5 Minutes</h1>
+  <h1>Patients Who Have Not Reported in Last 2 Minutes</h1>
 
   <%= render partial: "patients", locals: { patients: @non_reporting_patients } %>
 

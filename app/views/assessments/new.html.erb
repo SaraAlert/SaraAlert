@@ -1,24 +1,24 @@
 <h1>Daily Patient Assessment</h1>
-<%= form_with model: Assessment.new, url: patient_assessments_path do |f| %>
+<%= form_with model: Assessment.new, url: patient_assessments_path, local: true do |f| %>
   <%= f.label :temperature %>
-  <%= f.number_field :temperature %>
+  <%= f.number_field :temperature %><br />
   <%= f.label :felt_feverish %>
-  <%= f.check_box :felt_feverish %>
+  <%= f.check_box :felt_feverish %><br />
   <%= f.label :cough %>
-  <%= f.check_box :cough %>
+  <%= f.check_box :cough %><br />
   <%= f.label :sore_throat %>
-  <%= f.check_box :sore_throat %>
+  <%= f.check_box :sore_throat %><br />
   <%= f.label :difficulty_breathing %>
-  <%= f.check_box :difficulty_breathing %>
+  <%= f.check_box :difficulty_breathing %><br />
   <%= f.label :muscle_aches %>
-  <%= f.check_box :muscle_aches %>
+  <%= f.check_box :muscle_aches %><br />
   <%= f.label :headache %>
-  <%= f.check_box :headache %>
+  <%= f.check_box :headache %><br />
   <%= f.label :abdominal_discomfort %>
-  <%= f.check_box :abdominal_discomfort %>
+  <%= f.check_box :abdominal_discomfort %><br />
   <%= f.label :vomiting %>
-  <%= f.check_box :vomiting %>
+  <%= f.check_box :vomiting %><br />
   <%= f.label :diarrhea %>
-  <%= f.check_box :diarrhea %>
+  <%= f.check_box :diarrhea %><br />
   <%= f.submit "Submit" %>
 <% end %>
