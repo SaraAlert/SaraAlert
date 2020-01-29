@@ -1,5 +1,5 @@
 import React from "react"
-import { Card, Button, Form, Col, InputGroup } from 'react-bootstrap';
+import { Card, Button, Form, Col } from 'react-bootstrap';
 
 class Identification extends React.Component {
 
