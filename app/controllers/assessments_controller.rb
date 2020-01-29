@@ -11,9 +11,9 @@ class AssessmentsController < ApplicationController
     @assessment = Assessment.new(params[:assessment].permit(:temperature, :felt_feverish, :cough, :sore_throat, :difficulty_breathing, :muscle_aches, :headache, :abdominal_discomfort, :vomiting, :diarrhea))
     if (@assessment.temperature && @assessment.temperature.to_i > 100 ||
         @assessment.attributes.slice('felt_feverish', 'cough', 'sore_throat', 'difficulty_breathing', 'muscle_aches', 'headache', 'abdominal_discomfort', 'vomiting', 'diarrhea').values.any?)
-      @assessment.status = 'symptomatic'
+      @assessment.symptomatic = true
     else
-      @assessment.status = 'asymptomatic'
+      @assessment.symptomatic = false
     end
     @assessment.patient_id = params[:patient_id]
     # Attempt to save and continue; else if failed redirect to index
