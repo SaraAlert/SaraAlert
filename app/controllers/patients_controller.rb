@@ -55,8 +55,14 @@ class PatientsController < ApplicationController
 
     # Attempt to save and continue; else if failed redirect to index
     if @patient.save
+      # TODO: Switch on preffered primary contact
       if @patient.email.present?
+        # TODO: Dispatch as active job
         PatientMailer.enrollment_email(@patient).deliver_now
+      end
+      if @patient.primary_phone.present?
+        # TODO: Dispatch as active job
+        TwillioHelper.send_enrollment_sms(@patient)
       end
       redirect_to @patient
     else
