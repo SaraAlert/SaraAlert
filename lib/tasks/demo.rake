@@ -1,4 +1,5 @@
 namespace :demo do
+
   desc "Configure the database for demo use"
   task setup: :environment do
     print 'Creating enrollers...'
@@ -16,22 +17,57 @@ namespace :demo do
     epi1.save
     puts ' done!'
 
-    print 'Creating patients...'
-    patient1 = Patient.new(first_name: 'Example1', last_name: 'Person1', sex: 'Male', dob: Date.today - 44.years - 100.days, creator: enroller1)
-    patient1.responder = patient1
-    patient1.save
-    patient2 = Patient.new(first_name: 'Example2', last_name: 'Person2', sex: 'Female', dob: Date.today - 68.years - 200.days, creator: enroller2)
-    patient2.responder = patient2
-    patient2.save
-    puts ' done!'
+    #print 'Creating patients...'
+    #patient1 = Patient.new(first_name: 'Example1', last_name: 'Person1', sex: 'Male', dob: Date.today - 44.years - 100.days, creator: enroller1)
+    #patient1.responder = patient1
+    #patient1.save
+    #patient2 = Patient.new(first_name: 'Example2', last_name: 'Person2', sex: 'Female', dob: Date.today - 68.years - 200.days, creator: enroller2)
+    #patient2.responder = patient2
+    #patient2.save
+    #puts ' done!'
 
-    print 'Creating assessments...'
-    patient1.assessments.create(status: 'asymptomatic')
-    patient1.assessments.create(status: 'asymptomatic')
-    patient1.assessments.create(status: 'symptomatic')
-    patient2.assessments.create(status: 'asymptomatic')
-    patient2.assessments.create(status: 'asymptomatic')
-    patient2.assessments.create(status: 'asymptomatic')
+    #print 'Creating assessments...'
+    #patient1.assessments.create(symptomatic: false)
+    #patient1.assessments.create(symptomatic: false)
+    #patient1.assessments.create(symptomatic: true)
+    #patient2.assessments.create(symptomatic: false)
+    #patient2.assessments.create(symptomatic: false)
+    #patient2.assessments.create(symptomatic: false)
+    #puts ' done!'
+  end
+
+  desc "Add lots of data to the database to provide some idea of basic scaling issues"
+  task scale_test: :environment do
+
+    count = ENV['COUNT'] || 100
+
+    enroller = User.where("email LIKE 'enroller%'").first
+
+    assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"]
+    all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
+
+    print 'Creating patients...'
+    count.times do |i|
+      years = rand(80)
+      days = rand(365)
+      sex = rand < 0.5 ? 'Male' : 'Female'
+      Patient.transaction do
+        patient = Patient.new(first_name: "Example#{i}", last_name: "Person", sex: sex, dob: Date.today - years.years - days.days, creator: enroller)
+        patient.responder = patient
+        patient.save
+        rand(15).times do
+          patient.assessments.create({ symptomatic: false }.merge(all_false))
+        end
+        if rand < 0.03
+          number_of_symptoms = rand(assessment_columns.size) + 1
+          some_true = all_false.dup
+          some_true.keys.shuffle[0,number_of_symptoms].each { |key| some_true[key] = true }
+          patient.assessments.create({ symptomatic: true }.merge(some_true))
+        end
+      end
+      print '.' if i % 100 == 0
+    end
     puts ' done!'
   end
+
 end

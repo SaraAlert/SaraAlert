@@ -16,7 +16,7 @@
       <tr>
         <td><%= patient.first_name %> <%= patient.last_name %></td>
         <td><%= patient.sex %></td>
-        <td><%= patient.dob.to_formatted_s(:long) %></td>
+        <td><%= patient.dob&.to_formatted_s(:long) %></td>
         <td><%= patient.created_at.to_date.to_formatted_s(:long) %></td>
         <td><%= patient.latest_assessment&.created_at&.to_date&.to_formatted_s(:long) %></td>
         <td><%= link_to 'View', patient, class: 'btn btn-info' %></td>
