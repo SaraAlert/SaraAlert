@@ -16,13 +16,19 @@ class Enrollment extends React.Component {
     super(props);
     this.state = { index: 0, direction: null };
     this.setEnrollmentState = this.setEnrollmentState.bind(this);
+    this.finish = this.finish.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
     this.goto = this.goto.bind(this);
   }
 
-  setEnrollmentState(state) {
-    this.setState( {...state} );
+  setEnrollmentState(enrollmentState) {
+    let currentEnrollmentState = this.state.enrollmentState;
+    this.setState( { enrollmentState: { ...currentEnrollmentState, ...enrollmentState } } );
+  }
+
+  finish() {
+    // Blah
   }
 
   next() {
@@ -45,33 +51,33 @@ class Enrollment extends React.Component {
   }
 
   render () {
-    let {index, ...strippedState} = this.state; // "strippedState" is "this.state" without "index"
     return (
       <React.Fragment>
         <Carousel controls={false} indicators={false} interval={null} keyboard={false} activeIndex={this.state.index} direction={this.state.direction} onSelect={() => {}}>
           <Carousel.Item>
-            <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
+            <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Address goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
+            <Address goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Contact goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
+            <Contact goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Arrival goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
+            <Arrival goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <AdditionalPlannedTravel goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
+            <AdditionalPlannedTravel goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Exposure goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
+            <Exposure goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
+          {/* { TODO: Risk factors will essentially be a customizable list of yes/no answers */}
+          {/* <Carousel.Item>
+            <Risk goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+          </Carousel.Item> */}
           <Carousel.Item>
-            <Risk goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
-          </Carousel.Item>
-          <Carousel.Item>
-            <Review goto={this.goto} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={strippedState} />
+            <Review goto={this.goto} finish={this.finish} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
         </Carousel>
       </React.Fragment>
