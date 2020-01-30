@@ -2,13 +2,19 @@
 
   <ul class="nav nav-tabs">
     <li class="nav-item">
-      <a class="nav-link active" id="symptomatic-tab" data-toggle="tab" href="#symptomatic">Symptomatic <span class="badge badge-danger"><%= @symptomatic_patients.count %></span></a>
+      <a class="nav-link active" id="symptomatic-tab" data-toggle="tab" href="#symptomatic">
+        Symptomatic <span class="badge badge-danger badge-larger-font"><%= @symptomatic_patients.count %></span>
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="non-reporting-tab" data-toggle="tab" href="#non-reporting">Non-Reporting <span class="badge badge-warning"><%= @non_reporting_patients.count %></span></a>
+      <a class="nav-link" id="non-reporting-tab" data-toggle="tab" href="#non-reporting">
+        Non-Reporting <span class="badge badge-warning badge-larger-font"><%= @non_reporting_patients.count %></span>
+      </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link"  id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic">Compliant <span class="badge badge-success"><%= @asymptomatic_patients.count %></span></a>
+      <a class="nav-link"  id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic">
+        Compliant <span class="badge badge-success badge-larger-font"><%= @asymptomatic_patients.count %></span>
+      </a>
     </li>
   </ul>
 
