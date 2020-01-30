@@ -11,13 +11,19 @@ class Patient extends React.Component {
     if (!!!this.props.details) {
       return (<React.Fragment></React.Fragment>);
     }
+    debugger
     return (
       <React.Fragment>
         <Row>
           <Col>
             <Row>
               <Col>
-                <span className="font-weight-normal">DOB:</span> <span className="font-weight-light">{this.props.details.dob_day && this.props.details.dob_month && this.props.details.dob_year && `${this.props.details.dob_day}-${this.props.details.dob_month}-${this.props.details.dob_year}`}</span><br />
+                <h5>{`${this.props.details.first_name ? this.props.details.first_name : ''}${this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''}${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}</h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <span className="font-weight-normal">DOB:</span> <span className="font-weight-light">{this.props.details.date_of_birth && `${this.props.details.date_of_birth}`}</span><br />
                 <span className="font-weight-normal">Age:</span> <span className="font-weight-light">{`${this.props.details.age ? this.props.details.age : ''}`}</span><br />
                 <span className="font-weight-normal">Language:</span> <span className="font-weight-light">{`${this.props.details.primary_language ? this.props.details.primary_language : ''}`}</span>
               </Col>

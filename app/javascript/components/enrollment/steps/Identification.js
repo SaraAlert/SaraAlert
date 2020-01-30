@@ -18,9 +18,8 @@ class Identification extends React.Component {
     this.setState({current: {...current, [event.target.id]: value}}, () => {
       self.props.setEnrollmentState({ ...this.state.current });
       let current = this.state.current;
-      if ((event.target.id === "dob_day" || event.target.id === "dob_month" || event.target.id === "dob_year") &&
-          (self.state.current.dob_day && self.state.current.dob_month && self.state.current.dob_year && self.state.current.dob_year.length === 4)) {
-        self.setState({current: {...current, age: 0 - moment(`${self.state.current.dob_year}-${self.state.current.dob_month.padStart(2, 0)}-${self.state.current.dob_day.padStart(2, '0')}`).diff(moment.now(), 'years')}});
+      if (event.target.id === "date_of_birth" && self.state.current.date_of_birth) {
+        self.setState({current: {...current, age: 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years')}});
       }
     });
   }
@@ -47,21 +46,17 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-2">
-                <Form.Group as={Col} md="12">
+                <Form.Group as={Col} md="auto" controlId="date_of_birth">
                   <Form.Label className="nav-input-label">DATE OF BIRTH</Form.Label>
-                  <Form.Row>
-                    <Form.Group as={Col}><Form.Control placeholder="month" size="lg" className="form-square" id="dob_month" value={this.state.current.dob_month || ''} onChange={this.handleChange} /></Form.Group>
-                    <Form.Group as={Col}><Form.Control placeholder="day" size="lg" className="form-square" id="dob_day" value={this.state.current.dob_day || ''} onChange={this.handleChange} /></Form.Group>
-                    <Form.Group as={Col}><Form.Control placeholder="year" size="lg" className="form-square" id="dob_year" value={this.state.current.dob_year || ''} onChange={this.handleChange} /></Form.Group>
-                  </Form.Row>
+                  <Form.Control size="lg" type="date" className="form-square" value={this.state.current.date_of_birth || ''} onChange={this.handleChange} />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} controlId="age" md="4">
+                <Form.Group as={Col} controlId="age" md="auto">
                   <Form.Label className="nav-input-label">AGE</Form.Label>
                   <Form.Control placeholder="" size="lg" className="form-square" value={this.state.current.age || ''} onChange={this.handleChange} />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} controlId="sex" md="6">
+                <Form.Group as={Col} controlId="sex" md="auto">
                   <Form.Label className="nav-input-label">SEX</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.sex || ''} onChange={this.handleChange}>
                     <option disabled></option>
@@ -72,7 +67,7 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
-                <Form.Group as={Col} md="13">
+                <Form.Group as={Col}>
                   <Form.Label className="nav-input-label">RACE</Form.Label>
                   <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.white === true || false} onChange={this.handleChange} />
                   <Form.Check className="pt-2" type="switch" id="black_or_african_american" label="BLACK OR AFRICAN AMERICAN" checked={this.state.current.black_or_african_american === true || false} onChange={this.handleChange} />
@@ -80,7 +75,7 @@ class Identification extends React.Component {
                   <Form.Check className="pt-2" type="switch" id="asian" label="ASIAN" checked={this.state.current.asian === true || false} onChange={this.handleChange} />
                   <Form.Check className="pt-2" type="switch" id="native_hawaiian_or_other_pacific_islander" label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER" checked={this.state.current.native_hawaiian_or_other_pacific_islander === true || false} onChange={this.handleChange} />
                 </Form.Group>
-                <Form.Group as={Col} md="11" controlId="ethnicity">
+                <Form.Group as={Col} controlId="ethnicity">
                   <Form.Label className="nav-input-label">ETHNICITY</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.ethnicity || ''} onChange={this.handleChange}>
                     <option disabled></option>
@@ -90,12 +85,12 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-2">
-                <Form.Group as={Col} md="8" controlId="primary_language">
+                <Form.Group as={Col} controlId="primary_language">
                   <Form.Label className="nav-input-label">PRIMARY LANGUAGE</Form.Label>
                   <Form.Control size="lg" className="form-square" value={this.state.current.primary_language || ''} onChange={this.handleChange}  />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} md="8" controlId="secondary_language">
+                <Form.Group as={Col} controlId="secondary_language">
                   <Form.Label className="nav-input-label">SECONDARY LANGUAGE</Form.Label>
                   <Form.Control size="lg" className="form-square" value={this.state.current.secondary_language || ''} onChange={this.handleChange} />
                 </Form.Group>
