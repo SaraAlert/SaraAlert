@@ -12,6 +12,7 @@ import Risk from './steps/Risk';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BreadcrumbPath from '../BreadcrumbPath';
 
 class Enrollment extends React.Component {
 
@@ -78,6 +79,7 @@ class Enrollment extends React.Component {
   render () {
     return (
       <React.Fragment>
+        <BreadcrumbPath crumbs={[new Object({ value: "Dashboard", href: "/patients" }), new Object({ value: "Register New Subject", href: null })]} />
         <Carousel controls={false} indicators={false} interval={null} keyboard={false} activeIndex={this.state.index} direction={this.state.direction} onSelect={() => {}}>
           <Carousel.Item>
             <Identification goto={this.goto} next={this.next} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
