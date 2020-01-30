@@ -10,6 +10,8 @@ import Exposure from './steps/Exposure';
 import Review from './steps/Review';
 import Risk from './steps/Risk';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class Enrollment extends React.Component {
 
@@ -31,8 +33,8 @@ class Enrollment extends React.Component {
   submit() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token
     axios.post('/patients', { patient: this.state.enrollmentState }).then(function (response) {
-      // TODO: Figure out what to do on success
-      console.log(response);
+      // Inform user and redirect to home on success
+      toast.success('Record Successfully Saved', { onClose: () => location.href = '/' });
     }).catch(function (error) {
       // TODO: Figure out what to do on error
       console.log(error);
@@ -100,6 +102,7 @@ class Enrollment extends React.Component {
             <Review goto={this.goto} submit={this.submit} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
         </Carousel>
+        <ToastContainer position="top-center" autoClose={3000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </React.Fragment>
     );
   }

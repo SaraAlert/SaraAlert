@@ -24,6 +24,7 @@ class PatientsController < ApplicationController
   end
 
   def create
+    # TODO: This is accessed via React, so redirects are probably not sensible behavior
     redirect_to root_url unless current_user.can_create_patient?
 
     # Add patient details that were collected from the form

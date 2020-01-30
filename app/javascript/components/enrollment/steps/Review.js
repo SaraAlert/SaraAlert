@@ -6,6 +6,13 @@ class Review extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = { submitDisabled: false };
+    this.submit = this.submit.bind(this);
+  }
+
+  submit() {
+    this.setState({ submitDisabled: true });
+    this.props.submit();
   }
 
   render () {
@@ -18,7 +25,7 @@ class Review extends React.Component {
             <div className="pb-4"></div>
             {this.props.previous && <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>Previous</Button>}
             {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>{!!this.props.lastIndex && "Back"}{!!!this.props.lastIndex && "Next"}</Button>}
-            {this.props.submit && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>Finish</Button>}
+            {this.props.submit && <Button variant="primary" size="lg" className="float-right btn-square px-5" disabled={this.state.submitDisabled} onClick={this.submit}>Finish</Button>}
           </Card.Body>
         </Card>
       </React.Fragment>
