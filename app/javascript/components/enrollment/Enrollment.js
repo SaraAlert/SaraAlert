@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import axios from "axios"
 import { Carousel } from 'react-bootstrap';
 import Identification from './steps/Identification';
 import Address from './steps/Address';
@@ -16,7 +17,7 @@ class Enrollment extends React.Component {
     super(props);
     this.state = { index: 0, direction: null };
     this.setEnrollmentState = this.setEnrollmentState.bind(this);
-    this.finish = this.finish.bind(this);
+    this.submit = this.submit.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
     this.goto = this.goto.bind(this);
@@ -27,8 +28,15 @@ class Enrollment extends React.Component {
     this.setState( { enrollmentState: { ...currentEnrollmentState, ...enrollmentState } } );
   }
 
-  finish() {
-    // Blah
+  submit() {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token
+    axios.post('/patients', { patient: this.state.enrollmentState }).then(function (response) {
+      // TODO: Figure out what to do on success
+      console.log(response);
+    }).catch(function (error) {
+      // TODO: Figure out what to do on error
+      console.log(error);
+    });
   }
 
   next() {
@@ -89,7 +97,7 @@ class Enrollment extends React.Component {
           </Carousel.Item>
           {/* { TODO: Risk factors */}
           <Carousel.Item>
-            <Review goto={this.goto} finish={this.finish} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Review goto={this.goto} submit={this.submit} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
         </Carousel>
       </React.Fragment>
