@@ -67,7 +67,7 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
-                <Form.Group as={Col}>
+                <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE</Form.Label>
                   <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.white === true || false} onChange={this.handleChange} />
                   <Form.Check className="pt-2" type="switch" id="black_or_african_american" label="BLACK OR AFRICAN AMERICAN" checked={this.state.current.black_or_african_american === true || false} onChange={this.handleChange} />
@@ -75,7 +75,8 @@ class Identification extends React.Component {
                   <Form.Check className="pt-2" type="switch" id="asian" label="ASIAN" checked={this.state.current.asian === true || false} onChange={this.handleChange} />
                   <Form.Check className="pt-2" type="switch" id="native_hawaiian_or_other_pacific_islander" label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER" checked={this.state.current.native_hawaiian_or_other_pacific_islander === true || false} onChange={this.handleChange} />
                 </Form.Group>
-                <Form.Group as={Col} controlId="ethnicity">
+                <Form.Group as={Col} md="1"></Form.Group>
+                <Form.Group as={Col} md="8" controlId="ethnicity">
                   <Form.Label className="nav-input-label">ETHNICITY</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.ethnicity || ''} onChange={this.handleChange}>
                     <option disabled></option>
@@ -102,7 +103,7 @@ class Identification extends React.Component {
               </Form.Row>
             </Form>
             {this.props.previous && <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>Previous</Button>}
-            {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>Next</Button>}
+            {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>{!!this.props.lastIndex && "Back"}{!!!this.props.lastIndex && "Next"}</Button>}
             {this.props.finish && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.finish}>Finish</Button>}
           </Card.Body>
         </Card>

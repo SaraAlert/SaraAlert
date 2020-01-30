@@ -53,7 +53,7 @@ class Exposure extends React.Component {
                       <Form.Check type="switch" id="contact_of_known_case" label="CONTACT OF KNOWN CASE" checked={this.state.current.contact_of_known_case === true || false} onChange={this.handleChange} />
                     </Form.Group>
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
-                      <Form.Control size="sm" className="form-square" id="contact_of_known_case_id" placeholder="enter associated case ID" value={this.state.current.contact_of_known_case_id || ''} onChange={this.handleChange} />
+                      <Form.Control size="sm" className="form-square" id="contact_of_known_case_id" placeholder="enter case ID" value={this.state.current.contact_of_known_case_id || ''} onChange={this.handleChange} />
                     </Form.Group>
                   </Form.Row>
                   <Form.Row>
@@ -70,7 +70,7 @@ class Exposure extends React.Component {
               </Form.Row>
             </Form>
             {this.props.previous && <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>Previous</Button>}
-            {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>Next</Button>}
+            {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>{!!this.props.lastIndex && "Back"}{!!!this.props.lastIndex && "Next"}</Button>}
             {this.props.finish && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.finish}>Finish</Button>}
           </Card.Body>
         </Card>

@@ -1,6 +1,6 @@
 class PatientMailer < ApplicationMailer
-  default from: 'notifications@diseaseTrakker.org'
-   
+  default from: 'notifications@sara.mitre.org'
+
   def assessment_email(patient)
     @patient = patient
     mail(to: patient.email, subject: 'DiseaseTrackker Assessment Reminder')
@@ -12,7 +12,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def enrollment_sms(patient)
-    contents = "This is the DiseaseTrakker system please complete your assessment at #{new_patient_assessment_url(patient.submission_token)}"
+    contents = "This is the SARA system please complete your assessment at #{new_patient_assessment_url(patient.submission_token)}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
