@@ -1,16 +1,41 @@
 <div class="container">
 
-  <h1>Patients Who Have Reported Symptoms</h1>
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" id="symptomatic-tab" data-toggle="tab" href="#symptomatic">
+        Symptomatic <span class="badge badge-danger badge-larger-font"><%= @symptomatic_patients.count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="non-reporting-tab" data-toggle="tab" href="#non-reporting">
+        Non-Reporting <span class="badge badge-warning badge-larger-font"><%= @non_reporting_patients.count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link"  id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic">
+        Compliant <span class="badge badge-success badge-larger-font"><%= @asymptomatic_patients.count %></span>
+      </a>
+    </li>
+  </ul>
 
-  <%= render partial: "patients", locals: { patients: @symptomatic_patients } %>
+  <div class="tab-content" id="myTabContent">
 
-  <%# TODO: Make the reporting timeout configurable %>
-  <h1>Patients Who Have Not Reported in Last 2 Minutes</h1>
+    <div class="card tab-pane fade show active" id="symptomatic" role="tabpanel" aria-labelledby="symptomatic-tab">
+      <h3 class="p-4">Patients Who Have Reported Symptoms</h3>
+      <%= render partial: "patients", locals: { patients: @symptomatic_patients } %>
+    </div>
 
-  <%= render partial: "patients", locals: { patients: @non_reporting_patients } %>
+    <div class="card tab-pane fade" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
+      <%# TODO: Make the reporting timeout configurable %>
+      <h3 class="p-4">Patients Who Have Not Reported in Last 2 Minutes</h3>
+      <%= render partial: "patients", locals: { patients: @non_reporting_patients } %>
+    </div>
 
-  <h1>Compliant Patients With no Reported Symptoms</h1>
+    <div class="card tab-pane fade" id="asymptomatic" role="tabpanel" aria-labelledby="asymptomatic-tab">
+      <h3 class="p-4">Compliant Patients With no Reported Symptoms</h3>
+      <%= render partial: "patients", locals: { patients: @asymptomatic_patients } %>
+    </div>
 
-  <%= render partial: "patients", locals: { patients: @asymptomatic_patients } %>
+  </div>
 
 </div>
