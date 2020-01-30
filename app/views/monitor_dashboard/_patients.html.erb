@@ -1,27 +1,29 @@
-<table class="table">
+<div class="px-4">
+  <table class="table">
 
-  <thead>
-    <tr>
-      <th>Patient</th>
-      <th>Sex</th>
-      <th>Date of Birth</th>
-      <th>Observation Start</th>
-      <th>Latest Assessment</th>
-      <th></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% patients.each do |patient| -%>
+    <thead>
       <tr>
-        <td><%= patient.first_name %> <%= patient.last_name %></td>
-        <td><%= patient.sex %></td>
-        <td><%= patient.dob&.to_formatted_s(:long) %></td>
-        <td><%= patient.created_at.to_date.to_formatted_s(:long) %></td>
-        <td><%= patient.latest_assessment&.created_at&.to_date&.to_formatted_s(:long) %></td>
-        <td><%= link_to 'View', patient, class: 'btn btn-info' %></td>
+        <th>Patient</th>
+        <th>Sex</th>
+        <th>Date of Birth</th>
+        <th>Observation Start</th>
+        <th>Latest Assessment</th>
+        <th></th>
       </tr>
-    <% end -%>
-  </tbody>
+    </thead>
 
-</table>
+    <tbody>
+      <% patients.each do |patient| -%>
+        <tr>
+          <td><%= patient.first_name %> <%= patient.last_name %></td>
+          <td><%= patient.sex %></td>
+          <td><%= patient.dob&.to_formatted_s(:long) %></td>
+          <td><%= patient.created_at.to_date.to_formatted_s(:long) %></td>
+          <td><%= patient.latest_assessment&.created_at&.to_date&.to_formatted_s(:long) %></td>
+          <td><%= link_to 'View', patient, class: 'btn btn-info' %></td>
+        </tr>
+      <% end -%>
+    </tbody>
+
+  </table>
+</div>
