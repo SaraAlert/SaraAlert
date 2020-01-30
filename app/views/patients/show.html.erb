@@ -1,44 +1,31 @@
-<div class="container">
-<h1>Patient Details</h1>
-<%= t('simple_form.labels.patient.first_name') %>: <b><%= @patient.first_name %></b><br />
-<%= t('simple_form.labels.patient.middle_name') %>: <b><%= @patient.middle_name %></b><br />
-<%= t('simple_form.labels.patient.last_name') %>: <b><%= @patient.last_name %></b><br />
-<%= t('simple_form.labels.patient.suffix') %>: <b><%= @patient.suffix %></b><br />
-<%= t('simple_form.labels.patient.sex') %>: <b><%= @patient.sex %></b><br />
-<%= t('simple_form.labels.patient.dob') %>: <b><%= @patient.dob %></b><br />
-<%= t('simple_form.labels.patient.age') %>: <b><%= @patient.age %></b><br />
-<%= t('simple_form.labels.patient.race') %>: <b><%= @patient.race %></b><br />
-<%= t('simple_form.labels.patient.ethnicity') %>: <b><%= @patient.ethnicity %></b><br />
-<%= t('simple_form.labels.patient.language') %>: <b><%= @patient.language %></b><br />
-<%= t('simple_form.labels.patient.residence_line_1') %>: <b><%= @patient.residence_line_1 %></b><br />
-<%= t('simple_form.labels.patient.residence_line_2') %>: <b><%= @patient.residence_line_2 %></b><br />
-<%= t('simple_form.labels.patient.residence_city') %>: <b><%= @patient.residence_city %></b><br />
-<%= t('simple_form.labels.patient.residence_county') %>: <b><%= @patient.residence_county %></b><br />
-<%= t('simple_form.labels.patient.residence_state') %>: <b><%= @patient.residence_state %></b><br />
-<%= t('simple_form.labels.patient.residence_country') %>: <b><%= @patient.residence_country %></b><br />
-<%= t('simple_form.labels.patient.email') %>: <b><%= @patient.email %></b><br />
-<%= t('simple_form.labels.patient.primary_phone') %>: <b><%= @patient.primary_phone %></b><br />
-<%= t('simple_form.labels.patient.secondary_phone') %>: <b><%= @patient.secondary_phone %></b><br />
-<h1>Patient Assessments</h1>
-<% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"] %>
-<table class="table table-sm table-striped table-hover table-smaller-font">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <% columns.each do |column| -%>
-        <th><%= column.titleize %></th>
-      <% end -%>
-    </tr>
-  </thead>
-  <tbody>
-    <% @patient.assessments.order('created_at').each do |assessment| -%>
-    <tr>
-        <td><%= assessment.created_at.to_date.to_formatted_s(:long) %></td>
-        <% columns.each do |column| -%>
-          <td><% if assessment[column] -%><span class="concern">Yes</span><% else -%>No<% end -%></td>
+<%= react_component("PatientPage", { patient: @patient }) %>
+
+<div class="card mx-4 mt-4">
+
+  <h5 class="card-header">Patient Assessments</h5>
+
+  <div class="m-4">
+    <% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"] %>
+    <table class="table table-sm table-striped table-hover table-smaller-font">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <% columns.each do |column| -%>
+            <th><%= column.titleize %></th>
+          <% end -%>
+        </tr>
+      </thead>
+      <tbody>
+        <% @patient.assessments.order('created_at').each do |assessment| -%>
+        <tr>
+            <td><%= assessment.created_at.to_date.to_formatted_s(:long) %></td>
+            <% columns.each do |column| -%>
+              <td><% if assessment[column] -%><span class="concern">Yes</span><% else -%>No<% end -%></td>
+            <% end -%>
+          </tr>
         <% end -%>
-      </tr>
-    <% end -%>
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+
 </div>

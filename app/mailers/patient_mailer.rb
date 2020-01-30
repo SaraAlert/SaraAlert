@@ -1,6 +1,6 @@
 class PatientMailer < ApplicationMailer
-  default from: 'notifications@diseaseTrakker.org'
-   
+  default from: 'notifications@DiseaseTrakker.org'
+
   def assessment_email(patient)
     @patient = patient
     mail(to: patient.email, subject: 'DiseaseTrackker Assessment Reminder')

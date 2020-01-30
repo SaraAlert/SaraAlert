@@ -37,11 +37,12 @@ namespace :demo do
   end
 
   desc "Add lots of data to the database to provide some idea of basic scaling issues"
-  task scale_test: :environment do
+  task populate: :environment do
 
     count = ENV['COUNT'] || 100
 
-    enroller = User.where("email LIKE 'enroller%'").first
+    enroller1 = User.where("email LIKE 'enroller%'").first
+    enroller2 = User.where("email LIKE 'enroller%'").last
 
     assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
@@ -52,11 +53,11 @@ namespace :demo do
       days = rand(365)
       sex = rand < 0.5 ? 'Male' : 'Female'
       Patient.transaction do
-        patient = Patient.new(first_name: "Example#{i}", last_name: "Person", sex: sex, dob: Date.today - years.years - days.days, creator: enroller)
+        patient = Patient.new(first_name: "Example#{i}", last_name: "Person", sex: sex, date_of_birth: Date.today - years.years - days.days, creator: rand < 0.3 ? enroller1 : enroller2, created_at: rand < 0.7 ? Time.now - 2.days : Time.now)
         patient.responder = patient
         patient.save
         rand(15).times do
-          patient.assessments.create({ symptomatic: false }.merge(all_false))
+          patient.assessments.create({ symptomatic: false, created_at: rand < 0.7 ? Time.now - 2.days : Time.now }.merge(all_false))
         end
         if rand < 0.03
           number_of_symptoms = rand(assessment_columns.size) + 1
