@@ -20,7 +20,7 @@
           <td><%= patient.date_of_birth&.to_formatted_s(:long) %></td>
           <td><%= patient.created_at.to_date.to_formatted_s(:long) %></td>
           <td><%= patient.latest_assessment&.created_at&.to_date&.to_formatted_s(:long) %></td>
-          <td><%= link_to 'View', patient, class: 'btn btn-info' %></td>
+          <td><%= link_to 'View', patient, class: 'btn btn-primary' %></td>
         </tr>
       <% end -%>
     </tbody>
