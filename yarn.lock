@@ -763,7 +763,7 @@
     "@babel/plugin-transform-react-jsx-self" "^7.8.3"
     "@babel/plugin-transform-react-jsx-source" "^7.8.3"
 
-"@babel/runtime@^7.4.2", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.5", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.8.3.tgz#0811944f73a6c926bb2ad35e918dcc1bfab279f1"
   integrity sha512-fVHx1rzEmwB130VTkLnxR+HmxcTjGzH12LYQcFFoBwakMd3aOMD4OsRN7tGG/UOYE2ektgFrS8uACAoRk1CY0w==
@@ -2653,11 +2653,6 @@ cosmiconfig@^6.0.0:
     path-type "^4.0.0"
     yaml "^1.7.2"
 
-countries-list@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/countries-list/-/countries-list-2.5.0.tgz#2a71c7f169ef477673a72fd30945dedc96986b1a"
-  integrity sha512-3WkdGv0Yd0UPNdndgW+gCkj+5oMRY5dcgrjNETPuEE0nmClFbFlllWwHw+sSR0CJrPtSQ3BvF8+0/6qIdf31iw==
-
 crc32-stream@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/crc32-stream/-/crc32-stream-3.0.1.tgz#cae6eeed003b0e44d739d279de5ae63b171b4e85"
@@ -3135,6 +3130,13 @@ detective@^4.0.0:
   dependencies:
     acorn "^5.2.1"
     defined "^1.0.0"
+
+devise-axios@^1.0.24:
+  version "1.0.24"
+  resolved "https://registry.yarnpkg.com/devise-axios/-/devise-axios-1.0.24.tgz#c591da71b16778cc84040db4bfd82534b2c61c19"
+  integrity sha512-IgSQxWxDprWrZwYihqmeRpZffHRXifuTC4HCI98AzJWslUKoH5xK2LireBhnt4CqSFGXxfH4KfJdQ0vvEwS6kg==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
 
 diff@3.5.0:
   version "3.5.0"
@@ -5659,11 +5661,6 @@ module-deps@^4.0.2, module-deps@^4.0.8:
     subarg "^1.0.0"
     through2 "^2.0.0"
     xtend "^4.0.0"
-
-moment@^2.24.0:
-  version "2.24.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
-  integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
 move-concurrently@^1.0.1:
   version "1.0.1"
