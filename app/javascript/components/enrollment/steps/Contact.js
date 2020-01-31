@@ -39,7 +39,7 @@ class Contact extends React.Component {
                 <Form.Group as={Col} md="11" controlId="primary_telephone_type">
                   <Form.Label className="nav-input-label">PRIMARY PHONE TYPE</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.primary_telephone_type || ''} onChange={this.handleChange}>
-                    <option disabled></option>
+                    <option></option>
                     <option>Smartphone</option>
                     <option>Plain Cell</option>
                     <option>Landline</option>
@@ -49,7 +49,7 @@ class Contact extends React.Component {
                 <Form.Group as={Col} md="11" controlId="secondary_telephone_type">
                   <Form.Label className="nav-input-label">SECONDARY PHONE TYPE</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.secondary_telephone_type || ''} onChange={this.handleChange}>
-                    <option disabled></option>
+                    <option></option>
                     <option>Smartphone</option>
                     <option>Plain Cell</option>
                     <option>Landline</option>
@@ -82,7 +82,7 @@ class Contact extends React.Component {
                 <Form.Group as={Col} md="8" controlId="preferred_contact_method">
                   <Form.Label className="nav-input-label">PREFERRED CONTACT METHOD</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.preferred_contact_method || ''} onChange={this.handleChange}>
-                    <option disabled></option>
+                    <option></option>
                     <option>E-mail</option>
                     <option>Telephone call</option>
                     <option>SMS Text-message</option>

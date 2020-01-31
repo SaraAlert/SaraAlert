@@ -75,3 +75,14 @@ select.form-control {
   padding-left: 0px;
   padding-right: 0px;
 }
+
+.navbar-brand {
+  display: inline-block !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-right: 1rem !important;
+  font-size: 1.6rem !important;
+  line-height: inherit !important;
+  white-space: nowrap !important;
+  font-weight: 250 !important;
+}

@@ -38,7 +38,7 @@ class Arrival extends React.Component {
                 <Form.Group as={Col} md="8" controlId="source_of_report">
                   <Form.Label className="nav-input-label">SOURCE OF REPORT</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.source_of_report || ''} onChange={this.handleChange}>
-                    <option disabled></option>
+                    <option></option>
                     <option>Self-Identified</option>
                     <option>CDC</option>
                     <option>Other</option>

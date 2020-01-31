@@ -39,7 +39,7 @@ class AdditionalPlannedTravel extends React.Component {
                 <Form.Group as={Col} md="8" controlId="additional_planned_travel_type">
                   <Form.Label className="nav-input-label">TRAVEL TYPE</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.additional_planned_travel_type || ''} onChange={this.handleChange}>
-                    <option disabled></option>
+                    <option></option>
                     <option>Domestic</option>
                     <option>International</option>
                   </Form.Control>
@@ -52,7 +52,7 @@ class AdditionalPlannedTravel extends React.Component {
                   <Form.Group as={Col} md="8" controlId="additional_planned_travel_destination_country">
                     <Form.Label className="nav-input-label">DESTINATION COUNTRY</Form.Label>
                     <Form.Control as="select" size="lg" className="form-square" value={this.state.current.additional_planned_travel_destination_country || ''} onChange={this.handleChange}>
-                      <option disabled></option>
+                      <option></option>
                       {this.state.countries.map((country, index) => (
                         <option key={`country-${index}`}>{country.name}</option>
                       ))}
@@ -63,7 +63,7 @@ class AdditionalPlannedTravel extends React.Component {
                   <Form.Group as={Col} md="8" controlId="additional_planned_travel_destination_state">
                     <Form.Label className="nav-input-label">DESTINATION STATE</Form.Label>
                     <Form.Control as="select" size="lg" className="form-square" placeholder="Please enter state..." value={this.state.current.additional_planned_travel_destination_state || ''} onChange={this.handleChange}>
-                      <option disabled></option>
+                      <option></option>
                       {this.state.states.map((state, index) => (
                         <option key={`state-${index}`}>{state}</option>
                       ))}

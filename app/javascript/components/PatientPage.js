@@ -12,7 +12,7 @@ class PatientPage extends React.Component {
   render () {
     return (
       <React.Fragment>
-        <BreadcrumbPath crumbs={[new Object({ value: "Dashboard", href: "#" }), new Object({ value: "Subject Details", href: null })]} />
+        <BreadcrumbPath crumbs={[new Object({ value: "Dashboard", href: this.props.dashboardUrl ? this.props.dashboardUrl : null }), new Object({ value: "Subject View", href: null })]} />
         <Card className="mx-4 card-square">
           <Card.Header as="h5">Subject Details</Card.Header>
           <Card.Body>
