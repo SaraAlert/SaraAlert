@@ -1,8 +1,8 @@
-<%= react_component("PatientPage", { patient: @patient }) %>
+<%= react_component("PatientPage", { patient: @patient, dashboardUrl: '/monitor_dashboard' }) %>
 
-<div class="card mx-4 mt-4">
+<div class="card mx-4 mt-4 mb-4">
 
-  <h5 class="card-header">Patient Assessments</h5>
+  <h5 class="card-header">Subject Assessments</h5>
 
   <div class="m-4">
     <% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"] %>

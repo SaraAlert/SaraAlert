@@ -67,7 +67,7 @@ class Address extends React.Component {
                     <Form.Group as={Col} controlId="address_state">
                       <Form.Label className="nav-input-label">STATE</Form.Label>
                       <Form.Control as="select" size="lg" className="form-square" value={this.state.current.address_state || ''} onChange={this.handleChange}>
-                        <option disabled></option>
+                        <option></option>
                         {this.state.states.map((state, index) => (
                           <option key={`state-${index}`}>{state}</option>
                         ))}
@@ -113,7 +113,7 @@ class Address extends React.Component {
                     <Form.Group as={Col} controlId="monitored_address_state">
                       <Form.Label className="nav-input-label">STATE</Form.Label>
                       <Form.Control as="select" size="lg" className="form-square" value={this.state.current.monitored_address_state || ''} onChange={this.handleChange}>
-                        <option disabled></option>
+                        <option></option>
                         {this.state.states.map((state, index) => (
                           <option key={`state-${index}`}>{state}</option>
                         ))}
@@ -156,7 +156,7 @@ class Address extends React.Component {
                     <Form.Group as={Col} controlId="foreign_address_country">
                       <Form.Label className="nav-input-label">COUNTRY</Form.Label>
                       <Form.Control as="select" size="lg" className="form-square" value={this.state.current.foreign_address_country || ''} onChange={this.handleChange}>
-                        <option disabled></option>
+                        <option></option>
                         {this.state.countries.map((country, index) => (
                           <option key={`country-${index}`}>{country.name}</option>
                         ))}
@@ -206,7 +206,7 @@ class Address extends React.Component {
                     <Form.Group as={Col} controlId="foreign_monitored_address_state">
                       <Form.Label className="nav-input-label">STATE</Form.Label>
                       <Form.Control as="select" size="lg" className="form-square" value={this.state.current.foreign_monitored_address_state || ''} onChange={this.handleChange}>
-                        <option disabled></option>
+                        <option></option>
                         {this.state.states.map((state, index) => (
                           <option key={`state-${index}`}>{state}</option>
                         ))}

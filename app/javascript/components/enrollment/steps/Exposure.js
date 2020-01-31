@@ -38,7 +38,7 @@ class Exposure extends React.Component {
                 <Form.Group as={Col} md="7" controlId="potential_exposure_country">
                   <Form.Label className="nav-input-label">EXPOSURE COUNTRY</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.potential_exposure_country || ''} onChange={this.handleChange}>
-                    <option disabled></option>
+                    <option></option>
                     {this.state.countries.map((country, index) => (
                       <option key={`country-${index}`}>{country.name}</option>
                     ))}

@@ -35,7 +35,7 @@ class Enrollment extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token
     axios.post('/patients', { patient: this.state.enrollmentState }).then(function (response) {
       // Inform user and redirect to home on success
-      toast.success('Record Successfully Saved', { onClose: () => location.href = '/' });
+      toast.success('Subject Successfully Saved', { onClose: () => location.href = '/' });
     }).catch(function (error) {
       // TODO: Figure out what to do on error
       console.log(error);

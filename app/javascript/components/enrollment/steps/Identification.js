@@ -59,7 +59,7 @@ class Identification extends React.Component {
                 <Form.Group as={Col} controlId="sex" md="auto">
                   <Form.Label className="nav-input-label">SEX</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.sex || ''} onChange={this.handleChange}>
-                    <option disabled></option>
+                    <option></option>
                     <option>Female</option>
                     <option>Male</option>
                     <option>Unknown</option>
@@ -79,7 +79,7 @@ class Identification extends React.Component {
                 <Form.Group as={Col} md="8" controlId="ethnicity">
                   <Form.Label className="nav-input-label">ETHNICITY</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.ethnicity || ''} onChange={this.handleChange}>
-                    <option disabled></option>
+                    <option></option>
                     <option>Not Hispanic or Latino</option>
                     <option>Hispanic or Latino</option>
                   </Form.Control>
