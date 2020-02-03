@@ -1,6 +1,8 @@
 <%= react_component("BreadcrumbPath", { crumbs: [{ value: "Dashboard", href: nil }] }) %>
 
-<div class="container-fluid mx-2">
+<%= react_component("dashboard/MonitorDashboard", { stats: @stats }) %>
+
+<div class="mx-2">
 
   <ul class="nav nav-tabs">
     <li class="nav-item">

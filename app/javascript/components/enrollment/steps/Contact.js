@@ -20,7 +20,7 @@ class Contact extends React.Component {
   render () {
     return (
       <React.Fragment>
-        <Card className="mx-4 card-square">
+        <Card className="mx-2 card-square">
           <Card.Header as="h5">Subject Contact Information</Card.Header>
           <Card.Body>
             <Form>
@@ -91,7 +91,7 @@ class Contact extends React.Component {
               </Form.Row>
             </Form>
             {this.props.previous && <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>Previous</Button>}
-            {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>{!!this.props.lastIndex && "Back"}{!!!this.props.lastIndex && "Next"}</Button>}
+            {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>Next</Button>}
             {this.props.submit && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>Finish</Button>}
           </Card.Body>
         </Card>

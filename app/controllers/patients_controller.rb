@@ -1,18 +1,9 @@
 class PatientsController < ApplicationController
   before_action :authenticate_user!
+  before_action :get_stats, only: [:index]
 
   def index
     redirect_to root_url unless current_user.can_view_patient?
-    @stats = {
-      system_subjects: Patient.count,
-      system_subjects_last_24: Patient.where('created_at >= ?', Time.now - 1.day).count,
-      system_assessmets: Assessment.count,
-      system_assessmets_last_24: Assessment.where('created_at >= ?', Time.now - 1.day).count,
-      user_subjects: Patient.where(creator_id: current_user.id).count,
-      user_subjects_last_24: Patient.where(creator_id: current_user.id).where('created_at >= ?', Time.now - 1.day).count,
-      user_assessments: Patient.where(creator_id: 1).joins(:assessments).count,
-      user_assessments_last_24: Patient.where(creator_id: 1).joins(:assessments).where('assessments.created_at >= ?', Time.now - 1.day).count
-    }
   end
 
   def show
@@ -138,6 +129,19 @@ class PatientsController < ApplicationController
     else
       redirect_to action: 'index'
     end
+  end
+
+  def get_stats
+    @stats = {
+      system_subjects: Patient.count,
+      system_subjects_last_24: Patient.where('created_at >= ?', Time.now - 1.day).count,
+      system_assessmets: Assessment.count,
+      system_assessmets_last_24: Assessment.where('created_at >= ?', Time.now - 1.day).count,
+      user_subjects: Patient.where(creator_id: current_user.id).count,
+      user_subjects_last_24: Patient.where(creator_id: current_user.id).where('created_at >= ?', Time.now - 1.day).count,
+      user_assessments: Patient.where(creator_id: 1).joins(:assessments).count,
+      user_assessments_last_24: Patient.where(creator_id: 1).joins(:assessments).where('assessments.created_at >= ?', Time.now - 1.day).count
+    }
   end
 
 end

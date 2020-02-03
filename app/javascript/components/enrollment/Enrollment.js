@@ -32,7 +32,7 @@ class Enrollment extends React.Component {
   }
 
   submit() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios.post('/patients', { patient: this.state.enrollmentState }).then(function (response) {
       // Inform user and redirect to home on success
       toast.success('Subject Successfully Saved', { onClose: () => location.href = '/' });
@@ -82,26 +82,26 @@ class Enrollment extends React.Component {
         <BreadcrumbPath crumbs={[new Object({ value: "Dashboard", href: "/patients" }), new Object({ value: "Register New Subject", href: null })]} />
         <Carousel controls={false} indicators={false} interval={null} keyboard={false} activeIndex={this.state.index} direction={this.state.direction} onSelect={() => {}}>
           <Carousel.Item>
-            <Identification goto={this.goto} next={this.next} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Address goto={this.goto} next={this.next} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Address goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Contact goto={this.goto} next={this.next} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Contact goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Arrival goto={this.goto} next={this.next} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Arrival goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <AdditionalPlannedTravel goto={this.goto} next={this.next} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <AdditionalPlannedTravel goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Exposure goto={this.goto} next={this.next} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Exposure goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
           </Carousel.Item>
           {/* { TODO: Risk factors */}
           <Carousel.Item>
-            <Review goto={this.goto} submit={this.submit} previous={this.previous} lastIndex={this.state.lastIndex} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Review goto={this.goto} submit={this.submit} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
         </Carousel>
         <ToastContainer position="top-center" autoClose={3000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />

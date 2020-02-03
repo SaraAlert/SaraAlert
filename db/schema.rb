@@ -39,6 +39,8 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.integer "responder_id"
     t.integer "creator_id"
     t.string "submission_token"
+    t.boolean "confirmed_case", default: false
+    t.boolean "active", default: true
     t.string "first_name"
     t.string "middle_name"
     t.string "last_name"
