@@ -1,6 +1,6 @@
 import React from "react"
 import { Card } from 'react-bootstrap';
-import { PieChart, Pie, ResponsiveContainer, Cell, Legend, Label } from 'recharts';
+import { PieChart, Pie, ResponsiveContainer, Cell, Legend, Label, Tooltip } from 'recharts';
 
 class SubjectStatus extends React.Component {
 
@@ -9,13 +9,7 @@ class SubjectStatus extends React.Component {
   }
 
   render () {
-
-    const data = [
-      { name: 'Non-Reporting', value: 400 },
-      { name: 'Symptomatic', value: 300 },
-      { name: 'Asymptomatic', value: 200 },
-      { name: 'Confirmed', value: 50 },
-    ];
+    const data = [...this.props.stats.subject_status];
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#CA021A'];
 
     return (
@@ -41,6 +35,7 @@ class SubjectStatus extends React.Component {
                     <Label className="display-5" value={this.props.stats.system_subjects} position="center" />
                   </Pie>
                   <Legend layout="vertical" align="right" verticalAlign="middle" />
+                  <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
             </div>

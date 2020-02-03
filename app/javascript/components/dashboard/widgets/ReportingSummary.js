@@ -1,6 +1,6 @@
 import React from "react"
 import { Col, Card, Row } from 'react-bootstrap';
-import { PieChart, Pie, ResponsiveContainer, Cell, Legend, Label } from 'recharts';
+import { PieChart, Pie, ResponsiveContainer, Cell, Label, Tooltip } from 'recharts';
 
 class ReportingSummary extends React.Component {
 
@@ -9,13 +9,9 @@ class ReportingSummary extends React.Component {
   }
 
   render () {
-
-    const data = [
-      { name: 'Reported Today', value: 679 },
-      { name: 'Not Yet Reported', value: 569 },
-    ];
     const COLORS = ['#0088FE', '#00C49F'];
-
+    const data = [...this.props.stats.reporting_summmary];
+    const perc = Math.round((this.props.stats.reporting_summmary[0]['value'] / this.props.stats.system_subjects) * 100 * 10) / 10;
     return (
       <React.Fragment>
         <Card className="card-square">
@@ -27,13 +23,13 @@ class ReportingSummary extends React.Component {
                   <h5>REPORTED TODAY</h5>
                 </Row>
                 <Row>
-                  <h1 className="display-1" style={{color: '#0088FE'}}>{this.props.stats.user_subjects}</h1>
+                  <h1 className="display-1" style={{color: '#0088FE'}}>{data[0]['value']}</h1>
                 </Row>
                 <Row>
                   <h5>NOT YET REPORTED</h5>
                 </Row>
                 <Row>
-                  <h1 className="display-1" style={{color: '#00C49F'}}>{this.props.stats.user_subjects}</h1>
+                  <h1 className="display-1" style={{color: '#00C49F'}}>{data[1]['value']}</h1>
                 </Row>
               </Col>
               <Col md="12">
@@ -48,11 +44,12 @@ class ReportingSummary extends React.Component {
                         paddingAngle={2}
                         dataKey="value"
                       >
-                        <Label className="display-5" value={this.props.stats.system_subjects + "%"} position="center" />
+                        <Label className="display-5" value={perc + "%"} position="center" />
                         {
                           data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)
                         }
                       </Pie>
+                      <Tooltip />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>

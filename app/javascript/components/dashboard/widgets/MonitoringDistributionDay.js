@@ -1,6 +1,6 @@
 import React from "react"
 import { Card } from 'react-bootstrap';
-import { BarChart, Bar, ResponsiveContainer, CartesianGrid, Text, XAxis, YAxis, Label } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, CartesianGrid, Text, XAxis, YAxis, Label, Tooltip } from 'recharts';
 
 class MonitoringDistributionDay extends React.Component {
 
@@ -9,28 +9,7 @@ class MonitoringDistributionDay extends React.Component {
   }
 
   render () {
-
-    const data = [
-      {
-        day: '0', cases: 50
-      },
-      {
-        day: '1', cases: 54
-      },
-      {
-        day: '2', cases: 42
-      },
-      {
-        day: '3', cases: 34
-      },
-      {
-        day: '4', cases: 67
-      },
-      {
-        day: '5', cases: 12
-      },
-    ];
-
+    const data = this.props.stats.monitoring_distribution_by_day;
     return (
       <React.Fragment>
         <Card className="card-square">
@@ -46,6 +25,7 @@ class MonitoringDistributionDay extends React.Component {
                   <XAxis dataKey="day">
                     <Label value="Day of Monitoring" position="insideBottom" />
                   </XAxis>
+                  <Tooltip />
                   <YAxis label={<Text x={-30} y={60} dx={50} dy={150} offset={0} angle={-90}>Number of Subjects</Text>} />
                   <Bar dataKey="cases" fill="#0088FE" />
                 </BarChart>

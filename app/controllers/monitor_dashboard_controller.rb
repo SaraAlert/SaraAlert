@@ -41,10 +41,32 @@ class MonitorDashboardController < ApplicationController
     dates.each_with_index { |d, i| date_map[d] = i + 1 }
     patient_count_by_day = Hash.new(0)
     patients.each { |p| patient_count_by_day[date_map[p.created_at.to_date]] += 1 }
+    patient_count_by_day_array = []
+    patient_count_by_day.each { |day, count| patient_count_by_day_array << { day: day, cases: count } }
+    patient_count_by_day_array.sort_by!	{ |count| count[:day] }
 
     # Distribution by state for map
     patient_count_by_state = Hash.new(0)
     patients.each { |p| patient_count_by_state[p.monitored_address_state] += 1 }
+
+    # Symptomatic or unsymptomatic per day
+    symptomatic_assessments_by_day = Hash.new(0)
+    asymptomatic_assessments_by_day = Hash.new(0)
+    Assessment.find_each do |a|
+      if a.symptomatic
+        symptomatic_assessments_by_day[a.created_at.to_date] += 1
+      else
+        asymptomatic_assessments_by_day[a.created_at.to_date] += 1
+      end
+    end
+    assessment_result_by_day_array = []
+    (symptomatic_assessments_by_day.keys | asymptomatic_assessments_by_day.keys).sort.each do |date|
+      assessment_result_by_day_array << {
+        'name' => date.to_s,
+        'Symptomatic Assessments' => symptomatic_assessments_by_day[date],
+        'Asymptomatic Assessments' => asymptomatic_assessments_by_day[date]
+      }
+    end
 
     @stats = {
       system_subjects: Patient.count,
@@ -61,8 +83,9 @@ class MonitorDashboardController < ApplicationController
         { name: 'Reported Today', value: reported_today_count },
         { name: 'Not Yet Reported', value: not_yet_reported_count }
       ],
-      monitoring_distribution_by_day: patient_count_by_day,
-      monitoring_distribution_by_state: patient_count_by_state
+      monitoring_distribution_by_day: patient_count_by_day_array,
+      monitoring_distribution_by_state: patient_count_by_state,
+      assessment_result_by_day:	assessment_result_by_day_array
     }
   end
 

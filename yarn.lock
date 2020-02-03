@@ -4174,13 +4174,6 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.3
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.3.tgz#4a12ff1b60376ef09862c2093edd908328be8423"
   integrity sha512-a30VEBm4PEdx1dRB7MFK7BejejvCvBronbLjht+sHuGYj8PHs7M/5Z+rt5lw551vZ7yfTCj4Vuyy3mSJytDWRQ==
 
-gridstack@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/gridstack/-/gridstack-0.6.1.tgz#973fe065349c55011ba96acf85b8915fcb11df99"
-  integrity sha512-DuB5bAz2p9GP/KoTaESufxDDqlRMoFGXeu4tk90aNNSFfxT4EE48B2t+BiC/xGt0Zl31XOKd60ZBMNKu9dCUbQ==
-  dependencies:
-    jquery "^1.8 || 2 || 3"
-
 growl@1.10.5:
   version "1.10.5"
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.5.tgz#f2735dc2283674fa67478b10181059355c369e5e"
@@ -5038,7 +5031,7 @@ jest-worker@^25.1.0:
     merge-stream "^2.0.0"
     supports-color "^7.0.0"
 
-"jquery@^1.8 || 2 || 3", jquery@^3.4.1:
+jquery@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
   integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
