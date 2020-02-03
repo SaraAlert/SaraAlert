@@ -39,7 +39,7 @@ namespace :demo do
   desc "Add lots of data to the database to provide some idea of basic scaling issues"
   task populate: :environment do
 
-    count = ENV['COUNT'] || 100
+    count = (ENV['COUNT'] || 100).to_i
 
     enroller1 = User.where("email LIKE 'enroller%'").first
     enroller2 = User.where("email LIKE 'enroller%'").last
