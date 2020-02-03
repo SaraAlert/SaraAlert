@@ -9,13 +9,11 @@ class CreatePatients < ActiveRecord::Migration[6.0]
 
       # Patient status
       t.boolean :confirmed_case, default: false # TODO: If this is ever true, should this patient continue to exist in the db?
-      t.boolean :active, default: true # TODO: Autocalculate based on preconfigured monitoring timeframe?
 
       # Data collected for each patient
       # TODO: Consider storing this type of data as key value pairs in a separate table
       # TODO: We may want to break out the enrollments notes into a notes table shared with other notes
       # TODO: We would likely get some improvements by specifying string lengths where we know them
-      # TODO: We are likely missing some fields like international travel plans
       t.string :first_name
       t.string :middle_name
       t.string :last_name
@@ -70,6 +68,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :additional_planned_travel_type
       t.string :additional_planned_travel_destination
       t.string :additional_planned_travel_destination_state
+      t.string :additional_planned_travel_destination_country
       t.string :additional_planned_travel_port_of_departure
       t.date :date_of_departure
       t.date :date_of_arrival

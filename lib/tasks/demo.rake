@@ -39,8 +39,8 @@ namespace :demo do
   desc "Add lots of data to the database to provide some idea of basic scaling issues"
   task populate: :environment do
 
-    days = (ENV['DAYS'] || 5).to_i
-    count = (ENV['COUNT'] || 100).to_i
+    days = (ENV['DAYS'] || 14).to_i
+    count = (ENV['COUNT'] || 50).to_i
 
     enroller1 = User.where("email LIKE 'enroller%'").first
     enroller2 = User.where("email LIKE 'enroller%'").last
@@ -59,8 +59,9 @@ namespace :demo do
       Patient.transaction do
 
         # Any existing patients may or may not report
-        Patient.all.each do |patient|
+        Patient.find_each do |patient|
           next unless patient.created_at <= today
+          next if patient.confirmed_case
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
           if rand < 0.7 # 70% reporting rate on any given day
             if rand < 0.03 # 3% report some sort of symptoms
@@ -71,6 +72,15 @@ namespace :demo do
             else
               patient.assessments.create({ symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(all_false))
             end
+          end
+        end
+
+        # Some proportion of patients who are symptomatic may be confirmed cases
+        Patient.find_each do |patient|
+          next if patient.confirmed_case
+          next unless patient.assessments.order(:created_at).last(3).all?(&:symptomatic)
+          if rand < 0.1 # 10% actually become confirmed cases
+            patient.update_attributes(confirmed_case: true)
           end
         end
 
@@ -153,6 +163,7 @@ namespace :demo do
             patient.additional_planned_travel_type = rand < 0.7 ? 'Domestic' : 'International'
             patient.additional_planned_travel_destination = Faker::Address.city
             patient.additional_planned_travel_destination_state = Faker::Address.city if patient.additional_planned_travel_type == 'Domestic'
+            patient.additional_planned_travel_destination_country = Faker::Address.country if patient.additional_planned_travel_type == 'International'
             patient.additional_planned_travel_port_of_departure = Faker::Address.city
             patient.additional_planned_travel_start_date = today + rand(6).days
             patient.additional_planned_travel_end_date = patient.additional_planned_travel_start_date + rand(10).days
