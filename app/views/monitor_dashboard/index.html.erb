@@ -29,7 +29,7 @@
 
     <div class="card tab-pane fade" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
       <%# TODO: Make the reporting timeout configurable %>
-      <h3 class="p-4">Patients Who Have Not Reported in Last 2 Minutes</h3>
+      <h3 class="p-4">Patients Who Have Not Reported in Last 1 Minute</h3>
       <%= render partial: "patients", locals: { patients: @non_reporting_patients } %>
     </div>
 
