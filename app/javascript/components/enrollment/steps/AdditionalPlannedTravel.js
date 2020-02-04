@@ -1,21 +1,12 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
-import countries from 'countries-list';
+import { stateOptions, countryOptions } from '../../data';
 
 class AdditionalPlannedTravel extends React.Component {
 
   constructor(props) {
     super(props);
-    let states = ['Alabama','Alaska','American Samoa','Arizona','Arkansas','California',
-                  'Colorado','Connecticut','Delaware','District of Columbia','Federated States of Micronesia',
-                  'Florida','Georgia','Guam','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky',
-                  'Louisiana','Maine','Marshall Islands','Maryland','Massachusetts','Michigan','Minnesota',
-                  'Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey',
-                  'New Mexico','New York','North Carolina','North Dakota','Northern Mariana Islands','Ohio',
-                  'Oklahoma','Oregon','Palau','Pennsylvania','Puerto Rico','Rhode Island','South Carolina',
-                  'South Dakota','Tennessee','Texas','Utah','Vermont','Virgin Island','Virginia','Washington',
-                  'West Virginia','Wisconsin','Wyoming'];
-    this.state = { ...this.props, current: {...this.props.currentState}, states, countries: Object.values(countries.countries) };
+    this.state = { ...this.props, current: {...this.props.currentState} };
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -53,8 +44,8 @@ class AdditionalPlannedTravel extends React.Component {
                     <Form.Label className="nav-input-label">DESTINATION COUNTRY</Form.Label>
                     <Form.Control as="select" size="lg" className="form-square" value={this.state.current.additional_planned_travel_destination_country || ''} onChange={this.handleChange}>
                       <option></option>
-                      {this.state.countries.map((country, index) => (
-                        <option key={`country-${index}`}>{country.name}</option>
+                      {countryOptions.map((country, index) => (
+                        <option key={`country-${index}`}>{country}</option>
                       ))}
                     </Form.Control>
                   </Form.Group>
@@ -63,10 +54,10 @@ class AdditionalPlannedTravel extends React.Component {
                   <Form.Group as={Col} md="8" controlId="additional_planned_travel_destination_state">
                     <Form.Label className="nav-input-label">DESTINATION STATE</Form.Label>
                     <Form.Control as="select" size="lg" className="form-square" placeholder="Please enter state..." value={this.state.current.additional_planned_travel_destination_state || ''} onChange={this.handleChange}>
-                      <option></option>
-                      {this.state.states.map((state, index) => (
-                        <option key={`state-${index}`}>{state}</option>
-                      ))}
+                        <option></option>
+                        {stateOptions.map((state, index) => (
+                          <option key={`state-${index}`} value={state.abbrv}>{state.name}</option>
+                        ))}
                     </Form.Control>
                   </Form.Group>
                 )}
