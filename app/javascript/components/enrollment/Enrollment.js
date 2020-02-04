@@ -47,7 +47,7 @@ class Enrollment extends React.Component {
     let lastIndex = this.state.lastIndex;
     if (lastIndex) {
       this.setState({direction: "next"}, () => {
-        this.setState({index: lastIndex + 1, lastIndex: null});
+        this.setState({index: lastIndex, lastIndex: null});
       });
     } else {
       this.setState({direction: "next"}, () => {
@@ -99,7 +99,7 @@ class Enrollment extends React.Component {
           <Carousel.Item>
             <Exposure goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
           </Carousel.Item>
-          {/* { TODO: Risk factors */}
+          {/* TODO: Risk factors */}
           <Carousel.Item>
             <Review goto={this.goto} submit={this.submit} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
