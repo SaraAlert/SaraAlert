@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.integer "responder_id"
     t.integer "creator_id"
     t.string "submission_token"
+    t.boolean "confirmed_case", default: false
     t.string "first_name"
     t.string "middle_name"
     t.string "last_name"
@@ -93,6 +94,7 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.string "additional_planned_travel_type"
     t.string "additional_planned_travel_destination"
     t.string "additional_planned_travel_destination_state"
+    t.string "additional_planned_travel_destination_country"
     t.string "additional_planned_travel_port_of_departure"
     t.date "date_of_departure"
     t.date "date_of_arrival"

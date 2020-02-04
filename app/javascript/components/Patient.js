@@ -18,7 +18,7 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>Subject Identification: {`${this.props.details.first_name ? this.props.details.first_name : ''}${this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''}${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}</h5>
+                  <h5><u>Subject Identification</u>: {`${this.props.details.first_name ? this.props.details.first_name : ''}${this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''}${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}</h5>
                 </div>
                 <div className="float-right">
                   {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(0)}><h5>Edit</h5></Button>}
@@ -44,7 +44,7 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>Subject Address</h5>
+                  <h5><u>Subject Address</u></h5>
                 </div>
                 <div className="float-right">
                   {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}><h5>Edit</h5></Button>}
@@ -65,7 +65,7 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>Subject Contact</h5>
+                  <h5><u>Subject Contact</u></h5>
                 </div>
                 <div className="float-right">
                   {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}><h5>Edit</h5></Button>}
@@ -87,7 +87,7 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>Subject Arrival Information</h5>
+                  <h5><u>Subject Arrival Information</u></h5>
                 </div>
                 <div className="float-right">
                   {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}><h5>Edit</h5></Button>}
@@ -120,7 +120,7 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>Subject Additional Planned Travel</h5>
+                  <h5><u>Subject Additional Planned Travel</u></h5>
                 </div>
                 <div className="float-right">
                   {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}><h5>Edit</h5></Button>}
@@ -143,7 +143,7 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>Subject Potential Exposure Information</h5>
+                  <h5><u>Subject Potential Exposure Information</u></h5>
                 </div>
                 <div className="float-right">
                   {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}><h5>Edit</h5></Button>}
