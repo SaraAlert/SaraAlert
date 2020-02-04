@@ -43,14 +43,17 @@ class SymptomsAssessment extends React.Component {
             <Form.Row>
                 <Form.Group className="pt-1">
                   <Form.Check type="switch" id="cough" label="Cough" checked={this.state.current.cough === true || false} onChange={this.handleChange} />
-                  <Form.Check type="switch" className="pt-2" id="sore_throat" label="Sore Throat" checked={this.state.current.sore_throat === true || false} onChange={this.handleChange} />
                   <Form.Check type="switch" className="pt-2" id="difficulty_breathing" label="Difficulty Breathing" checked={this.state.current.difficulty_breathing === true || false} onChange={this.handleChange} />
+
+                  {/* TODO: Symptoms will be configurable; for now these are not appropriate
+                  <Form.Check type="switch" className="pt-2" id="sore_throat" label="Sore Throat" checked={this.state.current.sore_throat === true || false} onChange={this.handleChange} />
                   <Form.Check type="switch" className="pt-2" id="headaches" label="Headaches" checked={this.state.current.headaches === true || false} onChange={this.handleChange} />
                   <Form.Check type="switch" className="pt-2" id="muscle_aches" label="Muscle Aches" checked={this.state.current.muscle_aches === true || false} onChange={this.handleChange} />
                   <Form.Check type="switch" className="pt-2" id="abdominal_discomfort" label="Abdominal Discomfort" checked={this.state.current.abdominal_discomfort === true || false} onChange={this.handleChange} />
                   <Form.Check type="switch" className="pt-2" id="vomiting" label="Vomiting" checked={this.state.current.vomiting === true || false} onChange={this.handleChange} />
                   <Form.Check type="switch" className="pt-2" id="diarrhea" label="Diarrhea" checked={this.state.current.diarrhea === true || false} onChange={this.handleChange} />
-                </Form.Group>
+                  */}
+              </Form.Group>
             </Form.Row>
             <Form.Row className="pt-4">
               <Button variant="primary" block size="lg" className="btn-block btn-square" onClick={this.navigate}>{((this.state.current.cough || this.state.current.sore_throat || this.state.current.difficulty_breathing || this.state.current.headaches || this.state.current.muscle_aches || this.state.current.abdominal_discomfort || this.state.current.vomiting || this.state.current.diarrhea) && "Submit") || (!(this.state.current.cough || this.state.current.sore_throat || this.state.current.difficulty_breathing || this.state.current.headaches || this.state.current.muscle_aches || this.state.current.abdominal_discomfort || this.state.current.vomiting || this.state.current.diarrhea) && "Previous") }</Button>

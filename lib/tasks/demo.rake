@@ -47,6 +47,7 @@ namespace :demo do
 
     assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
+    all_false[:temperature] = '98'
 
     days.times do |day|
 
@@ -68,6 +69,7 @@ namespace :demo do
               number_of_symptoms = rand(assessment_columns.size) + 1
               some_true = all_false.dup
               some_true.keys.shuffle[0,number_of_symptoms].each { |key| some_true[key] = true }
+              some_true[:temperature] = "#{100 + rand(3)}"
               patient.assessments.create({ symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(some_true))
             else
               patient.assessments.create({ symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(all_false))
