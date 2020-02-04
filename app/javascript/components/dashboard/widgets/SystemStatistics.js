@@ -16,7 +16,7 @@ class SystemStatistics extends React.Component {
             <Row className="mx-4 mt-3 g-border-bottom-2">
               <Col>
                 <Row>
-                  <h5>TOTAL PATIENTS</h5>
+                  <h5>TOTAL SUBJECTS</h5>
                 </Row>
                 <Row>
                   <h1 className="display-1">{this.props.stats.system_subjects}</h1>

@@ -37,7 +37,7 @@ class GeneralAssessment extends React.Component {
               <Form.Control size="lg" id="temperature" className="form-square" value={this.state.current.temperature || ''} onChange={this.handleChange} />
             </Form.Row>
             <Form.Row className="pt-3">
-                <Form.Label className="nav-input-label">Are you experiencing any symptoms including cough, sore throat, difficulty breathing, headaches, muscle aches, abdominal discomfort, vomiting or diarrhea?</Form.Label>
+                <Form.Label className="nav-input-label">Are you experiencing any symptoms including cough or difficulty breathing?</Form.Label>
                 <Form.Control as="select" size="lg" className="form-square" id="experiencing_symptoms" value={this.state.current.experiencing_symptoms || "Please Select"} onChange={this.handleChange}>
                     <option disabled>Please Select</option>
                     <option>Yes</option>

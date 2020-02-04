@@ -3,7 +3,8 @@
 
     <thead>
       <tr>
-        <th>Patient</th>
+        <th>Subject</th>
+        <th>ID</th>
         <th>Sex</th>
         <th>Date of Birth</th>
         <th>Observation Start</th>
@@ -16,6 +17,8 @@
       <% patients.each do |patient| -%>
         <tr>
           <td><%= patient.first_name %> <%= patient.last_name %></td>
+          <%# TODO: This is a temporary ID concept, to be formalized based on requirements %>
+          <td><%= "#{patient.address_state[0,2].upcase}#{patient.id.to_s.rjust(6, '0')}" %></td>
           <td><%= patient.sex %></td>
           <td><%= patient.date_of_birth&.to_formatted_s(:long) %></td>
           <td><%= patient.created_at.to_date.to_formatted_s(:long) %></td>

@@ -5,15 +5,15 @@ class CreateAssessments < ActiveRecord::Migration[6.0]
       t.references :patient, index: true
       t.boolean :symptomatic
       t.string :temperature
-      t.boolean :felt_feverish
+      #t.boolean :felt_feverish
       t.boolean :cough
-      t.boolean :sore_throat
+      #t.boolean :sore_throat
       t.boolean :difficulty_breathing
-      t.boolean :muscle_aches
-      t.boolean :headache
-      t.boolean :abdominal_discomfort
-      t.boolean :vomiting
-      t.boolean :diarrhea
+      #t.boolean :muscle_aches
+      #t.boolean :headache
+      #t.boolean :abdominal_discomfort
+      #t.boolean :vomiting
+      #t.boolean :diarrhea
     end
   end
 end

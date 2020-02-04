@@ -10,6 +10,7 @@
       <thead>
         <tr>
           <th>Date</th>
+          <th>Temperature</th>
           <% columns.each do |column| -%>
             <th><%= column.titleize %></th>
           <% end -%>
@@ -19,6 +20,7 @@
         <% @patient.assessments.order('created_at').each do |assessment| -%>
         <tr>
             <td><%= assessment.created_at.to_date.to_formatted_s(:long) %></td>
+            <td><span class="<% if assessment[:temperature].to_i > 99 %>concern<% end %>"><%= assessment.temperature %></span></td>
             <% columns.each do |column| -%>
               <td><% if assessment[column] -%><span class="concern">Yes</span><% else -%>No<% end -%></td>
             <% end -%>
