@@ -103,6 +103,7 @@ namespace :demo do
             #interpretation_required
             address_line_1: Faker::Address.street_address,
             address_city: Faker::Address.city,
+            # TODO: Different portions of app use abbreviation vs full state, need common approach
             address_state: Faker::Address.state_abbr,
             address_line_2: rand < 0.3 ? Faker::Address.secondary_address : nil,
             address_zip: Faker::Address.zip_code,
