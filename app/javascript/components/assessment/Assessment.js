@@ -29,7 +29,7 @@ class Assessment extends React.Component {
     let lastIndex = this.state.lastIndex;
     if (lastIndex) {
       this.setState({direction: "next"}, () => {
-        this.setState({index: lastIndex + 1, lastIndex: null});
+        this.setState({index: lastIndex, lastIndex: null});
       });
     } else {
       this.setState({direction: "next"}, () => {
