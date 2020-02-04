@@ -15,7 +15,7 @@
     </li>
     <li class="nav-item">
       <a class="nav-link"  id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic">
-        Compliant <span class="badge badge-success badge-larger-font"><%= @asymptomatic_patients.count %></span>
+        Asymptomatic <span class="badge badge-success badge-larger-font"><%= @asymptomatic_patients.count %></span>
       </a>
     </li>
     <li class="nav-item">
@@ -28,18 +28,18 @@
   <div class="tab-content" id="myTabContent">
 
     <div class="card tab-pane fade show active" id="symptomatic" role="tabpanel" aria-labelledby="symptomatic-tab">
-      <h3 class="p-4">Patients Who Have Reported Symptoms</h3>
+      <h3 class="p-4">Subjects Who Have Reported Symptoms</h3>
       <%= render partial: "patients", locals: { patients: @symptomatic_patients } %>
     </div>
 
     <div class="card tab-pane fade" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
       <%# TODO: Make the reporting timeout configurable %>
-      <h3 class="p-4">Patients Who Have Not Reported in Last 1 Minute</h3>
+      <h3 class="p-4">Subjects Who Have Not Reported in Last 1 Minute</h3>
       <%= render partial: "patients", locals: { patients: @non_reporting_patients } %>
     </div>
 
     <div class="card tab-pane fade" id="asymptomatic" role="tabpanel" aria-labelledby="asymptomatic-tab">
-      <h3 class="p-4">Compliant Patients With no Reported Symptoms</h3>
+      <h3 class="p-4">Subjects Reporting No Symptoms</h3>
       <%= render partial: "patients", locals: { patients: @asymptomatic_patients } %>
     </div>
 
