@@ -27,10 +27,13 @@ class MonitorDashboardController < ApplicationController
     # The rest are asymptomatic patients with a recent report or recently added patients
     @asymptomatic_patients = patients - (@symptomatic_patients + @non_reporting_patients)
 
-    # Populate the information needed for the statistical portion of the dashboard
+    # Populate the information needed for the statistical portion of the dashboard, organizing the results in
+    # the format required by the graphs for display
+
+    # TODO: These were implemented rapidly without considering performance, clarity of implementation, or edge
+    # cases like date boundaries, and should be reviewed and likely refactored
 
     # Check how many reported or not today
-    # TODO: Ensure that date edge conditions are handled correctly
     reported_today = patients.select { |p| p.latest_assessment&.created_at&.to_date == Date.today }
     reported_today_count = reported_today.length
     not_yet_reported_count = patients.length - reported_today_count
