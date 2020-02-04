@@ -1,12 +1,12 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
-import countries from 'countries-list';
+import { countryOptions } from '../../data';
 
 class Exposure extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: {...this.props.currentState}, countries: Object.values(countries.countries) };
+    this.state = { ...this.props, current: {...this.props.currentState} };
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -39,8 +39,8 @@ class Exposure extends React.Component {
                   <Form.Label className="nav-input-label">EXPOSURE COUNTRY</Form.Label>
                   <Form.Control as="select" size="lg" className="form-square" value={this.state.current.potential_exposure_country || ''} onChange={this.handleChange}>
                     <option></option>
-                    {this.state.countries.map((country, index) => (
-                      <option key={`country-${index}`}>{country.name}</option>
+                    {countryOptions.map((country, index) => (
+                      <option key={`country-${index}`}>{country}</option>
                     ))}
                   </Form.Control>
                 </Form.Group>
