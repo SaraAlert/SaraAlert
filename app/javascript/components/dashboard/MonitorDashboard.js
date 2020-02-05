@@ -6,6 +6,7 @@ import ReportingSummary from './widgets/ReportingSummary';
 import MonitoringDistributionDay from './widgets/MonitoringDistributionDay';
 import AssessmentsDay from './widgets/AssessmentsDay';
 import { PropTypes } from 'prop-types';
+import MapChart from './widgets/MapChart';
 
 class MonitorDashboard extends React.Component {
   constructor(props) {
@@ -42,11 +43,13 @@ class MonitorDashboard extends React.Component {
               </Row>
               <Row className="mt-4">
                 <Col md="24">
-                  <MonitoringDistributionDay stats={this.props.stats} />
+                  <MonitoringDistributionDay stats={this.props.stats}/>
                 </Col>
               </Row>
               <Row className="mt-4">
-                <Col md="24"></Col>
+                <Col md="24">
+                  <MapChart stats={this.props.stats}/>
+                </Col>
               </Row>
             </Col>
           </Row>
