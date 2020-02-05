@@ -20,7 +20,7 @@ class PatientMailer < ApplicationMailer
 
     client.messages.create(
       from: from,
-      to: patient.primary_phone,
+      to: patient.primary_telephone,
       body: contents
     )
   end
