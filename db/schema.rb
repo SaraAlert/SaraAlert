@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_27_192149) do
+ActiveRecord::Schema.define(version: 2020_02_05_233306) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,11 +26,20 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.index ["patient_id"], name: "index_assessments_on_patient_id"
   end
 
+  create_table "jurisdictions", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "name"
+    t.string "ancestry"
+    t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
+  end
+
   create_table "patients", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "responder_id"
     t.integer "creator_id"
+    t.integer "jurisdiction_id"
     t.string "submission_token"
     t.boolean "confirmed_case", default: false
     t.string "first_name"
@@ -102,6 +111,7 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.boolean "healthcare_worker"
     t.boolean "worked_in_health_care_facility"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
+    t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
     t.index ["responder_id"], name: "index_patients_on_responder_id"
     t.index ["submission_token"], name: "index_patients_on_submission_token"
   end
@@ -127,9 +137,11 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.integer "failed_attempts", default: 0, null: false
     t.datetime "locked_at"
     t.boolean "force_password_change"
+    t.integer "jurisdiction_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"
   end
 
   create_table "users_roles", id: false, force: :cascade do |t|

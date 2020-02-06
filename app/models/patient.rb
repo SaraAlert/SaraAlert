@@ -4,4 +4,5 @@ class Patient < ApplicationRecord
   has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
   has_many :assessments
   has_one :latest_assessment, -> { order created_at: :desc }, class_name: 'Assessment'
+  belongs_to :jurisdiction
 end

@@ -5,9 +5,10 @@ class MonitorDashboardController < ApplicationController
     # Restrict access to monitors only
     redirect_to root_url unless current_user.can_view_monitor_dashboard?
 
-    # Load all patients, eager loading assessments
-    # TODO: This can be made more performant through SQL if needed
-    patients = Patient.all.includes(:latest_assessment)
+    # Load all patients that the current user can see, eager loading assessments
+    patients = current_user.viewable_patients.includes(:latest_assessment)
+
+    # TODO: The below can likely be made more performant through SQL if needed
 
     # Show all patients that have reported symptoms
     @symptomatic_patients = patients.select { |p| p.latest_assessment&.symptomatic }

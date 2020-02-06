@@ -38,6 +38,9 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
       # Require the user to change their password on first login (used on account setup)
       t.boolean :force_password_change
 
+      # Each user is associated with one jurisdiction that they have access to (along with sub-jurisdictions)
+      t.integer :jurisdiction_id, index: true
+
       t.timestamps null: false
     end
 

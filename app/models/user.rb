@@ -18,6 +18,14 @@ class User < ApplicationRecord
 
   has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
 
+  # TODO: Can one person have access to two jurisdictions that are not hierarchical? May want has_many through
+  belongs_to :jurisdiction
+
+  # Patients this user can view through their jurisdiction access
+  def viewable_patients
+    jurisdiction.all_patients
+  end
+
   # Can this user create a new Patient?
   def can_create_patient?
       has_role?(:enroller) || has_role?(:admin)

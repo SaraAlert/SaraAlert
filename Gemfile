@@ -19,6 +19,8 @@ gem 'jbuilder', '~> 2.7'
 gem 'twilio-ruby'
 # Sidekiq for queueing
 gem 'sidekiq'
+# Ancestry for managing trees
+gem 'ancestry'
 
 # Devise, cancancan, and rolify for authC/Z
 gem 'devise'

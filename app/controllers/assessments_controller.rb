@@ -4,6 +4,7 @@ class AssessmentsController < ApplicationController
   end
 
   def new
+    # TODO: We need to check the assessment token for all actions in this controller
     @assessment = Assessment.new
     @patient_submission_token = params[:patient_submission_token]
   end

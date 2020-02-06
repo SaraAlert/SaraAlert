@@ -3,17 +3,19 @@ class PatientsController < ApplicationController
   before_action :get_stats, only: [:index]
 
   def index
+    # TODO: Should this be can_create_patient?
     redirect_to root_url unless current_user.can_view_patient?
   end
 
   def show
+    # TODO: We'll want to display the jurisdiction; full path can be gotten with @patient.jurisdiction.path.map(&:name).join(' / ')
     redirect_to root_url unless current_user.can_view_patient?
     # Retrieve Patient by id, but only check patients that current_user created
     @patient = current_user.created_patients.find_by_id(params.permit(:id)[:id])
     # Or that the current user is monitoring
-    # TODO: Once we have jurisdictions we need to specify access control rules in the cancan ability file
+    # TODO: We should specify access control rules in the cancan ability file
     if (current_user.has_role?(:monitor))
-      @patient ||= Patient.find_by_id(params.permit(:id)[:id])
+      @patient ||= current_user.viewable_patients&.find_by_id(params.permit(:id)[:id])
     end
     # If we failed to find a patient given the id, redirect to index
     redirect_to action: 'index' if @patient.nil?
@@ -102,6 +104,8 @@ class PatientsController < ApplicationController
 
     # Set the creator as the current user
     patient.creator = current_user
+
+    # TODO: We need to correctly assign this patient to a jurisdiction
 
     # Create a secure random token to act as the subject's password when they submit assessments; this gets
     # included in the URL sent to the subject to allow them to report without having to type in a password
