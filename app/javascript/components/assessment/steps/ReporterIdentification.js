@@ -1,5 +1,6 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class ReporterIdentification extends React.Component {
 
@@ -37,5 +38,10 @@ class ReporterIdentification extends React.Component {
     );
   }
 }
+
+ReporterIdentification.propTypes = {
+  currentState: PropTypes.object,
+  setAssessmentState: PropTypes.func
+};
 
 export default ReporterIdentification

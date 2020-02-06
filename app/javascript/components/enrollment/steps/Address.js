@@ -1,6 +1,7 @@
 import React from "react"
 import { Card, Button, Tabs, Tab, Form, Col } from 'react-bootstrap';
 import { stateOptions, countryOptions } from '../../data';
+import { PropTypes } from 'prop-types';
 
 class Address extends React.Component {
 
@@ -232,5 +233,13 @@ class Address extends React.Component {
     );
   }
 }
+
+Address.propTypes = {
+  currentState: PropTypes.object,
+  previous: PropTypes.func,
+  setEnrollmentState: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default Address

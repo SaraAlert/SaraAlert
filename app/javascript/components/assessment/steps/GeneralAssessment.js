@@ -1,5 +1,6 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class GeneralAssessment extends React.Component {
 
@@ -53,5 +54,12 @@ class GeneralAssessment extends React.Component {
     );
   }
 }
+
+GeneralAssessment.propTypes = {
+  currentState: PropTypes.object,
+  setAssessmentState: PropTypes.func,
+  goto: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default GeneralAssessment

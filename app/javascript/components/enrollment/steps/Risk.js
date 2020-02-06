@@ -1,5 +1,6 @@
 import React from "react"
-import { Card, Button, Form, Col } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class Risk extends React.Component {
 
@@ -33,5 +34,13 @@ class Risk extends React.Component {
     );
   }
 }
+
+Risk.propTypes = {
+  currentState: PropTypes.object,
+  setEnrollmentState: PropTypes.func,
+  previous: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default Risk

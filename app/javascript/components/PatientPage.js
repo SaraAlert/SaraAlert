@@ -2,6 +2,7 @@ import React from "react"
 import { Card } from 'react-bootstrap';
 import Patient from './Patient';
 import BreadcrumbPath from './BreadcrumbPath';
+import { PropTypes } from 'prop-types';
 
 class PatientPage extends React.Component {
 
@@ -23,5 +24,10 @@ class PatientPage extends React.Component {
     );
   }
 }
+
+PatientPage.propTypes = {
+  patient: PropTypes.object,
+  dashboardUrl: PropTypes.string
+};
 
 export default PatientPage

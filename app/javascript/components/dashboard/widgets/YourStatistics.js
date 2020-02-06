@@ -1,5 +1,6 @@
 import React from "react"
 import { Row, Col, Card } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class YourStatistics extends React.Component {
 
@@ -55,5 +56,9 @@ class YourStatistics extends React.Component {
     );
   }
 }
+
+YourStatistics.propTypes = {
+  stats: PropTypes.object
+};
 
 export default YourStatistics

@@ -1,5 +1,6 @@
 import React from "react";
 import { Breadcrumb } from 'react-bootstrap';
+import { PropTypes } from "prop-types"
 
 class BreadcrumbPath extends React.Component {
 
@@ -19,5 +20,9 @@ class BreadcrumbPath extends React.Component {
     );
   }
 }
+
+BreadcrumbPath.propTypes = {
+  crumbs: PropTypes.object
+};
 
 export default BreadcrumbPath

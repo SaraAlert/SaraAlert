@@ -1,5 +1,5 @@
 import React from "react"
-import PropTypes from "prop-types"
+import { PropTypes } from "prop-types"
 import axios from "axios"
 import { Carousel } from 'react-bootstrap';
 import Identification from './steps/Identification';
@@ -8,7 +8,6 @@ import Contact from './steps/Contact';
 import Arrival from './steps/Arrival';
 import Exposure from './steps/Exposure';
 import Review from './steps/Review';
-import Risk from './steps/Risk';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -111,7 +110,9 @@ class Enrollment extends React.Component {
 }
 
 Enrollment.propTypes = {
-  patient: PropTypes.object
+  patient: PropTypes.object,
+  authenticity_token: PropTypes.string,
+  enrollmentState: PropTypes.object
 };
 
 export default Enrollment

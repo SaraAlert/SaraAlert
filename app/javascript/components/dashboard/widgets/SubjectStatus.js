@@ -1,6 +1,7 @@
 import React from "react"
 import { Card } from 'react-bootstrap';
 import { PieChart, Pie, ResponsiveContainer, Cell, Legend, Label, Tooltip } from 'recharts';
+import { PropTypes } from 'prop-types';
 
 class SubjectStatus extends React.Component {
 
@@ -45,5 +46,9 @@ class SubjectStatus extends React.Component {
     );
   }
 }
+
+SubjectStatus.propTypes = {
+  stats: PropTypes.object
+};
 
 export default SubjectStatus

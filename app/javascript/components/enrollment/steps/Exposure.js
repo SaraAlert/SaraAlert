@@ -1,6 +1,7 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { countryOptions } from '../../data';
+import { PropTypes } from 'prop-types';
 
 class Exposure extends React.Component {
 
@@ -78,5 +79,13 @@ class Exposure extends React.Component {
     );
   }
 }
+
+Exposure.propTypes = {
+  currentState: PropTypes.object,
+  previous: PropTypes.func,
+  setEnrollmentState: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default Exposure

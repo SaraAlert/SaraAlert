@@ -1,12 +1,11 @@
 import React from "react"
-import PropTypes from "prop-types"
 import axios from "axios"
 import { Carousel } from 'react-bootstrap';
 import ReporterIdentification from './steps/ReporterIdentification';
 import GeneralAssessment from './steps/GeneralAssessment';
 import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
-
+import { PropTypes } from 'prop-types';
 
 class Assessment extends React.Component {
 
@@ -107,7 +106,9 @@ class Assessment extends React.Component {
 }
 
 Assessment.propTypes = {
-  patient: PropTypes.object
+  patient: PropTypes.object,
+  authenticity_token: PropTypes.string,
+  patient_submission_token: PropTypes.string
 };
 
 export default Assessment

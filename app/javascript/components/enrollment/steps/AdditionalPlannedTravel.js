@@ -1,6 +1,7 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { stateOptions, countryOptions } from '../../data';
+import { PropTypes } from 'prop-types';
 
 class AdditionalPlannedTravel extends React.Component {
 
@@ -92,5 +93,13 @@ class AdditionalPlannedTravel extends React.Component {
     );
   }
 }
+
+AdditionalPlannedTravel.propTypes = {
+  currentState: PropTypes.object,
+  previous: PropTypes.func,
+  setEnrollmentState: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default AdditionalPlannedTravel

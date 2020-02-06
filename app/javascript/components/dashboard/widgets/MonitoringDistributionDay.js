@@ -1,6 +1,7 @@
 import React from "react"
 import { Card } from 'react-bootstrap';
 import { BarChart, Bar, ResponsiveContainer, CartesianGrid, Text, XAxis, YAxis, Label, Tooltip } from 'recharts';
+import { PropTypes } from 'prop-types';
 
 class MonitoringDistributionDay extends React.Component {
 
@@ -37,5 +38,9 @@ class MonitoringDistributionDay extends React.Component {
     );
   }
 }
+
+MonitoringDistributionDay.propTypes = {
+  stats: PropTypes.object
+};
 
 export default MonitoringDistributionDay

@@ -1,6 +1,7 @@
 import React from "react";
 import { Card } from 'react-bootstrap';
 import { LineChart, ResponsiveContainer, XAxis, YAxis, Legend, CartesianGrid, Line, Tooltip } from 'recharts';
+import { PropTypes } from 'prop-types';
 
 class AssessmentsDay extends React.Component {
 
@@ -34,5 +35,9 @@ class AssessmentsDay extends React.Component {
     );
   }
 }
+
+AssessmentsDay.propTypes = {
+  stats: PropTypes.object
+};
 
 export default AssessmentsDay

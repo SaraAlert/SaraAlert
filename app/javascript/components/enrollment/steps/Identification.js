@@ -1,6 +1,7 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import moment from 'moment';
+import { PropTypes } from 'prop-types';
 
 class Identification extends React.Component {
 
@@ -111,5 +112,12 @@ class Identification extends React.Component {
     );
   }
 }
+
+Identification.propTypes = {
+  currentState: PropTypes.object,
+  previous: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default Identification

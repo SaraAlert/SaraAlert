@@ -5,6 +5,7 @@ import SubjectStatus from './widgets/SubjectStatus';
 import ReportingSummary from './widgets/ReportingSummary';
 import MonitoringDistributionDay from './widgets/MonitoringDistributionDay';
 import AssessmentsDay from './widgets/AssessmentsDay';
+import { PropTypes } from 'prop-types';
 
 class MonitorDashboard extends React.Component {
 
@@ -58,5 +59,9 @@ class MonitorDashboard extends React.Component {
     );
   }
 }
+
+MonitorDashboard.propTypes = {
+  stats: PropTypes.object
+};
 
 export default MonitorDashboard

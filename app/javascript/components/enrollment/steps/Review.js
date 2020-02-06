@@ -1,6 +1,7 @@
 import React from "react"
 import { Card, Button } from 'react-bootstrap';
 import Patient from '../../Patient';
+import { PropTypes } from 'prop-types';
 
 class Review extends React.Component {
 
@@ -32,5 +33,13 @@ class Review extends React.Component {
     );
   }
 }
+
+Review.propTypes = {
+  currentState: PropTypes.object,
+  goto: PropTypes.func,
+  previous: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default Review

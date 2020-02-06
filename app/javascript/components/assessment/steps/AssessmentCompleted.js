@@ -1,5 +1,6 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class AssessmentCompleted extends React.Component {
 
@@ -30,5 +31,10 @@ class AssessmentCompleted extends React.Component {
     );
   }
 }
+
+AssessmentCompleted.propTypes = {
+  currentState: PropTypes.object,
+  setAssessmentState: PropTypes.func
+};
 
 export default AssessmentCompleted

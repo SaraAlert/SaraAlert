@@ -1,5 +1,6 @@
 import React from "react"
 import { Col, Row, Button } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class Patient extends React.Component {
 
@@ -167,5 +168,11 @@ class Patient extends React.Component {
     );
   }
 }
+
+Patient.propTypes = {
+  patient: PropTypes.object,
+  details: PropTypes.object,
+  goto: PropTypes.func
+};
 
 export default Patient

@@ -1,5 +1,6 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class Contact extends React.Component {
 
@@ -99,5 +100,13 @@ class Contact extends React.Component {
     );
   }
 }
+
+Contact.propTypes = {
+  currentState: PropTypes.object,
+  previous: PropTypes.func,
+  setEnrollmentState: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default Contact

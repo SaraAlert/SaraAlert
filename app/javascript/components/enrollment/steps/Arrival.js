@@ -1,5 +1,6 @@
 import React from "react"
 import { Card, Button, Form, Col } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class Arrival extends React.Component {
 
@@ -81,5 +82,13 @@ class Arrival extends React.Component {
     );
   }
 }
+
+Arrival.propTypes = {
+  currentState: PropTypes.object,
+  previous: PropTypes.func,
+  setEnrollmentState: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func
+};
 
 export default Arrival

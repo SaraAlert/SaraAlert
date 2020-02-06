@@ -1,6 +1,7 @@
 import React from "react"
 import { Col, Card, Row } from 'react-bootstrap';
 import { PieChart, Pie, ResponsiveContainer, Cell, Label, Tooltip } from 'recharts';
+import { PropTypes } from 'prop-types';
 
 class ReportingSummary extends React.Component {
 
@@ -61,5 +62,9 @@ class ReportingSummary extends React.Component {
     );
   }
 }
+
+ReportingSummary.propTypes = {
+  stats: PropTypes.object
+};
 
 export default ReportingSummary
