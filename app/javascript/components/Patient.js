@@ -9,7 +9,7 @@ class Patient extends React.Component {
   }
 
   render () {
-    if (!!!this.props.details) {
+    if (!this.props.details) {
       return (<React.Fragment>No subject details to show.</React.Fragment>);
     }
     return (

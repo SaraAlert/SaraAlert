@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Row, Col, Card } from 'react-bootstrap';
+import { Button, Row, Col } from 'react-bootstrap';
 import BreadcrumbPath from '../BreadcrumbPath';
 import SystemStatistics from './widgets/SystemStatistics';
 import YourStatistics from './widgets/YourStatistics';

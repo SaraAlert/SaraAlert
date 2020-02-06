@@ -1,5 +1,5 @@
 import React from "react"
-import { Card, Button, Form, Col } from 'react-bootstrap';
+import { Card, Button, Form } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 
 class SymptomsAssessment extends React.Component {

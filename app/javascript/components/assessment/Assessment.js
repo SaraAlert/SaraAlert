@@ -1,7 +1,6 @@
 import React from "react"
 import axios from "axios"
 import { Carousel } from 'react-bootstrap';
-import ReporterIdentification from './steps/ReporterIdentification';
 import GeneralAssessment from './steps/GeneralAssessment';
 import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
@@ -61,11 +60,8 @@ class Assessment extends React.Component {
     var data = new FormData();
     var assessmentState = this.state.assessmentState;
     for (var key in assessmentState) {
-        if (assessmentState.hasOwnProperty(key) && typeof(assessmentState[key] !== 'function')) {
-            data.append(key, assessmentState[key]);
-        }
+      data.append(key, assessmentState[key]);
     }
-
     data.append('patient_submission_token',this.state.patient_submission_token)
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token
     axios({
@@ -86,7 +82,6 @@ class Assessment extends React.Component {
   }
 
   render () {
-    let {index, ...strippedState} = this.state; // "strippedState" is "this.state" without "index"
     return (
       <React.Fragment>
         <Carousel controls={false} indicators={false} interval={null} keyboard={false} activeIndex={this.state.index} direction={this.state.direction} onSelect={() => {}}>
