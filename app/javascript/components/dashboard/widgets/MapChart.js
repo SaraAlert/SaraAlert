@@ -1,9 +1,11 @@
-import React, { useState }  from "react";
+import React from "react";
 import { Card } from 'react-bootstrap';
 import { ComposableMap, Geographies, Geography, ZoomableGroup} from "react-simple-maps";
 import ReactTooltip from 'react-tooltip';
 import { scaleQuantize } from "d3-scale";
-import { USAMap, stateOptions } from '../../data';
+import { stateOptions } from '../../data';
+import { USAMap } from '../../MapData';
+
 
 class MapChart extends React.Component {
 
