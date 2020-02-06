@@ -23,7 +23,7 @@ class BreadcrumbPath extends React.Component {
 }
 
 BreadcrumbPath.propTypes = {
-  crumbs: PropTypes.object,
+  crumbs: PropTypes.array,
 };
 
 export default BreadcrumbPath;
