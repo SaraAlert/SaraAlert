@@ -1,16 +1,15 @@
-import React from "react"
+import React from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 
 class Patient extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
-  render () {
+  render() {
     if (!this.props.details) {
-      return (<React.Fragment>No subject details to show.</React.Fragment>);
+      return <React.Fragment>No subject details to show.</React.Fragment>;
     }
     return (
       <React.Fragment>
@@ -19,24 +18,47 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5><u>Subject Identification</u>: {`${this.props.details.first_name ? this.props.details.first_name : ''}${this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''}${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}</h5>
+                  <h5>
+                    <u>Subject Identification</u>:{' '}
+                    {`${this.props.details.first_name ? this.props.details.first_name : ''}${
+                      this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
+                    }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
+                  </h5>
                 </div>
                 <div className="float-right">
-                  {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(0)}><h5>Edit</h5></Button>}
+                  {this.props.goto && (
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(0)}>
+                      <h5>Edit</h5>
+                    </Button>
+                  )}
                 </div>
                 <div className="clearfix"></div>
               </Col>
             </Row>
             <Row>
               <Col className="text-truncate">
-                <span className="font-weight-normal">DOB:</span> <span className="font-weight-light">{this.props.details.date_of_birth && `${this.props.details.date_of_birth}`}</span><br />
-                <span className="font-weight-normal">Age:</span> <span className="font-weight-light">{`${this.props.details.age ? this.props.details.age : ''}`}</span><br />
-                <span className="font-weight-normal">Language:</span> <span className="font-weight-light">{`${this.props.details.primary_language ? this.props.details.primary_language : ''}`}</span>
+                <span className="font-weight-normal">DOB:</span>{' '}
+                <span className="font-weight-light">{this.props.details.date_of_birth && `${this.props.details.date_of_birth}`}</span>
+                <br />
+                <span className="font-weight-normal">Age:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.age ? this.props.details.age : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Language:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.primary_language ? this.props.details.primary_language : ''}`}</span>
               </Col>
               <Col className="text-truncate">
-                <span className="font-weight-normal">Sex:</span> <span className="font-weight-light">{`${this.props.details.sex ? this.props.details.sex : ''}`}</span><br />
-                <span className="font-weight-normal">Race:</span> <span className="font-weight-light">{`${this.props.details.white ? 'White' : ''}${this.props.details.black_or_african_american ? ' Black or African American' : ''}${this.props.details.asian ? ' Asian' : ''}${this.props.details.american_indian_or_alaska_native ? ' American Indian or Alaska Native' : ''}${this.props.details.native_hawaiian_or_other_pacific_islander ? ' Native Hawaiian or Other Pacific Islander' : ''}`}</span><br />
-                <span className="font-weight-normal">Ethnicity:</span> <span className="font-weight-light">{`${this.props.details.ethnicity ? this.props.details.ethnicity : ''}`}</span>
+                <span className="font-weight-normal">Sex:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.sex ? this.props.details.sex : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Race:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.white ? 'White' : ''}${
+                  this.props.details.black_or_african_american ? ' Black or African American' : ''
+                }${this.props.details.asian ? ' Asian' : ''}${this.props.details.american_indian_or_alaska_native ? ' American Indian or Alaska Native' : ''}${
+                  this.props.details.native_hawaiian_or_other_pacific_islander ? ' Native Hawaiian or Other Pacific Islander' : ''
+                }`}</span>
+                <br />
+                <span className="font-weight-normal">Ethnicity:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.ethnicity ? this.props.details.ethnicity : ''}`}</span>
               </Col>
             </Row>
           </Col>
@@ -45,18 +67,38 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5><u>Subject Address</u></h5>
+                  <h5>
+                    <u>Subject Address</u>
+                  </h5>
                 </div>
                 <div className="float-right">
-                  {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}><h5>Edit</h5></Button>}
+                  {this.props.goto && (
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}>
+                      <h5>Edit</h5>
+                    </Button>
+                  )}
                 </div>
                 <div className="clearfix"></div>
               </Col>
             </Row>
             <Row>
               <Col className="text-truncate">
-                <span className="font-weight-light">{this.props.details.address_line_1 && `${this.props.details.address_line_1}`}{this.props.details.address_line_2 && ` ${this.props.details.address_line_2}`}{this.props.details.foreign_address_line_1 && `${this.props.details.foreign_address_line_1}`}{this.props.details.foreign_address_line_2 && ` ${this.props.details.foreign_address_line_2}`}</span><br />
-                <span className="font-weight-light">{`${this.props.details.address_city ? this.props.details.address_city : ''}`}{this.props.details.address_state ? ` ${this.props.details.address_state}` : ''}{this.props.details.address_zip ? ` ${this.props.details.address_zip}` : ''}{`${this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}`}{this.props.details.foreign_address_country ? ` ${this.props.details.foreign_address_country}` : ''}{this.props.details.foreign_address_zip ? ` ${this.props.details.foreign_address_zip}` : ''}</span><br />
+                <span className="font-weight-light">
+                  {this.props.details.address_line_1 && `${this.props.details.address_line_1}`}
+                  {this.props.details.address_line_2 && ` ${this.props.details.address_line_2}`}
+                  {this.props.details.foreign_address_line_1 && `${this.props.details.foreign_address_line_1}`}
+                  {this.props.details.foreign_address_line_2 && ` ${this.props.details.foreign_address_line_2}`}
+                </span>
+                <br />
+                <span className="font-weight-light">
+                  {`${this.props.details.address_city ? this.props.details.address_city : ''}`}
+                  {this.props.details.address_state ? ` ${this.props.details.address_state}` : ''}
+                  {this.props.details.address_zip ? ` ${this.props.details.address_zip}` : ''}
+                  {`${this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}`}
+                  {this.props.details.foreign_address_country ? ` ${this.props.details.foreign_address_country}` : ''}
+                  {this.props.details.foreign_address_zip ? ` ${this.props.details.foreign_address_zip}` : ''}
+                </span>
+                <br />
               </Col>
             </Row>
           </Col>
@@ -66,20 +108,33 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5><u>Subject Contact</u></h5>
+                  <h5>
+                    <u>Subject Contact</u>
+                  </h5>
                 </div>
                 <div className="float-right">
-                  {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}><h5>Edit</h5></Button>}
+                  {this.props.goto && (
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
+                      <h5>Edit</h5>
+                    </Button>
+                  )}
                 </div>
                 <div className="clearfix"></div>
               </Col>
             </Row>
             <Row>
               <Col className="text-truncate">
-                <span className="font-weight-normal">Phone:</span> <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span><br />
-                <span className="font-weight-normal">Type:</span> <span className="font-weight-light">{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : ''}`}</span><br />
-                <span className="font-weight-normal">Preferred Contact:</span> <span className="font-weight-light">{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''}`}</span><br />
-                <span className="font-weight-normal">Email:</span> <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
+                <span className="font-weight-normal">Phone:</span>{' '}
+                <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
+                <br />
+                <span className="font-weight-normal">Type:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Preferred Contact:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Email:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
               </Col>
             </Row>
           </Col>
@@ -88,10 +143,16 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5><u>Subject Arrival Information</u></h5>
+                  <h5>
+                    <u>Subject Arrival Information</u>
+                  </h5>
                 </div>
                 <div className="float-right">
-                  {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}><h5>Edit</h5></Button>}
+                  {this.props.goto && (
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}>
+                      <h5>Edit</h5>
+                    </Button>
+                  )}
                 </div>
                 <div className="clearfix"></div>
               </Col>
@@ -99,18 +160,21 @@ class Patient extends React.Component {
             <Row>
               <Col className="text-truncate">
                 <h6>DEPARTED</h6>
-                <span className="font-weight-light">{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span><br />
+                <span className="font-weight-light">{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
+                <br />
                 <span className="font-weight-light">{`${this.props.details.date_of_departure ? this.props.details.date_of_departure : ''}`}</span>
               </Col>
               <Col className="text-truncate">
                 <h6>ARRIVAL</h6>
-                <span className="font-weight-light">{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span><br />
+                <span className="font-weight-light">{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
+                <br />
                 <span className="font-weight-light">{`${this.props.details.date_of_arrival ? this.props.details.date_of_arrival : ''}`}</span>
               </Col>
             </Row>
             <Row>
               <Col className="text-truncate pt-1">
-                <span className="font-weight-light">{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span><br />
+                <span className="font-weight-light">{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
+                <br />
                 <span className="font-weight-light">{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
               </Col>
             </Row>
@@ -121,21 +185,49 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5><u>Subject Additional Planned Travel</u></h5>
+                  <h5>
+                    <u>Subject Additional Planned Travel</u>
+                  </h5>
                 </div>
                 <div className="float-right">
-                  {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}><h5>Edit</h5></Button>}
+                  {this.props.goto && (
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}>
+                      <h5>Edit</h5>
+                    </Button>
+                  )}
                 </div>
                 <div className="clearfix"></div>
               </Col>
             </Row>
             <Row>
               <Col className="text-truncate">
-                <span className="font-weight-normal">Type:</span> <span className="font-weight-light">{this.props.details.additional_planned_travel_type && `${this.props.details.additional_planned_travel_type}`}</span><br />
-                <span className="font-weight-normal">Place:</span> <span className="font-weight-light">{`${this.props.details.additional_planned_travel_destination_country ? this.props.details.additional_planned_travel_destination_country : ''}`}{`${this.props.details.additional_planned_travel_destination_state ? this.props.details.additional_planned_travel_destination_state : ''}`}</span><br />
-                <span className="font-weight-normal">Port Of Departure:</span> <span className="font-weight-light">{`${this.props.details.additional_planned_travel_port_of_departure ? this.props.details.additional_planned_travel_port_of_departure : ''}`}</span><br />
-                <span className="font-weight-normal">End Date:</span> <span className="font-weight-light">{`${this.props.details.additional_planned_travel_start_date ? this.props.details.additional_planned_travel_start_date : ''}`}</span><br />
-                <span className="font-weight-normal">Start Date:</span> <span className="font-weight-light">{`${this.props.details.additional_planned_travel_end_date ? this.props.details.additional_planned_travel_end_date : ''}`}</span>
+                <span className="font-weight-normal">Type:</span>{' '}
+                <span className="font-weight-light">
+                  {this.props.details.additional_planned_travel_type && `${this.props.details.additional_planned_travel_type}`}
+                </span>
+                <br />
+                <span className="font-weight-normal">Place:</span>{' '}
+                <span className="font-weight-light">
+                  {`${
+                    this.props.details.additional_planned_travel_destination_country ? this.props.details.additional_planned_travel_destination_country : ''
+                  }`}
+                  {`${this.props.details.additional_planned_travel_destination_state ? this.props.details.additional_planned_travel_destination_state : ''}`}
+                </span>
+                <br />
+                <span className="font-weight-normal">Port Of Departure:</span>{' '}
+                <span className="font-weight-light">{`${
+                  this.props.details.additional_planned_travel_port_of_departure ? this.props.details.additional_planned_travel_port_of_departure : ''
+                }`}</span>
+                <br />
+                <span className="font-weight-normal">End Date:</span>{' '}
+                <span className="font-weight-light">{`${
+                  this.props.details.additional_planned_travel_start_date ? this.props.details.additional_planned_travel_start_date : ''
+                }`}</span>
+                <br />
+                <span className="font-weight-normal">Start Date:</span>{' '}
+                <span className="font-weight-light">{`${
+                  this.props.details.additional_planned_travel_end_date ? this.props.details.additional_planned_travel_end_date : ''
+                }`}</span>
               </Col>
             </Row>
           </Col>
@@ -144,10 +236,16 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5><u>Subject Potential Exposure Information</u></h5>
+                  <h5>
+                    <u>Subject Potential Exposure Information</u>
+                  </h5>
                 </div>
                 <div className="float-right">
-                  {this.props.goto && <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}><h5>Edit</h5></Button>}
+                  {this.props.goto && (
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
+                      <h5>Edit</h5>
+                    </Button>
+                  )}
                 </div>
                 <div className="clearfix"></div>
               </Col>
@@ -155,10 +253,23 @@ class Patient extends React.Component {
             <Row>
               <Col className="text-truncate">
                 <h6>LAST EXPOSURE</h6>
-                <span className="font-weight-light">{`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}{`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}</span><br />
-                <span className="font-weight-light">{`${this.props.details.last_date_of_potential_exposure ? this.props.details.last_date_of_potential_exposure : ''}`}</span><br />
-                <span className="font-weight-light">{this.props.details.contact_of_known_case ? 'Contact of Known Case: ' + (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '') : ''}</span><br />
-                <span className="font-weight-light">{this.props.details.healthcare_worker ? 'Health Care Worker' : ''}</span><br />
+                <span className="font-weight-light">
+                  {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
+                  {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
+                </span>
+                <br />
+                <span className="font-weight-light">{`${
+                  this.props.details.last_date_of_potential_exposure ? this.props.details.last_date_of_potential_exposure : ''
+                }`}</span>
+                <br />
+                <span className="font-weight-light">
+                  {this.props.details.contact_of_known_case
+                    ? 'Contact of Known Case: ' + (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '')
+                    : ''}
+                </span>
+                <br />
+                <span className="font-weight-light">{this.props.details.healthcare_worker ? 'Health Care Worker' : ''}</span>
+                <br />
                 <span className="font-weight-light">{this.props.details.worked_in_health_care_facility ? 'Worked in Health Care Facility' : ''}</span>
               </Col>
             </Row>
@@ -172,7 +283,7 @@ class Patient extends React.Component {
 Patient.propTypes = {
   patient: PropTypes.object,
   details: PropTypes.object,
-  goto: PropTypes.func
+  goto: PropTypes.func,
 };
 
-export default Patient
+export default Patient;

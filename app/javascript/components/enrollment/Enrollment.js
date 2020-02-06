@@ -1,6 +1,6 @@
-import React from "react"
-import { PropTypes } from "prop-types"
-import axios from "axios"
+import React from 'react';
+import { PropTypes } from 'prop-types';
+import axios from 'axios';
 import { Carousel } from 'react-bootstrap';
 import Identification from './steps/Identification';
 import Address from './steps/Address';
@@ -14,7 +14,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import BreadcrumbPath from '../BreadcrumbPath';
 
 class Enrollment extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = { index: 0, direction: null };
@@ -27,80 +26,126 @@ class Enrollment extends React.Component {
 
   setEnrollmentState(enrollmentState) {
     let currentEnrollmentState = this.state.enrollmentState;
-    this.setState( { enrollmentState: { ...currentEnrollmentState, ...enrollmentState } } );
+    this.setState({ enrollmentState: { ...currentEnrollmentState, ...enrollmentState } });
   }
 
   submit() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios.post('/patients', { patient: this.state.enrollmentState }).then(function () {
-      // Inform user and redirect to home on success
-      toast.success('Subject Successfully Saved', { onClose: () => location.href = '/' });
-    }).catch(function (error) {
-      // TODO: Figure out what to do on error
-      console.log(error);
-    });
+    axios
+      .post('/patients', { patient: this.state.enrollmentState })
+      .then(function() {
+        // Inform user and redirect to home on success
+        toast.success('Subject Successfully Saved', { onClose: () => (location.href = '/') });
+      })
+      .catch(function(error) {
+        // TODO: Figure out what to do on error
+        console.log(error);
+      });
   }
 
   next() {
     let index = this.state.index;
     let lastIndex = this.state.lastIndex;
     if (lastIndex) {
-      this.setState({direction: "next"}, () => {
-        this.setState({index: lastIndex, lastIndex: null});
+      this.setState({ direction: 'next' }, () => {
+        this.setState({ index: lastIndex, lastIndex: null });
       });
     } else {
-      this.setState({direction: "next"}, () => {
-        this.setState({index: index + 1, lastIndex: null});
+      this.setState({ direction: 'next' }, () => {
+        this.setState({ index: index + 1, lastIndex: null });
       });
     }
   }
 
   previous() {
     let index = this.state.index;
-    this.setState({direction: "prev"}, () => {
-      this.setState({index: index - 1, lastIndex: null});
+    this.setState({ direction: 'prev' }, () => {
+      this.setState({ index: index - 1, lastIndex: null });
     });
   }
 
   goto(targetIndex) {
     let index = this.state.index;
     if (targetIndex > index) {
-      this.setState({direction: "next"}, () => {
-        this.setState({index: targetIndex, lastIndex: index});
+      this.setState({ direction: 'next' }, () => {
+        this.setState({ index: targetIndex, lastIndex: index });
       });
     } else if (targetIndex < index) {
-      this.setState({direction: "prev"}, () => {
-        this.setState({index: targetIndex, lastIndex: index});
+      this.setState({ direction: 'prev' }, () => {
+        this.setState({ index: targetIndex, lastIndex: index });
       });
     }
   }
 
-  render () {
+  render() {
     return (
       <React.Fragment>
-        <BreadcrumbPath crumbs={[new Object({ value: "Dashboard", href: "/patients" }), new Object({ value: "Register New Subject", href: null })]} />
-        <Carousel controls={false} indicators={false} interval={null} keyboard={false} activeIndex={this.state.index} direction={this.state.direction} onSelect={() => {}}>
+        <BreadcrumbPath crumbs={[new Object({ value: 'Dashboard', href: '/patients' }), new Object({ value: 'Register New Subject', href: null })]} />
+        <Carousel
+          controls={false}
+          indicators={false}
+          interval={null}
+          keyboard={false}
+          activeIndex={this.state.index}
+          direction={this.state.direction}
+          onSelect={() => {}}>
           <Carousel.Item>
             <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Address goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
+            <Address
+              goto={this.goto}
+              next={this.next}
+              previous={this.previous}
+              setEnrollmentState={this.setEnrollmentState}
+              currentState={this.props.enrollmentState}
+            />
           </Carousel.Item>
           <Carousel.Item>
-            <Contact goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
+            <Contact
+              goto={this.goto}
+              next={this.next}
+              previous={this.previous}
+              setEnrollmentState={this.setEnrollmentState}
+              currentState={this.props.enrollmentState}
+            />
           </Carousel.Item>
           <Carousel.Item>
-            <Arrival goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
+            <Arrival
+              goto={this.goto}
+              next={this.next}
+              previous={this.previous}
+              setEnrollmentState={this.setEnrollmentState}
+              currentState={this.props.enrollmentState}
+            />
           </Carousel.Item>
           <Carousel.Item>
-            <AdditionalPlannedTravel goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
+            <AdditionalPlannedTravel
+              goto={this.goto}
+              next={this.next}
+              previous={this.previous}
+              setEnrollmentState={this.setEnrollmentState}
+              currentState={this.props.enrollmentState}
+            />
           </Carousel.Item>
           <Carousel.Item>
-            <Exposure goto={this.goto} next={this.next} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
+            <Exposure
+              goto={this.goto}
+              next={this.next}
+              previous={this.previous}
+              setEnrollmentState={this.setEnrollmentState}
+              currentState={this.props.enrollmentState}
+            />
           </Carousel.Item>
           {/* TODO: Risk factors */}
           <Carousel.Item>
-            <Review goto={this.goto} submit={this.submit} previous={this.previous} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
+            <Review
+              goto={this.goto}
+              submit={this.submit}
+              previous={this.previous}
+              setEnrollmentState={this.setEnrollmentState}
+              currentState={this.state.enrollmentState}
+            />
           </Carousel.Item>
         </Carousel>
         <ToastContainer position="top-center" autoClose={3000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
@@ -112,7 +157,7 @@ class Enrollment extends React.Component {
 Enrollment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  enrollmentState: PropTypes.object
+  enrollmentState: PropTypes.object,
 };
 
-export default Enrollment
+export default Enrollment;

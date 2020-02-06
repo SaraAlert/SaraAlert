@@ -1,14 +1,13 @@
-import React from "react"
+import React from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 
 class YourStatistics extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
-  render () {
+  render() {
     return (
       <React.Fragment>
         <Card className="card-square">
@@ -58,7 +57,7 @@ class YourStatistics extends React.Component {
 }
 
 YourStatistics.propTypes = {
-  stats: PropTypes.object
+  stats: PropTypes.object,
 };
 
-export default YourStatistics
+export default YourStatistics;

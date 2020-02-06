@@ -31,5 +31,11 @@
     "prettier": "1.19.1",
     "pretty-quick": "^2.0.1",
     "webpack-dev-server": "^3.10.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "./node_modules/.bin/pretty-quick --staged --pattern \"**/components/**/*.*(js|jsx)\" && ./node_modules/.bin/eslint app/javascript/components/",
+      "pre-push": "./node_modules/.bin/pretty-quick --check --pattern \"**/components/**/*.*(js|jsx)\" && ./node_modules/.bin/eslint app/javascript/components/"
+    }
   }
 }

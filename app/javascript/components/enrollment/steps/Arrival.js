@@ -1,24 +1,23 @@
-import React from "react"
+import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 
 class Arrival extends React.Component {
-
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: {...this.props.currentState} };
+    this.state = { ...this.props, current: { ...this.props.currentState } };
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(event) {
-    let value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
+    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
-    this.setState({current: {...current, [event.target.id]: value}}, () => {
+    this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.current });
     });
   }
 
-  render () {
+  render() {
     let today = new Date().toISOString().substr(0, 10);
     return (
       <React.Fragment>
@@ -33,7 +32,13 @@ class Arrival extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="6" controlId="date_of_departure">
                   <Form.Label className="nav-input-label">DATE OF DEPARTURE</Form.Label>
-                  <Form.Control size="lg" type="date" className="form-square" value={this.state.current.date_of_departure || today} onChange={this.handleChange} />
+                  <Form.Control
+                    size="lg"
+                    type="date"
+                    className="form-square"
+                    value={this.state.current.date_of_departure || today}
+                    onChange={this.handleChange}
+                  />
                 </Form.Group>
                 <Form.Group as={Col} md="2"></Form.Group>
                 <Form.Group as={Col} md="8" controlId="source_of_report">
@@ -63,19 +68,45 @@ class Arrival extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="6" controlId="date_of_arrival">
                   <Form.Label className="nav-input-label">DATE OF ARRIVAL</Form.Label>
-                  <Form.Control size="lg" type="date" className="form-square" value={this.state.current.date_of_arrival || today} onChange={this.handleChange} />
+                  <Form.Control
+                    size="lg"
+                    type="date"
+                    className="form-square"
+                    value={this.state.current.date_of_arrival || today}
+                    onChange={this.handleChange}
+                  />
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-2 pb-3">
                 <Form.Group as={Col} md="24" controlId="travel_related_notes">
                   <Form.Label className="nav-input-label">TRAVEL RELATED NOTES</Form.Label>
-                  <Form.Control as="textarea" rows="5" size="lg" className="form-square" placeholder="enter additional information about subject’s travel history (e.g. visited farm, sick relative, original country departed from, etc.)" value={this.state.current.travel_related_notes || ''} onChange={this.handleChange} />
+                  <Form.Control
+                    as="textarea"
+                    rows="5"
+                    size="lg"
+                    className="form-square"
+                    placeholder="enter additional information about subject’s travel history (e.g. visited farm, sick relative, original country departed from, etc.)"
+                    value={this.state.current.travel_related_notes || ''}
+                    onChange={this.handleChange}
+                  />
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>Previous</Button>}
-            {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>Next</Button>}
-            {this.props.submit && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>Finish</Button>}
+            {this.props.previous && (
+              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
+                Previous
+              </Button>
+            )}
+            {this.props.next && (
+              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>
+                Next
+              </Button>
+            )}
+            {this.props.submit && (
+              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>
+                Finish
+              </Button>
+            )}
           </Card.Body>
         </Card>
       </React.Fragment>
@@ -88,7 +119,7 @@ Arrival.propTypes = {
   previous: PropTypes.func,
   setEnrollmentState: PropTypes.func,
   next: PropTypes.func,
-  submit: PropTypes.func
+  submit: PropTypes.func,
 };
 
-export default Arrival
+export default Arrival;
