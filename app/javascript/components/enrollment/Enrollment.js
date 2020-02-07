@@ -1,6 +1,7 @@
-import React from 'react';
-import { PropTypes } from 'prop-types';
-import axios from 'axios';
+import React from "react"
+import PropTypes from "prop-types"
+import axios from "axios"
+import { debounce } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import Identification from './steps/Identification';
 import Address from './steps/Address';
@@ -17,7 +18,7 @@ class Enrollment extends React.Component {
   constructor(props) {
     super(props);
     this.state = { index: 0, direction: null };
-    this.setEnrollmentState = this.setEnrollmentState.bind(this);
+    this.setEnrollmentState = debounce(this.setEnrollmentState.bind(this), 1000);
     this.submit = this.submit.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
