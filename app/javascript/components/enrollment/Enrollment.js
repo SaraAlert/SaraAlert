@@ -1,6 +1,6 @@
-import React from "react"
-import PropTypes from "prop-types"
-import axios from "axios"
+import React from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
 import { debounce } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import Identification from './steps/Identification';
