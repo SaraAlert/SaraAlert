@@ -1,12 +1,11 @@
-import React from "react"
-import PropTypes from "prop-types"
-import axios from "axios"
+import React from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
 import { debounce } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import GeneralAssessment from './steps/GeneralAssessment';
 import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
-import { PropTypes } from 'prop-types';
 
 class Assessment extends React.Component {
   constructor(props) {
