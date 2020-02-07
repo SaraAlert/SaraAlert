@@ -26,7 +26,7 @@ class MonitorDashboard extends React.Component {
               </Row>
               <Row className="mt-4">
                 <Col md="24">
-                  <MapChart stats={this.props.stats}/>
+                  <MapChart stats={this.props.stats} />
                 </Col>
               </Row>
               <Row className="mt-4">
@@ -43,7 +43,7 @@ class MonitorDashboard extends React.Component {
               </Row>
               <Row className="mt-4">
                 <Col md="24">
-                  <MonitoringDistributionDay stats={this.props.stats}/>
+                  <MonitoringDistributionDay stats={this.props.stats} />
                 </Col>
               </Row>
               <Row className="mt-4">
