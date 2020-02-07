@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import moment from 'moment';
 import { PropTypes } from 'prop-types';
+import * as yup from 'yup';
 
 class Identification extends React.Component {
   constructor(props) {
@@ -23,6 +24,8 @@ class Identification extends React.Component {
       }
     });
   }
+
+  validate() {}
 
   render() {
     return (

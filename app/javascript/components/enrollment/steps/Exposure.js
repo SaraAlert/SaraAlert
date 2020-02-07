@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { countryOptions } from '../../data';
 import { PropTypes } from 'prop-types';
+import * as yup from 'yup';
 
 class Exposure extends React.Component {
   constructor(props) {

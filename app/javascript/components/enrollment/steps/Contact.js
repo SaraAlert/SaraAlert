@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import * as yup from 'yup';
 
 class Contact extends React.Component {
   constructor(props) {

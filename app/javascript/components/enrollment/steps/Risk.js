@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import * as yup from 'yup';
 
 class Risk extends React.Component {
   constructor(props) {

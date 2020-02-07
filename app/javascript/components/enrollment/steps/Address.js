@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Button, Tabs, Tab, Form, Col } from 'react-bootstrap';
 import { stateOptions, countryOptions } from '../../data';
 import { PropTypes } from 'prop-types';
+import * as yup from 'yup';
 
 class Address extends React.Component {
   constructor(props) {

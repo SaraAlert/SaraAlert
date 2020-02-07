@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Button } from 'react-bootstrap';
 import Patient from '../../Patient';
 import { PropTypes } from 'prop-types';
+import * as yup from 'yup';
 
 class Review extends React.Component {
   constructor(props) {
