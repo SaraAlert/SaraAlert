@@ -13,6 +13,7 @@
     "bootstrap": "^4.4.1",
     "devise-axios": "^1.0.24",
     "jquery": "^3.4.1",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "popper": "^1.0.1",
     "prop-types": "^15.7.2",
