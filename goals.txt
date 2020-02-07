@@ -1,7 +1,0 @@
-Tool to support early symptom identification, track case contacts
-
-Pilot after one week
-
-Sharable (open source?)
-
-Data is secure
