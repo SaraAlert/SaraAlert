@@ -2557,7 +2557,7 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@^2.20.0:
+commander@2, commander@^2.20.0:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
@@ -3055,6 +3055,11 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
+d3-array@1:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-1.2.4.tgz#635ce4d5eea759f6f605863dbcfc30edc737f71f"
+  integrity sha512-KHW6M86R+FUPYGb3R5XiYjXPq7VzwxZ22buHhAEVG5ztoEcZZMLov530mmccaqA1GghZArjQV46fuc8kUqhhHw==
+
 "d3-array@1.2.0 - 2":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-2.4.0.tgz#87f8b9ad11088769c82b5ea846bcb1cc9393f242"
@@ -3069,6 +3074,13 @@ d3-format@1:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/d3-format/-/d3-format-1.4.3.tgz#4e8eb4dff3fdcb891a8489ec6e698601c41b96f1"
   integrity sha512-mm/nE2Y9HgGyjP+rKIekeITVgBtX97o1nrvHCWX8F/yBYyevUTvu9vb5pUnKwrcSw7o7GuwMOWjS9gFDs4O+uQ==
+
+d3-geo@^1.11.6:
+  version "1.11.9"
+  resolved "https://registry.yarnpkg.com/d3-geo/-/d3-geo-1.11.9.tgz#77eaed14ba62fc2c0aef55cd2943849c866f7ae6"
+  integrity sha512-9edcH6J3s/Aa3KJITWqFJbyB/8q3mMlA9Fi7z6yy+FAYMnRaxmC7jBhUnsINxVWD14GmqX3DK8uk7nV6/Ekt4A==
+  dependencies:
+    d3-array "1"
 
 d3-interpolate@^1.2.0, d3-interpolate@^1.3.0:
   version "1.4.0"
@@ -8016,6 +8028,14 @@ react-resize-detector@^4.2.1:
     raf-schd "^4.0.2"
     resize-observer-polyfill "^1.5.1"
 
+react-simple-maps@^1.0.0-beta.0:
+  version "1.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/react-simple-maps/-/react-simple-maps-1.0.0-beta.0.tgz#9432476f993b47d1ef2d6ddbe6b70a918b5162da"
+  integrity sha512-GF4nyhBL+6dNN/WcWguLRJWDRTQJ4lVDT7bexkD8Gq6a1ucOxcyGUvUFfjWgqn6tDXHfsinjdoC5AJJfCghdpg==
+  dependencies:
+    d3-geo "^1.11.6"
+    topojson-client "^3.0.0"
+
 react-smooth@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/react-smooth/-/react-smooth-1.0.5.tgz#94ae161d7951cdd893ccb7099d031d342cb762ad"
@@ -8035,6 +8055,14 @@ react-toastify@^5.5.0:
     classnames "^2.2.6"
     prop-types "^15.7.2"
     react-transition-group "^4"
+
+react-tooltip@^3.11.4:
+  version "3.11.4"
+  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-3.11.4.tgz#a2f9ac649ca82911939aad86cf46bae6458583d0"
+  integrity sha512-iZZ5lE1h/slfjDIoRpWC+iDKOLzkmac1k4a1PeXnWsIu3FhrUApsUCz4tSCYv/5hIXnOMZHTcXPftJb6B/9lzQ==
+  dependencies:
+    classnames "^2.2.6"
+    prop-types "^15.6.0"
 
 react-transition-group@^2.5.0:
   version "2.9.0"
@@ -9610,6 +9638,13 @@ toidentifier@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.0.tgz#7e1be3470f1e77948bc43d94a3c8f4d7752ba553"
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
+
+topojson-client@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/topojson-client/-/topojson-client-3.1.0.tgz#22e8b1ed08a2b922feeb4af6f53b6ef09a467b99"
+  integrity sha512-605uxS6bcYxGXw9qi62XyrV6Q3xwbndjachmNxu8HWTtVPxZfEJN9fd/SZS1Q54Sn2y0TMyMxFj/cJINqGHrKw==
+  dependencies:
+    commander "2"
 
 touch@0.0.3:
   version "0.0.3"
