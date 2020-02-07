@@ -1,145 +1,130 @@
-import React from "react";
+import React from 'react';
 import { Card } from 'react-bootstrap';
-import { ComposableMap, Geographies, Geography, ZoomableGroup} from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import ReactTooltip from 'react-tooltip';
-import { scaleQuantize } from "d3-scale";
+import { scaleQuantize } from 'd3-scale';
 import { stateOptions } from '../../data';
 import { USAMap } from '../../MapData';
-
+import { PropTypes } from 'prop-types';
 
 class MapChart extends React.Component {
-
   constructor(props) {
     super(props);
+    this.state = {
+      highlighted: '',
+      hovered: false,
+      content: '',
+      zoom: 1,
+    };
+    this.handleLeave = this.handleLeave.bind(this);
+    this.handleZoomIn = this.handleZoomIn.bind(this);
+    this.handleZoomOut = this.handleZoomOut.bind(this);
+    this.setTooltipContent = this.setTooltipContent.bind(this);
+    this.getSymptomaticSize = this.getSymptomaticSize.bind(this);
   }
 
-  state = {
-    highlighted: "",
-    hovered: false,
-    content: "",
-    zoom: 1
-  };
-  stateOpts = stateOptions
-  handleMove = geo => {
+  handleMove(geo) {
     if (this.state.hovered) return;
     this.setState({
       hovered: true,
-      highlighted: geo.properties.CONTINENT
+      highlighted: geo.properties.CONTINENT,
     });
-  };
-  handleLeave = () => {
+  }
+
+  handleLeave() {
     this.setState({
-      highlighted: "",
-      hovered: false
+      highlighted: '',
+      hovered: false,
     });
-  };
+  }
 
-  projection = (width, height) => {
-    const albersUsa = d3
-      .geoAlbersUsa()
-      .scale(1500)
-      .translate([width / 2, height / 2]);
-    albersUsa.rotate = function rotate(...args) {
-      return args.length ? () => [width / 2, height / 2] : [0, 0, 0];
-    };
-    return albersUsa;
-  };
+  handleZoomIn() {
+    if (this.state.zoom >= 4) return;
+    this.setState({ zoom: this.state.zoom * 2 });
+  }
 
-  render () {
+  handleZoomOut() {
+    if (this.state.zoom <= 1) return;
+    this.setState({ zoom: this.state.zoom / 2 });
+  }
 
-    const handleZoomIn = () => {
-      if (this.state.zoom >= 4) return;
-      this.setState({zoom: this.state.zoom * 2 })
-    }
-  
-    const handleZoomOut = () => {
-      if (this.state.zoom <= 1) return;
-      this.setState({zoom: this.state.zoom / 2 })
-    }
+  setTooltipContent(stateName, data) {
+    const symptomatic = this.getSymptomaticSize(stateName, data);
+    this.setState({
+      content: stateName ? `${stateName} - ${symptomatic}` : '',
+    });
+  }
 
+  getSymptomaticSize(stateName, data) {
+    const state = stateOptions.find(obj => {
+      return obj.name == stateName;
+    });
+    const stateAbvr = state ? state.abbrv : '';
+    return data && data[stateAbvr] ? data[stateAbvr] : 0;
+  }
+
+  render() {
     const data = this.props.stats.monitoring_distribution_by_state;
     const colorScale = scaleQuantize()
-    .domain([Math.min.apply(null,Object.values(data)),Math.max.apply(null,Object.values(data))])
-    .range(["#ffffcc", "#ffeda0", "#fed976", "#feb24c", "#fd8d3c", "#fc4e2a", "#e31a1c", "#bd0026", "#800026"]);
-
-    const setTooltipContent = (stateName) => {
-      const symptomatic = getSymptomaticSize(stateName)
-      this.setState({
-        content: stateName ? `${stateName} - ${symptomatic}` : ""
-      });
-    };
-
-    const getSymptomaticSize = (stateName) => {
-      const stateAbvr = stateOptions.find(obj => {return obj.name == stateName})?.abbrv
-      return data[stateAbvr]
-    };
+      .domain([Math.min.apply(null, Object.values(data)), Math.max.apply(null, Object.values(data))])
+      .range(['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']);
 
     return (
       <React.Fragment>
         <ReactTooltip>{this.state.content}</ReactTooltip>
-          <Card className="card-square">
-            <Card.Header as="h5">Location of Symptomatic Subjects</Card.Header>
-              <Card.Body>
-                <ComposableMap data-tip="" projection="geoAlbersUsa">>
-                <ZoomableGroup center={[ -97, 40 ]} zoom={this.state.zoom}>
-                  <Geographies geography={USAMap}>
-                    {({ geographies }) =>
-                      geographies.map(geo => (
-                        <Geography
-                          key={geo.rsmKey}
-                          geography={geo}
-                          stroke="#FFF"
-                          fill={colorScale(geo ? getSymptomaticSize(geo.properties.name): "#EEE")}
-                          onMouseEnter={() => {
-                            setTooltipContent(`${geo.properties.name}`);
-                          }}
-                          onMouseLeave={() => {
-                            setTooltipContent("");
-                          }}
-                          style={{
-                            default: {
-                              outline: "#none"
-                            },
-                            hover: {
-                              fill: "#F53",
-                              outline: "none"
-                            },
-                            pressed: {
-                              fill: "#E42",
-                              outline: "none"
-                            }
-                          }}
-                        />
-                      ))
-                    }
-              </Geographies>
+        <Card className="card-square">
+          <Card.Header as="h5">Location of Symptomatic Subjects</Card.Header>
+          <Card.Body>
+            <ComposableMap data-tip="" projection="geoAlbersUsa">
+              <ZoomableGroup center={[-97, 40]} zoom={this.state.zoom}>
+                <Geographies geography={USAMap}>
+                  {({ geographies }) =>
+                    geographies.map(geo => (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        stroke="#FFF"
+                        fill={
+                          this.getSymptomaticSize(geo.properties.name, data) != 0 ? colorScale(this.getSymptomaticSize(geo.properties.name, data)) : '#50C878'
+                        }
+                        onMouseEnter={() => {
+                          this.setTooltipContent(`${geo.properties.name}`, data);
+                        }}
+                        onMouseLeave={() => {
+                          this.setTooltipContent('', data);
+                        }}
+                        style={{
+                          default: {
+                            outline: '#none',
+                          },
+                          hover: {
+                            fill: '#F53',
+                            outline: 'none',
+                          },
+                          pressed: {
+                            fill: '#E42',
+                            outline: 'none',
+                          },
+                        }}
+                      />
+                    ))
+                  }
+                </Geographies>
               </ZoomableGroup>
             </ComposableMap>
             <div className="controls">
-        <button class="btn btn-outline-primary" onClick={handleZoomIn}>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="3"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
-        <button class="btn btn-outline-primary" onClick={handleZoomOut}>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="3"
-          >
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </button>
-      </div>
+              <button className="btn btn-outline-primary" onClick={this.handleZoomIn}>
+                <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+              <button className="btn btn-outline-primary" onClick={this.handleZoomOut}>
+                <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            </div>
           </Card.Body>
         </Card>
       </React.Fragment>
@@ -147,4 +132,8 @@ class MapChart extends React.Component {
   }
 }
 
-export default MapChart
+MapChart.propTypes = {
+  stats: PropTypes.object,
+};
+
+export default MapChart;
