@@ -6,16 +6,16 @@ namespace :demo do
     raise "This task is only for use in a development environment" unless Rails.env == 'development'
 
     print 'Creating enrollers...'
-    enroller1 = User.new(email: 'enroller1@example.com', password: '123456')
+    enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab')
     enroller1.add_role :enroller
     enroller1.save
-    enroller2 = User.new(email: 'enroller2@example.com', password: '123456')
+    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab')
     enroller2.add_role :enroller
     enroller2.save
     puts ' done!'
 
     print 'Creating epis...'
-    epi1 = User.new(email: 'epi1@example.com', password: '123456')
+    epi1 = User.new(email: 'epi1@example.com', password: '123456ab')
     epi1.add_role :monitor
     epi1.save
     puts ' done!'
