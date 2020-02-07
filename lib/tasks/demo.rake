@@ -2,6 +2,9 @@ namespace :demo do
 
   desc "Configure the database for demo use"
   task setup: :environment do
+
+    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+
     print 'Creating enrollers...'
     enroller1 = User.new(email: 'enroller1@example.com', password: '123456')
     enroller1.add_role :enroller
@@ -38,6 +41,8 @@ namespace :demo do
 
   desc "Add lots of data to the database to provide some idea of basic scaling issues"
   task populate: :environment do
+
+    raise "This task is only for use in a development environment" unless Rails.env == 'development'
 
     days = (ENV['DAYS'] || 14).to_i
     count = (ENV['COUNT'] || 50).to_i
