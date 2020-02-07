@@ -1,18 +1,18 @@
-import React from "react";
+import React from 'react';
 import { Row, Col } from 'react-bootstrap';
 import SystemStatistics from './widgets/SystemStatistics';
 import SubjectStatus from './widgets/SubjectStatus';
 import ReportingSummary from './widgets/ReportingSummary';
 import MonitoringDistributionDay from './widgets/MonitoringDistributionDay';
 import AssessmentsDay from './widgets/AssessmentsDay';
+import { PropTypes } from 'prop-types';
 
 class MonitorDashboard extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
-  render () {
+  render() {
     return (
       <React.Fragment>
         <div className="mx-2 pb-4">
@@ -46,9 +46,7 @@ class MonitorDashboard extends React.Component {
                 </Col>
               </Row>
               <Row className="mt-4">
-                <Col md="24">
-
-                </Col>
+                <Col md="24"></Col>
               </Row>
             </Col>
           </Row>
@@ -59,4 +57,8 @@ class MonitorDashboard extends React.Component {
   }
 }
 
-export default MonitorDashboard
+MonitorDashboard.propTypes = {
+  stats: PropTypes.object,
+};
+
+export default MonitorDashboard;

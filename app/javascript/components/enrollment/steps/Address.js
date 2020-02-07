@@ -1,39 +1,45 @@
-import React from "react"
+import React from 'react';
 import { Card, Button, Tabs, Tab, Form, Col } from 'react-bootstrap';
 import { stateOptions, countryOptions } from '../../data';
+import { PropTypes } from 'prop-types';
 
 class Address extends React.Component {
-
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: {...this.props.currentState}};
+    this.state = { ...this.props, current: { ...this.props.currentState } };
     this.handleChange = this.handleChange.bind(this);
     this.whereMonitoredSameAsHome = this.whereMonitoredSameAsHome.bind(this);
   }
 
   handleChange(event) {
-    let value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
+    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
-    this.setState({current: {...current, [event.target.id]: value}}, () => {
+    this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.current });
     });
   }
 
   whereMonitoredSameAsHome() {
     let currentState = this.state.current;
-    this.setState({ current: { ...currentState,
-      monitored_address_line_1: currentState.address_line_1,
-      monitored_address_city: currentState.address_city,
-      monitored_address_state: currentState.address_state,
-      monitored_address_line_2: currentState.address_line_2,
-      monitored_address_zip: currentState.address_zip,
-      monitored_address_county: currentState.address_county
-    } }, () => {
-      this.props.setEnrollmentState({ ...this.state.current });
-    });
+    this.setState(
+      {
+        current: {
+          ...currentState,
+          monitored_address_line_1: currentState.address_line_1,
+          monitored_address_city: currentState.address_city,
+          monitored_address_state: currentState.address_state,
+          monitored_address_line_2: currentState.address_line_2,
+          monitored_address_zip: currentState.address_zip,
+          monitored_address_county: currentState.address_county,
+        },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.current });
+      }
+    );
   }
 
-  render () {
+  render() {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
@@ -43,8 +49,7 @@ class Address extends React.Component {
               <Tab eventKey="within" title="Home Address Within USA">
                 <Form>
                   <Form.Row className="h-100">
-                    <Form.Group as={Col} md={12} className="my-auto">
-                    </Form.Group>
+                    <Form.Group as={Col} md={12} className="my-auto"></Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-4">
                     <Form.Group as={Col} controlId="address_line_1">
@@ -60,7 +65,9 @@ class Address extends React.Component {
                       <Form.Control as="select" size="lg" className="form-square" value={this.state.current.address_state || ''} onChange={this.handleChange}>
                         <option></option>
                         {stateOptions.map((state, index) => (
-                          <option key={`state-${index}`} value={state.abbrv}>{state.name}</option>
+                          <option key={`state-${index}`} value={state.abbrv}>
+                            {state.name}
+                          </option>
                         ))}
                       </Form.Control>
                     </Form.Group>
@@ -81,15 +88,24 @@ class Address extends React.Component {
                       <Form.Control size="lg" className="form-square" value={this.state.current.address_county || ''} onChange={this.handleChange} />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row><hr/></Form.Row>
+                  <Form.Row>
+                    <hr />
+                  </Form.Row>
                   <Form.Row className="h-100">
                     <Form.Group as={Col} className="my-auto">
-                      <h5>Address at Destination in USA Where Monitored<Button size="md" variant="outline-primary" className="ml-4 btn-square px-3" onClick={this.whereMonitoredSameAsHome}>Set to Home Address</Button></h5>
+                      <h5>
+                        Address at Destination in USA Where Monitored
+                        <Button size="md" variant="outline-primary" className="ml-4 btn-square px-3" onClick={this.whereMonitoredSameAsHome}>
+                          Set to Home Address
+                        </Button>
+                      </h5>
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-1 pb-2">
                     <Form.Group as={Col} md={24} className="my-auto">
-                      <span className="font-weight-light">(If subject is planning on travel within the US, enter the <b>first</b> location where they may be contacted)</span>
+                      <span className="font-weight-light">
+                        (If subject is planning on travel within the US, enter the <b>first</b> location where they may be contacted)
+                      </span>
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-3">
@@ -103,10 +119,17 @@ class Address extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} controlId="monitored_address_state">
                       <Form.Label className="nav-input-label">STATE</Form.Label>
-                      <Form.Control as="select" size="lg" className="form-square" value={this.state.current.monitored_address_state || ''} onChange={this.handleChange}>
+                      <Form.Control
+                        as="select"
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.monitored_address_state || ''}
+                        onChange={this.handleChange}>
                         <option></option>
                         {stateOptions.map((state, index) => (
-                          <option key={`state-${index}`} value={state.abbrv}>{state.name}</option>
+                          <option key={`state-${index}`} value={state.abbrv}>
+                            {state.name}
+                          </option>
                         ))}
                       </Form.Control>
                     </Form.Group>
@@ -132,8 +155,7 @@ class Address extends React.Component {
               <Tab eventKey="outside" title="Home Address Outside USA (Foreign)">
                 <Form>
                   <Form.Row className="h-100">
-                    <Form.Group as={Col} md={12} className="my-auto">
-                    </Form.Group>
+                    <Form.Group as={Col} md={12} className="my-auto"></Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-4">
                     <Form.Group as={Col} controlId="foreign_address_line_1">
@@ -146,7 +168,12 @@ class Address extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} controlId="foreign_address_country">
                       <Form.Label className="nav-input-label">COUNTRY</Form.Label>
-                      <Form.Control as="select" size="lg" className="form-square" value={this.state.current.foreign_address_country || ''} onChange={this.handleChange}>
+                      <Form.Control
+                        as="select"
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.foreign_address_country || ''}
+                        onChange={this.handleChange}>
                         <option></option>
                         {countryOptions.map((country, index) => (
                           <option key={`country-${index}`}>{country}</option>
@@ -174,7 +201,9 @@ class Address extends React.Component {
                       <Form.Control size="lg" className="form-square" value={this.state.current.foreign_address_state || ''} onChange={this.handleChange} />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row><hr/></Form.Row>
+                  <Form.Row>
+                    <hr />
+                  </Form.Row>
                   <Form.Row className="h-100">
                     <Form.Group as={Col} md={24} className="my-auto">
                       <h5>Address at Destination in USA Where Monitored</h5>
@@ -182,24 +211,43 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="pt-2 pb-2">
                     <Form.Group as={Col} md={24} className="my-auto">
-                      <span className="font-weight-light">(If subject is planning on travel within the US, enter the <b>first</b> location where they may be contacted)</span>
+                      <span className="font-weight-light">
+                        (If subject is planning on travel within the US, enter the <b>first</b> location where they may be contacted)
+                      </span>
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-3">
                     <Form.Group as={Col} controlId="foreign_monitored_address_line_1">
                       <Form.Label className="nav-input-label">ADDRESS 1</Form.Label>
-                      <Form.Control size="lg" className="form-square" value={this.state.current.foreign_monitored_address_line_1 || ''} onChange={this.handleChange} />
+                      <Form.Control
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.foreign_monitored_address_line_1 || ''}
+                        onChange={this.handleChange}
+                      />
                     </Form.Group>
                     <Form.Group as={Col} controlId="foreign_monitored_address_city">
                       <Form.Label className="nav-input-label">TOWN/CITY</Form.Label>
-                      <Form.Control size="lg" className="form-square" value={this.state.current.foreign_monitored_address_city || ''} onChange={this.handleChange} />
+                      <Form.Control
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.foreign_monitored_address_city || ''}
+                        onChange={this.handleChange}
+                      />
                     </Form.Group>
                     <Form.Group as={Col} controlId="foreign_monitored_address_state">
                       <Form.Label className="nav-input-label">STATE</Form.Label>
-                      <Form.Control as="select" size="lg" className="form-square" value={this.state.current.foreign_monitored_address_state || ''} onChange={this.handleChange}>
+                      <Form.Control
+                        as="select"
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.foreign_monitored_address_state || ''}
+                        onChange={this.handleChange}>
                         <option></option>
                         {stateOptions.map((state, index) => (
-                          <option key={`state-${index}`} value={state.abbrv}>{state.name}</option>
+                          <option key={`state-${index}`} value={state.abbrv}>
+                            {state.name}
+                          </option>
                         ))}
                       </Form.Control>
                     </Form.Group>
@@ -207,25 +255,52 @@ class Address extends React.Component {
                   <Form.Row className="pt-2">
                     <Form.Group as={Col} md={8} controlId="foreign_monitored_address_line_2">
                       <Form.Label className="nav-input-label">ADDRESS 2</Form.Label>
-                      <Form.Control size="lg" className="form-square" value={this.state.current.foreign_monitored_address_line_2 || ''} onChange={this.handleChange} />
+                      <Form.Control
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.foreign_monitored_address_line_2 || ''}
+                        onChange={this.handleChange}
+                      />
                     </Form.Group>
                     <Form.Group as={Col} md={4} controlId="foreign_monitored_address_zip">
                       <Form.Label className="nav-input-label">ZIP</Form.Label>
-                      <Form.Control size="lg" className="form-square" value={this.state.current.foreign_monitored_address_zip || ''} onChange={this.handleChange} />
+                      <Form.Control
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.foreign_monitored_address_zip || ''}
+                        onChange={this.handleChange}
+                      />
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-2 pb-3">
                     <Form.Group as={Col} md={8} controlId="foreign_monitored_address_county">
                       <Form.Label className="nav-input-label">COUNTY</Form.Label>
-                      <Form.Control size="lg" className="form-square" value={this.state.current.foreign_monitored_address_county || ''} onChange={this.handleChange} />
+                      <Form.Control
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.foreign_monitored_address_county || ''}
+                        onChange={this.handleChange}
+                      />
                     </Form.Group>
                   </Form.Row>
                 </Form>
               </Tab>
             </Tabs>
-            {this.props.previous && <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>Previous</Button>}
-            {this.props.next && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>Next</Button>}
-            {this.props.submit && <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>Finish</Button>}
+            {this.props.previous && (
+              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
+                Previous
+              </Button>
+            )}
+            {this.props.next && (
+              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>
+                Next
+              </Button>
+            )}
+            {this.props.submit && (
+              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>
+                Finish
+              </Button>
+            )}
           </Card.Body>
         </Card>
       </React.Fragment>
@@ -233,4 +308,12 @@ class Address extends React.Component {
   }
 }
 
-export default Address
+Address.propTypes = {
+  currentState: PropTypes.object,
+  previous: PropTypes.func,
+  setEnrollmentState: PropTypes.func,
+  next: PropTypes.func,
+  submit: PropTypes.func,
+};
+
+export default Address;

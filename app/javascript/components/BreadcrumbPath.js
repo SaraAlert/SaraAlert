@@ -1,18 +1,20 @@
-import React from "react";
+import React from 'react';
 import { Breadcrumb } from 'react-bootstrap';
+import { PropTypes } from 'prop-types';
 
 class BreadcrumbPath extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
-  render () {
+  render() {
     return (
       <React.Fragment>
         <Breadcrumb className="breadcrumb-square mx-2">
           {this.props.crumbs.map((crumb, index) => (
-            <Breadcrumb.Item key={"crumb-" + index} href={crumb.href} active={crumb.href === null ? true : false}><span className="lead">{crumb.value}</span></Breadcrumb.Item>
+            <Breadcrumb.Item key={'crumb-' + index} href={crumb.href} active={crumb.href === null ? true : false}>
+              <span className="lead">{crumb.value}</span>
+            </Breadcrumb.Item>
           ))}
         </Breadcrumb>
       </React.Fragment>
@@ -20,4 +22,8 @@ class BreadcrumbPath extends React.Component {
   }
 }
 
-export default BreadcrumbPath
+BreadcrumbPath.propTypes = {
+  crumbs: PropTypes.array,
+};
+
+export default BreadcrumbPath;
