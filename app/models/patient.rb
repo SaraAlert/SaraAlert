@@ -9,7 +9,7 @@ class Patient < ApplicationRecord
 
   # Allow information on the subject's jurisdiction to be displayed
   def jurisdiction_path
-    jurisdiction.path.map(&:name)
+    jurisdiction&.path&.map(&:name)
   end
 
   def as_json(options = {})
