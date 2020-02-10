@@ -2,8 +2,19 @@ class User < ApplicationRecord
   rolify
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  devise :database_authenticatable, :registerable, :validatable, :lockable
+
+  # Validate password complexity
+  validate :password_complexity
+  def password_complexity
+    if password.present?
+      # Passwords must have characters from at least two groups, identified by these regexes (last one is punctuation)
+      matches = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^\w\s]/].select { |rx| rx.match(password) }.size
+      unless matches >= 2
+        errors.add :password, "must include characters from at least two groups (lower case, upper case, numbers, special characters)"
+      end
+    end
+  end
 
   has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
 

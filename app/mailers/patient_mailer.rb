@@ -3,12 +3,12 @@ class PatientMailer < ApplicationMailer
 
   def assessment_email(patient)
     @patient = patient
-    mail(to: patient.email, subject: 'DiseaseTrackker Assessment Reminder')
+    mail(to: patient.email, subject: 'SaraAlert Assessment Reminder')
   end
 
   def enrollment_email(patient)
     @patient = patient
-    mail(to: patient.email, subject: 'DiseaseTrackker Enrollment')
+    mail(to: patient.email, subject: 'SaraAlert Enrollment')
   end
 
   def enrollment_sms(patient)
