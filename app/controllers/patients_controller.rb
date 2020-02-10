@@ -8,7 +8,6 @@ class PatientsController < ApplicationController
   end
 
   def show
-    # TODO: We'll want to display the jurisdiction; full path can be gotten with @patient.jurisdiction.path.map(&:name).join(' / ')
     redirect_to root_url unless current_user.can_view_patient?
     # Retrieve Patient by id, but only check patients that current_user created
     @patient = current_user.created_patients.find_by_id(params.permit(:id)[:id])
@@ -105,7 +104,8 @@ class PatientsController < ApplicationController
     # Set the creator as the current user
     patient.creator = current_user
 
-    # TODO: We need to correctly assign this patient to a jurisdiction
+    # TODO: We need to correctly assign this patient to a jurisdiction; for now just assume the jurisidiction of the user
+    patient.jurisdiction = current_user.jurisdiction
 
     # Create a secure random token to act as the subject's password when they submit assessments; this gets
     # included in the URL sent to the subject to allow them to report without having to type in a password

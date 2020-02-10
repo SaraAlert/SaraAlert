@@ -13,6 +13,7 @@ class PatientPage extends React.Component {
     return (
       <React.Fragment>
         <BreadcrumbPath
+          current_user={this.props.current_user}
           crumbs={[
             new Object({ value: 'Dashboard', href: this.props.dashboardUrl ? this.props.dashboardUrl : null }),
             new Object({ value: 'Subject View', href: null }),
@@ -30,6 +31,7 @@ class PatientPage extends React.Component {
 }
 
 PatientPage.propTypes = {
+  current_user: PropTypes.object,
   patient: PropTypes.object,
   dashboardUrl: PropTypes.string,
 };

@@ -41,4 +41,13 @@ class User < ApplicationRecord
     has_role?(:monitor) || has_role?(:admin)
   end
 
+  # Allow information on the user's jurisdiction to be displayed
+  def jurisdiction_path
+    jurisdiction.path.map(&:name)
+  end
+
+  def as_json(options = {})
+    super((options || {}).merge(methods: :jurisdiction_path))
+  end
+
 end

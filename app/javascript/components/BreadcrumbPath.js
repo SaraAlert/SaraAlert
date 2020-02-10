@@ -16,6 +16,11 @@ class BreadcrumbPath extends React.Component {
               <span className="lead">{crumb.value}</span>
             </Breadcrumb.Item>
           ))}
+          <li className="ml-auto">
+            {this.props.current_user &&
+              this.props.current_user.jurisdiction_path &&
+              'Your jurisdiction: ' + this.props.current_user.jurisdiction_path.join(', ')}
+          </li>
         </Breadcrumb>
       </React.Fragment>
     );
@@ -23,6 +28,7 @@ class BreadcrumbPath extends React.Component {
 }
 
 BreadcrumbPath.propTypes = {
+  current_user: PropTypes.object,
   crumbs: PropTypes.array,
 };
 
