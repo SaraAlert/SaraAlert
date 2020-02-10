@@ -17,10 +17,10 @@ namespace :demo do
     puts ' done!'
 
     print 'Creating enrollers...'
-    enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab')
+    enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab', jurisdiction: county1)
     enroller1.add_role :enroller
     enroller1.save
-    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab')
+    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: state1)
     enroller2.add_role :enroller
     enroller2.save
     puts ' done!'
