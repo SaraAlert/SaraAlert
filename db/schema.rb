@@ -126,6 +126,7 @@ ActiveRecord::Schema.define(version: 2020_01_27_192149) do
     t.inet "last_sign_in_ip"
     t.integer "failed_attempts", default: 0, null: false
     t.datetime "locked_at"
+    t.boolean "force_password_change"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_users_on_email", unique: true

@@ -8,14 +8,18 @@ namespace :user do
     email = ENV["EMAIL"]
     raise "EMAIL must be provided" unless email
     password = ENV["PASSWORD"]
-    raise "PASSWORD must be provided" unless password
+    unless password
+      puts "Generating random password"
+      password = SecureRandom.base58(10) # About 58 bits of entropy
+    end
     role = ENV["ROLE"]
     raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
-    user = User.create!(email: email, password: password)
+    user = User.create!(email: email, password: password, force_password_change: true) # Require user to change password on first login
     user.add_role role
+    UserMailer.welcome_email(user, password).deliver_later
   end
 
-  desc "Update a user's password"
+  desc "Update a user's password and/or role"
   task update: :environment do
     roles = Role.pluck(:name)
     email = ENV["EMAIL"]

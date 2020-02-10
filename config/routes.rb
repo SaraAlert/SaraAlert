@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
-  devise_for :users
-
   root to: "home#index"
+
+  devise_for :users, only: [:sessions]
+  as :user do
+    get 'users/edit' => 'users/registrations#edit', :as => 'edit_user_registration'
+    put 'users' => 'users/registrations#update', :as => 'user_registration'
+  end
 
   resources :patients, only: [:index, :new, :create, :show]
 

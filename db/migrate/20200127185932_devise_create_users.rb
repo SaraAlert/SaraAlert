@@ -35,6 +35,9 @@ class DeviseCreateUsers < ActiveRecord::Migration[6.0]
       # t.string   :unlock_token # Only if unlock strategy is :email or :both
       t.datetime :locked_at
 
+      # Require the user to change their password on first login (used on account setup)
+      t.boolean :force_password_change
+
       t.timestamps null: false
     end
 
