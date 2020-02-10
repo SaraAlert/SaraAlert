@@ -44,4 +44,11 @@ namespace :user do
     User.where(email: email).delete_all
   end
 
+  desc "List user accounts"
+  task list: :environment do
+    User.find_each do |user|
+      puts "#{user.email.ljust(45, '.')} #{user.roles_name.join(' ')}"
+    end
+  end
+
 end
