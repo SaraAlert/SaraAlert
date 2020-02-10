@@ -44,8 +44,7 @@ namespace :demo do
     days = (ENV['DAYS'] || 14).to_i
     count = (ENV['COUNT'] || 50).to_i
 
-    enroller1 = User.where("email LIKE 'enroller%'").first
-    enroller2 = User.where("email LIKE 'enroller%'").last
+    enrollers = User.all.select { |u| u.has_role?('enroller') }
 
     assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
@@ -146,7 +145,7 @@ namespace :demo do
             #contact_of_known_case_id
             healthcare_worker: rand < 0.1,
             worked_in_health_care_facility: rand < 0.15,
-            creator: rand < 0.3 ? enroller1 : enroller2,
+            creator: enrollers.sample,
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
           )
 
