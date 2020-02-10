@@ -81,7 +81,10 @@ class Enrollment extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <BreadcrumbPath crumbs={[new Object({ value: 'Dashboard', href: '/patients' }), new Object({ value: 'Register New Subject', href: null })]} />
+        <BreadcrumbPath
+          current_user={this.props.current_user}
+          crumbs={[new Object({ value: 'Dashboard', href: '/patients' }), new Object({ value: 'Register New Subject', href: null })]}
+        />
         <Carousel
           controls={false}
           indicators={false}
@@ -156,6 +159,7 @@ class Enrollment extends React.Component {
 }
 
 Enrollment.propTypes = {
+  current_user: PropTypes.object,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   enrollmentState: PropTypes.object,

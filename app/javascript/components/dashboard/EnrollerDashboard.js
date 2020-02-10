@@ -13,7 +13,7 @@ class EnrollerDashboard extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <BreadcrumbPath crumbs={[new Object({ value: 'Dashboard', href: null })]} />
+        <BreadcrumbPath current_user={this.props.current_user} crumbs={[new Object({ value: 'Dashboard', href: null })]} />
         <div className="mx-2">
           <Button
             variant="primary"
@@ -39,6 +39,7 @@ class EnrollerDashboard extends React.Component {
 }
 
 EnrollerDashboard.propTypes = {
+  current_user: PropTypes.object,
   stats: PropTypes.object,
 };
 

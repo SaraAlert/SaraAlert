@@ -5,9 +5,10 @@ class MonitorDashboardController < ApplicationController
     # Restrict access to monitors only
     redirect_to root_url unless current_user.can_view_monitor_dashboard?
 
-    # Load all patients, eager loading assessments
-    # TODO: This can be made more performant through SQL if needed
-    patients = Patient.all.includes(:latest_assessment)
+    # Load all patients that the current user can see, eager loading assessments
+    patients = current_user.viewable_patients.includes(:latest_assessment)
+
+    # TODO: The below can likely be made more performant through SQL if needed
 
     # Show all patients that have reported symptoms
     @symptomatic_patients = patients.select { |p| p.latest_assessment&.symptomatic }
@@ -55,7 +56,7 @@ class MonitorDashboardController < ApplicationController
     # Symptomatic or unsymptomatic per day
     symptomatic_assessments_by_day = Hash.new(0)
     asymptomatic_assessments_by_day = Hash.new(0)
-    Assessment.find_each do |a|
+    Assessment.where(patient: patients).find_each do |a|
       if a.symptomatic
         symptomatic_assessments_by_day[a.created_at.to_date] += 1
       else
@@ -72,15 +73,15 @@ class MonitorDashboardController < ApplicationController
     end
 
     @stats = {
-      system_subjects: Patient.count,
-      system_subjects_last_24: Patient.where('created_at >= ?', Time.now - 1.day).count,
-      system_assessmets: Assessment.count,
-      system_assessmets_last_24: Assessment.where('created_at >= ?', Time.now - 1.day).count,
+      system_subjects: patients.count,
+      system_subjects_last_24: patients.where('created_at >= ?', Time.now - 1.day).count,
+      system_assessmets: Assessment.where(patient: patients).count,
+      system_assessmets_last_24: Assessment.where(patient: patients).where('created_at >= ?', Time.now - 1.day).count,
       subject_status: [
         { name: 'Asymptomatic', value: @asymptomatic_patients.length },
         { name: 'Non-Reporting', value: @non_reporting_patients.length },
         { name: 'Symptomatic', value: @symptomatic_patients.length },
-        { name: 'Confirmed', value: Patient.where(confirmed_case: true).count }
+        { name: 'Confirmed', value: current_user.viewable_patients.where(confirmed_case: true).count }
       ],
       reporting_summmary: [
         { name: 'Reported Today', value: reported_today_count },

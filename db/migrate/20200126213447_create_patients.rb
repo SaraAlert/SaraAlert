@@ -5,6 +5,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.timestamps
       t.integer :responder_id, index: true
       t.integer :creator_id, index: true
+      t.integer :jurisdiction_id, index: true
       t.string :submission_token, index: true
 
       # Patient status

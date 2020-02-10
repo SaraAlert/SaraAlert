@@ -61,6 +61,15 @@ class Patient extends React.Component {
                 <span className="font-weight-light">{`${this.props.details.ethnicity ? this.props.details.ethnicity : ''}`}</span>
               </Col>
             </Row>
+            {/* TODO: This should be adjusted when we start setting the jurisdiction during the enrollment process */}
+            {this.props.details.jurisdiction_path && (
+              <Row className="mt-4">
+                <Col>
+                  <span className="font-weight-normal">Monitoring Jurisdiction:</span>{' '}
+                  <span className="font-weight-light">{`${this.props.details.jurisdiction_path.join(', ')}`}</span>
+                </Col>
+              </Row>
+            )}
           </Col>
           <Col md="1"></Col>
           <Col md="11">

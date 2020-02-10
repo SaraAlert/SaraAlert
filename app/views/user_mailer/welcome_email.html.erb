@@ -6,10 +6,10 @@
 
   <body>
     <h1>Welcome to the SARA Alert System!</h1>
-    <p>Your initial login credentials are</p>
+    <p>You've been added to the <%= @user.jurisdiction.name %> jurisdiction. Your initial login credentials are</p>
     <p>
       Username: <%= @user.email %><br/>
-      Password: <%= @password %>
+      Temporary password: <%= @password %>
     </p>
     <p>Please log in to <a href="<%= root_url %>">the Sara Alert application</a> to change your password as soon as possible.</p>
   </body>

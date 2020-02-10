@@ -5,38 +5,35 @@ namespace :demo do
 
     raise "This task is only for use in a development environment" unless Rails.env == 'development'
 
+    print 'Creating jurisdictions...'
+    state1 = Jurisdiction.create(name: 'State 1')
+    county1 = Jurisdiction.create(name: 'County 1', parent: state1)
+    city1 = Jurisdiction.create(name: 'City 1', parent: county1)
+    city2 = Jurisdiction.create(name: 'City 2', parent: county1)
+    county2 = Jurisdiction.create(name: 'County 2', parent: state1)
+    state2 = Jurisdiction.create(name: 'State 2')
+    county3 = Jurisdiction.create(name: 'County 3', parent: state2)
+    county4 = Jurisdiction.create(name: 'County 4', parent: state2)
+    puts ' done!'
+
     print 'Creating enrollers...'
-    enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab')
+    enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab', jurisdiction: county1)
     enroller1.add_role :enroller
     enroller1.save
-    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab')
+    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: state1)
     enroller2.add_role :enroller
     enroller2.save
     puts ' done!'
 
     print 'Creating epis...'
-    epi1 = User.new(email: 'epi1@example.com', password: '123456ab')
+    epi1 = User.new(email: 'epi1@example.com', password: '123456ab', jurisdiction: county1)
     epi1.add_role :monitor
     epi1.save
+    epi2 = User.new(email: 'epi2@example.com', password: '123456ab', jurisdiction: state1)
+    epi2.add_role :monitor
+    epi2.save
     puts ' done!'
 
-    #print 'Creating patients...'
-    #patient1 = Patient.new(first_name: 'Example1', last_name: 'Person1', sex: 'Male', dob: Date.today - 44.years - 100.days, creator: enroller1)
-    #patient1.responder = patient1
-    #patient1.save
-    #patient2 = Patient.new(first_name: 'Example2', last_name: 'Person2', sex: 'Female', dob: Date.today - 68.years - 200.days, creator: enroller2)
-    #patient2.responder = patient2
-    #patient2.save
-    #puts ' done!'
-
-    #print 'Creating assessments...'
-    #patient1.assessments.create(symptomatic: false)
-    #patient1.assessments.create(symptomatic: false)
-    #patient1.assessments.create(symptomatic: true)
-    #patient2.assessments.create(symptomatic: false)
-    #patient2.assessments.create(symptomatic: false)
-    #patient2.assessments.create(symptomatic: false)
-    #puts ' done!'
   end
 
   desc "Add lots of data to the database to provide some idea of basic scaling issues"
@@ -47,12 +44,13 @@ namespace :demo do
     days = (ENV['DAYS'] || 14).to_i
     count = (ENV['COUNT'] || 50).to_i
 
-    enroller1 = User.where("email LIKE 'enroller%'").first
-    enroller2 = User.where("email LIKE 'enroller%'").last
+    enrollers = User.all.select { |u| u.has_role?('enroller') }
 
     assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
     all_false[:temperature] = '98'
+
+    jurisdictions = Jurisdiction.all
 
     days.times do |day|
 
@@ -135,7 +133,7 @@ namespace :demo do
             port_of_origin: Faker::Address.city,
             date_of_departure: today - (rand < 0.3 ? 1.day : 0.days),
             source_of_report: rand < 0.4 ? 'Self-Identified' : 'CDC',
-            flight_or_vessel_number: "#{('A'..'Z').to_a.shuffle[0]}#{rand(10)}#{rand(10)}#{rand(10)}",
+            flight_or_vessel_number: "#{('A'..'Z').to_a.sample}#{rand(10)}#{rand(10)}#{rand(10)}",
             flight_or_vessel_carrier: "#{Faker::Name.first_name} Airlines",
             port_of_entry_into_usa: Faker::Address.city,
             date_of_arrival: today,
@@ -147,11 +145,11 @@ namespace :demo do
             #contact_of_known_case_id
             healthcare_worker: rand < 0.1,
             worked_in_health_care_facility: rand < 0.15,
-            creator: rand < 0.3 ? enroller1 : enroller2,
+            creator: enrollers.sample,
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
           )
 
-          patient[[:white, :black_or_african_american, :american_indian_or_alaska_native, :asian, :native_hawaiian_or_other_pacific_islander].shuffle.first] = true
+          patient[[:white, :black_or_african_american, :american_indian_or_alaska_native, :asian, :native_hawaiian_or_other_pacific_islander].sample] = true
 
           if rand < 0.7
             patient.monitored_address_line_1 = patient.address_line_1
@@ -178,6 +176,7 @@ namespace :demo do
             #patient.additional_planned_travel_related_notes
           end
 
+          patient.jurisdiction = jurisdictions.sample
           patient.responder = patient
           patient.save
 

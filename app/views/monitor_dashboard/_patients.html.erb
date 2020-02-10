@@ -4,6 +4,7 @@
     <thead>
       <tr>
         <th>Subject</th>
+        <th>Jurisdiction</th>
         <th>ID</th>
         <th>Sex</th>
         <th>Date of Birth</th>
@@ -17,6 +18,7 @@
       <% patients.each do |patient| -%>
         <tr>
           <td><%= patient.first_name %> <%= patient.last_name %></td>
+          <td><%= patient.jurisdiction.name %></td>
           <%# TODO: This is a temporary ID concept, to be formalized based on requirements %>
           <td><%= "#{patient.address_state&.first(2)&.upcase || 'XX'}#{patient.id.to_s.rjust(6, '0')}" %></td>
           <td><%= patient.sex %></td>
