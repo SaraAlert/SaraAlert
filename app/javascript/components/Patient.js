@@ -63,7 +63,8 @@ class Patient extends React.Component {
             </Row>
             <Row className="mt-4">
               <Col>
-                <span className="font-weight-normal">Monitoring Jurisdiction:</span> <span className="font-weight-light">{this.props.details.jurisdiction_path && `${this.props.details.jurisdiction_path.join(' | ')}`}</span><br />
+                <span className="font-weight-normal">Monitoring Jurisdiction:</span>{' '}
+                <span className="font-weight-light">{this.props.details.jurisdiction_path && `${this.props.details.jurisdiction_path.join(', ')}`}</span>
               </Col>
             </Row>
           </Col>

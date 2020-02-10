@@ -19,7 +19,7 @@ class BreadcrumbPath extends React.Component {
           <li className="ml-auto">
             {this.props.current_user &&
               this.props.current_user.jurisdiction_path &&
-              'Your jurisdiction: ' + this.props.current_user.jurisdiction_path.join(', ')}
+              `Your jurisdiction: ${this.props.current_user.jurisdiction_path.join(', ')}`}
           </li>
         </Breadcrumb>
       </React.Fragment>
