@@ -6,8 +6,9 @@ import * as yup from 'yup';
 class Risk extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState } };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
     this.handleChange = this.handleChange.bind(this);
+    this.validate = this.validate.bind(this);
   }
 
   handleChange(event) {
@@ -16,6 +17,28 @@ class Risk extends React.Component {
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.current });
     });
+  }
+
+  validate(callback) {
+    let self = this;
+    schema
+      .validate(this.state.current, { abortEarly: false })
+      .then(function() {
+        // No validation issues? Invoke callback (move to next step)
+        self.setState({ errors: {} }, () => {
+          callback();
+        });
+      })
+      .catch(function(err) {
+        // Validation errors, update state to display to user
+        if (err && err.inner) {
+          let issues = {};
+          for (var issue of err.inner) {
+            issues[issue['path']] = issue['errors'];
+          }
+          self.setState({ errors: issues });
+        }
+      });
   }
 
   render() {
@@ -30,7 +53,7 @@ class Risk extends React.Component {
               </Button>
             )}
             {this.props.next && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>
+              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
                 Next
               </Button>
             )}
@@ -45,6 +68,8 @@ class Risk extends React.Component {
     );
   }
 }
+
+const schema = yup.object().shape({});
 
 Risk.propTypes = {
   currentState: PropTypes.object,
