@@ -131,7 +131,7 @@ class PatientsController < ApplicationController
       end
       redirect_to patient
     else
-      redirect_to action: 'index'
+      render(:file => File.join(Rails.root, 'public/422.html'), :status => 422, :layout => false)
     end
   end
 
