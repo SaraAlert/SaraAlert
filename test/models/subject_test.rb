@@ -5,6 +5,7 @@ class SubjectTest < ActiveSupport::TestCase
   def setup
     @test_subject = Patient.new
     @test_subject.responder = @test_subject
+    @test_subject.jurisdiction = Jurisdiction.new
     test_user = User.new(email: "test@example.com", password: "abc1234")
     @test_subject.creator = test_user
   end

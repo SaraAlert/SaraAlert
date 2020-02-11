@@ -6,6 +6,7 @@ class AssessmentTest < ActiveSupport::TestCase
     test_subject.responder = test_subject
     test_user = User.new(email: "test@example.com", password: "abc1234")
     test_subject.creator = test_user
+    test_subject.jurisdiction = Jurisdiction.new
     @test_assessment = Assessment.new
     @test_assessment.patient = test_subject
   end
