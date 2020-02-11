@@ -6,8 +6,9 @@ import * as yup from 'yup';
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState } };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
     this.handleChange = this.handleChange.bind(this);
+    this.validate = this.validate.bind(this);
   }
 
   handleChange(event) {
@@ -16,6 +17,28 @@ class Contact extends React.Component {
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.current });
     });
+  }
+
+  validate(callback) {
+    let self = this;
+    schema
+      .validate(this.state.current, { abortEarly: false })
+      .then(function() {
+        // No validation issues? Invoke callback (move to next step)
+        self.setState({ errors: {} }, () => {
+          callback();
+        });
+      })
+      .catch(function(err) {
+        // Validation errors, update state to display to user
+        if (err && err.inner) {
+          let issues = {};
+          for (var issue of err.inner) {
+            issues[issue['path']] = issue['errors'];
+          }
+          self.setState({ errors: issues });
+        }
+      });
   }
 
   render() {
@@ -27,19 +50,40 @@ class Contact extends React.Component {
             <Form>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="11" controlId="primary_telephone">
-                  <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER</Form.Label>
-                  <Form.Control size="lg" className="form-square" value={this.state.current.primary_telephone || ''} onChange={this.handleChange} />
+                  <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['primary_telephone']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.primary_telephone || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['primary_telephone']}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="2"></Form.Group>
                 <Form.Group as={Col} md="11" controlId="secondary_telephone">
-                  <Form.Label className="nav-input-label">SECONDARY TELEPHONE NUMBER</Form.Label>
-                  <Form.Control size="lg" className="form-square" value={this.state.current.secondary_telephone || ''} onChange={this.handleChange} />
+                  <Form.Label className="nav-input-label">
+                    SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}
+                  </Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['secondary_telephone']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.secondary_telephone || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['secondary_telephone']}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="11" controlId="primary_telephone_type">
-                  <Form.Label className="nav-input-label">PRIMARY PHONE TYPE</Form.Label>
+                  <Form.Label className="nav-input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
+                    isInvalid={this.state.errors['primary_telephone_type']}
                     as="select"
                     size="lg"
                     className="form-square"
@@ -50,11 +94,17 @@ class Contact extends React.Component {
                     <option>Plain Cell</option>
                     <option>Landline</option>
                   </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['primary_telephone_type']}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="2"></Form.Group>
                 <Form.Group as={Col} md="11" controlId="secondary_telephone_type">
-                  <Form.Label className="nav-input-label">SECONDARY PHONE TYPE</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    SECONDARY PHONE TYPE{schema?.fields?.secondary_telephone_type?._exclusive?.required && ' *'}
+                  </Form.Label>
                   <Form.Control
+                    isInvalid={this.state.errors['secondary_telephone_type']}
                     as="select"
                     size="lg"
                     className="form-square"
@@ -65,6 +115,9 @@ class Contact extends React.Component {
                     <option>Plain Cell</option>
                     <option>Landline</option>
                   </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['secondary_telephone_type']}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-2">
@@ -85,18 +138,39 @@ class Contact extends React.Component {
               </Form.Row>
               <Form.Row className="pt-3">
                 <Form.Group as={Col} md="8" controlId="email">
-                  <Form.Label className="nav-input-label">E-MAIL ADDRESS</Form.Label>
-                  <Form.Control size="lg" className="form-square" value={this.state.current.email || ''} onChange={this.handleChange} />
+                  <Form.Label className="nav-input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['email']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.email || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['email']}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="confirm_email">
-                  <Form.Label className="nav-input-label">CONFIRM E-MAIL ADDRESS</Form.Label>
-                  <Form.Control size="lg" className="form-square" value={this.state.current.confirm_email || ''} onChange={this.handleChange} />
+                  <Form.Label className="nav-input-label">CONFIRM E-MAIL ADDRESS{schema?.fields?.confirm_email?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['confirm_email']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.confirm_email || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['confirm_email']}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-3 pb-3">
                 <Form.Group as={Col} md="8" controlId="preferred_contact_method">
-                  <Form.Label className="nav-input-label">PREFERRED CONTACT METHOD</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    PREFERRED CONTACT METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
+                  </Form.Label>
                   <Form.Control
+                    isInvalid={this.state.errors['preferred_contact_method']}
                     as="select"
                     size="lg"
                     className="form-square"
@@ -107,6 +181,9 @@ class Contact extends React.Component {
                     <option>Telephone call</option>
                     <option>SMS Text-message</option>
                   </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['preferred_contact_method']}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
             </Form>
@@ -116,7 +193,7 @@ class Contact extends React.Component {
               </Button>
             )}
             {this.props.next && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>
+              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
                 Next
               </Button>
             )}
@@ -131,6 +208,22 @@ class Contact extends React.Component {
     );
   }
 }
+
+const schema = yup.object().shape({
+  primary_telephone: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  secondary_telephone: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  email: yup
+    .string()
+    .email('Please enter a valid email.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+  confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+  preferred_contact_method: yup
+    .string()
+    .required('Please indicate a preferred contact method.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+});
 
 Contact.propTypes = {
   currentState: PropTypes.object,
