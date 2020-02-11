@@ -7,8 +7,9 @@ import * as yup from 'yup';
 class Exposure extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState } };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
     this.handleChange = this.handleChange.bind(this);
+    this.validate = this.validate.bind(this);
   }
 
   handleChange(event) {
@@ -19,8 +20,29 @@ class Exposure extends React.Component {
     });
   }
 
+  validate(callback) {
+    let self = this;
+    schema
+      .validate(this.state.current, { abortEarly: false })
+      .then(function() {
+        // No validation issues? Invoke callback (move to next step)
+        self.setState({ errors: {} }, () => {
+          callback();
+        });
+      })
+      .catch(function(err) {
+        // Validation errors, update state to display to user
+        if (err && err.inner) {
+          let issues = {};
+          for (var issue of err.inner) {
+            issues[issue['path']] = issue['errors'];
+          }
+          self.setState({ errors: issues });
+        }
+      });
+  }
+
   render() {
-    let today = new Date().toISOString().substr(0, 10);
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
@@ -29,22 +51,42 @@ class Exposure extends React.Component {
             <Form>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="7" controlId="last_date_of_potential_exposure">
-                  <Form.Label className="nav-input-label">EXPOSURE DATE</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    EXPOSURE DATE{schema?.fields?.last_date_of_potential_exposure?._exclusive?.required && ' *'}
+                  </Form.Label>
                   <Form.Control
+                    isInvalid={this.state.errors['last_date_of_potential_exposure']}
                     size="lg"
                     type="date"
                     className="form-square"
-                    value={this.state.current.last_date_of_potential_exposure || today}
+                    value={this.state.current.last_date_of_potential_exposure || ''}
                     onChange={this.handleChange}
                   />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['last_date_of_potential_exposure']}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="10" controlId="potential_exposure_location">
-                  <Form.Label className="nav-input-label">EXPOSURE LOCATION</Form.Label>
-                  <Form.Control size="lg" className="form-square" value={this.state.current.potential_exposure_location || ''} onChange={this.handleChange} />
+                  <Form.Label className="nav-input-label">
+                    EXPOSURE LOCATION{schema?.fields?.potential_exposure_location?._exclusive?.required && ' *'}
+                  </Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['potential_exposure_location']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.potential_exposure_location || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['potential_exposure_location']}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="7" controlId="potential_exposure_country">
-                  <Form.Label className="nav-input-label">EXPOSURE COUNTRY</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    EXPOSURE COUNTRY{schema?.fields?.potential_exposure_country?._exclusive?.required && ' *'}
+                  </Form.Label>
                   <Form.Control
+                    isInvalid={this.state.errors['potential_exposure_country']}
                     as="select"
                     size="lg"
                     className="form-square"
@@ -55,6 +97,9 @@ class Exposure extends React.Component {
                       <option key={`country-${index}`}>{country}</option>
                     ))}
                   </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['potential_exposure_country']}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-2 pb-4 h-100">
@@ -114,7 +159,7 @@ class Exposure extends React.Component {
               </Button>
             )}
             {this.props.next && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>
+              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
                 Next
               </Button>
             )}
@@ -129,6 +174,16 @@ class Exposure extends React.Component {
     );
   }
 }
+
+const schema = yup.object().shape({
+  last_date_of_potential_exposure: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  potential_exposure_location: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  potential_exposure_country: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  contact_of_known_case: yup.boolean(),
+  contact_of_known_case_id: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  healthcare_worker: yup.boolean(),
+  worked_in_health_care_facility: yup.boolean(),
+});
 
 Exposure.propTypes = {
   currentState: PropTypes.object,
