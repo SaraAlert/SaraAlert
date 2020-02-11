@@ -33,7 +33,7 @@ class Identification extends React.Component {
     let self = this;
     schema
       .validate(this.state.current, { abortEarly: false })
-      .then(function(value) {
+      .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, () => {
           callback();
