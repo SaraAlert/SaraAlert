@@ -23,7 +23,6 @@ class AssessmentsController < ApplicationController
     else
       @assessment.symptomatic = false
     end
-
     # Attempt to save and continue; else if failed redirect to index
     if @assessment.save!
       # TODO Figure out what to do if save is not successful

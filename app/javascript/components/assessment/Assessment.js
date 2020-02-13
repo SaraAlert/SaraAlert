@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { debounce } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import GeneralAssessment from './steps/GeneralAssessment';
 import SymptomsAssessment from './steps/SymptomsAssessment';
@@ -11,7 +10,7 @@ class Assessment extends React.Component {
   constructor(props) {
     super(props);
     this.state = { index: 0, direction: null, patient_submission_token: props.patient_submission_token };
-    this.setAssessmentState = debounce(this.setAssessmentState.bind(this), 1000);
+    this.setAssessmentState = this.setAssessmentState.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
     this.goto = this.goto.bind(this);
@@ -58,18 +57,13 @@ class Assessment extends React.Component {
   }
 
   submit() {
-    var data = new FormData();
     var assessmentState = this.state.assessmentState;
-    for (var key in assessmentState) {
-      data.append(key, assessmentState[key]);
-    }
-    data.append('patient_submission_token', this.state.patient_submission_token);
+
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
       url: `/patients/${this.state.patient_submission_token}/assessments`,
-      data: data,
-      headers: { 'Content-Type': 'multipart/form-data' },
+      data: assessmentState,
     })
       .then(function(response) {
         //handle success
