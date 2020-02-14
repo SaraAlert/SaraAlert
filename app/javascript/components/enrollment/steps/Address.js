@@ -577,13 +577,19 @@ const schemaDomestic = yup.object().shape({
   address_city: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   address_state: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   address_line_2: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  address_zip: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  address_zip: yup
+    .string()
+    .matches(/(^\d{5}$)|(^\d{5}-\d{4}$)/, 'Invalid zip-code format')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
   address_county: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   monitored_address_line_1: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   monitored_address_city: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   monitored_address_state: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   monitored_address_line_2: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  monitored_address_zip: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  monitored_address_zip: yup
+    .string()
+    .matches(/(^\d{5}$)|(^\d{5}-\d{4}$)/, 'Invalid zip-code format')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
   monitored_address_county: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
 });
 
