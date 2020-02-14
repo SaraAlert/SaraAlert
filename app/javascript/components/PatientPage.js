@@ -1,12 +1,26 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Button, Card, Modal } from 'react-bootstrap';
 import Patient from './Patient';
 import BreadcrumbPath from './BreadcrumbPath';
+import Assessment from './assessment/Assessment';
 import { PropTypes } from 'prop-types';
 
 class PatientPage extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      showAddAssessment: false,
+    };
+    this.handleClose = this.handleClose.bind(this);
+    this.handleShow = this.handleShow.bind(this);
+  }
+
+  handleClose() {
+    this.setState({ showAddAssessment: false });
+  }
+
+  handleShow() {
+    this.setState({ showAddAssessment: true });
   }
 
   render() {
@@ -28,6 +42,16 @@ class PatientPage extends React.Component {
             <Patient details={this.props.patient || {}} />
           </Card.Body>
         </Card>
+        <Button variant="primary" size="lg" className="mx-2 my-4 btn-square px-4" onClick={this.handleShow}>
+          Add Assessment For Subject
+        </Button>
+
+        <Modal show={this.state.showAddAssessment} onHide={this.handleClose}>
+          <Modal.Header closeButton></Modal.Header>
+          <Modal.Body>
+            <Assessment patient_submission_token={this.props.patient.submission_token} authenticity_token={this.props.authenticity_token} />
+          </Modal.Body>
+        </Modal>
       </React.Fragment>
     );
   }
@@ -38,6 +62,8 @@ PatientPage.propTypes = {
   current_user: PropTypes.object,
   patient: PropTypes.object,
   dashboardUrl: PropTypes.string,
+  authenticity_token: PropTypes.string,
+  patient_submission_token: PropTypes.string,
 };
 
 export default PatientPage;
