@@ -32,7 +32,7 @@ class Contact extends React.Component {
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone: yup
             .string()
-            .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Invalid Phone Number')
+            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Invalid Phone Number')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
@@ -50,11 +50,11 @@ class Contact extends React.Component {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
-            .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Invalid Phone Number')
+            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Invalid Phone Number')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone: yup
             .string()
-            .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Invalid Phone Number')
+            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Invalid Phone Number')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
