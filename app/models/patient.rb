@@ -1,5 +1,7 @@
 class Patient < ApplicationRecord
   # TODO: We assume that we can rely on the frontend for "context-aware" validation
+  # TODO: Stricter validation for fields that are handed to other systems (e.g. phone, email address)
+  # TODO: Also add guards on what gets handed to external server (only allow specific validated)
   columns.each do |column|
     case column.type
     when :text

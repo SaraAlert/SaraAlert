@@ -6,30 +6,30 @@ namespace :demo do
     raise "This task is only for use in a development environment" unless Rails.env == 'development'
 
     print 'Creating jurisdictions...'
-    state1 = Jurisdiction.create(name: 'State 1')
-    county1 = Jurisdiction.create(name: 'County 1', parent: state1)
-    city1 = Jurisdiction.create(name: 'City 1', parent: county1)
-    city2 = Jurisdiction.create(name: 'City 2', parent: county1)
-    county2 = Jurisdiction.create(name: 'County 2', parent: state1)
-    state2 = Jurisdiction.create(name: 'State 2')
-    county3 = Jurisdiction.create(name: 'County 3', parent: state2)
-    county4 = Jurisdiction.create(name: 'County 4', parent: state2)
+    state1 = Jurisdiction.create(name: 'Example State')
+    county1 = Jurisdiction.create(name: 'Example County', parent: state1)
+    city1 = Jurisdiction.create(name: 'Example City', parent: county1)
+    city2 = Jurisdiction.create(name: 'Example City 2', parent: county1)
+    county2 = Jurisdiction.create(name: 'Example County 2', parent: state1)
+    state2 = Jurisdiction.create(name: 'Example State 2')
+    county3 = Jurisdiction.create(name: 'Example County 3', parent: state2)
+    county4 = Jurisdiction.create(name: 'Example County 4', parent: state2)
     puts ' done!'
 
     print 'Creating enrollers...'
-    enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab', jurisdiction: county1)
+    enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
     enroller1.add_role :enroller
     enroller1.save
-    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: state1)
+    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
     enroller2.add_role :enroller
     enroller2.save
     puts ' done!'
 
     print 'Creating epis...'
-    epi1 = User.new(email: 'epi1@example.com', password: '123456ab', jurisdiction: county1)
+    epi1 = User.new(email: 'epi1@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
     epi1.add_role :monitor
     epi1.save
-    epi2 = User.new(email: 'epi2@example.com', password: '123456ab', jurisdiction: state1)
+    epi2 = User.new(email: 'epi2@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
     epi2.add_role :monitor
     epi2.save
     puts ' done!'
@@ -57,7 +57,7 @@ namespace :demo do
       today = Date.today - (days - (day + 1)).days
 
       # Create the patients for this day
-      print "Creating synthetic patients for day #{day + 1} (#{today})..."
+      print "Creating synthetic subjects for day #{day + 1} (#{today})..."
 
       # Transaction speeds things up a bit
       Patient.transaction do

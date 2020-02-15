@@ -1,4 +1,6 @@
 class Assessment < ApplicationRecord
+  # TODO: There's currently a hard coded symptom list, but those should be configurable
+  # TODO: Temperature should be stored with units or strictly using MKS
   # TODO: We assume that we can rely on the frontend for "context-aware" validation
   columns.each do |column|
     case column.type
