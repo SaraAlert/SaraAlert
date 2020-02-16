@@ -136,14 +136,17 @@ class Patient extends React.Component {
                 <span className="font-weight-normal">Phone:</span>{' '}
                 <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
                 <br />
+                <span className="font-weight-normal">Preferred Contact Time by Phone:</span>{' '}
+                <span className="font-weight-light">{this.props.details.preferred_contact_time && `${this.props.details.preferred_contact_time}`}</span>
+                <br />
                 <span className="font-weight-normal">Type:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : ''}`}</span>
                 <br />
-                <span className="font-weight-normal">Preferred Contact:</span>{' '}
-                <span className="font-weight-light">{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''}`}</span>
-                <br />
                 <span className="font-weight-normal">Email:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Preferred Contact:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''}`}</span>
               </Col>
             </Row>
           </Col>
