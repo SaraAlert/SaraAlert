@@ -1,6 +1,7 @@
-<%= react_component("PatientPage", { current_user: current_user, patient: @patient, dashboardUrl: '/monitor_dashboard' }) %>
+<%# TODO: patient_id is a temporary ID concept, to be formalized based on requirements %>
+<%= react_component("PatientPage", { current_user: current_user, patient: @patient, patient_id: "#{@patient.address_state&.first(2)&.upcase || 'XX'}#{@patient.id.to_s.rjust(6, '0')}", dashboardUrl: '/monitor_dashboard' }) %>
 
-<div class="card mx-2 mt-4 mb-4">
+<div class="card mx-2 mt-4 mb-4 card-square">
 
   <h5 class="card-header">Subject Assessments</h5>
 

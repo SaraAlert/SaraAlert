@@ -35,7 +35,7 @@ class Review extends React.Component {
             )}
             {this.props.submit && (
               <Button variant="primary" size="lg" className="float-right btn-square px-5" disabled={this.state.submitDisabled} onClick={this.submit}>
-                Finish
+                Enroll
               </Button>
             )}
           </Card.Body>

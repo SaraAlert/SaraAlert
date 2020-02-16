@@ -20,7 +20,7 @@ class PatientPage extends React.Component {
           ]}
         />
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Subject Details</Card.Header>
+          <Card.Header as="h5">Subject Details {this.props.patient_id ? `(ID: ${this.props.patient_id})` : ''}</Card.Header>
           <Card.Body>
             <Patient details={this.props.patient || {}} />
           </Card.Body>
@@ -31,6 +31,7 @@ class PatientPage extends React.Component {
 }
 
 PatientPage.propTypes = {
+  patient_id: PropTypes.string,
   current_user: PropTypes.object,
   patient: PropTypes.object,
   dashboardUrl: PropTypes.string,

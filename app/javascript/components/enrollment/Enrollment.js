@@ -43,7 +43,7 @@ class Enrollment extends React.Component {
       .post('/patients', { patient: this.state.enrollmentState })
       .then(function() {
         // Inform user and redirect to home on success
-        toast.success('Subject Successfully Saved', { onClose: () => (location.href = '/') });
+        toast.success('Subject Successfully Saved.', { onClose: () => (location.href = '/') });
       })
       .catch(function(error) {
         // TODO: Figure out what to do on error
