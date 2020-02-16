@@ -71,7 +71,6 @@ class PatientsController < ApplicationController
   end
 
   def update
-    # TODO: This is accessed via React, so redirects are probably not sensible behavior
     redirect_to root_url unless current_user.can_edit_patient?
 
     # If we failed to find a patient given the id, redirect to index

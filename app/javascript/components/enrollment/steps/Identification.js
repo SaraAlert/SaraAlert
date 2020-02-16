@@ -132,7 +132,7 @@ class Identification extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="sex" md="auto">
-                  <Form.Label className="nav-input-label">SEX{schema?.fields?.sex?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="nav-input-label">SEX AT BIRTH{schema?.fields?.sex?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['sex']}
                     as="select"
