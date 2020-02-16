@@ -29,6 +29,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :ethnicity
       t.string :primary_language
       t.boolean :interpretation_required
+      t.string :nationality
       t.string :address_line_1
       t.string :foreign_address_line_1
       t.string :address_city

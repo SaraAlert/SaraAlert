@@ -237,6 +237,21 @@ class Identification extends React.Component {
                   />
                 </Form.Group>
               </Form.Row>
+              <Form.Row className="pt-2">
+                <Form.Group as={Col} md={12} controlId="nationality">
+                  <Form.Label className="nav-input-label">NATIONALITY{schema?.fields?.nationality?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['nationality']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.nationality || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['nationality']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Form.Row>
             </Form>
             {this.props.previous && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
@@ -291,6 +306,7 @@ const schema = yup.object().shape({
     .max(200, 'Max length exceeded, please limit to 200 characters.'),
   secondary_language: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   interpretation_required: yup.boolean(),
+  nationality: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
 });
 
 Identification.propTypes = {
