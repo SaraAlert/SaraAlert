@@ -132,12 +132,21 @@ class Identification extends React.Component {
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="sex" md="auto">
                   <Form.Label className="nav-input-label">SEX{schema?.fields?.sex?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control as="select" size="lg" className="form-square" value={this.state.current.sex || ''} onChange={this.handleChange}>
+                  <Form.Control
+                    isInvalid={this.state.errors['sex']}
+                    as="select"
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.sex || ''}
+                    onChange={this.handleChange}>
                     <option></option>
                     <option>Female</option>
                     <option>Male</option>
                     <option>Unknown</option>
                   </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['sex']}
+                  </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
@@ -253,23 +262,32 @@ class Identification extends React.Component {
 const schema = yup.object().shape({
   first_name: yup
     .string()
-    .required('First Name is required.')
+    .required('Please enter a First Name.')
     .max(200, 'Max length exceeded, please limit to 200 characters.'),
   middle_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   last_name: yup
     .string()
-    .required('Last Name is required.')
+    .required('Please enter a Last Name.')
     .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  date_of_birth: yup.date('Date must correspond to the "mm/dd/yyyy" format.'),
+  date_of_birth: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .required('Please enter a date of birth.')
+    .max(new Date(), 'Date can not be in the future.'),
   age: yup.number(),
-  sex: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  sex: yup
+    .string()
+    .required('Please indicate sex.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
   white: yup.boolean(),
   black_or_african_american: yup.boolean(),
   american_indian_or_alaska_native: yup.boolean(),
   asian: yup.boolean(),
   native_hawaiian_or_other_pacific_islander: yup.boolean(),
   ethnicity: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  primary_language: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  primary_language: yup
+    .string()
+    .required('Please enter a primary language.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
   secondary_language: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   interpretation_required: yup.boolean(),
 });
