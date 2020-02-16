@@ -83,6 +83,8 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.boolean :contact_of_known_case
       t.string :contact_of_known_case_id
       t.boolean :healthcare_worker
+      t.boolean :laboratory_worker
+      t.boolean :airline_worker
       t.boolean :worked_in_health_care_facility
     end
   end

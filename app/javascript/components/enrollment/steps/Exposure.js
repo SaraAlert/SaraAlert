@@ -155,6 +155,30 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                      <Form.Check
+                        className="pt-2 my-auto"
+                        type="switch"
+                        id="laboratory_worker"
+                        label="LABORATORY WORKER"
+                        checked={this.state.current.laboratory_worker === true || false}
+                        onChange={this.handleChange}
+                      />
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                      <Form.Check
+                        className="pt-2 my-auto"
+                        type="switch"
+                        id="airline_worker"
+                        label="AIRLINE WORKER"
+                        checked={this.state.current.airline_worker === true || false}
+                        onChange={this.handleChange}
+                      />
+                    </Form.Group>
+                  </Form.Row>
                 </Form.Group>
               </Form.Row>
             </Form>

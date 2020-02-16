@@ -110,6 +110,8 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.boolean "contact_of_known_case"
     t.string "contact_of_known_case_id"
     t.boolean "healthcare_worker"
+    t.boolean "laboratory_worker"
+    t.boolean "airline_worker"
     t.boolean "worked_in_health_care_facility"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
