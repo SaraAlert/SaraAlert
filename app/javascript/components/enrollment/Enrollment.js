@@ -25,12 +25,19 @@ class Enrollment extends React.Component {
     this.goto = this.goto.bind(this);
   }
 
+  componentDidMount() {
+    window.onbeforeunload = function() {
+      return 'All progress will be lost. Are you sure?';
+    };
+  }
+
   setEnrollmentState(enrollmentState) {
     let currentEnrollmentState = this.state.enrollmentState;
     this.setState({ enrollmentState: { ...currentEnrollmentState, ...enrollmentState } });
   }
 
   submit() {
+    window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post('/patients', { patient: this.state.enrollmentState })
