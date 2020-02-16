@@ -58,16 +58,17 @@ class Assessment extends React.Component {
 
   submit() {
     var assessmentState = this.state.assessmentState;
-
+    var self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
       url: `/patients/${this.state.patient_submission_token}/assessments`,
       data: assessmentState,
     })
-      .then(function(response) {
-        //handle success
-        console.log(response);
+      .then(function() {
+        if (self.props.reloadHook) {
+          self.props.reloadHook();
+        }
       })
       .catch(function(response) {
         //handle error
