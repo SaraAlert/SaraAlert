@@ -573,12 +573,22 @@ class Address extends React.Component {
 }
 
 const schemaDomestic = yup.object().shape({
-  address_line_1: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  address_city: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  address_state: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  address_line_1: yup
+    .string()
+    .required('Please enter first line of address.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+  address_city: yup
+    .string()
+    .required('Please enter city of address.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+  address_state: yup
+    .string()
+    .required('Please enter state of address.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
   address_line_2: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   address_zip: yup
     .string()
+    .required('Please enter zip code of address.')
     .matches(/^$|(^\d{5}$)|(^\d{5}-\d{4}$)/, 'Invalid zip-code format')
     .max(200, 'Max length exceeded, please limit to 200 characters.'),
   address_county: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
@@ -595,8 +605,14 @@ const schemaDomestic = yup.object().shape({
 
 const schemaForeign = yup.object().shape({
   foreign_address_line_1: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  foreign_address_city: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  foreign_address_country: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  foreign_address_city: yup
+    .string()
+    .required('Please enter city of address.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+  foreign_address_country: yup
+    .string()
+    .required('Please enter country of address.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
   foreign_address_line_2: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   foreign_address_zip: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   foreign_address_line_3: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
