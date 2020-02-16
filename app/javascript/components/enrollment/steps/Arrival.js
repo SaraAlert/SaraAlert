@@ -196,12 +196,30 @@ class Arrival extends React.Component {
 }
 
 const schema = yup.object().shape({
-  port_of_origin: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  date_of_departure: yup.date('Date must correspond to the "mm/dd/yyyy" format.').max(new Date(), 'Date can not be in the future.'),
-  source_of_report: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  flight_or_vessel_number: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  flight_or_vessel_carrier: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  port_of_entry_into_usa: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  port_of_origin: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  date_of_departure: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .max(new Date(), 'Date can not be in the future.')
+    .nullable(),
+  source_of_report: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  flight_or_vessel_number: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  flight_or_vessel_carrier: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  port_of_entry_into_usa: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   date_of_arrival: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .max(new Date(), 'Date can not be in the future.')
@@ -209,8 +227,12 @@ const schema = yup.object().shape({
       if (dod && dod instanceof Date) {
         return yup.date().min(dod, 'Date of Arrival must occur after the Date of Departure.');
       }
-    }),
-  travel_related_notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.'),
+    })
+    .nullable(),
+  travel_related_notes: yup
+    .string()
+    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
+    .nullable(),
 });
 
 Arrival.propTypes = {

@@ -279,34 +279,51 @@ const schema = yup.object().shape({
   first_name: yup
     .string()
     .required('Please enter a First Name.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  middle_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  middle_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   last_name: yup
     .string()
     .required('Please enter a Last Name.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   date_of_birth: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .required('Please enter a date of birth.')
-    .max(new Date(), 'Date can not be in the future.'),
-  age: yup.number(),
+    .max(new Date(), 'Date can not be in the future.')
+    .nullable(),
+  age: yup.number().nullable(),
   sex: yup
     .string()
     .required('Please indicate sex.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  white: yup.boolean(),
-  black_or_african_american: yup.boolean(),
-  american_indian_or_alaska_native: yup.boolean(),
-  asian: yup.boolean(),
-  native_hawaiian_or_other_pacific_islander: yup.boolean(),
-  ethnicity: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  white: yup.boolean().nullable(),
+  black_or_african_american: yup.boolean().nullable(),
+  american_indian_or_alaska_native: yup.boolean().nullable(),
+  asian: yup.boolean().nullable(),
+  native_hawaiian_or_other_pacific_islander: yup.boolean().nullable(),
+  ethnicity: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   primary_language: yup
     .string()
     .required('Please enter a primary language.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  secondary_language: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  interpretation_required: yup.boolean(),
-  nationality: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  secondary_language: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  interpretation_required: yup.boolean().nullable(),
+  nationality: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
 });
 
 Identification.propTypes = {

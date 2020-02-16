@@ -137,7 +137,7 @@ class Patient extends React.Component {
                 <span className="font-weight-normal">Phone:</span>{' '}
                 <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
                 <br />
-                <span className="font-weight-normal">Preferred Contact Time by Phone:</span>{' '}
+                <span className="font-weight-normal">Preferred Contact Time:</span>{' '}
                 <span className="font-weight-light">{this.props.details.preferred_contact_time && `${this.props.details.preferred_contact_time}`}</span>
                 <br />
                 <span className="font-weight-normal">Type:</span>{' '}

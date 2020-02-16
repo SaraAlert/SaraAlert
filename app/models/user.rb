@@ -26,6 +26,22 @@ class User < ApplicationRecord
     jurisdiction.all_patients
   end
 
+  # Patients this user has enrolled
+  def enrolled_patients
+    created_patients
+  end
+
+  # Get a patient (that this user is allowed to get)
+  def get_patient(id)
+    if has_role?(:enroller)
+      created_patients.find_by_id(id)
+    elsif has_role?(:monitor)
+      viewable_patients.find_by_id(id)
+    elsif has_role?(:admin)
+      Patient.find_by_id(id)
+    end
+  end
+
   # Can this user create a new Patient?
   def can_create_patient?
       has_role?(:enroller) || has_role?(:admin)
@@ -34,6 +50,16 @@ class User < ApplicationRecord
   # Can this user view a Patient?
   def can_view_patient?
     has_role?(:enroller) || has_role?(:monitor) || has_role?(:admin)
+  end
+
+  # Can this user edit a Patient?
+  def can_edit_patient?
+    has_role?(:enroller) || has_role?(:monitor) || has_role?(:admin)
+  end
+
+  # Can this user view Patient assessments?
+  def can_view_patient_assessments?
+    has_role?(:monitor) || has_role?(:admin)
   end
 
   # Can this user view the monitor dashboard?
