@@ -13,6 +13,12 @@ class Patient extends React.Component {
     }
     return (
       <React.Fragment>
+        {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
+          <Row className="pb-4 my-2 mx-4">
+            The reporting responsibility for this subject is handled by another subject.&nbsp;
+            <a href={'/patients/' + this.props.details.responder_id}>Click here to view that subject</a>.
+          </Row>
+        )}
         <Row className="g-border-bottom-2 pb-4 my-2 mx-2">
           <Col md="11">
             <Row>

@@ -15,12 +15,15 @@ class PatientPage extends React.Component {
         <BreadcrumbPath
           current_user={this.props.current_user}
           crumbs={[
-            new Object({ value: 'Dashboard', href: this.props.dashboardUrl ? this.props.dashboardUrl : null }),
+            new Object({ value: 'Return To Dashboard', href: this.props.dashboardUrl ? this.props.dashboardUrl : null }),
             new Object({ value: 'Subject View', href: null }),
           ]}
         />
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Subject Details {this.props.patient_id ? `(ID: ${this.props.patient_id})` : ''}</Card.Header>
+          <Card.Header as="h5">
+            Subject Details {this.props.patient_id ? `(ID: ${this.props.patient_id})` : ''}{' '}
+            {this.props.patient.id && <a href={'/patients/' + this.props.patient.id + '/edit'}>(edit)</a>}
+          </Card.Header>
           <Card.Body>
             <Patient details={this.props.patient || {}} />
           </Card.Body>

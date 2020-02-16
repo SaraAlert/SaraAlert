@@ -11,6 +11,11 @@
               <h3 class="mb-0">Log In</h3>
             </div>
             <div class="card-body">
+              <% unless flash[:alert].blank? %>
+                <div class="alert alert-danger" role="alert">
+                  <%= flash[:alert] %>
+                </div>
+              <% end %>
               <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
               <div class="form-group">
                 <label for="uname1">Email</label>

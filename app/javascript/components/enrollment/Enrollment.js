@@ -36,32 +36,29 @@ class Enrollment extends React.Component {
     this.setState({ enrollmentState: { ...currentEnrollmentState, ...enrollmentState } });
   }
 
-  submit() {
+  submit(_event, groupMember) {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    if (this.props.editMode) {
-      axios
-        .patch('/patients/' + this.props.patient.id, { patient: this.state.enrollmentState })
-        .then(function() {
-          // Inform user and redirect to home on success
-          toast.success('Subject Successfully Updated.', { onClose: () => (location.href = '/') });
-        })
-        .catch(function(error) {
-          // TODO: Figure out what to do on error
-          console.log(error);
-        });
-    } else {
-      axios
-        .post('/patients', { patient: this.state.enrollmentState })
-        .then(function() {
-          // Inform user and redirect to home on success
-          toast.success('Subject Successfully Saved.', { onClose: () => (location.href = '/') });
-        })
-        .catch(function(error) {
-          // TODO: Figure out what to do on error
-          console.log(error);
-        });
+    const data = new Object({ patient: this.state.enrollmentState });
+    const message = this.props.editMode ? 'Subject Successfully Updated.' : 'Subject Successfully Saved.';
+    if (this.props.parent_id) {
+      data['responder_id'] = this.props.parent_id;
     }
+    axios({
+      method: this.props.editMode ? 'patch' : 'post',
+      url: this.props.editMode ? '/patients/' + this.props.patient.id : '/patients',
+      data: data,
+    })
+      .then(function(data) {
+        // Inform user and redirect to home on success
+        toast.success(message, {
+          onClose: () => (location.href = groupMember ? '/patients/' + data['data']['id'] + '/group' : '/patients/' + data['data']['id']),
+        });
+      })
+      .catch(function(error) {
+        // TODO: Figure out what to do on error
+        console.log(error);
+      });
   }
 
   next() {
@@ -169,6 +166,7 @@ class Enrollment extends React.Component {
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
               currentState={this.state.enrollmentState}
+              parentId={this.props.parent_id}
             />
           </Carousel.Item>
         </Carousel>
@@ -184,6 +182,7 @@ Enrollment.propTypes = {
   authenticity_token: PropTypes.string,
   enrollmentState: PropTypes.object,
   editMode: PropTypes.bool,
+  parent_id: PropTypes.string,
 };
 
 export default Enrollment;
