@@ -52,7 +52,7 @@ class Exposure extends React.Component {
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="7" controlId="last_date_of_potential_exposure">
                   <Form.Label className="nav-input-label">
-                    EXPOSURE DATE{schema?.fields?.last_date_of_potential_exposure?._exclusive?.required && ' *'}
+                    LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_potential_exposure?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['last_date_of_potential_exposure']}
