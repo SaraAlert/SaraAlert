@@ -243,6 +243,28 @@ class Contact extends React.Component {
                     {this.state.errors['preferred_contact_method']}
                   </Form.Control.Feedback>
                 </Form.Group>
+                {this.state.current.preferred_contact_method === 'Telephone call' && (
+                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
+                    <Form.Label className="nav-input-label">
+                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
+                    </Form.Label>
+                    <Form.Control
+                      isInvalid={this.state.errors['preferred_contact_time']}
+                      as="select"
+                      size="lg"
+                      className="form-square"
+                      value={this.state.current.preferred_contact_time || ''}
+                      onChange={this.handleChange}>
+                      <option></option>
+                      <option>Morning</option>
+                      <option>Afternoon</option>
+                      <option>Evening</option>
+                    </Form.Control>
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['preferred_contact_time']}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                )}
               </Form.Row>
             </Form>
             {this.props.previous && (
@@ -287,6 +309,7 @@ var schema = yup.object().shape({
     .string()
     .required('Please indicate a preferred contact method.')
     .max(200, 'Max length exceeded, please limit to 200 characters.'),
+  preferred_contact_time: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
 });
 
 Contact.propTypes = {

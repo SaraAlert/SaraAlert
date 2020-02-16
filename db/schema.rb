@@ -87,6 +87,7 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.string "secondary_telephone_type"
     t.string "email"
     t.string "preferred_contact_method"
+    t.string "preferred_contact_time"
     t.string "port_of_origin"
     t.string "source_of_report"
     t.string "flight_or_vessel_number"
