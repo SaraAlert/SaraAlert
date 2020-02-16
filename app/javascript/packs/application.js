@@ -1,5 +1,4 @@
 // Browser Compatibility
-
 require('es6-shim');
 require('core-js');
 
@@ -33,3 +32,9 @@ ReactRailsUJS.useContext(componentRequireContext);
 import 'bootstrap'
 import './stylesheets/application.scss'
 import "@fortawesome/fontawesome-free/js/all";
+
+// DataTables
+require("datatables.net-bs4")(window, $);
+require("datatables.net-buttons-bs4")(window, $);
+require("datatables.net-bs4/css/dataTables.bootstrap4.css");
+require("datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css");

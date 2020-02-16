@@ -3,6 +3,8 @@
 <div class="mx-2 pb-4 pt-4">
   <div class="card card-square">
     <h5 class="card-header">Enrolled Subjects</h5>
-    <%= render partial: "patients", locals: { patients: current_user.enrolled_patients } %>
+    <div class="m-3">
+      <%= render partial: "patients", locals: { patients: current_user.enrolled_patients } %>
+    </div>
   </div>
 </div>

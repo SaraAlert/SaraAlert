@@ -1,15 +1,12 @@
 <%# TODO: patient_id is a temporary ID concept, to be formalized based on requirements %>
-<%= react_component("PatientPage", { current_user: current_user, patient: @patient, patient_id: "#{@patient.address_state&.first(2)&.upcase || 'XX'}#{@patient.id.to_s.rjust(6, '0')}", dashboardUrl: '/monitor_dashboard', authenticity_token: form_authenticity_token }) %>
+<%= react_component("PatientPage", { current_user: current_user, patient: @patient, patient_id: "#{@patient.address_state&.first(2)&.upcase || 'XX'}#{@patient.id.to_s.rjust(6, '0')}", dashboardUrl: '/monitor_dashboard', authenticity_token: form_authenticity_token, canAddAssessments: current_user.can_view_patient_assessments? }) %>
 
 <% if current_user.can_view_patient_assessments? %>
-
   <div class="card mx-2 mt-1 mb-4 card-square">
-
     <h5 class="card-header">Subject Assessments</h5>
-
     <div class="m-4">
       <% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"] %>
-      <table class="table table-sm table-striped table-hover table-smaller-font">
+      <table class="assessment_table table table-sm table-striped table-hover table-smaller-font">
         <thead>
           <tr>
             <th>Date</th>
@@ -22,7 +19,7 @@
         <tbody>
           <% @patient.assessments.order('created_at').each do |assessment| -%>
           <tr>
-              <td><%= assessment.created_at.to_date.to_formatted_s(:long) %></td>
+              <td><%= assessment.created_at.to_date&.strftime('%F') %></td>
               <td><span class="<% if assessment[:temperature].to_i > 99 %>concern<% end %>"><%= assessment.temperature %></span></td>
               <% columns.each do |column| -%>
                 <td><% if assessment[column] -%><span class="concern">Yes</span><% else -%>No<% end -%></td>
@@ -32,7 +29,15 @@
         </tbody>
       </table>
     </div>
-
   </div>
-
 <% end %>
+
+<script>
+  $(document).ready(function() {
+    $('.assessment_table').DataTable({
+      "paging": false,
+      "search": false,
+      "info": false
+    });
+  });
+</script>

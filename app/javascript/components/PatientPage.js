@@ -36,19 +36,23 @@ class PatientPage extends React.Component {
             <Patient details={this.props.patient || {}} />
           </Card.Body>
         </Card>
-        <Button variant="primary" size="lg" className="mx-2 my-4 btn-square px-4" onClick={() => this.setState({ showAddAssessment: true })}>
-          Add Assessment For Subject
-        </Button>
-        <Modal show={this.state.showAddAssessment} onHide={() => this.setState({ showAddAssessment: false })}>
-          <Modal.Header closeButton></Modal.Header>
-          <Modal.Body>
-            <Assessment
-              patient_submission_token={this.props.patient.submission_token}
-              authenticity_token={this.props.authenticity_token}
-              reloadHook={this.reloadHook}
-            />
-          </Modal.Body>
-        </Modal>
+        {this.props.canAddAssessments && (
+          <React.Fragment>
+            <Button variant="primary" size="lg" className="mx-2 my-4 btn-square px-4" onClick={() => this.setState({ showAddAssessment: true })}>
+              Add Assessment For Subject
+            </Button>
+            <Modal show={this.state.showAddAssessment} onHide={() => this.setState({ showAddAssessment: false })}>
+              <Modal.Header closeButton></Modal.Header>
+              <Modal.Body>
+                <Assessment
+                  patient_submission_token={this.props.patient.submission_token}
+                  authenticity_token={this.props.authenticity_token}
+                  reloadHook={this.reloadHook}
+                />
+              </Modal.Body>
+            </Modal>
+          </React.Fragment>
+        )}
       </React.Fragment>
     );
   }
@@ -61,6 +65,7 @@ PatientPage.propTypes = {
   dashboardUrl: PropTypes.string,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
+  canAddAssessments: PropTypes.bool,
 };
 
 export default PatientPage;
