@@ -206,7 +206,7 @@ const schema = yup.object().shape({
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .max(new Date(), 'Date can not be in the future.')
     .when('date_of_departure', dod => {
-      if (dod instanceof Date) {
+      if (dod && dod instanceof Date) {
         return yup.date().min(dod, 'Date of Arrival must occur after the Date of Departure.');
       }
     }),

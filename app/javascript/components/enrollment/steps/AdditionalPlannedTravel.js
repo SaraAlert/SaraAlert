@@ -233,7 +233,7 @@ const schema = yup.object().shape({
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .max(new Date(), 'Date can not be in the future.')
     .when('additional_planned_travel_start_date', sd => {
-      if (sd instanceof Date) {
+      if (sd && sd instanceof Date) {
         return yup.date().min(sd, 'End Date must occur after the Start Date.');
       }
     }),

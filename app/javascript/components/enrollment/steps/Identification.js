@@ -20,7 +20,8 @@ class Identification extends React.Component {
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       let current = this.state.current;
       if (event.target.id === 'date_of_birth' && self.state.current.date_of_birth) {
-        self.setState({ current: { ...current, age: 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years') } }, () => {
+        let age = 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years');
+        self.setState({ current: { ...current, age: age < 200 && age > 0 ? age : current.age } }, () => {
           self.props.setEnrollmentState({ ...self.state.current });
         });
       } else {
