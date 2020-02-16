@@ -102,7 +102,7 @@ namespace :demo do
             date_of_birth: birthday,
             age: ((Date.today - birthday) / 365.25).round,
             ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
-            #primary_language
+            primary_language: 'English',
             #interpretation_required
             address_line_1: Faker::Address.street_address,
             address_city: Faker::Address.city,
