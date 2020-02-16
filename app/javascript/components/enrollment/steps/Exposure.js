@@ -49,7 +49,12 @@ class Exposure extends React.Component {
           <Card.Header as="h5">Subject Potential Exposure Information</Card.Header>
           <Card.Body>
             <Form>
-              <Form.Row className="pt-2">
+              <Form.Row className="pt-2 pb-2">
+                <Form.Group as={Col} className="my-auto">
+                  <Form.Label className="nav-input-label">TRAVEL HISTORY</Form.Label>
+                </Form.Group>
+              </Form.Row>
+              <Form.Row>
                 <Form.Group as={Col} md="7" controlId="last_date_of_potential_exposure">
                   <Form.Label className="nav-input-label">
                     LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_potential_exposure?._exclusive?.required && ' *'}
@@ -102,7 +107,7 @@ class Exposure extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2 pb-4 h-100">
+              <Form.Row className="pt-3 pb-4 h-100">
                 <Form.Group as={Col} className="my-auto">
                   <Form.Label className="nav-input-label">EXPOSURE RISK FACTORS</Form.Label>
                   <Form.Row>
