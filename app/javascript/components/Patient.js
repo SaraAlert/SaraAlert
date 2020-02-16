@@ -100,10 +100,11 @@ class Patient extends React.Component {
                 </span>
                 <br />
                 <span className="font-weight-light">
-                  {`${this.props.details.address_city ? this.props.details.address_city : ''}`}
+                  {this.props.details.address_city ? this.props.details.address_city : ''}
                   {this.props.details.address_state ? ` ${this.props.details.address_state}` : ''}
+                  {this.props.details.address_county ? ` ${this.props.details.address_county}` : ''}
                   {this.props.details.address_zip ? ` ${this.props.details.address_zip}` : ''}
-                  {`${this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}`}
+                  {this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}
                   {this.props.details.foreign_address_country ? ` ${this.props.details.foreign_address_country}` : ''}
                   {this.props.details.foreign_address_zip ? ` ${this.props.details.foreign_address_zip}` : ''}
                 </span>
