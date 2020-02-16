@@ -228,8 +228,15 @@ const schema = yup.object().shape({
   additional_planned_travel_destination_country: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   additional_planned_travel_destination_state: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   additional_planned_travel_port_of_departure: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  additional_planned_travel_start_date: yup.date('Date must correspond to the "mm/dd/yyyy" format.'),
-  additional_planned_travel_end_date: yup.date('Date must correspond to the "mm/dd/yyyy" format.'),
+  additional_planned_travel_start_date: yup.date('Date must correspond to the "mm/dd/yyyy" format.').max(new Date(), 'Date can not be in the future.'),
+  additional_planned_travel_end_date: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .max(new Date(), 'Date can not be in the future.')
+    .when('additional_planned_travel_start_date', sd => {
+      if (sd instanceof Date) {
+        return yup.date().min(sd, 'End Date must occur after the Start Date.');
+      }
+    }),
   additional_planned_travel_related_notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.'),
 });
 
