@@ -176,7 +176,10 @@ class Exposure extends React.Component {
 }
 
 const schema = yup.object().shape({
-  last_date_of_potential_exposure: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+  last_date_of_potential_exposure: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .max(new Date(), 'Date can not be in the future.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.'),
   potential_exposure_location: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   potential_exposure_country: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
   contact_of_known_case: yup.boolean(),
