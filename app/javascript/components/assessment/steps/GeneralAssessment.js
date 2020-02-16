@@ -1,13 +1,15 @@
 import React from 'react';
 import { Card, Button, Form } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import * as yup from 'yup';
 
 class GeneralAssessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState } };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
     this.handleChange = this.handleChange.bind(this);
     this.navigate = this.navigate.bind(this);
+    this.validate = this.validate.bind(this);
   }
 
   handleChange(event) {
@@ -26,6 +28,28 @@ class GeneralAssessment extends React.Component {
     }
   }
 
+  validate(callback) {
+    let self = this;
+    schema
+      .validate(this.state.current, { abortEarly: false })
+      .then(function() {
+        // No validation issues? Invoke callback (move to next step)
+        self.setState({ errors: {} }, () => {
+          callback();
+        });
+      })
+      .catch(function(err) {
+        // Validation errors, update state to display to user
+        if (err && err.inner) {
+          let issues = {};
+          for (var issue of err.inner) {
+            issues[issue['path']] = issue['errors'];
+          }
+          self.setState({ errors: issues });
+        }
+      });
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -36,7 +60,17 @@ class GeneralAssessment extends React.Component {
           <Card.Body>
             <Form.Row className="pt-3">
               <Form.Label className="nav-input-label">What was your temperature today (°F)?</Form.Label>
-              <Form.Control size="lg" id="temperature" className="form-square" value={this.state.current.temperature || ''} onChange={this.handleChange} />
+              <Form.Control
+                isInvalid={this.state.errors['temperature']}
+                size="lg"
+                id="temperature"
+                className="form-square"
+                value={this.state.current.temperature || ''}
+                onChange={this.handleChange}
+              />
+              <Form.Control.Feedback className="d-block" type="invalid">
+                {this.state.errors['temperature']}
+              </Form.Control.Feedback>
             </Form.Row>
             <Form.Row className="pt-3">
               <Form.Label className="nav-input-label">Are you experiencing any symptoms including cough or difficulty breathing?</Form.Label>
@@ -60,7 +94,7 @@ class GeneralAssessment extends React.Component {
                 size="lg"
                 className="btn-block btn-square"
                 disabled={!(this.state.current.experiencing_symptoms && this.state.current.temperature)}
-                onClick={this.navigate}>
+                onClick={() => this.validate(this.navigate)}>
                 {(this.state.current.experiencing_symptoms === 'Yes' && 'Continue') || (this.state.current.experiencing_symptoms !== 'Yes' && 'Submit')}
               </Button>
             </Form.Row>
@@ -70,6 +104,10 @@ class GeneralAssessment extends React.Component {
     );
   }
 }
+
+const schema = yup.object().shape({
+  temperature: yup.number('Please enter a valid number.').required(),
+});
 
 GeneralAssessment.propTypes = {
   currentState: PropTypes.object,

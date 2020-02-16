@@ -26,10 +26,12 @@
     "react-toastify": "^5.5.0",
     "react-tooltip": "^3.11.4",
     "react_ujs": "^2.6.1",
-    "recharts": "^2.0.0-beta.1"
+    "recharts": "^2.0.0-beta.1",
+    "yup": "^0.28.1"
   },
   "version": "0.1.0",
   "devDependencies": {
+    "babel-eslint": "^10.0.3",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.18.3",
     "husky": "^4.2.1",
