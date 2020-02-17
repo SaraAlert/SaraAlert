@@ -21,7 +21,6 @@
         <td><%= patient.date_of_birth&.strftime('%F') %></td>
         <td><%= patient.created_at.to_date&.strftime('%F') %></td>
         <td>
-          <%= link_to 'Details', patient, class: '' %>
           <%= link_to 'Edit', edit_patient_url(patient), class: 'ml-2' %>
         </td>
       </tr>
