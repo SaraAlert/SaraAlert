@@ -112,7 +112,7 @@ Assessment.propTypes = {
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
   assessment: PropTypes.object,
-  updateId: PropTypes.string,
+  updateId: PropTypes.number,
   reload: PropTypes.bool,
 };
 
