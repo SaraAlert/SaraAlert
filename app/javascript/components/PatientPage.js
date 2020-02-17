@@ -1,8 +1,7 @@
 import React from 'react';
-import { Button, Card, Modal } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import Patient from './Patient';
 import BreadcrumbPath from './BreadcrumbPath';
-import Assessment from './assessment/Assessment';
 import { PropTypes } from 'prop-types';
 
 class PatientPage extends React.Component {

@@ -68,7 +68,6 @@ class Assessment extends React.Component {
     })
       .then(function() {
         if (self.props.reload) {
-          debugger;
           location.href = '/patients/' + self.props.patient_id;
         }
       })
@@ -112,6 +111,9 @@ Assessment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
+  assessment: PropTypes.object,
+  updateId: PropTypes.string,
+  reload: PropTypes.bool,
 };
 
 export default Assessment;
