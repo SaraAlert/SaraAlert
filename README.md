@@ -45,3 +45,9 @@ Sidekiq is the queueing system that ActiveJob interfaces with.
 Sidekiq should be installed when you run `bundle install`
 You will have to start sidekiq independent of the app, you'll have to make sure that sidekiq is aware that it is responsible for the mailers queue.
 `bundle exec sidekiq -q default -q mailers`
+
+
+## Whenever
+The [whenever gem](https://github.com/javan/whenever) is what we are using to schedule ActiveJobs.
+This gem uses the contents of `config/schedule.rb` to generate a crontab file.
+If you make changes to this file make sure to run `bundle exec whenever --update-crontab`
