@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.integer "creator_id"
     t.integer "jurisdiction_id"
     t.string "submission_token"
+    t.boolean "open", default: true
     t.boolean "confirmed_case", default: false
     t.string "first_name"
     t.string "middle_name"
