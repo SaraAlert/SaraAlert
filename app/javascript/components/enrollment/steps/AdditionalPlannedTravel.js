@@ -15,6 +15,10 @@ class AdditionalPlannedTravel extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
+    value =
+      (event.target.id === 'additional_planned_travel_start_date' || event.target.id === 'additional_planned_travel_end_date') && value === ''
+        ? undefined
+        : value;
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.current });
     });

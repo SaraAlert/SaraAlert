@@ -17,6 +17,7 @@ class Identification extends React.Component {
     let current = this.state.current;
     let self = this;
     event.persist();
+    value = event.target.id === 'date_of_birth' && value === '' ? undefined : value;
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       let current = this.state.current;
       if (event.target.id === 'date_of_birth' && self.state.current.date_of_birth) {

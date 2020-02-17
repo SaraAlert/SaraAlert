@@ -15,6 +15,7 @@ class Exposure extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
+    value = event.target.id === 'last_date_of_potential_exposure' && value === '' ? undefined : value;
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.current });
     });
