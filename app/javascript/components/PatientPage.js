@@ -36,23 +36,6 @@ class PatientPage extends React.Component {
             <Patient details={this.props.patient || {}} />
           </Card.Body>
         </Card>
-        {this.props.canAddAssessments && (
-          <React.Fragment>
-            <Button variant="primary" size="lg" className="mx-2 my-4 btn-square px-4" onClick={() => this.setState({ showAddAssessment: true })}>
-              Add Assessment For Subject
-            </Button>
-            <Modal show={this.state.showAddAssessment} onHide={() => this.setState({ showAddAssessment: false })}>
-              <Modal.Header closeButton></Modal.Header>
-              <Modal.Body>
-                <Assessment
-                  patient_submission_token={this.props.patient.submission_token}
-                  authenticity_token={this.props.authenticity_token}
-                  reloadHook={this.reloadHook}
-                />
-              </Modal.Body>
-            </Modal>
-          </React.Fragment>
-        )}
       </React.Fragment>
     );
   }

@@ -24,7 +24,7 @@
           <td><%= patient.created_at.to_date&.strftime('%F') %></td>
           <td><%= patient.latest_assessment&.created_at&.to_date&.strftime('%F') %></td>
           <td>
-            <%= link_to 'View', patient, class: '' %>
+            <%= link_to 'Details', patient, class: '' %>
             <%= link_to 'Edit', edit_patient_url(patient), class: 'ml-2' %>
           </td>
         </tr>

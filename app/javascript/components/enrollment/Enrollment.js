@@ -100,7 +100,7 @@ class Enrollment extends React.Component {
       <React.Fragment>
         <BreadcrumbPath
           current_user={this.props.current_user}
-          crumbs={[new Object({ value: 'Dashboard', href: '/patients' }), new Object({ value: 'Register New Subject', href: null })]}
+          crumbs={[new Object({ value: 'Return To Dashboard', href: '/' }), new Object({ value: 'Register New Subject', href: null })]}
         />
         <Carousel
           controls={false}

@@ -62,6 +62,11 @@ class User < ApplicationRecord
     has_role?(:monitor) || has_role?(:admin)
   end
 
+  # Can this user edit Patient assessments?
+  def can_edit_patient_assessments?
+    has_role?(:monitor) || has_role?(:admin)
+  end
+
   # Can this user view the monitor dashboard?
   def can_view_monitor_dashboard?
     has_role?(:monitor) || has_role?(:admin)

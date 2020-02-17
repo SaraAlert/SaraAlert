@@ -1,35 +1,77 @@
 <%# TODO: patient_id is a temporary ID concept, to be formalized based on requirements %>
-<%= react_component("PatientPage", { current_user: current_user, patient: @patient, patient_id: "#{@patient.address_state&.first(2)&.upcase || 'XX'}#{@patient.id.to_s.rjust(6, '0')}", dashboardUrl: '/monitor_dashboard', authenticity_token: form_authenticity_token, canAddAssessments: current_user.can_view_patient_assessments? }) %>
+<%= react_component("PatientPage", { current_user: current_user, patient: @patient, patient_id: "#{@patient.address_state&.first(2)&.upcase || 'XX'}#{@patient.id.to_s.rjust(6, '0')}", dashboardUrl: '/monitor_dashboard', authenticity_token: form_authenticity_token }) %>
 
 <% if current_user.can_view_patient_assessments? %>
-  <div class="card mx-2 mt-1 mb-4 card-square">
-    <h5 class="card-header">Subject Assessments</h5>
+  <div class="modal" tabindex="-1" role="dialog" id="modal-new">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card mx-2 mt-3 mb-4 card-square">
+    <h5 class="card-header">Subject Assessments <a href="#" data-toggle="modal" data-target="#modal-new">(add new)</a></h5>
     <div class="m-4">
-      <% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"] %>
+      <% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature", "who_reported"] %>
       <table class="assessment_table table table-sm table-striped table-hover table-smaller-font">
         <thead>
           <tr>
+            <th style="display:none;">id</th>
+            <th>Symptomatic</th>
+            <th>Reporter</th>
             <th>Date</th>
             <th>Temperature</th>
             <% columns.each do |column| -%>
               <th><%= column.titleize %></th>
             <% end -%>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <% @patient.assessments.order('created_at').each do |assessment| -%>
-          <tr>
+            <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
+              <td style="display:none;"><%= assessment.id %></th>
+              <td><%= assessment.symptomatic %></td>
+              <td><%= assessment.who_reported %></td>
               <td><%= assessment.created_at.to_date&.strftime('%F') %></td>
               <td><span class="<% if assessment[:temperature].to_i > 99 %>concern<% end %>"><%= assessment.temperature %></span></td>
               <% columns.each do |column| -%>
                 <td><% if assessment[column] -%><span class="concern">Yes</span><% else -%>No<% end -%></td>
               <% end -%>
+              <td>
+                <a href="#" data-toggle="modal" data-target="#modal-<%= assessment.id %>">
+                  Edit
+                </a>
+              </td>
             </tr>
           <% end -%>
         </tbody>
       </table>
     </div>
   </div>
+  <% @patient.assessments.order('created_at').each do |assessment| -%>
+    <div class="modal" tabindex="-1" role="dialog" id="<%= 'modal-' + assessment.id.to_s %>" key="<%= 'modal-' + assessment.id.to_s %>">
+      <div class="modal-dialog" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end -%>
 <% end %>
 
 <script>
@@ -37,7 +79,11 @@
     $('.assessment_table').DataTable({
       "paging": false,
       "search": false,
-      "info": false
+      "info": false,
+      "columnDefs": [
+        { "orderable": false, "targets": -1 }
+      ],
+      "order": [[ 3, "desc" ]]
     });
   });
 </script>

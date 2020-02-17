@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.bigint "patient_id"
     t.boolean "symptomatic"
     t.string "temperature"
+    t.string "who_reported", default: "subject"
     t.boolean "cough"
     t.boolean "difficulty_breathing"
     t.index ["patient_id"], name: "index_assessments_on_patient_id"

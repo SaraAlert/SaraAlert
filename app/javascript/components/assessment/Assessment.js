@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { pickBy, identity } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import GeneralAssessment from './steps/GeneralAssessment';
 import SymptomsAssessment from './steps/SymptomsAssessment';
@@ -9,7 +10,7 @@ import AssessmentCompleted from './steps/AssessmentCompleted';
 class Assessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null, patient_submission_token: props.patient_submission_token };
+    this.state = { index: 0, direction: null, assessmentState: pickBy(this.props.assessment, identity) };
     this.setAssessmentState = this.setAssessmentState.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
@@ -62,19 +63,23 @@ class Assessment extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
-      url: `/patients/${this.state.patient_submission_token}/assessments`,
+      url: `/patients/${this.props.patient_submission_token}/assessments${this.props.updateId ? '/' + this.props.updateId : ''}`,
       data: assessmentState,
     })
       .then(function() {
-        if (self.props.reloadHook) {
-          self.props.reloadHook();
+        if (self.props.reload) {
+          debugger;
+          location.href = '/patients/' + self.props.patient_id;
         }
       })
       .catch(function(response) {
         //handle error
         console.log(response);
       });
-    this.goto(2);
+    if (!this.props.reload) {
+      // No need to say thanks for reporting if we want to reload the page
+      this.goto(2);
+    }
   }
 
   render() {

@@ -15,6 +15,8 @@ Rails.application.routes.draw do
     resources :assessments, only: [:create, :new, :index]
   end
 
+  post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
+
   get '/monitor_dashboard', to: 'monitor_dashboard#index', as: :monitor_dashboard
 
 end

@@ -3,8 +3,7 @@ class PatientsController < ApplicationController
   before_action :get_stats, only: [:index]
 
   def index
-    # TODO: Should this be can_create_patient?
-    redirect_to root_url unless current_user.can_view_patient?
+    redirect_to root_url unless current_user.can_create_patient?
   end
 
   def show

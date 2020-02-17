@@ -46,7 +46,7 @@ namespace :demo do
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
-    assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"]
+    assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature", "who_reported"]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
     all_false[:temperature] = '98'
 
@@ -148,6 +148,8 @@ namespace :demo do
             creator: enrollers.sample,
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
           )
+
+          patient.submission_token = SecureRandom.hex(20)
 
           patient[[:white, :black_or_african_american, :american_indian_or_alaska_native, :asian, :native_hawaiian_or_other_pacific_islander].sample] = true
 
