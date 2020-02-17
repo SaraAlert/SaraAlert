@@ -55,9 +55,17 @@ class Enrollment extends React.Component {
           onClose: () => (location.href = groupMember ? '/patients/' + data['data']['id'] + '/group' : '/patients/' + data['data']['id']),
         });
       })
-      .catch(function(error) {
-        // TODO: Figure out what to do on error
-        console.log(error);
+      .catch(function(err) {
+        toast.error(
+          <div>
+            <div> Failed to communicate with the Sara Alert System Server. </div>
+            <div> If the error continues, please contact a System Administrator. </div>
+          </div>,
+          {
+            autoClose: 10000,
+          }
+        );
+        console.log(err);
       });
   }
 
