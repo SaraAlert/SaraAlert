@@ -38,7 +38,7 @@ class GeneralAssessment extends React.Component {
           callback();
         });
       })
-      .catch(function(err) {
+      .catch(err => {
         // Validation errors, update state to display to user
         if (err && err.inner) {
           let issues = {};

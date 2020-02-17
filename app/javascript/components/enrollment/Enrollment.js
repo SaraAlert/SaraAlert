@@ -49,13 +49,13 @@ class Enrollment extends React.Component {
       url: this.props.editMode ? '/patients/' + this.props.patient.id : '/patients',
       data: data,
     })
-      .then(function(data) {
+      .then(data => {
         // Inform user and redirect to home on success
         toast.success(message, {
           onClose: () => (location.href = groupMember ? '/patients/' + data['data']['id'] + '/group' : '/patients/' + data['data']['id']),
         });
       })
-      .catch(function(err) {
+      .catch(() => {
         toast.error(
           <div>
             <div> Failed to communicate with the Sara Alert System Server. </div>
@@ -65,7 +65,6 @@ class Enrollment extends React.Component {
             autoClose: 10000,
           }
         );
-        console.log(err);
       });
   }
 
