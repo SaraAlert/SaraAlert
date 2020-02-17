@@ -13,7 +13,7 @@
   <tbody class="table-striped">
     <% patients.each do |patient| -%>
       <tr>
-        <td><%= patient.first_name %> <%= patient.last_name %></td>
+        <td><%= link_to "#{patient.first_name} #{patient.last_name}", patient, class: '' %></td>
         <td><%= patient.jurisdiction.name %></td>
         <%# TODO: This is a temporary ID concept, to be formalized based on requirements %>
         <td><%= "#{patient.address_state&.first(2)&.upcase || 'XX'}#{patient.id.to_s.rjust(6, '0')}" %></td>
