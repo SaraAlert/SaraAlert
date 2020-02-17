@@ -7,6 +7,8 @@ class GeneralAssessment extends React.Component {
   constructor(props) {
     super(props);
     this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
+    // TODO Iterate over dynamic "symptoms" hash
+    this.state.current.experiencing_symptoms = this.state.current.cough || this.state.current.difficulty_breathing ? 'Yes' : 'No';
     this.handleChange = this.handleChange.bind(this);
     this.navigate = this.navigate.bind(this);
     this.validate = this.validate.bind(this);
@@ -15,7 +17,11 @@ class GeneralAssessment extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
-    this.setState({ current: { ...current, [event.target.id]: value } }, () => {
+    if (event.target.id.split('_idpre')[0] === 'experiencing_symptoms' && value === 'No') {
+      current['cough'] = false;
+      current['difficulty_breathing'] = false;
+    }
+    this.setState({ current: { ...current, [event.target.id.split('_idpre')[0]]: value } }, () => {
       this.props.setAssessmentState({ ...this.state.current });
     });
   }
@@ -63,7 +69,7 @@ class GeneralAssessment extends React.Component {
               <Form.Control
                 isInvalid={this.state.errors['temperature']}
                 size="lg"
-                id="temperature"
+                id={`temperature${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
                 className="form-square"
                 value={this.state.current.temperature || ''}
                 onChange={this.handleChange}
@@ -78,7 +84,7 @@ class GeneralAssessment extends React.Component {
                 as="select"
                 size="lg"
                 className="form-square"
-                id="experiencing_symptoms"
+                id={`experiencing_symptoms${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
                 value={this.state.current.experiencing_symptoms || 'Please Select'}
                 onChange={this.handleChange}>
                 <option disabled>Please Select</option>
@@ -106,7 +112,12 @@ class GeneralAssessment extends React.Component {
 }
 
 const schema = yup.object().shape({
-  temperature: yup.number('Please enter a valid number.').required(),
+  temperature: yup
+    .number()
+    .min(80, 'Please enter a value between 80 and 120 °F.')
+    .max(120, 'Please enter a value between 80 and 120 °F.')
+    .typeError('Please enter a valid number.')
+    .required(),
 });
 
 GeneralAssessment.propTypes = {

@@ -93,10 +93,22 @@ class Assessment extends React.Component {
           direction={this.state.direction}
           onSelect={() => {}}>
           <Carousel.Item>
-            <GeneralAssessment goto={this.goto} submit={this.submit} setAssessmentState={this.setAssessmentState} currentState={this.state.assessmentState} />
+            <GeneralAssessment
+              goto={this.goto}
+              submit={this.submit}
+              setAssessmentState={this.setAssessmentState}
+              currentState={this.state.assessmentState}
+              idPre={this.props.idPre}
+            />
           </Carousel.Item>
           <Carousel.Item>
-            <SymptomsAssessment goto={this.goto} submit={this.submit} setAssessmentState={this.setAssessmentState} currentState={this.state.assessmentState} />
+            <SymptomsAssessment
+              goto={this.goto}
+              submit={this.submit}
+              setAssessmentState={this.setAssessmentState}
+              currentState={this.state.assessmentState}
+              idPre={this.props.idPre}
+            />
           </Carousel.Item>
           <Carousel.Item>
             <AssessmentCompleted goto={this.goto} submit={this.submit} setAssessmentState={this.setAssessmentState} currentState={this.state.assessmentState} />

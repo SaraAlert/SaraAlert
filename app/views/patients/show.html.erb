@@ -11,7 +11,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
+          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
         </div>
       </div>
     </div>
@@ -66,7 +66,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
+            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }, html_options={id: `a${assessment.id}`}) %>
           </div>
         </div>
       </div>

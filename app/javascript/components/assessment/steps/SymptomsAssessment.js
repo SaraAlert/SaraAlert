@@ -27,7 +27,7 @@ class SymptomsAssessment extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
-    this.setState({ current: { ...current, [event.target.id]: value } }, () => {
+    this.setState({ current: { ...current, [event.target.id.split('_idpre')[0]]: value } }, () => {
       this.props.setAssessmentState({ ...this.state.current });
     });
   }
@@ -54,24 +54,21 @@ class SymptomsAssessment extends React.Component {
             </Form.Row>
             <Form.Row>
               <Form.Group className="pt-1">
-                <Form.Check type="switch" id="cough" label="Cough" checked={this.state.current.cough === true || false} onChange={this.handleChange} />
+                <Form.Check
+                  type="switch"
+                  id={`cough${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
+                  label="Cough"
+                  checked={this.state.current.cough === true || false}
+                  onChange={this.handleChange}
+                />
                 <Form.Check
                   type="switch"
                   className="pt-2"
-                  id="difficulty_breathing"
+                  id={`difficulty_breathing${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
                   label="Difficulty Breathing"
                   checked={this.state.current.difficulty_breathing === true || false}
                   onChange={this.handleChange}
                 />
-
-                {/* TODO: Symptoms will be configurable; for now these are not appropriate
-                  <Form.Check type="switch" className="pt-2" id="sore_throat" label="Sore Throat" checked={this.state.current.sore_throat === true || false} onChange={this.handleChange} />
-                  <Form.Check type="switch" className="pt-2" id="headaches" label="Headaches" checked={this.state.current.headaches === true || false} onChange={this.handleChange} />
-                  <Form.Check type="switch" className="pt-2" id="muscle_aches" label="Muscle Aches" checked={this.state.current.muscle_aches === true || false} onChange={this.handleChange} />
-                  <Form.Check type="switch" className="pt-2" id="abdominal_discomfort" label="Abdominal Discomfort" checked={this.state.current.abdominal_discomfort === true || false} onChange={this.handleChange} />
-                  <Form.Check type="switch" className="pt-2" id="vomiting" label="Vomiting" checked={this.state.current.vomiting === true || false} onChange={this.handleChange} />
-                  <Form.Check type="switch" className="pt-2" id="diarrhea" label="Diarrhea" checked={this.state.current.diarrhea === true || false} onChange={this.handleChange} />
-                  */}
               </Form.Group>
             </Form.Row>
             <Form.Row className="pt-4">
