@@ -9,6 +9,8 @@ Rails.application.routes.draw do
 
   resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]
 
+  resources :admin, only: [:index]
+
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   resources :patients, param: :submission_token do
