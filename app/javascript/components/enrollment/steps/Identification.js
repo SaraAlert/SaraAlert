@@ -17,12 +17,17 @@ class Identification extends React.Component {
     let current = this.state.current;
     let self = this;
     event.persist();
-    value = event.target.id === 'date_of_birth' && value === '' ? undefined : value;
+    value = event.target.type === 'date' && value === '' ? undefined : value;
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       let current = this.state.current;
-      if (event.target.id === 'date_of_birth' && self.state.current.date_of_birth) {
-        let age = 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years');
-        self.setState({ current: { ...current, age: age < 200 && age > 0 ? age : current.age } }, () => {
+      if (event.target.id === 'date_of_birth') {
+        let age;
+        // if value is undefined, age will stay undefined (which nulls out the age field)
+        if (typeof value !== 'undefined') {
+          age = 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years');
+          age = age < 200 && age > 0 ? age : current.age;
+        }
+        self.setState({ current: { ...current, age } }, () => {
           self.props.setEnrollmentState({ ...self.state.current });
         });
       } else {

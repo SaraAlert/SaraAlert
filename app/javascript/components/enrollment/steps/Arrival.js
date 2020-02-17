@@ -14,7 +14,7 @@ class Arrival extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
-    value = (event.target.id === 'date_of_departure' || event.target.id === 'date_of_arrival') && value === '' ? undefined : value;
+    value = event.target.type === 'date' && value === '' ? undefined : value;
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.current });
     });
