@@ -20,7 +20,7 @@
     <h5 class="card-header">Subject Assessments <a href="#" data-toggle="modal" data-target="#modal-new">(add new)</a></h5>
     <div class="m-4">
       <% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature", "who_reported"] %>
-      <table class="assessment_table table table-sm table-striped table-hover table-smaller-font">
+      <table class="assessment_table table table-sm table-striped table-hover table-smaller-font" style="width:100%">
         <thead>
           <tr>
             <th style="display:none;">id</th>
