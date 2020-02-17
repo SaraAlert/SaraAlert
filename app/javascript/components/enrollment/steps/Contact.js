@@ -66,7 +66,10 @@ class Contact extends React.Component {
             .email('Please enter a valid email.')
             .required('Please provide an email')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+          confirm_email: yup
+            .string()
+            .required('Please confirm email.')
+            .oneOf([yup.ref('email'), null], 'Confirm email must match.'),
           preferred_contact_method: yup
             .string()
             .required('Please indicate a preferred contact method.')

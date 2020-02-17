@@ -304,7 +304,6 @@ const schema = yup.object().shape({
   age: yup.number().nullable(),
   sex: yup
     .string()
-    .required('Please indicate sex.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   white: yup.boolean().nullable(),
@@ -318,7 +317,6 @@ const schema = yup.object().shape({
     .nullable(),
   primary_language: yup
     .string()
-    .required('Please enter a primary language.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   secondary_language: yup
