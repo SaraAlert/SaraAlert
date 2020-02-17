@@ -29,13 +29,25 @@ class Review extends React.Component {
               </Button>
             )}
             {this.props.submit && (
-              <Button variant="primary" size="lg" className="float-right btn-square px-5" disabled={this.state.submitDisabled} onClick={this.submit}>
+              <Button
+                variant="secondary"
+                size="lg"
+                className="float-right btn-square px-5"
+                disabled={this.state.submitDisabled}
+                onClick={() => {
+                  window.history.back();
+                }}>
+                Cancel
+              </Button>
+            )}
+            {this.props.submit && (
+              <Button variant="primary" size="lg" className="float-right btn-square px-5 mr-4" disabled={this.state.submitDisabled} onClick={this.submit}>
                 Finish
               </Button>
             )}
             {this.props.submit && !this.props.parent_id && this.props.currentState.responder_id === this.props.currentState.id && (
               <Button
-                variant="secondary"
+                variant="primary"
                 size="lg"
                 className="float-right btn-square px-5 mr-4"
                 disabled={this.state.submitDisabled}

@@ -26,27 +26,22 @@
   </ul>
 
   <div class="tab-content" id="myTabContent">
-
     <div class="card card-square tab-pane fade show active pb-4" id="symptomatic" role="tabpanel" aria-labelledby="symptomatic-tab">
       <h3 class="px-4 pt-4">Subjects Who Have Reported Symptoms</h3>
       <%= render partial: "patients", locals: { patients: @symptomatic_patients } %>
     </div>
-
     <div class="card card-square tab-pane fade pb-4" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
       <%# TODO: Make the reporting timeout configurable %>
       <h3 class="px-4 pt-4">Subjects Who Have Not Reported in Last 1 Minute</h3>
       <%= render partial: "patients", locals: { patients: @non_reporting_patients } %>
     </div>
-
     <div class="card card-square tab-pane fade pb-4" id="asymptomatic" role="tabpanel" aria-labelledby="asymptomatic-tab">
       <h3 class="px-4 pt-4">Subjects Reporting No Symptoms</h3>
       <%= render partial: "patients", locals: { patients: @asymptomatic_patients } %>
     </div>
-
     <div class="card card-square tab-pane fade pt-3 px-2" id="analytics" role="tabpanel" aria-labelledby="analytics-tab">
       <%= react_component("dashboard/MonitorDashboard", { stats: @stats }) %>
     </div>
-
   </div>
 
 </div>
@@ -54,7 +49,6 @@
 <script>
   $(document).ready(function() {
     $('.patients_table').DataTable({
-      "paging": false,
       "info": false,
       "columnDefs": [
         { "orderable": false, "targets": -1 }
