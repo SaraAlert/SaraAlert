@@ -8,7 +8,7 @@ import AssessmentsDay from './widgets/AssessmentsDay';
 import { PropTypes } from 'prop-types';
 import MapChart from './widgets/MapChart';
 
-class MonitorDashboard extends React.Component {
+class Analytics extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -60,8 +60,8 @@ class MonitorDashboard extends React.Component {
   }
 }
 
-MonitorDashboard.propTypes = {
+Analytics.propTypes = {
   stats: PropTypes.object,
 };
 
-export default MonitorDashboard;
+export default Analytics;

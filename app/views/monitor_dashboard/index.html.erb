@@ -40,7 +40,7 @@
       <%= render partial: "patients", locals: { patients: @asymptomatic_patients } %>
     </div>
     <div class="card card-square tab-pane fade pt-3 px-2" id="analytics" role="tabpanel" aria-labelledby="analytics-tab">
-      <%= react_component("dashboard/MonitorDashboard", { stats: @stats }) %>
+      <%= react_component("dashboard/Analytics", { stats: @stats }) %>
     </div>
   </div>
 
