@@ -9,7 +9,9 @@ Rails.application.routes.draw do
 
   resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]
 
-  resources :admin, only: [:index]
+  resources :admin, only: [:index, :create_user]
+  
+  post 'admin/create_user', to: 'admin#create_user'
 
   resources :histories, only: [:create]
 

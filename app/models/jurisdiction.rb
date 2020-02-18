@@ -6,4 +6,9 @@ class Jurisdiction < ApplicationRecord
   def all_patients
     Patient.where(jurisdiction_id: subtree_ids)
   end
+
+  def jurisdiction_path_string
+    path&.map(&:name).join(', ')
+  end
+
 end
