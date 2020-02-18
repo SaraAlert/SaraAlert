@@ -66,7 +66,10 @@ class Contact extends React.Component {
             .email('Please enter a valid email.')
             .required('Please provide an email')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+          confirm_email: yup
+            .string()
+            .required('Please confirm email.')
+            .oneOf([yup.ref('email'), null], 'Confirm email must match.'),
           preferred_contact_method: yup
             .string()
             .required('Please indicate a preferred contact method.')
@@ -87,7 +90,7 @@ class Contact extends React.Component {
           callback();
         });
       })
-      .catch(function(err) {
+      .catch(err => {
         // Validation errors, update state to display to user
         if (err && err.inner) {
           let issues = {};
@@ -243,6 +246,28 @@ class Contact extends React.Component {
                     {this.state.errors['preferred_contact_method']}
                   </Form.Control.Feedback>
                 </Form.Group>
+                {this.state.current.preferred_contact_method === 'Telephone call' && (
+                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
+                    <Form.Label className="nav-input-label">
+                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
+                    </Form.Label>
+                    <Form.Control
+                      isInvalid={this.state.errors['preferred_contact_time']}
+                      as="select"
+                      size="lg"
+                      className="form-square"
+                      value={this.state.current.preferred_contact_time || ''}
+                      onChange={this.handleChange}>
+                      <option></option>
+                      <option>Morning</option>
+                      <option>Afternoon</option>
+                      <option>Evening</option>
+                    </Form.Control>
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['preferred_contact_time']}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                )}
               </Form.Row>
             </Form>
             {this.props.previous && (
@@ -271,22 +296,39 @@ var schema = yup.object().shape({
   primary_telephone: yup
     .string()
     .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   secondary_telephone: yup
     .string()
     .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  primary_telephone_type: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  secondary_telephone_type: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   email: yup
     .string()
     .email('Please enter a valid email.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  confirm_email: yup
+    .string()
+    .oneOf([yup.ref('email'), null], 'Confirm email must match.')
+    .nullable(),
   preferred_contact_method: yup
     .string()
     .required('Please indicate a preferred contact method.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  preferred_contact_time: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
 });
 
 Contact.propTypes = {

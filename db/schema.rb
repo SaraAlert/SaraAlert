@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_05_233306) do
+ActiveRecord::Schema.define(version: 2020_02_18_015649) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,9 +21,20 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.bigint "patient_id"
     t.boolean "symptomatic"
     t.string "temperature"
+    t.string "who_reported", default: "subject"
     t.boolean "cough"
     t.boolean "difficulty_breathing"
     t.index ["patient_id"], name: "index_assessments_on_patient_id"
+  end
+
+  create_table "histories", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.text "comment"
+    t.string "created_by"
+    t.string "history_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_histories_on_patient_id"
   end
 
   create_table "jurisdictions", force: :cascade do |t|
@@ -41,7 +52,10 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.integer "creator_id"
     t.integer "jurisdiction_id"
     t.string "submission_token"
+    t.boolean "open", default: true
     t.boolean "confirmed_case", default: false
+    t.string "exposure_risk_assessment"
+    t.string "monitoring_plan"
     t.string "first_name"
     t.string "middle_name"
     t.string "last_name"
@@ -56,6 +70,7 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.string "ethnicity"
     t.string "primary_language"
     t.boolean "interpretation_required"
+    t.string "nationality"
     t.string "address_line_1"
     t.string "foreign_address_line_1"
     t.string "address_city"
@@ -87,6 +102,7 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.string "secondary_telephone_type"
     t.string "email"
     t.string "preferred_contact_method"
+    t.string "preferred_contact_time"
     t.string "port_of_origin"
     t.string "source_of_report"
     t.string "flight_or_vessel_number"
@@ -108,8 +124,12 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.string "potential_exposure_country"
     t.boolean "contact_of_known_case"
     t.string "contact_of_known_case_id"
-    t.boolean "healthcare_worker"
-    t.boolean "worked_in_health_care_facility"
+    t.boolean "travel_to_affected_country_or_area"
+    t.boolean "laboratory_personnel"
+    t.boolean "healthcare_personnel"
+    t.boolean "crew_on_passenger_or_cargo_flight"
+    t.boolean "was_in_health_care_facility_with_known_cases"
+    t.text "exposure_notes"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
     t.index ["responder_id"], name: "index_patients_on_responder_id"

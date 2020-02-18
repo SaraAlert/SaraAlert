@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { pickBy, identity } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import GeneralAssessment from './steps/GeneralAssessment';
 import SymptomsAssessment from './steps/SymptomsAssessment';
@@ -9,7 +10,7 @@ import AssessmentCompleted from './steps/AssessmentCompleted';
 class Assessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null, patient_submission_token: props.patient_submission_token };
+    this.state = { index: 0, direction: null, assessmentState: pickBy(this.props.assessment, identity) };
     this.setAssessmentState = this.setAssessmentState.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
@@ -58,22 +59,26 @@ class Assessment extends React.Component {
 
   submit() {
     var assessmentState = this.state.assessmentState;
-
+    var self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
-      url: `/patients/${this.state.patient_submission_token}/assessments`,
+      url: `/patients/${this.props.patient_submission_token}/assessments${this.props.updateId ? '/' + this.props.updateId : ''}`,
       data: assessmentState,
     })
-      .then(function(response) {
-        //handle success
-        console.log(response);
+      .then(function() {
+        if (self.props.reload) {
+          location.href = '/patients/' + self.props.patient_id;
+        }
       })
       .catch(function(response) {
         //handle error
         console.log(response);
       });
-    this.goto(2);
+    if (!this.props.reload) {
+      // No need to say thanks for reporting if we want to reload the page
+      this.goto(2);
+    }
   }
 
   render() {
@@ -88,10 +93,22 @@ class Assessment extends React.Component {
           direction={this.state.direction}
           onSelect={() => {}}>
           <Carousel.Item>
-            <GeneralAssessment goto={this.goto} submit={this.submit} setAssessmentState={this.setAssessmentState} currentState={this.state.assessmentState} />
+            <GeneralAssessment
+              goto={this.goto}
+              submit={this.submit}
+              setAssessmentState={this.setAssessmentState}
+              currentState={this.state.assessmentState}
+              idPre={this.props.idPre}
+            />
           </Carousel.Item>
           <Carousel.Item>
-            <SymptomsAssessment goto={this.goto} submit={this.submit} setAssessmentState={this.setAssessmentState} currentState={this.state.assessmentState} />
+            <SymptomsAssessment
+              goto={this.goto}
+              submit={this.submit}
+              setAssessmentState={this.setAssessmentState}
+              currentState={this.state.assessmentState}
+              idPre={this.props.idPre}
+            />
           </Carousel.Item>
           <Carousel.Item>
             <AssessmentCompleted goto={this.goto} submit={this.submit} setAssessmentState={this.setAssessmentState} currentState={this.state.assessmentState} />
@@ -106,6 +123,10 @@ Assessment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
+  assessment: PropTypes.object,
+  updateId: PropTypes.number,
+  reload: PropTypes.bool,
+  idPre: PropTypes.string,
 };
 
 export default Assessment;

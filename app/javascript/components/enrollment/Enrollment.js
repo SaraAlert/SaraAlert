@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { debounce } from 'lodash';
+import { debounce, pickBy, identity } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import Identification from './steps/Identification';
 import Address from './steps/Address';
@@ -12,12 +12,11 @@ import Review from './steps/Review';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import BreadcrumbPath from '../BreadcrumbPath';
 
 class Enrollment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null };
+    this.state = { index: this.props.editMode ? 6 : 0, direction: null, enrollmentState: pickBy(this.props.patient, identity) };
     this.setEnrollmentState = debounce(this.setEnrollmentState.bind(this), 1000);
     this.submit = this.submit.bind(this);
     this.next = this.next.bind(this);
@@ -25,22 +24,46 @@ class Enrollment extends React.Component {
     this.goto = this.goto.bind(this);
   }
 
+  componentDidMount() {
+    window.onbeforeunload = function() {
+      return 'All progress will be lost. Are you sure?';
+    };
+  }
+
   setEnrollmentState(enrollmentState) {
     let currentEnrollmentState = this.state.enrollmentState;
     this.setState({ enrollmentState: { ...currentEnrollmentState, ...enrollmentState } });
   }
 
-  submit() {
+  submit(_event, groupMember) {
+    window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post('/patients', { patient: this.state.enrollmentState })
-      .then(function() {
+    const data = new Object({ patient: this.state.enrollmentState });
+    const message = this.props.editMode ? 'Subject Successfully Updated.' : 'Subject Successfully Saved.';
+    if (this.props.parent_id) {
+      data['responder_id'] = this.props.parent_id;
+    }
+    axios({
+      method: this.props.editMode ? 'patch' : 'post',
+      url: this.props.editMode ? '/patients/' + this.props.patient.id : '/patients',
+      data: data,
+    })
+      .then(data => {
         // Inform user and redirect to home on success
-        toast.success('Subject Successfully Saved', { onClose: () => (location.href = '/') });
+        toast.success(message, {
+          onClose: () => (location.href = groupMember ? '/patients/' + data['data']['id'] + '/group' : '/patients/' + data['data']['id']),
+        });
       })
-      .catch(function(error) {
-        // TODO: Figure out what to do on error
-        console.log(error);
+      .catch(() => {
+        toast.error(
+          <div>
+            <div> Failed to communicate with the Sara Alert System Server. </div>
+            <div> If the error continues, please contact a System Administrator. </div>
+          </div>,
+          {
+            autoClose: 10000,
+          }
+        );
       });
   }
 
@@ -81,10 +104,6 @@ class Enrollment extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <BreadcrumbPath
-          current_user={this.props.current_user}
-          crumbs={[new Object({ value: 'Dashboard', href: '/patients' }), new Object({ value: 'Register New Subject', href: null })]}
-        />
         <Carousel
           controls={false}
           indicators={false}
@@ -94,7 +113,7 @@ class Enrollment extends React.Component {
           direction={this.state.direction}
           onSelect={() => {}}>
           <Carousel.Item>
-            <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={this.props.enrollmentState} />
+            <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
             <Address
@@ -102,7 +121,7 @@ class Enrollment extends React.Component {
               next={this.next}
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
-              currentState={this.props.enrollmentState}
+              currentState={this.state.enrollmentState}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -111,7 +130,7 @@ class Enrollment extends React.Component {
               next={this.next}
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
-              currentState={this.props.enrollmentState}
+              currentState={this.state.enrollmentState}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -120,7 +139,7 @@ class Enrollment extends React.Component {
               next={this.next}
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
-              currentState={this.props.enrollmentState}
+              currentState={this.state.enrollmentState}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -129,7 +148,7 @@ class Enrollment extends React.Component {
               next={this.next}
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
-              currentState={this.props.enrollmentState}
+              currentState={this.state.enrollmentState}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -138,7 +157,7 @@ class Enrollment extends React.Component {
               next={this.next}
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
-              currentState={this.props.enrollmentState}
+              currentState={this.state.enrollmentState}
             />
           </Carousel.Item>
           {/* TODO: Risk factors */}
@@ -149,6 +168,7 @@ class Enrollment extends React.Component {
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
               currentState={this.state.enrollmentState}
+              parentId={this.props.parent_id}
             />
           </Carousel.Item>
         </Carousel>
@@ -163,6 +183,8 @@ Enrollment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   enrollmentState: PropTypes.object,
+  editMode: PropTypes.bool,
+  parent_id: PropTypes.string,
 };
 
 export default Enrollment;

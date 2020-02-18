@@ -3,8 +3,12 @@ class CreateAssessments < ActiveRecord::Migration[6.0]
     create_table :assessments do |t|
       t.timestamps
       t.references :patient, index: true
+
       t.boolean :symptomatic
       t.string :temperature
+
+      t.string :who_reported, default: 'subject'
+
       #t.boolean :felt_feverish
       t.boolean :cough
       #t.boolean :sore_throat

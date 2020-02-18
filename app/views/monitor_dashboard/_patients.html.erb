@@ -1,6 +1,5 @@
 <div class="px-4">
-  <table class="table">
-
+  <table class="patients_table table table-striped" style="width:100%">
     <thead>
       <tr>
         <th>Subject</th>
@@ -9,26 +8,30 @@
         <th>Sex</th>
         <th>Date of Birth</th>
         <th>Observation Start</th>
+        <th>Risk Level</th>
+        <th>Monitoring Plan</th>
         <th>Latest Assessment</th>
-        <th></th>
+        <th>Actions</th>
       </tr>
     </thead>
-
-    <tbody class="table-striped">
+    <tbody>
       <% patients.each do |patient| -%>
         <tr>
-          <td><%= patient.first_name %> <%= patient.last_name %></td>
+          <td><%= link_to "#{patient.first_name} #{patient.last_name}", patient, class: '' %></td>
           <td><%= patient.jurisdiction.name %></td>
           <%# TODO: This is a temporary ID concept, to be formalized based on requirements %>
           <td><%= "#{patient.address_state&.first(2)&.upcase || 'XX'}#{patient.id.to_s.rjust(6, '0')}" %></td>
           <td><%= patient.sex %></td>
-          <td><%= patient.date_of_birth&.to_formatted_s(:long) %></td>
-          <td><%= patient.created_at.to_date.to_formatted_s(:long) %></td>
-          <td><%= patient.latest_assessment&.created_at&.to_date&.to_formatted_s(:long) %></td>
-          <td><%= link_to 'View', patient, class: 'btn btn-sm btn-square btn-primary' %></td>
+          <td><%= patient.date_of_birth&.strftime('%F') %></td>
+          <td><%= patient.created_at.to_date&.strftime('%F') %></td>
+          <td><%= patient.exposure_risk_assessment %></td>
+          <td><% if patient.monitoring_plan&.include? 'Self-monitoring' %>Self<% elsif patient.monitoring_plan&.include? 'Daily' %>Daily<% end %></td>
+          <td><%= patient.latest_assessment&.created_at&.to_date&.strftime('%F') %></td>
+          <td>
+            <%= link_to 'Edit', edit_patient_url(patient), class: 'ml-2' %>
+          </td>
         </tr>
       <% end -%>
     </tbody>
-
   </table>
 </div>

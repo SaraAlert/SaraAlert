@@ -10,9 +10,9 @@ class Review extends React.Component {
     this.submit = this.submit.bind(this);
   }
 
-  submit() {
+  submit(event, groupMember) {
     this.setState({ submitDisabled: true });
-    this.props.submit();
+    this.props.submit(event, groupMember);
   }
 
   render() {
@@ -28,14 +28,31 @@ class Review extends React.Component {
                 Previous
               </Button>
             )}
-            {this.props.next && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.next}>
-                Next
+            {this.props.submit && (
+              <Button
+                variant="secondary"
+                size="lg"
+                className="float-right btn-square px-5"
+                disabled={this.state.submitDisabled}
+                onClick={() => {
+                  window.history.back();
+                }}>
+                Cancel
               </Button>
             )}
             {this.props.submit && (
-              <Button variant="primary" size="lg" className="float-right btn-square px-5" disabled={this.state.submitDisabled} onClick={this.submit}>
+              <Button variant="primary" size="lg" className="float-right btn-square px-5 mr-4" disabled={this.state.submitDisabled} onClick={this.submit}>
                 Finish
+              </Button>
+            )}
+            {this.props.submit && !this.props.parent_id && this.props.currentState.responder_id === this.props.currentState.id && (
+              <Button
+                variant="primary"
+                size="lg"
+                className="float-right btn-square px-5 mr-4"
+                disabled={this.state.submitDisabled}
+                onClick={event => this.submit(event, true)}>
+                Finish and add a Group Member
               </Button>
             )}
           </Card.Body>
@@ -51,6 +68,7 @@ Review.propTypes = {
   previous: PropTypes.func,
   next: PropTypes.func,
   submit: PropTypes.func,
+  parent_id: PropTypes.string,
 };
 
 export default Review;

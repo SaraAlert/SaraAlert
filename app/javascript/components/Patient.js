@@ -13,6 +13,12 @@ class Patient extends React.Component {
     }
     return (
       <React.Fragment>
+        {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
+          <Row className="pb-4 my-2 mx-4">
+            The reporting responsibility for this subject is handled by another subject.&nbsp;
+            <a href={'/patients/' + this.props.details.responder_id}>Click here to view that subject</a>.
+          </Row>
+        )}
         <Row className="g-border-bottom-2 pb-4 my-2 mx-2">
           <Col md="11">
             <Row>
@@ -100,10 +106,11 @@ class Patient extends React.Component {
                 </span>
                 <br />
                 <span className="font-weight-light">
-                  {`${this.props.details.address_city ? this.props.details.address_city : ''}`}
+                  {this.props.details.address_city ? this.props.details.address_city : ''}
                   {this.props.details.address_state ? ` ${this.props.details.address_state}` : ''}
+                  {this.props.details.address_county ? ` ${this.props.details.address_county}` : ''}
                   {this.props.details.address_zip ? ` ${this.props.details.address_zip}` : ''}
-                  {`${this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}`}
+                  {this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}
                   {this.props.details.foreign_address_country ? ` ${this.props.details.foreign_address_country}` : ''}
                   {this.props.details.foreign_address_zip ? ` ${this.props.details.foreign_address_zip}` : ''}
                 </span>
@@ -136,14 +143,17 @@ class Patient extends React.Component {
                 <span className="font-weight-normal">Phone:</span>{' '}
                 <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
                 <br />
+                <span className="font-weight-normal">Preferred Contact Time:</span>{' '}
+                <span className="font-weight-light">{this.props.details.preferred_contact_time && `${this.props.details.preferred_contact_time}`}</span>
+                <br />
                 <span className="font-weight-normal">Type:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : ''}`}</span>
                 <br />
-                <span className="font-weight-normal">Preferred Contact:</span>{' '}
-                <span className="font-weight-light">{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''}`}</span>
-                <br />
                 <span className="font-weight-normal">Email:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Preferred Contact:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''}`}</span>
               </Col>
             </Row>
           </Col>
@@ -277,9 +287,11 @@ class Patient extends React.Component {
                     : ''}
                 </span>
                 <br />
-                <span className="font-weight-light">{this.props.details.healthcare_worker ? 'Health Care Worker' : ''}</span>
+                <span className="font-weight-light">{this.props.details.travel_to_affected_country_or_area ? 'Health Care Worker' : ''}</span>
                 <br />
-                <span className="font-weight-light">{this.props.details.worked_in_health_care_facility ? 'Worked in Health Care Facility' : ''}</span>
+                <span className="font-weight-light">
+                  {this.props.details.was_in_health_care_facility_with_known_cases ? 'Worked in Health Care Facility' : ''}
+                </span>
               </Col>
             </Row>
           </Col>

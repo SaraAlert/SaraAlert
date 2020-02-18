@@ -6,12 +6,13 @@ namespace :demo do
     raise "This task is only for use in a development environment" unless Rails.env == 'development'
 
     print 'Creating jurisdictions...'
-    state1 = Jurisdiction.create(name: 'Example State')
+    usa = Jurisdiction.create(name: 'USA')
+    state1 = Jurisdiction.create(name: 'Example State', parent: usa)
     county1 = Jurisdiction.create(name: 'Example County', parent: state1)
     city1 = Jurisdiction.create(name: 'Example City', parent: county1)
     city2 = Jurisdiction.create(name: 'Example City 2', parent: county1)
     county2 = Jurisdiction.create(name: 'Example County 2', parent: state1)
-    state2 = Jurisdiction.create(name: 'Example State 2')
+    state2 = Jurisdiction.create(name: 'Example State 2', parent: usa)
     county3 = Jurisdiction.create(name: 'Example County 3', parent: state2)
     county4 = Jurisdiction.create(name: 'Example County 4', parent: state2)
     puts ' done!'
@@ -34,6 +35,12 @@ namespace :demo do
     epi2.save
     puts ' done!'
 
+    print 'Creating admin...'
+    admin1 = User.new(email: 'admin1@example.com', password: '123456ab', jurisdiction: usa, force_password_change: false)
+    admin1.add_role :admin
+    admin1.save
+    puts ' done!'
+
   end
 
   desc "Add lots of data to the database to provide some idea of basic scaling issues"
@@ -42,11 +49,11 @@ namespace :demo do
     raise "This task is only for use in a development environment" unless Rails.env == 'development'
 
     days = (ENV['DAYS'] || 14).to_i
-    count = (ENV['COUNT'] || 50).to_i
+    count = (ENV['COUNT'] || 25).to_i
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
-    assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature"]
+    assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature", "who_reported"]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
     all_false[:temperature] = '98'
 
@@ -102,7 +109,7 @@ namespace :demo do
             date_of_birth: birthday,
             age: ((Date.today - birthday) / 365.25).round,
             ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
-            #primary_language
+            primary_language: 'English',
             #interpretation_required
             address_line_1: Faker::Address.street_address,
             address_city: Faker::Address.city,
@@ -143,11 +150,13 @@ namespace :demo do
             potential_exposure_country: Faker::Address.country,
             #contact_of_known_case
             #contact_of_known_case_id
-            healthcare_worker: rand < 0.1,
-            worked_in_health_care_facility: rand < 0.15,
+            travel_to_affected_country_or_area: rand < 0.1,
+            was_in_health_care_facility_with_known_cases: rand < 0.15,
             creator: enrollers.sample,
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
           )
+
+          patient.submission_token = SecureRandom.hex(20)
 
           patient[[:white, :black_or_african_american, :american_indian_or_alaska_native, :asian, :native_hawaiian_or_other_pacific_islander].sample] = true
 

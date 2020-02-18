@@ -32,6 +32,18 @@ body {
   border-radius: 0 !important;
 }
 
+.alert {
+  border-radius: 0 !important;
+}
+
+.button {
+  border-radius: 0 !important;
+}
+
+.form-control {
+  border-radius: 0 !important;
+}
+
 .nav-input-label {
   font-weight: 600;
 }
@@ -101,4 +113,8 @@ select.form-control {
 
 .logo-header {
   background-size: 20px 30px;
+}
+
+.badge-padding {
+  margin: 0 !important;
 }

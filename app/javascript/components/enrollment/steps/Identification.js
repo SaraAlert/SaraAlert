@@ -17,11 +17,17 @@ class Identification extends React.Component {
     let current = this.state.current;
     let self = this;
     event.persist();
+    value = event.target.type === 'date' && value === '' ? undefined : value;
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       let current = this.state.current;
-      if (event.target.id === 'date_of_birth' && self.state.current.date_of_birth) {
-        let age = 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years');
-        self.setState({ current: { ...current, age: age < 200 && age > 0 ? age : current.age } }, () => {
+      if (event.target.id === 'date_of_birth') {
+        let age;
+        // if value is undefined, age will stay undefined (which nulls out the age field)
+        if (typeof value !== 'undefined') {
+          age = 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years');
+          age = age < 200 && age > 0 ? age : current.age;
+        }
+        self.setState({ current: { ...current, age } }, () => {
           self.props.setEnrollmentState({ ...self.state.current });
         });
       } else {
@@ -40,7 +46,7 @@ class Identification extends React.Component {
           callback();
         });
       })
-      .catch(function(err) {
+      .catch(err => {
         // Validation errors, update state to display to user
         if (err && err.inner) {
           let issues = {};
@@ -132,7 +138,7 @@ class Identification extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="sex" md="auto">
-                  <Form.Label className="nav-input-label">SEX{schema?.fields?.sex?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="nav-input-label">SEX AT BIRTH{schema?.fields?.sex?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['sex']}
                     as="select"
@@ -237,6 +243,21 @@ class Identification extends React.Component {
                   />
                 </Form.Group>
               </Form.Row>
+              <Form.Row className="pt-2">
+                <Form.Group as={Col} md={12} controlId="nationality">
+                  <Form.Label className="nav-input-label">NATIONALITY{schema?.fields?.nationality?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['nationality']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.nationality || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['nationality']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Form.Row>
             </Form>
             {this.props.previous && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
@@ -264,33 +285,49 @@ const schema = yup.object().shape({
   first_name: yup
     .string()
     .required('Please enter a First Name.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  middle_name: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  middle_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   last_name: yup
     .string()
     .required('Please enter a Last Name.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   date_of_birth: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .required('Please enter a date of birth.')
-    .max(new Date(), 'Date can not be in the future.'),
-  age: yup.number(),
+    .max(new Date(), 'Date can not be in the future.')
+    .nullable(),
+  age: yup.number().nullable(),
   sex: yup
     .string()
-    .required('Please indicate sex.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  white: yup.boolean(),
-  black_or_african_american: yup.boolean(),
-  american_indian_or_alaska_native: yup.boolean(),
-  asian: yup.boolean(),
-  native_hawaiian_or_other_pacific_islander: yup.boolean(),
-  ethnicity: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  white: yup.boolean().nullable(),
+  black_or_african_american: yup.boolean().nullable(),
+  american_indian_or_alaska_native: yup.boolean().nullable(),
+  asian: yup.boolean().nullable(),
+  native_hawaiian_or_other_pacific_islander: yup.boolean().nullable(),
+  ethnicity: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
   primary_language: yup
     .string()
-    .required('Please enter a primary language.')
-    .max(200, 'Max length exceeded, please limit to 200 characters.'),
-  secondary_language: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  interpretation_required: yup.boolean(),
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  secondary_language: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  interpretation_required: yup.boolean().nullable(),
+  nationality: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
 });
 
 Identification.propTypes = {

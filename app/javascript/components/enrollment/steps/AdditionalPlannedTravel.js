@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
-import { stateOptions, countryOptions } from '../../data';
+import { stateOptions, countryOptions } from '../../Data';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
 
@@ -15,6 +15,10 @@ class AdditionalPlannedTravel extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
+    value =
+      (event.target.id === 'additional_planned_travel_start_date' || event.target.id === 'additional_planned_travel_end_date') && value === ''
+        ? undefined
+        : value;
     this.setState({ current: { ...current, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.current });
     });
@@ -30,7 +34,7 @@ class AdditionalPlannedTravel extends React.Component {
           callback();
         });
       })
-      .catch(function(err) {
+      .catch(err => {
         // Validation errors, update state to display to user
         if (err && err.inner) {
           let issues = {};
@@ -223,12 +227,30 @@ class AdditionalPlannedTravel extends React.Component {
 }
 
 const schema = yup.object().shape({
-  additional_planned_travel_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  additional_planned_travel_destination: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  additional_planned_travel_destination_country: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  additional_planned_travel_destination_state: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  additional_planned_travel_port_of_departure: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-  additional_planned_travel_start_date: yup.date('Date must correspond to the "mm/dd/yyyy" format.').max(new Date(), 'Date can not be in the future.'),
+  additional_planned_travel_type: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  additional_planned_travel_destination: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  additional_planned_travel_destination_country: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  additional_planned_travel_destination_state: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  additional_planned_travel_port_of_departure: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  additional_planned_travel_start_date: yup
+    .date('Date must correspond to the "mm/dd/yyyy" format.')
+    .max(new Date(), 'Date can not be in the future.')
+    .nullable(),
   additional_planned_travel_end_date: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .max(new Date(), 'Date can not be in the future.')
@@ -236,8 +258,12 @@ const schema = yup.object().shape({
       if (sd && sd instanceof Date) {
         return yup.date().min(sd, 'End Date must occur after the Start Date.');
       }
-    }),
-  additional_planned_travel_related_notes: yup.string().max(2000, 'Max length exceeded, please limit to 2000 characters.'),
+    })
+    .nullable(),
+  additional_planned_travel_related_notes: yup
+    .string()
+    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
+    .nullable(),
 });
 
 AdditionalPlannedTravel.propTypes = {

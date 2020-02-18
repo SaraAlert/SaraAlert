@@ -6,6 +6,8 @@ class HomeController < ApplicationController
       redirect_to patients_url
     elsif current_user.has_role? :monitor
       redirect_to monitor_dashboard_url
+    elsif current_user.has_role? :admin
+      redirect_to admin_index_url
     end
   end
 

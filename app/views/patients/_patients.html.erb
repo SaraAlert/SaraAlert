@@ -1,0 +1,40 @@
+<table class="patients_table table table-striped" style="width:100%">
+  <thead>
+    <tr>
+      <th>Subject</th>
+      <th>Jurisdiction</th>
+      <th>ID</th>
+      <th>Sex</th>
+      <th>Date of Birth</th>
+      <th>Observation Start</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody class="table-striped">
+    <% patients.each do |patient| -%>
+      <tr>
+        <td><%= link_to "#{patient.first_name} #{patient.last_name}", patient, class: '' %></td>
+        <td><%= patient.jurisdiction.name %></td>
+        <%# TODO: This is a temporary ID concept, to be formalized based on requirements %>
+        <td><%= "#{patient.address_state&.first(2)&.upcase || 'XX'}#{patient.id.to_s.rjust(6, '0')}" %></td>
+        <td><%= patient.sex %></td>
+        <td><%= patient.date_of_birth&.strftime('%F') %></td>
+        <td><%= patient.created_at.to_date&.strftime('%F') %></td>
+        <td>
+          <%= link_to 'Edit', edit_patient_url(patient), class: 'ml-2' %>
+        </td>
+      </tr>
+    <% end -%>
+  </tbody>
+</table>
+<script>
+  $(document).ready(function() {
+    $('.patients_table').DataTable({
+      "info": false,
+      "columnDefs": [
+        { "orderable": false, "targets": -1 }
+      ],
+      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
+    });
+  });
+</script>

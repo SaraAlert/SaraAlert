@@ -29,6 +29,7 @@
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+vendor/bundle/
 
 # Ignore environment variable
 config/local_env.yml
