@@ -12,28 +12,60 @@ class MonitoringStatus extends React.Component {
       showMonitoringStatusModal: false,
       message: '',
       reasoning: '',
-      monitoring_status: this.props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
-      monitoring_plan: this.props.patient.monitoring_plan,
-      exposure_risk_assessment: this.props.patient.exposure_risk_assessment,
+      monitoring_status: props?.patient?.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
+      monitoring_plan: !!props.patient.monitoring_plan,
+      exposure_risk_assessment: !!props.patient.exposure_risk_assessment,
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
+    this.toggleMonitoringStatusModal = this.toggleMonitoringStatusModal.bind(this);
+    this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
+    this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
   }
 
   handleChange(event) {
-    if (event.target.id === 'exposure_risk_assessment') {
+    if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
         showExposureRiskAssessmentModal: true,
-        message: 'exposure risk assessment to "' + event.target.value + '".',
-        [event.target.id]: event.target.value,
+        message: 'exposure risk assessment to "' + event?.target?.value ? event.target.value : '' + '".',
+        [event.target.id]: event?.target?.value ? event.target.value : '',
       });
-    } else if (event.target.id === 'monitoring_plan') {
-      this.setState({ showMonitoringPlanModal: true, message: 'monitoring plan to "' + event.target.value + '".', [event.target.id]: event.target.value });
-    } else if (event.target.id === 'monitoring_status') {
-      this.setState({ showMonitoringStatusModal: true, message: 'monitoring status to "' + event.target.value + '".', [event.target.id]: event.target.value });
-    } else {
-      this.setState({ [event.target.id]: event.target.value });
+    } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
+      this.setState({
+        showMonitoringPlanModal: true,
+        message: 'monitoring plan to "' + event.target.value + '".',
+        [event.target.id]: event?.target?.value ? event.target.value : '',
+      });
+    } else if (event?.target?.id && event.target.id === 'monitoring_status') {
+      this.setState({
+        showMonitoringStatusModal: true,
+        message: 'monitoring status to "' + event.target.value + '".',
+        [event.target.id]: event?.target?.value ? event.target.value : '',
+      });
+    } else if (event?.target?.id) {
+      this.setState({ [event.target.id]: event?.target?.value ? event.target.value : '' });
     }
+  }
+
+  toggleMonitoringStatusModal() {
+    let current = this.state.showMonitoringStatusModal;
+    this.setState({
+      showMonitoringStatusModal: !current,
+    });
+  }
+
+  toggleMonitoringPlanModal() {
+    let current = this.state.showMonitoringPlanModal;
+    this.setState({
+      showMonitoringPlanModal: !current,
+    });
+  }
+
+  toggleExposureRiskAssessmentModal() {
+    let current = this.state.showExposureRiskAssessmentModal;
+    this.setState({
+      showExposureRiskAssessmentModal: !current,
+    });
   }
 
   submit() {
@@ -68,7 +100,7 @@ class MonitoringStatus extends React.Component {
                     className="form-control-lg"
                     id="monitoring_status"
                     onChange={this.handleChange}
-                    value={this.state.monitoring_status || ''}>
+                    value={this.state.monitoring_status}>
                     <option>Actively Monitoring</option>
                     <option>Not Monitoring</option>
                   </Form.Control>
@@ -80,7 +112,7 @@ class MonitoringStatus extends React.Component {
                     className="form-control-lg"
                     id="exposure_risk_assessment"
                     onChange={this.handleChange}
-                    value={this.state.exposure_risk_assessment || ''}>
+                    value={this.state.exposure_risk_assessment}>
                     <option disabled></option>
                     <option>High</option>
                     <option>Medium</option>
@@ -90,12 +122,7 @@ class MonitoringStatus extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col}>
                   <Form.Label>MONITORING PLAN</Form.Label>
-                  <Form.Control
-                    as="select"
-                    className="form-control-lg"
-                    id="monitoring_plan"
-                    onChange={this.handleChange}
-                    value={this.state.monitoring_plan || ''}>
+                  <Form.Control as="select" className="form-control-lg" id="monitoring_plan" onChange={this.handleChange} value={this.state.monitoring_plan}>
                     <option disabled></option>
                     <option>Daily active monitoring</option>
                     <option>Self-monitoring with public health supervision</option>
@@ -122,17 +149,7 @@ class MonitoringStatus extends React.Component {
             <Button variant="primary btn-square" onClick={this.submit}>
               Submit
             </Button>
-            <Button
-              variant="secondary btn-square"
-              onClick={() => {
-                this.setState({
-                  showExposureRiskAssessmentModal: false,
-                  showMonitoringPlanModal: false,
-                  showMonitoringStatusModal: false,
-                  message: '',
-                  reasoning: '',
-                });
-              }}>
+            <Button variant="secondary btn-square" onClick={this.toggleExposureRiskAssessmentModal}>
               Cancel
             </Button>
           </Modal.Footer>
@@ -152,17 +169,7 @@ class MonitoringStatus extends React.Component {
             <Button variant="primary btn-square" onClick={this.submit}>
               Submit
             </Button>
-            <Button
-              variant="secondary btn-square"
-              onClick={() => {
-                this.setState({
-                  showExposureRiskAssessmentModal: false,
-                  showMonitoringPlanModal: false,
-                  showMonitoringStatusModal: false,
-                  message: '',
-                  reasoning: '',
-                });
-              }}>
+            <Button variant="secondary btn-square" onClick={this.toggleMonitoringPlanModal}>
               Cancel
             </Button>
           </Modal.Footer>
@@ -182,17 +189,7 @@ class MonitoringStatus extends React.Component {
             <Button variant="primary btn-square" onClick={this.submit}>
               Submit
             </Button>
-            <Button
-              variant="secondary btn-square"
-              onClick={() => {
-                this.setState({
-                  showExposureRiskAssessmentModal: false,
-                  showMonitoringPlanModal: false,
-                  showMonitoringStatusModal: false,
-                  message: '',
-                  reasoning: '',
-                });
-              }}>
+            <Button variant="secondary btn-square" onClick={this.toggleMonitoringStatusModal}>
               Cancel
             </Button>
           </Modal.Footer>
