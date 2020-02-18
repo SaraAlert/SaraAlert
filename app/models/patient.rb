@@ -24,8 +24,4 @@ class Patient < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
-  def as_json(options = {})
-    super((options || {}).merge(methods: :jurisdiction_path))
-  end
-
 end
