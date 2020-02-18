@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 2020_02_18_015649) do
     t.integer "creator_id"
     t.integer "jurisdiction_id"
     t.string "submission_token"
-    t.boolean "open", default: true
+    t.boolean "monitoring", default: true
     t.boolean "confirmed_case", default: false
     t.string "exposure_risk_assessment"
     t.string "monitoring_plan"

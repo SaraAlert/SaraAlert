@@ -12,7 +12,7 @@ class MonitoringStatus extends React.Component {
       showMonitoringStatusModal: false,
       message: '',
       reasoning: '',
-      monitoring_status: this.props.patient.open ? 'Actively Monitoring' : 'Not Monitoring',
+      monitoring_status: this.props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
       monitoring_plan: this.props.patient.monitoring_plan,
       exposure_risk_assessment: this.props.patient.exposure_risk_assessment,
     };
@@ -40,7 +40,7 @@ class MonitoringStatus extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post('/patients/' + this.props.patient.id + '/status', {
-        open: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
+        monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
         exposure_risk_assessment: this.state.exposure_risk_assessment,
         monitoring_plan: this.state.monitoring_plan,
         message: this.state.message,

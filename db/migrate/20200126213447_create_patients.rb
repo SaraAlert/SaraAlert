@@ -8,8 +8,8 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.integer :jurisdiction_id, index: true
       t.string :submission_token, index: true
 
-      # Open represents if a subject is open and being currently being monitored
-      t.boolean :open, default: true
+      # Monitoring represents if a subject is open and being currently being monitored
+      t.boolean :monitoring, default: true
 
       # Patient status
       t.boolean :confirmed_case, default: false # TODO: If this is ever true, should this patient continue to exist in the db?

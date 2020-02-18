@@ -97,7 +97,7 @@ class PatientsController < ApplicationController
   def update_status
     redirect_to root_url unless current_user.can_edit_patient?
     patient = Patient.find_by_id(params.permit(:id)[:id])
-    patient.update!(params.require(:patient).permit(:open, :monitoring_plan, :exposure_risk_assessment))
+    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_plan, :exposure_risk_assessment))
     history = History.new
     history.created_by = current_user.email
     comment = 'User changed '

@@ -6,7 +6,7 @@ class CloseSubjectsJob < ApplicationJob
     closeable = Patient.where("created_at < ? ", Date.today - ADMIN_OPTIONS['monitoring_period_days'].days)
     closeable.each do |subject|
       # TODO Add additional criteria for cases that we can auto-close eg: Non-symptomatic
-      subject[:open] = false
+      subject[:monitoring] = false
       subject.save!
     end
   end

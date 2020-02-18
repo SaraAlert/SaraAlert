@@ -6,9 +6,9 @@ class MonitorDashboardController < ApplicationController
     redirect_to root_url unless current_user.can_view_monitor_dashboard?
 
     # Load all patients that the current user can see, eager loading assessments
-    patients = current_user.viewable_patients.where(open: true).includes(:latest_assessment)
+    patients = current_user.viewable_patients.where(monitoring: true).includes(:latest_assessment)
 
-    @closed_patients = current_user.viewable_patients.includes(:latest_assessment).select { |p| p.open == false }
+    @closed_patients = current_user.viewable_patients.includes(:latest_assessment).select { |p| p.monitoring == false }
 
     # Show all patients that have reported symptoms
     @symptomatic_patients = patients.select { |p| p.latest_assessment&.symptomatic }
