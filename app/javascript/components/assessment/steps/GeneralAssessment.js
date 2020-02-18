@@ -65,7 +65,10 @@ class GeneralAssessment extends React.Component {
           </Card.Header>
           <Card.Body>
             <Form.Row className="pt-3">
-              <Form.Label className="nav-input-label">What was your temperature today (°F)?</Form.Label>
+              <Form.Label className="nav-input-label">
+                <div>What was your temperature today?</div>
+                <i className="text-secondary h6">Enter temp in C° or F° - the system will handle the unit.</i>
+              </Form.Label>
               <Form.Control
                 isInvalid={this.state.errors['temperature']}
                 size="lg"
@@ -114,9 +117,8 @@ class GeneralAssessment extends React.Component {
 const schema = yup.object().shape({
   temperature: yup
     .number()
-    .min(80, 'Please enter a value between 80 and 120 °F.')
-    .max(120, 'Please enter a value between 80 and 120 °F.')
     .typeError('Please enter a valid number.')
+    .test('is-in-bounds', 'Temperature Out of Bounds [27 - 49C] [80 - 120F]', value => (value > 27 && value < 49) || (value > 80 && value < 120))
     .required(),
 });
 

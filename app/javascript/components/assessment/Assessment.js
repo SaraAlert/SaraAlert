@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import _ from 'lodash';
 import { pickBy, identity } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import GeneralAssessment from './steps/GeneralAssessment';
@@ -16,6 +17,9 @@ class Assessment extends React.Component {
     this.previous = this.previous.bind(this);
     this.goto = this.goto.bind(this);
     this.submit = this.submit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.hasChanges = this.hasChanges.bind(this);
+    this.fieldIsEmptyOrNew = this.fieldIsEmptyOrNew.bind(this);
   }
 
   setAssessmentState(assessmentState) {
@@ -57,6 +61,33 @@ class Assessment extends React.Component {
     }
   }
 
+  hasChanges() {
+    let currentAssessment = _.cloneDeep(this.props.assessment);
+    let symptoms = ['cough', 'difficulty_breathing', 'symptomatic'];
+    // Having falsey values on them causes the comparison to fail.
+    symptoms.forEach(symptom => {
+      if (currentAssessment[symptom] === false) {
+        delete currentAssessment[symptom];
+      }
+    });
+    return !_.isEqual(this.state.assessmentState, currentAssessment);
+  }
+
+  fieldIsEmptyOrNew(object) {
+    const keysToIgnore = ['who_reported'];
+    let allFieldsEmpty = true;
+    _.map(object, (value, key) => {
+      if (object[key] !== null && !keysToIgnore.includes(key)) {
+        allFieldsEmpty = false;
+      }
+    });
+    if (allFieldsEmpty || _.isEmpty(this.props.assessment)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   submit() {
     var assessmentState = this.state.assessmentState;
     var self = this;
@@ -81,6 +112,20 @@ class Assessment extends React.Component {
     }
   }
 
+  handleSubmit() {
+    if (this.fieldIsEmptyOrNew(this.props.assessment)) {
+      this.submit();
+    } else {
+      if (this.hasChanges()) {
+        if (confirm("Are you sure you'd like to edit this record?")) {
+          this.submit();
+        }
+      } else {
+        this.submit();
+      }
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -95,7 +140,7 @@ class Assessment extends React.Component {
           <Carousel.Item>
             <GeneralAssessment
               goto={this.goto}
-              submit={this.submit}
+              submit={this.handleSubmit}
               setAssessmentState={this.setAssessmentState}
               currentState={this.state.assessmentState}
               idPre={this.props.idPre}
@@ -104,14 +149,19 @@ class Assessment extends React.Component {
           <Carousel.Item>
             <SymptomsAssessment
               goto={this.goto}
-              submit={this.submit}
+              submit={this.handleSubmit}
               setAssessmentState={this.setAssessmentState}
               currentState={this.state.assessmentState}
               idPre={this.props.idPre}
             />
           </Carousel.Item>
           <Carousel.Item>
-            <AssessmentCompleted goto={this.goto} submit={this.submit} setAssessmentState={this.setAssessmentState} currentState={this.state.assessmentState} />
+            <AssessmentCompleted
+              goto={this.goto}
+              submit={this.handleSubmit}
+              setAssessmentState={this.setAssessmentState}
+              currentState={this.state.assessmentState}
+            />
           </Carousel.Item>
         </Carousel>
       </React.Fragment>
