@@ -3,7 +3,7 @@ import { Card } from 'react-bootstrap';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 import ReactTooltip from 'react-tooltip';
 import { scaleQuantize } from 'd3-scale';
-import { USAMap, stateOptions } from '../../Data';
+import { USAMap, stateOptions } from '../../data';
 import { PropTypes } from 'prop-types';
 
 class MapChart extends React.Component {
