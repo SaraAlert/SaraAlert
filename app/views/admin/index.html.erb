@@ -17,7 +17,7 @@
 
     <div class="card card-square tab-pane fade show active" id="user" role="tabpanel" aria-labelledby="user-tab">
       <div class="p-3">
-        user configure (react component?)
+        <%= react_component("admin/Admin", {data: User.all, roles: User.all.map {|user| user.roles }.flatten, authenticity_token: form_authenticity_token}) %>
       </div>
     </div>
 

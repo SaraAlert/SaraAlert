@@ -4,4 +4,8 @@ class AdminController < ApplicationController
   def index
   end
 
+  def create_user
+    byebug
+  end
+
 end
