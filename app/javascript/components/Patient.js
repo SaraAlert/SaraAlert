@@ -287,9 +287,11 @@ class Patient extends React.Component {
                     : ''}
                 </span>
                 <br />
-                <span className="font-weight-light">{this.props.details.healthcare_worker ? 'Health Care Worker' : ''}</span>
+                <span className="font-weight-light">{this.props.details.travel_to_affected_country_or_area ? 'Health Care Worker' : ''}</span>
                 <br />
-                <span className="font-weight-light">{this.props.details.worked_in_health_care_facility ? 'Worked in Health Care Facility' : ''}</span>
+                <span className="font-weight-light">
+                  {this.props.details.was_in_health_care_facility_with_known_cases ? 'Worked in Health Care Facility' : ''}
+                </span>
               </Col>
             </Row>
           </Col>

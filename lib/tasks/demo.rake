@@ -150,8 +150,8 @@ namespace :demo do
             potential_exposure_country: Faker::Address.country,
             #contact_of_known_case
             #contact_of_known_case_id
-            healthcare_worker: rand < 0.1,
-            worked_in_health_care_facility: rand < 0.15,
+            travel_to_affected_country_or_area: rand < 0.1,
+            was_in_health_care_facility_with_known_cases: rand < 0.15,
             creator: enrollers.sample,
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
           )

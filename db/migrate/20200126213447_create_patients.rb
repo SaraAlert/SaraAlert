@@ -89,10 +89,12 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :potential_exposure_country
       t.boolean :contact_of_known_case
       t.string :contact_of_known_case_id
-      t.boolean :healthcare_worker
-      t.boolean :laboratory_worker
-      t.boolean :airline_worker
-      t.boolean :worked_in_health_care_facility
+      t.boolean :travel_to_affected_country_or_area
+      t.boolean :laboratory_personnel
+      t.boolean :healthcare_personnel
+      t.boolean :crew_on_passenger_or_cargo_flight
+      t.boolean :was_in_health_care_facility_with_known_cases
+      t.text :exposure_notes
     end
   end
 end

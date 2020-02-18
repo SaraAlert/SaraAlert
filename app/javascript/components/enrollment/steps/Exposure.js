@@ -111,7 +111,7 @@ class Exposure extends React.Component {
                       <Form.Check
                         type="switch"
                         id="contact_of_known_case"
-                        label="CONTACT OF KNOWN CASE"
+                        label="CLOSE CONTACT WITH A KNOWN CASE"
                         checked={this.state.current.contact_of_known_case === true || false}
                         onChange={this.handleChange}
                       />
@@ -132,9 +132,9 @@ class Exposure extends React.Component {
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
-                        id="healthcare_worker"
-                        label="HEALTHCARE WORKER"
-                        checked={this.state.current.healthcare_worker === true || false}
+                        id="travel_to_affected_country_or_area"
+                        label="TRAVEL TO AFFECTED COUNTRY OR AREA"
+                        checked={this.state.current.travel_to_affected_country_or_area === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -144,9 +144,9 @@ class Exposure extends React.Component {
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
-                        id="worked_in_health_care_facility"
-                        label="WORKED IN HEALTH CARE FACILITY"
-                        checked={this.state.current.worked_in_health_care_facility === true || false}
+                        id="was_in_health_care_facility_with_known_cases"
+                        label="WAS IN HEALTH CARE FACILITY WITH KNOWN CASES"
+                        checked={this.state.current.was_in_health_care_facility_with_known_cases === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -156,9 +156,9 @@ class Exposure extends React.Component {
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
-                        id="laboratory_worker"
-                        label="LABORATORY WORKER"
-                        checked={this.state.current.laboratory_worker === true || false}
+                        id="laboratory_personnel"
+                        label="LABORATORY PERSONNEL"
+                        checked={this.state.current.laboratory_personnel === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -168,11 +168,85 @@ class Exposure extends React.Component {
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
-                        id="airline_worker"
-                        label="AIRLINE WORKER"
-                        checked={this.state.current.airline_worker === true || false}
+                        id="healthcare_personnel"
+                        label="HEALTHCARE PERSONNEL"
+                        checked={this.state.current.healthcare_personnel === true || false}
                         onChange={this.handleChange}
                       />
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                      <Form.Check
+                        className="pt-2 my-auto"
+                        type="switch"
+                        id="crew_on_passenger_or_cargo_flight"
+                        label="CREW ON PASSENGER OR CARGO FLIGHT"
+                        checked={this.state.current.crew_on_passenger_or_cargo_flight === true || false}
+                        onChange={this.handleChange}
+                      />
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row className="pt-5">
+                    <Form.Group as={Col} md="8" controlId="exposure_risk_assessment">
+                      <Form.Label className="nav-input-label">
+                        EXPOSURE RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
+                      </Form.Label>
+                      <Form.Control
+                        isInvalid={this.state.errors['exposure_risk_assessment']}
+                        as="select"
+                        size="lg"
+                        className="form-square"
+                        id="exposure_risk_assessment"
+                        onChange={this.handleChange}
+                        value={this.state.current.exposure_risk_assessment || ''}>
+                        <option></option>
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                        <option>No Identified Risk</option>
+                      </Form.Control>
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['exposure_risk_assessment']}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group as={Col} md="8" controlId="monitoring_plan">
+                      <Form.Label className="nav-input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Control
+                        isInvalid={this.state.errors['monitoring_plan']}
+                        as="select"
+                        size="lg"
+                        className="form-square"
+                        id="monitoring_plan"
+                        onChange={this.handleChange}
+                        value={this.state.current.monitoring_plan || ''}>
+                        <option></option>
+                        <option>Daily active monitoring</option>
+                        <option>Self-monitoring with public health supervision</option>
+                        <option>Self-monitoring with delegated supervision</option>
+                        <option>Self-observation</option>
+                      </Form.Control>
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['monitoring_plan']}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row className="pt-4 pb-3">
+                    <Form.Group as={Col} md="24" controlId="exposure_notes">
+                      <Form.Label className="nav-input-label">EXPOSURE NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Control
+                        isInvalid={this.state.errors['exposure_notes']}
+                        as="textarea"
+                        rows="5"
+                        size="lg"
+                        className="form-square"
+                        placeholder="enter additional information about subject’s potential exposure"
+                        value={this.state.current.exposure_notes || ''}
+                        onChange={this.handleChange}
+                      />
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['exposure_notes']}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
                 </Form.Group>
@@ -218,8 +292,23 @@ const schema = yup.object().shape({
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
-  healthcare_worker: yup.boolean().nullable(),
-  worked_in_health_care_facility: yup.boolean().nullable(),
+  travel_to_affected_country_or_area: yup.boolean().nullable(),
+  was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
+  crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),
+  laboratory_personnel: yup.boolean().nullable(),
+  healthcare_personnel: yup.boolean().nullable(),
+  exposure_risk_assessment: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  monitoring_plan: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  exposure_notes: yup
+    .string()
+    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
+    .nullable(),
 });
 
 Exposure.propTypes = {
