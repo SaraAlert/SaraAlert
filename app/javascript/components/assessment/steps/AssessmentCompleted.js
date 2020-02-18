@@ -24,7 +24,7 @@ class AssessmentCompleted extends React.Component {
             Daily Self-Assessment
           </Card.Header>
           <Card.Body className="text-center">
-            <Form.Label className="text-center pt-1">Thank You For Completing Your Self Assesement</Form.Label>
+            <Form.Label className="text-center pt-1">Thank You For Completing Your Self Assessement</Form.Label>
             <br />
             <Form.Label className="fas fa-thumbs-up fa-10x text-center pt-2"> </Form.Label>
           </Card.Body>

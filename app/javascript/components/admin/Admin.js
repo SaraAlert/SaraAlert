@@ -1,15 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
+import { Button, ButtonGroup } from 'react-bootstrap';
+import { BootstrapTable, TableHeaderColumn, InsertModalHeader, InsertModalFooter } from 'react-bootstrap-table';
 
 const roleTypes = ['admin', 'enroller', 'monitor'];
-
 class Admin extends React.Component {
   constructor(props) {
     super(props);
     var dataLen = props.data.length;
+    // TODO: have role be available directly on patient sent from backend
+    // This method assumes that role and user data arrays have parallel indexes
     for (var i = 0; i < dataLen; i++) {
       props.data[i]['role'] = props.roles[i]['name'];
     }
@@ -17,55 +19,84 @@ class Admin extends React.Component {
   }
 
   onAddRow(row) {
+    if (this.props.data.map(a => a.email).includes(row.email)) {
+      alert('User already exists');
+      return;
+    }
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    const data = new Object({ user: row });
-    const message = 'User Successfully Added';
-    toast.success(message, {});
-    axios({
+    let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path], email: row.email, role: row.role };
+    let send_result = axios({
       method: 'post',
       url: '/admin/create_user',
-      data: data,
+      data: submit_data,
     })
-      .then(function() {
-        alert('Successfully added new user.');
+      .then(() => {
+        return true;
       })
       .catch(() => {
-        alert('Error adding new user.');
+        return false;
       });
+
+    send_result.then(success => {
+      if (success) {
+        this.props.data.push(row);
+        this.setState({ data: this.props.data });
+      } else {
+        alert('Error adding new user.');
+      }
+    });
   }
 
   addUserModalHeader = () => {
-    return <InsertModalHeader title="Add User" />;
+    return <InsertModalHeader title="Add User" hideClose={true} />;
   };
 
-  addUserModalFooter = save => {
+  addUserModalFooter = () => {
     return <InsertModalFooter saveBtnText="Add User" />;
+  };
+
+  addUserButton = onClick => {
+    return (
+      <Button variant="primary" size="md" className="btn-block btn-square" onClick={onClick}>
+        Add User
+      </Button>
+    );
+  };
+
+  createCustomButtonGroup = props => {
+    return <ButtonGroup className="mr-2 pb-1">{props.insertBtn}</ButtonGroup>;
   };
 
   render() {
     const options = {
       onAddRow: this.onAddRow,
+      btnGroup: this.createCustomButtonGroup,
+      insertBtn: this.addUserButton,
       insertModalHeader: this.addUserModalHeader,
       insertModalFooter: this.addUserModalFooter,
     };
 
     return (
-      <BootstrapTable data={this.props.data} insertRow={true} options={options}>
-        <TableHeaderColumn width="150px" dataField="email" isKey>
+      <BootstrapTable data={this.props.data} insertRow={true} options={options} className="table table-striped">
+        <TableHeaderColumn dataField="email" isKey>
           Email
         </TableHeaderColumn>
-        <TableHeaderColumn width="150px" dataField="jurisdiction_path">
+        <TableHeaderColumn dataField="jurisdiction_path" editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths) } }}>
           Jurisdiction
         </TableHeaderColumn>
-        <TableHeaderColumn width="150px" dataField="force_password_change">
-          Force Password Change
-        </TableHeaderColumn>
-        <TableHeaderColumn width="150px" dataField="role" editable={{ type: 'select', options: { values: roleTypes } }}>
+        <TableHeaderColumn dataField="role" editable={{ type: 'select', options: { values: roleTypes } }}>
           Role
         </TableHeaderColumn>
       </BootstrapTable>
     );
   }
 }
+
+Admin.propTypes = {
+  data: PropTypes.array,
+  authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
+  roles: PropTypes.array,
+};
 
 export default Admin;
