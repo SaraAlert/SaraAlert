@@ -125,6 +125,7 @@ GeneralAssessment.propTypes = {
   setAssessmentState: PropTypes.func,
   goto: PropTypes.func,
   submit: PropTypes.func,
+  idPre: PropTypes.string,
 };
 
 export default GeneralAssessment;

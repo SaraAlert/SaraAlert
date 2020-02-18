@@ -126,6 +126,7 @@ Assessment.propTypes = {
   assessment: PropTypes.object,
   updateId: PropTypes.number,
   reload: PropTypes.bool,
+  idPre: PropTypes.string,
 };
 
 export default Assessment;
