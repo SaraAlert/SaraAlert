@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import Patient from './Patient';
-import BreadcrumbPath from './BreadcrumbPath';
 import { PropTypes } from 'prop-types';
 
 class PatientPage extends React.Component {
@@ -19,13 +18,6 @@ class PatientPage extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <BreadcrumbPath
-          current_user={this.props.current_user}
-          crumbs={[
-            new Object({ value: 'Return To Dashboard', href: this.props.dashboardUrl ? this.props.dashboardUrl : null }),
-            new Object({ value: 'Subject View', href: null }),
-          ]}
-        />
         <Card className="mx-2 card-square">
           <Card.Header as="h5">
             Subject Details {this.props.patient_id ? `(ID: ${this.props.patient_id})` : ''}{' '}

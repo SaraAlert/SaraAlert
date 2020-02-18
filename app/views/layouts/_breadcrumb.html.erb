@@ -1,0 +1,10 @@
+<div class="mx-2">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <% crumbs.each do |crumb| -%>
+        <li class="breadcrumb-item lead<% if crumb[:href].nil? %> active<% end %>"><% unless crumb[:href].nil? %><a href="<%= crumb[:href] %>"><% end %><%= crumb[:value] %><% unless crumb[:href].nil? %></a><% end %></li>
+      <% end %>
+      <span class="lead ml-auto"><% unless jurisdiction_path.empty? %>Your Jurisdiction: <%= jurisdiction_path.join(', ') %><% end %></span>
+    </ol>
+  </nav>
+</div>

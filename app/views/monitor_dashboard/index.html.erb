@@ -1,4 +1,4 @@
-<%= react_component("BreadcrumbPath", { current_user: current_user, crumbs: [{ value: "Dashboard", href: nil }] }) %>
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Dashboard", href: nil} ] } %>
 
 <div class="mx-2 pb-4">
 
@@ -40,7 +40,7 @@
       <%= render partial: "patients", locals: { patients: @asymptomatic_patients } %>
     </div>
     <div class="card card-square tab-pane fade pt-3 px-2" id="analytics" role="tabpanel" aria-labelledby="analytics-tab">
-      <%= react_component("dashboard/Analytics", { stats: @stats }) %>
+      <%= react_component("dashboard/MonitorAnalytics", { stats: @stats }) %>
     </div>
   </div>
 
@@ -52,7 +52,8 @@
       "info": false,
       "columnDefs": [
         { "orderable": false, "targets": -1 }
-      ]
-      });
+      ],
+      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
+    });
   });
 </script>

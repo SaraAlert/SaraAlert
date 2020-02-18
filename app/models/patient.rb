@@ -17,6 +17,7 @@ class Patient < ApplicationRecord
   has_many :assessments
   has_one :latest_assessment, -> { order created_at: :desc }, class_name: 'Assessment'
   belongs_to :jurisdiction
+  has_many :histories
 
   # Allow information on the subject's jurisdiction to be displayed
   def jurisdiction_path

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_05_233306) do
+ActiveRecord::Schema.define(version: 2020_02_18_015649) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,16 @@ ActiveRecord::Schema.define(version: 2020_02_05_233306) do
     t.boolean "cough"
     t.boolean "difficulty_breathing"
     t.index ["patient_id"], name: "index_assessments_on_patient_id"
+  end
+
+  create_table "histories", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.text "comment"
+    t.string "created_by"
+    t.string "history_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_histories_on_patient_id"
   end
 
   create_table "jurisdictions", force: :cascade do |t|

@@ -1,3 +1,5 @@
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Dashboard", href: '/'}, {value: "Subject Details", href: nil} ] } %>
+
 <%# TODO: patient_id is a temporary ID concept, to be formalized based on requirements %>
 <%= react_component("PatientPage", { current_user: current_user, patient: @patient, patient_id: "#{@patient.address_state&.first(2)&.upcase || 'XX'}#{@patient.id.to_s.rjust(6, '0')}", dashboardUrl: '/monitor_dashboard', authenticity_token: form_authenticity_token }) %>
 
@@ -74,6 +76,19 @@
   <% end -%>
 <% end %>
 
+<% if current_user.can_modify_subject_status? %>
+  <div class="card mx-2 mt-3 mb-4 card-square">
+    <h5 class="card-header">Actions</h5>
+  </div>
+<% end %>
+
+<% if current_user.can_modify_subject_status? %>
+  <div class="card mx-2 mt-3 mb-4 card-square">
+    <h5 class="card-header">History</h5>
+    <%= render partial: "histories", locals: { patient_id: @patient.id, histories: @patient.histories } %>
+  </div>
+<% end %>
+
 <script>
   $(document).ready(function() {
     $('.assessment_table').DataTable({
@@ -83,7 +98,8 @@
       "columnDefs": [
         { "orderable": false, "targets": -1 }
       ],
-      "order": [[ 3, "desc" ]]
+      "order": [[ 3, "desc" ]],
+      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
     });
   });
 </script>

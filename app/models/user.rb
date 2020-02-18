@@ -72,6 +72,16 @@ class User < ApplicationRecord
     has_role?(:monitor) || has_role?(:admin)
   end
 
+  # Can this user modify subject status?
+  def can_modify_subject_status?
+    has_role?(:monitor) || has_role?(:admin)
+  end
+
+  # Can this user create subject history?
+  def can_create_subject_history?
+    has_role?(:monitor) || has_role?(:admin)
+  end
+
   # Allow information on the user's jurisdiction to be displayed
   def jurisdiction_path
     jurisdiction&.path&.map(&:name)

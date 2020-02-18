@@ -1,6 +1,8 @@
-<%= react_component("dashboard/EnrollerDashboard", { current_user: current_user, stats: @stats }) %>
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Dashboard", href: nil} ] } %>
 
-<div class="mx-2 pb-4 pt-4">
+<%= link_to 'Enroll New Subject', {controller: "patients", action: "new"}, class: "btn btn-lg btn-primary btn-square ml-2 mb-3" %>
+
+<div class="mx-2">
   <div class="card card-square">
     <h5 class="card-header">Enrolled Subjects</h5>
     <div class="m-3">
@@ -8,3 +10,7 @@
     </div>
   </div>
 </div>
+
+<%= react_component("dashboard/EnrollerAnalytics", { current_user: current_user, stats: @stats }) %>
+
+<div class="pb-4"></div>

@@ -12,7 +12,6 @@ import Review from './steps/Review';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import BreadcrumbPath from '../BreadcrumbPath';
 
 class Enrollment extends React.Component {
   constructor(props) {
@@ -105,10 +104,6 @@ class Enrollment extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <BreadcrumbPath
-          current_user={this.props.current_user}
-          crumbs={[new Object({ value: 'Return To Dashboard', href: '/' }), new Object({ value: 'Register New Subject', href: null })]}
-        />
         <Carousel
           controls={false}
           indicators={false}
