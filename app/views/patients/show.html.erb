@@ -29,18 +29,18 @@
     <h5 class="card-header">Subject Assessments <a href="#" data-toggle="modal" data-target="#modal-new">(add new)</a></h5>
     <div class="m-4">
       <% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature", "who_reported"] %>
-      <table class="assessment_table table table-sm table-striped table-hover table-smaller-font" style="width:100%">
+      <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
         <thead>
           <tr>
             <th style="display:none;">id</th>
-            <th>Symptomatic</th>
-            <th>Reporter</th>
-            <th>Date and Time</th>
-            <th>Temperature</th>
+            <th class="DataTable-table-header">Symptomatic</th>
+            <th class="DataTable-table-header">Reporter</th>
+            <th class="DataTable-table-header">Date and Time</th>
+            <th class="DataTable-table-header">Temperature</th>
             <% columns.each do |column| -%>
-              <th><%= column.titleize %></th>
+              <th class="DataTable-table-header"><%= column.titleize %></th>
             <% end -%>
-            <th>Actions</th>
+            <th class="DataTable-table-header">Actions</th>
           </tr>
         </thead>
         <tbody>
