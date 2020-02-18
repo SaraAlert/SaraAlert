@@ -1,0 +1,9 @@
+node_modules
+.git
+log/*
+tmp/*
+.env-prod
+.env-prod-example
+.dockerignore
+goals.txt
+README.md
