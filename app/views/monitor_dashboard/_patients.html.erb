@@ -11,7 +11,6 @@
         <th>Risk Level</th>
         <th>Monitoring Plan</th>
         <th>Latest Assessment</th>
-        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -27,9 +26,6 @@
           <td><%= patient.exposure_risk_assessment %></td>
           <td><% if patient.monitoring_plan&.include? 'Self-monitoring' %>Self<% elsif patient.monitoring_plan&.include? 'Daily' %>Daily<% end %></td>
           <td><%= patient.latest_assessment&.created_at&.to_date&.strftime('%F') %></td>
-          <td>
-            <%= link_to 'Edit', edit_patient_url(patient), class: 'ml-2' %>
-          </td>
         </tr>
       <% end -%>
     </tbody>
