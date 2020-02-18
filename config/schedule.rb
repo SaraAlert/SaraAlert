@@ -5,9 +5,11 @@ set :output, "/tmp/cronlog.log"
 
 
 ############# Development Settings For Development And Demonstration ############
-every 1.minute do
+
+every 1.hour do
   runner "CloseSubjectsJob.perform_now", :environment => "development"
 end
+
 #################################################################################
 
 
