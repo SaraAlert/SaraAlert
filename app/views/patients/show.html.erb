@@ -3,6 +3,13 @@
 <%# TODO: patient_id is a temporary ID concept, to be formalized based on requirements %>
 <%= react_component("PatientPage", { current_user: current_user, patient: @patient, patient_id: "#{@patient.address_state&.first(2)&.upcase || 'XX'}#{@patient.id.to_s.rjust(6, '0')}", dashboardUrl: '/monitor_dashboard', authenticity_token: form_authenticity_token }) %>
 
+<% if current_user.can_modify_subject_status? %>
+  <div class="card mx-2 mt-4 mb-4 card-square">
+    <h5 class="card-header">Subject Monitoring</h5>
+    <%= react_component("subject/MonitoringStatus", { current_user: current_user, authenticity_token: form_authenticity_token, patient: @patient }) %>
+  </div>
+<% end %>
+
 <% if current_user.can_view_patient_assessments? %>
   <div class="modal" tabindex="-1" role="dialog" id="modal-new">
     <div class="modal-dialog" role="document">
@@ -68,7 +75,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }, html_options={id: `a${assessment.id}`}) %>
+            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
           </div>
         </div>
       </div>
@@ -78,21 +85,14 @@
 
 <% if current_user.can_modify_subject_status? %>
   <div class="card mx-2 mt-3 mb-4 card-square">
-    <h5 class="card-header">Actions</h5>
-  </div>
-<% end %>
-
-<% if current_user.can_modify_subject_status? %>
-  <div class="card mx-2 mt-3 mb-4 card-square">
     <h5 class="card-header">History</h5>
-    <%= render partial: "histories", locals: { patient_id: @patient.id, histories: @patient.histories } %>
+    <%= render partial: "histories", locals: { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC') } %>
   </div>
 <% end %>
 
 <script>
   $(document).ready(function() {
     $('.assessment_table').DataTable({
-      "paging": false,
       "search": false,
       "info": false,
       "columnDefs": [

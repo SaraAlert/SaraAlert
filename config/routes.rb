@@ -15,6 +15,8 @@ Rails.application.routes.draw do
 
   get '/patients/:id/group', to: 'patients#new_group_member'
 
+  post '/patients/:id/status', to: 'patients#update_status'
+
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]
   end

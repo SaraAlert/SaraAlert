@@ -14,6 +14,9 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       # Patient status
       t.boolean :confirmed_case, default: false # TODO: If this is ever true, should this patient continue to exist in the db?
 
+      t.string :exposure_risk_assessment
+      t.string :monitoring_plan
+
       # Data collected for each patient
       # TODO: Consider storing this type of data as key value pairs in a separate table
       # TODO: We may want to break out the enrollments notes into a notes table shared with other notes

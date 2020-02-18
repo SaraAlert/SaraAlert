@@ -94,6 +94,21 @@ class PatientsController < ApplicationController
     render json: patient
   end
 
+  def update_status
+    redirect_to root_url unless current_user.can_edit_patient?
+    patient = Patient.find_by_id(params.permit(:id)[:id])
+    patient.update!(params.require(:patient).permit(:open, :monitoring_plan, :exposure_risk_assessment))
+    history = History.new
+    history.created_by = current_user.email
+    comment = 'User changed '
+    comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
+    comment += ' Reason: ' +params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+    history.comment = comment
+    history.patient = patient
+    history.history_type = 'Monitoring Change'
+    history.save!
+  end
+
   def get_stats
     @stats = {
       system_subjects: Patient.count,
@@ -180,7 +195,9 @@ class PatientsController < ApplicationController
       :healthcare_worker,
       :worked_in_health_care_facility,
       :laboratory_worker,
-      :airline_worker
+      :airline_worker,
+      :monitoring_plan,
+      :exposure_risk_assessment
     ]
   end
 

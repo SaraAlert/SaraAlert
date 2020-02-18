@@ -54,6 +54,8 @@ ActiveRecord::Schema.define(version: 2020_02_18_015649) do
     t.string "submission_token"
     t.boolean "open", default: true
     t.boolean "confirmed_case", default: false
+    t.string "exposure_risk_assessment"
+    t.string "monitoring_plan"
     t.string "first_name"
     t.string "middle_name"
     t.string "last_name"
