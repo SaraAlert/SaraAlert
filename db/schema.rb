@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 2020_02_18_015649) do
     t.boolean "confirmed_case", default: false
     t.string "exposure_risk_assessment"
     t.string "monitoring_plan"
+    t.string "user_defined_id"
     t.string "first_name"
     t.string "middle_name"
     t.string "last_name"

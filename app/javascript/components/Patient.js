@@ -43,6 +43,9 @@ class Patient extends React.Component {
             </Row>
             <Row>
               <Col className="text-truncate">
+                <span className="font-weight-normal">ID:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.user_defined_id ? this.props.details.user_defined_id : ''}`}</span>
+                <br />
                 <span className="font-weight-normal">DOB:</span>{' '}
                 <span className="font-weight-light">{this.props.details.date_of_birth && `${this.props.details.date_of_birth}`}</span>
                 <br />
@@ -65,6 +68,10 @@ class Patient extends React.Component {
                 <br />
                 <span className="font-weight-normal">Ethnicity:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.ethnicity ? this.props.details.ethnicity : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Nationality:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.nationality ? this.props.details.nationality : ''}`}</span>
+                <br />
               </Col>
             </Row>
             {/* TODO: This should be adjusted when we start setting the jurisdiction during the enrollment process */}

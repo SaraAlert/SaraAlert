@@ -20,7 +20,7 @@ class PatientPage extends React.Component {
       <React.Fragment>
         <Card className="mx-2 card-square">
           <Card.Header as="h5">
-            Subject Details {this.props.patient_id ? `(ID: ${this.props.patient_id})` : ''}{' '}
+            Subject Details {this.props.patient.user_defined_id ? `(ID: ${this.props.patient.user_defined_id})` : ''}{' '}
             {this.props.patient.id && <a href={'/patients/' + this.props.patient.id + '/edit'}>(click here to edit subject details)</a>}
           </Card.Header>
           <Card.Body>

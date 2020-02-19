@@ -14,8 +14,12 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       # Patient status
       t.boolean :confirmed_case, default: false # TODO: If this is ever true, should this patient continue to exist in the db?
 
+      # Workflow categories
       t.string :exposure_risk_assessment
       t.string :monitoring_plan
+
+      # User definable identifier
+      t.string :user_defined_id
 
       # Data collected for each patient
       # TODO: Consider storing this type of data as key value pairs in a separate table

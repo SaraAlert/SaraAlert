@@ -258,6 +258,21 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
+              <Form.Row className="pt-2">
+                <Form.Group as={Col} md={12} controlId="user_defined_id">
+                  <Form.Label className="nav-input-label">IDENTIFIER{schema?.fields?.user_defined_id?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['user_defined_id']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.user_defined_id || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['user_defined_id']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Form.Row>
             </Form>
             {this.props.previous && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
@@ -325,6 +340,10 @@ const schema = yup.object().shape({
     .nullable(),
   interpretation_required: yup.boolean().nullable(),
   nationality: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  user_defined_id: yup
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),

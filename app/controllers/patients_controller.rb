@@ -125,6 +125,7 @@ class PatientsController < ApplicationController
   # Parameters allowed for saving to database
   def allowed_params
     [
+      :user_defined_id,
       :first_name,
       :middle_name,
       :last_name,
