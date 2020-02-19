@@ -7,11 +7,11 @@ RUN curl -o /usr/local/share/ca-certificates/MITRE-BA-NPE-CA-3.crt "http://pki.m
 RUN update-ca-certificates
 
 # Install node, tzdata, and yarn
-RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - 
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list 
-RUN apt-get update 
-RUN apt-get upgrade -y 
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update
+RUN apt-get upgrade -y
 RUN apt-get install -y nodejs tzdata yarn
 RUN rm -rf /var/lib/apt/lists/*
 
@@ -32,9 +32,11 @@ RUN su app -c 'bundle install --binstubs --without development test'
 
 ADD . /home/app/disease-trakker
 
-# Set yarn 
+# Set yarn
 RUN yarn config set cafile /usr/local/share/ca-certificates/MITRE-BA-Root.crt
 RUN npm config set cafile /usr/local/share/ca-certificates/MITRE-BA-Root.crt
+
+RUN yarn install
 
 # Create a folder that needs to exist for the precompile
 RUN mkdir -p ./app/assets/stylesheets
