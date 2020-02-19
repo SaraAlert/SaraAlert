@@ -12,9 +12,9 @@ class MonitoringStatus extends React.Component {
       showMonitoringStatusModal: false,
       message: '',
       reasoning: '',
-      monitoring_status: props?.patient?.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
-      monitoring_plan: props.patient.monitoring_plan,
-      exposure_risk_assessment: props.patient.exposure_risk_assessment,
+      monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
+      monitoring_plan: props.patient.monitoring_plan ? props.patient.monitoring_plan : '',
+      exposure_risk_assessment: props.patient.exposure_risk_assessment ? props.patient.exposure_risk_assessment : '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -27,7 +27,7 @@ class MonitoringStatus extends React.Component {
     if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
         showExposureRiskAssessmentModal: true,
-        message: 'exposure risk assessment to "' + event?.target?.value ? event.target.value : '' + '".',
+        message: 'exposure risk assessment to "' + event.target.value + '".',
         [event.target.id]: event?.target?.value ? event.target.value : '',
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
@@ -51,6 +51,7 @@ class MonitoringStatus extends React.Component {
     let current = this.state.showMonitoringStatusModal;
     this.setState({
       showMonitoringStatusModal: !current,
+      monitoring_status: this.props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
     });
   }
 
@@ -58,6 +59,7 @@ class MonitoringStatus extends React.Component {
     let current = this.state.showMonitoringPlanModal;
     this.setState({
       showMonitoringPlanModal: !current,
+      monitoring_plan: this.props.patient.monitoring_plan ? this.props.patient.monitoring_plan : '',
     });
   }
 
@@ -65,6 +67,7 @@ class MonitoringStatus extends React.Component {
     let current = this.state.showExposureRiskAssessmentModal;
     this.setState({
       showExposureRiskAssessmentModal: !current,
+      exposure_risk_assessment: this.props.patient.exposure_risk_assessment ? this.props.patient.exposure_risk_assessment : '',
     });
   }
 

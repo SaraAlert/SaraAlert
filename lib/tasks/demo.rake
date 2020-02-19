@@ -153,6 +153,7 @@ namespace :demo do
             travel_to_affected_country_or_area: rand < 0.1,
             was_in_health_care_facility_with_known_cases: rand < 0.15,
             creator: enrollers.sample,
+            user_defined_id: "EXAMPLE-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
           )
 
