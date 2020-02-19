@@ -34,7 +34,7 @@ class SystemStatistics extends React.Component {
             <Row className="mx-4 mt-4">
               <Col>
                 <Row>
-                  <h5>TOTAL ASSESSMENTS</h5>
+                  <h5>TOTAL REPORTS</h5>
                 </Row>
                 <Row>
                   <h1 className="display-1">{this.props.stats.system_assessmets}</h1>

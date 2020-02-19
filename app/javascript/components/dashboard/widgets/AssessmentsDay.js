@@ -13,7 +13,7 @@ class AssessmentsDay extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="h5">Assessment Type Over Time</Card.Header>
+          <Card.Header as="h5">Report Type Over Time</Card.Header>
           <Card.Body>
             <div style={{ width: '100%', height: '300px' }} className="recharts-wrapper">
               <ResponsiveContainer>
@@ -23,8 +23,8 @@ class AssessmentsDay extends React.Component {
                   <CartesianGrid strokeDasharray="3 3" />
                   <Legend />
                   <Tooltip />
-                  <Line type="monotone" dataKey="Symptomatic Assessments" stroke="#8884d8" activeDot={{ r: 8 }} />
-                  <Line type="monotone" dataKey="Asymptomatic Assessments" stroke="#82ca9d" />
+                  <Line type="monotone" dataKey="Symptomatic Reports" stroke="#8884d8" activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="Asymptomatic Reports" stroke="#82ca9d" />
                 </LineChart>
               </ResponsiveContainer>
             </div>

@@ -61,7 +61,7 @@ class GeneralAssessment extends React.Component {
       <React.Fragment>
         <Card className="mx-0 card-square align-item-center">
           <Card.Header className="text-center" as="h4">
-            Daily Self-Assessment
+            Daily Self-Report
           </Card.Header>
           <Card.Body>
             <Form.Row className="pt-3">

@@ -21,10 +21,10 @@ class AssessmentCompleted extends React.Component {
       <React.Fragment>
         <Card className="mx-0 card-square align-item-center">
           <Card.Header className="text-center" as="h4">
-            Daily Self-Assessment
+            Daily Self-Report
           </Card.Header>
           <Card.Body className="text-center">
-            <Form.Label className="text-center pt-1">Thank You For Completing Your Self Assessement</Form.Label>
+            <Form.Label className="text-center pt-1">Thank You For Completing Your Self Report</Form.Label>
             <br />
             <Form.Label className="fas fa-thumbs-up fa-10x text-center pt-2"> </Form.Label>
           </Card.Body>

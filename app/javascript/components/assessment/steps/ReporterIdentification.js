@@ -20,7 +20,7 @@ class ReporterIdentification extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-0 card-square">
-          <Card.Header as="h4">Daily Self-Assessment</Card.Header>
+          <Card.Header as="h4">Daily Self-Report</Card.Header>
           <Card.Body>
             <Form>
               <Form.Label className="nav-input-label">Are You Reporting For Yourself Or Somebody Else?</Form.Label>

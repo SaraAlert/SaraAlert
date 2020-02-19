@@ -190,11 +190,11 @@ class Contact extends React.Component {
                   Landline
                 </Form.Group>
                 <Form.Group as={Col} md="auto">
-                  <span className="font-weight-light">Phone capable of accessing web-based assessment tool</span>
+                  <span className="font-weight-light">Phone capable of accessing web-based report tool</span>
                   <br />
                   <span className="font-weight-light">Phone capable of SMS messaging</span>
                   <br />
-                  <span className="font-weight-light">Has telephone but cannot use SMS or web-based assessment tool</span>
+                  <span className="font-weight-light">Has telephone but cannot use SMS or web-based report tool</span>
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-3">
