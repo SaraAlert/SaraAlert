@@ -13,8 +13,8 @@ class MonitoringStatus extends React.Component {
       message: '',
       reasoning: '',
       monitoring_status: props?.patient?.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
-      monitoring_plan: !!props.patient.monitoring_plan,
-      exposure_risk_assessment: !!props.patient.exposure_risk_assessment,
+      monitoring_plan: props.patient.monitoring_plan,
+      exposure_risk_assessment: props.patient.exposure_risk_assessment,
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
