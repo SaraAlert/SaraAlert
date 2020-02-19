@@ -27,7 +27,7 @@ class MonitoringStatus extends React.Component {
     if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
         showExposureRiskAssessmentModal: true,
-        message: 'exposure risk report to "' + event?.target?.value ? event.target.value : '' + '".',
+        message: 'exposure risk assessment to "' + event?.target?.value ? event.target.value : '' + '".',
         [event.target.id]: event?.target?.value ? event.target.value : '',
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
@@ -106,7 +106,7 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col}>
-                  <Form.Label>EXPOSURE RISK REPORT</Form.Label>
+                  <Form.Label>EXPOSURE RISK ASSESSMENT</Form.Label>
                   <Form.Control
                     as="select"
                     className="form-control-lg"
@@ -136,7 +136,7 @@ class MonitoringStatus extends React.Component {
         </Form>
         <Modal show={this.state.showExposureRiskAssessmentModal}>
           <Modal.Header>
-            <Modal.Title>Subject Exposure Risk Report</Modal.Title>
+            <Modal.Title>Subject Exposure Risk Assessment</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>You are about to change this subject&apos;s {this.state.message}</p>
