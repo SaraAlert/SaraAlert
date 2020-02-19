@@ -190,7 +190,7 @@ class Exposure extends React.Component {
                   <Form.Row className="pt-5">
                     <Form.Group as={Col} md="8" controlId="exposure_risk_assessment">
                       <Form.Label className="nav-input-label">
-                        EXPOSURE RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
+                        EXPOSURE RISK REPORT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['exposure_risk_assessment']}
