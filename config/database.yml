@@ -83,3 +83,5 @@ production:
   database: disease_trakker_production
   username: disease_trakker
   password: <%= ENV['DISEASE_TRAKKER_DATABASE_PASSWORD'] %>
+  host: <%= ENV['DISEASE_TRAKKER_DATABASE_HOST'] || 'localhost' %>
+  port: <%= ENV['DISEASE_TRAKKER_DATABASE_PORT'] || '5432' %>
