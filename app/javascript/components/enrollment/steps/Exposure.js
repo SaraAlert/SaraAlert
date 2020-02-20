@@ -47,7 +47,7 @@ class Exposure extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Subject Potential Exposure Information</Card.Header>
+          <Card.Header as="h5">Subject Exposure Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row>
@@ -187,10 +187,16 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-5">
+                  <Form.Row className="pt-4 g-border-bottom-2" />
+                  <Form.Row className="pt-3">
+                    <Form.Group as={Col}>
+                      <Form.Label className="nav-input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row className="pt-2">
                     <Form.Group as={Col} md="8" controlId="exposure_risk_assessment">
                       <Form.Label className="nav-input-label">
-                        EXPOSURE RISK REPORT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
+                        EXPOSURE RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['exposure_risk_assessment']}
@@ -278,6 +284,7 @@ const schema = yup.object().shape({
   last_date_of_potential_exposure: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .max(new Date(), 'Date can not be in the future.')
+    .required('Please enter a last date of exposure.')
     .nullable(),
   potential_exposure_location: yup
     .string()
