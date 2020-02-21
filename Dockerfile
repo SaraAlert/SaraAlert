@@ -32,7 +32,6 @@ RUN chown -R app:app .
 RUN su app -c 'bundle install --binstubs --without development test'
 
 RUN yarn config set cafile /etc/ssl/certs/ca-certificates.crt
-RUN yarn install
 
 ADD . /home/app/disease-trakker
 
