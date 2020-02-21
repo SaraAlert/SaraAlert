@@ -84,6 +84,7 @@ class MonitoringStatus extends React.Component {
   toggleJurisdictionModal() {
     let current = this.state.showJurisdictionModal;
     this.setState({
+      message: 'jurisdiction to "' + this.state.jurisdiction + '".',
       showJurisdictionModal: !current,
     });
   }

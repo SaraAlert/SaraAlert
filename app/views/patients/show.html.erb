@@ -1,4 +1,4 @@
-<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return To Dashboard", href: '/'}, {value: "Subject Details", href: nil} ] } %>
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return To Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ] } %>
 
 <%# TODO: patient_id is a temporary ID concept, to be formalized based on requirements %>
 <%= react_component("PatientPage", { current_user: current_user, patient: @patient, patient_id: "#{@patient.address_state&.first(2)&.upcase || 'XX'}#{@patient.id.to_s.rjust(6, '0')}", dashboardUrl: '/monitor_dashboard', authenticity_token: form_authenticity_token }) %>
