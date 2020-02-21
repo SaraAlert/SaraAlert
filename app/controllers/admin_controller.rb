@@ -8,12 +8,12 @@ class AdminController < ApplicationController
   end
 
   def create_user
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role)
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
     roles = Role.pluck(:name)
     email = permitted_params[:email]
     raise "EMAIL must be provided" unless email
     password = SecureRandom.base58(10) # About 58 bits of entropy
-    role = permitted_params[:role]
+    role = permitted_params[:role_title]
     raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]

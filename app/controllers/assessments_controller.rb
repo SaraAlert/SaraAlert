@@ -25,9 +25,9 @@ class AssessmentsController < ApplicationController
       @assessment.symptomatic = false
     end
 
-    # Determine if a user created this assessment or a subject
+    # Determine if a user created this assessment or a monitoree
     if current_user.nil?
-      @assessment.who_reported = 'subject'
+      @assessment.who_reported = 'Monitoree'
     else
       @assessment.who_reported = current_user.email
     end
@@ -50,7 +50,7 @@ class AssessmentsController < ApplicationController
     else
       assessment.symptomatic = false
     end
-    # Subjects can't edit their own assessments, so the last person to touch this assessment was current_user
+    # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
     assessment.who_reported = current_user.email
     assessment.save!
   end

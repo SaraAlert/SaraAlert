@@ -45,7 +45,7 @@ class Risk extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Subject Risk Factor Information</Card.Header>
+          <Card.Header as="h5">Monitoree Risk Factor Information</Card.Header>
           <Card.Body>
             {this.props.previous && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>

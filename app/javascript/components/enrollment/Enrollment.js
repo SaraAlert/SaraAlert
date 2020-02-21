@@ -39,7 +39,7 @@ class Enrollment extends React.Component {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     const data = new Object({ patient: this.state.enrollmentState });
-    const message = this.props.editMode ? 'Subject Successfully Updated.' : 'Subject Successfully Saved.';
+    const message = this.props.editMode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
     if (this.props.parent_id) {
       data['responder_id'] = this.props.parent_id;
     }

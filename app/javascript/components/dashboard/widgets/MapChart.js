@@ -72,7 +72,7 @@ class MapChart extends React.Component {
       <React.Fragment>
         <ReactTooltip>{this.state.content}</ReactTooltip>
         <Card className="card-square">
-          <Card.Header as="h5">Location of Symptomatic Subjects</Card.Header>
+          <Card.Header as="h5">Location of Symptomatic Monitorees</Card.Header>
           <Card.Body>
             <ComposableMap data-tip="" projection="geoAlbersUsa">
               <ZoomableGroup center={[-97, 40]} zoom={this.state.zoom}>
