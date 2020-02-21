@@ -15,7 +15,7 @@ class MonitoringDistributionDay extends React.Component {
         <Card className="card-square">
           <Card.Header as="h5">Monitoring Distribution by Day</Card.Header>
           <Card.Body>
-            <h5 className="pb-4">DISTRIBUTION OF SUBJECTS UNDER MONITORING</h5>
+            <h5 className="pb-4">DISTRIBUTION OF MONITOREES UNDER MONITORING</h5>
             <div style={{ width: '100%', height: '330px' }} className="recharts-wrapper">
               <ResponsiveContainer>
                 <BarChart data={data}>
@@ -27,7 +27,7 @@ class MonitoringDistributionDay extends React.Component {
                   <YAxis
                     label={
                       <Text x={-30} y={60} dx={50} dy={150} offset={0} angle={-90}>
-                        Number of Subjects
+                        Number of Monitorees
                       </Text>
                     }
                   />

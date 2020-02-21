@@ -8,7 +8,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.integer :jurisdiction_id, index: true
       t.string :submission_token, index: true
 
-      # Monitoring represents if a subject is open and being currently being monitored
+      # Monitoring represents if a monitoree is open and being currently being monitored
       t.boolean :monitoring, default: true
 
       # Patient status

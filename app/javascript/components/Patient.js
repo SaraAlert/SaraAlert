@@ -9,14 +9,14 @@ class Patient extends React.Component {
 
   render() {
     if (!this.props.details) {
-      return <React.Fragment>No subject details to show.</React.Fragment>;
+      return <React.Fragment>No monitoree details to show.</React.Fragment>;
     }
     return (
       <React.Fragment>
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
           <Row className="pb-4 my-2 mx-4">
-            The reporting responsibility for this subject is handled by another subject.&nbsp;
-            <a href={'/patients/' + this.props.details.responder_id}>Click here to view that subject</a>.
+            The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
+            <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
           </Row>
         )}
         <Row className="g-border-bottom-2 pb-4 my-2 mx-2">
@@ -25,7 +25,7 @@ class Patient extends React.Component {
               <Col>
                 <div className="float-left">
                   <h5>
-                    <u>Subject Identification</u>:{' '}
+                    <u>Identification</u>:{' '}
                     {`${this.props.details.first_name ? this.props.details.first_name : ''}${
                       this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
                     }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
@@ -90,7 +90,7 @@ class Patient extends React.Component {
               <Col>
                 <div className="float-left">
                   <h5>
-                    <u>Subject Address</u>
+                    <u>Address</u>
                   </h5>
                 </div>
                 <div className="float-right">
@@ -132,7 +132,7 @@ class Patient extends React.Component {
               <Col>
                 <div className="float-left">
                   <h5>
-                    <u>Subject Contact</u>
+                    <u>Contact Information</u>
                   </h5>
                 </div>
                 <div className="float-right">
@@ -170,7 +170,7 @@ class Patient extends React.Component {
               <Col>
                 <div className="float-left">
                   <h5>
-                    <u>Subject Arrival Information</u>
+                    <u>Arrival Information</u>
                   </h5>
                 </div>
                 <div className="float-right">
@@ -212,7 +212,7 @@ class Patient extends React.Component {
               <Col>
                 <div className="float-left">
                   <h5>
-                    <u>Subject Additional Planned Travel</u>
+                    <u>Additional Planned Travel</u>
                   </h5>
                 </div>
                 <div className="float-right">
@@ -263,7 +263,7 @@ class Patient extends React.Component {
               <Col>
                 <div className="float-left">
                   <h5>
-                    <u>Subject Potential Exposure Information</u>
+                    <u>Potential Exposure Information</u>
                   </h5>
                 </div>
                 <div className="float-right">

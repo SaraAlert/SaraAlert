@@ -47,7 +47,7 @@ class Exposure extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Subject Potential Exposure Information</Card.Header>
+          <Card.Header as="h5">Monitoree Potential Exposure Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row>
@@ -240,7 +240,7 @@ class Exposure extends React.Component {
                         rows="5"
                         size="lg"
                         className="form-square"
-                        placeholder="enter additional information about subject’s potential exposure"
+                        placeholder="enter additional information about monitoree’s potential exposure"
                         value={this.state.current.exposure_notes || ''}
                         onChange={this.handleChange}
                       />

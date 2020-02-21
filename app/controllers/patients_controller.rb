@@ -52,8 +52,8 @@ class PatientsController < ApplicationController
     # TODO: We need to correctly assign this patient to a jurisdiction; for now just assume the jurisidiction of the user
     patient.jurisdiction = current_user.jurisdiction
 
-    # Create a secure random token to act as the subject's password when they submit assessments; this gets
-    # included in the URL sent to the subject to allow them to report without having to type in a password
+    # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
+    # included in the URL sent to the monitoree to allow them to report without having to type in a password
     # TODO: This is currently a notional solution, and any final solution will require a security review
     patient.submission_token = SecureRandom.hex(20) # 160 bits
 

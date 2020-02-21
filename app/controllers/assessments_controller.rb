@@ -50,7 +50,7 @@ class AssessmentsController < ApplicationController
     else
       assessment.symptomatic = false
     end
-    # Subjects can't edit their own assessments, so the last person to touch this assessment was current_user
+    # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
     assessment.who_reported = current_user.email
     assessment.save!
   end
