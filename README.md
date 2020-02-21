@@ -51,3 +51,57 @@ You will have to start sidekiq independent of the app, you'll have to make sure 
 The [whenever gem](https://github.com/javan/whenever) is what we are using to schedule ActiveJobs.
 This gem uses the contents of `config/schedule.rb` to generate a crontab file.
 If you make changes to this file make sure to run `bundle exec whenever --update-crontab`
+
+
+### Docker
+
+##### Building Docker Image Behind Corperate Proxy
+1. Put your root cert(s) in a certs/ directory in a file named ca-certificates.crt
+2. Pass the certs directory to docker build as an argument named `cert_dir`
+```bash
+docker build --build-arg cert_dir=./certs  .
+```
+***Note if building image via docker-compse certs are expected to be in a root-level directory named `certs`
+
+##### Running App Using Docker-Compose
+To get this working in Docker:
+
+* Ensure docker and docker-compose are installed on your machine
+* Generate an `.env-prod` file. To see an example of what needs to be in that file, view `.env-prod-example`. The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least
+* `docker-compose build .`
+* `docker-compose down` (if it's already running)
+* `docker-compose up -d --force-recreate` (-d starts it daemonized, --force-recreate makes it grab the new build you just did)
+* `docker-compose logs -f` will follow the log files as these containers are started
+* `docker-compose exec disease-trakker /usr/bin/rake db:create db:migrate RAILS_ENV=production`
+* `docker-compose exec disease-trakker /usr/bin/rake demo:populate demo:setup RAILS_ENV=production`
+* `docker-compose exec disease-trakker /usr/bin/rake mailers:test_send_enrollment_email RAILS_ENV=production`
+
+### Setting this up on Nightingaledemo-dev
+* Installed docker-compose from this guide: https://docs.docker.com/compose/install/
+* Added a `docker` group, and added myself (mokeefe) to it
+* `cd /etc/httpd/conf.d` to get to the apache conf directory
+* `mv welcome.conf welcome.conf.bak` to get rid of the "apache is working" starter page
+* Copy the following into the terminal:
+ ```ApacheConf
+cat <<EOT >> sara.conf
+  <VirtualHost *:80>
+    ServerName saraalert.mitre.org
+    ServerAlias nightingaledemo-dev.mitre.org
+    ServerAlias diseasetrakkerdemo.mitre.org
+
+    ProxyPass / http://localhost:3000/
+
+    ProxyPassReverse / http://localhost:3000/
+  </VirtualHost>
+EOT
+```
+* `sudo service httpd restart` to make the updates take
+* `cd /etc/postfix` to get to the postfix conf directory
+* in `main.cf`:
+* find the host address by finding the ip for `docker0` from `ip a`, e.g. `172.17.0.1`
+* Add that host address to the `inet_interfaces` variable, e.g. `localhost, 172.17.0.1`
+* Then add the /16 subnet to `mynetworks`, e.g. `localhost, 172.17.0.0/16`
+* Add iptables rules to allow smtp connections on all interfaces except the externally facing ethernet: `sudo iptables -I INPUT -i ens33 -p tcp --dport 25 -j DROP` and `sudo iptables -I INPUT 2 -p tcp --dport 25 -j ACCEPT`
+* Save the iptables config to persist through reboots: `sudo iptables-save`
+
+

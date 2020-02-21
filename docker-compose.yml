@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  sara-alert:
+    build:
+      context: .
+      args:
+        cert_dir: ./certs
+    image: sara-alert-rails
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env-prod
+    restart: unless-stopped
+    networks:
+      - dt-net
+    depends_on:
+      - redis
+      - postgres
+  postgres:
+    image: 'postgres:10.3-alpine'
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_USER: disease_trakker
+    env_file:
+      - .env-prod
+    restart: unless-stopped
+    networks:
+      - dt-net
+  redis:
+    image: "redis:rc-alpine"
+    volumes:
+      - 'redis:/data'
+    command: redis-server
+    restart: unless-stopped
+    networks:
+      - dt-net
+  sidekiq:
+    image: sara-alert-rails
+    env_file:
+      - .env-prod
+    restart: unless-stopped
+    networks:
+      - dt-net
+    command: bundle exec sidekiq -q default -q mailers
+    depends_on:
+      - redis
+      - sara-alert
+
+volumes:
+  redis:
+  postgres:
+
+networks:
+  dt-net:

@@ -62,9 +62,24 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  config.action_mailer.delivery_method = :smtp
+
+  config.action_mailer.default_url_options = {
+    host: ENV['ACTION_MAILER_HOST'] || 'localhost',
+    port: ENV['ACTION_MAILER_PORT'] || 3000,
+    protocol: ENV['ACTION_MAILER_PROTOCOL'] || 'http',
+    script_name: ENV['ACTION_MAILER_PATH']
+  }
+
+  config.action_mailer.smtp_settings = {
+    address: ENV['ACTION_MAILER_SMTP_ADDRESS'] || 'localhost',
+    port: ENV['ACTION_MAILER_SMTP_PORT'] || 25
+  }
+
+
   # TODO: Set this for the production environment
   # config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-  
+
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false

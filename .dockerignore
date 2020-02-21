@@ -1,0 +1,13 @@
+# OS X
+.DS_Store
+
+node_modules
+.git
+.gitignore
+log/*
+tmp/*
+.env-prod
+.env-prod-example
+.dockerignore
+goals.txt
+README.md
