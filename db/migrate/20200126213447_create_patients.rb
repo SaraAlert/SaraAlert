@@ -18,8 +18,12 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :exposure_risk_assessment
       t.string :monitoring_plan
 
-      # User definable identifier
-      t.string :user_defined_id
+      # User definable identifier (STATE/LOCAL)
+      t.string :user_defined_id_statelocal
+      # User definable identifier (CDC)
+      t.string :user_defined_id_cdc
+      # User definable identifier (NNDSS)
+      t.string :user_defined_id_nndss
 
       # Data collected for each patient
       # TODO: Consider storing this type of data as key value pairs in a separate table
@@ -88,7 +92,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.date :additional_planned_travel_start_date
       t.date :additional_planned_travel_end_date
       t.text :additional_planned_travel_related_notes
-      t.date :last_date_of_potential_exposure
+      t.date :last_date_of_exposure
       t.string :potential_exposure_location
       t.string :potential_exposure_country
       t.boolean :contact_of_known_case

@@ -43,9 +43,6 @@ class Patient extends React.Component {
             </Row>
             <Row>
               <Col className="text-truncate">
-                <span className="font-weight-normal">ID:</span>{' '}
-                <span className="font-weight-light">{`${this.props.details.user_defined_id ? this.props.details.user_defined_id : ''}`}</span>
-                <br />
                 <span className="font-weight-normal">DOB:</span>{' '}
                 <span className="font-weight-light">{this.props.details.date_of_birth && `${this.props.details.date_of_birth}`}</span>
                 <br />
@@ -54,6 +51,17 @@ class Patient extends React.Component {
                 <br />
                 <span className="font-weight-normal">Language:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.primary_language ? this.props.details.primary_language : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">State/Local ID:</span>{' '}
+                <span className="font-weight-light">{`${
+                  this.props.details.user_defined_id_statelocal ? this.props.details.user_defined_id_statelocal : ''
+                }`}</span>
+                <br />
+                <span className="font-weight-normal">CDC ID:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.user_defined_id_cdc ? this.props.details.user_defined_id_cdc : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">NNDSS ID:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.user_defined_id_nndss ? this.props.details.user_defined_id_nndss : ''}`}</span>
               </Col>
               <Col className="text-truncate">
                 <span className="font-weight-normal">Sex:</span>{' '}
@@ -281,23 +289,37 @@ class Patient extends React.Component {
                 <h6>LAST EXPOSURE</h6>
                 <span className="font-weight-light">
                   {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
+                  {`${this.props.details.potential_exposure_location ? <br /> : ''}`}
                   {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
+                  {`${this.props.details.potential_exposure_country ? <br /> : ''}`}
                 </span>
+                <span className="font-weight-light">{`${this.props.details.last_date_of_exposure ? this.props.details.last_date_of_exposure : ''}`}</span>
                 <br />
-                <span className="font-weight-light">{`${
-                  this.props.details.last_date_of_potential_exposure ? this.props.details.last_date_of_potential_exposure : ''
-                }`}</span>
-                <br />
-                <span className="font-weight-light">
+                <span className="font-weight-light text-danger">
                   {this.props.details.contact_of_known_case
-                    ? 'Contact of Known Case: ' + (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '')
+                    ? 'CLOSE CONTACT WITH A KNOWN CASE: ' + (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '')
                     : ''}
+                  {this.props.details.contact_of_known_case ? <br /> : ''}
                 </span>
-                <br />
-                <span className="font-weight-light">{this.props.details.travel_to_affected_country_or_area ? 'Health Care Worker' : ''}</span>
-                <br />
-                <span className="font-weight-light">
-                  {this.props.details.was_in_health_care_facility_with_known_cases ? 'Worked in Health Care Facility' : ''}
+                <span className="font-weight-light text-danger">
+                  {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL TO AFFECTED COUNTRY OR AREA' : ''}
+                  {this.props.details.travel_to_affected_country_or_area ? <br /> : ''}
+                </span>
+                <span className="font-weight-light text-danger">
+                  {this.props.details.was_in_health_care_facility_with_known_cases ? 'WAS IN HEALTH CARE FACILITY WITH KNOWN CASES' : ''}
+                  {this.props.details.was_in_health_care_facility_with_known_cases ? <br /> : ''}
+                </span>
+                <span className="font-weight-light text-danger">
+                  {this.props.details.laboratory_personnel ? 'LABORATORY PERSONNEL' : ''}
+                  {this.props.details.laboratory_personnel ? <br /> : ''}
+                </span>
+                <span className="font-weight-light text-danger">
+                  {this.props.details.healthcare_personnel ? 'HEALTHCARE PERSONNEL' : ''}
+                  {this.props.details.healthcare_personnel ? <br /> : ''}
+                </span>
+                <span className="font-weight-light text-danger">
+                  {this.props.details.crew_on_passenger_or_cargo_flight ? 'CREW ON PASSENGER OR CARGO FLIGHT' : ''}
+                  {this.props.details.crew_on_passenger_or_cargo_flight ? <br /> : ''}
                 </span>
               </Col>
             </Row>

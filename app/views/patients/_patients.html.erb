@@ -2,8 +2,8 @@
   <thead>
     <tr>
       <th class="DataTable-table-header">Monitoree</th>
-      <th class="DataTable-table-header">Jurisdiction</th>
-      <th class="DataTable-table-header">ID</th>
+      <th class="DataTable-table-header">Assigned Jurisdiction</th>
+      <th class="DataTable-table-header">State&#47;Local ID</th>
       <th class="DataTable-table-header">Sex</th>
       <th class="DataTable-table-header">Date of Birth</th>
       <th class="DataTable-table-header">Enrollment Date</th>
@@ -12,9 +12,9 @@
   <tbody class="table-striped">
     <% patients.each do |patient| -%>
       <tr>
-        <td><%= link_to "#{patient.first_name} #{patient.last_name}", patient, class: '' %></td>
+        <td><%= link_to "#{patient.last_name}, #{patient.first_name}", patient, class: '' %></td>
         <td><%= patient.jurisdiction.name %></td>
-        <td><%= patient.user_defined_id.blank? ? '' : patient.user_defined_id %></td>
+        <td><%= patient.user_defined_id_statelocal.blank? ? '' : patient.user_defined_id_statelocal %></td>
         <td><%= patient.sex %></td>
         <td><%= patient.date_of_birth&.strftime('%F') %></td>
         <td><%= patient.created_at.to_date&.strftime('%F') %></td>

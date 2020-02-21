@@ -51,20 +51,20 @@ class Exposure extends React.Component {
           <Card.Body>
             <Form>
               <Form.Row>
-                <Form.Group as={Col} md="7" controlId="last_date_of_potential_exposure">
+                <Form.Group as={Col} md="7" controlId="last_date_of_exposure">
                   <Form.Label className="nav-input-label">
-                    LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_potential_exposure?._exclusive?.required && ' *'}
+                    LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control
-                    isInvalid={this.state.errors['last_date_of_potential_exposure']}
+                    isInvalid={this.state.errors['last_date_of_exposure']}
                     size="lg"
                     type="date"
                     className="form-square"
-                    value={this.state.current.last_date_of_potential_exposure || ''}
+                    value={this.state.current.last_date_of_exposure || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['last_date_of_potential_exposure']}
+                    {this.state.errors['last_date_of_exposure']}
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="10" controlId="potential_exposure_location">
@@ -193,7 +193,7 @@ class Exposure extends React.Component {
                       <Form.Label className="nav-input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2">
+                  <Form.Row className="pt-3">
                     <Form.Group as={Col} md="8" controlId="exposure_risk_assessment">
                       <Form.Label className="nav-input-label">
                         EXPOSURE RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
@@ -203,7 +203,6 @@ class Exposure extends React.Component {
                         as="select"
                         size="lg"
                         className="form-square"
-                        id="exposure_risk_assessment"
                         onChange={this.handleChange}
                         value={this.state.current.exposure_risk_assessment || ''}>
                         <option></option>
@@ -223,7 +222,6 @@ class Exposure extends React.Component {
                         as="select"
                         size="lg"
                         className="form-square"
-                        id="monitoring_plan"
                         onChange={this.handleChange}
                         value={this.state.current.monitoring_plan || ''}>
                         <option></option>
@@ -281,7 +279,7 @@ class Exposure extends React.Component {
 }
 
 const schema = yup.object().shape({
-  last_date_of_potential_exposure: yup
+  last_date_of_exposure: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .max(new Date(), 'Date can not be in the future.')
     .required('Please enter a last date of exposure.')

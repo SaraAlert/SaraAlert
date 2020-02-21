@@ -160,7 +160,6 @@ class Enrollment extends React.Component {
               currentState={this.state.enrollmentState}
             />
           </Carousel.Item>
-          {/* TODO: Risk factors */}
           <Carousel.Item>
             <Review
               goto={this.goto}

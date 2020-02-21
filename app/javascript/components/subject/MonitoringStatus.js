@@ -6,41 +6,51 @@ import axios from 'axios';
 class MonitoringStatus extends React.Component {
   constructor(props) {
     super(props);
+    const jur = this.props.jurisdiction_paths.find(jur => jur.value === props.jurisdiction_id);
     this.state = {
       showExposureRiskAssessmentModal: false,
       showMonitoringPlanModal: false,
       showMonitoringStatusModal: false,
+      showJurisdictionModal: false,
       message: '',
       reasoning: '',
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
       monitoring_plan: props.patient.monitoring_plan ? props.patient.monitoring_plan : '',
       exposure_risk_assessment: props.patient.exposure_risk_assessment ? props.patient.exposure_risk_assessment : '',
+      jurisdiction: jur ? jur.label : '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
     this.toggleMonitoringStatusModal = this.toggleMonitoringStatusModal.bind(this);
     this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
     this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
+    this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
   }
 
   handleChange(event) {
-    if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
+    if (event?.target?.name && event.target.name === 'jurisdictionList') {
+      // Jurisdiction is a weird case; the datalist and input work differently together
+      this.setState({
+        message: 'jurisdiction to "' + event.target.value + '".',
+        jurisdiction: event?.target?.value ? event.target.value : '',
+      });
+    } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
         showExposureRiskAssessmentModal: true,
         message: 'exposure risk assessment to "' + event.target.value + '".',
-        [event.target.id]: event?.target?.value ? event.target.value : '',
+        exposure_risk_assessment: event?.target?.value ? event.target.value : '',
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
       this.setState({
         showMonitoringPlanModal: true,
         message: 'monitoring plan to "' + event.target.value + '".',
-        [event.target.id]: event?.target?.value ? event.target.value : '',
+        monitoring_plan: event?.target?.value ? event.target.value : '',
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
         showMonitoringStatusModal: true,
         message: 'monitoring status to "' + event.target.value + '".',
-        [event.target.id]: event?.target?.value ? event.target.value : '',
+        monitoring_status: event?.target?.value ? event.target.value : '',
       });
     } else if (event?.target?.id) {
       this.setState({ [event.target.id]: event?.target?.value ? event.target.value : '' });
@@ -71,8 +81,16 @@ class MonitoringStatus extends React.Component {
     });
   }
 
+  toggleJurisdictionModal() {
+    let current = this.state.showJurisdictionModal;
+    this.setState({
+      showJurisdictionModal: !current,
+    });
+  }
+
   submit() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    const jur = this.props.jurisdiction_paths.find(jur => jur.label === this.state.jurisdiction);
     axios
       .post('/patients/' + this.props.patient.id + '/status', {
         monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
@@ -80,6 +98,7 @@ class MonitoringStatus extends React.Component {
         monitoring_plan: this.state.monitoring_plan,
         message: this.state.message,
         reasoning: this.state.reasoning,
+        jurisdiction: jur ? jur.value : null,
       })
       .then(() => {
         location.href = '/patients/' + this.props.patient.id;
@@ -87,6 +106,31 @@ class MonitoringStatus extends React.Component {
       .catch(error => {
         console.log(error);
       });
+  }
+
+  createModal(title, toggle) {
+    return (
+      <Modal show={true}>
+        <Modal.Header>
+          <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>You are about to change this subject&apos;s {this.state.message}</p>
+          <Form.Group>
+            <Form.Label>Please describe your reasoning:</Form.Label>
+            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary btn-square" onClick={this.submit}>
+            Submit
+          </Button>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
   }
 
   render() {
@@ -97,7 +141,7 @@ class MonitoringStatus extends React.Component {
             <Col>
               <Form.Row>
                 <Form.Group as={Col}>
-                  <Form.Label>MONITORING STATUS</Form.Label>
+                  <Form.Label className="nav-input-label">MONITORING STATUS</Form.Label>
                   <Form.Control
                     as="select"
                     className="form-control-lg"
@@ -109,7 +153,7 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col}>
-                  <Form.Label>EXPOSURE RISK ASSESSMENT</Form.Label>
+                  <Form.Label className="nav-input-label">EXPOSURE RISK ASSESSMENT</Form.Label>
                   <Form.Control
                     as="select"
                     className="form-control-lg"
@@ -124,7 +168,7 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col}>
-                  <Form.Label>MONITORING PLAN</Form.Label>
+                  <Form.Label className="nav-input-label">MONITORING PLAN</Form.Label>
                   <Form.Control as="select" className="form-control-lg" id="monitoring_plan" onChange={this.handleChange} value={this.state.monitoring_plan}>
                     <option disabled></option>
                     <option>Daily active monitoring</option>
@@ -134,69 +178,40 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
+              <Form.Row className="pt-3 align-items-end">
+                <Form.Group as={Col} md={14}>
+                  <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
+                  <Form.Control
+                    as="input"
+                    list="jurisdiction"
+                    name="jurisdictionList"
+                    value={this.state.jurisdiction}
+                    className="form-control-lg"
+                    onChange={this.handleChange}
+                  />
+                  <datalist id="jurisdiction">
+                    {this.props.jurisdiction_paths.map(jur => {
+                      return (
+                        <option value={jur.label} key={`jur-${jur.value}`}>
+                          {jur.label}
+                        </option>
+                      );
+                    })}
+                  </datalist>
+                </Form.Group>
+                <Form.Group as={Col} md={10}>
+                  <Button onClick={this.toggleJurisdictionModal} className="btn-lg btn-square">
+                    Change Jurisdiction
+                  </Button>
+                </Form.Group>
+              </Form.Row>
             </Col>
           </Row>
         </Form>
-        <Modal show={this.state.showExposureRiskAssessmentModal}>
-          <Modal.Header>
-            <Modal.Title>Monitoree Exposure Risk Assessment</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>You are about to change this monitoree&apos;s {this.state.message}</p>
-            <Form.Group>
-              <Form.Label>Please describe your reasoning:</Form.Label>
-              <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary btn-square" onClick={this.submit}>
-              Submit
-            </Button>
-            <Button variant="secondary btn-square" onClick={this.toggleExposureRiskAssessmentModal}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        <Modal show={this.state.showMonitoringPlanModal}>
-          <Modal.Header>
-            <Modal.Title>Monitoring Plan</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>You are about to change this monitoree&apos;s {this.state.message}</p>
-            <Form.Group>
-              <Form.Label>Please describe your reasoning:</Form.Label>
-              <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary btn-square" onClick={this.submit}>
-              Submit
-            </Button>
-            <Button variant="secondary btn-square" onClick={this.toggleMonitoringPlanModal}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        <Modal show={this.state.showMonitoringStatusModal}>
-          <Modal.Header>
-            <Modal.Title>Monitoring Status</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>You are about to change this monitoree&apos;s {this.state.message}</p>
-            <Form.Group>
-              <Form.Label>Please describe your reasoning:</Form.Label>
-              <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary btn-square" onClick={this.submit}>
-              Submit
-            </Button>
-            <Button variant="secondary btn-square" onClick={this.toggleMonitoringStatusModal}>
-              Cancel
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        {this.state.showMonitoringStatusModal && this.createModal('Monitoring Status', this.toggleMonitoringStatusModal)}
+        {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal)}
+        {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal)}
+        {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal)}
       </React.Fragment>
     );
   }

@@ -33,3 +33,6 @@ vendor/bundle/
 
 # Ignore environment variable
 config/local_env.yml
+
+.DS_Store
+

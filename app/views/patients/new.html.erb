@@ -1,3 +1,5 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return To Dashboard", href: '/'}, {value: "Register New Monitoree", href: nil} ] } %>
 
 <%= react_component("enrollment/Enrollment", { current_user: current_user, patient: @patient, editMode: false, authenticity_token: form_authenticity_token }) %>
+
+<div class="pb-4"></div>

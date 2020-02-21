@@ -49,7 +49,6 @@ class PatientsController < ApplicationController
     # Set the creator as the current user
     patient.creator = current_user
 
-    # TODO: We need to correctly assign this patient to a jurisdiction; for now just assume the jurisidiction of the user
     patient.jurisdiction = current_user.jurisdiction
 
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
@@ -98,6 +97,12 @@ class PatientsController < ApplicationController
     redirect_to root_url unless current_user.can_edit_patient?
     patient = Patient.find_by_id(params.permit(:id)[:id])
     patient.update!(params.require(:patient).permit(:monitoring, :monitoring_plan, :exposure_risk_assessment))
+    if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
+      # Jurisdiction has changed
+      jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
+      patient.jurisdiction_id = jur.id unless jur.nil?
+    end
+    patient.save!
     history = History.new
     history.created_by = current_user.email
     comment = 'User changed '
@@ -125,7 +130,9 @@ class PatientsController < ApplicationController
   # Parameters allowed for saving to database
   def allowed_params
     [
-      :user_defined_id,
+      :user_defined_id_statelocal,
+      :user_defined_id_cdc,
+      :user_defined_id_nndss,
       :first_name,
       :middle_name,
       :last_name,
@@ -188,7 +195,7 @@ class PatientsController < ApplicationController
       :additional_planned_travel_start_date,
       :additional_planned_travel_end_date,
       :additional_planned_travel_related_notes,
-      :last_date_of_potential_exposure,
+      :last_date_of_exposure,
       :potential_exposure_location,
       :potential_exposure_country,
       :contact_of_known_case,
@@ -254,7 +261,7 @@ class PatientsController < ApplicationController
       :additional_planned_travel_start_date,
       :additional_planned_travel_end_date,
       :additional_planned_travel_related_notes,
-      :last_date_of_potential_exposure,
+      :last_date_of_exposure,
       :potential_exposure_location,
       :potential_exposure_country,
     ]

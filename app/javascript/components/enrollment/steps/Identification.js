@@ -259,17 +259,45 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-2">
-                <Form.Group as={Col} md={12} controlId="user_defined_id">
-                  <Form.Label className="nav-input-label">IDENTIFIER{schema?.fields?.user_defined_id?._exclusive?.required && ' *'}</Form.Label>
+                <Form.Group as={Col} md={8} controlId="user_defined_id_statelocal">
+                  <Form.Label className="nav-input-label">STATE/LOCAL ID{schema?.fields?.user_defined_id_statelocal?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
-                    isInvalid={this.state.errors['user_defined_id']}
+                    isInvalid={this.state.errors['user_defined_id_statelocal']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.user_defined_id || ''}
+                    value={this.state.current.user_defined_id_statelocal || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['user_defined_id']}
+                    {this.state.errors['user_defined_id_statelocal']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md={8} controlId="user_defined_id_cdc">
+                  <Form.Label className="nav-input-label">CDC ID{schema?.fields?.user_defined_id_cdc?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['user_defined_id_cdc']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.user_defined_id_cdc || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['user_defined_id_cdc']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md={8} controlId="user_defined_id_nndss">
+                  <Form.Label className="nav-input-label">
+                    NNDSS LOC. REC. ID/CASE ID{schema?.fields?.user_defined_id_nndss?._exclusive?.required && ' *'}
+                  </Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['user_defined_id_nndss']}
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.user_defined_id_nndss || ''}
+                    onChange={this.handleChange}
+                  />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['user_defined_id_nndss']}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>

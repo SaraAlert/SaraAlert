@@ -24,4 +24,10 @@ class Patient < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
+  # Single place for calculating the end of monitoring date for this subject.
+  def end_of_monitoring
+    return last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days unless last_date_of_exposure.nil?
+    return created_at + ADMIN_OPTIONS['monitoring_period_days'].days
+  end
+
 end

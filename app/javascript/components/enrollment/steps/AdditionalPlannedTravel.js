@@ -247,10 +247,7 @@ const schema = yup.object().shape({
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
-  additional_planned_travel_start_date: yup
-    .date('Date must correspond to the "mm/dd/yyyy" format.')
-    .max(new Date(), 'Date can not be in the future.')
-    .nullable(),
+  additional_planned_travel_start_date: yup.date('Date must correspond to the "mm/dd/yyyy" format.').nullable(),
   additional_planned_travel_end_date: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
     .max(new Date(), 'Date can not be in the future.')

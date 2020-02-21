@@ -7,9 +7,9 @@ namespace :demo do
 
     print 'Creating jurisdictions...'
     usa = Jurisdiction.create(name: 'USA')
-    state1 = Jurisdiction.create(name: 'Example State', parent: usa)
-    county1 = Jurisdiction.create(name: 'Example County', parent: state1)
-    city1 = Jurisdiction.create(name: 'Example City', parent: county1)
+    state1 = Jurisdiction.create(name: 'Example State 1', parent: usa)
+    county1 = Jurisdiction.create(name: 'Example County 1', parent: state1)
+    city1 = Jurisdiction.create(name: 'Example City 1', parent: county1)
     city2 = Jurisdiction.create(name: 'Example City 2', parent: county1)
     county2 = Jurisdiction.create(name: 'Example County 2', parent: state1)
     state2 = Jurisdiction.create(name: 'Example State 2', parent: usa)
@@ -21,7 +21,7 @@ namespace :demo do
     enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
     enroller1.add_role :enroller
     enroller1.save
-    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
+    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: county3, force_password_change: false)
     enroller2.add_role :enroller
     enroller2.save
     puts ' done!'
@@ -30,7 +30,7 @@ namespace :demo do
     epi1 = User.new(email: 'epi1@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
     epi1.add_role :monitor
     epi1.save
-    epi2 = User.new(email: 'epi2@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
+    epi2 = User.new(email: 'epi2@example.com', password: '123456ab', jurisdiction: county3, force_password_change: false)
     epi2.add_role :monitor
     epi2.save
     puts ' done!'
@@ -145,7 +145,7 @@ namespace :demo do
             port_of_entry_into_usa: Faker::Address.city,
             date_of_arrival: today,
             #travel_related_notes
-            last_date_of_potential_exposure: today - rand(5).days,
+            last_date_of_exposure: today - rand(5).days,
             potential_exposure_location: Faker::Address.city,
             potential_exposure_country: Faker::Address.country,
             #contact_of_known_case
@@ -153,7 +153,7 @@ namespace :demo do
             travel_to_affected_country_or_area: rand < 0.1,
             was_in_health_care_facility_with_known_cases: rand < 0.15,
             creator: enrollers.sample,
-            user_defined_id: "EXAMPLE-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
+            user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
           )
 
