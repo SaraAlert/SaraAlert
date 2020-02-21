@@ -7,7 +7,7 @@ class CreateAssessments < ActiveRecord::Migration[6.0]
       t.boolean :symptomatic
       t.string :temperature
 
-      t.string :who_reported, default: 'subject'
+      t.string :who_reported, default: 'Monitoree'
 
       #t.boolean :felt_feverish
       t.boolean :cough

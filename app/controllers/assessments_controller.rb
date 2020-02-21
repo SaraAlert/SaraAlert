@@ -25,9 +25,9 @@ class AssessmentsController < ApplicationController
       @assessment.symptomatic = false
     end
 
-    # Determine if a user created this assessment or a subject
+    # Determine if a user created this assessment or a monitoree
     if current_user.nil?
-      @assessment.who_reported = 'subject'
+      @assessment.who_reported = 'Monitoree'
     else
       @assessment.who_reported = current_user.email
     end
