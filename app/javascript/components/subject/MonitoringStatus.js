@@ -220,6 +220,8 @@ class MonitoringStatus extends React.Component {
 MonitoringStatus.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.array,
+  jurisdiction_id: PropTypes.string,
 };
 
 export default MonitoringStatus;
