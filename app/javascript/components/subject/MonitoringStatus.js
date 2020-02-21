@@ -139,10 +139,10 @@ class MonitoringStatus extends React.Component {
         </Form>
         <Modal show={this.state.showExposureRiskAssessmentModal}>
           <Modal.Header>
-            <Modal.Title>Subject Exposure Risk Assessment</Modal.Title>
+            <Modal.Title>Monitoree Exposure Risk Assessment</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>You are about to change this subject&apos;s {this.state.message}</p>
+            <p>You are about to change this monitoree&apos;s {this.state.message}</p>
             <Form.Group>
               <Form.Label>Please describe your reasoning:</Form.Label>
               <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
@@ -159,10 +159,10 @@ class MonitoringStatus extends React.Component {
         </Modal>
         <Modal show={this.state.showMonitoringPlanModal}>
           <Modal.Header>
-            <Modal.Title>Subject Monitoring Plan</Modal.Title>
+            <Modal.Title>Monitoring Plan</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>You are about to change this subject&apos;s {this.state.message}</p>
+            <p>You are about to change this monitoree&apos;s {this.state.message}</p>
             <Form.Group>
               <Form.Label>Please describe your reasoning:</Form.Label>
               <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
@@ -179,10 +179,10 @@ class MonitoringStatus extends React.Component {
         </Modal>
         <Modal show={this.state.showMonitoringStatusModal}>
           <Modal.Header>
-            <Modal.Title>Subject Monitoring Status</Modal.Title>
+            <Modal.Title>Monitoring Status</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>You are about to change this subject&apos;s {this.state.message}</p>
+            <p>You are about to change this monitoree&apos;s {this.state.message}</p>
             <Form.Group>
               <Form.Label>Please describe your reasoning:</Form.Label>
               <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />

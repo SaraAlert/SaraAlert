@@ -15,7 +15,7 @@ class SubjectStatus extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="h5">Subject Status</Card.Header>
+          <Card.Header as="h5">Monitoree Status</Card.Header>
           <Card.Body>
             <div style={{ width: '100%', height: 260 }} className="recharts-wrapper">
               <ResponsiveContainer>

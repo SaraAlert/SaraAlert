@@ -106,7 +106,7 @@ class Contact extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Subject Contact Information</Card.Header>
+          <Card.Header as="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row className="pt-2">

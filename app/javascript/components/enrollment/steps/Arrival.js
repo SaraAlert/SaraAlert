@@ -46,7 +46,7 @@ class Arrival extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Subject Arrival Information</Card.Header>
+          <Card.Header as="h5">Monitoree Arrival Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row className="pt-2">
@@ -164,7 +164,7 @@ class Arrival extends React.Component {
                     rows="5"
                     size="lg"
                     className="form-square"
-                    placeholder="enter additional information about subject’s travel history (e.g. visited farm, sick relative, original country departed from, etc.)"
+                    placeholder="enter additional information about monitoree’s travel history (e.g. visited farm, sick relative, original country departed from, etc.)"
                     value={this.state.current.travel_related_notes || ''}
                     onChange={this.handleChange}
                   />

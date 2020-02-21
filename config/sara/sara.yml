@@ -1,4 +1,4 @@
-# How many days an enrolled subject should be monitored
+# How many days an enrolled monitoree should be monitored
 monitoring_period_days: 14
 
 # How many minutes in a reporting period (hint: 1440 mins for 24 hours)

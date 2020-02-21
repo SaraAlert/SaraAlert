@@ -88,7 +88,7 @@ class Address extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Subject Address</Card.Header>
+          <Card.Header as="h5">Monitoree Address</Card.Header>
           <Card.Body>
             <Tabs
               defaultActiveKey={this.state.selectedTab}
@@ -209,7 +209,7 @@ class Address extends React.Component {
                   <Form.Row className="pt-1 pb-2">
                     <Form.Group as={Col} md={24} className="my-auto">
                       <span className="font-weight-light">
-                        (If subject is planning on travel within the US, enter the <b>first</b> location where they may be contacted)
+                        (If monitoree is planning on travel within the US, enter the <b>first</b> location where they may be contacted)
                       </span>
                     </Form.Group>
                   </Form.Row>
@@ -440,7 +440,7 @@ class Address extends React.Component {
                   <Form.Row className="pt-2 pb-2">
                     <Form.Group as={Col} md={24} className="my-auto">
                       <span className="font-weight-light">
-                        (If subject is planning on travel within the US, enter the <b>first</b> location where they may be contacted)
+                        (If monitoree is planning on travel within the US, enter the <b>first</b> location where they may be contacted)
                       </span>
                     </Form.Group>
                   </Form.Row>

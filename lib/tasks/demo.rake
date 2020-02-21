@@ -64,7 +64,7 @@ namespace :demo do
       today = Date.today - (days - (day + 1)).days
 
       # Create the patients for this day
-      print "Creating synthetic subjects for day #{day + 1} (#{today})..."
+      print "Creating synthetic monitorees for day #{day + 1} (#{today})..."
 
       # Transaction speeds things up a bit
       Patient.transaction do

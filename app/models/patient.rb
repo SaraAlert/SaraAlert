@@ -19,7 +19,7 @@ class Patient < ApplicationRecord
   belongs_to :jurisdiction
   has_many :histories
 
-  # Allow information on the subject's jurisdiction to be displayed
+  # Allow information on the monitoree's jurisdiction to be displayed
   def jurisdiction_path
     jurisdiction&.path&.map(&:name)
   end
