@@ -24,7 +24,7 @@ class Admin extends React.Component {
       return;
     }
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path], email: row.email, role: row.role };
+    let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path], email: row.email, role_title: row.role };
     let send_result = axios({
       method: 'post',
       url: '/admin/create_user',
