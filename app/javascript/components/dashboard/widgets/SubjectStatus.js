@@ -7,10 +7,9 @@ class SubjectStatus extends React.Component {
   constructor(props) {
     super(props);
   }
-
   render() {
     const data = [...this.props.stats.subject_status];
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#CA021A'];
+    const COLORS = ['#28A745', '#F0F020', '#AB4642', '#6C757D'];
 
     return (
       <React.Fragment>

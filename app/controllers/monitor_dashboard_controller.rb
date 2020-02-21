@@ -81,7 +81,7 @@ class MonitorDashboardController < ApplicationController
         { name: 'Asymptomatic', value: @asymptomatic_patients.length },
         { name: 'Non-Reporting', value: @non_reporting_patients.length },
         { name: 'Symptomatic', value: @symptomatic_patients.length },
-        { name: 'Confirmed', value: current_user.viewable_patients.where(confirmed_case: true).count }
+        { name: 'Closed', value: current_user.viewable_patients.where(monitoring: false).count }
       ],
       reporting_summmary: [
         { name: 'Reported Today', value: reported_today_count },
