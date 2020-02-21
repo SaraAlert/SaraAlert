@@ -54,6 +54,16 @@ If you make changes to this file make sure to run `bundle exec whenever --update
 
 
 ### Docker
+
+##### Building Docker Image Behind Corperate Proxy
+1. Put your root cert(s) in a certs/ directory in a file named ca-certificates.crt
+2. Pass the certs directory to docker build as an argument named `cert_dir`
+```bash
+docker build --build-arg cert_dir=./certs  .
+```
+***Note if building image via docker-compse certs are expected to be in a root-level directory named `certs`
+
+##### Running App Using Docker-Compose
 To get this working in Docker:
 
 * Ensure docker and docker-compose are installed on your machine

@@ -1,10 +1,12 @@
 version: "3"
 
 services:
-  disease-trakker:
-    # image: artifacts.mitre.org:8316/disease-trakker:latest
+  sara-alert:
     build:
       context: .
+      args:
+        cert_dir: ./certs
+    image: sara-alert-rails
     ports:
       - "3000:3000"
     env_file:
@@ -35,9 +37,7 @@ services:
     networks:
       - dt-net
   sidekiq:
-    # image: artifacts.mitre.org:8316/disease-trakker:latest
-    build:
-      context: .
+    image: sara-alert-rails
     env_file:
       - .env-prod
     restart: unless-stopped
@@ -46,6 +46,7 @@ services:
     command: bundle exec sidekiq -q default -q mailers
     depends_on:
       - redis
+      - sara-alert
 
 volumes:
   redis:

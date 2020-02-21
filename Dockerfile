@@ -1,9 +1,10 @@
+ARG cert_dir
+
 # Pinned to the latest ruby 2.6.0 version of the Passenger base Docker image
 FROM phusion/passenger-ruby26:1.0.6
 
-# Install the MITRE certificates into Ubuntu, to prevent self-signed certificate issues
-RUN curl -o /usr/local/share/ca-certificates/MITRE-BA-Root.crt http://pki.mitre.org/MITRE%20BA%20Root.crt
-RUN curl -o /usr/local/share/ca-certificates/MITRE-BA-NPE-CA-3.crt "http://pki.mitre.org/MITRE%20BA%20NPE%20CA-3(1).crt"
+# Add certs and configure yarn
+COPY ${cert_dir}/ /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
 # Install node, tzdata, and yarn
@@ -30,13 +31,10 @@ RUN chown -R app:app .
 
 RUN su app -c 'bundle install --binstubs --without development test'
 
-ADD . /home/app/disease-trakker
-
-# Set yarn
-RUN yarn config set cafile /usr/local/share/ca-certificates/MITRE-BA-Root.crt
-RUN npm config set cafile /usr/local/share/ca-certificates/MITRE-BA-Root.crt
-
+RUN yarn config set cafile /etc/ssl/certs/ca-certificates.crt
 RUN yarn install
+
+ADD . /home/app/disease-trakker
 
 # Create a folder that needs to exist for the precompile
 RUN mkdir -p ./app/assets/stylesheets
