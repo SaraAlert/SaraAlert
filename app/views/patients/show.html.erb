@@ -50,7 +50,7 @@
               <td><%= assessment.symptomatic %></td>
               <td><%= assessment.who_reported %></td>
               <td><%= assessment.created_at %></td>
-              <td><span class="<% if assessment[:temperature].to_i > 99 %>concern<% end %>"><%= assessment.temperature %></span></td>
+              <td><span class="<% if assessment[:temperature].to_f >= 100.4 %>concern<% end %>"><%= assessment.temperature %></span></td>
               <% columns.each do |column| -%>
                 <td><% if assessment[column] -%><span class="concern">Yes</span><% else -%>No<% end -%></td>
               <% end -%>

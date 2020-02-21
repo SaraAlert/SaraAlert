@@ -264,6 +264,14 @@ class PatientsController < ApplicationController
       :last_date_of_exposure,
       :potential_exposure_location,
       :potential_exposure_country,
+      :contact_of_known_case,
+      :contact_of_known_case_id,
+      :travel_to_affected_country_or_area,
+      :was_in_health_care_facility_with_known_cases,
+      :laboratory_personnel,
+      :healthcare_personnel,
+      :exposure_notes,
+      :crew_on_passenger_or_cargo_flight,
     ]
   end
 

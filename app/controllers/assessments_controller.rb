@@ -18,7 +18,7 @@ class AssessmentsController < ApplicationController
     @assessment.patient = patient
 
     # Cache the overall thought on whether these symptoms are concerning
-    if (@assessment.temperature && @assessment.temperature.to_i > 100 ||
+    if (@assessment.temperature && @assessment.temperature.to_i >= 100.4 ||
         @assessment.attributes.slice(*(symptoms.map { |s| s.to_s })).values.any?)
       @assessment.symptomatic = true
     else
@@ -44,7 +44,7 @@ class AssessmentsController < ApplicationController
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     assessment.update!(params.permit(*assessment_params))
-    if (assessment.temperature && assessment.temperature.to_i > 100 ||
+    if (assessment.temperature && assessment.temperature.to_i >= 100.4 ||
       assessment.attributes.slice(*(symptoms.map { |s| s.to_s })).values.any?)
       assessment.symptomatic = true
     else
