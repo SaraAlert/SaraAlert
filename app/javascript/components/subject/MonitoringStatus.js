@@ -110,7 +110,7 @@ class MonitoringStatus extends React.Component {
 
   createModal(title, toggle) {
     return (
-      <Modal show={true}>
+      <Modal size="lg" show centered>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
