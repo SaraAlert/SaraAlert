@@ -289,10 +289,9 @@ class Patient extends React.Component {
                 <h6>LAST EXPOSURE</h6>
                 <span className="font-weight-light">
                   {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
-                  {`${this.props.details.potential_exposure_location ? <br /> : ''}`}
                   {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
-                  {`${this.props.details.potential_exposure_country ? <br /> : ''}`}
                 </span>
+                <br />
                 <span className="font-weight-light">{`${this.props.details.last_date_of_exposure ? this.props.details.last_date_of_exposure : ''}`}</span>
                 <br />
                 <span className="font-weight-light text-danger">

@@ -118,7 +118,7 @@ const schema = yup.object().shape({
   temperature: yup
     .number()
     .typeError('Please enter a valid number.')
-    .test('is-in-bounds', 'Temperature Out of Bounds [27 - 49C] [80 - 120F]', value => (value > 27 && value < 49) || (value > 80 && value < 120))
+    .test('is-in-bounds', 'Temperature Out of Bounds [27 - 49C] [80 - 120F]', value => (value >= 27 && value <= 49) || (value >= 80 && value <= 120))
     .required(),
 });
 

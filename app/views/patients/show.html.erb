@@ -5,13 +5,8 @@
 
 <% if current_user.can_modify_subject_status? %>
   <div class="card mx-2 mt-4 mb-4 card-square">
-<<<<<<< Updated upstream
     <h5 class="card-header">Monitoring</h5>
-    <%= react_component("subject/MonitoringStatus", { current_user: current_user, authenticity_token: form_authenticity_token, patient: @patient }) %>
-=======
-    <h5 class="card-header">Subject Monitoring</h5>
     <%= react_component("subject/MonitoringStatus", { current_user: current_user, authenticity_token: form_authenticity_token, jurisdiction_id: @patient.jurisdiction_id, patient: @patient, jurisdiction_paths: Jurisdiction.all.collect{ |jur| { value: jur.id, label: jur.jurisdiction_path_string } } } ) %>
->>>>>>> Stashed changes
   </div>
 <% end %>
 
