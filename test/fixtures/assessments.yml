@@ -1,0 +1,90 @@
+patient_1_assessment_1:
+  id: 1
+  created_at: "2020-02-18 17:46:27"
+  updated_at: "2020-02-24 18:43:43.946381"
+  patient_id: 1
+  symptomatic: false
+  temperature: 98
+  who_reported: "Monitoree"
+  cough: false
+  difficulty_breathing: false
+patient_1_assessment_2:
+  id: 2
+  created_at: "2020-02-20 21:47:22"
+  updated_at: "2020-02-24 18:43:46.16124"
+  patient_id: 1
+  symptomatic: false
+  temperature: 100
+  who_reported: "Monitoree"
+  cough: false
+  difficulty_breathing: false
+patient_2_assessment_1:
+  id: 3
+  created_at: "2020-02-18 22:32:58"
+  updated_at: "2020-02-24 18:43:43.948409"
+  patient_id: 2
+  symptomatic: false
+  temperature: 98
+  who_reported: "Monitoree"
+  cough: false
+  difficulty_breathing: false
+patient_2_assessment_2:
+  id: 4
+  created_at: "2020-02-20 18:18:43"
+  updated_at: "2020-02-24 18:43:46.163109"
+  patient_id: 2
+  symptomatic: false
+  temperature: 99
+  who_reported: "Monitoree"
+  cough: false
+  difficulty_breathing: false
+patient_3_assessment_1:
+  id: 5
+  created_at: "2020-03-03 18:18:43"
+  updated_at: "2020-03-03 18:43:43"
+  patient_id: 3
+  symptomatic: true
+  temperature: 103
+  who_reported: "Monitoree"
+  cough: true
+  difficulty_breathing: false
+patient_3_assessment_2:
+  id: 6
+  created_at: "2020-03-04 18:18:43"
+  updated_at: "2020-03-04 18:43:43"
+  patient_id: 3
+  symptomatic: true
+  temperature: 104
+  who_reported: "Monitoree"
+  cough: true
+  difficulty_breathing: true
+patient_4_assessment_1:
+  id: 7
+  created_at: "2020-03-04 18:18:43"
+  updated_at: "2020-03-04 18:43:43"
+  patient_id: 4
+  symptomatic: false
+  temperature: 98
+  who_reported: "Monitoree"
+  cough: false
+  difficulty_breathing: false
+patient_5_assessment_1:
+  id: 8
+  created_at: "2020-03-02 18:18:43"
+  updated_at: "2020-03-02 18:43:43"
+  patient_id: 5
+  symptomatic: true
+  temperature: 102
+  who_reported: "Monitoree"
+  cough: false
+  difficulty_breathing: true
+patient_8_assessment_1:
+  id: 9
+  created_at: "2020-03-04 18:18:43"
+  updated_at: "2020-03-04 18:43:43"
+  patient_id: 7
+  symptomatic: false
+  temperature: 99
+  who_reported: "Monitoree"
+  cough: false
+  difficulty_breathing: false

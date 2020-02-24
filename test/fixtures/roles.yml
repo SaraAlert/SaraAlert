@@ -1,0 +1,25 @@
+role_1:
+  id: 1
+  name: "enroller"
+  created_at: "2020-02-26 20:02:49.23232"
+  updated_at: "2020-02-26 20:02:49.23232"
+role_2:
+  id: 2
+  name: "public_health"
+  created_at: "2020-02-26 20:02:49.884308"
+  updated_at: "2020-02-26 20:02:49.884308"
+role_3:
+  id: 3
+  name: "public_health_enroller"
+  created_at: "2020-02-26 20:02:50.542881"
+  updated_at: "2020-02-26 20:02:50.542881"
+role_4:
+  id: 4
+  name: "admin"
+  created_at: "2020-02-26 20:02:50.645298"
+  updated_at: "2020-02-26 20:02:50.645298"
+role_5:
+  id: 5
+  name: "analyst"
+  created_at: "2020-02-26 20:02:50.747852"
+  updated_at: "2020-02-26 20:02:50.747852"
