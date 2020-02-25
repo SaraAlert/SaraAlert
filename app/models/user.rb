@@ -48,6 +48,11 @@ class User < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
+  # Override as_json to include jurisdiction_path
+  def as_json(options = {})
+    super((options || {}).merge(methods: :jurisdiction_path))
+  end
+
   #############################################################################
   # Access Restrictions for users
   #############################################################################
