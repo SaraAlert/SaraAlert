@@ -2,7 +2,9 @@
 
 <%= link_to 'Enroll New Monitoree', {controller: "patients", action: "new"}, class: "btn btn-lg btn-primary btn-square ml-2 mb-3" %>
 
-<div class="mx-2">
+<%= link_to 'View Enrollment Analytics', {controller: :analytics, action: "index"}, class: "btn btn-lg btn-primary btn-square ml-3 mb-3" %>
+
+<div class="mx-2 pb-4">
   <div class="card card-square">
     <h5 class="card-header">Enrolled Monitorees</h5>
     <div class="m-3">
@@ -10,7 +12,3 @@
     </div>
   </div>
 </div>
-
-<%= react_component("dashboard/EnrollerAnalytics", { current_user: current_user, stats: @stats }) %>
-
-<div class="pb-4"></div>

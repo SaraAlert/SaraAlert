@@ -5,7 +5,10 @@ namespace :demo do
 
     raise "This task is only for use in a development environment" unless Rails.env == 'development'
 
+    #####################################
+
     print 'Creating jurisdictions...'
+
     usa = Jurisdiction.create(name: 'USA')
     state1 = Jurisdiction.create(name: 'Example State 1', parent: usa)
     county1 = Jurisdiction.create(name: 'Example County 1', parent: state1)
@@ -15,31 +18,62 @@ namespace :demo do
     state2 = Jurisdiction.create(name: 'Example State 2', parent: usa)
     county3 = Jurisdiction.create(name: 'Example County 3', parent: state2)
     county4 = Jurisdiction.create(name: 'Example County 4', parent: state2)
+
     puts ' done!'
 
+    #####################################
+
     print 'Creating enrollers...'
+
     enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
     enroller1.add_role :enroller
     enroller1.save
-    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: county3, force_password_change: false)
+
+    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: state2, force_password_change: false)
     enroller2.add_role :enroller
     enroller2.save
+
     puts ' done!'
+
+    #####################################
 
     print 'Creating epis...'
+
     epi1 = User.new(email: 'epi1@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
-    epi1.add_role :monitor
+    epi1.add_role :public_health
     epi1.save
-    epi2 = User.new(email: 'epi2@example.com', password: '123456ab', jurisdiction: county3, force_password_change: false)
-    epi2.add_role :monitor
+
+    epi2 = User.new(email: 'epi2@example.com', password: '123456ab', jurisdiction: state2, force_password_change: false)
+    epi2.add_role :public_health_enroller
     epi2.save
+
     puts ' done!'
 
+    #####################################
+
     print 'Creating admin...'
+
     admin1 = User.new(email: 'admin1@example.com', password: '123456ab', jurisdiction: usa, force_password_change: false)
     admin1.add_role :admin
     admin1.save
+
     puts ' done!'
+
+    #####################################
+
+    print 'Creating analytics user...'
+
+    analytics_all = User.new(email: 'analytics_all@example.com', password: '123456ab', jurisdiction: usa, force_password_change: false)
+    analytics_all.add_role :analyst
+    analytics_all.save
+
+    analytics_state = User.new(email: 'analytics_state@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
+    analytics_state.add_role :analyst
+    analytics_state.save
+
+    puts ' done!'
+
+    #####################################
 
   end
 

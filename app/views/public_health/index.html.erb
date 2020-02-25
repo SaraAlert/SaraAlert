@@ -1,5 +1,13 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Dashboard", href: nil} ] } %>
 
+<% if current_user.can_view_analytics? %>
+  <%= link_to 'View Analytics', {controller: "analytics", action: "index"}, class: "btn btn-lg btn-primary btn-square ml-2 mb-4" %>
+<% end %>
+
+<% if current_user.can_create_patient? %>
+  <%= link_to 'Enroll New Monitoree', {controller: "patients", action: "new"}, class: "btn btn-lg btn-primary btn-square ml-2 mb-4" %>
+<% end %>
+
 <div class="mx-2 pb-4">
 
   <ul class="nav nav-tabs">
@@ -14,18 +22,13 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link"  id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic">
+      <a class="nav-link" id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic">
         Asymptomatic <span class="badge badge-success badge-larger-font"><%= @asymptomatic_patients.count %></span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link"  id="closed-tab" data-toggle="tab" href="#closed">
+      <a class="nav-link" id="closed-tab" data-toggle="tab" href="#closed">
         Closed <span class="badge badge-secondary badge-larger-font"><%= @closed_patients.count %></span>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link"  id="analytics-tab" data-toggle="tab" href="#analytics">
-        Analytics
       </a>
     </li>
   </ul>
@@ -48,9 +51,6 @@
       <h3 class="px-4 pt-4 pb-3">Monitorees Not Being Monitored</h3>
       <%= render partial: "patients", locals: { patients: @closed_patients } %>
     </div>
-    <div class="card card-square tab-pane fade pt-3 px-2" id="analytics" role="tabpanel" aria-labelledby="analytics-tab">
-      <%= react_component("dashboard/MonitorAnalytics", { stats: @stats }) %>
-    </div>
   </div>
 
 </div>
@@ -59,9 +59,6 @@
   $(document).ready(function() {
     $('.patients_table').DataTable({
       "info": false,
-      "columnDefs": [
-        { "orderable": false, "targets": -1 }
-      ],
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
     });
   });

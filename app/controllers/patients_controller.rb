@@ -1,40 +1,80 @@
 class PatientsController < ApplicationController
   before_action :authenticate_user!
-  before_action :get_stats, only: [:index]
 
+  # Enroller view to see enrolled subjects and button to enroll new subjects
   def index
-    redirect_to root_url unless current_user.can_create_patient?
+    unless current_user.can_create_patient?
+      redirect_to root_url and return
+    end
   end
 
+  # The single subject view
   def show
-    redirect_to root_url unless current_user.can_view_patient?
+    unless current_user.can_view_patient?
+      redirect_to root_url and return
+    end
+
     @patient = current_user.get_patient(params.permit(:id)[:id])
-    # If we failed to find a patient given the id, redirect to index
-    redirect_to action: 'index' if @patient.nil?
+
+    # If we failed to find a subject given the id, redirect to index
+    if @patient.nil?
+      redirect_to root_url and return
+    end
   end
 
+  # Returns a new (unsaved) subject, for creating a new subject
   def new
-    redirect_to root_url unless current_user.can_create_patient?
+    unless current_user.can_create_patient?
+      redirect_to root_url and return
+    end
     @patient = Patient.new
   end
 
+  # Similar to 'new', except used for creating a new group member
   def new_group_member
-    redirect_to root_url unless current_user.can_create_patient?
+    unless current_user.can_create_patient?
+      redirect_to root_url and return
+    end
+
+    # Find the parent subject
     parent = current_user.get_patient(params.permit(:id)[:id])
+
+    # If we failed to find the parent given the id, redirect to index
+    if parent.nil?
+      redirect_to root_url and return
+    end
+
     @patient = Patient.new(parent.attributes.slice(*(group_member_subset.map { |s| s.to_s })))
+
+    # If we failed to find a subject given the id, redirect to index
+    if @patient.nil?
+      redirect_to root_url and return
+    end
+
     @parent_id = parent.id
   end
 
+  # Editing a patient
   def edit
-    redirect_to root_url unless current_user.can_edit_patient?
+    unless current_user.can_edit_patient?
+      redirect_to root_url and return
+    end
+
     @patient = current_user.get_patient(params.permit(:id)[:id])
-    # If we failed to find a patient given the id, redirect to index
-    redirect_to action: 'index' if @patient.nil?
+
+    # If we failed to find a subject given the id, redirect to index
+    if @patient.nil?
+      redirect_to root_url and return
+    end
+
   end
 
+  # This follows 'new', this will receive the subject details and save a new subject
+  # to the database.
   def create
-    # TODO: This is accessed via React, so redirects are probably not sensible behavior
-    redirect_to root_url unless current_user.can_create_patient?
+    unless current_user.can_create_patient?
+      redirect_to root_url and return
+    end
 
     # Add patient details that were collected from the form
     patient = Patient.new(params[:patient].permit(*allowed_params))
@@ -49,11 +89,11 @@ class PatientsController < ApplicationController
     # Set the creator as the current user
     patient.creator = current_user
 
+    # Set the subject jurisdiction to the creator's jurisdiction
     patient.jurisdiction = current_user.jurisdiction
 
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
-    # TODO: This is currently a notional solution, and any final solution will require a security review
     patient.submission_token = SecureRandom.hex(20) # 160 bits
 
     # Attempt to save and continue; else if failed redirect to index
@@ -79,22 +119,33 @@ class PatientsController < ApplicationController
     end
   end
 
+  # General updates to an existing subject.
   def update
-    redirect_to root_url unless current_user.can_edit_patient?
+    unless current_user.can_edit_patient?
+      redirect_to root_url and return
+    end
 
-    # If we failed to find a patient given the id, redirect to index
     content = params.require(:patient).permit(:patient, :id, *allowed_params)
     patient = current_user.get_patient(content[:id])
-    redirect_to action: 'index' if patient.nil?
 
-    # Attempt to update
-    patient.update!(content)
+    # If we failed to find a subject given the id, redirect to index
+    if patient.nil?
+      redirect_to root_url and return
+    end
+
+    # Attempt to update, else return to index if failed
+    unless patient.update!(content)
+      redirect_to root_url and return
+    end
 
     render json: patient
   end
 
+  # Updates to workflow/tracking status for a subject
   def update_status
-    redirect_to root_url unless current_user.can_edit_patient?
+    unless current_user.can_edit_patient?
+      redirect_to root_url and return
+    end
     patient = Patient.find_by_id(params.permit(:id)[:id])
     patient.update!(params.require(:patient).permit(:monitoring, :monitoring_plan, :exposure_risk_assessment))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
@@ -112,19 +163,6 @@ class PatientsController < ApplicationController
     history.patient = patient
     history.history_type = 'Monitoring Change'
     history.save!
-  end
-
-  def get_stats
-    @stats = {
-      system_subjects: Patient.count,
-      system_subjects_last_24: Patient.where('created_at >= ?', Time.now - 1.day).count,
-      system_assessmets: Assessment.count,
-      system_assessmets_last_24: Assessment.where('created_at >= ?', Time.now - 1.day).count,
-      user_subjects: Patient.where(creator_id: current_user.id).count,
-      user_subjects_last_24: Patient.where(creator_id: current_user.id).where('created_at >= ?', Time.now - 1.day).count,
-      user_assessments: Patient.where(creator_id: current_user.id).joins(:assessments).count,
-      user_assessments_last_24: Patient.where(creator_id: current_user.id).joins(:assessments).where('assessments.created_at >= ?', Time.now - 1.day).count
-    }
   end
 
   # Parameters allowed for saving to database

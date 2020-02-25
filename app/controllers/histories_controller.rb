@@ -1,6 +1,7 @@
 class HistoriesController < ApplicationController
   before_action :authenticate_user!
 
+  # Create a new history route; this is used to create comments on subjects.
   def create
     redirect_to root_url unless current_user.can_create_subject_history?
     history = History.new(comment: params.permit(:comment)[:comment])
