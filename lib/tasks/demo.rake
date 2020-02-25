@@ -10,48 +10,88 @@ namespace :demo do
     print 'Creating jurisdictions...'
 
     usa = Jurisdiction.create(name: 'USA')
-    state1 = Jurisdiction.create(name: 'Example State 1', parent: usa)
-    county1 = Jurisdiction.create(name: 'Example County 1', parent: state1)
-    city1 = Jurisdiction.create(name: 'Example City 1', parent: county1)
-    city2 = Jurisdiction.create(name: 'Example City 2', parent: county1)
-    county2 = Jurisdiction.create(name: 'Example County 2', parent: state1)
-    state2 = Jurisdiction.create(name: 'Example State 2', parent: usa)
-    county3 = Jurisdiction.create(name: 'Example County 3', parent: state2)
-    county4 = Jurisdiction.create(name: 'Example County 4', parent: state2)
+    state1 = Jurisdiction.create(name: 'State 1', parent: usa)
+    state2 = Jurisdiction.create(name: 'State 2', parent: usa)
+    county1 = Jurisdiction.create(name: 'County 1', parent: state1)
+    county2 = Jurisdiction.create(name: 'County 2', parent: state1)
+    county3 = Jurisdiction.create(name: 'County 3', parent: state2)
+    county4 = Jurisdiction.create(name: 'County 4', parent: state2)
 
     puts ' done!'
 
     #####################################
 
-    print 'Creating enrollers...'
+    print 'Creating enroller users...'
 
-    enroller1 = User.new(email: 'enroller1@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
+    enroller1 = User.new(email: 'state1_enroller@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
     enroller1.add_role :enroller
     enroller1.save
 
-    enroller2 = User.new(email: 'enroller2@example.com', password: '123456ab', jurisdiction: state2, force_password_change: false)
+    enroller2 = User.new(email: 'localS1C1_enroller@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
     enroller2.add_role :enroller
     enroller2.save
 
+    enroller3 = User.new(email: 'localS1C2_enroller@example.com', password: '123456ab', jurisdiction: county2, force_password_change: false)
+    enroller3.add_role :enroller
+    enroller3.save
+
+    enroller4 = User.new(email: 'state2_enroller@example.com', password: '123456ab', jurisdiction: state2, force_password_change: false)
+    enroller4.add_role :enroller
+    enroller4.save
+
+    enroller5 = User.new(email: 'localS2C3_enroller@example.com', password: '123456ab', jurisdiction: county3, force_password_change: false)
+    enroller5.add_role :enroller
+    enroller5.save
+
+    enroller6 = User.new(email: 'localS2C4_enroller@example.com', password: '123456ab', jurisdiction: county4, force_password_change: false)
+    enroller6.add_role :enroller
+    enroller6.save
+
     puts ' done!'
 
     #####################################
 
-    print 'Creating epis...'
+    print 'Creating public health users...'
 
-    epi1 = User.new(email: 'epi1@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
-    epi1.add_role :public_health
-    epi1.save
+    ph1 = User.new(email: 'state1_epi@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
+    ph1.add_role :public_health
+    ph1.save
 
-    epi2 = User.new(email: 'epi2@example.com', password: '123456ab', jurisdiction: state2, force_password_change: false)
-    epi2.add_role :public_health_enroller
-    epi2.save
+    ph2 = User.new(email: 'localS1C1_epi@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
+    ph2.add_role :public_health
+    ph2.save
+
+    ph3 = User.new(email: 'localS1C2_epi@example.com', password: '123456ab', jurisdiction: county2, force_password_change: false)
+    ph3.add_role :public_health
+    ph3.save
+
+    ph4 = User.new(email: 'state2_epi@example.com', password: '123456ab', jurisdiction: state2, force_password_change: false)
+    ph4.add_role :public_health
+    ph4.save
+
+    ph5 = User.new(email: 'localS2C3_epi@example.com', password: '123456ab', jurisdiction: county3, force_password_change: false)
+    ph5.add_role :public_health
+    ph5.save
+
+    ph6 = User.new(email: 'localS2C4_epi@example.com', password: '123456ab', jurisdiction: county4, force_password_change: false)
+    ph6.add_role :public_health
+    ph6.save
 
     puts ' done!'
 
     #####################################
 
-    print 'Creating admin...'
+    print 'Creating public health enroller users...'
+
+    phe1 = User.new(email: 'state1_epi_enroller@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
+    phe1.add_role :public_health_enroller
+    phe1.save
+
+    puts ' done!'
+
+    #####################################
+
+    print 'Creating admin users...'
 
     admin1 = User.new(email: 'admin1@example.com', password: '123456ab', jurisdiction: usa, force_password_change: false)
     admin1.add_role :admin
@@ -61,15 +101,11 @@ namespace :demo do
 
     #####################################
 
-    print 'Creating analytics user...'
+    print 'Creating analyst users...'
 
-    analytics_all = User.new(email: 'analytics_all@example.com', password: '123456ab', jurisdiction: usa, force_password_change: false)
-    analytics_all.add_role :analyst
-    analytics_all.save
-
-    analytics_state = User.new(email: 'analytics_state@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
-    analytics_state.add_role :analyst
-    analytics_state.save
+    analyst1 = User.new(email: 'analyst_all@example.com', password: '123456ab', jurisdiction: usa, force_password_change: false)
+    analyst1.add_role :analyst
+    analyst1.save
 
     puts ' done!'
 
