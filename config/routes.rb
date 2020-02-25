@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]
 
   resources :admin, only: [:index, :create_user]
-  
+
   post 'admin/create_user', to: 'admin#create_user'
 
   resources :histories, only: [:create]
@@ -25,6 +25,7 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
-  get '/monitor_dashboard', to: 'monitor_dashboard#index', as: :monitor_dashboard
+  get '/public_health', to: 'public_health#index', as: :public_health
 
+  get '/analytics', to: 'analytics#index', as: :analytics
 end

@@ -1,1 +1,1 @@
-<%= react_component("admin/Admin", {data: User.all, roles: User.all.map {|user| user.roles }.flatten, authenticity_token: form_authenticity_token, jurisdiction_paths: Hash[Jurisdiction.all.map{|jur| [jur.jurisdiction_path_string, jur.id]}] }) %>
+<%= react_component("admin/Admin", {data: User.all, roles: User.all.map { |user| user.roles }.flatten, role_types: User.all.map { |user| user.roles }.flatten.uniq, authenticity_token: form_authenticity_token, jurisdiction_paths: Hash[Jurisdiction.all.map{|jur| [jur.jurisdiction_path_string, jur.id]}] }) %>

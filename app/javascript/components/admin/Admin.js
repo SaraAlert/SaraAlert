@@ -5,7 +5,6 @@ import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn, InsertModalHeader, InsertModalFooter } from 'react-bootstrap-table';
 
-const roleTypes = ['admin', 'enroller', 'monitor'];
 class Admin extends React.Component {
   constructor(props) {
     super(props);
@@ -84,7 +83,7 @@ class Admin extends React.Component {
         <TableHeaderColumn dataField="jurisdiction_path" editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths) } }}>
           Jurisdiction
         </TableHeaderColumn>
-        <TableHeaderColumn dataField="role" editable={{ type: 'select', options: { values: roleTypes } }}>
+        <TableHeaderColumn dataField="role" editable={{ type: 'select', options: { values: this.props.role_types } }}>
           Role
         </TableHeaderColumn>
       </BootstrapTable>
@@ -97,6 +96,7 @@ Admin.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   roles: PropTypes.array,
+  role_types: PropTypes.array,
 };
 
 export default Admin;

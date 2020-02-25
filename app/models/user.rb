@@ -18,7 +18,6 @@ class User < ApplicationRecord
 
   has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
 
-  # TODO: Can one person have access to two jurisdictions that are not hierarchical? May want has_many through
   belongs_to :jurisdiction
 
   # Patients this user can view through their jurisdiction access
@@ -34,52 +33,14 @@ class User < ApplicationRecord
   # Get a patient (that this user is allowed to get)
   def get_patient(id)
     if has_role?(:enroller)
-      created_patients.find_by_id(id)
-    elsif has_role?(:monitor)
+      enrolled_patients.find_by_id(id)
+    elsif has_role?(:public_health)
       viewable_patients.find_by_id(id)
+    elsif has_role?(:public_health_enroller)
+      enrolled_patients.find_by_id(id) || viewable_patients.find_by_id(id)
     elsif has_role?(:admin)
       Patient.find_by_id(id)
     end
-  end
-
-  # Can this user create a new Patient?
-  def can_create_patient?
-      has_role?(:enroller) || has_role?(:admin)
-  end
-
-  # Can this user view a Patient?
-  def can_view_patient?
-    has_role?(:enroller) || has_role?(:monitor) || has_role?(:admin)
-  end
-
-  # Can this user edit a Patient?
-  def can_edit_patient?
-    has_role?(:enroller) || has_role?(:monitor) || has_role?(:admin)
-  end
-
-  # Can this user view Patient assessments?
-  def can_view_patient_assessments?
-    has_role?(:monitor) || has_role?(:admin)
-  end
-
-  # Can this user edit Patient assessments?
-  def can_edit_patient_assessments?
-    has_role?(:monitor) || has_role?(:admin)
-  end
-
-  # Can this user view the monitor dashboard?
-  def can_view_monitor_dashboard?
-    has_role?(:monitor) || has_role?(:admin)
-  end
-
-  # Can this user modify subject status?
-  def can_modify_subject_status?
-    has_role?(:monitor) || has_role?(:admin)
-  end
-
-  # Can this user create subject history?
-  def can_create_subject_history?
-    has_role?(:monitor) || has_role?(:admin)
   end
 
   # Allow information on the user's jurisdiction to be displayed
@@ -87,8 +48,58 @@ class User < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
-  def as_json(options = {})
-    super((options || {}).merge(methods: :jurisdiction_path))
+  #############################################################################
+  # Access Restrictions for users
+  #############################################################################
+
+  # Can this user create a new Patient?
+  def can_create_patient?
+      has_role?(:enroller) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user view a Patient?
+  def can_view_patient?
+    has_role?(:enroller) || has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user edit a Patient?
+  def can_edit_patient?
+    has_role?(:enroller) || has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user view Patient assessments?
+  def can_view_patient_assessments?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user edit Patient assessments?
+  def can_edit_patient_assessments?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user view the public health dashboard?
+  def can_view_public_health_dashboard?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user view the enroller dashboard?
+  def can_view_enroller_dashboard?
+    has_role?(:enroller)
+  end
+
+  # Can view analytics
+  def can_view_analytics?
+    has_role?(:enroller) || has_role?(:public_health) || has_role?(:public_health_enroller) || has_role?(:analyst)
+  end
+
+  # Can this user modify subject status?
+  def can_modify_subject_status?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user create subject history?
+  def can_create_subject_history?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
   end
 
 end
