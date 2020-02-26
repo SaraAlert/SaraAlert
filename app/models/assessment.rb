@@ -11,5 +11,7 @@ class Assessment < ApplicationRecord
       validates column.name.to_sym, length: { maximum: 200 }
     end
   end
+  has_one :reported_condition, :class_name => 'Condition'
+  has_one :symptomatic_condition, :class_name => 'Condition'
   belongs_to :patient
 end

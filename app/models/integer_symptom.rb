@@ -1,0 +1,2 @@
+class IntegerSymptom < Symptom
+end

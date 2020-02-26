@@ -5,14 +5,13 @@ class CreateAssessments < ActiveRecord::Migration[6.0]
       t.references :patient, index: true
 
       t.boolean :symptomatic
-      t.string :temperature
-
+  
       t.string :who_reported, default: 'Monitoree'
 
       #t.boolean :felt_feverish
-      t.boolean :cough
+      # t.boolean :cough
       #t.boolean :sore_throat
-      t.boolean :difficulty_breathing
+      # t.boolean :difficulty_breathing
       #t.boolean :muscle_aches
       #t.boolean :headache
       #t.boolean :abdominal_discomfort

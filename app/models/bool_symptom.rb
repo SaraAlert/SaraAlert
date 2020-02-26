@@ -1,0 +1,2 @@
+class BoolSymptom < Symptom
+end

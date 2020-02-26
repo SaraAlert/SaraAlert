@@ -1,0 +1,2 @@
+class FloatSymptom < Symptom
+end
