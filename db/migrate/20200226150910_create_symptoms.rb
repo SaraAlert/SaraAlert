@@ -11,7 +11,7 @@ class CreateSymptoms < ActiveRecord::Migration[6.0]
 
       t.integer :condition_id
   
-      # Store concrete type of syptom
+      # Store concrete type of symptom
       t.string :type
       t.timestamps
     end

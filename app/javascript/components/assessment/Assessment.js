@@ -11,7 +11,7 @@ import AssessmentCompleted from './steps/AssessmentCompleted';
 class Assessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null, assessmentState: pickBy(this.props.assessment, identity) };
+    this.state = { index: 0, direction: null, assessmentState: pickBy(this.props.assessment, identity), symptoms: this.props.symptoms };
     this.setAssessmentState = this.setAssessmentState.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
@@ -141,6 +141,7 @@ class Assessment extends React.Component {
               goto={this.goto}
               submit={this.handleSubmit}
               setAssessmentState={this.setAssessmentState}
+              symptoms={this.state.symptoms}
               currentState={this.state.assessmentState}
               idPre={this.props.idPre}
             />
@@ -150,6 +151,7 @@ class Assessment extends React.Component {
               goto={this.goto}
               submit={this.handleSubmit}
               setAssessmentState={this.setAssessmentState}
+              symptoms={this.state.symptoms}
               currentState={this.state.assessmentState}
               idPre={this.props.idPre}
             />

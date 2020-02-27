@@ -40,6 +40,19 @@ class SymptomsAssessment extends React.Component {
     }
   }
 
+  boolSymptom = (name, label) => {
+    return (
+      <Form.Check
+        type="switch"
+        id={`${name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
+        label={`${label}`}
+        //checked={this.state.current.cough === true || false}
+        checked={false}
+        onChange={this.handleChange}
+      />
+    );
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -54,7 +67,7 @@ class SymptomsAssessment extends React.Component {
             </Form.Row>
             <Form.Row>
               <Form.Group className="pt-1">
-                <Form.Check
+                {/*<Form.Check
                   type="switch"
                   id={`cough${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
                   label="Cough"
@@ -68,7 +81,12 @@ class SymptomsAssessment extends React.Component {
                   label="Difficulty Breathing"
                   checked={this.state.current.difficulty_breathing === true || false}
                   onChange={this.handleChange}
-                />
+                /> */}
+                {this.state.symptoms
+                  .filter(x => {
+                    return x.field_type === 'BoolSymptom';
+                  })
+                  .map(a => this.boolSymptom(a.name, a.label))}
               </Form.Group>
             </Form.Row>
             <Form.Row className="pt-4">

@@ -82,7 +82,16 @@ class GeneralAssessment extends React.Component {
               </Form.Control.Feedback>
             </Form.Row>
             <Form.Row className="pt-3">
-              <Form.Label className="nav-input-label">Are you experiencing any symptoms including cough or difficulty breathing?</Form.Label>
+              <Form.Label className="nav-input-label">
+                Are you experiencing any of the following symptoms{' '}
+                {this.state.symptoms
+                  .filter(x => {
+                    return x.bool_value != null;
+                  })
+                  .map(a => a.label)
+                  .join(', ')}
+                ?
+              </Form.Label>
               <Form.Control
                 as="select"
                 size="lg"

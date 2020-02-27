@@ -9,6 +9,7 @@ class AssessmentsController < ApplicationController
   def new
     @assessment = Assessment.new
     @patient_submission_token = params[:patient_submission_token]
+    @symptoms = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction.hierarchical_condition_unpopulated_symptoms.symptoms
   end
 
   def create

@@ -19,7 +19,8 @@ class Jurisdiction < ApplicationRecord
   end
 
   # This creates NEW condition that represents a join of all of the symptoms in your jurisdiciton hierarchy
-  def full_symptomatic_condition
+  # Contains the values for the symptoms that will be what are considered as symptomatic
+  def hierarchical_symptomatic_condition
     master_symptoms_list = []
     # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
     all_condition_symptoms = path&.map{|symp_defs| symp_defs.symptomatic_definitions.last&.symptoms}
@@ -31,7 +32,29 @@ class Jurisdiction < ApplicationRecord
       }
     }
 
-    return Condition.create(symptoms: master_symptoms_list)
+    return Condition.new(symptoms: master_symptoms_list)
+  end
+
+
+  def hierarchical_condition_unpopulated_symptoms
+    new_cond = Condition.new()
+    master_symptoms_list = []
+    # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
+    all_condition_symptoms = path&.map{|symp_defs| symp_defs.symptomatic_definitions.last&.symptoms}
+    all_condition_symptoms&.each{|symptoms_list| 
+      symptoms_list&.each{ |symptom| 
+        if !(master_symptoms_list.include?(symptom.name))
+          new_symptom = symptom.dup()
+          # Should put clear function in the symptom class(es)
+          new_symptom.int_value = nil
+          new_symptom.float_value = nil
+          new_symptom.bool_value = nil
+          master_symptoms_list.push(symptom.name)
+          new_cond.symptoms.push(new_symptom)
+        end
+      }
+    }
+    return new_cond
   end
 
 end
