@@ -59,6 +59,26 @@ class AnalyticsController < ApplicationController
 
       # Generate counts per day
       dates = patients.map { |p| p.created_at.to_date }.uniq.sort
+
+      # This obviously isn't the most efficient way to obtain this data
+      symptomatic_patient_count_by_state_and_day = []
+      dates.each_with_index { | d, i |
+        symptomatic_patient_count_by_state_and_day << {day: d}
+        states = ['AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY']
+        states.each { | state |
+          count = Assessment.joins(:patient).where('assessments.created_at::date = ?', d).where(symptomatic: true, 'patients.monitored_address_state' => state).count()
+            symptomatic_patient_count_by_state_and_day[i][state] = count
+        }
+      }
+      total_patient_count_by_state_and_day = []
+      dates.each_with_index { | d, i |
+        total_patient_count_by_state_and_day << {day: d}
+        states = ['AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY']
+        states.each { | state |
+          count = Assessment.joins(:patient).where('assessments.created_at::date = ?', d).where('patients.monitored_address_state' => state).count()
+            total_patient_count_by_state_and_day[i][state] = count
+        }
+      }
       date_map = {}
       dates.each_with_index { |d, i| date_map[d] = i + 1 }
       patient_count_by_day = Hash.new(0)
@@ -107,6 +127,8 @@ class AnalyticsController < ApplicationController
         ],
         monitoring_distribution_by_day: patient_count_by_day_array,
         monitoring_distribution_by_state: patient_count_by_state,
+        symptomatic_patient_count_by_state_and_day: symptomatic_patient_count_by_state_and_day,
+        total_patient_count_by_state_and_day: total_patient_count_by_state_and_day,
         assessment_result_by_day:	assessment_result_by_day_array
       }
     end
