@@ -183,8 +183,7 @@ namespace :demo do
             #interpretation_required
             address_line_1: Faker::Address.street_address,
             address_city: Faker::Address.city,
-            # TODO: Different portions of app use abbreviation vs full state, need common approach
-            address_state: Faker::Address.state_abbr,
+            address_state: Faker::Address.state,
             address_line_2: rand < 0.3 ? Faker::Address.secondary_address : nil,
             address_zip: Faker::Address.zip_code,
             #address_county
@@ -240,7 +239,7 @@ namespace :demo do
           else
             patient.monitored_address_line_1 = Faker::Address.street_address
             patient.monitored_address_city = Faker::Address.city
-            patient.monitored_address_state = Faker::Address.state_abbr
+            patient.monitored_address_state = Faker::Address.state
             patient.monitored_address_line_2 = rand < 0.3 ? Faker::Address.secondary_address : nil
             patient.monitored_address_zip = Faker::Address.zip_code
           end

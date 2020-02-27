@@ -9,8 +9,6 @@ class Admin extends React.Component {
   constructor(props) {
     super(props);
     var dataLen = props.data.length;
-    // TODO: have role be available directly on patient sent from backend
-    // This method assumes that role and user data arrays have parallel indexes
     for (var i = 0; i < dataLen; i++) {
       props.data[i]['role'] = props.roles[i]['name'];
     }

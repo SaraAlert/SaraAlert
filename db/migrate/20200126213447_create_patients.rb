@@ -1,6 +1,5 @@
 class CreatePatients < ActiveRecord::Migration[6.0]
   def change
-    # TODO: reconsider the lack of a group table (allows better separation of PII in the patients table)
     create_table :patients do |t|
       t.timestamps
       t.integer :responder_id, index: true
@@ -26,9 +25,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :user_defined_id_nndss
 
       # Data collected for each patient
-      # TODO: Consider storing this type of data as key value pairs in a separate table
-      # TODO: We may want to break out the enrollments notes into a notes table shared with other notes
-      # TODO: We would likely get some improvements by specifying string lengths where we know them
+      # TODO: We may want to break out "notes" into a notes table shared
       t.string :first_name
       t.string :middle_name
       t.string :last_name

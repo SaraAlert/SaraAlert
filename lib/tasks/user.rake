@@ -1,9 +1,10 @@
 namespace :user do
 
-  # TODO: These are user management functions for testing until a web interface is developed
-  
   desc "Add a user account"
   task add: :environment do
+
+    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+
     roles = Role.pluck(:name)
     jurisdictions = Jurisdiction.pluck(:name)
     email = ENV["EMAIL"]
@@ -29,6 +30,9 @@ namespace :user do
 
   desc "Update a user's password and/or role and/or jurisdiction"
   task update: :environment do
+
+    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+
     roles = Role.pluck(:name)
     jurisdictions = Jurisdiction.pluck(:name)
     email = ENV["EMAIL"]
@@ -54,6 +58,9 @@ namespace :user do
 
   desc "Delete a user account"
   task delete: :environment do
+
+    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+
     email = ENV["EMAIL"]
     raise "EMAIL must be provided" unless email
     User.where(email: email).delete_all
@@ -61,6 +68,9 @@ namespace :user do
 
   desc "List user accounts"
   task list: :environment do
+
+    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+
     User.find_each do |user|
       puts "#{user.email.ljust(45, '.')} #{user.roles_name.join(' ')}"
     end

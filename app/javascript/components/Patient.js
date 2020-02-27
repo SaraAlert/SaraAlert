@@ -82,7 +82,6 @@ class Patient extends React.Component {
                 <br />
               </Col>
             </Row>
-            {/* TODO: This should be adjusted when we start setting the jurisdiction during the enrollment process */}
             {this.props.details.jurisdiction_path && (
               <Row className="mt-4">
                 <Col>

@@ -1,10 +1,10 @@
 class AssessmentsController < ApplicationController
+  before_action :check_patient_token, only: [:new, :create, :update]
 
   def index
   end
 
   def new
-    # TODO: We need to check the assessment token for all actions in this controller
     @assessment = Assessment.new
     @patient_submission_token = params[:patient_submission_token]
   end
@@ -13,7 +13,6 @@ class AssessmentsController < ApplicationController
     # The patient providing this assessment is identified through the submission_token
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
 
-    redirect_to root_url unless patient
     @assessment = Assessment.new(params.permit(*assessment_params))
     @assessment.patient = patient
 
@@ -34,8 +33,7 @@ class AssessmentsController < ApplicationController
 
     # Attempt to save and continue; else if failed redirect to index
     if @assessment.save!
-      # TODO Figure out what to do if save is not successful
-      redirect_to patient_assessments_url
+      redirect_to patient_assessments_url and return
     end
   end
 
@@ -53,6 +51,16 @@ class AssessmentsController < ApplicationController
     # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
     assessment.who_reported = current_user.email
     assessment.save!
+  end
+
+  def check_patient_token
+    if params.nil? || params[:patient_submission_token].nil?
+      redirect_to root_url and return
+    end
+    patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
+    if patient.nil?
+      redirect_to root_url and return
+    end
   end
 
   def assessment_params
