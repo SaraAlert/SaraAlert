@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   before_action :new_users_must_change_password
+  protect_from_forgery prepend: true
   def new_users_must_change_password
     if current_user && current_user.force_password_change
       # Redirect unless we're already at the change password page or logging out
