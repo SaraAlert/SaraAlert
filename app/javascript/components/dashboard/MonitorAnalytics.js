@@ -26,7 +26,7 @@ class Analytics extends React.Component {
           let link = document.createElement('a');
           let jurisdiction = this.props.current_user.jurisdiction_path.join('_');
           let currentDate = moment().format('YYYY_MM_DD');
-          let imageName = `SaraAnalytics_${jurisdiction}_${currentDate}.png`;
+          let imageName = `SaraAlert_${jurisdiction}_${currentDate}.png`;
           link.download = imageName;
           link.href = dataUrl;
           link.click();
