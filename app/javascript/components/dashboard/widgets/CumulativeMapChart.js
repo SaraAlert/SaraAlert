@@ -10,7 +10,7 @@ import { PropTypes } from 'prop-types';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
 
-class MapChart extends React.Component {
+class CumulativeMapChart extends React.Component {
   constructor(props) {
     super(props);
     this.handleLeave = this.handleLeave.bind(this);
@@ -25,10 +25,12 @@ class MapChart extends React.Component {
       hovered: false,
       content: '',
       zoom: 1,
+      maximumCount: 0,
       selectedDateData: {},
       selectedDay: null,
+      cumulativeDateData: {},
       // All this `map` does is to translate `{'Kansas' : 5}` to `{'KA' : 5}` for all states
-      mappedTotalPatientCountByStateAndDay: this.props.stats.total_patient_count_by_state_and_day.map(x => {
+      mappedSymptomaticPatientCountByStateAndDay: this.props.stats.symptomatic_patient_count_by_state_and_day.map(x => {
         let mappedValues = {};
         mappedValues['day'] = x.day;
         _.forIn(_.omit(x, 'day'), (value, key) => {
@@ -40,8 +42,28 @@ class MapChart extends React.Component {
     };
   }
   componentDidMount() {
-    this.setState({ selectedDay: _.head(this.state.mappedTotalPatientCountByStateAndDay).day });
-    this.setState({ selectedDateData: this.state.mappedTotalPatientCountByStateAndDay[0] });
+    let previousDaysValuesCumulative;
+    let x = this.state.mappedSymptomaticPatientCountByStateAndDay.map((dayData, index) => {
+      if (index === 0) {
+        return dayData;
+      } else {
+        let previousDateData =
+          typeof previousDaysValuesCumulative === 'undefined'
+            ? _.omit(this.state.mappedSymptomaticPatientCountByStateAndDay[index - 1], 'day')
+            : previousDaysValuesCumulative;
+        let currentDateData = _.omit(dayData, 'day');
+        previousDaysValuesCumulative = _.mergeWith(previousDateData, currentDateData, (x, y) => x + y);
+        let retVal = JSON.parse(JSON.stringify(previousDaysValuesCumulative));
+        retVal['day'] = dayData.day;
+        return retVal;
+      }
+    });
+    // Due to the culmulative nature of this function,we only need to check the final element in the array for the highest value
+    // maximumCount
+    this.setState({ selectedDay: _.head(x).day });
+    this.setState({ maximumCount: Math.max(..._.valuesIn(_.omit(_.last(x), 'day'))) });
+    this.setState({ cumulativeDateData: x });
+    this.setState({ selectedDateData: this.state.mappedSymptomaticPatientCountByStateAndDay[0] });
   }
 
   handleMove(geo) {
@@ -86,30 +108,27 @@ class MapChart extends React.Component {
 
   getDateRange() {
     let retVal = {};
-    this.state.mappedTotalPatientCountByStateAndDay.forEach((dayData, index) => {
+    this.state.mappedSymptomaticPatientCountByStateAndDay.forEach((dayData, index) => {
       retVal[index] = moment(dayData.day).format('DD');
     });
     return retVal;
   }
 
   handleDateRangeChange(value) {
-    this.setState({ selectedDateData: _.omit(this.state.mappedTotalPatientCountByStateAndDay[value], 'day') });
-    this.setState({ selectedDay: this.state.mappedTotalPatientCountByStateAndDay[value].day });
+    this.setState({ selectedDateData: _.omit(this.state.cumulativeDateData[value], 'day') });
+    this.setState({ selectedDay: this.state.cumulativeDateData[value].day });
   }
 
   render() {
     const colorScale = scaleQuantize()
-      .domain([
-        0,
-        Math.max(...Object.values(this.state.mappedTotalPatientCountByStateAndDay.map(x => _.omit(x, 'day'))).map(x => Math.max(...Object.values(x)))),
-      ])
+      .domain([0, this.state.maximumCount])
       .range(['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']);
 
     return (
       <React.Fragment>
         <ReactTooltip>{this.state.content}</ReactTooltip>
         <Card className="card-square">
-          <Card.Header as="h5">Total Monitorees Over Time</Card.Header>
+          <Card.Header as="h5">Symptomatic Monitorees Over Time</Card.Header>
           <Card.Body>
             <ComposableMap data-tip="" projection="geoAlbersUsa">
               <ZoomableGroup center={[-97, 40]} zoom={this.state.zoom}>
@@ -149,7 +168,7 @@ class MapChart extends React.Component {
             </ComposableMap>
             <div className="mx-5 mt-4">
               <Slider
-                max={this.state.mappedTotalPatientCountByStateAndDay.length - 1}
+                max={this.state.mappedSymptomaticPatientCountByStateAndDay.length - 1}
                 marks={this.getDateRange()}
                 railStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
@@ -179,8 +198,8 @@ class MapChart extends React.Component {
   }
 }
 
-MapChart.propTypes = {
+CumulativeMapChart.propTypes = {
   stats: PropTypes.object,
 };
 
-export default MapChart;
+export default CumulativeMapChart;
