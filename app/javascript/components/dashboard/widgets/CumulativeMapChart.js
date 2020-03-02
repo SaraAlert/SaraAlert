@@ -29,17 +29,27 @@ class CumulativeMapChart extends React.Component {
       selectedDateData: {},
       selectedDay: null,
       cumulativeDateData: {},
+      // All this `map` does is to translate `{'Kansas' : 5}` to `{'KA' : 5}` for all states
+      mappedSymptomaticPatientCountByStateAndDay: this.props.stats.symptomatic_patient_count_by_state_and_day.map(x => {
+        let mappedValues = {};
+        mappedValues['day'] = x.day;
+        _.forIn(_.omit(x, 'day'), (value, key) => {
+          let abbreviation = stateOptions.find(state => state.name === key).abbrv;
+          mappedValues[abbreviation] = value;
+        });
+        return mappedValues;
+      }),
     };
   }
   componentDidMount() {
     let previousDaysValuesCumulative;
-    let x = this.props.stats.symptomatic_patient_count_by_state_and_day.map((dayData, index) => {
+    let x = this.state.mappedSymptomaticPatientCountByStateAndDay.map((dayData, index) => {
       if (index === 0) {
         return dayData;
       } else {
         let previousDateData =
           typeof previousDaysValuesCumulative === 'undefined'
-            ? _.omit(this.props.stats.symptomatic_patient_count_by_state_and_day[index - 1], 'day')
+            ? _.omit(this.state.mappedSymptomaticPatientCountByStateAndDay[index - 1], 'day')
             : previousDaysValuesCumulative;
         let currentDateData = _.omit(dayData, 'day');
         previousDaysValuesCumulative = _.mergeWith(previousDateData, currentDateData, (x, y) => x + y);
@@ -53,7 +63,7 @@ class CumulativeMapChart extends React.Component {
     this.setState({ selectedDay: _.head(x).day });
     this.setState({ maximumCount: Math.max(..._.valuesIn(_.omit(_.last(x), 'day'))) });
     this.setState({ cumulativeDateData: x });
-    this.setState({ selectedDateData: this.props.stats.symptomatic_patient_count_by_state_and_day[0] });
+    this.setState({ selectedDateData: this.state.mappedSymptomaticPatientCountByStateAndDay[0] });
   }
 
   handleMove(geo) {
@@ -98,7 +108,7 @@ class CumulativeMapChart extends React.Component {
 
   getDateRange() {
     let retVal = {};
-    this.props.stats.symptomatic_patient_count_by_state_and_day.forEach((dayData, index) => {
+    this.state.mappedSymptomaticPatientCountByStateAndDay.forEach((dayData, index) => {
       retVal[index] = moment(dayData.day).format('DD');
     });
     return retVal;
@@ -158,7 +168,7 @@ class CumulativeMapChart extends React.Component {
             </ComposableMap>
             <div className="mx-5 mt-4">
               <Slider
-                max={this.props.stats.symptomatic_patient_count_by_state_and_day.length - 1}
+                max={this.state.mappedSymptomaticPatientCountByStateAndDay.length - 1}
                 marks={this.getDateRange()}
                 railStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}

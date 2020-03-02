@@ -62,21 +62,16 @@ class AnalyticsController < ApplicationController
 
       # This obviously isn't the most efficient way to obtain this data
       symptomatic_patient_count_by_state_and_day = []
-      dates.each_with_index { | d, i |
-        symptomatic_patient_count_by_state_and_day << {day: d}
-        states = ['AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY']
-        states.each { | state |
-          count = Assessment.joins(:patient).where('assessments.created_at::date = ?', d).where(symptomatic: true, 'patients.monitored_address_state' => state).count()
-            symptomatic_patient_count_by_state_and_day[i][state] = count
-        }
-      }
       total_patient_count_by_state_and_day = []
       dates.each_with_index { | d, i |
+        symptomatic_patient_count_by_state_and_day << {day: d}
         total_patient_count_by_state_and_day << {day: d}
-        states = ['AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA', 'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY']
+        states = ['Alabama', 'Alaska', 'American Samoa', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Federated States of Micronesia', 'Florida', 'Georgia', 'Guam', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Marshall Islands', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Northern Mariana Islands', 'Ohio', 'Oklahoma', 'Oregon', 'Palau', 'Pennsylvania', 'Puerto Rico', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virgin Island', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
         states.each { | state |
-          count = Assessment.joins(:patient).where('assessments.created_at::date = ?', d).where('patients.monitored_address_state' => state).count()
-            total_patient_count_by_state_and_day[i][state] = count
+          count1 = Assessment.joins(:patient).where('assessments.created_at::date = ?', d).where(symptomatic: true, 'patients.monitored_address_state' => state).count()
+          symptomatic_patient_count_by_state_and_day[i][state] = count1
+          count2 = Assessment.joins(:patient).where('assessments.created_at::date = ?', d).where('patients.monitored_address_state' => state).count()
+          total_patient_count_by_state_and_day[i][state] = count2
         }
       }
       date_map = {}

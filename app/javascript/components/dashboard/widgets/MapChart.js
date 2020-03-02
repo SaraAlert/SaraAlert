@@ -27,11 +27,21 @@ class MapChart extends React.Component {
       zoom: 1,
       selectedDateData: {},
       selectedDay: null,
+      // All this `map` does is to translate `{'Kansas' : 5}` to `{'KA' : 5}` for all states
+      mappedTotalPatientCountByStateAndDay: this.props.stats.total_patient_count_by_state_and_day.map(x => {
+        let mappedValues = {};
+        mappedValues['day'] = x.day;
+        _.forIn(_.omit(x, 'day'), (value, key) => {
+          let abbreviation = stateOptions.find(state => state.name === key).abbrv;
+          mappedValues[abbreviation] = value;
+        });
+        return mappedValues;
+      }),
     };
   }
   componentDidMount() {
-    this.setState({ selectedDay: _.head(this.props.stats.total_patient_count_by_state_and_day).day });
-    this.setState({ selectedDateData: this.props.stats.total_patient_count_by_state_and_day[0] });
+    this.setState({ selectedDay: _.head(this.state.mappedTotalPatientCountByStateAndDay).day });
+    this.setState({ selectedDateData: this.state.mappedTotalPatientCountByStateAndDay[0] });
   }
 
   handleMove(geo) {
@@ -76,22 +86,22 @@ class MapChart extends React.Component {
 
   getDateRange() {
     let retVal = {};
-    this.props.stats.total_patient_count_by_state_and_day.forEach((dayData, index) => {
+    this.state.mappedTotalPatientCountByStateAndDay.forEach((dayData, index) => {
       retVal[index] = moment(dayData.day).format('DD');
     });
     return retVal;
   }
 
   handleDateRangeChange(value) {
-    this.setState({ selectedDateData: _.omit(this.props.stats.total_patient_count_by_state_and_day[value], 'day') });
-    this.setState({ selectedDay: this.props.stats.total_patient_count_by_state_and_day[value].day });
+    this.setState({ selectedDateData: _.omit(this.state.mappedTotalPatientCountByStateAndDay[value], 'day') });
+    this.setState({ selectedDay: this.state.mappedTotalPatientCountByStateAndDay[value].day });
   }
 
   render() {
     const colorScale = scaleQuantize()
       .domain([
         0,
-        Math.max(...Object.values(this.props.stats.total_patient_count_by_state_and_day.map(x => _.omit(x, 'day'))).map(x => Math.max(...Object.values(x)))),
+        Math.max(...Object.values(this.state.mappedTotalPatientCountByStateAndDay.map(x => _.omit(x, 'day'))).map(x => Math.max(...Object.values(x)))),
       ])
       .range(['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']);
 
@@ -139,7 +149,7 @@ class MapChart extends React.Component {
             </ComposableMap>
             <div className="mx-5 mt-4">
               <Slider
-                max={this.props.stats.total_patient_count_by_state_and_day.length - 1}
+                max={this.state.mappedTotalPatientCountByStateAndDay.length - 1}
                 marks={this.getDateRange()}
                 railStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
