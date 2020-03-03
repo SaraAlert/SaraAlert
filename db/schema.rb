@@ -29,6 +29,8 @@ ActiveRecord::Schema.define(version: 2020_02_28_204449) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "jurisdiction_id"
     t.integer "assessment_id"
+    t.string "threshold_condition_hash"
+    t.string "type"
   end
 
   create_table "histories", force: :cascade do |t|

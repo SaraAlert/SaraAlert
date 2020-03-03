@@ -1,0 +1,2 @@
+class ThresholdCondition < Condition
+end

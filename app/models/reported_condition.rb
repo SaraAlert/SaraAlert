@@ -1,0 +1,2 @@
+class ReportedCondition < Condition
+end

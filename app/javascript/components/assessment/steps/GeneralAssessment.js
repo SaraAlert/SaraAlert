@@ -8,7 +8,19 @@ class GeneralAssessment extends React.Component {
     super(props);
     this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
     // TODO Iterate over dynamic "symptoms" hash
-    this.state.current.experiencing_symptoms = this.state.current.cough || this.state.current.difficulty_breathing ? 'Yes' : 'No';
+    this.state.current.experiencing_symptoms =
+      this.state.current.symptoms.filter(x => {
+        return x.bool_value === true;
+      }).length === 0
+        ? 'No'
+        : 'Yes';
+    // If all values are null then form has not been populated with answers so experiencing symptoms should be null
+    this.state.current.experiencing_symptoms =
+      this.state.current.symptoms.filter(x => {
+        return x.bool_value !== null;
+      }).length === 0
+        ? null
+        : this.state.current.experiencing_symptoms;
     this.handleChange = this.handleChange.bind(this);
     this.navigate = this.navigate.bind(this);
     this.validate = this.validate.bind(this);
@@ -17,11 +29,28 @@ class GeneralAssessment extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
-    if (event.target.id.split('_idpre')[0] === 'experiencing_symptoms' && value === 'No') {
-      current['cough'] = false;
-      current['difficulty_breathing'] = false;
+    let field_id = event.target.id.split('_idpre')[0];
+    // experiencing_symptoms dropdown is not dynamically generated, need special case for it
+    if (field_id === 'experiencing_symptoms') {
+      if (value === 'No') {
+        current.symptoms
+          .filter(x => {
+            return x.field_type === 'BoolSymptom';
+          })
+          .forEach(x => (x.bool_value = false));
+        current.experiencing_symptoms = value;
+      } else if (value === 'Yes') {
+        current.experiencing_symptoms = value;
+      }
+    } else if (current.symptoms.find(x => x.name === event.target.id)?.field_type === 'BoolSymptom') {
+      Object.values(current.symptoms).find(symp => symp.name === field_id).bool_value = value;
+    } else if (current.symptoms.find(x => x.name === event.target.id)?.field_type === 'FloatSymptom') {
+      Object.values(current.symptoms).find(symp => symp.name === field_id).float_value = value;
+    } else if (current.symptoms.find(x => x.name === event.target.id)?.field_type === 'IntegerSymptom') {
+      Object.values(current.symptoms).find(symp => symp.name === field_id).int_value = value;
     }
-    this.setState({ current: { ...current, [event.target.id.split('_idpre')[0]]: value } }, () => {
+
+    this.setState({ current: { ...current } }, () => {
       this.props.setAssessmentState({ ...this.state.current });
     });
   }
@@ -37,7 +66,10 @@ class GeneralAssessment extends React.Component {
   validate(callback) {
     let self = this;
     schema
-      .validate(this.state.current, { abortEarly: false })
+      .validate(
+        this.state.current.symptoms.find(x => x.name === 'temperature'),
+        { abortEarly: false }
+      )
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, () => {
@@ -74,19 +106,19 @@ class GeneralAssessment extends React.Component {
                 size="lg"
                 id={`temperature${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
                 className="form-square"
-                value={this.state.current.temperature || ''}
+                value={this.state.current.symptoms.find(x => x.name === 'temperature').float_value || ''}
                 onChange={this.handleChange}
               />
               <Form.Control.Feedback className="d-block" type="invalid">
-                {this.state.errors['temperature']}
+                {this.state.errors['float_value']}
               </Form.Control.Feedback>
             </Form.Row>
             <Form.Row className="pt-3">
               <Form.Label className="nav-input-label">
                 Are you experiencing any of the following symptoms{' '}
-                {this.state.symptoms
+                {this.state.current.symptoms
                   .filter(x => {
-                    return x.bool_value != null;
+                    return x.field_type === 'BoolSymptom';
                   })
                   .map(a => a.label)
                   .join(', ')}
@@ -111,7 +143,7 @@ class GeneralAssessment extends React.Component {
                 block
                 size="lg"
                 className="btn-block btn-square"
-                disabled={!(this.state.current.experiencing_symptoms && this.state.current.temperature)}
+                disabled={!(this.state.current.experiencing_symptoms && this.state.current.symptoms.find(x => x.name === 'temperature')?.float_value)}
                 onClick={() => this.validate(this.navigate)}>
                 {(this.state.current.experiencing_symptoms === 'Yes' && 'Continue') || (this.state.current.experiencing_symptoms !== 'Yes' && 'Submit')}
               </Button>
@@ -124,7 +156,7 @@ class GeneralAssessment extends React.Component {
 }
 
 const schema = yup.object().shape({
-  temperature: yup
+  float_value: yup
     .number()
     .typeError('Please enter a valid number.')
     .test('is-in-bounds', 'Temperature Out of Bounds [27 - 49C] [80 - 120F]', value => (value >= 27 && value <= 49) || (value >= 80 && value <= 120))

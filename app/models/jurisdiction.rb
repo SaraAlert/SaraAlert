@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'digest/md5'
 
 # Jurisdiction: jurisdiction model
 class Jurisdiction < ApplicationRecord
@@ -7,7 +8,7 @@ class Jurisdiction < ApplicationRecord
   # Immediate patients are those just in this jurisdiction
   has_many :immediate_patients, class_name: 'Patient'
  
-  has_many :symptomatic_definitions, class_name: 'Condition'
+  has_many :symptomatic_definitions, class_name: 'ThresholdCondition'
 
   # All patients are all those in this or descendent jurisdictions
   def all_patients
@@ -27,17 +28,22 @@ class Jurisdiction < ApplicationRecord
     all_condition_symptoms&.each{|symptoms_list| 
       symptoms_list&.each{ |symptom| 
         if !(master_symptoms_list.include?(symptom.name))
-          master_symptoms_list.push(symptom.clone())
+          master_symptoms_list.push(symptom.dup())
         end
       }
     }
-
-    return Condition.new(symptoms: master_symptoms_list)
+    # TODO: Make hash based on jurisdiction and symptomatic_definitions counts
+    symptoms_list_hash = Digest::MD5.hexdigest(master_symptoms_list.map{|x| [x.name, x.float_value, x.bool_value, x.int_value]}.to_s.chars.sort.join)
+    if (ThresholdCondition.where(threshold_condition_hash: symptoms_list_hash).count == 0)
+       ThresholdCondition.create(symptoms: master_symptoms_list, threshold_condition_hash: symptoms_list_hash)
+    end
+    return ThresholdCondition.where(threshold_condition_hash: symptoms_list_hash).first
   end
 
 
   def hierarchical_condition_unpopulated_symptoms
-    new_cond = Condition.new()
+    threshold_condition = hierarchical_symptomatic_condition
+    new_cond = ReportedCondition.new(threshold_condition_hash: threshold_condition.threshold_condition_hash)
     master_symptoms_list = []
     # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
     all_condition_symptoms = path&.map{|symp_defs| symp_defs.symptomatic_definitions.last&.symptoms}
