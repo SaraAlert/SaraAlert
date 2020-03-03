@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  sara-alert:
+    image: ${SARA_ALERT_IMAGE}:latest
+  sidekiq:
+    image: ${SARA_ALERT_IMAGE}:latest
+
