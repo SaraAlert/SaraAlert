@@ -34,7 +34,9 @@ import './stylesheets/application.scss'
 import "@fortawesome/fontawesome-free/js/all";
 
 // DataTables
+window.JSZip = require('jszip');
 require("datatables.net-bs4")(window, $);
 require("datatables.net-buttons-bs4")(window, $);
+require('datatables.net-buttons/js/buttons.html5.js')(window, $);
 require("datatables.net-bs4/css/dataTables.bootstrap4.css");
 require("datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css");
