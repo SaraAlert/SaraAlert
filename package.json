@@ -1,5 +1,5 @@
 {
-  "name": "disease_trakker",
+  "name": "sara_alert",
   "private": true,
   "dependencies": {
     "@babel/preset-react": "^7.8.3",
@@ -21,6 +21,7 @@
     "es6-shim": "^0.35.5",
     "imports-loader": "^0.8.0",
     "jquery": "^3.4.1",
+    "jszip": "^3.2.2",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "popper": "^1.0.1",
