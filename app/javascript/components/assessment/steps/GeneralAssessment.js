@@ -42,11 +42,11 @@ class GeneralAssessment extends React.Component {
       } else if (value === 'Yes') {
         current.experiencing_symptoms = value;
       }
-    } else if (current.symptoms.find(x => x.name === event.target.id)?.field_type === 'BoolSymptom') {
+    } else if (current.symptoms.find(x => x.name === field_id)?.field_type === 'BoolSymptom') {
       Object.values(current.symptoms).find(symp => symp.name === field_id).bool_value = value;
-    } else if (current.symptoms.find(x => x.name === event.target.id)?.field_type === 'FloatSymptom') {
+    } else if (current.symptoms.find(x => x.name === field_id)?.field_type === 'FloatSymptom') {
       Object.values(current.symptoms).find(symp => symp.name === field_id).float_value = value;
-    } else if (current.symptoms.find(x => x.name === event.target.id)?.field_type === 'IntegerSymptom') {
+    } else if (current.symptoms.find(x => x.name === field_id)?.field_type === 'IntegerSymptom') {
       Object.values(current.symptoms).find(symp => symp.name === field_id).int_value = value;
     }
 

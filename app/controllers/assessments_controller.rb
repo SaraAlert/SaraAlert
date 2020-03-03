@@ -41,7 +41,7 @@ class AssessmentsController < ApplicationController
     reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash )
 
 
-    @assessment = Assessment.new(reported_condition: reported_condition, symptomatic_condition: threshold_condition )
+    @assessment = Assessment.new(reported_condition: reported_condition)
     @assessment.symptomatic = @assessment.is_symptomatic
     @assessment.patient = patient
   
@@ -67,13 +67,21 @@ class AssessmentsController < ApplicationController
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
-    assessment.update!(params.permit(*assessment_params))
-    if (assessment.temperature && assessment.temperature.to_i >= 100.4 ||
-      assessment.attributes.slice(*(symps.map { |s| s.to_s })).values.any?)
-      assessment.symptomatic = true
-    else
-      assessment.symptomatic = false
-    end
+    reported_symptoms_array = params.permit({:symptoms => [:name, :bool_value, :float_value, :int_value, :field_type, :label]}).to_h['symptoms']
+
+    typed_reported_symptoms = []
+    reported_symptoms_array.each { |symp|
+      if symp['field_type'] == "FloatSymptom"
+        symptom = FloatSymptom.create(symp.except(:field_type))
+      elsif symp['field_type'] == "BoolSymptom"
+        symptom = BoolSymptom.create(symp.except(:field_type))
+      elsif symp['field_type'] == "IntegerSymptom"
+        symptom = IntegerSymptom.create(symp.except(:field_type))
+      end
+      typed_reported_symptoms.push(symptom)
+    }
+    assessment.reported_condition.symptoms = typed_reported_symptoms
+    assessment.symptomatic = assessment.is_symptomatic
     # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
     assessment.who_reported = current_user.email
 

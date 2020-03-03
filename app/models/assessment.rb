@@ -12,26 +12,62 @@ class Assessment < ApplicationRecord
     end
   end
   has_one :reported_condition, :class_name => 'ReportedCondition'
-  has_one :symptomatic_condition, :class_name => 'ThresholdCondition'
   belongs_to :patient
 
   def is_symptomatic
     reported_condition.symptoms.each{ |reported_symptom|
-      threshold_symptom = symptomatic_condition.symptoms.select{|symp| symp.name == reported_symptom.name}[0]
-      if reported_symptom.type == "FloatSymptom"
-        if reported_symptom.float_value >= threshold_symptom.float_value
-          return true
-        end
-      elsif reported_symptom.type  == "BoolSymptom"
-        if reported_symptom.bool_value === threshold_symptom.bool_value
-          return true
-        end
-      elsif reported_symptom.type  == "IntegerSymptom"
-        if reported_symptom.int_value >= threshold_symptom.int_value
-          return true
-        end
-      end
+      return symptom_passes_threshold(reported_symptom.name)
     }
     return false;
   end
+
+  # symptom_passes_threshold will return true if the symptom with the given name in the reported condition
+  # meets the definition of symptomatic as defined in the assocated ThresholdCondition
+  def symptom_passes_threshold(symptom_name)
+    reported_symptom = reported_condition.symptoms.select{|symp| symp.name == symptom_name}[0]
+    # This will be the case if a symptom is no longer being tracked and the assessments table is looking for its value
+    if reported_symptom == nil
+      return nil
+    end
+    threshold_condition = reported_condition.get_threshold_condition
+    threshold_symptom = threshold_condition.symptoms.select{|symp| symp.name == symptom_name}[0]
+    if reported_symptom.type == "FloatSymptom"
+      if reported_symptom.float_value >= threshold_symptom.float_value
+        return true
+      end
+    elsif reported_symptom.type  == "BoolSymptom"
+      if reported_symptom.bool_value === threshold_symptom.bool_value
+        return true
+      end
+    elsif reported_symptom.type  == "IntegerSymptom"
+      if reported_symptom.int_value >= threshold_symptom.int_value
+        return true
+      end
+    end
+    return false
+  end
+
+  def get_reported_symptom_value(symptom_name)
+    reported_symptom = reported_condition.symptoms.select{|symp| symp.name == symptom_name}[0]
+    # This will be the case if a symptom is no longer being tracked and the assessments table is looking for its value
+    if reported_symptom == nil
+      return nil
+    end
+    if reported_symptom.type == "FloatSymptom"
+      return reported_symptom.float_value
+    elsif reported_symptom.type  == "BoolSymptom"
+      return reported_symptom.bool_value
+    elsif reported_symptom.type  == "IntegerSymptom"
+      return reported_symptom.int_value
+    end
+  end
+
+  def get_all_symptom_names
+    return reported_condition.symptoms.collect{|x| x.name}
+  end
+
+  def get_reported_symptom_by_name(symptom_name)
+     return reported_condition.symptoms.select{|symp| symp.name == symptom_name}[0]
+  end
+
 end

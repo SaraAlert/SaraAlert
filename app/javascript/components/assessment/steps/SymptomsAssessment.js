@@ -14,11 +14,11 @@ class SymptomsAssessment extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let field_id = event.target.id.split('_idpre')[0];
-    if (this.state.current.symptoms.find(x => x.name === event.target.id).field_type === 'BoolSymptom') {
+    if (this.state.current.symptoms.find(x => x.name === field_id).field_type === 'BoolSymptom') {
       Object.values(current.symptoms).find(symp => symp.name === field_id).bool_value = value;
-    } else if (this.state.current.symptoms.find(x => x.name === event.target.id).field_type === 'FloatSymptom') {
+    } else if (this.state.current.symptoms.find(x => x.name === field_id).field_type === 'FloatSymptom') {
       Object.values(current.symptoms).find(symp => symp.name === field_id).float_value = value;
-    } else if (this.state.current.symptoms.find(x => x.name === event.target.id).field_type === 'IntegerSymptom') {
+    } else if (this.state.current.symptoms.find(x => x.name === field_id).field_type === 'IntegerSymptom') {
       Object.values(current.symptoms).find(symp => symp.name === field_id).int_value = value;
     }
     this.setState({ current: { ...current } }, () => {

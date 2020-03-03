@@ -19,7 +19,8 @@
           </button>
         </div>
         <div class="modal-body">
-          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
+          <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
+          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, threshold_hash: reporting_condition.threshold_condition_hash, symptoms: reporting_condition.symptoms, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
         </div>
       </div>
     </div>
@@ -30,7 +31,9 @@
       <div class="pb-4">
         <%= react_component("subject/ClearAssessments", { current_user: current_user, authenticity_token: form_authenticity_token, patient: @patient } ) %>
       </div>
-      <% columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature", "who_reported"] %>
+      <% columns= [] %>
+      <% @patient.assessments.each do |assessment| columns.concat(assessment.get_all_symptom_names) end %>
+      <% columns = columns.uniq%>
       <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
         <thead>
           <tr>
@@ -38,7 +41,6 @@
             <th class="DataTable-table-header">Needs Review</th>
             <th class="DataTable-table-header">Reporter</th>
             <th class="DataTable-table-header">Date and Time</th>
-            <th class="DataTable-table-header">Temperature</th>
             <% columns.each do |column| -%>
               <th class="DataTable-table-header"><%= column.titleize %></th>
             <% end -%>
@@ -52,9 +54,16 @@
               <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
               <td><%= assessment.who_reported %></td>
               <td><%= assessment.created_at %></td>
-              <td><span class="<% if assessment[:temperature].to_f >= 100.4 %>concern<% end %>"><%= assessment.temperature %></span></td>
               <% columns.each do |column| -%>
-                <td><% if assessment[column] -%><span class="concern">Yes</span><% else -%>No<% end -%></td>
+                <% if assessment.get_reported_symptom_by_name(column) == nil %>
+                <td></td>
+                <% end %>
+                <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
+                  <td><%passes_threshold = assessment.symptom_passes_threshold(column)%> <% if passes_threshold -%><span class="concern">Yes</span><% elsif passes_threshold==false -%>No <%else -%><% end -%></td>
+                <% end %>
+                <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
+                  <td><%passes_threshold = assessment.symptom_passes_threshold(column)%> <% if passes_threshold -%><span class="concern"><%=assessment.get_reported_symptom_value(column)%></span><% elsif passes_threshold==false -%><%=assessment.get_reported_symptom_value(column)%><%else -%><% end -%></td>
+                <% end %>
               <% end -%>
               <td>
                 <a href="#" data-toggle="modal" data-target="#modal-<%= assessment.id %>">
@@ -77,7 +86,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
+            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, threshold_hash: assessment.reported_condition.threshold_condition_hash, symptoms: assessment.reported_condition.symptoms, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id }) %>
           </div>
         </div>
       </div>
