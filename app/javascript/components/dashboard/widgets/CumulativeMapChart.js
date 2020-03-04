@@ -7,8 +7,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import { USAMap, stateOptions } from '../../data';
 import { PropTypes } from 'prop-types';
-import Slider from 'rc-slider/lib/Slider';
-import 'rc-slider/assets/index.css';
+// import Slider from 'rc-slider/lib/Slider';
+// import 'rc-slider/assets/index.css';
 
 class CumulativeMapChart extends React.Component {
   constructor(props) {
@@ -128,7 +128,7 @@ class CumulativeMapChart extends React.Component {
       <React.Fragment>
         <ReactTooltip>{this.state.content}</ReactTooltip>
         <Card className="card-square">
-          <Card.Header as="h5">Symptomatic Monitorees Over Time</Card.Header>
+          <Card.Header as="h5">Symptomatic Monitorees</Card.Header>
           <Card.Body>
             <ComposableMap data-tip="" projection="geoAlbersUsa">
               <ZoomableGroup center={[-97, 40]} zoom={this.state.zoom}>
@@ -166,7 +166,7 @@ class CumulativeMapChart extends React.Component {
                 </Geographies>
               </ZoomableGroup>
             </ComposableMap>
-            <div className="mx-5 mt-4">
+            {/* <div className="mx-5 mt-4">
               <Slider
                 max={this.state.mappedSymptomaticPatientCountByStateAndDay.length - 1}
                 marks={this.getDateRange()}
@@ -176,8 +176,8 @@ class CumulativeMapChart extends React.Component {
                 dotStyle={{ borderColor: '#333', backgroundColor: 'white' }}
                 onChange={this.handleDateRangeChange}
               />
-              <div className="mt-5 text-center display-6 font-weight-bold"> {moment(this.state.selectedDay).format('MM - DD - YYYY')}</div>
-            </div>
+            </div> */}
+            <div className="mt-5 text-center display-6 font-weight-bold"> {moment(this.state.selectedDay).format('MM - DD - YYYY')}</div>
             <div className="controls">
               <button className="btn btn-outline-primary" onClick={this.handleZoomIn}>
                 <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
