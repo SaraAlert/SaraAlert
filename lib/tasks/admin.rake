@@ -43,8 +43,10 @@ namespace :admin do
 
         # Parse and recursively create children jurisdictions if  included
         children_jurs = jur_values['children']
-        children_jurs.each do |child_jur_name, child_jur_vals|
-            parse_jurisdiction(jurisdiction, child_jur_name, child_jur_vals)
+            if children_jurs != nil
+            children_jurs.each do |child_jur_name, child_jur_vals|
+                parse_jurisdiction(jurisdiction, child_jur_name, child_jur_vals)
+            end
         end
 
     end

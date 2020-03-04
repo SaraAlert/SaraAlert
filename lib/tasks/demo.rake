@@ -9,13 +9,13 @@ namespace :demo do
 
     print 'Creating jurisdictions...'
 
-    usa = Jurisdiction.create(name: 'USA')
-    state1 = Jurisdiction.create(name: 'State 1', parent: usa)
-    state2 = Jurisdiction.create(name: 'State 2', parent: usa)
-    county1 = Jurisdiction.create(name: 'County 1', parent: state1)
-    county2 = Jurisdiction.create(name: 'County 2', parent: state1)
-    county3 = Jurisdiction.create(name: 'County 3', parent: state2)
-    county4 = Jurisdiction.create(name: 'County 4', parent: state2)
+    usa = Jurisdiction.where(name: 'USA').first
+    state1 = Jurisdiction.where(name: 'State 1').first
+    state2 = Jurisdiction.where(name: 'State 2').first
+    county1 = Jurisdiction.where(name: 'County 1').first
+    county2 = Jurisdiction.where(name: 'County 2').first
+    county3 = Jurisdiction.where(name: 'County 3').first
+    county4 = Jurisdiction.where(name: 'County 4').first
 
     puts ' done!'
 

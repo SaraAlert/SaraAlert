@@ -7,6 +7,7 @@
             # Useable values are [float_value, int_value, or bool_value]
             float_value: 101.4
         'Cough':
+            # The expected threshold value for bool_values should always be true
             bool_value: true
         'Difficulty Breathing':
             bool_value: true
