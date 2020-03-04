@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
-import SystemStatistics from './widgets/SystemStatistics';
+import SystemStatisticsPie from './widgets/SystemStatisticsPie';
 import moment from 'moment';
 import MonitoringDistributionDay from './widgets/MonitoringDistributionDay';
 // import AssessmentsDay from './widgets/AssessmentsDay';
@@ -10,7 +10,7 @@ import CumulativeMapChart from './widgets/CumulativeMapChart';
 import CasesOverTime from './widgets/CasesOverTime';
 import domtoimage from 'dom-to-image';
 
-class Analytics extends React.Component {
+class MonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
@@ -51,7 +51,7 @@ class Analytics extends React.Component {
             <Col md="12">
               <Row>
                 <Col md="24">
-                  <SystemStatistics stats={this.props.stats} />
+                  <SystemStatisticsPie stats={this.props.stats} />
                 </Col>
               </Row>
               <Row className="mt-4">
@@ -88,9 +88,9 @@ class Analytics extends React.Component {
   }
 }
 
-Analytics.propTypes = {
+MonitorAnalytics.propTypes = {
   stats: PropTypes.object,
   current_user: PropTypes.object,
 };
 
-export default Analytics;
+export default MonitorAnalytics;

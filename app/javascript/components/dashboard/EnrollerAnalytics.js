@@ -4,7 +4,7 @@ import SystemStatistics from './widgets/SystemStatistics';
 import YourStatistics from './widgets/YourStatistics';
 import { PropTypes } from 'prop-types';
 
-class EnrollerDashboard extends React.Component {
+class EnrollerAnalytics extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -27,9 +27,9 @@ class EnrollerDashboard extends React.Component {
   }
 }
 
-EnrollerDashboard.propTypes = {
+EnrollerAnalytics.propTypes = {
   current_user: PropTypes.object,
   stats: PropTypes.object,
 };
 
-export default EnrollerDashboard;
+export default EnrollerAnalytics;
