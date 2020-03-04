@@ -1,0 +1,23 @@
+'USA':
+    symptoms: 
+        # Key is the symptom name as it will appear to the user
+        'Temperature': 
+            # The value specified here is the threshold value for the particular symptom
+            # values greater than or equal to this value are considered to be symptomatic
+            # Useable values are [float_value, int_value, or bool_value]
+            float_value: 101.4
+        'Cough':
+            bool_value: true
+        'Difficulty Breathing':
+            bool_value: true
+    # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
+    # in the
+    children:
+        'State 1':
+            children:
+                'County 1':
+                'County 2':
+        'State 2':
+            children:
+                'County 3':
+                'County 4':
