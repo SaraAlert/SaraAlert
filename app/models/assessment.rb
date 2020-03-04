@@ -15,10 +15,11 @@ class Assessment < ApplicationRecord
   belongs_to :patient
 
   def is_symptomatic
+    symptomatic = false
     reported_condition.symptoms.each{ |reported_symptom|
-      return symptom_passes_threshold(reported_symptom.name)
+      symptomatic = symptomatic || symptom_passes_threshold(reported_symptom.name)
     }
-    return false;
+    return symptomatic
   end
 
   # symptom_passes_threshold will return true if the symptom with the given name in the reported condition

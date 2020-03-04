@@ -26,20 +26,9 @@ class AssessmentsController < ApplicationController
   
     reported_symptoms_array = params.permit({:symptoms => [:name, :bool_value, :float_value, :int_value, :field_type, :label]}).to_h['symptoms']
 
-    typed_reported_symptoms = []
-    reported_symptoms_array.each { |symp|
-      if symp['field_type'] == "FloatSymptom"
-        symptom = FloatSymptom.create(symp.except(:field_type))
-      elsif symp['field_type'] == "BoolSymptom"
-        symptom = BoolSymptom.create(symp.except(:field_type))
-      elsif symp['field_type'] == "IntegerSymptom"
-        symptom = IntegerSymptom.create(symp.except(:field_type))
-      end
-      typed_reported_symptoms.push(symptom)
-    }
+    typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 
     reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash )
-
 
     @assessment = Assessment.new(reported_condition: reported_condition)
     @assessment.symptomatic = @assessment.is_symptomatic
@@ -69,17 +58,8 @@ class AssessmentsController < ApplicationController
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     reported_symptoms_array = params.permit({:symptoms => [:name, :bool_value, :float_value, :int_value, :field_type, :label]}).to_h['symptoms']
 
-    typed_reported_symptoms = []
-    reported_symptoms_array.each { |symp|
-      if symp['field_type'] == "FloatSymptom"
-        symptom = FloatSymptom.create(symp.except(:field_type))
-      elsif symp['field_type'] == "BoolSymptom"
-        symptom = BoolSymptom.create(symp.except(:field_type))
-      elsif symp['field_type'] == "IntegerSymptom"
-        symptom = IntegerSymptom.create(symp.except(:field_type))
-      end
-      typed_reported_symptoms.push(symptom)
-    }
+    typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
+
     assessment.reported_condition.symptoms = typed_reported_symptoms
     assessment.symptomatic = assessment.is_symptomatic
     # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
@@ -104,23 +84,4 @@ class AssessmentsController < ApplicationController
     redirect_to(root_url) && return if patient.nil?
   end
 
-  def assessment_params
-    [
-      :temperature
-    ] + symps
-  end
-
-  def symps
-    [
-      :felt_feverish,
-      :cough,
-      :sore_throat,
-      :difficulty_breathing,
-      :muscle_aches,
-      :headache,
-      :abdominal_discomfort,
-      :vomiting,
-      :diarrhea
-    ]
-  end
 end

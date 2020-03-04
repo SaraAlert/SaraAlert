@@ -7,7 +7,6 @@ class GeneralAssessment extends React.Component {
   constructor(props) {
     super(props);
     this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
-    // TODO Iterate over dynamic "symptoms" hash
     this.state.current.experiencing_symptoms =
       this.state.current.symptoms.filter(x => {
         return x.bool_value === true;
