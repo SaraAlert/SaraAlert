@@ -2,5 +2,4 @@
 monitoring_period_days: 14
 
 # How many minutes in a reporting period (hint: 1440 mins for 24 hours)
-# reporting_period_minutes: 1440
-reporting_period_minutes: 3 # TODO: 3 minutes for demonstration, 1440 for real use
+reporting_period_minutes: 1440

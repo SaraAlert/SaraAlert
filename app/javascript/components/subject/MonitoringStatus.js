@@ -12,6 +12,7 @@ class MonitoringStatus extends React.Component {
       showMonitoringPlanModal: false,
       showMonitoringStatusModal: false,
       showJurisdictionModal: false,
+      showClearAssessmentsModal: false,
       message: '',
       reasoning: '',
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
@@ -25,6 +26,8 @@ class MonitoringStatus extends React.Component {
     this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
     this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
+    this.toggleClearAssessmentsModal = this.toggleClearAssessmentsModal.bind(this);
+    this.clearAssessments = this.clearAssessments.bind(this);
   }
 
   handleChange(event) {
@@ -89,6 +92,15 @@ class MonitoringStatus extends React.Component {
     });
   }
 
+  toggleClearAssessmentsModal() {
+    let current = this.state.showClearAssessmentsModal;
+    this.setState({
+      message:
+        'assessments to reviewed. This will mean the subject is no longer considered symptomatic. Any "Needs Review" entries in the "Reports" section will be set to "No".',
+      showClearAssessmentsModal: !current,
+    });
+  }
+
   submit() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     const jur = this.props.jurisdiction_paths.find(jur => jur.label === this.state.jurisdiction);
@@ -109,7 +121,21 @@ class MonitoringStatus extends React.Component {
       });
   }
 
-  createModal(title, toggle) {
+  clearAssessments() {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .post('/patients/' + this.props.patient.id + '/status/clear', {
+        reasoning: this.state.reasoning,
+      })
+      .then(() => {
+        location.href = '/patients/' + this.props.patient.id;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  createModal(title, toggle, submit) {
     return (
       <Modal size="lg" show centered>
         <Modal.Header>
@@ -123,7 +149,7 @@ class MonitoringStatus extends React.Component {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={this.submit}>
+          <Button variant="primary btn-square" onClick={submit}>
             Submit
           </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
@@ -206,13 +232,21 @@ class MonitoringStatus extends React.Component {
                   </Button>
                 </Form.Group>
               </Form.Row>
+              <Form.Row className="pt-3 align-items-end">
+                <Form.Group as={Col} md={8}>
+                  <Button onClick={this.toggleClearAssessmentsModal} className="btn-lg btn-square">
+                    Clear All Assessment Reports
+                  </Button>
+                </Form.Group>
+              </Form.Row>
             </Col>
           </Row>
         </Form>
-        {this.state.showMonitoringStatusModal && this.createModal('Monitoring Status', this.toggleMonitoringStatusModal)}
-        {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal)}
-        {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal)}
-        {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal)}
+        {this.state.showMonitoringStatusModal && this.createModal('Monitoring Status', this.toggleMonitoringStatusModal, this.submit)}
+        {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
+        {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
+        {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
+        {this.state.showClearAssessmentsModal && this.createModal('Clear Assessments', this.toggleClearAssessmentsModal, this.clearAssessments)}
       </React.Fragment>
     );
   }

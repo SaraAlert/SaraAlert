@@ -122,3 +122,8 @@ select.form-control {
 .badge-padding {
   margin: 0 !important;
 }
+
+.nav-tabs .nav-link {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}

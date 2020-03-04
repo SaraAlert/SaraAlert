@@ -158,7 +158,26 @@ class PatientsController < ApplicationController
     history.created_by = current_user.email
     comment = 'User changed '
     comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
-    comment += ' Reason: ' +params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+    history.comment = comment
+    history.patient = patient
+    history.history_type = 'Monitoring Change'
+    history.save!
+  end
+
+  def clear_assessments
+    unless current_user.can_edit_patient?
+      redirect_to root_url and return
+    end
+    patient = current_user.get_patient(params.permit(:id)[:id])
+    patient.assessments.each do |assessment|
+      assessment.symptomatic = false;
+      assessment.save!
+    end
+    history = History.new
+    history.created_by = current_user.email
+    comment = 'User cleared all assessment reports.'
+    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
     history.comment = comment
     history.patient = patient
     history.history_type = 'Monitoring Change'

@@ -19,6 +19,8 @@ Rails.application.routes.draw do
 
   post '/patients/:id/status', to: 'patients#update_status'
 
+  post '/patients/:id/status/clear', to: 'patients#clear_assessments'
+
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]
   end

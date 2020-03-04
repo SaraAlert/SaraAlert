@@ -41,6 +41,8 @@ RUN mkdir -p ./app/assets/stylesheets
 # SECRET_KEY_BASE sets a dummy secret key, so that the precompiler (which doesn't need the secret key for anything) can run
 RUN SECRET_KEY_BASE=precompile_only bundle exec rake assets:precompile
 
+RUN bundle exec whenever --update-crontab
+
 CMD bundle exec rails s puma -C config/puma.rb
 
 EXPOSE 3000
