@@ -23,27 +23,30 @@ namespace :admin do
             jurisdiction = Jurisdiction.create(name: jur_name , parent: parent)
         end
 
-        # Base-level jurisdiction that does not have its own symptoms or children
-        if jur_values == nil
-            return
-        end
-
         # Parse and add symptoms list to jurisdiction if included
-        jur_symps = jur_values['symptoms']
+        jur_symps = nil
+        if jur_values != nil
+            jur_symps = jur_values['symptoms']
+        end
+        threshold_condition_symptoms = []
         if jur_symps != nil
-            threshold_condition_symptoms = []
             jur_symps.each do |symp_name, symp_vals|
                 symptom = {"name"=>symp_name.parameterize, "label"=> symp_name}.merge(symp_vals)
                 threshold_condition_symptoms.push(Symptom.symptom_factory(symptom))
             end
-            threshold_condition = ThresholdCondition.create(symptoms: threshold_condition_symptoms)
-            jurisdiction.threshold_conditions.push(threshold_condition)
-            jurisdiction.save
         end
 
+        threshold_condition = ThresholdCondition.create(symptoms: threshold_condition_symptoms)
+        jurisdiction.threshold_conditions.push(threshold_condition)
+        jurisdiction.save
+
+
         # Parse and recursively create children jurisdictions if  included
-        children_jurs = jur_values['children']
-            if children_jurs != nil
+        children_jurs = nil
+        if jur_values != nil
+            children_jurs = jur_values['children']
+        end
+        if children_jurs != nil
             children_jurs.each do |child_jur_name, child_jur_vals|
                 parse_jurisdiction(jurisdiction, child_jur_name, child_jur_vals)
             end
