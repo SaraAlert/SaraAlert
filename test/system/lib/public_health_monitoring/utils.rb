@@ -6,7 +6,7 @@ class PublicHealthMonitoringUtils < ApplicationSystemTestCase
   USER_PASSWORD = "123456ab"
 
   CHECKBOX_ANIMATION_DELAY = 0.4
-  MODAL_ANIMATION_DELAY = 1
+  MODAL_ANIMATION_DELAY = 0
   
   def login(user)
     visit "/"
@@ -14,6 +14,10 @@ class PublicHealthMonitoringUtils < ApplicationSystemTestCase
     fill_in "user_email", with: user["email"]
     fill_in "user_password", with: USER_PASSWORD
     click_on "login"
+  end
+
+  def logout
+    click_on "Logout"
   end
 
   def wait_for_checkbox_animation

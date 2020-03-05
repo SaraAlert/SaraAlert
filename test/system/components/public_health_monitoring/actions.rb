@@ -42,8 +42,4 @@ class PublicHealthMonitoringActions < ApplicationSystemTestCase
     click_on "Submit"
   end
 
-  def wait_for_modal_animation
-    sleep(inspection_time = MODAL_ANIMATION_DELAY)
-  end
-
 end

@@ -18,22 +18,17 @@ class PublicHealthTest < ApplicationSystemTestCase
   @@public_health_monitoring_reports = PublicHealthMonitoringReports.new(nil)
   @@public_health_monitoring_utils = PublicHealthMonitoringUtils.new(nil)
 
-  test "search for exisitng patients" do
-    @@public_health_monitoring_utils.login(USERS["state1_epi"])
-    @@public_health_monitoring_dashboard.select_tab("Closed")
-    @@public_health_monitoring_dashboard.search_and_verify_patient_info(PATIENTS["patient_5"])
-    @@public_health_monitoring_dashboard.select_tab("Asymptomatic")
-    # @@public_health_monitoring_dashboard.search_and_verify_patient_info(PATIENTS["patient_4"]) # test currently depends on today's date
-    # @@public_health_monitoring_dashboard.search_and_verify_patient_info(PATIENTS["patient_7"]) # test currently depends on today's date
-    @@public_health_monitoring_dashboard.select_tab("Non-Reporting")
-    @@public_health_monitoring_dashboard.search_and_verify_patient_info(PATIENTS["patient_2"])
-    @@public_health_monitoring_dashboard.search_and_verify_patient_info(PATIENTS["patient_6"])
-    @@public_health_monitoring_dashboard.search_and_verify_patient_info(PATIENTS["patient_8"])
-    @@public_health_monitoring_dashboard.select_tab("Symptomatic")
-    # @@public_health_monitoring_dashboard.search_and_verify_patient_info(PATIENTS["patient_3"]) # test currently depends on today's date
+  test "epis can only view and search for patients under their jurisdiction" do
+    search_for_and_verify_patients_under_jurisdiction(USERS["state1_epi"], [3], [2, 6, 7], [4, 8], [5])
+    search_for_and_verify_patients_under_jurisdiction(USERS["locals1c1_epi"], [], [], [4], [])
+    search_for_and_verify_patients_under_jurisdiction(USERS["locals1c2_epi"], [], [6], [], [])
+    search_for_and_verify_patients_under_jurisdiction(USERS["state2_epi"], [], [11], [9, 10], [])
+    search_for_and_verify_patients_under_jurisdiction(USERS["locals2c3_epi"], [], [11], [], [])
+    search_for_and_verify_patients_under_jurisdiction(USERS["locals2c4_epi"], [], [], [10], [])
   end
   
-  test "update monitoring status" do
+  test "perform monitoring actions" do
+    update_monitoring_status(USERS["state1_epi"], PATIENTS["patient_2"], "Non-Reporting", "Closed", "Not Monitoring", "Completed Monitoring", "details")
   end
 
   test "update assigned jurisdiction" do
@@ -46,6 +41,24 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test "export data to excel and csv" do
+  end
+
+  def search_for_and_verify_patients_under_jurisdiction(epi, symptomatic_patients, non_reporting_patients, asymptomatic_patients, closed_patients)
+    @@public_health_monitoring_utils.login(epi)
+    @@public_health_monitoring_dashboard.verify_patients_under_tab("Symptomatic", PATIENTS, symptomatic_patients)
+    @@public_health_monitoring_dashboard.verify_patients_under_tab("Non-Reporting", PATIENTS, non_reporting_patients)
+    @@public_health_monitoring_dashboard.verify_patients_under_tab("Asymptomatic", PATIENTS, asymptomatic_patients)
+    @@public_health_monitoring_dashboard.verify_patients_under_tab("Closed", PATIENTS, closed_patients)
+    @@public_health_monitoring_utils.logout
+  end
+
+  def update_monitoring_status(epi, patient, old_tab, new_tab, monitoring_status, status_change_reason, reasoning)
+    @@public_health_monitoring_utils.login(epi)
+    @@public_health_monitoring_dashboard.search_for_and_view_patient(old_tab, patient)
+    @@public_health_monitoring_actions.update_monitoring_status(monitoring_status, status_change_reason, reasoning)
+    @@public_health_monitoring_dashboard.return_to_dashboard
+    @@public_health_monitoring_dashboard.verify_patient_under_tab(new_tab, patient)
+    @@public_health_monitoring_utils.logout
   end
 
 end

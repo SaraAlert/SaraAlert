@@ -4,24 +4,45 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
   
   TAB_SELECTION_DELAY = 0.5
   
-  def view_patient(patient)
-    search_and_verify_patient_info(patient)
-    click_on(patient["last_name"] + ", " + patient["first_name"])
+  def verify_patients_under_tab(tab, patients, patient_ids)
+    click_on tab
+    patients.each do |patient_id, patient|
+      search_for_and_verify_patient(patient, patient_ids.include?(patient["id"]))
+    end
   end
 
-  def search_and_verify_patient_info(patient)
+  def verify_patient_under_tab(tab, patient)
+    click_on tab
+    search_for_and_verify_patient(patient, true)
+  end
+
+  def search_for_and_verify_patient(patient, should_exist)
     search_for_patient(patient)
-    assert_selector "td", text: patient["last_name"] + ", " + patient["first_name"]
-    assert_selector "td", text: patient["date_of_birth"]
+    if should_exist
+      assert_selector "td", text: get_patient_display_name(patient)
+      assert_selector "td", text: patient["date_of_birth"]
+    else
+      refute_selector "td", text: get_patient_display_name(patient)
+      refute_selector "td", text: patient["date_of_birth"]
+    end
+  end
+
+  def search_for_and_view_patient(tab, patient)
+    click_on tab
+    search_for_patient(patient)
+    click_on get_patient_display_name(patient)
   end
 
   def search_for_patient(patient)
     fill_in "Search:", with: patient["first_name"] + " " + patient["last_name"] + " " + patient["date_of_birth"]
   end
 
-  def select_tab(tab)
-    click_on tab
-    sleep(inspection_time = TAB_SELECTION_DELAY)
+  def get_patient_display_name(patient)
+    patient["last_name"] + ", " + patient["first_name"]
+  end
+
+  def return_to_dashboard
+    click_on "Return To Dashboard"
   end
 
 end
