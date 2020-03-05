@@ -20,8 +20,7 @@ class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
     verify_address(existing_monitoree["address"])
     verify_contact_info(existing_monitoree["contact_info"])
     verify_arrival_info(existing_monitoree["arrival_info"])
-    ## Uncomment when additional_planned_travel_destination_country is copied over
-    # verify_additional_planned_travel(existing_monitoree["additional_planned_travel"])
+    verify_additional_planned_travel(existing_monitoree["additional_planned_travel"])
     verify_potential_exposure_info(existing_monitoree["potential_exposure_info"])
   end
 

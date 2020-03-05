@@ -8,13 +8,12 @@ class PublicHealthMonitoringUtils < ApplicationSystemTestCase
   CHECKBOX_ANIMATION_DELAY = 0.4
   MODAL_ANIMATION_DELAY = 1
   
-  def login(user, redirect_url)
+  def login(user)
     visit "/"
     assert_equal(SIGN_IN_URL, page.current_path)
     fill_in "user_email", with: user["email"]
     fill_in "user_password", with: USER_PASSWORD
     click_on "login"
-    assert_equal(redirect_url, page.current_path)
   end
 
   def wait_for_checkbox_animation

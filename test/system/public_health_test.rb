@@ -12,8 +12,6 @@ class PublicHealthTest < ApplicationSystemTestCase
   PATIENTS = YAML.load(File.read(__dir__ + "/../fixtures/patients.yml"))
   USERS = YAML.load(File.read(__dir__ + "/../fixtures/users.yml"))
 
-  EPIS_HOME_PAGE_URL = "/public_health"
-
   @@public_health_monitoring_actions = PublicHealthMonitoringActions.new(nil)
   @@public_health_monitoring_dashboard = PublicHealthMonitoringDashboard.new(nil)
   @@public_health_monitoring_history = PublicHealthMonitoringHistory.new(nil)
@@ -21,7 +19,7 @@ class PublicHealthTest < ApplicationSystemTestCase
   @@public_health_monitoring_utils = PublicHealthMonitoringUtils.new(nil)
 
   test "search for exisitng patients" do
-    @@public_health_monitoring_utils.login(USERS["state1_epi"], EPIS_HOME_PAGE_URL)
+    @@public_health_monitoring_utils.login(USERS["state1_epi"])
     @@public_health_monitoring_dashboard.select_tab("Closed")
     @@public_health_monitoring_dashboard.search_and_verify_patient_info(PATIENTS["patient_5"])
     @@public_health_monitoring_dashboard.select_tab("Asymptomatic")

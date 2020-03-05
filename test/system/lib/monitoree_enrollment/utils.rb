@@ -10,18 +10,16 @@ class MonitoreeEnrollmentUtils < ApplicationSystemTestCase
   ENROLLMENT_SUBMISSION_DELAY = 4 # wait for submission alert animation to finish, otherwise can't click
   POP_UP_ALERT_ANIMATION_DELAY = 0.5 # wait for alert to pop up or dismiss
 
-  def login(user, redirect_url)
+  def login(user)
     visit "/"
     assert_equal(SIGN_IN_URL, page.current_path)
     fill_in "user_email", with: user["email"]
     fill_in "user_password", with: USER_PASSWORD
     click_on "login"
-    assert_equal(redirect_url, page.current_path)
   end
 
-  def return_to_dashboard(redirect_url)
+  def return_to_dashboard
     click_on "Return To Dashboard"
-    assert_equal(redirect_url, page.current_path)
   end
 
   def go_to_next_page
@@ -54,6 +52,10 @@ class MonitoreeEnrollmentUtils < ApplicationSystemTestCase
     dob = Date.parse(format_date(value))
     now = Time.now.utc.to_date
     now.year - dob.year - ((now.month > dob.month || (now.month == dob.month && now.day >= dob.day)) ? 0 : 1)
+  end
+
+  def get_dashboard_display_name(monitoree)
+    monitoree["identification"]["last_name"] + ", " + monitoree["identification"]["first_name"]
   end
 
   def get_state_abbrv(value)
