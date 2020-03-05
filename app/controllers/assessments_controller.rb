@@ -29,6 +29,13 @@ class AssessmentsController < ApplicationController
       @assessment.who_reported = 'Monitoree'
     else
       @assessment.who_reported = current_user.email
+      history = History.new
+      history.created_by = current_user.email
+      comment = 'User created a new subject report.'
+      history.comment = comment
+      history.patient = patient
+      history.history_type = 'Report Created'
+      history.save!
     end
 
     # Attempt to save and continue; else if failed redirect to index
@@ -50,7 +57,17 @@ class AssessmentsController < ApplicationController
     end
     # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
     assessment.who_reported = current_user.email
-    assessment.save!
+    # Attempt to save and continue; else if failed redirect to index
+    if assessment.save!
+      history = History.new
+      history.created_by = current_user.email
+      comment = 'User updated an existing subject report.'
+      history.comment = comment
+      history.patient = patient
+      history.history_type = 'Report Updated'
+      history.save!
+      redirect_to patient_assessments_url and return
+    end
   end
 
   def check_patient_token

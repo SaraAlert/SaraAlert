@@ -117,7 +117,7 @@ class Assessment extends React.Component {
       this.submit();
     } else {
       if (this.hasChanges()) {
-        if (confirm("Are you sure you'd like to edit this record?")) {
+        if (confirm("Are you sure you'd like to modify this report?")) {
           this.submit();
         }
       } else {

@@ -1,7 +1,7 @@
 <% histories.each do |history| -%>
   <div class="card mt-4 mx-3 card-square shadow-sm">
     <div class="card-header">
-      <b><%= history.created_by %></b>, <%= time_ago_in_words(history.created_at) %> ago
+      <b><%= history.created_by %></b>, <%= time_ago_in_words(history.created_at) %> ago (<%= history.created_at %>)
       <span class="float-right">
         <h5 class="badge-padding"><span class="badge badge-secondary"><%= history.history_type %></span></h5>
       </span>

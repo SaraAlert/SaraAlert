@@ -12,13 +12,14 @@ class MonitoringStatus extends React.Component {
       showMonitoringPlanModal: false,
       showMonitoringStatusModal: false,
       showJurisdictionModal: false,
-      showClearAssessmentsModal: false,
       message: '',
       reasoning: '',
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
       monitoring_plan: props.patient.monitoring_plan ? props.patient.monitoring_plan : '',
       exposure_risk_assessment: props.patient.exposure_risk_assessment ? props.patient.exposure_risk_assessment : '',
       jurisdiction: jur ? jur.label : '',
+      current_jurisdiction: jur ? jur.label : '', // Used to remember jur on page load in case user cancels change modal
+      monitoring_status_options: null,
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -26,8 +27,6 @@ class MonitoringStatus extends React.Component {
     this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
     this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
-    this.toggleClearAssessmentsModal = this.toggleClearAssessmentsModal.bind(this);
-    this.clearAssessments = this.clearAssessments.bind(this);
   }
 
   handleChange(event) {
@@ -35,25 +34,47 @@ class MonitoringStatus extends React.Component {
       // Jurisdiction is a weird case; the datalist and input work differently together
       this.setState({
         message: 'jurisdiction to "' + event.target.value + '".',
+        message_warning: '',
         jurisdiction: event?.target?.value ? event.target.value : '',
+        monitoring_status_options: null,
+        monitoring_status_option: null,
       });
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
         showExposureRiskAssessmentModal: true,
         message: 'exposure risk assessment to "' + event.target.value + '".',
+        message_warning: '',
         exposure_risk_assessment: event?.target?.value ? event.target.value : '',
+        monitoring_status_options: null,
+        monitoring_status_option: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
       this.setState({
         showMonitoringPlanModal: true,
         message: 'monitoring plan to "' + event.target.value + '".',
+        message_warning: '',
         monitoring_plan: event?.target?.value ? event.target.value : '',
+        monitoring_status_options: null,
+        monitoring_status_option: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
         showMonitoringStatusModal: true,
         message: 'monitoring status to "' + event.target.value + '".',
+        message_warning: event.target.value === 'Not Monitoring' ? 'This record will be moved to the closed line list.' : '',
         monitoring_status: event?.target?.value ? event.target.value : '',
+        monitoring_status_options:
+          event.target.value === 'Not Monitoring'
+            ? [
+                'Completed Monitoring',
+                'Lost to follow-up during monitoring period',
+                'Lost to follow-up (contact never established)',
+                'Transferred to another jurisdiction',
+                'Person Under Investigation (PUI)',
+                'Case confirmed',
+              ]
+            : null,
+        monitoring_status_option: null,
       });
     } else if (event?.target?.id) {
       this.setState({ [event.target.id]: event?.target?.value ? event.target.value : '' });
@@ -89,15 +110,7 @@ class MonitoringStatus extends React.Component {
     this.setState({
       message: 'jurisdiction to "' + this.state.jurisdiction + '".',
       showJurisdictionModal: !current,
-    });
-  }
-
-  toggleClearAssessmentsModal() {
-    let current = this.state.showClearAssessmentsModal;
-    this.setState({
-      message:
-        'assessments to reviewed. This will mean the subject is no longer considered symptomatic. Any "Needs Review" entries in the "Reports" section will be set to "No".',
-      showClearAssessmentsModal: !current,
+      jurisdiction: current ? this.state.current_jurisdiction : this.state.jurisdiction, // Reset select jurisdiction if cancel
     });
   }
 
@@ -110,22 +123,8 @@ class MonitoringStatus extends React.Component {
         exposure_risk_assessment: this.state.exposure_risk_assessment,
         monitoring_plan: this.state.monitoring_plan,
         message: this.state.message,
-        reasoning: this.state.reasoning,
+        reasoning: (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
         jurisdiction: jur ? jur.value : null,
-      })
-      .then(() => {
-        location.href = '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-  clearAssessments() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post('/patients/' + this.props.patient.id + '/status/clear', {
-        reasoning: this.state.reasoning,
       })
       .then(() => {
         location.href = '/patients/' + this.props.patient.id;
@@ -142,16 +141,37 @@ class MonitoringStatus extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>You are about to change this subject&apos;s {this.state.message}</p>
+          <p>
+            You are about to change this subject&apos;s {this.state.message} {this.state.message_warning && <b>{this.state.message_warning}</b>}
+          </p>
+          {this.state.monitoring_status_options && (
+            <Form.Group>
+              <Form.Label>Please select reason for status change:</Form.Label>
+              <Form.Control as="select" size="lg" className="form-square" id="monitoring_status_option" onChange={this.handleChange}>
+                <option disabled selected value></option>
+                {this.state.monitoring_status_options.map((option, index) => (
+                  <option key={`option-${index}`} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+          )}
           <Form.Group>
-            <Form.Label>Please describe your reasoning:</Form.Label>
+            <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
-            Submit
-          </Button>
+          {this.state.monitoring_status_options && !this.state.monitoring_status_option ? (
+            <Button variant="primary btn-square" disabled>
+              Submit
+            </Button>
+          ) : (
+            <Button variant="primary btn-square" onClick={submit}>
+              Submit
+            </Button>
+          )}
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
@@ -232,13 +252,6 @@ class MonitoringStatus extends React.Component {
                   </Button>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3 align-items-end">
-                <Form.Group as={Col} md={8}>
-                  <Button onClick={this.toggleClearAssessmentsModal} className="btn-lg btn-square">
-                    Clear All Assessment Reports
-                  </Button>
-                </Form.Group>
-              </Form.Row>
             </Col>
           </Row>
         </Form>
@@ -246,7 +259,6 @@ class MonitoringStatus extends React.Component {
         {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
         {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
-        {this.state.showClearAssessmentsModal && this.createModal('Clear Assessments', this.toggleClearAssessmentsModal, this.clearAssessments)}
       </React.Fragment>
     );
   }
