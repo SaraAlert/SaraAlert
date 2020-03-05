@@ -6,7 +6,7 @@ import * as yup from 'yup';
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
     this.handleChange = this.handleChange.bind(this);
     this.validate = this.validate.bind(this);
     this.updatePrimaryContactMethodValidations = this.updatePrimaryContactMethodValidations.bind(this);
@@ -15,8 +15,9 @@ class Contact extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
-    this.setState({ current: { ...current, [event.target.id]: value } }, () => {
-      this.props.setEnrollmentState({ ...this.state.current });
+    let modified = this.state.modified;
+    this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
+      this.props.setEnrollmentState({ ...this.state.modified });
     });
     this.updatePrimaryContactMethodValidations(event);
   }

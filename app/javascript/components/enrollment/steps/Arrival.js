@@ -6,7 +6,7 @@ import * as yup from 'yup';
 class Arrival extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
     this.handleChange = this.handleChange.bind(this);
     this.validate = this.validate.bind(this);
   }
@@ -14,9 +14,10 @@ class Arrival extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
+    let modified = this.state.modified;
     value = event.target.type === 'date' && value === '' ? undefined : value;
-    this.setState({ current: { ...current, [event.target.id]: value } }, () => {
-      this.props.setEnrollmentState({ ...this.state.current });
+    this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
+      this.props.setEnrollmentState({ ...this.state.modified });
     });
   }
 

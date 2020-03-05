@@ -7,7 +7,7 @@ import * as yup from 'yup';
 class AdditionalPlannedTravel extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
+    this.state = { ...this.props, current: { ...this.props.currentState }, modified: {}, errors: {} };
     this.handleChange = this.handleChange.bind(this);
     this.validate = this.validate.bind(this);
   }
@@ -15,12 +15,13 @@ class AdditionalPlannedTravel extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
+    let modified = this.state.modified;
     value =
       (event.target.id === 'additional_planned_travel_start_date' || event.target.id === 'additional_planned_travel_end_date') && value === ''
         ? undefined
         : value;
-    this.setState({ current: { ...current, [event.target.id]: value } }, () => {
-      this.props.setEnrollmentState({ ...this.state.current });
+    this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
+      this.props.setEnrollmentState({ ...this.state.modified });
     });
   }
 

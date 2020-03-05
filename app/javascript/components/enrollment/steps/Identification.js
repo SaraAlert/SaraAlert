@@ -7,7 +7,7 @@ import * as yup from 'yup';
 class Identification extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {} };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
     this.handleChange = this.handleChange.bind(this);
     this.validate = this.validate.bind(this);
   }
@@ -15,11 +15,13 @@ class Identification extends React.Component {
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
+    let modified = this.state.modified;
     let self = this;
     event.persist();
     value = event.target.type === 'date' && value === '' ? undefined : value;
-    this.setState({ current: { ...current, [event.target.id]: value } }, () => {
+    this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
       let current = this.state.current;
+      let modified = this.state.modified;
       if (event.target.id === 'date_of_birth') {
         let age;
         // if value is undefined, age will stay undefined (which nulls out the age field)
@@ -27,11 +29,11 @@ class Identification extends React.Component {
           age = 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years');
           age = age < 200 && age > 0 ? age : current.age;
         }
-        self.setState({ current: { ...current, age } }, () => {
-          self.props.setEnrollmentState({ ...self.state.current });
+        self.setState({ current: { ...current, age }, modified: { ...modified, age } }, () => {
+          self.props.setEnrollmentState({ ...self.state.modified });
         });
       } else {
-        self.props.setEnrollmentState({ ...self.state.current });
+        self.props.setEnrollmentState({ ...self.state.modified });
       }
     });
   }
