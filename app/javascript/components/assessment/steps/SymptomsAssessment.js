@@ -37,6 +37,7 @@ class SymptomsAssessment extends React.Component {
       <Form.Check
         type="switch"
         id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
+        key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         label={`${symp.label}`}
         checked={symp.value === true || false}
         onChange={this.handleChange}
