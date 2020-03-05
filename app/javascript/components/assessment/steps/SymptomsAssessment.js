@@ -14,13 +14,7 @@ class SymptomsAssessment extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let field_id = event.target.id.split('_idpre')[0];
-    if (this.state.current.symptoms.find(x => x.name === field_id).field_type === 'BoolSymptom') {
-      Object.values(current.symptoms).find(symp => symp.name === field_id).bool_value = value;
-    } else if (this.state.current.symptoms.find(x => x.name === field_id).field_type === 'FloatSymptom') {
-      Object.values(current.symptoms).find(symp => symp.name === field_id).float_value = value;
-    } else if (this.state.current.symptoms.find(x => x.name === field_id).field_type === 'IntegerSymptom') {
-      Object.values(current.symptoms).find(symp => symp.name === field_id).int_value = value;
-    }
+    Object.values(current.symptoms).find(symp => symp.name === field_id).value = value;
     this.setState({ current: { ...current } }, () => {
       this.props.setAssessmentState({ ...this.state.current });
     });
@@ -29,7 +23,7 @@ class SymptomsAssessment extends React.Component {
   navigate() {
     if (
       this.state.current.symptoms.filter(x => {
-        return x.bool_value === true;
+        return x.value === true;
       }).length === 0
     ) {
       this.props.goto(0);
@@ -44,7 +38,7 @@ class SymptomsAssessment extends React.Component {
         type="switch"
         id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         label={`${symp.label}`}
-        checked={symp.bool_value === true || false}
+        checked={symp.value === true || false}
         onChange={this.handleChange}
       />
     );
@@ -66,7 +60,7 @@ class SymptomsAssessment extends React.Component {
               <Form.Group className="pt-1">
                 {this.state.current.symptoms
                   .filter(x => {
-                    return x.field_type === 'BoolSymptom';
+                    return x.type === 'BoolSymptom';
                   })
                   .map(symp => this.boolSymptom(symp))}
               </Form.Group>
@@ -74,11 +68,11 @@ class SymptomsAssessment extends React.Component {
             <Form.Row className="pt-4">
               <Button variant="primary" block size="lg" className="btn-block btn-square" onClick={this.navigate}>
                 {(this.state.current.symptoms.filter(x => {
-                  return x.bool_value === true;
+                  return x.value === true;
                 }).length !== 0 &&
                   'Submit') ||
                   (this.state.current.symptoms.filter(x => {
-                    return x.bool_value === true;
+                    return x.value === true;
                   }).length === 0 &&
                     'Previous')}
               </Button>

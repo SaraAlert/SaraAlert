@@ -21,7 +21,7 @@ class AdminTaskTest < ActiveSupport::TestCase
   test "jurisdiction and symptom creation and editing" do
     # The JSON representation of a config/sara/jurisdiction.yml file
     # this is how the config file is represented after it is parsed out of .yml
-    baseline_jurisdictions = {"USA"=>{"symptoms"=>{"Temperature"=>{"float_value"=>101.4}, "Cough"=>{"bool_value"=>true}, "Difficulty Breathing"=>{"bool_value"=>true}}, "children"=>{"State 1"=>{"children"=>{"County 1"=>nil, "County 2"=>nil}}, "State 2"=>{"children"=>{"County 3"=>nil, "County 4"=>nil}}}}}
+    baseline_jurisdictions = {"USA"=>{"symptoms"=>{"Temperature"=>{"value"=>101.4, "type"=>"FloatSymptom"}, "Cough"=>{"value"=>true, "type"=>"BoolSymptom"}, "Difficulty Breathing"=>{"value"=>true, "type"=>"BoolSymptom"}}, "children"=>{"State 1"=>{"children"=>{"County 1"=>nil, "County 2"=>nil}}, "State 2"=>{"children"=>{"County 3"=>nil, "County 4"=>nil}}}}}
     parse_jurisdiction(nil, 'USA', baseline_jurisdictions['USA'])
 
     # Assert Jurisdictions have all been loaded and hierarchy is correct
@@ -88,7 +88,7 @@ class AdminTaskTest < ActiveSupport::TestCase
     ########################
     ### Update Symptoms ####
     ########################
-    updated_jurisdictions = {"USA"=>{"symptoms"=>{"Temperature"=>{"float_value"=>101.4}, "Cough"=>{"bool_value"=>true}}, "children"=>{"State 1"=>{"symptoms"=>{"Vomit"=>{"bool_value"=>true}}, "children"=>{"County 1"=>nil, "County 2"=>nil}}, "State 2"=>{"children"=>{"County 3"=>nil, "County 4"=>nil}}}}}
+    updated_jurisdictions = {"USA"=>{"symptoms"=>{"Temperature"=>{"value"=>101.4, "type"=>"FloatSymptom"}, "Cough"=>{"value"=>true, "type"=>"BoolSymptom"}}, "children"=>{"State 1"=>{"symptoms"=>{"Vomit"=>{"value"=>true, "type"=>"BoolSymptom"}}, "children"=>{"County 1"=>nil, "County 2"=>nil}}, "State 2"=>{"children"=>{"County 3"=>nil, "County 4"=>nil}}}}}
   
     parse_jurisdiction(nil, 'USA', updated_jurisdictions['USA'])
     # Assert Jurisdictions have all been loaded and hierarchy is correct

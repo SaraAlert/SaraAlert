@@ -24,7 +24,7 @@ class AssessmentsController < ApplicationController
 
     redirect_to root_url unless threshold_condition
   
-    reported_symptoms_array = params.permit({:symptoms => [:name, :bool_value, :float_value, :int_value, :field_type, :label]}).to_h['symptoms']
+    reported_symptoms_array = params.permit({:symptoms => [:name, :value, :type, :label]}).to_h['symptoms']
 
     typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 
@@ -56,7 +56,7 @@ class AssessmentsController < ApplicationController
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
-    reported_symptoms_array = params.permit({:symptoms => [:name, :bool_value, :float_value, :int_value, :field_type, :label]}).to_h['symptoms']
+    reported_symptoms_array = params.permit({:symptoms => [:name, :value, :type, :label]}).to_h['symptoms']
 
     typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 

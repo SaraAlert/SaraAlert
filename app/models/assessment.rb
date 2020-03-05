@@ -31,16 +31,12 @@ class Assessment < ApplicationRecord
     end
     threshold_condition = reported_condition.get_threshold_condition
     threshold_symptom = threshold_condition.symptoms.select{|symp| symp.name == symptom_name}[0]
-    if reported_symptom.type == "FloatSymptom"
-      if reported_symptom.float_value >= threshold_symptom.float_value
+    if reported_symptom.type == "FloatSymptom" || reported_symptom.type  == "IntegerSymptom"
+      if reported_symptom.value >= threshold_symptom.value
         return true
       end
     elsif reported_symptom.type  == "BoolSymptom"
-      if reported_symptom.bool_value === threshold_symptom.bool_value
-        return true
-      end
-    elsif reported_symptom.type  == "IntegerSymptom"
-      if reported_symptom.int_value >= threshold_symptom.int_value
+      if reported_symptom.value === threshold_symptom.value
         return true
       end
     end
@@ -53,13 +49,7 @@ class Assessment < ApplicationRecord
     if reported_symptom == nil
       return nil
     end
-    if reported_symptom.type == "FloatSymptom"
-      return reported_symptom.float_value
-    elsif reported_symptom.type  == "BoolSymptom"
-      return reported_symptom.bool_value
-    elsif reported_symptom.type  == "IntegerSymptom"
-      return reported_symptom.int_value
-    end
+    return reported_symptom.value
   end
 
   def get_all_symptom_names

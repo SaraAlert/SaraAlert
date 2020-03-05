@@ -5,7 +5,7 @@ class Condition < ApplicationRecord
         typed_symptoms = []
 
         symptoms_array.each { |symp|
-            symptom = Symptom.symptom_factory(symp)
+            symptom = Symptom.new(symp)
             typed_symptoms.push(symptom)
         }
         return typed_symptoms

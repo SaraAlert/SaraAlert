@@ -33,7 +33,7 @@ namespace :admin do
         if jur_symps != nil
             jur_symps.each do |symp_name, symp_vals|
                 symptom = {"name"=>symp_name.parameterize, "label"=> symp_name}.merge(symp_vals)
-                threshold_condition_symptoms.push(Symptom.symptom_factory(symptom))
+                threshold_condition_symptoms.push(Symptom.new(symptom))
             end
         end
 
