@@ -54,8 +54,7 @@ class EnrollerTest < ApplicationSystemTestCase
   end
 
   test "edit existing data" do
-    ## Uncoment when bug is fixed where info edited from one section does not persist after editing info from another
-    # @@monitoree_enrollment_form.enroll_monitoree_and_edit_info(USERS["locals1c1_enroller"], MONITOREES["monitoree_3"], MONITOREES["monitoree_6"])
+    @@monitoree_enrollment_form.enroll_monitoree_and_edit_info(USERS["locals1c1_enroller"], MONITOREES["monitoree_3"], MONITOREES["monitoree_6"])
   end
 
   test "cancel monitoree enrollment via cancel button" do
