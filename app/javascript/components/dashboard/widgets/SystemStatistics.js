@@ -37,7 +37,7 @@ class SystemStatistics extends React.Component {
                   <h5>TOTAL REPORTS</h5>
                 </Row>
                 <Row>
-                  <h1 className="display-1">{this.props.stats.system_assessmets}</h1>
+                  <h1 className="display-1">{this.props.stats.system_assessments}</h1>
                 </Row>
               </Col>
               <Col>
@@ -45,7 +45,7 @@ class SystemStatistics extends React.Component {
                   <h5>NEW LAST 24 HOURS</h5>
                 </Row>
                 <Row>
-                  <h1 className="display-1">{this.props.stats.system_assessmets_last_24}</h1>
+                  <h1 className="display-1">{this.props.stats.system_assessments_last_24}</h1>
                 </Row>
               </Col>
             </Row>

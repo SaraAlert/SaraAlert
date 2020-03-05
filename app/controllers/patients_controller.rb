@@ -105,13 +105,14 @@ class PatientsController < ApplicationController
         # deliver_later forces the use of ActiveJob
         # sidekiq and redis should be running for this to work
         # If these are not running, all jobs will be completed when services start
-        PatientMailer.enrollment_email(patient).deliver_later
+        PatientMailer.enrollment_email(patient).deliver_later if ADMIN_OPTIONS['enable_email']
       end
       if patient.primary_telephone.present?
         # deliver_later forces the use of ActiveJob
         # sidekiq and redis should be running for this to work
         # If these are not running, all jobs will be completed when services start
-        PatientMailer.enrollment_sms(patient).deliver_later
+        # TODO: Enable when deploying externally
+        PatientMailer.enrollment_sms(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
       end
       render json: patient
     else

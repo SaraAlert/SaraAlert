@@ -3,3 +3,9 @@ monitoring_period_days: 14
 
 # How many minutes in a reporting period (hint: 1440 mins for 24 hours)
 reporting_period_minutes: 1440
+
+# Should Sara Alert send emails?
+enable_email: true
+
+# Should Sara Alert send SMS messages?
+enable_sms: false
