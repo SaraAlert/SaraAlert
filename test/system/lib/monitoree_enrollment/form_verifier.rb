@@ -145,7 +145,7 @@ class MonitoreeEnrollmentFormVerifier < ApplicationSystemTestCase
   end
 
   def verify_form_data_for_state_input_field(data, field)
-    assert_equal(@@monitoree_enrollment_utils.get_state_abbrv(data[field]), find("#" + field)["value"], field + " mismatch") if data[field]
+    assert_equal(data[field], find("#" + field)["value"], field + " mismatch") if data[field]
   end
 
   def verify_form_data_for_checkbox_input_field(data, field)

@@ -123,7 +123,7 @@ class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
   end
 
   def verify_state_field(value)
-    assert_selector "span", text: @@monitoree_enrollment_utils.get_state_abbrv(value) if value
+    assert_selector "span", text: value if value
   end
 
   def verify_exposure_risk_factor(data, field)

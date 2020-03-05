@@ -22,7 +22,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
     assert_equal(monitoree["address"]["address_line_1"], find("#monitored_address_line_1")["value"])
     assert_equal(monitoree["address"]["address_city"], find("#monitored_address_city")["value"])
     assert_equal(monitoree["address"]["address_line_2"], find("#monitored_address_line_2")["value"])
-    assert_equal(@@monitoree_enrollment_utils.get_state_abbrv(monitoree["address"]["address_state"]), find("#monitored_address_state")["value"])
+    assert_equal(monitoree["address"]["address_state"], find("#monitored_address_state")["value"])
     assert_equal(monitoree["address"]["address_zip"], find("#monitored_address_zip")["value"])
     assert_equal(monitoree["address"]["address_county"], find("#monitored_address_county")["value"])
   end
