@@ -8,6 +8,10 @@ class Address extends React.Component {
   constructor(props) {
     super(props);
     this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, selectedTab: 'domestic' };
+    if (typeof this.props.currentState.monitored_address_state !== 'undefined') {
+      // When viewing existing patients, the `monitored_address_state` needs to be reverse mapped back to the abbreviation
+      this.state.current.monitored_address_state = stateOptions.find(state => state.name === this.props.currentState.monitored_address_state)?.abbrv;
+    }
     this.handleChange = this.handleChange.bind(this);
     this.whereMonitoredSameAsHome = this.whereMonitoredSameAsHome.bind(this);
     this.validate = this.validate.bind(this);
@@ -181,7 +185,9 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="pt-2">
                     <Form.Group as={Col} md={8} controlId="address_county">
-                      <Form.Label className="nav-input-label">COUNTY{schemaDomestic?.fields?.address_county?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="nav-input-label">
+                        COUNTY (DISTRICT) {schemaDomestic?.fields?.address_county?._exclusive?.required && ' *'}
+                      </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['address_county']}
                         size="lg"
@@ -299,7 +305,7 @@ class Address extends React.Component {
                   <Form.Row className="pt-2 pb-3">
                     <Form.Group as={Col} md={8} controlId="monitored_address_county">
                       <Form.Label className="nav-input-label">
-                        COUNTY{schemaDomestic?.fields?.monitored_address_county?._exclusive?.required && ' *'}
+                        COUNTY (DISTRICT) {schemaDomestic?.fields?.monitored_address_county?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitored_address_county']}
@@ -534,7 +540,7 @@ class Address extends React.Component {
                   <Form.Row className="pt-2 pb-3">
                     <Form.Group as={Col} md={8} controlId="foreign_monitored_address_county">
                       <Form.Label className="nav-input-label">
-                        COUNTY{schemaForeign?.fields?.foreign_monitored_address_county?._exclusive?.required && ' *'}
+                        COUNTY (DISTRICT) {schemaForeign?.fields?.foreign_monitored_address_county?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['foreign_monitored_address_county']}
