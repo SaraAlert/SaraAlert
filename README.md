@@ -3,23 +3,23 @@
 This is a prototype Rails application for tracking the 2019 novel coronavirus
 
 ## Installing and Running
-#####To Install
+##### To Install
 ```bash
 bundle install
 yarn install
 ```
-#####To Setup Database
+##### To Setup Database
 ```bash
 bundle exec rake db:drop db:create db:migrate db:setup
 ```
 Note: Make sure you have a Postgres database running
 
-#####To Run
+##### To Run
 ```bash
 bundle exec rails s
 ```
 
-#####To Populate Demo Database
+##### To Populate Demo Database
 ```bash
 bundle exec rake demo:setup
 bundle exec rake demo:populate
@@ -104,4 +104,10 @@ EOT
 * Add iptables rules to allow smtp connections on all interfaces except the externally facing ethernet: `sudo iptables -I INPUT -i ens33 -p tcp --dport 25 -j DROP` and `sudo iptables -I INPUT 2 -p tcp --dport 25 -j ACCEPT`
 * Save the iptables config to persist through reboots: `sudo iptables-save`
 
+## Testing
 
+### System Tests
+By default, `rails test` will not run system tests. To run:
+```
+rails test:system
+```

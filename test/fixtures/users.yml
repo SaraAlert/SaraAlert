@@ -1,0 +1,150 @@
+state1_enroller:
+  id: 1
+  email: "state1_enroller@example.com"
+  encrypted_password: "$2a$11$hcY1AcX7WWtqsXADa1g7O.KxNj2nsy9ISzYEFzxN7J7552c25ZGhe"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 2
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+locals1c1_enroller:
+  id: 2
+  email: "locals1c1_enroller@example.com"
+  encrypted_password: "$2a$11$3m2JVBfZ1LdG0QZBSAmkDu3u.qtKNutSrG5XVVZZB0fBe5q8LdRii"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 4
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+locals1c2_enroller:
+  id: 3
+  email: "locals1c2_enroller@example.com"
+  encrypted_password: "$2a$11$3m2JVBfZ1LdG0QZBSAmkDu3u.qtKNutSrG5XVVZZB0fBe5q8LdRii"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 5
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+state2_enroller:
+  id: 4
+  email: "state2_enroller@example.com"
+  encrypted_password: "$2a$11$nRGu7TrsKF6lTHHr.xFNqOlGkyYYU2xEugmP0TmV0RSTez0GZoASu"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 3
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+locals2c3_enroller:
+  id: 5
+  email: "locals2c3_enroller@example.com"
+  encrypted_password: "$2a$11$hs2C7OtjQNf73kqBZHM1teFJmOSNFcqy.GHkcg0no7Q/s5ItprOxi"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 6
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+locals2c4_enroller:
+  id: 6
+  email: "locals2c4_enroller@example.com"
+  encrypted_password: "$2a$11$4cgUiRemC8qmzmyNE7cVf.bgvnNjFy5DHaPTMUCQCpQGyuvEr7AiC"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 7
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+state1_epi:
+  id: 7
+  email: "state1_epi@example.com"
+  encrypted_password: "$2a$11$/rBs4ZTjPikABXvTt3n2tO6cbG.QYPzX0Bi4RtzL3ylo3YNzO0sVS"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 2
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+locals1c1_epi:
+  id: 8
+  email: "locals1c1_epi@example.com"
+  encrypted_password: "$2a$11$m8ZyVR86ZfEbbAAblA4F2eW/ch7IiXU7V1RSgEcRENBbndgyMLUA2"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 4
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+locals1c2_epi:
+  id: 9
+  email: "locals1c2_epi@example.com"
+  encrypted_password: "$2a$11$6FZAYugLqNOx2FZnwwSF3.5YyXSgv9vI767.8THksYhBcw/1rBNCO"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 5
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+state2_epi:
+  id: 10
+  email: "state2_epi@example.com"
+  encrypted_password: "$2a$11$ChlP3JouzC5zhuM62eAvr.Vye.XICXCD0O54tDddXJ3fOoKlaqGX6"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 3
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+locals2c3_epi:
+  id: 11
+  email: "locals2c3_epi@example.com"
+  encrypted_password: "$2a$11$rR.9nxjg8gEFrVquUCoLE.zgDvMYMgtjeyznrf7g6ASpXv5lEdE1O"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 6
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+locals2c4_epi:
+  id: 12
+  email: "locals2c4_epi@example.com"
+  encrypted_password: "$2a$11$RbzotFM.IXCBolnoFzv0q.90CvZk9F3XiG11LnriMPiUaJHgK69NK"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 7
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+state1_epi_enroller:
+  id: 13
+  email: "state1_epi_enroller@example.com"
+  encrypted_password: "$2a$11$6tNB90WBiMfeehwdcTQ1x.H379Wmv3cTlWYW3nvURxd/PH6F/Inva"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 2
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+admin1:
+  id: 14
+  email: "admin1@example.com"
+  encrypted_password: "$2a$11$JHw3xUNX1Tnxyk2xJjP35ul7uWeWBsFkw3.Mt6UTTqastPAeBHz2W"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 1
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"
+analyst_all:
+  id: 15
+  email: "analyst_all@example.com"
+  encrypted_password: "$2a$11$swhNoM7Tq7DNwoa0qVbGLueMBbL6K7HlKN10vPafiwo9.tXH14sIS"
+  sign_in_count: 0
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 1
+  created_at: "2020-02-26 20:02:49.250963"
+  updated_at: "2020-02-26 20:02:49.250963"

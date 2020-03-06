@@ -124,7 +124,7 @@ class AdditionalPlannedTravel extends React.Component {
                       onChange={this.handleChange}>
                       <option></option>
                       {stateOptions.map((state, index) => (
-                        <option key={`state-${index}`} value={state.abbrv}>
+                        <option key={`state-${index}`} value={state.name}>
                           {state.name}
                         </option>
                       ))}
