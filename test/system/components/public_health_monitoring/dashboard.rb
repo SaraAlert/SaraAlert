@@ -24,7 +24,7 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     else
       refute_selector "td", text: get_patient_display_name(patient)
       refute_selector "td", text: patient["date_of_birth"]
-    end
+    end  
   end
 
   def search_for_and_view_patient(tab, patient)

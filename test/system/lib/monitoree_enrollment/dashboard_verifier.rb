@@ -53,7 +53,7 @@ class MonitoreeEnrollmentDashboardVerifier < ApplicationSystemTestCase
   end
 
   def go_to_correct_tab
-    click_on "Asymptomatic" if page.has_link?('Asymptomatic')
+    click_on "Asymptomatic" if page.has_link?("Asymptomatic")
   end
 
 end

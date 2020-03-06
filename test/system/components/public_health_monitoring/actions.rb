@@ -25,7 +25,7 @@ class PublicHealthMonitoringActions < ApplicationSystemTestCase
     end
   end
 
-  def update_monitoring_plan(monitoring_plan, details)
+  def update_monitoring_plan(monitoring_plan, reasoning)
     if monitoring_plan != find("#monitoring_plan")["value"]
       select monitoring_plan, from: "monitoring_plan"
       @@public_health_monitoring_utils.wait_for_modal_animation
