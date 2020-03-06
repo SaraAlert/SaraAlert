@@ -15,7 +15,7 @@
             value: true
             type: 'BoolSymptom'
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
-    # in the
+    # in the children: field
     children:
         'State 1':
             children:
