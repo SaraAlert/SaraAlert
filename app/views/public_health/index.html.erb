@@ -13,22 +13,22 @@
   <ul class="nav nav-tabs">
     <li class="nav-item">
       <a class="nav-link active" id="symptomatic-tab" data-toggle="tab" href="#symptomatic">
-        Symptomatic <span class="badge badge-danger badge-larger-font"><%= @symptomatic_patients.count %></span>
+        Symptomatic <span class="badge badge-danger badge-larger-font"><%= @symptomatic_count %></span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" id="non-reporting-tab" data-toggle="tab" href="#non-reporting">
-        Non-Reporting <span class="badge badge-warning badge-larger-font"><%= @non_reporting_patients.count %></span>
+        Non-Reporting <span class="badge badge-warning badge-larger-font"><%= @non_reporting_count %></span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic">
-        Asymptomatic <span class="badge badge-success badge-larger-font"><%= @asymptomatic_patients.count %></span>
+        Asymptomatic <span class="badge badge-success badge-larger-font"><%= @asymptomatic_count %></span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" id="closed-tab" data-toggle="tab" href="#closed">
-        Closed <span class="badge badge-secondary badge-larger-font"><%= @closed_patients.count %></span>
+        Closed <span class="badge badge-secondary badge-larger-font"><%= @closed_count %></span>
       </a>
     </li>
   </ul>
@@ -36,41 +36,20 @@
   <div class="tab-content" id="myTabContent">
     <div class="card card-square tab-pane fade show active pb-4" id="symptomatic" role="tabpanel" aria-labelledby="symptomatic-tab">
       <h3 class="px-4 pt-4 pb-3">Monitorees Who Have Reported Symptoms</h3>
-      <%= render partial: "patients", locals: { patients: @symptomatic_patients } %>
+      <%= render partial: "patients", locals: { type: 'symptomatic_patients' } %>
     </div>
     <div class="card card-square tab-pane fade pb-4" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
-      <%# TODO: Make the reporting timeout configurable %>
-      <h3 class="px-4 pt-4 pb-3">Monitorees Who Have Not Reported in the Last Day</h3>
-      <%= render partial: "patients", locals: { patients: @non_reporting_patients } %>
+      <h3 class="px-4 pt-4 pb-3">Monitorees Who Have Failed To Report in the Last Day</h3>
+      <%= render partial: "patients", locals: { type: 'non_reporting_patients' } %>
     </div>
     <div class="card card-square tab-pane fade pb-4" id="asymptomatic" role="tabpanel" aria-labelledby="asymptomatic-tab">
       <h3 class="px-4 pt-4 pb-3">Monitorees Reporting No Symptoms</h3>
-      <%= render partial: "patients", locals: { patients: @asymptomatic_patients } %>
+      <%= render partial: "patients", locals: { type: 'asymptomatic_patients' } %>
     </div>
     <div class="card card-square tab-pane fade pb-4" id="closed" role="tabpanel" aria-labelledby="closed-tab">
       <h3 class="px-4 pt-4 pb-3">Monitorees Not Being Monitored</h3>
-      <%= render partial: "patients", locals: { patients: @closed_patients } %>
+      <%= render partial: "patients", locals: { type: 'closed_patients' } %>
     </div>
   </div>
 
 </div>
-
-<script>
-  $(document).ready(function() {
-    $('.patients_table').DataTable({
-      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'B><'col-sm-24 col-md-14'p>>",
-      buttons: [
-        {
-            extend: 'excelHtml5',
-            title: 'Sara_Alert_Excel_export',
-            text: '<i class="fas fa-file-excel"></i>&nbsp;Excel'
-        },
-        {
-            extend: 'csvHtml5',
-            title: 'Sara_Alert_CSV_export',
-            text: '<i class="fas fa-file-csv"></i>&nbsp;CSV'
-        }
-      ]
-    });
-  });
-</script>

@@ -39,6 +39,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.boolean :native_hawaiian_or_other_pacific_islander
       t.string :ethnicity
       t.string :primary_language
+      t.string :secondary_language
       t.boolean :interpretation_required
       t.string :nationality
       t.string :address_line_1

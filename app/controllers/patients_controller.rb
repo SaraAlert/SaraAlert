@@ -204,6 +204,7 @@ class PatientsController < ApplicationController
       :native_hawaiian_or_other_pacific_islander,
       :ethnicity,
       :primary_language,
+      :secondary_language,
       :interpretation_required,
       :nationality,
       :address_line_1,

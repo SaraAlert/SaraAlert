@@ -6,28 +6,121 @@ class PublicHealthController < ApplicationController
     unless current_user.can_view_public_health_dashboard?
       redirect_to root_url and return
     end
+    @symptomatic_count = current_user.viewable_patients.symptomatic.count
+    @closed_count = current_user.viewable_patients.monitoring_closed.count
+    @non_reporting_count = current_user.viewable_patients.non_reporting.count
+    @asymptomatic_count = current_user.viewable_patients.asymptomatic.count
+    @new_count = current_user.viewable_patients.new_subject.count
+  end
 
-    # Load all patients that the current user can see, eager loading assessments
-    patients = current_user.viewable_patients.where(monitoring: true).includes(:latest_assessment)
+  def symptomatic_patients
+    # Restrict access to public health only
+    unless current_user.can_view_public_health_dashboard?
+      redirect_to root_url and return
+    end
+    data = current_user.viewable_patients.symptomatic
 
-    @closed_patients = current_user.viewable_patients.includes(:latest_assessment).select { |p| p.monitoring == false }
-
-    # Show all patients that have reported symptoms
-    @symptomatic_patients = patients.select { |p| p.latest_assessment&.symptomatic }
-
-    # Show all patients that have not reported in a timely fashion; this list includes patients who 1) have
-    # been in the system long enough to be considered overdue and 2) are not symptomatic (we got those above)
-    # and 3) who have not reported recently
-
-    time_boundary = ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago
-    @non_reporting_patients = patients.reject do |p|
-      (p.created_at >= time_boundary || # Created more recently than our time boundary, so not expected to have reported yet
-       p.latest_assessment&.symptomatic || # Symptomatic, handled in a different list
-       (p.latest_assessment && p.latest_assessment.created_at >= time_boundary)) # Reported recently
+    # Filter on search
+    search = params[:search][:value] unless params[:search].nil?
+    if search.present?
+      filtered = data.where('lower(first_name) like ?', "%#{search.downcase}%").or(
+        data.where('lower(last_name) like ?', "%#{search.downcase}%").or(
+          data.where('lower(user_defined_id_statelocal) like ?', "%#{search.downcase}%")
+        )
+      )
+    else
+      filtered = data
     end
 
-    # The rest are asymptomatic patients with a recent report or recently added patients
-    @asymptomatic_patients = patients - (@symptomatic_patients + @non_reporting_patients)
+    # Paginate
+    length = params[:length].to_i
+    page = params[:start].to_i == 0 ? 1 : (params[:start].to_i / length) + 1
+    draw = params[:draw].to_i
+
+    render json: { data: filtered.paginate(per_page: length, page: page), draw: draw, recordsTotal: data.count, recordsFiltered: filtered.count }
+  end
+
+  def closed_patients
+    # Restrict access to public health only
+    unless current_user.can_view_public_health_dashboard?
+      redirect_to root_url and return
+    end
+    data = current_user.viewable_patients.monitoring_closed
+
+    # Filter on search
+    search = params[:search][:value] unless params[:search].nil?
+    if search.present?
+      filtered = data.where('lower(first_name) like ?', "%#{search.downcase}%").or(
+        data.where('lower(last_name) like ?', "%#{search.downcase}%").or(
+          data.where('lower(user_defined_id_statelocal) like ?', "%#{search.downcase}%")
+        )
+      )
+    else
+      filtered = data
+    end
+
+    # Paginate
+    length = params[:length].to_i
+    page = params[:start].to_i == 0 ? 1 : (params[:start].to_i / length) + 1
+    draw = params[:draw].to_i
+
+    render json: { data: filtered.paginate(per_page: length, page: page), draw: draw, recordsTotal: data.count, recordsFiltered: filtered.count }
+  end
+
+  def non_reporting_patients
+    # Restrict access to public health only
+    unless current_user.can_view_public_health_dashboard?
+      redirect_to root_url and return
+    end
+
+    data = current_user.viewable_patients.non_reporting
+
+    # Filter on search
+    search = params[:search][:value] unless params[:search].nil?
+    if search.present?
+      filtered = data.where('lower(first_name) like ?', "%#{search.downcase}%").or(
+        data.where('lower(last_name) like ?', "%#{search.downcase}%").or(
+          data.where('lower(user_defined_id_statelocal) like ?', "%#{search.downcase}%")
+        )
+      )
+    else
+      filtered = data
+    end
+
+    # Paginate
+    length = params[:length].to_i
+    page = params[:start].to_i == 0 ? 1 : (params[:start].to_i / length) + 1
+    draw = params[:draw].to_i
+
+    render json: { data: filtered.paginate(per_page: length, page: page), draw: draw, recordsTotal: data.count, recordsFiltered: filtered.count }
+  end
+
+  def asymptomatic_patients
+    # Restrict access to public health only
+    unless current_user.can_view_public_health_dashboard?
+      redirect_to root_url and return
+    end
+
+    data = current_user.viewable_patients.asymptomatic
+
+    # Filter on search
+    search = params[:search][:value] unless params[:search].nil?
+    if search.present?
+      filtered = data.where('lower(first_name) like ?', "%#{search.downcase}%").or(
+        data.where('lower(last_name) like ?', "%#{search.downcase}%").or(
+          data.where('lower(user_defined_id_statelocal) like ?', "%#{search.downcase}%")
+        )
+      )
+    else
+      filtered = data
+    end
+
+    # Paginate
+    length = params[:length].to_i
+    page = params[:start].to_i == 0 ? 1 : (params[:start].to_i / length) + 1
+    draw = params[:draw].to_i
+
+    render json: { data: filtered.paginate(per_page: length, page: page), draw: draw, recordsTotal: data.count, recordsFiltered: filtered.count }
   end
 
 end
