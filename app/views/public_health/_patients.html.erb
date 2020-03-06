@@ -40,12 +40,24 @@
         {
             extend: 'excelHtml5',
             title: 'Sara_Alert_Excel_export',
-            text: '<i class="fas fa-file-excel"></i>&nbsp;Excel'
+            text: '<i class="fas fa-file-excel"></i>&nbsp;Excel',
+            exportOptions: {
+              modifier: {
+                page: 'all',
+                search: 'none'
+              }
+            }
         },
         {
             extend: 'csvHtml5',
             title: 'Sara_Alert_CSV_export',
-            text: '<i class="fas fa-file-csv"></i>&nbsp;CSV'
+            text: '<i class="fas fa-file-csv"></i>&nbsp;CSV',
+            exportOptions: {
+              modifier: {
+                page: 'all',
+                search: 'none'
+              }
+            }
         }
       ]
     });

@@ -24,27 +24,11 @@ class AnalyticsController < ApplicationController
     # Stats for public health & analysts
     if current_user.has_role?(:public_health) || current_user.has_role?(:public_health_enroller) || current_user.has_role?(:analyst)
       # Load all patients that the current user can see, eager loading assessments
-      patients = current_user.viewable_patients.where(monitoring: true).includes(:latest_assessment)
-
-      # Patients that are not being monitored
-      closed_patients = current_user.viewable_patients.where(monitoring: false)
-
-      # Show all patients that have reported symptoms
-      symptomatic_patients = patients.select { |p| p.latest_assessment&.symptomatic }
-
-      # Show all patients that have not reported in a timely fashion; this list includes patients who 1) have
-      # been in the system long enough to be considered overdue and 2) are not symptomatic (we got those above)
-      # and 3) who have not reported recently
-
-      time_boundary = ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago
-      non_reporting_patients = patients.reject do |p|
-        (p.created_at >= time_boundary || # Created more recently than our time boundary, so not expected to have reported yet
-        p.latest_assessment&.symptomatic || # Symptomatic, handled in a different list
-        (p.latest_assessment && p.latest_assessment.created_at >= time_boundary)) # Reported recently
-      end
-
-      # The rest are asymptomatic patients with a recent report or recently added patients
-      asymptomatic_patients = patients - (symptomatic_patients + non_reporting_patients)
+      patients = current_user.viewable_patients.monitoring_open
+      closed_patients = current_user.viewable_patients.monitoring_closed
+      symptomatic_patients = current_user.viewable_patients.symptomatic
+      non_reporting_patients = current_user.viewable_patients.non_reporting
+      asymptomatic_patients = current_user.viewable_patients.asymptomatic
 
       # Populate the information needed for the statistical portion of the dashboard, organizing the results in
       # the format required by the graphs for display
