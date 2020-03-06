@@ -75,21 +75,25 @@ class Patient < ApplicationRecord
 
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
-    return last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days unless last_date_of_exposure.nil?
-    return created_at + ADMIN_OPTIONS['monitoring_period_days'].days
+    if last_date_of_exposure
+      return last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days
+    end
+    if created_at
+      return created_at + ADMIN_OPTIONS['monitoring_period_days'].days
+    end
   end
 
   def linelist
     {
       name: {name: "#{last_name}, #{first_name}", id: id},
-      jurisdiction: jurisdiction.name,
+      jurisdiction: jurisdiction&.name || '',
       state_local_id: user_defined_id_statelocal || '',
-      sex: sex,
-      dob: date_of_birth&.strftime('%F'),
-      end_of_monitoring: end_of_monitoring&.strftime('%F'),
-      risk_level: exposure_risk_assessment,
-      monitoring_plan: monitoring_plan,
-      latest_report: latest_assessment&.created_at&.strftime('%F')
+      sex: sex || '',
+      dob: date_of_birth&.strftime('%F') || '',
+      end_of_monitoring: end_of_monitoring&.strftime('%F') || '',
+      risk_level: exposure_risk_assessment || '',
+      monitoring_plan: monitoring_plan || '',
+      latest_report: latest_assessment&.created_at&.strftime('%F') || ''
     }
   end
 
