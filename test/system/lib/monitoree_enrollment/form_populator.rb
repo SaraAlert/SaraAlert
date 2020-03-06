@@ -1,10 +1,10 @@
 require "application_system_test_case"
 
-require_relative "utils"
+require_relative "../system_test_utils"
 
 class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
 
-  @@monitoree_enrollment_utils = MonitoreeEnrollmentUtils.new(nil)
+  @@system_test_utils = SystemTestUtils.new(nil)
   
   def populate_monitoree_info(monitoree)
     populate_identification(monitoree["identification"], true)
@@ -46,7 +46,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
     populate_text_input(identification, "user_defined_id_statelocal")
     populate_text_input(identification, "user_defined_id_cdc")
     populate_text_input(identification, "user_defined_id_nndss")
-    @@monitoree_enrollment_utils.go_to_next_page if continue
+    @@system_test_utils.go_to_next_page if continue
   end
 
   def populate_address(address, continue)
@@ -82,7 +82,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
         populate_text_input(address, "foreign_monitored_address_county")
       end
     end
-    @@monitoree_enrollment_utils.go_to_next_page if continue
+    @@system_test_utils.go_to_next_page if continue
   end
 
   def populate_contact_info(contact_info, continue)
@@ -96,7 +96,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
       populate_select_input(contact_info, "preferred_contact_method")
       populate_select_input(contact_info, "preferred_contact_time")
     end
-    @@monitoree_enrollment_utils.go_to_next_page if continue
+    @@system_test_utils.go_to_next_page if continue
   end
 
   def populate_arrival_info(arrival_info, continue)
@@ -110,7 +110,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
       populate_text_input(arrival_info, "date_of_arrival")
       populate_text_input(arrival_info, "travel_related_notes")
     end
-    @@monitoree_enrollment_utils.go_to_next_page if continue
+    @@system_test_utils.go_to_next_page if continue
   end
 
   def populate_additional_planned_travel(additional_planned_travel, continue)
@@ -124,7 +124,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
       populate_text_input(additional_planned_travel, "additional_planned_travel_end_date")
       populate_text_input(additional_planned_travel, "additional_planned_travel_related_notes")
     end
-    @@monitoree_enrollment_utils.go_to_next_page if continue
+    @@system_test_utils.go_to_next_page if continue
   end
 
   def populate_potential_exposure_info(potential_exposure_info, continue)
@@ -143,7 +143,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
       populate_select_input(potential_exposure_info, "monitoring_plan")
       populate_text_input(potential_exposure_info, "exposure_notes")
     end
-    @@monitoree_enrollment_utils.go_to_next_page if continue
+    @@system_test_utils.go_to_next_page if continue
   end
 
   def populate_text_input(data, field)

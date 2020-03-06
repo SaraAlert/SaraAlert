@@ -1,10 +1,10 @@
 require "application_system_test_case"
 
-require_relative "utils"
+require_relative "../system_test_utils"
 
 class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
 
-  @@monitoree_enrollment_utils = MonitoreeEnrollmentUtils.new(nil)
+  @@system_test_utils = SystemTestUtils.new(nil)
   
   def verify_monitoree_info(monitoree)
     verify_identification(monitoree["identification"])
@@ -118,7 +118,7 @@ class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
   end
 
   def verify_monitoree_age_field(value)
-    assert_selector "span", text: @@monitoree_enrollment_utils.calculate_age(value) if value
+    assert_selector "span", text: @@system_test_utils.calculate_age(value) if value
   end
 
   def verify_state_field(value)

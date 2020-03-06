@@ -1,12 +1,12 @@
 require "application_system_test_case"
 
 require_relative "form_populator"
-require_relative "utils"
+require_relative "../system_test_utils"
 
 class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
 
   @@monitoree_enrollment_form_populator = MonitoreeEnrollmentFormPopulator.new(nil)
-  @@monitoree_enrollment_utils = MonitoreeEnrollmentUtils.new(nil)
+  @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_enrollment_input_validation(monitoree)
     click_link "Enroll New Monitoree"
@@ -19,7 +19,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
   end
 
   def verify_input_validation_for_identification(identification)
-    @@monitoree_enrollment_utils.go_to_next_page
+    @@system_test_utils.go_to_next_page
     assert_selector "div", text: "Please enter a First Name."
     assert_selector "div", text: "Please enter a Last Name."
     assert_selector "div", text: "Please enter a date of birth."
@@ -38,7 +38,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
   end
 
   def verify_input_validation_for_address(address)
-    @@monitoree_enrollment_utils.go_to_next_page
+    @@system_test_utils.go_to_next_page
     assert_selector "div", text: "Please enter first line of address."
     assert_selector "div", text: "Please enter city of address."
     assert_selector "div", text: "Please enter state of address."
@@ -61,7 +61,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
   end
 
   def verify_input_validation_for_contact_info(contact_info)
-    @@monitoree_enrollment_utils.go_to_next_page
+    @@system_test_utils.go_to_next_page
     assert_selector "div", text: "Please indicate a preferred contact method."
     select "Telephone call", from: "preferred_contact_method"
     click_on "Next"
@@ -132,7 +132,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
   end
 
   def verify_input_validation_for_potential_exposure_info(potential_exposure_info)
-    @@monitoree_enrollment_utils.go_to_next_page
+    @@system_test_utils.go_to_next_page
     assert_selector "div", text: "Please enter a last date of exposure."
     fill_in "last_date_of_exposure", with: "11/31/2000"
     click_on "Next"

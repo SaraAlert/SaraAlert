@@ -1,13 +1,17 @@
 require "application_system_test_case"
 
+require_relative "components/monitoree_enrollment/dashboard"
 require_relative "components/monitoree_enrollment/form"
+require_relative "lib/system_test_utils"
 
 class EnrollerTest < ApplicationSystemTestCase
 
-  MONITOREES = YAML.load(File.read(__dir__ + "/form_data/monitorees.yml"))
-  USERS = YAML.load(File.read(__dir__ + "/../fixtures/users.yml"))
-
+  @@monitoree_enrollment_dashboard = MonitoreeEnrollmentDashboard.new(nil)
   @@monitoree_enrollment_form = MonitoreeEnrollmentForm.new(nil)
+  @@system_test_utils = SystemTestUtils.new(nil)
+
+  MONITOREES = @@system_test_utils.get_monitorees
+  USERS = @@system_test_utils.get_users
 
   test "state enroller enroll monitoree with all fields" do
     @@monitoree_enrollment_form.enroll_monitoree(USERS["locals1c1_enroller"], MONITOREES["monitoree_2"])
@@ -63,6 +67,10 @@ class EnrollerTest < ApplicationSystemTestCase
 
   test "cancel monitoree enrollment via return to dashboard link" do
     @@monitoree_enrollment_form.enroll_monitoree_and_cancel(USERS["locals2c4_enroller"], MONITOREES["monitoree_1"], "Return To Dashboard")
+  end
+
+  test "view enrollment analytics" do
+    @@monitoree_enrollment_dashboard.login_and_view_enrollment_analytics(USERS["locals2c4_enroller"])
   end
 
 end
