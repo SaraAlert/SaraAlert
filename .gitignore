@@ -42,3 +42,5 @@ config/local_env.yml
 certs/
 
 .DS_Store
+
+dump.rdb
