@@ -19,8 +19,11 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
   @@monitoree_enrollment_info_page_verifier = MonitoreeEnrollmentInfoPageVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def enroll_monitoree(enroller, monitoree)
-    @@system_test_utils.login(enroller)
+  MONITOREES = @@system_test_utils.get_monitorees
+
+  def enroll_monitoree(user_name, monitoree_name)
+    monitoree = MONITOREES[monitoree_name]
+    @@system_test_utils.login(user_name)
     click_on 'Enroll New Monitoree'
     @@monitoree_enrollment_form_populator.populate_monitoree_info(monitoree)
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree)
@@ -31,8 +34,10 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(monitoree)
   end
 
-  def enroll_monitorees_in_group(enroller, existing_monitoree, new_monitoree)
-    @@system_test_utils.login(enroller)
+  def enroll_monitorees_in_group(user_name, existing_monitoree_name, new_monitoree_name)
+    existing_monitoree = MONITOREES[existing_monitoree_name]
+    new_monitoree = MONITOREES[new_monitoree_name]
+    @@system_test_utils.login(user_name)
     click_link 'Enroll New Monitoree'
     @@monitoree_enrollment_form_populator.populate_monitoree_info(existing_monitoree)
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree)
@@ -48,25 +53,26 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_as_group_member_on_dashboard(existing_monitoree, new_monitoree)
   end
 
-  def enroll_monitoree_with_same_monitored_address_as_home(enroller, monitoree)
-    @@system_test_utils.login(enroller)
+  def enroll_monitoree_with_same_monitored_address_as_home(user_name, monitoree_name)
+    @@system_test_utils.login(user_name)
     click_link 'Enroll New Monitoree'
-    @@monitoree_enrollment_form_populator.populate_monitoree_info_with_same_monitored_address_as_home(monitoree)
+    @@monitoree_enrollment_form_populator.populate_monitoree_info_with_same_monitored_address_as_home(MONITOREES[monitoree_name])
   end
 
-  def enroll_monitoree_and_edit_info(enroller, existing_monitoree, new_monitoree)
-    enroll_monitoree(enroller, existing_monitoree)
-    click_on @@system_test_utils.get_dashboard_display_name(existing_monitoree)
+  def enroll_monitoree_and_edit_info(user_name, existing_monitoree_name, new_monitoree_name)
+    enroll_monitoree(user_name, existing_monitoree_name)
+    click_on @@system_test_utils.get_dashboard_display_name(MONITOREES[existing_monitoree_name])
     click_on '(click here to edit)'
-    @@monitoree_enrollment_info_page.edit_data_on_review_page(new_monitoree)
+    @@monitoree_enrollment_info_page.edit_data_on_review_page(MONITOREES[new_monitoree_name])
     click_on 'Finish'
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(new_monitoree)
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(MONITOREES[new_monitoree_name])
     click_on 'Return To Dashboard'
-    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(new_monitoree)
+    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[new_monitoree_name])
   end
 
-  def enroll_monitoree_and_cancel(enroller, monitoree, cancel_link)
-    @@system_test_utils.login(enroller)
+  def enroll_monitoree_and_cancel(user_name, monitoree_name, cancel_link)
+    monitoree = MONITOREES[monitoree_name]
+    @@system_test_utils.login(user_name)
     click_link 'Enroll New Monitoree'
     @@monitoree_enrollment_form_populator.populate_monitoree_info(monitoree)
     click_on cancel_link
@@ -80,29 +86,29 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_not_on_dashboard(monitoree)
   end
 
-  def enroll_monitoree_and_edit_data_on_review_page(enroller, existing_monitoree, new_monitoree)
-    @@system_test_utils.login(enroller)
+  def enroll_monitoree_and_edit_data_on_review_page(user_name, existing_monitoree_name, new_monitoree_name)
+    @@system_test_utils.login(user_name)
     click_on 'Enroll New Monitoree'
-    @@monitoree_enrollment_form_populator.populate_monitoree_info(existing_monitoree)
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree)
-    @@monitoree_enrollment_info_page.edit_data_on_review_page(new_monitoree)
+    @@monitoree_enrollment_form_populator.populate_monitoree_info(MONITOREES[existing_monitoree_name])
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(MONITOREES[existing_monitoree_name])
+    @@monitoree_enrollment_info_page.edit_data_on_review_page(MONITOREES[new_monitoree_name])
   end
 
-  def enroll_monitoree_and_edit_data_after_submission(enroller, monitoree)
-    @@system_test_utils.login(enroller)
-    display_name = @patients_dashboard_component_test_helper.search_for_monitoree(monitoree)
+  def enroll_monitoree_and_edit_data_after_submission(user_name, monitoree_name)
+    @@system_test_utils.login(user_name)
+    display_name = @patients_dashboard_component_test_helper.search_for_monitoree(MONITOREES[monitoree_name])
     click_on display_name
     click_on '(click here to edit)'
-    @@monitoree_enrollment_info_page.edit_data_on_review_page(monitoree)
+    @@monitoree_enrollment_info_page.edit_data_on_review_page(MONITOREES[monitoree_name])
   end
 
-  def verify_form_data_after_navigation(enroller, monitoree)
-    @@system_test_utils.login(enroller)
-    @@monitoree_enrollment_form_verifier.verify_form_data_after_navigation(monitoree)
+  def verify_form_data_after_navigation(user_name, monitoree_name)
+    @@system_test_utils.login(user_name)
+    @@monitoree_enrollment_form_verifier.verify_form_data_after_navigation(MONITOREES[monitoree_name])
   end
 
-  def verify_enrollment_input_validation(enroller, monitoree)
-    @@system_test_utils.login(enroller)
-    @@monitoree_enrollment_form_validator.verify_enrollment_input_validation(monitoree)
+  def verify_enrollment_input_validation(user_name, monitoree_name)
+    @@system_test_utils.login(user_name)
+    @@monitoree_enrollment_form_validator.verify_enrollment_input_validation(MONITOREES[monitoree_name])
   end
 end

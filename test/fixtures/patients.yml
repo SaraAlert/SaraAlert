@@ -4,7 +4,7 @@ patient_1:
   updated_at: "2020-02-11 14:30:07"
   responder_id: 1
   creator_id: 1
-  jurisdiction_id: 1
+  jurisdiction_id: 2
   submission_token: "de8c267224b17cb977cd1787c2237693df17b703"
   monitoring: true
   confirmed_case: false

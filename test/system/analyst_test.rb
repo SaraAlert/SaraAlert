@@ -7,29 +7,27 @@ require_relative 'lib/system_test_utils'
 class AnalystTest < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  USERS = @@system_test_utils.get_users
-
   test 'analyst viewing analytics' do
-    login_and_view_analytics(USERS['analyst_all'], true)
+    login_and_view_analytics('analyst_all', true)
   end
 
   test 'epi viewing analytics' do
-    login_and_view_analytics(USERS['state1_epi'], false)
-    login_and_view_analytics(USERS['locals1c1_epi'], false)
+    login_and_view_analytics('state1_epi', false)
+    login_and_view_analytics('locals1c1_epi', false)
   end
 
   test 'epi enroller viewing analytics' do
-    login_and_view_analytics(USERS['state1_epi_enroller'], false)
+    login_and_view_analytics('state1_epi_enroller', false)
   end
 
-  def login_and_view_analytics(user, is_analyst)
-    @@system_test_utils.login(user)
+  def login_and_view_analytics(user_name, is_analyst)
+    @@system_test_utils.login(user_name)
     click_on 'Analytics' unless is_analyst
-    verify_analytics_page(user)
+    verify_analytics_page
     @@system_test_utils.logout
   end
 
-  def verify_analytics_page(_user)
+  def verify_analytics_page
     ## verify jurisdiction
     assert_selector 'button', text: 'EXPORT ANALYSIS AS PNG'
     assert_selector 'h5', text: 'System Statistics'

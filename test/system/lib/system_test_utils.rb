@@ -4,10 +4,11 @@ require 'application_system_test_case'
 
 class SystemTestUtils < ApplicationSystemTestCase
   ASSESSMENTS = YAML.safe_load(File.read(__dir__ + '/../form_data/assessments.yml'))
+  CONDITIONS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/conditions.yml'))
   MONITOREES = YAML.safe_load(File.read(__dir__ + '/../form_data/monitorees.yml'))
   PATIENTS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/patients.yml'))
   REPORTS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/assessments.yml'))
-  STATES = YAML.safe_load(File.read(__dir__ + '/../constants/states.yml'))
+  SYMPTOMS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/symptoms.yml'))
   USERS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/users.yml'))
 
   SIGN_IN_URL = '/users/sign_in'
@@ -19,10 +20,10 @@ class SystemTestUtils < ApplicationSystemTestCase
   CHECKBOX_ANIMATION_DELAY = 0.5 # wait for checkbox to load
   MODAL_ANIMATION_DELAY = 0 # wait for modal to load
 
-  def login(user)
+  def login(user_name)
     visit '/'
     assert_equal(SIGN_IN_URL, page.current_path)
-    fill_in 'user_email', with: user['email']
+    fill_in 'user_email', with: USERS[user_name]['email']
     fill_in 'user_password', with: USER_PASSWORD
     click_on 'login'
   end
@@ -81,6 +82,10 @@ class SystemTestUtils < ApplicationSystemTestCase
     ASSESSMENTS
   end
 
+  def get_conditions
+    CONDITIONS
+  end
+
   def get_monitorees
     MONITOREES
   end
@@ -90,8 +95,12 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def get_reports
-    REPORTS.each{|k,v| v['reported_condition'] = ReportedCondition.new(symptoms: [FloatSymptom.new(name: 'temperature', label: 'Temperature', float_value: 101.1)])}
+    # REPORTS.each{|k,v| v['reported_condition'] = ReportedCondition.new(symptoms: [FloatSymptom.new(name: 'temperature', label: 'Temperature', float_value: 101.1)])}
     REPORTS
+  end
+
+  def get_symptoms
+    SYMPTOMS
   end
 
   def get_users
@@ -106,12 +115,20 @@ class SystemTestUtils < ApplicationSystemTestCase
     '/patients/' + submission_token + '/assessments/new'
   end
 
-  def get_state_abbrv(value)
-    STATES[value]['abbrv']
+  def get_assessment_name(patient_name, report_number)
+    patient_name + '_assessment_' + report_number.to_s
+  end
+
+  def get_patient_display_name(patient_name)
+    PATIENTS[patient_name]['last_name'] + ', ' + PATIENTS[patient_name]['first_name']
   end
 
   def format_date(value)
     value[6..9] + '-' + value[0..1] + '-' + value[3..4]
+  end
+
+  def trim_ms_from_date(value)
+    Time.parse(value).change(:usec => 0).strftime('%Y-%m-%d %H:%M:%S')
   end
 
   def calculate_age(value)
