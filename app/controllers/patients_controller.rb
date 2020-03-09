@@ -72,7 +72,7 @@ class PatientsController < ApplicationController
   # This follows 'new', this will receive the subject details and save a new subject
   # to the database.
   def create
-    unless current_user.can_create_patient?
+    unless current_user.can_create_patient? || current_user.can_import?
       redirect_to root_url and return
     end
 

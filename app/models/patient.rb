@@ -83,6 +83,7 @@ class Patient < ApplicationRecord
     end
   end
 
+  # Information about this subject (that is useful in a linelist)
   def linelist
     {
       name: {name: "#{last_name}, #{first_name}", id: id},

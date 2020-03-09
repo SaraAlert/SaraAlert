@@ -1,0 +1,8 @@
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return To Dashboard", href: '/'}, {value: "Import", href: nil} ] } %>
+
+<div class="card mx-2 mt-3 mb-4 card-square">
+  <h5 class="card-header">Import Error</h5>
+  <div class="alert alert-danger mt-3 mx-3" role="alert">
+    <%= @error_msg %>
+  </div>
+</div>

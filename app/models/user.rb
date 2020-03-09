@@ -67,6 +67,16 @@ class User < ApplicationRecord
     has_role?(:enroller) || has_role?(:public_health) || has_role?(:public_health_enroller)
   end
 
+  # Can this user export?
+  def can_export?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user import?
+  def can_import?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
   # Can this user edit a Patient?
   def can_edit_patient?
     has_role?(:enroller) || has_role?(:public_health) || has_role?(:public_health_enroller)
