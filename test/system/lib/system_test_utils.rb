@@ -90,7 +90,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def get_reports
-    REPORTS.each{|k,v| v['reported_condition'] = ReportedCondition.new(symptoms: [])}
+    REPORTS.each{|k,v| v['reported_condition'] = ReportedCondition.new(symptoms: [FloatSymptom.new(name: 'temperature', label: 'Temperature', float_value: 101.1)])}
     REPORTS
   end
 
