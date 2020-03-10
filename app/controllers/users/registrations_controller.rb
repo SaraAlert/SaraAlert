@@ -12,7 +12,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def password_expired
-    redirect_to edit_user_registration_url and return
+    redirect_to edit_user_registration_url && return
   end
 
   protected
