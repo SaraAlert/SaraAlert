@@ -36,7 +36,6 @@ class MonitoreeEnrollmentDashboardVerifier < ApplicationSystemTestCase
     displayed_birthday = @@system_test_utils.format_date(monitoree['identification']['date_of_birth'])
     search_and_verify_existence(monitoree['identification']['first_name'], displayed_name, displayed_birthday)
     search_and_verify_existence(monitoree['identification']['last_name'], displayed_name, displayed_birthday)
-    search_and_verify_existence(displayed_birthday, displayed_name, displayed_birthday)
     displayed_name
   end
 
