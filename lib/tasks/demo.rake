@@ -253,7 +253,7 @@ namespace :demo do
           patient.responder = patient
           patient.save
 
-          print '.' if i % 100.zero?
+          print '.' if (i % 100).zero?
         end
 
         # Cases increase 10-20% every day
