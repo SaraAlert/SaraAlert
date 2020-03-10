@@ -68,10 +68,6 @@ class PublicHealthTest < ApplicationSystemTestCase
     add_comment(USERS['locals2c3_epi'], PATIENTS['patient_11'], 'Non-Reporting', 'comment')
   end
 
-  test 'export data to excel' do
-    export_data_to_excel(USERS['state1_epi'])
-  end
-
   test 'export data to csv' do
     export_data_to_csv(USERS['locals2c4_epi'])
   end
@@ -169,17 +165,9 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_data_to_excel(epi)
-    @@system_test_utils.login(epi)
-    assert_selector 'span', text: 'Excel'
-    # click_on "Excel"
-    ## verify that file is downloaded
-    @@system_test_utils.logout
-  end
-
   def export_data_to_csv(epi)
     @@system_test_utils.login(epi)
-    assert_selector 'span', text: 'CSV'
+    assert_selector 'a', text: 'CSV'
     # click_on "CSV"
     ## verify that file is downloaded
     @@system_test_utils.logout
