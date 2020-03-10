@@ -136,22 +136,27 @@ namespace :demo do
       # Transaction speeds things up a bit
       Patient.transaction do
         # Any existing patients may or may not report
-        # Patient.find_each do |patient|
-        #   next unless patient.created_at <= today
-        #   next if patient.confirmed_case
-        #   next if patient.assessments.any? { |a| a.created_at.to_date == today }
-        #   if rand < 0.7 # 70% reporting rate on any given day
-        #     if rand < 0.03 # 3% report some sort of symptoms
-        #       number_of_symptoms = rand(assessment_columns.size) + 1
-        #       some_true = all_false.dup
-        #       some_true.keys.shuffle[0,number_of_symptoms].each { |key| some_true[key] = true }
-        #       some_true[:temperature] = "#{100 + rand(3)}"
-        #       patient.assessments.create({ symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(some_true))
-        #     else
-        #       patient.assessments.create({ symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(all_false))
-        #     end
-        #   end
-        # end
+        Patient.find_each do |patient|
+          next unless patient.created_at <= today
+          next if patient.confirmed_case
+          next if patient.assessments.any? { |a| a.created_at.to_date == today }
+          if rand < 0.7 # 70% reporting rate on any given day
+            reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
+            if rand < 0.03 # 3% report some sort of symptoms
+              bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
+              number_of_symptoms = rand(bool_symps.count) + 1
+              bool_symps.each do |symp|  symp['bool_value'] = false end
+              bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
+              reported_condition.symptoms.select {|s| s.name == 'temperature' }.first.float_value = "#{100 + rand(3)}"
+              patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
+            else
+              bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
+              bool_symps.each do |symp|  symp['bool_value'] = false end
+                reported_condition.symptoms.select {|s| s.name == 'temperature' }.first.float_value = "99.8"
+              patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
+            end
+          end
+        end
 
         # Some proportion of patients who are symptomatic may be confirmed cases
         Patient.find_each do |patient|
