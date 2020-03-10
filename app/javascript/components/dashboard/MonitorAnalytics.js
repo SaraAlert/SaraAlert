@@ -33,7 +33,7 @@ class MonitorAnalytics extends React.Component {
         }
       })
       .catch(function(error) {
-        console.error('oops, something went wrong!', error);
+        console.error(error);
       });
   }
   render() {

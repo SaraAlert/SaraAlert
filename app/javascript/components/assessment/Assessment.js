@@ -102,9 +102,8 @@ class Assessment extends React.Component {
           location.href = '/patients/' + self.props.patient_id;
         }
       })
-      .catch(function(response) {
-        //handle error
-        console.log(response);
+      .catch(function(error) {
+        console.error(error);
       });
     if (!this.props.reload) {
       // No need to say thanks for reporting if we want to reload the page

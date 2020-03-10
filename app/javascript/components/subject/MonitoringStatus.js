@@ -130,7 +130,7 @@ class MonitoringStatus extends React.Component {
         location.href = '/patients/' + this.props.patient.id;
       })
       .catch(error => {
-        console.log(error);
+        console.error(error);
       });
   }
 
