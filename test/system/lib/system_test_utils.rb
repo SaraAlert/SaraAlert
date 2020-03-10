@@ -90,6 +90,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def get_reports
+    REPORTS.each{|k,v| v['reported_condition'] = ReportedCondition.new(symptoms: [])}
     REPORTS
   end
 

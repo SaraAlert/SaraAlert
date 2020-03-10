@@ -53,11 +53,11 @@ class Assessment < ApplicationRecord
   end
 
   def get_all_symptom_names
-    return reported_condition.symptoms.collect{|x| x.name}
+    return reported_condition&.symptoms&.collect{|x| x.name} || []
   end
 
   def get_reported_symptom_by_name(symptom_name)
-     return reported_condition.symptoms.select{|symp| symp.name == symptom_name}[0]
+     return reported_condition&.symptoms&.select{|symp| symp.name == symptom_name}&.first || nil
   end
 
 end

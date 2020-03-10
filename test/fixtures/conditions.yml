@@ -1,11 +1,13 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+threshold_condition_1:
+    id: 1
+    jurisdiction_id: 1
+    assessment_id: nil
+    threshold_condition_hash: nil
+    type: "ThresholdCondition"
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the '{}' from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+reported_condition_1:
+    id: 9
+    jurisdiction_id: nil
+    assessment_id: 1
+    threshold_condition_hash: "4ec9f07444ecd4ac576cd173046cde77"
+    type: "ReportedCondition"

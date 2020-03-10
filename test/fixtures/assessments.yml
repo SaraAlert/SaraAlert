@@ -4,167 +4,116 @@ patient_1_assessment_1:
   updated_at: "2020-02-24 18:43:43.946381"
   patient_id: 1
   symptomatic: false
-  temperature: 98
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_1_assessment_2:
   id: 2
   created_at: "2020-02-20 21:47:22"
   updated_at: "2020-02-24 18:43:46.16124"
   patient_id: 1
   symptomatic: false
-  temperature: 100
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_2_assessment_1:
   id: 3
   created_at: "2020-02-18 22:32:58"
   updated_at: "2020-02-24 18:43:43.948409"
   patient_id: 2
   symptomatic: false
-  temperature: 98
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_2_assessment_2:
   id: 4
   created_at: "2020-02-20 18:18:43"
   updated_at: "2020-02-24 18:43:46.163109"
   patient_id: 2
   symptomatic: false
-  temperature: 99
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_3_assessment_1:
   id: 5
   created_at: "2020-03-03 18:18:43"
   updated_at: "2020-03-03 18:43:43"
   patient_id: 3
   symptomatic: true
-  temperature: 103
   who_reported: "Monitoree"
-  cough: true
-  difficulty_breathing: false
 patient_3_assessment_2:
   id: 6
   created_at: "2020-03-04 23:18:43"
   updated_at: "2020-03-04 23:43:43"
   patient_id: 3
   symptomatic: true
-  temperature: 104
   who_reported: "Monitoree"
-  cough: true
-  difficulty_breathing: true
 patient_4_assessment_1:
   id: 7
   created_at: "9999-03-04 23:18:43"
   updated_at: "9990-03-04 23:43:43"
   patient_id: 4
   symptomatic: false
-  temperature: 98
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_5_assessment_1:
   id: 8
   created_at: "2020-03-02 18:18:43"
   updated_at: "2020-03-02 18:43:43"
   patient_id: 5
   symptomatic: true
-  temperature: 102
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: true
 patient_8_assessment_1:
   id: 9
   created_at: "2020-03-04 18:18:43"
   updated_at: "2020-03-04 18:43:43"
   patient_id: 8
   symptomatic: false
-  temperature: 99
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_8_assessment_2:
   id: 10
   created_at: "9999-03-05 18:18:43"
   updated_at: "9999-03-05 18:43:43"
   patient_id: 8
   symptomatic: false
-  temperature: 97
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_9_assessment_1:
   id: 11
   created_at: "2020-03-02 19:18:43"
   updated_at: "2020-03-02 19:43:43"
   patient_id: 9
   symptomatic: false
-  temperature: 98
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_9_assessment_2:
   id: 12
   created_at: "2020-03-03 11:18:43"
   updated_at: "2020-03-03 11:43:43"
   patient_id: 9
   symptomatic: true
-  temperature: 101
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: true
 patient_9_assessment_3:
   id: 13
   created_at: "2020-03-04 11:18:43"
   updated_at: "2020-03-04 11:43:43"
   patient_id: 9
   symptomatic: true
-  temperature: 102
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: true
 patient_9_assessment_3:
   id: 14
   created_at: "9999-03-05 15:18:43"
   updated_at: "9999-03-05 15:43:43"
   patient_id: 9
   symptomatic: false
-  temperature: 100
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_10_assessment_1:
   id: 15
   created_at: "2020-02-29 15:18:43"
   updated_at: "2020-02-29 15:43:43"
   patient_id: 10
   symptomatic: false
-  temperature: 96
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_10_assessment_2:
   id: 16
   created_at: "2020-03-02 15:18:43"
   updated_at: "2020-03-02 15:43:43"
   patient_id: 10
   symptomatic: false
-  temperature: 97
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
 patient_10_assessment_3:
   id: 17
   created_at: "9999-03-15 15:18:43"
   updated_at: "9999-03-15 15:43:43"
   patient_id: 10
   symptomatic: false
-  temperature: 97
   who_reported: "Monitoree"
-  cough: false
-  difficulty_breathing: false
