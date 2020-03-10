@@ -6,7 +6,9 @@
 
   <body>
     <h1>Welcome to the Sara Alert System!</h1>
-    <p>Please provide your daily assessment <a href="<%= new_patient_assessment_url(@patient.submission_token) %>">using our online assessment tool</a>.</p>
+    <form action="<%= patients_assessments_url %>" method="post">
+      <p>Please provide your daily report <button type="submit" name="patient_submission_token" value="<%= @patient.submission_token %>" style="border: none;outline: none;background: none;cursor: pointer;color: #0000EE;padding: 0;text-decoration: underline;font-family: inherit;font-size: inherit;">using our online reporting tool</button>.</p>
+    </form>
   </body>
 
 </html>
