@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Jurisdiction: jurisdiction model
 class Jurisdiction < ApplicationRecord
   has_ancestry
 
@@ -10,7 +13,6 @@ class Jurisdiction < ApplicationRecord
   end
 
   def jurisdiction_path_string
-    path&.map(&:name).join(', ')
+    path&.map(&:name)&.join(', ')
   end
-
 end

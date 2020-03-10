@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
+# ExportController: for exporting subjects
 class ExportController < ApplicationController
   before_action :authenticate_user!
 
   def csv
-    unless current_user.can_export?
-      redirect_to root_url and return
-    end
+    redirect_to(root_url) && return unless current_user.can_export?
 
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'
@@ -18,9 +19,7 @@ class ExportController < ApplicationController
     end
 
     # Do nothing if issue with request/permissions
-    if patients.nil?
-      redirect_to root_url and return
-    end
+    redirect_to(root_url) && return if patients.nil?
 
     # Build CSV
     csv_result = CSV.generate(headers: true) do |csv|

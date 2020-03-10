@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# User: user model
 class User < ApplicationRecord
   rolify
   # Include default devise modules. Others available are:
@@ -7,13 +10,11 @@ class User < ApplicationRecord
   # Validate password complexity
   validate :password_complexity
   def password_complexity
-    if password.present?
-      # Passwords must have characters from at least two groups, identified by these regexes (last one is punctuation)
-      matches = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^\w\s]/].select { |rx| rx.match(password) }.size
-      unless matches >= 2
-        errors.add :password, "must include characters from at least two groups (lower case, upper case, numbers, special characters)"
-      end
-    end
+    return unless password.present?
+
+    # Passwords must have characters from at least two groups, identified by these regexes (last one is punctuation)
+    matches = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^\w\s]/].select { |rx| rx.match(password) }.size
+    errors.add :password, 'must include characters from at least two groups (lower case, upper case, numbers, special characters)' unless matches >= 2
   end
 
   has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
@@ -59,7 +60,7 @@ class User < ApplicationRecord
 
   # Can this user create a new Patient?
   def can_create_patient?
-      has_role?(:enroller) || has_role?(:public_health_enroller)
+    has_role?(:enroller) || has_role?(:public_health_enroller)
   end
 
   # Can this user view a Patient?
@@ -116,5 +117,4 @@ class User < ApplicationRecord
   def can_create_subject_history?
     has_role?(:public_health) || has_role?(:public_health_enroller)
   end
-
 end

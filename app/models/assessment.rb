@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Assessment: assessment model
 class Assessment < ApplicationRecord
   # TODO: There's currently a hard coded symptom list, but those should be configurable
   columns.each do |column|

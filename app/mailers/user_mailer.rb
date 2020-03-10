@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# UserMailer: mailers for users
 class UserMailer < ApplicationMailer
   default from: 'notifications@SaraAlert.mitre.org'
 
@@ -6,5 +9,4 @@ class UserMailer < ApplicationMailer
     @password = password
     mail(to: user.email, subject: 'Welcome to the SaraAlert system')
   end
-
 end

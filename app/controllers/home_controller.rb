@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# HomeController: redirects based on role
 class HomeController < ApplicationController
   before_action :authenticate_user!
 
@@ -12,5 +15,4 @@ class HomeController < ApplicationController
       redirect_to admin_index_url
     end
   end
-
 end

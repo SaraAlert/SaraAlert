@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
+# ApplicationController: base controller, handles password changes
 class ApplicationController < ActionController::Base
-  before_action :new_users_must_change_password
+  before_action :user_must_change_password
   protect_from_forgery prepend: true
-  def new_users_must_change_password
-    if current_user && current_user.force_password_change
-      # Redirect unless we're already at the change password page or logging out
-      unless request.url == edit_user_registration_url || request.url == user_registration_url || request.url == destroy_user_session_url
-        redirect_to edit_user_registration_url
-      end
-    end
+  def user_must_change_password
+    return unless current_user&.force_password_change
+
+    return if request.url == edit_user_registration_url || request.url == user_registration_url || request.url == destroy_user_session_url
+
+    redirect_to edit_user_registration_url
   end
 end

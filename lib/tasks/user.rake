@@ -1,23 +1,26 @@
+# frozen_string_literal: true
+
 namespace :user do
-
-  desc "Add a user account"
+  desc 'Add a user account'
   task add: :environment do
-
-    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     roles = Role.pluck(:name)
     jurisdictions = Jurisdiction.pluck(:name)
-    email = ENV["EMAIL"]
-    raise "EMAIL must be provided" unless email
-    password = ENV["PASSWORD"]
+    email = ENV['EMAIL']
+    raise 'EMAIL must be provided' unless email
+
+    password = ENV['PASSWORD']
     unless password
-      puts "Generating random password"
+      puts 'Generating random password'
       password = SecureRandom.base58(10) # About 58 bits of entropy
     end
-    role = ENV["ROLE"]
+    role = ENV['ROLE']
     raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
-    jurisdiction = ENV["JURISDICTION"]
-    raise "JURISDICTION must be provided and one of #{jurisdictions}" unless jurisdiction && jurisdiction.include?(jurisdiction)
+
+    jurisdiction = ENV['JURISDICTION']
+    raise "JURISDICTION must be provided and one of #{jurisdictions}" unless jurisdiction&.include?(jurisdiction)
+
     user = User.create!(
       email: email,
       password: password,
@@ -30,50 +33,45 @@ namespace :user do
 
   desc "Update a user's password and/or role and/or jurisdiction"
   task update: :environment do
-
-    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     roles = Role.pluck(:name)
     jurisdictions = Jurisdiction.pluck(:name)
-    email = ENV["EMAIL"]
-    raise "EMAIL must be provided" unless email
+    email = ENV['EMAIL']
+    raise 'EMAIL must be provided' unless email
+
     user = User.find_by_email!(email)
-    password = ENV["PASSWORD"]
-    role = ENV["ROLE"]
-    jurisdiction = ENV["JURISDICTION"]
+    password = ENV['PASSWORD']
+    role = ENV['ROLE']
+    jurisdiction = ENV['JURISDICTION']
     unless password || (role && roles.include?(role)) || (jurisdiction && jurisdictions.include?(jurisdiction))
       raise "PASSWORD or ROLE or JURISDICTION must be provided; ROLE must be one of one of #{roles}; JURISDICTION must be one of #{jurisdictions}"
     end
-    if password
-      user.update_attributes!(password: password)
-    end
+
+    user.update_attributes!(password: password) if password
     if role
       user.roles.each { |role| user.remove_role(role.name) }
       user.add_role role
     end
-    if jurisdiction
-      user.update_attributes!(jurisdiction: Jurisdiction.find_by_name(jurisdiction))
-    end
+    user.update_attributes!(jurisdiction: Jurisdiction.find_by_name(jurisdiction)) if jurisdiction
   end
 
-  desc "Delete a user account"
+  desc 'Delete a user account'
   task delete: :environment do
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
-    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+    email = ENV['EMAIL']
+    raise 'EMAIL must be provided' unless email
 
-    email = ENV["EMAIL"]
-    raise "EMAIL must be provided" unless email
     User.where(email: email).delete_all
   end
 
-  desc "List user accounts"
+  desc 'List user accounts'
   task list: :environment do
-
-    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     User.find_each do |user|
       puts "#{user.email.ljust(45, '.')} #{user.roles_name.join(' ')}"
     end
   end
-
 end

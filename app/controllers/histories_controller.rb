@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# HistoriesController: for keeping track of user actions over time
 class HistoriesController < ApplicationController
   before_action :authenticate_user!
 
@@ -11,5 +14,4 @@ class HistoriesController < ApplicationController
     history.save!
     redirect_back fallback_location: root_path
   end
-
 end

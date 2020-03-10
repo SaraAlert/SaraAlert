@@ -1,13 +1,14 @@
-require "application_system_test_case"
+# frozen_string_literal: true
+
+require 'application_system_test_case'
 
 class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
-
   TAB_SELECTION_DELAY = 0.5
 
   def verify_patients_under_tab(tab, patients, patient_ids)
     click_on tab
-    patients.each do |patient_id, patient|
-      search_for_and_verify_patient(patient, patient_ids.include?(patient["id"]))
+    patients.each do |_patient_id, patient|
+      search_for_and_verify_patient(patient, patient_ids.include?(patient['id']))
     end
   end
 
@@ -19,11 +20,11 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
   def search_for_and_verify_patient(patient, should_exist)
     search_for_patient(patient)
     if should_exist
-      assert_selector "td", text: get_patient_display_name(patient)
-      assert_selector "td", text: patient["date_of_birth"]
+      assert_selector 'td', text: get_patient_display_name(patient)
+      assert_selector 'td', text: patient['date_of_birth']
     else
-      refute_selector "td", text: get_patient_display_name(patient)
-      refute_selector "td", text: patient["date_of_birth"]
+      refute_selector 'td', text: get_patient_display_name(patient)
+      refute_selector 'td', text: patient['date_of_birth']
     end
   end
 
@@ -34,15 +35,14 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
   end
 
   def search_for_patient(patient)
-    fill_in "Search:", with: patient["last_name"]
+    fill_in 'Search:', with: patient['last_name']
   end
 
   def get_patient_display_name(patient)
-    patient["last_name"] + ", " + patient["first_name"]
+    patient['last_name'] + ', ' + patient['first_name']
   end
 
   def return_to_dashboard
-    click_on "Return To Dashboard"
+    click_on 'Return To Dashboard'
   end
-
 end

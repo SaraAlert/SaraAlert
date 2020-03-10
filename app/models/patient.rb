@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
+# Patient: patient model
 class Patient < ApplicationRecord
   # TODO: Stricter validation for fields that are handed to other systems (e.g. phone, email address)
   # TODO: Also add guards on what gets handed to external server (only allow specific validated)
   columns.each do |column|
     case column.type
     when :text
-     validates column.name.to_sym, length: { maximum: 2000 }
+      validates column.name.to_sym, length: { maximum: 2000 }
     when :string
       validates column.name.to_sym, length: { maximum: 200 }
     end
@@ -18,54 +21,54 @@ class Patient < ApplicationRecord
   belongs_to :jurisdiction
   has_many :histories
 
-  scope :monitoring_open, -> {
+  scope :monitoring_open, lambda {
     where('monitoring = ?', true)
   }
 
-  scope :monitoring_closed, -> {
+  scope :monitoring_closed, lambda {
     where('monitoring = ?', false)
   }
 
-  scope :symptomatic, -> {
+  scope :symptomatic, lambda {
     where('monitoring = ?', true)
-    .joins(:assessments)
-    .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
-    .where('assessments.symptomatic = ?', true)
+      .joins(:assessments)
+      .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
+      .where('assessments.symptomatic = ?', true)
   }
 
-  scope :non_reporting, -> {
+  scope :non_reporting, lambda {
     where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-    .where('monitoring = ?', true)
-    .left_outer_joins(:assessments)
-    .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
-    .where('assessments.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-    .where('assessments.symptomatic = ?', false)
-    .or(
-      where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       .where('monitoring = ?', true)
       .left_outer_joins(:assessments)
-      .where(assessments: { patient_id: nil })
-    )
+      .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
+      .where('assessments.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+      .where('assessments.symptomatic = ?', false)
+      .or(
+        where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where('monitoring = ?', true)
+        .left_outer_joins(:assessments)
+        .where(assessments: { patient_id: nil })
+      )
   }
 
-  scope :new_subject, -> {
+  scope :new_subject, lambda {
     where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-    .where('monitoring = ?', true)
-    .where('id NOT IN (SELECT DISTINCT(patient_id) FROM assessments)')
+      .where('monitoring = ?', true)
+      .where('id NOT IN (SELECT DISTINCT(patient_id) FROM assessments)')
   }
 
-  scope :asymptomatic, -> {
+  scope :asymptomatic, lambda {
     where('monitoring = ?', true)
-    .left_outer_joins(:assessments)
-    .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
-    .where('assessments.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-    .where('assessments.symptomatic = ?', false)
-    .or(
-      where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where('monitoring = ?', true)
       .left_outer_joins(:assessments)
-      .where(assessments: { patient_id: nil })
-    )
+      .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
+      .where('assessments.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+      .where('assessments.symptomatic = ?', false)
+      .or(
+        where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where('monitoring = ?', true)
+        .left_outer_joins(:assessments)
+        .where(assessments: { patient_id: nil })
+      )
   }
 
   # Allow information on the monitoree's jurisdiction to be displayed
@@ -75,18 +78,14 @@ class Patient < ApplicationRecord
 
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
-    if last_date_of_exposure
-      return last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days
-    end
-    if created_at
-      return created_at + ADMIN_OPTIONS['monitoring_period_days'].days
-    end
+    return last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days if last_date_of_exposure
+    return created_at + ADMIN_OPTIONS['monitoring_period_days'].days if created_at
   end
 
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
-      name: {name: "#{last_name}, #{first_name}", id: id},
+      name: { name: "#{last_name}, #{first_name}", id: id },
       jurisdiction: jurisdiction&.name || '',
       state_local_id: user_defined_id_statelocal || '',
       sex: sex || '',
@@ -102,5 +101,4 @@ class Patient < ApplicationRecord
   def as_json(options = {})
     super((options || {}).merge(methods: :linelist))
   end
-
 end

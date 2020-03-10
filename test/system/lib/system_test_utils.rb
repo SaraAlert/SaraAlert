@@ -1,55 +1,56 @@
-require "application_system_test_case"
+# frozen_string_literal: true
+
+require 'application_system_test_case'
 
 class SystemTestUtils < ApplicationSystemTestCase
+  ASSESSMENTS = YAML.safe_load(File.read(__dir__ + '/../form_data/assessments.yml'))
+  MONITOREES = YAML.safe_load(File.read(__dir__ + '/../form_data/monitorees.yml'))
+  PATIENTS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/patients.yml'))
+  REPORTS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/assessments.yml'))
+  STATES = YAML.safe_load(File.read(__dir__ + '/../constants/states.yml'))
+  USERS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/users.yml'))
 
-  ASSESSMENTS = YAML.load(File.read(__dir__ + "/../form_data/assessments.yml"))
-  MONITOREES = YAML.load(File.read(__dir__ + "/../form_data/monitorees.yml"))
-  PATIENTS = YAML.load(File.read(__dir__ + "/../../fixtures/patients.yml"))
-  REPORTS = YAML.load(File.read(__dir__ + "/../../fixtures/assessments.yml"))
-  STATES = YAML.load(File.read(__dir__ + "/../constants/states.yml"))
-  USERS = YAML.load(File.read(__dir__ + "/../../fixtures/users.yml"))
-  
-  SIGN_IN_URL = "/users/sign_in"
-  USER_PASSWORD = "123456ab"
+  SIGN_IN_URL = '/users/sign_in'
+  USER_PASSWORD = '123456ab'
 
   ENROLLMENT_PAGE_TRANSITION_DELAY = 0.8 # wait for carousel animation to finish loading
   ENROLLMENT_SUBMISSION_DELAY = 4 # wait for submission alert animation to finish
   POP_UP_ALERT_ANIMATION_DELAY = 0.5 # wait for alert to pop up or dismiss
   CHECKBOX_ANIMATION_DELAY = 0.5 # wait for checkbox to load
   MODAL_ANIMATION_DELAY = 0 # wait for modal to load
-  
+
   def login(user)
-    visit "/"
+    visit '/'
     assert_equal(SIGN_IN_URL, page.current_path)
-    fill_in "user_email", with: user["email"]
-    fill_in "user_password", with: USER_PASSWORD
-    click_on "login"
+    fill_in 'user_email', with: user['email']
+    fill_in 'user_password', with: USER_PASSWORD
+    click_on 'login'
   end
 
   def login_with_custom_password(email, password)
-    visit "/"
+    visit '/'
     assert_equal(SIGN_IN_URL, page.current_path)
-    fill_in "user_email", with: email
-    fill_in "user_password", with: password
-    click_on "login"
+    fill_in 'user_email', with: email
+    fill_in 'user_password', with: password
+    click_on 'login'
   end
 
   def logout
-    click_on "Logout"
+    click_on 'Logout'
   end
 
   def return_to_dashboard
-    click_on "Return To Dashboard"
+    click_on 'Return To Dashboard'
   end
 
   def go_to_next_page
     wait_for_enrollment_page_transition
-    click_on "Next"
+    click_on 'Next'
   end
 
   def go_to_prev_page
     wait_for_enrollment_page_transition
-    click_on "Previous"
+    click_on 'Previous'
   end
 
   def wait_for_enrollment_page_transition
@@ -67,13 +68,13 @@ class SystemTestUtils < ApplicationSystemTestCase
   def wait_for_checkbox_animation
     sleep(inspection_time = CHECKBOX_ANIMATION_DELAY)
   end
-  
+
   def wait_for_modal_animation
     sleep(inspection_time = MODAL_ANIMATION_DELAY)
   end
 
   def get_dashboard_display_name(monitoree)
-    monitoree["identification"]["last_name"] + ", " + monitoree["identification"]["first_name"]
+    monitoree['identification']['last_name'] + ', ' + monitoree['identification']['first_name']
   end
 
   def get_assessments
@@ -101,21 +102,20 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def get_assessments_url(submission_token)
-    "/patients/" + submission_token + "/assessments/new"
+    '/patients/' + submission_token + '/assessments/new'
   end
 
   def get_state_abbrv(value)
-    STATES[value]["abbrv"]
+    STATES[value]['abbrv']
   end
 
   def format_date(value)
-    value[6..9] + "-" + value[0..1] + "-" + value[3..4]
+    value[6..9] + '-' + value[0..1] + '-' + value[3..4]
   end
 
   def calculate_age(value)
     dob = Date.parse(format_date(value))
     now = Time.now.utc.to_date
-    now.year - dob.year - ((now.month > dob.month || (now.month == dob.month && now.day >= dob.day)) ? 0 : 1)
+    now.year - dob.year - (now.month > dob.month || (now.month == dob.month && now.day >= dob.day) ? 0 : 1)
   end
-
 end

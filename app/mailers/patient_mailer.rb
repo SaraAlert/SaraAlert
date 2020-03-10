@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# PatientMailer: mailers for monitorees
 class PatientMailer < ApplicationMailer
   default from: 'notifications@SaraAlert.mitre.org'
 
@@ -23,5 +26,4 @@ class PatientMailer < ApplicationMailer
       body: contents
     )
   end
-
 end

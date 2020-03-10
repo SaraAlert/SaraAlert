@@ -1,12 +1,13 @@
+# frozen_string_literal: true
+
 require 'roo'
 
+# ImportController: for importing subjects from other formats
 class ImportController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    unless current_user.can_import?
-      redirect_to root_url and return
-    end
+    redirect_to(root_url) && return unless current_user.can_import?
   end
 
   def error
@@ -14,9 +15,7 @@ class ImportController < ApplicationController
   end
 
   def epix
-    unless current_user.can_import?
-      redirect_to root_url and return
-    end
+    redirect_to(root_url) && return unless current_user.can_import?
 
     # Load and parse Epi-X file
     begin
@@ -24,9 +23,9 @@ class ImportController < ApplicationController
 
       @patients = []
 
-      header = xlxs.sheet(0).row(1)
       xlxs.sheet(0).each_with_index do |row, index|
-        next if index == 0 # Skip headers
+        next if index.zero? # Skip headers
+
         epix_fields = {
           user_defined_id_statelocal: row[0],
           flight_or_vessel_number: row[1],
@@ -57,10 +56,8 @@ class ImportController < ApplicationController
         }
         @patients << epix_fields
       end
-
-    rescue StandardError => e
-      redirect_to :controller => 'import', :action => 'error' and return
+    rescue StandardError
+      redirect_to(controller: 'import', action: 'error') && (return)
     end
   end
-
 end

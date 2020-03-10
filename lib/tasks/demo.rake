@@ -1,9 +1,9 @@
+# frozen_string_literal: true
+
 namespace :demo do
-
-  desc "Configure the database for demo use"
+  desc 'Configure the database for demo use'
   task setup: :environment do
-
-    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     #####################################
 
@@ -110,27 +110,24 @@ namespace :demo do
     puts ' done!'
 
     #####################################
-
   end
 
-  desc "Add lots of data to the database to provide some idea of basic scaling issues"
+  desc 'Add lots of data to the database to provide some idea of basic scaling issues'
   task populate: :environment do
-
-    raise "This task is only for use in a development environment" unless Rails.env == 'development'
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     days = (ENV['DAYS'] || 14).to_i
     count = (ENV['COUNT'] || 25).to_i
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
-    assessment_columns = Assessment.column_names - ["id", "created_at", "updated_at", "patient_id", "symptomatic", "temperature", "who_reported"]
+    assessment_columns = Assessment.column_names - %w[id created_at updated_at patient_id symptomatic temperature who_reported]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
     all_false[:temperature] = '98'
 
     jurisdictions = Jurisdiction.all
 
     days.times do |day|
-
       today = Date.today - (days - (day + 1)).days
 
       # Create the patients for this day
@@ -138,18 +135,18 @@ namespace :demo do
 
       # Transaction speeds things up a bit
       Patient.transaction do
-
         # Any existing patients may or may not report
         Patient.find_each do |patient|
           next unless patient.created_at <= today
           next if patient.confirmed_case
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
+
           if rand < 0.7 # 70% reporting rate on any given day
             if rand < 0.03 # 3% report some sort of symptoms
               number_of_symptoms = rand(assessment_columns.size) + 1
               some_true = all_false.dup
-              some_true.keys.shuffle[0,number_of_symptoms].each { |key| some_true[key] = true }
-              some_true[:temperature] = "#{100 + rand(3)}"
+              some_true.keys.shuffle[0, number_of_symptoms].each { |key| some_true[key] = true }
+              some_true[:temperature] = rand(100..102).to_s
               patient.assessments.create({ symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(some_true))
             else
               patient.assessments.create({ symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(all_false))
@@ -161,14 +158,12 @@ namespace :demo do
         Patient.find_each do |patient|
           next if patient.confirmed_case
           next unless patient.assessments.order(:created_at).last(3).all?(&:symptomatic)
-          if rand < 0.1 # 10% actually become confirmed cases
-            patient.update_attributes(confirmed_case: true)
-          end
+
+          patient.update_attributes(confirmed_case: true) if rand < 0.1 # 10% actually become confirmed cases
         end
 
         # Create count patients
         count.times do |i|
-
           sex = Faker::Gender.binary_type
           birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
           patient = Patient.new(
@@ -180,26 +175,26 @@ namespace :demo do
             age: ((Date.today - birthday) / 365.25).round,
             ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
             primary_language: 'English',
-            #interpretation_required
+            # interpretation_required
             address_line_1: Faker::Address.street_address,
             address_city: Faker::Address.city,
             address_state: Faker::Address.state,
             address_line_2: rand < 0.3 ? Faker::Address.secondary_address : nil,
             address_zip: Faker::Address.zip_code,
-            #address_county
-            #foreign_address_line_1
-            #foreign_address_city
-            #foreign_address_country
-            #foreign_address_line_2
-            #foreign_address_zip
-            #foreign_address_line_3
-            #foreign_address_state
-            #foreign_monitored_address_line_1
-            #foreign_monitored_address_city
-            #foreign_monitored_address_state
-            #foreign_monitored_address_line_2
-            #foreign_monitored_address_zip
-            #foreign_monitored_address_county
+            # address_county
+            # foreign_address_line_1
+            # foreign_address_city
+            # foreign_address_country
+            # foreign_address_line_2
+            # foreign_address_zip
+            # foreign_address_line_3
+            # foreign_address_state
+            # foreign_monitored_address_line_1
+            # foreign_monitored_address_city
+            # foreign_monitored_address_state
+            # foreign_monitored_address_line_2
+            # foreign_monitored_address_zip
+            # foreign_monitored_address_county
             primary_telephone: '(333) 333-3333',
             primary_telephone_type: rand < 0.7 ? 'Smartphone' : 'Plain Cell',
             secondary_telephone: '(333) 333-3333',
@@ -213,12 +208,12 @@ namespace :demo do
             flight_or_vessel_carrier: "#{Faker::Name.first_name} Airlines",
             port_of_entry_into_usa: Faker::Address.city,
             date_of_arrival: today,
-            #travel_related_notes
+            # travel_related_notes
             last_date_of_exposure: today - rand(5).days,
             potential_exposure_location: Faker::Address.city,
             potential_exposure_country: Faker::Address.country,
-            #contact_of_known_case
-            #contact_of_known_case_id
+            # contact_of_known_case
+            # contact_of_known_case_id
             travel_to_affected_country_or_area: rand < 0.1,
             was_in_health_care_facility_with_known_cases: rand < 0.15,
             creator: enrollers.sample,
@@ -228,7 +223,7 @@ namespace :demo do
 
           patient.submission_token = SecureRandom.hex(20)
 
-          patient[[:white, :black_or_african_american, :american_indian_or_alaska_native, :asian, :native_hawaiian_or_other_pacific_islander].sample] = true
+          patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
 
           if rand < 0.7
             patient.monitored_address_line_1 = patient.address_line_1
@@ -252,14 +247,14 @@ namespace :demo do
             patient.additional_planned_travel_port_of_departure = Faker::Address.city
             patient.additional_planned_travel_start_date = today + rand(6).days
             patient.additional_planned_travel_end_date = patient.additional_planned_travel_start_date + rand(10).days
-            #patient.additional_planned_travel_related_notes
+            # patient.additional_planned_travel_related_notes
           end
 
           patient.jurisdiction = jurisdictions.sample
           patient.responder = patient
           patient.save
 
-          print '.' if i % 100 == 0
+          print '.' if i % 100.zero?
         end
 
         # Cases increase 10-20% every day
@@ -269,5 +264,4 @@ namespace :demo do
       puts ' done!'
     end
   end
-
 end
