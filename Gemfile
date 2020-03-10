@@ -24,8 +24,9 @@ gem 'sidekiq'
 # Ancestry for managing trees
 gem 'ancestry'
 
-# Devise, and rolify for authC/Z
+# Devise, and rolify for auth
 gem 'devise'
+gem 'devise-security'
 gem 'rolify'
 
 # Better React integration

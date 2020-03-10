@@ -21,3 +21,5 @@ Metrics/ClassLength:
   Max: 300
 Metrics/BlockLength:
   Max: 30
+Style/ClassAndModuleChildren:
+  Enabled: false

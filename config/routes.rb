@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   as :user do
     get 'users/edit' => 'users/registrations#edit', :as => 'edit_user_registration'
     put 'users' => 'users/registrations#update', :as => 'user_registration'
+    get 'users/password_expired' => 'users/registrations#password_expired', :as => 'user_password_expired'
   end
 
   resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]

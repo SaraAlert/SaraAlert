@@ -4,6 +4,7 @@
 class ApplicationController < ActionController::Base
   before_action :user_must_change_password
   protect_from_forgery prepend: true
+
   def user_must_change_password
     return unless current_user&.force_password_change
 

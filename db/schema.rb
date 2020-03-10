@@ -171,10 +171,12 @@ ActiveRecord::Schema.define(version: 2020_02_28_204449) do
     t.datetime "locked_at"
     t.boolean "force_password_change"
     t.integer "jurisdiction_id"
+    t.datetime "password_changed_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"
+    t.index ["password_changed_at"], name: "index_users_on_password_changed_at"
   end
 
   create_table "users_roles", id: false, force: :cascade do |t|
