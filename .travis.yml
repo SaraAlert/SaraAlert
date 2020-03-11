@@ -14,6 +14,8 @@ before_install:
 services:
   - xvfb
   - postgresql
+before_script:
+  - psql -c 'create database disease_trakker_test;' -U postgres
 script:
   - yarn install
   - yarn audit
