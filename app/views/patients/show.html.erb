@@ -32,7 +32,7 @@
         <%= react_component("subject/ClearAssessments", { current_user: current_user, authenticity_token: form_authenticity_token, patient: @patient } ) %>
       </div>
       <% columns= [] %>
-      <% @patient.assessments.each do |assessment| columns.concat(assessment.get_all_symptom_names) end %>
+      <% @patient.assessments.each do |assessment| columns.concat(assessment.all_symptom_names) end %>
       <% columns = columns.uniq%>
       <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
         <thead>

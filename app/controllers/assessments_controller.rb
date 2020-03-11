@@ -23,17 +23,16 @@ class AssessmentsController < ApplicationController
     threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
 
     redirect_to root_url unless threshold_condition
-  
-    reported_symptoms_array = params.permit({:symptoms => [:name, :value, :type, :label]}).to_h['symptoms']
+
+    reported_symptoms_array = params.permit({ symptoms: %i[name value type label] }).to_h['symptoms']
 
     typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 
-    reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash )
+    reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash)
 
     @assessment = Assessment.new(reported_condition: reported_condition)
-    @assessment.symptomatic = @assessment.is_symptomatic
+    @assessment.symptomatic = @assessment.symptomatic?
     @assessment.patient = patient
-  
 
     # Determine if a user created this assessment or a monitoree
     if current_user.nil?
@@ -56,12 +55,12 @@ class AssessmentsController < ApplicationController
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
-    reported_symptoms_array = params.permit({:symptoms => [:name, :value, :type, :label]}).to_h['symptoms']
+    reported_symptoms_array = params.permit({ symptoms: %i[name value type label] }).to_h['symptoms']
 
     typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 
     assessment.reported_condition.symptoms = typed_reported_symptoms
-    assessment.symptomatic = assessment.is_symptomatic
+    assessment.symptomatic = assessment.symptomatic?
     # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
     assessment.who_reported = current_user.email
 
@@ -83,5 +82,4 @@ class AssessmentsController < ApplicationController
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     redirect_to(root_url) && return if patient.nil?
   end
-
 end

@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
+# ReportedCondition
 class ReportedCondition < Condition
-    def get_threshold_condition
-        return ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
-    end
+  def threshold_condition
+    ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
+  end
 end

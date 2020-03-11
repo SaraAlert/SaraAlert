@@ -42,8 +42,8 @@ class ClearAssessments extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            You are about to clear all reports for this subject. This will mark any &quot;Needs Review&quot; reports as &quot;No&quot;. This subject will be
-            considered asymptomatic.
+            You are about to mark all reports as reviewed for this subject. This will mark any &quot;Needs Review&quot; reports as &quot;No&quot;. This subject
+            will be considered asymptomatic (or non-reporting, if the subject has not reported recently).
           </p>
           <Form.Group>
             <Form.Label>Please describe your reasoning:</Form.Label>
@@ -66,7 +66,7 @@ class ClearAssessments extends React.Component {
     return (
       <React.Fragment>
         <Button onClick={this.toggleClearAssessmentsModal} className="btn-lg btn-square">
-          Clear All Reports
+          Mark All As Reviewed
         </Button>
         {this.state.showClearAssessmentsModal && this.createModal('Clear All Reports', this.toggleClearAssessmentsModal, this.clearAssessments)}
       </React.Fragment>
