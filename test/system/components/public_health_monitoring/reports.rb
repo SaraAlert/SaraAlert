@@ -20,8 +20,8 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
     ## also test rejecting the alert
   end
 
-  def clear_all_reports(reasoning)
-    click_on 'Clear All Reports'
+  def mark_all_as_reviewed(reasoning)
+    click_on 'Mark All As Reviewed'
     @@system_test_utils.wait_for_modal_animation
     fill_in 'reasoning', with: reasoning
     click_on 'Submit'

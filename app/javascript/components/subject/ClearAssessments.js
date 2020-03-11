@@ -68,7 +68,7 @@ class ClearAssessments extends React.Component {
         <Button onClick={this.toggleClearAssessmentsModal} className="btn-lg btn-square">
           Mark All As Reviewed
         </Button>
-        {this.state.showClearAssessmentsModal && this.createModal('Clear All Reports', this.toggleClearAssessmentsModal, this.clearAssessments)}
+        {this.state.showClearAssessmentsModal && this.createModal('Mark All As Reviewed', this.toggleClearAssessmentsModal, this.clearAssessments)}
       </React.Fragment>
     );
   }

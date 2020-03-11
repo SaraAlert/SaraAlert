@@ -56,12 +56,12 @@ class PublicHealthTest < ApplicationSystemTestCase
     add_report(USERS['locals1c1_epi'], PATIENTS['patient_4'], 'Asymptomatic', 98, false, false)
   end
 
-  test 'edit report' do
-    edit_report(USERS['state2_epi'], PATIENTS['patient_10'], 'Asymptomatic', REPORTS['patient_10_assessment_3'], 102, true, false)
-  end
+  # test 'edit report' do
+  #   edit_report(USERS['state2_epi'], PATIENTS['patient_10'], 'Asymptomatic', REPORTS['patient_10_assessment_3'], 102, true, false)
+  # end
 
   test 'clear all reports' do
-    clear_all_reports(USERS['state1_epi_enroller'], PATIENTS['patient_5'], 'Closed', 'details')
+    mark_all_as_reviewed(USERS['state1_epi_enroller'], PATIENTS['patient_5'], 'Closed', 'details')
   end
 
   test 'add comment' do
@@ -157,10 +157,10 @@ class PublicHealthTest < ApplicationSystemTestCase
   #   @@system_test_utils.logout
   # end
 
-  def clear_all_reports(epi, patient, tab, reasoning)
+  def mark_all_as_reviewed(epi, patient, tab, reasoning)
     @@system_test_utils.login(epi)
     @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient)
-    @@public_health_monitoring_reports.clear_all_reports(reasoning)
+    @@public_health_monitoring_reports.mark_all_as_reviewed(reasoning)
     ## verify reports are cleared
     @@system_test_utils.logout
   end
