@@ -88,6 +88,10 @@ GEM
       xpath (~> 3.2)
     childprocess (3.0.0)
     chronic (0.10.2)
+    codecov (0.1.16)
+      json
+      simplecov
+      url
     concurrent-ruby (1.1.6)
     connection_pool (2.2.2)
     crass (1.0.6)
@@ -100,6 +104,7 @@ GEM
     devise-security (0.14.3)
       devise (>= 4.3.0, < 5.0)
       rails (>= 4.2.0, < 7.0)
+    docile (1.3.2)
     erubi (1.9.0)
     execjs (2.7.0)
     faker (2.10.2)
@@ -121,6 +126,7 @@ GEM
     jaro_winkler (1.5.4)
     jbuilder (2.10.0)
       activesupport (>= 5.0.0)
+    json (2.3.0)
     jwt (2.2.1)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
@@ -236,6 +242,10 @@ GEM
       rack (~> 2.0)
       rack-protection (>= 2.0.0)
       redis (>= 4.1.0)
+    simplecov (0.18.5)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+    simplecov-html (0.12.2)
     spring (2.1.0)
     spring-watcher-listen (2.0.1)
       listen (>= 2.7, < 4.0)
@@ -257,6 +267,7 @@ GEM
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
     unicode-display_width (1.6.1)
+    url (0.3.2)
     warden (1.2.8)
       rack (>= 2.0.6)
     web-console (4.0.1)
@@ -292,6 +303,7 @@ DEPENDENCIES
   brakeman
   byebug
   capybara (>= 2.15)
+  codecov
   devise
   devise-security
   faker
@@ -308,6 +320,7 @@ DEPENDENCIES
   sass-rails (>= 6)
   selenium-webdriver
   sidekiq
+  simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
   twilio-ruby
