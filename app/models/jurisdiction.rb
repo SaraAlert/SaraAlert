@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'digest/md5'
+require 'digest'
 
 # Jurisdiction: jurisdiction model
 class Jurisdiction < ApplicationRecord
@@ -26,7 +26,7 @@ class Jurisdiction < ApplicationRecord
     theshold_conditions_edit_count = 0
     path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
     jurisdiction_threshold_unique_string = jurisdiction_path_string + theshold_conditions_edit_count.to_s
-    Digest::MD5.hexdigest(jurisdiction_threshold_unique_string)
+    Digest::SHA256.hexdigest(jurisdiction_threshold_unique_string)
   end
 
   # This creates NEW condition that represents a join of all of the symptoms in your jurisdiciton hierarchy
