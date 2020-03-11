@@ -1,0 +1,27 @@
+temperature_symptom:
+  id: 1
+  name: "temperature"
+  label: "Temperature"
+  bool_value: nil
+  float_value: 101.4
+  int_value: nil
+  condition_id: 1
+  type: "FloatSymptom"
+cough_symptom:
+  id: 2
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  float_value: nil
+  int_value: nil
+  condition_id: 1
+  type: "BoolSymptom"
+difficulty_breathing_symptom:
+  id: 3
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  float_value: nil
+  int_value: nil
+  condition_id: 1
+  type: "BoolSymptom"

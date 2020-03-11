@@ -149,13 +149,13 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def edit_report(epi, patient, tab, report, temperature, cough, difficulty_breathing)
-    @@system_test_utils.login(epi)
-    @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient)
-    @@public_health_monitoring_reports.edit_report(report, temperature, cough, difficulty_breathing)
-    ## verify report is updated
-    @@system_test_utils.logout
-  end
+  # def edit_report(epi, patient, tab, report, temperature, cough, difficulty_breathing)
+  #   @@system_test_utils.login(epi)
+  #   @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient)
+  #   @@public_health_monitoring_reports.edit_report(report, temperature, cough, difficulty_breathing)
+  #   ## verify report is updated
+  #   @@system_test_utils.logout
+  # end
 
   def clear_all_reports(epi, patient, tab, reasoning)
     @@system_test_utils.login(epi)

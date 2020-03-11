@@ -20,11 +20,17 @@ ActiveRecord::Schema.define(version: 2020_02_28_204449) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "patient_id"
     t.boolean "symptomatic"
-    t.string "temperature"
     t.string "who_reported", default: "Monitoree"
-    t.boolean "cough"
-    t.boolean "difficulty_breathing"
     t.index ["patient_id"], name: "index_assessments_on_patient_id"
+  end
+
+  create_table "conditions", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "jurisdiction_id"
+    t.integer "assessment_id"
+    t.string "threshold_condition_hash"
+    t.string "type"
   end
 
   create_table "histories", force: :cascade do |t|
@@ -157,6 +163,18 @@ ActiveRecord::Schema.define(version: 2020_02_28_204449) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
+  create_table "symptoms", force: :cascade do |t|
+    t.string "name"
+    t.string "label"
+    t.boolean "bool_value"
+    t.float "float_value"
+    t.integer "int_value"
+    t.integer "condition_id"
+    t.string "type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "users", force: :cascade do |t|

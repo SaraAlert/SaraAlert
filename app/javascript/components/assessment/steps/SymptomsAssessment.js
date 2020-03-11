@@ -8,37 +8,42 @@ class SymptomsAssessment extends React.Component {
     this.state = { ...this.props, current: { ...this.props.currentState } };
     this.handleChange = this.handleChange.bind(this);
     this.navigate = this.navigate.bind(this);
-    this.anySelectedSymptoms = this.anySelectedSymptoms.bind(this);
-  }
-
-  anySelectedSymptoms() {
-    return (
-      this.state.current.cough ||
-      this.state.current.sore_throat ||
-      this.state.current.difficulty_breathing ||
-      this.state.current.headaches ||
-      this.state.current.muscle_aches ||
-      this.state.current.abdominal_discomfort ||
-      this.state.current.vomiting ||
-      this.state.current.diarrhea
-    );
   }
 
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
-    this.setState({ current: { ...current, [event.target.id.split('_idpre')[0]]: value } }, () => {
+    let field_id = event.target.id.split('_idpre')[0];
+    Object.values(current.symptoms).find(symp => symp.name === field_id).value = value;
+    this.setState({ current: { ...current } }, () => {
       this.props.setAssessmentState({ ...this.state.current });
     });
   }
 
   navigate() {
-    if (!this.anySelectedSymptoms()) {
+    if (
+      this.state.current.symptoms.filter(x => {
+        return x.value === true;
+      }).length === 0
+    ) {
       this.props.goto(0);
     } else {
       this.props.submit();
     }
   }
+
+  boolSymptom = symp => {
+    return (
+      <Form.Check
+        type="switch"
+        id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
+        key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
+        label={`${symp.label}`}
+        checked={symp.value === true || false}
+        onChange={this.handleChange}
+      />
+    );
+  };
 
   render() {
     return (
@@ -54,44 +59,22 @@ class SymptomsAssessment extends React.Component {
             </Form.Row>
             <Form.Row>
               <Form.Group className="pt-1">
-                <Form.Check
-                  type="switch"
-                  id={`cough${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
-                  label="Cough"
-                  checked={this.state.current.cough === true || false}
-                  onChange={this.handleChange}
-                />
-                <Form.Check
-                  type="switch"
-                  className="pt-2"
-                  id={`difficulty_breathing${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
-                  label="Difficulty Breathing"
-                  checked={this.state.current.difficulty_breathing === true || false}
-                  onChange={this.handleChange}
-                />
+                {this.state.current.symptoms
+                  .filter(x => {
+                    return x.type === 'BoolSymptom';
+                  })
+                  .map(symp => this.boolSymptom(symp))}
               </Form.Group>
             </Form.Row>
             <Form.Row className="pt-4">
               <Button variant="primary" block size="lg" className="btn-block btn-square" onClick={this.navigate}>
-                {((this.state.current.cough ||
-                  this.state.current.sore_throat ||
-                  this.state.current.difficulty_breathing ||
-                  this.state.current.headaches ||
-                  this.state.current.muscle_aches ||
-                  this.state.current.abdominal_discomfort ||
-                  this.state.current.vomiting ||
-                  this.state.current.diarrhea) &&
+                {(this.state.current.symptoms.filter(x => {
+                  return x.value === true;
+                }).length !== 0 &&
                   'Submit') ||
-                  (!(
-                    this.state.current.cough ||
-                    this.state.current.sore_throat ||
-                    this.state.current.difficulty_breathing ||
-                    this.state.current.headaches ||
-                    this.state.current.muscle_aches ||
-                    this.state.current.abdominal_discomfort ||
-                    this.state.current.vomiting ||
-                    this.state.current.diarrhea
-                  ) &&
+                  (this.state.current.symptoms.filter(x => {
+                    return x.value === true;
+                  }).length === 0 &&
                     'Previous')}
               </Button>
             </Form.Row>

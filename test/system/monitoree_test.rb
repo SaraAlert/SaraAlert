@@ -54,7 +54,7 @@ class MonitoreeTest < ApplicationSystemTestCase
 
   test 'maintain form data after clicking continue and previous' do
     visit @@system_test_utils.get_assessments_url(ASSESSMENTS['assessment_1']['submission_token'])
-    temperature = '100'
+    temperature = "105"
     fill_in 'temperature', with: temperature
     select 'Yes', from: 'experiencing_symptoms'
     click_on 'Continue'
@@ -65,7 +65,7 @@ class MonitoreeTest < ApplicationSystemTestCase
 
   test 'maintain form data after clicking continue and previous and submit successfully' do
     visit @@system_test_utils.get_assessments_url(ASSESSMENTS['assessment_1']['submission_token'])
-    temperature = '98'
+    temperature = "105"
     fill_in 'temperature', with: temperature
     select 'No', from: 'experiencing_symptoms'
     select 'Yes', from: 'experiencing_symptoms'
@@ -86,7 +86,7 @@ class MonitoreeTest < ApplicationSystemTestCase
     assessments_url = @@system_test_utils.get_assessments_url(assessment['submission_token'])
     visit assessments_url
     assert_equal(assessments_url, page.current_path)
-    fill_in 'temperature', with: assessment['temperature']
+    fill_in 'temperature', with: assessment['symptoms'][0]['float_value']
     if assessment['experiencing_symptoms']
       select 'Yes', from: 'experiencing_symptoms'
       assert_selector '#submit_button', text: 'Continue'
@@ -104,11 +104,11 @@ class MonitoreeTest < ApplicationSystemTestCase
 
   def populate_symptoms(assessment)
     assert_selector 'button', text: 'Previous'
-    if assessment['cough']
+    if assessment['symptoms'][1]['bool_value']
       @@system_test_utils.wait_for_checkbox_animation
       find('label', text: 'Cough').click
     end
-    if assessment['difficulty_breathing']
+    if assessment['symptoms'][2]['bool_value']
       @@system_test_utils.wait_for_checkbox_animation
       find('label', text: 'Difficulty Breathing').click
     end

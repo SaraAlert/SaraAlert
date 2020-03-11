@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import _ from 'lodash';
-import { pickBy, identity } from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import GeneralAssessment from './steps/GeneralAssessment';
 import SymptomsAssessment from './steps/SymptomsAssessment';
@@ -11,7 +10,7 @@ import AssessmentCompleted from './steps/AssessmentCompleted';
 class Assessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: 0, direction: null, assessmentState: pickBy(this.props.assessment, identity) };
+    this.state = { index: 0, direction: null, assessmentState: { symptoms: this.props.symptoms } };
     this.setAssessmentState = this.setAssessmentState.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
@@ -89,13 +88,14 @@ class Assessment extends React.Component {
   }
 
   submit() {
-    var assessmentState = this.state.assessmentState;
+    var submitData = this.state.assessmentState;
+    submitData.threshold_hash = this.props.threshold_hash;
     var self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
       url: `/patients/${this.props.patient_submission_token}/assessments${this.props.updateId ? '/' + this.props.updateId : ''}`,
-      data: assessmentState,
+      data: submitData,
     })
       .then(function() {
         if (self.props.reload) {
@@ -141,6 +141,7 @@ class Assessment extends React.Component {
               goto={this.goto}
               submit={this.handleSubmit}
               setAssessmentState={this.setAssessmentState}
+              symptoms={this.state.symptoms}
               currentState={this.state.assessmentState}
               idPre={this.props.idPre}
             />
@@ -150,6 +151,7 @@ class Assessment extends React.Component {
               goto={this.goto}
               submit={this.handleSubmit}
               setAssessmentState={this.setAssessmentState}
+              symptoms={this.state.symptoms}
               currentState={this.state.assessmentState}
               idPre={this.props.idPre}
             />
@@ -172,6 +174,8 @@ Assessment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
+  symptoms: PropTypes.array,
+  threshold_hash: PropTypes.string,
   assessment: PropTypes.object,
   updateId: PropTypes.number,
   reload: PropTypes.bool,

@@ -9,13 +9,13 @@ namespace :demo do
 
     print 'Creating jurisdictions...'
 
-    usa = Jurisdiction.create(name: 'USA')
-    state1 = Jurisdiction.create(name: 'State 1', parent: usa)
-    state2 = Jurisdiction.create(name: 'State 2', parent: usa)
-    county1 = Jurisdiction.create(name: 'County 1', parent: state1)
-    county2 = Jurisdiction.create(name: 'County 2', parent: state1)
-    county3 = Jurisdiction.create(name: 'County 3', parent: state2)
-    county4 = Jurisdiction.create(name: 'County 4', parent: state2)
+    usa = Jurisdiction.where(name: 'USA').first
+    state1 = Jurisdiction.where(name: 'State 1').first
+    state2 = Jurisdiction.where(name: 'State 2').first
+    county1 = Jurisdiction.where(name: 'County 1').first
+    county2 = Jurisdiction.where(name: 'County 2').first
+    county3 = Jurisdiction.where(name: 'County 3').first
+    county4 = Jurisdiction.where(name: 'County 4').first
 
     puts ' done!'
 
@@ -140,16 +140,20 @@ namespace :demo do
           next unless patient.created_at <= today
           next if patient.confirmed_case
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
-
           if rand < 0.7 # 70% reporting rate on any given day
+            reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
             if rand < 0.03 # 3% report some sort of symptoms
-              number_of_symptoms = rand(assessment_columns.size) + 1
-              some_true = all_false.dup
-              some_true.keys.shuffle[0, number_of_symptoms].each { |key| some_true[key] = true }
-              some_true[:temperature] = rand(100..102).to_s
-              patient.assessments.create({ symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(some_true))
+              bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
+              number_of_symptoms = rand(bool_symps.count) + 1
+              bool_symps.each do |symp|  symp['bool_value'] = false end
+              bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
+              reported_condition.symptoms.select {|s| s.name == 'temperature' }.first.float_value = "#{100 + rand(3)}"
+              patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
             else
-              patient.assessments.create({ symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) }.merge(all_false))
+              bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
+              bool_symps.each do |symp|  symp['bool_value'] = false end
+                reported_condition.symptoms.select {|s| s.name == 'temperature' }.first.float_value = "99.8"
+              patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
             end
           end
         end
@@ -254,7 +258,7 @@ namespace :demo do
           patient.responder = patient
           patient.save
 
-          print '.' if i % 100.zero?
+          print '.' if (i % 100).zero?
         end
 
         # Cases increase 10-20% every day

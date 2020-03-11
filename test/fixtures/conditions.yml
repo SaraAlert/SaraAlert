@@ -1,0 +1,13 @@
+threshold_condition_1:
+    id: 1
+    jurisdiction_id: 1
+    assessment_id: nil
+    threshold_condition_hash: nil
+    type: "ThresholdCondition"
+
+reported_condition_1:
+    id: 9
+    jurisdiction_id: nil
+    assessment_id: 1
+    threshold_condition_hash: "4ec9f07444ecd4ac576cd173046cde77"
+    type: "ReportedCondition"
