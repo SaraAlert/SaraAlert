@@ -9,6 +9,7 @@ before_install:
   - export PATH="$HOME/.yarn/bin:$PATH"
   - "export DISPLAY=:99.0"
   - gem install bundler
+  - bundle exec gemsurance
 services:
   - xvfb
   - postgresql
@@ -19,6 +20,5 @@ before_script:
   - bundle install
 script:
   - bundle exec brakeman -qAzw1
-  - bundle exec gemsurance
   - bundle exec rake test
   - bundle exec rake test:system
