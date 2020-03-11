@@ -4,6 +4,8 @@ Sara Alert is an open source tool built to allow public health officials to moni
 
 Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that is can be deployed to support future outbreaks.
 
+Created by [The MITRE Corporation](https://www.mitre.org).
+
 ## Installing and Running
 
 Sara Alert is a Ruby on Rails application that uses the PostgreSQL database for data storage.
