@@ -13,7 +13,7 @@ services:
   - postgresql
 before_script:
   - psql -c 'create database disease_trakker_test;' -U postgres
-  - yarn install
+  - yarn install --ignore-engines
   - bundle install
 script:
   - bundle exec brakeman -qAzw1
