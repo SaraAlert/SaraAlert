@@ -44,3 +44,5 @@ certs/
 .DS_Store
 
 dump.rdb
+
+coverage
