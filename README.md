@@ -27,7 +27,7 @@ Run the following commands from the root directory to pull in both frontend and 
 
 #### Database
 
-Run the following command from the root directory to intialize the database (Note: Make sure you have a Postgres database running):
+Run the following command from the root directory to intialize the database (note: make sure you have a Postgres database running):
 
 * `bundle exec rake db:drop db:create db:migrate db:setup`
 * `bundle exec rake admin:import_or_update_jurisdictions`
@@ -64,7 +64,7 @@ bundle exec sidekiq -q default -q mailers
 
 #### Whenever
 
-The [Whenever] gem(https://github.com/javan/whenever) is used to schedule ActiveJobs (for things like closing out monitorees that no longer need to be monitored). This gem uses the contents of `config/schedule.rb` to generate a crontab file.
+The [Whenever](https://github.com/javan/whenever) gem is used to schedule ActiveJobs (for things like closing out monitorees that no longer need to be monitored). This gem uses the contents of `config/schedule.rb` to generate a crontab file.
 To update your chrontab (to periodically perform the jobs defined in `config/schedule.rb`), run `bundle exec whenever --update-crontab`.
 
 #### Running
@@ -113,13 +113,13 @@ You must run `bundle exec rake admin:import_or_update_jurisdictions` in order fo
 
 ## Reporting Issues
 
-To report issues with the Sara Alert code, please submit tickets to [Github](https://github.com/SaraAlert/SaraAlert/issues).
+To report issues with the Sara Alert code, please submit tickets to [GitHub](https://github.com/SaraAlert/SaraAlert/issues).
 
 ## Version History
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-Releases are documented in the [CHANGELOG](https://github.com/SaraAlert/SaraAlert/blob/master/CHANGELOG.md).
+Releases are documented in the [CHANGELOG.md](https://github.com/SaraAlert/SaraAlert/blob/master/CHANGELOG.md).
 
 ## License
 
