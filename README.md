@@ -68,7 +68,7 @@ Sidekiq is the queueing system that ActiveJob interfaces with. Sidekiq should be
 bundle exec sidekiq -q default -q mailers
 ```
 
-#### Whenever
+##### Whenever
 
 The [Whenever](https://github.com/javan/whenever) gem is used to schedule ActiveJobs (for things like closing out monitorees that no longer need to be monitored). This gem uses the contents of `config/schedule.rb` to generate a crontab file.
 To update your chrontab (to periodically perform the jobs defined in `config/schedule.rb`), run `bundle exec whenever --update-crontab`.
