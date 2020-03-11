@@ -1,6 +1,6 @@
 # Sara Alert
 
-Sara Alert is an open soure tool built to allow public health officials to monitor potentially exposed individuals (“monitorees”, e.g., contacts of cases or travelers from affected areas) over time for symptoms by enrolling them in the system. During enrollment, the potentially exposed individual indicates their preferred method for daily contact. The enrolled monitoree receives a daily reminder from Sara Alert to enter temperature and any symptoms. If any symptoms are reported, the public health official receives an alert in order to coordinate care. If the monitoree fails to report, the public health official can follow up after a pre-defined period. Public health officials have access to reports and aggregated data based on their level of access.
+Sara Alert is an open source tool built to allow public health officials to monitor potentially exposed individuals (“monitorees”, e.g., contacts of cases or travelers from affected areas) over time for symptoms by enrolling them in the system. During enrollment, the potentially exposed individual indicates their preferred method for daily contact. The enrolled monitoree receives a daily reminder from Sara Alert to enter temperature and any symptoms. If any symptoms are reported, the public health official receives an alert in order to coordinate care. If the monitoree fails to report, the public health official can follow up after a pre-defined period. Public health officials have access to reports and aggregated data based on their level of access.
 
 Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that is can be deployed to support future outbreaks.
 
@@ -64,12 +64,12 @@ bundle exec sidekiq -q default -q mailers
 
 #### Whenever
 
-The [Whenever gem](https://github.com/javan/whenever) is used to schedule ActiveJobs (for things like closing out monitorees that no longer need to be monitored). This gem uses the contents of `config/schedule.rb` to generate a crontab file.
+The [Whenever] gem(https://github.com/javan/whenever) is used to schedule ActiveJobs (for things like closing out monitorees that no longer need to be monitored). This gem uses the contents of `config/schedule.rb` to generate a crontab file.
 To update your chrontab (to periodically perform the jobs defined in `config/schedule.rb`), run `bundle exec whenever --update-crontab`.
 
 #### Running
 
-To run Sara Alert, simply execute: `bundle exec rails s`.
+To run Sara Alert, execute: `bundle exec rails s`.
 
 ### Installation (Docker)
 
