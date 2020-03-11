@@ -39,9 +39,9 @@ Run the following command from the root directory to intialize the database (not
 * `bundle exec rake admin:import_or_update_jurisdictions`
 * (optional) `bundle exec rake demo:setup demo:populate`
 
-#### ActiveJob + Sidkiq + Redis
+#### ActiveJob + Sidkiq + Redis + Whenever
 
-ActiveJob will work with Sidekiq and Redis to manage the queueing and running of jobs (used to send emails, SMS, and other methods of notification).
+ActiveJob will work with Sidekiq, Redis, and Whenever to manage the queueing and running of jobs (used to send emails, SMS, and other methods of notification).
 
 ##### Redis
 
