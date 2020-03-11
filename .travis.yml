@@ -9,6 +9,7 @@ before_install:
   - export PATH="$HOME/.yarn/bin:$PATH"
   - "export DISPLAY=:99.0"
   - gem install bundler
+  - bundle install
   - bundle exec gemsurance
 services:
   - xvfb
@@ -17,7 +18,6 @@ services:
 before_script:
   - psql -c 'create database disease_trakker_test;' -U postgres
   - yarn install --ignore-engines
-  - bundle install
 script:
   - bundle exec brakeman -qAzw1
   - bundle exec rake test
