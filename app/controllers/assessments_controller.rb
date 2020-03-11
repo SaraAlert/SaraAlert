@@ -3,8 +3,13 @@
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
   before_action :check_patient_token, only: %i[new create update]
+  protect_from_forgery except: %i[new_from_email]
 
   def index; end
+
+  def new_from_email
+    redirect_to new_patient_assessment_url(params[:patient_submission_token])
+  end
 
   def new
     @assessment = Assessment.new

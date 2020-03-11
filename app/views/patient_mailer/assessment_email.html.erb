@@ -6,8 +6,8 @@
 
   <body>
     <h1>This is your reminder to complete your daily report</h1>
-    <form action="<%= patients_assessments_url %>" method="post">
-      <p>Please provide your daily report <button type="input" name="patient_submission_token" value="<%= @patient.submission_token %>" style="border: none;outline: none;background: none;cursor: pointer;color: #0000EE;padding: 0;text-decoration: underline;font-family: inherit;font-size: inherit;">using our online reporting tool</button>.</p>
+    <form action="<%= patients_assessments_url %>" method="post" target="_blank">
+      <p>Please provide your daily report <button type="submit" name="patient_submission_token" value="<%= @patient.submission_token %>" style="border: none;outline: none;background: none;cursor: pointer;color: #0000EE;padding: 0;text-decoration: underline;font-family: inherit;font-size: inherit;">using our online reporting tool</button>.</p>
     </form>
   </body>
 
