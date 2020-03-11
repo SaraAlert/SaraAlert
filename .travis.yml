@@ -1,7 +1,4 @@
 language: ruby
-cache:
-  - bundler
-  - node_modules
 sudo: required
 addons:
   chrome: stable
@@ -16,10 +13,9 @@ services:
   - postgresql
 before_script:
   - psql -c 'create database disease_trakker_test;' -U postgres
-script:
   - yarn install
-  - yarn audit
   - bundle install
+script:
   - bundle exec brakeman -qAzw1
   - bundle exec gemsurance
   - bundle exec rake test
