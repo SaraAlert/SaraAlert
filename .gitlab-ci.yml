@@ -29,7 +29,7 @@ build-push-staging-image:
     - schedules
   script:
     - docker build -f Production.Dockerfile --tag $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest --build-arg cert="$(cat $MITRE_CERT_PATH)" .
-    - docker push $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest .
+    - docker push $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest
   allow_failure: true
 
 system-test:
