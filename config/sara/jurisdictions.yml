@@ -61,6 +61,9 @@
         'Difficulty Breathing':
             value: true
             type: 'BoolSymptom'
+        'Feeling Feverish':
+            value: true
+            type: 'BoolSymptom'
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
     # in the children: field
     children:
