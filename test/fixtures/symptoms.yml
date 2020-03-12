@@ -1,27 +1,526 @@
-temperature_symptom:
+jurisdiction_1_threshold_condition_temperature_symptom:
   id: 1
   name: "temperature"
   label: "Temperature"
-  bool_value: nil
-  float_value: 101.4
-  int_value: nil
+  float_value: 100.4
   condition_id: 1
   type: "FloatSymptom"
-cough_symptom:
+jurisdiction_1_threshold_condition_cough_symptom:
   id: 2
   name: "cough"
   label: "Cough"
   bool_value: true
-  float_value: nil
-  int_value: nil
   condition_id: 1
   type: "BoolSymptom"
-difficulty_breathing_symptom:
+jurisdiction_1_threshold_condition_difficulty_breathing_symptom:
   id: 3
   name: "difficulty-breathing"
   label: "Difficulty Breathing"
   bool_value: true
-  float_value: nil
-  int_value: nil
   condition_id: 1
+  type: "BoolSymptom"
+threshold_condition_1_temperature_symptom:
+  id: 4
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100.4
+  condition_id: 8
+  type: "FloatSymptom"
+threshold_condition_1_cough_symptom:
+  id: 5
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 8
+  type: "BoolSymptom"
+threshold_condition_1_difficulty_breathing_symptom:
+  id: 6
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 8
+  type: "BoolSymptom"
+threshold_condition_2_temperature_symptom:
+  id: 10
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100.4
+  condition_id: 10
+  type: "FloatSymptom"
+threshold_condition_2_cough_symptom:
+  id: 11
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 10
+  type: "BoolSymptom"
+threshold_condition_2_difficulty_breathing_symptom:
+  id: 12
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 10
+  type: "BoolSymptom"
+threshold_condition_3_temperature_symptom:
+  id: 16
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100.4
+  condition_id: 12
+  type: "FloatSymptom"
+threshold_condition_3_cough_symptom:
+  id: 17
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 12
+  type: "BoolSymptom"
+threshold_condition_3_difficulty_breathing_symptom:
+  id: 18
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 12
+  type: "BoolSymptom"
+threshold_condition_4_temperature_symptom:
+  id: 22
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100.4
+  condition_id: 14
+  type: "FloatSymptom"
+threshold_condition_4_cough_symptom:
+  id: 23
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 14
+  type: "BoolSymptom"
+threshold_condition_4_difficulty_breathing_symptom:
+  id: 24
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 14
+  type: "BoolSymptom"
+threshold_condition_5_temperature_symptom:
+  id: 28
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100.4
+  condition_id: 16
+  type: "FloatSymptom"
+threshold_condition_5_cough_symptom:
+  id: 29
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 16
+  type: "BoolSymptom"
+threshold_condition_5_difficulty_breathing_symptom:
+  id: 30
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 16
+  type: "BoolSymptom"
+threshold_condition_6_temperature_symptom:
+  id: 55
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100.4
+  condition_id: 25
+  type: "FloatSymptom"
+threshold_condition_6_cough_symptom:
+  id: 56
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 25
+  type: "BoolSymptom"
+threshold_condition_6_difficulty_breathing_symptom:
+  id: 57
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 25
+  type: "BoolSymptom"
+threshold_condition_7_temperature_symptom:
+  id: 112
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100.4
+  condition_id: 44
+  type: "FloatSymptom"
+threshold_condition_7_cough_symptom:
+  id: 113
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 44
+  type: "BoolSymptom"
+threshold_condition_7_difficulty_breathing_symptom:
+  id: 114
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 44
+  type: "BoolSymptom"
+
+patient_1_assessment_1_temperature:
+  id: 10011
+  name: "temperature"
+  label: "Temperature"
+  float_value: 98
+  condition_id: 1001
+  type: "FloatSymptom"
+patient_1_assessment_1_cough:
+  id: 10012
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1001
+  type: "BoolSymptom"
+patient_1_assessment_1_difficulty_breathing:
+  id: 10013
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1001
+  type: "BoolSymptom"
+patient_1_assessment_2_temperature:
+  id: 10021
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100
+  condition_id: 1002
+  type: "FloatSymptom"
+patient_1_assessment_2_cough:
+  id: 10022
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1002
+  type: "BoolSymptom"
+patient_1_assessment_2_difficulty_breathing:
+  id: 10023
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1002
+  type: "BoolSymptom"
+patient_2_assessment_1_temperature:
+  id: 10031
+  name: "temperature"
+  label: "Temperature"
+  float_value: 98
+  condition_id: 1003
+  type: "FloatSymptom"
+patient_2_assessment_1_cough:
+  id: 10032
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1003
+  type: "BoolSymptom"
+patient_2_assessment_1_difficulty_breathing:
+  id: 10033
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1003
+  type: "BoolSymptom"
+patient_2_assessment_2_temperature:
+  id: 10041
+  name: "temperature"
+  label: "Temperature"
+  float_value: 99
+  condition_id: 1004
+  type: "FloatSymptom"
+patient_2_assessment_2_cough:
+  id: 10042
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1004
+  type: "BoolSymptom"
+patient_2_assessment_2_difficulty_breathing:
+  id: 10043
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1004
+  type: "BoolSymptom"
+patient_3_assessment_1_temperature:
+  id: 10051
+  name: "temperature"
+  label: "Temperature"
+  float_value: 103
+  condition_id: 1005
+  type: "FloatSymptom"
+patient_3_assessment_1_cough:
+  id: 10052
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 1005
+  type: "BoolSymptom"
+patient_3_assessment_1_difficulty_breathing:
+  id: 10053
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1005
+  type: "BoolSymptom"
+patient_3_assessment_2_temperature:
+  id: 10061
+  name: "temperature"
+  label: "Temperature"
+  float_value: 104
+  condition_id: 1006
+  type: "FloatSymptom"
+patient_3_assessment_2_cough:
+  id: 10062
+  name: "cough"
+  label: "Cough"
+  bool_value: true
+  condition_id: 1006
+  type: "BoolSymptom"
+patient_3_assessment_2_difficulty_breathing:
+  id: 10063
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 1006
+  type: "BoolSymptom"
+patient_4_assessment_1_temperature:
+  id: 10071
+  name: "temperature"
+  label: "Temperature"
+  float_value: 98
+  condition_id: 1007
+  type: "FloatSymptom"
+patient_4_assessment_1_cough:
+  id: 10072
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1007
+  type: "BoolSymptom"
+patient_4_assessment_1_difficulty_breathing:
+  id: 10073
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1007
+  type: "BoolSymptom"
+patient_5_assessment_1_temperature:
+  id: 10081
+  name: "temperature"
+  label: "Temperature"
+  float_value: 102
+  condition_id: 1008
+  type: "FloatSymptom"
+patient_5_assessment_1_cough:
+  id: 10082
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1008
+  type: "BoolSymptom"
+patient_5_assessment_1_difficulty_breathing:
+  id: 10083
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 1008
+  type: "BoolSymptom"
+patient_8_assessment_1_temperature:
+  id: 10091
+  name: "temperature"
+  label: "Temperature"
+  float_value: 99
+  condition_id: 1009
+  type: "FloatSymptom"
+patient_8_assessment_1_cough:
+  id: 10092
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1009
+  type: "BoolSymptom"
+patient_8_assessment_1_difficulty_breathing:
+  id: 10093
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1009
+  type: "BoolSymptom"
+patient_8_assessment_2_temperature:
+  id: 10101
+  name: "temperature"
+  label: "Temperature"
+  float_value: 97
+  condition_id: 1010
+  type: "FloatSymptom"
+patient_8_assessment_2_cough:
+  id: 10102
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1010
+  type: "BoolSymptom"
+patient_8_assessment_2_difficulty_breathing:
+  id: 10103
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1010
+  type: "BoolSymptom"
+patient_9_assessment_1_temperature:
+  id: 10111
+  name: "temperature"
+  label: "Temperature"
+  float_value: 98
+  condition_id: 1011
+  type: "FloatSymptom"
+patient_9_assessment_1_cough:
+  id: 10112
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1011
+  type: "BoolSymptom"
+patient_9_assessment_1_difficulty_breathing:
+  id: 10113
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1011
+  type: "BoolSymptom"
+patient_9_assessment_2_temperature:
+  id: 10121
+  name: "temperature"
+  label: "Temperature"
+  float_value: 101
+  condition_id: 1012
+  type: "FloatSymptom"
+patient_9_assessment_2_cough:
+  id: 10122
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1012
+  type: "BoolSymptom"
+patient_9_assessment_2_difficulty_breathing:
+  id: 10123
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 1012
+  type: "BoolSymptom"
+patient_9_assessment_3_temperature:
+  id: 10131
+  name: "temperature"
+  label: "Temperature"
+  float_value: 102
+  condition_id: 1013
+  type: "FloatSymptom"
+patient_9_assessment_3_cough:
+  id: 10132
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1013
+  type: "BoolSymptom"
+patient_9_assessment_3_difficulty_breathing:
+  id: 10133
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: true
+  condition_id: 1013
+  type: "BoolSymptom"
+patient_9_assessment_4_temperature:
+  id: 10141
+  name: "temperature"
+  label: "Temperature"
+  float_value: 100
+  condition_id: 1014
+  type: "FloatSymptom"
+patient_9_assessment_4_cough:
+  id: 10142
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1014
+  type: "BoolSymptom"
+patient_9_assessment_4_difficulty_breathing:
+  id: 10143
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1014
+  type: "BoolSymptom"
+patient_10_assessment_1_temperature:
+  id: 10151
+  name: "temperature"
+  label: "Temperature"
+  float_value: 96
+  condition_id: 1015
+  type: "FloatSymptom"
+patient_10_assessment_1_cough:
+  id: 10152
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1015
+  type: "BoolSymptom"
+patient_10_assessment_1_difficulty_breathing:
+  id: 10153
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1015
+  type: "BoolSymptom"
+patient_10_assessment_2_temperature:
+  id: 10161
+  name: "temperature"
+  label: "Temperature"
+  float_value: 97
+  condition_id: 1016
+  type: "FloatSymptom"
+patient_10_assessment_2_cough:
+  id: 10162
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1016
+  type: "BoolSymptom"
+patient_10_assessment_2_difficulty_breathing:
+  id: 10163
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1016
+  type: "BoolSymptom"
+patient_10_assessment_3_temperature:
+  id: 10171
+  name: "temperature"
+  label: "Temperature"
+  float_value: 97
+  condition_id: 1017
+  type: "FloatSymptom"
+patient_10_assessment_3_cough:
+  id: 10172
+  name: "cough"
+  label: "Cough"
+  bool_value: false
+  condition_id: 1017
+  type: "BoolSymptom"
+patient_10_assessment_3_difficulty_breathing:
+  id: 10173
+  name: "difficulty-breathing"
+  label: "Difficulty Breathing"
+  bool_value: false
+  condition_id: 1017
   type: "BoolSymptom"

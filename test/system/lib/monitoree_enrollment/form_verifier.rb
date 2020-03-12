@@ -155,6 +155,6 @@ class MonitoreeEnrollmentFormVerifier < ApplicationSystemTestCase
 
   def verify_form_data_for_checkbox_input_field_with_custom_label(data, field, label)
     # need to figure out how to get value of checkbox input from DOM
-    # assert_equal(data[field], find("label", text: label)) if data[field]
+    # assert_equal(data[field], find('label', text: label)) if data[field]
   end
 end

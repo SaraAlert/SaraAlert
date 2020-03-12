@@ -2,9 +2,11 @@
 
 require 'application_system_test_case'
 
+require_relative 'components/assessment/form'
 require_relative 'lib/system_test_utils'
 
 class MonitoreeTest < ApplicationSystemTestCase
+  @@assessment_form = AssessmentForm.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
   ASSESSMENTS = @@system_test_utils.get_assessments
@@ -35,9 +37,9 @@ class MonitoreeTest < ApplicationSystemTestCase
     INVALID_TEMPERATURE_NUMBERS = ['abc', '&9$*&@)#(!', '192.849.01', 'ab9.3iuj@9'].freeze
     INVALID_TEMPERATURE_NUMBERS.each do |temperature|
       select 'No', from: 'experiencing_symptoms'
-      populate_temperature_with_invalid_input(temperature, 'Submit', 'Please enter a valid number.')
+      @@assessment_form.populate_temperature_with_invalid_input(temperature, 'Submit', 'Please enter a valid number.')
       select 'Yes', from: 'experiencing_symptoms'
-      populate_temperature_with_invalid_input(temperature, 'Continue', 'Please enter a valid number.')
+      @@assessment_form.populate_temperature_with_invalid_input(temperature, 'Continue', 'Please enter a valid number.')
     end
   end
 
@@ -46,15 +48,15 @@ class MonitoreeTest < ApplicationSystemTestCase
     OUT_OF_BOUNDS_TEMPERATURES = ['195 381', '-158', '842910', '50', '-1', '130'].freeze
     OUT_OF_BOUNDS_TEMPERATURES.each do |temperature|
       select 'No', from: 'experiencing_symptoms'
-      populate_temperature_with_invalid_input(temperature, 'Submit', 'Temperature Out of Bounds [27 - 49C] [80 - 120F]')
+      @@assessment_form.populate_temperature_with_invalid_input(temperature, 'Submit', 'Temperature Out of Bounds [27 - 49C] [80 - 120F]')
       select 'Yes', from: 'experiencing_symptoms'
-      populate_temperature_with_invalid_input(temperature, 'Continue', 'Temperature Out of Bounds [27 - 49C] [80 - 120F]')
+      @@assessment_form.populate_temperature_with_invalid_input(temperature, 'Continue', 'Temperature Out of Bounds [27 - 49C] [80 - 120F]')
     end
   end
 
   test 'maintain form data after clicking continue and previous' do
     visit @@system_test_utils.get_assessments_url(ASSESSMENTS['assessment_1']['submission_token'])
-    temperature = "105"
+    temperature = '105'
     fill_in 'temperature', with: temperature
     select 'Yes', from: 'experiencing_symptoms'
     click_on 'Continue'
@@ -65,7 +67,7 @@ class MonitoreeTest < ApplicationSystemTestCase
 
   test 'maintain form data after clicking continue and previous and submit successfully' do
     visit @@system_test_utils.get_assessments_url(ASSESSMENTS['assessment_1']['submission_token'])
-    temperature = "105"
+    temperature = '105'
     fill_in 'temperature', with: temperature
     select 'No', from: 'experiencing_symptoms'
     select 'Yes', from: 'experiencing_symptoms'
@@ -86,39 +88,8 @@ class MonitoreeTest < ApplicationSystemTestCase
     assessments_url = @@system_test_utils.get_assessments_url(assessment['submission_token'])
     visit assessments_url
     assert_equal(assessments_url, page.current_path)
-    fill_in 'temperature', with: assessment['symptoms'][0]['float_value']
-    if assessment['experiencing_symptoms']
-      select 'Yes', from: 'experiencing_symptoms'
-      assert_selector '#submit_button', text: 'Continue'
-      click_on 'Continue'
-      populate_symptoms(assessment)
-    else
-      select 'No', from: 'experiencing_symptoms'
-      assert_selector '#submit_button', text: 'Submit'
-    end
-    assert_selector 'button', text: 'Submit'
-    click_on 'Submit'
+    @@assessment_form.populate_assessment('', assessment['symptoms'][0]['float_value'], assessment['symptoms'][1]['bool_value'], assessment['symptoms'][2]['bool_value'])
     assert_selector 'label', text: 'Thank You For Completing Your Self Report'
     ## assert assessment successfully saved to database
-  end
-
-  def populate_symptoms(assessment)
-    assert_selector 'button', text: 'Previous'
-    if assessment['symptoms'][1]['bool_value']
-      @@system_test_utils.wait_for_checkbox_animation
-      find('label', text: 'Cough').click
-    end
-    if assessment['symptoms'][2]['bool_value']
-      @@system_test_utils.wait_for_checkbox_animation
-      find('label', text: 'Difficulty Breathing').click
-    end
-  end
-
-  def populate_temperature_with_invalid_input(temperature, button_text, error_msg)
-    fill_in 'temperature', with: temperature
-    assert_selector '#submit_button', text: button_text
-    click_on button_text
-    assert_selector 'div', text: error_msg
-    assert_selector 'div', text: 'What was your temperature today?'
   end
 end

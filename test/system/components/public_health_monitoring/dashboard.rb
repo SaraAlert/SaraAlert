@@ -2,47 +2,45 @@
 
 require 'application_system_test_case'
 
+require_relative '../../lib/system_test_utils'
+
 class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
-  TAB_SELECTION_DELAY = 0.5
 
-  def verify_patients_under_tab(tab, patients, patient_ids)
+  @@system_test_utils = SystemTestUtils.new(nil)
+  
+  PATIENTS = @@system_test_utils.get_patients
+  
+  def verify_patients_under_tab(tab, patient_ids)
     click_on tab
-    patients.each do |_patient_id, patient|
-      search_for_and_verify_patient(patient, patient_ids.include?(patient['id']))
+    PATIENTS.each do |patient_name, patient|
+      search_for_and_verify_patient(patient_name, patient_ids.include?(patient['id']))
     end
   end
 
-  def verify_patient_under_tab(tab, patient)
+  def verify_patient_under_tab(tab, patient_name)
     click_on tab
-    search_for_and_verify_patient(patient, true)
+    search_for_and_verify_patient(patient_name, true)
   end
 
-  def search_for_and_verify_patient(patient, should_exist)
-    search_for_patient(patient)
+  def search_for_and_verify_patient(patient_name, should_exist)
+    search_for_patient(patient_name)    
     if should_exist
-      assert_selector 'td', text: get_patient_display_name(patient)
-      assert_selector 'td', text: patient['date_of_birth']
+      assert_selector 'td', text: @@system_test_utils.get_patient_display_name(patient_name)
+      assert_selector 'td', text: PATIENTS[patient_name]['date_of_birth']
     else
-      refute_selector 'td', text: get_patient_display_name(patient)
-      refute_selector 'td', text: patient['date_of_birth']
+      refute_selector 'td', text: @@system_test_utils.get_patient_display_name(patient_name)
+      refute_selector 'td', text: PATIENTS[patient_name]['date_of_birth']
     end
   end
 
-  def search_for_and_view_patient(tab, patient)
+  def search_for_and_view_patient(tab, patient_name)
     click_on tab
-    search_for_patient(patient)
-    click_on get_patient_display_name(patient)
+    search_for_patient(patient_name)
+    click_on @@system_test_utils.get_patient_display_name(patient_name)
   end
 
-  def search_for_patient(patient)
-    fill_in 'Search:', with: patient['last_name']
+  def search_for_patient(patient_name)
+    fill_in 'Search:', with: PATIENTS[patient_name]['last_name']
   end
 
-  def get_patient_display_name(patient)
-    patient['last_name'] + ', ' + patient['first_name']
-  end
-
-  def return_to_dashboard
-    click_on 'Return To Dashboard'
-  end
 end

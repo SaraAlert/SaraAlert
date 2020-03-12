@@ -97,36 +97,36 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
 
   def verify_input_validation_for_arrival_info(arrival_info)
     ## Uncomment when validation is implemented for departure and arrival dates
-    # fill_in "date_of_departure", with: "02/29/2001"
-    # click_on "Next"
-    # assert_selector "div", text: "Please enter a valid date of departure."
-    # fill_in "date_of_departure", with: "10/01/803290"
-    # click_on "Next"
-    # assert_selector "div", text: "Please enter a valid date of departure."
-    # fill_in "date_of_arrival", with: "11/31/2000"
-    # click_on "Next"
-    # assert_selector "div", text: "Please enter a valid date of departure."
-    # fill_in "date_of_arrival", with: "10/01/4000"
-    # click_on "Next"
-    # assert_selector "div", text: "Please enter a valid date of departure."
+    # fill_in 'date_of_departure', with: '02/29/2001'
+    # click_on 'Next'
+    # assert_selector 'div', text: 'Please enter a valid date of departure.'
+    # fill_in 'date_of_departure', with: '10/01/803290'
+    # click_on 'Next'
+    # assert_selector 'div', text: 'Please enter a valid date of departure.'
+    # fill_in 'date_of_arrival', with: '11/31/2000'
+    # click_on 'Next'
+    # assert_selector 'div', text: 'Please enter a valid date of departure.'
+    # fill_in 'date_of_arrival', with: '10/01/4000'
+    # click_on 'Next'
+    # assert_selector 'div', text: 'Please enter a valid date of departure.'
     @@monitoree_enrollment_form_populator.populate_arrival_info(arrival_info, true)
     refute_selector 'div', text: 'Please enter a valid date of departure.'
   end
 
   def verify_input_validation_for_additional_planned_travel(additional_planned_travel)
     ## Uncomment when validation is implemented for departure and arrival dates
-    # fill_in "start_date", with: "02/29/2001"
-    # click_on "Next"
-    # assert_selector "div", text: "Please enter a valid start date."
-    # fill_in "start_date", with: "10/01/803290"
-    # click_on "Next"
-    # assert_selector "div", text: "Please enter a valid start date."
-    # fill_in "end_date", with: "11/31/2000"
-    # click_on "Next"
-    # assert_selector "div", text: "Please enter a valid end date."
-    # fill_in "end_date", with: "10/01/4000"
-    # click_on "Next"
-    # assert_selector "div", text: "Please enter a valid end date."
+    # fill_in 'start_date', with: '02/29/2001'
+    # click_on 'Next'
+    # assert_selector 'div', text: 'Please enter a valid start date.'
+    # fill_in 'start_date', with: '10/01/803290'
+    # click_on 'Next'
+    # assert_selector 'div', text: 'Please enter a valid start date.'
+    # fill_in 'end_date', with: '11/31/2000'
+    # click_on 'Next'
+    # assert_selector 'div', text: 'Please enter a valid end date.'
+    # fill_in 'end_date', with: '10/01/4000'
+    # click_on 'Next'
+    # assert_selector 'div', text: 'Please enter a valid end date.'
     @@monitoree_enrollment_form_populator.populate_additional_planned_travel(additional_planned_travel, true)
     refute_selector 'div', text: 'Please enter a valid start date.'
     refute_selector 'div', text: 'Please enter a valid end date.'
