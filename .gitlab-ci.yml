@@ -1,0 +1,60 @@
+---
+stages:
+  - create-image
+  - test
+  - deploy
+
+build-push-development-test-image:
+  stage: create-image
+  only:
+    refs:
+      - master
+  tags:
+    - shell-exec-required
+  except:
+    - schedules
+  script:
+    - docker build -f DevelopmentTest.Dockerfile --tag $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:development-test --build-arg cert="$(cat $MITRE_CERT_PATH)" .
+    - docker push $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:development-test
+  allow_failure: true
+
+build-push-staging-image:
+  stage: create-image
+  tags:
+    - shell-exec-required
+  only:
+    refs:
+      - master
+  except:
+    - schedules
+  script:
+    - docker build -f Production.Dockerfile --tag $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest --build-arg cert="$(cat $MITRE_CERT_PATH)" .
+    - docker push $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest .
+  allow_failure: true
+
+system-test:
+  stage: test
+  image: $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:development-test
+  services:
+    - postgres:10.3-alpine
+    - redis:latest
+  variables:
+    RAILS_ENV: test
+    POSTGRES_DB: disease_trakker_test
+    POSTGRES_PASSWORD: ''
+    POSTGRES_HOST_AUTH_METHOD: trust
+    POSTGRES_USER: runner
+    APP_IN_CI: 'true'
+    REDIS_URL: redis://redis:6379
+  before_script:
+    - cp config/gitlab-ci/gitlab-database.yml config/database.yml
+    - ruby -v
+    - bundle install --jobs $(nproc)
+    - yarn install
+    - /builds/2019-ncov/disease-trakker/bin/webpack
+  script:
+    - bundle exec rake test test:system
+  artifacts:
+    when: on_failure
+    paths:
+      - tmp/screenshots/

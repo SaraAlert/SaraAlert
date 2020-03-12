@@ -4,6 +4,7 @@
 node_modules
 .git
 .gitignore
+.gitlab-ci.yml
 log/*
 tmp/*
 .env-prod
@@ -11,3 +12,8 @@ tmp/*
 .dockerignore
 goals.txt
 README.md
+.byebug_history
+docker-compose.prod.yml
+docker-compose.yml
+yarn-error.log
+.ruby-version

@@ -1,0 +1,8 @@
+test:
+  adapter: postgresql
+  pool: 5
+  timeout: 5000
+  database: disease_trakker_test
+  host: postgres
+  user: runner
+  password: ''
