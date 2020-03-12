@@ -48,22 +48,20 @@
 'USA':
     symptoms:
         # Key is the symptom name as it will appear to the user
-        'Temperature':
+        'Cough':
             # The value specified here is the threshold value for the particular symptom
             # values greater than or equal to this value are considered to be symptomatic
             # Useable values for type are [FloatSymptom, IntegerSymptom, or BoolSymptom]
-            value: 100.4
-            type: 'FloatSymptom'
-        'Cough':
             # The expected threshold value for bool_values should always be true
             value: true
             type: 'BoolSymptom'
         'Difficulty Breathing':
             value: true
             type: 'BoolSymptom'
-        'Feeling Feverish':
+        'Fever':
             value: true
             type: 'BoolSymptom'
+            notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
     # in the children: field
     children:

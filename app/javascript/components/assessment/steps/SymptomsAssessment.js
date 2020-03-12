@@ -21,15 +21,7 @@ class SymptomsAssessment extends React.Component {
   }
 
   navigate() {
-    if (
-      this.state.current.symptoms.filter(x => {
-        return x.value === true;
-      }).length === 0
-    ) {
-      this.props.goto(0);
-    } else {
-      this.props.submit();
-    }
+    this.props.submit();
   }
 
   boolSymptom = symp => {
@@ -38,10 +30,13 @@ class SymptomsAssessment extends React.Component {
         type="switch"
         id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
-        label={`${symp.label}`}
         checked={symp.value === true || false}
-        onChange={this.handleChange}
-      />
+        label={
+          <div>
+            <b>{symp.label}</b> {symp.notes ? ' ' + symp.notes : ''}
+          </div>
+        }
+        onChange={this.handleChange}></Form.Check>
     );
   };
 
@@ -52,10 +47,7 @@ class SymptomsAssessment extends React.Component {
           <Card.Header as="h4">Daily Self-Report</Card.Header>
           <Card.Body>
             <Form.Row>
-              <Form.Label className="nav-input-label">
-                You previously indicated that you are experiencing symptoms. Please select all symptoms which you are experiencing.
-              </Form.Label>{' '}
-              <br />
+              <Form.Label className="nav-input-label">Please select all symptoms which you are experiencing.</Form.Label> <br />
             </Form.Row>
             <Form.Row>
               <Form.Group className="pt-1">
@@ -68,14 +60,7 @@ class SymptomsAssessment extends React.Component {
             </Form.Row>
             <Form.Row className="pt-4">
               <Button variant="primary" block size="lg" className="btn-block btn-square" onClick={this.navigate}>
-                {(this.state.current.symptoms.filter(x => {
-                  return x.value === true;
-                }).length !== 0 &&
-                  'Submit') ||
-                  (this.state.current.symptoms.filter(x => {
-                    return x.value === true;
-                  }).length === 0 &&
-                    'Previous')}
+                Submit
               </Button>
             </Form.Row>
           </Card.Body>

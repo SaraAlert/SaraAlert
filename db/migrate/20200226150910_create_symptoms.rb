@@ -3,6 +3,7 @@ class CreateSymptoms < ActiveRecord::Migration[6.0]
     create_table :symptoms do |t|
       t.string :name
       t.string :label
+      t.string :notes
       
       # Add fields for child-types of symptoms
       t.boolean :bool_value
