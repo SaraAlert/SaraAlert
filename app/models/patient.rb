@@ -71,6 +71,15 @@ class Patient < ApplicationRecord
       )
   }
 
+  def self.order_by_risk(risk_categories)
+    order_by = ['CASE']
+    risk_categories.each_with_index do |risk, index|
+      order_by << "WHEN exposure_risk_assessment='#{risk}' THEN #{index}"
+    end
+    order_by << 'END'
+    order(order_by.join(' '))
+  end
+
   # Allow information on the monitoree's jurisdiction to be displayed
   def jurisdiction_path
     jurisdiction&.path&.map(&:name)
