@@ -71,13 +71,16 @@ class Patient < ApplicationRecord
       )
   }
 
-  def self.order_by_risk(risk_categories)
-    order_by = ['CASE']
-    risk_categories.each_with_index do |risk, index|
-      order_by << "WHEN exposure_risk_assessment='#{risk}' THEN #{index}"
-    end
-    order_by << 'END'
-    order(order_by.join(' '))
+  def self.order_by_risk(asc=true)
+    order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
+                "WHEN exposure_risk_assessment='Medium' THEN 1",
+                "WHEN exposure_risk_assessment='Low' THEN 2",
+                "WHEN exposure_risk_assessment='No Identified Risk' THEN 3"]
+    order_by_rev = ["WHEN exposure_risk_assessment='High' THEN 3",
+                    "WHEN exposure_risk_assessment='Medium' THEN 2",
+                    "WHEN exposure_risk_assessment='Low' THEN 1",
+                    "WHEN exposure_risk_assessment='No Identified Risk' THEN 0"]
+    order((['CASE'] + (asc ? order_by : order_by_rev) + ['END']).join(' '))
   end
 
   # Allow information on the monitoree's jurisdiction to be displayed
