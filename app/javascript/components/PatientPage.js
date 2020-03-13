@@ -24,7 +24,7 @@ class PatientPage extends React.Component {
             {this.props.patient.id && <a href={'/patients/' + this.props.patient.id + '/edit'}>(click here to edit)</a>}
           </Card.Header>
           <Card.Body>
-            <Patient details={this.props.patient || {}} />
+            <Patient details={this.props.patient || {}} groupMembers={this.props.group_members || []} />
           </Card.Body>
         </Card>
       </React.Fragment>
@@ -36,6 +36,7 @@ PatientPage.propTypes = {
   patient_id: PropTypes.string,
   current_user: PropTypes.object,
   patient: PropTypes.object,
+  group_members: PropTypes.array,
   dashboardUrl: PropTypes.string,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
