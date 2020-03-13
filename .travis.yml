@@ -23,5 +23,3 @@ script:
   - bundle exec brakeman -qAzw1
   - bundle exec rake test
   - bundle exec rake test:system
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
