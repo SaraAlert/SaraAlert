@@ -126,7 +126,11 @@ class PatientsController < ApplicationController
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
-      patient.jurisdiction_id = jur.id unless jur.nil?
+      unless jur.nil?
+        transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction: jur, who: current_user)
+        transfer.save!
+        patient.jurisdiction_id = jur.id
+      end
     end
     patient.save!
     history = History.new

@@ -20,6 +20,7 @@ class Patient < ApplicationRecord
   has_one :latest_assessment, -> { order created_at: :desc }, class_name: 'Assessment'
   belongs_to :jurisdiction
   has_many :histories
+  has_many :transfers
 
   scope :monitoring_open, lambda {
     where('monitoring = ?', true)
@@ -71,7 +72,7 @@ class Patient < ApplicationRecord
       )
   }
 
-  def self.order_by_risk(asc=true)
+  def self.order_by_risk(asc = true)
     order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
                 "WHEN exposure_risk_assessment='Medium' THEN 1",
                 "WHEN exposure_risk_assessment='Low' THEN 2",

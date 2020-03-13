@@ -16,6 +16,8 @@ class ExportController < ApplicationController
       patients = current_user.viewable_patients.non_reporting
     elsif params[:type] == 'closed'
       patients = current_user.viewable_patients.monitoring_closed
+    elsif params[:type] == 'transferred'
+      patients = current_user.jurisdiction.transferred_patients
     end
 
     # Do nothing if issue with request/permissions
