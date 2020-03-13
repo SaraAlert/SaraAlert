@@ -15,6 +15,8 @@ class PatientsController < ApplicationController
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
 
+    @group_members = @patient.dependents.where.not(id: @patient.id)
+
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
   end
@@ -87,7 +89,7 @@ class PatientsController < ApplicationController
         # deliver_later forces the use of ActiveJob
         # sidekiq and redis should be running for this to work
         # If these are not running, all jobs will be completed when services start
-        PatientMailer.enrollment_email(patient).deliver_now if ADMIN_OPTIONS['enable_email']
+        PatientMailer.enrollment_email(patient).deliver_later if ADMIN_OPTIONS['enable_email']
       end
       if patient.primary_telephone.present?
         # deliver_later forces the use of ActiveJob

@@ -19,6 +19,22 @@ class Patient extends React.Component {
             <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
           </Row>
         )}
+        {this.props?.groupMembers && this.props?.groupMembers?.length > 0 && (
+          <Row className="pb-4 my-2 mx-4">
+            <Col>
+              <Row>This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
+              {this.props?.groupMembers?.map((member, index) => {
+                return (
+                  <Row key={'gm' + index}>
+                    <a href={'/patients/' + member.id}>
+                      {member.last_name}, {member.first_name} {member.middle_name || ''}
+                    </a>
+                  </Row>
+                );
+              })}
+            </Col>
+          </Row>
+        )}
         <Row className="g-border-bottom-2 pb-4 my-2 mx-2">
           <Col md="11">
             <Row>
@@ -330,6 +346,7 @@ class Patient extends React.Component {
 
 Patient.propTypes = {
   patient: PropTypes.object,
+  group_members: PropTypes.array,
   details: PropTypes.object,
   goto: PropTypes.func,
 };

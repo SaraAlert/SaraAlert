@@ -168,6 +168,7 @@ class Enrollment extends React.Component {
               setEnrollmentState={this.setEnrollmentState}
               currentState={this.state.enrollmentState}
               parentId={this.props.parent_id}
+              canAddGroup={this.props.can_add_group}
             />
           </Carousel.Item>
         </Carousel>
@@ -184,6 +185,7 @@ Enrollment.propTypes = {
   enrollmentState: PropTypes.object,
   editMode: PropTypes.bool,
   parent_id: PropTypes.string,
+  can_add_group: PropTypes.bool,
 };
 
 export default Enrollment;
