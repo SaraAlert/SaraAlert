@@ -12,6 +12,7 @@ class PublicHealthController < ApplicationController
     @non_reporting_count = current_user.viewable_patients.non_reporting.count
     @asymptomatic_count = current_user.viewable_patients.asymptomatic.count
     @new_count = current_user.viewable_patients.new_subject.count
+    @transferred_count = current_user.jurisdiction.transferred_patients.count
   end
 
   def symptomatic_patients
@@ -40,6 +41,13 @@ class PublicHealthController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
     render json: filter_sort_paginate(params, current_user.viewable_patients.asymptomatic)
+  end
+
+  def transferred_patients
+    # Restrict access to public health only
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+
+    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_patients)
   end
 
   protected
@@ -87,7 +95,6 @@ class PublicHealthController < ApplicationController
       elsif val['column'] == '5' # End of Monitoring
         sorted = sorted.order(last_date_of_exposure: direction)
       elsif val['column'] == '6' # Risk
-        risk_categories = ['High', 'Medium', 'Low', 'No Identified Risk']
         sorted = sorted.order_by_risk(val['dir'] == 'asc')
       elsif val['column'] == '7' # Plan
         sorted = sorted.order(monitoring_plan: direction)
