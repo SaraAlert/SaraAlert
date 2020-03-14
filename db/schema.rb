@@ -183,6 +183,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
   create_table "symptoms", force: :cascade do |t|
     t.string "name"
     t.string "label"
+    t.string "notes"
     t.boolean "bool_value"
     t.float "float_value"
     t.integer "int_value"
@@ -190,6 +191,19 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.string "type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "transfers", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.integer "to_jurisdiction_id"
+    t.integer "from_jurisdiction_id"
+    t.integer "who_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["from_jurisdiction_id"], name: "index_transfers_on_from_jurisdiction_id"
+    t.index ["patient_id"], name: "index_transfers_on_patient_id"
+    t.index ["to_jurisdiction_id"], name: "index_transfers_on_to_jurisdiction_id"
+    t.index ["who_id"], name: "index_transfers_on_who_id"
   end
 
   create_table "users", force: :cascade do |t|

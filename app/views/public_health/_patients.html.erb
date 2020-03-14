@@ -23,7 +23,11 @@
       "columns": [
         { "data": "linelist.name",
           "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-            $(nTd).html("<a href='patients/"+oData.linelist.name.id+"'>"+oData.linelist.name.name+"</a>");
+            if (<%= p_links %>) {
+              $(nTd).html("<a href='patients/"+oData.linelist.name.id+"'>"+oData.linelist.name.name+"</a>");
+            } else {
+              $(nTd).html(oData.linelist.name.name);
+            }
           }
         },
         { "data": "linelist.jurisdiction" },
@@ -35,7 +39,7 @@
         { "data": "linelist.monitoring_plan" },
         { "data": "linelist.latest_report" }
       ],
-      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'B><'col-sm-24 col-md-14'p>>"
+      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });
   });
 </script>

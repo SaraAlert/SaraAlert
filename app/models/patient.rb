@@ -20,6 +20,7 @@ class Patient < ApplicationRecord
   has_one :latest_assessment, -> { order created_at: :desc }, class_name: 'Assessment'
   belongs_to :jurisdiction
   has_many :histories
+  has_many :transfers
 
   scope :monitoring_open, lambda {
     where('monitoring = ?', true)
@@ -75,6 +76,18 @@ class Patient < ApplicationRecord
         .where(assessments: { patient_id: nil })
       )
   }
+
+  def self.order_by_risk(asc = true)
+    order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
+                "WHEN exposure_risk_assessment='Medium' THEN 1",
+                "WHEN exposure_risk_assessment='Low' THEN 2",
+                "WHEN exposure_risk_assessment='No Identified Risk' THEN 3"]
+    order_by_rev = ["WHEN exposure_risk_assessment='High' THEN 3",
+                    "WHEN exposure_risk_assessment='Medium' THEN 2",
+                    "WHEN exposure_risk_assessment='Low' THEN 1",
+                    "WHEN exposure_risk_assessment='No Identified Risk' THEN 0"]
+    order((['CASE'] + (asc ? order_by : order_by_rev) + ['END']).join(' '))
+  end
 
   # Allow information on the monitoree's jurisdiction to be displayed
   def jurisdiction_path

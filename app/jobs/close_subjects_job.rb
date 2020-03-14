@@ -21,10 +21,10 @@ class CloseSubjectsJob < ApplicationJob
     closeable.each do |subject|
       if !subject.last_date_of_exposure.nil? && subject.last_date_of_exposure < ADMIN_OPTIONS['monitoring_period_days'].days.ago
         subject[:monitoring] = false
-        subject.save!
+        PatientMailer.closed_email(subject).deliver_later if subject.save!
       elsif subject.created_at < ADMIN_OPTIONS['monitoring_period_days'].days.ago
         subject[:monitoring] = false
-        subject.save!
+        PatientMailer.closed_email(subject).deliver_later if subject.save!
       end
     end
   end

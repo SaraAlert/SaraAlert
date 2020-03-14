@@ -15,6 +15,8 @@ class PatientsController < ApplicationController
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
 
+    @group_members = @patient.dependents.where.not(id: @patient.id)
+
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
   end
@@ -87,7 +89,7 @@ class PatientsController < ApplicationController
         # deliver_later forces the use of ActiveJob
         # sidekiq and redis should be running for this to work
         # If these are not running, all jobs will be completed when services start
-        PatientMailer.enrollment_email(patient).deliver_now if ADMIN_OPTIONS['enable_email']
+        PatientMailer.enrollment_email(patient).deliver_later if ADMIN_OPTIONS['enable_email']
       end
       if patient.primary_telephone.present?
         # deliver_later forces the use of ActiveJob
@@ -126,7 +128,11 @@ class PatientsController < ApplicationController
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
-      patient.jurisdiction_id = jur.id unless jur.nil?
+      unless jur.nil?
+        transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction: jur, who: current_user)
+        transfer.save!
+        patient.jurisdiction_id = jur.id
+      end
     end
     patient.save!
     history = History.new

@@ -26,4 +26,9 @@ class PatientMailer < ApplicationMailer
       body: contents
     )
   end
+
+  def closed_email(patient)
+    @patient = patient
+    mail(to: patient.email, subject: 'SaraAlert Reporting Complete')
+  end
 end

@@ -5,7 +5,6 @@ require 'application_system_test_case'
 require_relative '../../lib/system_test_utils'
 
 class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
-
   @@system_test_utils = SystemTestUtils.new(nil)
   
   PATIENTS = @@system_test_utils.get_patients
@@ -42,5 +41,4 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
   def search_for_patient(patient_name)
     fill_in 'Search:', with: PATIENTS[patient_name]['last_name']
   end
-
 end

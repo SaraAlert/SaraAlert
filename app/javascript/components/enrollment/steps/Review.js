@@ -45,7 +45,7 @@ class Review extends React.Component {
                 Finish
               </Button>
             )}
-            {this.props.submit && !this.props.parent_id && this.props.currentState.responder_id === this.props.currentState.id && (
+            {this.props.submit && !this.props.parent_id && this.props.currentState.responder_id === this.props.currentState.id && this.props.canAddGroup && (
               <Button
                 variant="primary"
                 size="lg"
@@ -69,6 +69,7 @@ Review.propTypes = {
   next: PropTypes.func,
   submit: PropTypes.func,
   parent_id: PropTypes.string,
+  canAddGroup: PropTypes.bool,
 };
 
 export default Review;
