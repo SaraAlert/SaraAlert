@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import _ from 'lodash';
 import { Carousel } from 'react-bootstrap';
-import GeneralAssessment from './steps/GeneralAssessment';
 import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
 
@@ -136,16 +135,6 @@ class Assessment extends React.Component {
           activeIndex={this.state.index}
           direction={this.state.direction}
           onSelect={() => {}}>
-          <Carousel.Item>
-            <GeneralAssessment
-              goto={this.goto}
-              submit={this.handleSubmit}
-              setAssessmentState={this.setAssessmentState}
-              symptoms={this.state.symptoms}
-              currentState={this.state.assessmentState}
-              idPre={this.props.idPre}
-            />
-          </Carousel.Item>
           <Carousel.Item>
             <SymptomsAssessment
               goto={this.goto}

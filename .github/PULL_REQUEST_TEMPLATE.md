@@ -6,12 +6,10 @@ Pull requests into Sara Alert require the following. Submitter and reviewer shou
 - [ ] JIRA ticket for this PR:
 - [ ] JIRA ticket links to this PR
 - [ ] Code diff has been done and been reviewed (it **does not** contain: additional white space, not applicable code changes, debug statements, etc.)
-- [ ] Tests are included and test edge cases
 - [ ] Tests have been run locally and pass (remember to update Gemfile when applicable)
 
 **Reviewer:**
 
 Name:
 - [ ] Code is maintainable and reusable, reuses existing code and infrastructure where appropriate, and accomplishes the task’s purpose
-- [ ] The tests appropriately test the new code, including edge cases
 - [ ] You have tried to break the code

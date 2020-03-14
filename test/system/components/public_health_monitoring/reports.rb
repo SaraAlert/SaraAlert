@@ -13,19 +13,27 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
   SYMPTOMS = @@system_test_utils.get_symptoms
   REPORTS = @@system_test_utils.get_reports
 
-  def add_report(temperature, cough, difficulty_breathing)
+  def add_report(assessment)
     click_on '(add new)'
-    @@assessment_form.populate_assessment('_idprenew', temperature, cough, difficulty_breathing)
+    @@assessment_form.populate_assessment(assessment['symptoms'])
   end
 
-  def edit_report(patient_name, report_number, temperature, cough, difficulty_breathing)
+  def edit_report(patient_name, report_number, assessment)
     report = REPORTS[@@system_test_utils.get_assessment_name(patient_name, report_number)]
     search_for_report(report['created_at'])
     click_on 'Edit'
-    @@system_test_utils.wait_for_modal_animation
-    @@assessment_form.populate_assessment('_idpre' + report['id'].to_s, temperature, cough, difficulty_breathing)
+    @@assessment_form.populate_assessment(assessment['symptoms'])
     page.driver.browser.switch_to.alert.accept
-    ## also test rejecting the alert
+  end
+
+  def edit_report_and_cancel(patient_name, report_number, assessment)
+    report = REPORTS[@@system_test_utils.get_assessment_name(patient_name, report_number)]
+    search_for_report(report['created_at'])
+    click_on 'Edit'
+    @@assessment_form.populate_assessment(assessment['symptoms'])
+    page.driver.browser.switch_to.alert.dismiss
+    assert_selector 'h4', text: 'Daily Self-Report'
+    find('button', class: 'close').click
   end
 
   def mark_all_as_reviewed(reasoning)
@@ -39,34 +47,41 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
     fill_in 'Search:', with: query
   end
 
-  def verify_reports(patient_name, report_numbers)
+  def verify_existing_reports(patient_name, report_numbers)
     report_numbers.each { |report_number| 
-      verify_report(patient_name, report_number)
+      assessment_name = @@system_test_utils.get_assessment_name(patient_name, report_number)
+      report = REPORTS[assessment_name]
+      search_for_report(@@system_test_utils.trim_ms_from_date(report['created_at']))
+      assert_selector 'td', text: report['who_reported']
+      SYMPTOMS.keys().each { |symptom_key|
+        if symptom_key.include? assessment_name
+          verify_symptom(SYMPTOMS[symptom_key])
+        end
+      }
     }
   end
 
-  def verify_report(patient_name, report_number)
-    assessment_name = @@system_test_utils.get_assessment_name(patient_name, report_number)
-    report = REPORTS[assessment_name]
-    search_for_report(@@system_test_utils.trim_ms_from_date(report['created_at']))
-    assert_selector 'td', text: report['who_reported']
-    assert_selector 'td', text: SYMPTOMS[assessment_name + '_temperature']['float_value']
-    assert_selector 'td', text: SYMPTOMS[assessment_name + '_cough']['bool_value'] ? 'Yes' : 'No'
-    assert_selector 'td', text: SYMPTOMS[assessment_name + '_difficulty_breathing']['bool_value'] ? 'Yes' : 'No'
-    assert_selector 'td', text: report['symptomatic'] ? 'Yes' : 'No'
-  end
-
-  def verify_new_report(epi, temperature, cough, difficulty_breathing)
+  def verify_new_report(epi, assessment)
     search_for_report(epi['email'])
     assert_selector 'td', text: epi['email']
-    assert_selector 'td', text: temperature
-    assert_selector 'td', text: cough ? 'Yes' : 'No'
-    assert_selector 'td', text: difficulty_breathing ? 'Yes' : 'No'
-    assert_selector 'td', text: cough || difficulty_breathing ? 'Yes' : 'No'
+    assessment['symptoms'].each { |symptom|
+      verify_symptom(symptom)
+    }
+  end
+
+  def verify_symptom(symptom)
+    case symptom['type']
+    when 'BoolSymptom'
+      ## make assertion more specific
+      assert_selector 'td', text: symptom['bool_value'] ? 'Yes' : 'No'
+    when 'FloatSymptom'
+      assert_selector 'td', text: symptom['float_value']
+    when 'IntSymptom'
+      assert_selector 'td', text: symptom['int_value']
+    end
   end
 
   def search_for_report(query)
     fill_in 'Search:', with: query
   end
-
 end

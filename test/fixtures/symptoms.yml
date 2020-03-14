@@ -1,10 +1,10 @@
-jurisdiction_1_threshold_condition_temperature_symptom:
+jurisdiction_1_threshold_condition_fever_symptom:
   id: 1
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100.4
+  name: "fever"
+  label: "Fever"
+  bool_value: true
   condition_id: 1
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 jurisdiction_1_threshold_condition_cough_symptom:
   id: 2
   name: "cough"
@@ -19,13 +19,13 @@ jurisdiction_1_threshold_condition_difficulty_breathing_symptom:
   bool_value: true
   condition_id: 1
   type: "BoolSymptom"
-threshold_condition_1_temperature_symptom:
+threshold_condition_1_fever_symptom:
   id: 4
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100.4
+  name: "fever"
+  label: "Fever"
+  bool_value: true
   condition_id: 8
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 threshold_condition_1_cough_symptom:
   id: 5
   name: "cough"
@@ -40,13 +40,13 @@ threshold_condition_1_difficulty_breathing_symptom:
   bool_value: true
   condition_id: 8
   type: "BoolSymptom"
-threshold_condition_2_temperature_symptom:
+threshold_condition_2_fever_symptom:
   id: 10
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100.4
+  name: "fever"
+  label: "Fever"
+  bool_value: true
   condition_id: 10
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 threshold_condition_2_cough_symptom:
   id: 11
   name: "cough"
@@ -61,13 +61,13 @@ threshold_condition_2_difficulty_breathing_symptom:
   bool_value: true
   condition_id: 10
   type: "BoolSymptom"
-threshold_condition_3_temperature_symptom:
+threshold_condition_3_fever_symptom:
   id: 16
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100.4
+  name: "fever"
+  label: "Fever"
+  bool_value: true
   condition_id: 12
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 threshold_condition_3_cough_symptom:
   id: 17
   name: "cough"
@@ -82,13 +82,13 @@ threshold_condition_3_difficulty_breathing_symptom:
   bool_value: true
   condition_id: 12
   type: "BoolSymptom"
-threshold_condition_4_temperature_symptom:
+threshold_condition_4_fever_symptom:
   id: 22
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100.4
+  name: "fever"
+  label: "Fever"
+  bool_value: true
   condition_id: 14
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 threshold_condition_4_cough_symptom:
   id: 23
   name: "cough"
@@ -103,13 +103,13 @@ threshold_condition_4_difficulty_breathing_symptom:
   bool_value: true
   condition_id: 14
   type: "BoolSymptom"
-threshold_condition_5_temperature_symptom:
+threshold_condition_5_fever_symptom:
   id: 28
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100.4
+  name: "fever"
+  label: "Fever"
+  bool_value: true
   condition_id: 16
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 threshold_condition_5_cough_symptom:
   id: 29
   name: "cough"
@@ -124,13 +124,13 @@ threshold_condition_5_difficulty_breathing_symptom:
   bool_value: true
   condition_id: 16
   type: "BoolSymptom"
-threshold_condition_6_temperature_symptom:
+threshold_condition_6_fever_symptom:
   id: 55
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100.4
+  name: "fever"
+  label: "Fever"
+  bool_value: true
   condition_id: 25
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 threshold_condition_6_cough_symptom:
   id: 56
   name: "cough"
@@ -145,13 +145,13 @@ threshold_condition_6_difficulty_breathing_symptom:
   bool_value: true
   condition_id: 25
   type: "BoolSymptom"
-threshold_condition_7_temperature_symptom:
+threshold_condition_7_fever_symptom:
   id: 112
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100.4
+  name: "fever"
+  label: "Fever"
+  bool_value: true
   condition_id: 44
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 threshold_condition_7_cough_symptom:
   id: 113
   name: "cough"
@@ -167,13 +167,13 @@ threshold_condition_7_difficulty_breathing_symptom:
   condition_id: 44
   type: "BoolSymptom"
 
-patient_1_assessment_1_temperature:
+patient_1_assessment_1_fever:
   id: 10011
-  name: "temperature"
-  label: "Temperature"
-  float_value: 98
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1001
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_1_assessment_1_cough:
   id: 10012
   name: "cough"
@@ -188,13 +188,13 @@ patient_1_assessment_1_difficulty_breathing:
   bool_value: false
   condition_id: 1001
   type: "BoolSymptom"
-patient_1_assessment_2_temperature:
+patient_1_assessment_2_fever:
   id: 10021
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1002
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_1_assessment_2_cough:
   id: 10022
   name: "cough"
@@ -209,13 +209,13 @@ patient_1_assessment_2_difficulty_breathing:
   bool_value: false
   condition_id: 1002
   type: "BoolSymptom"
-patient_2_assessment_1_temperature:
+patient_2_assessment_1_fever:
   id: 10031
-  name: "temperature"
-  label: "Temperature"
-  float_value: 98
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1003
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_2_assessment_1_cough:
   id: 10032
   name: "cough"
@@ -230,13 +230,13 @@ patient_2_assessment_1_difficulty_breathing:
   bool_value: false
   condition_id: 1003
   type: "BoolSymptom"
-patient_2_assessment_2_temperature:
+patient_2_assessment_2_fever:
   id: 10041
-  name: "temperature"
-  label: "Temperature"
-  float_value: 99
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1004
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_2_assessment_2_cough:
   id: 10042
   name: "cough"
@@ -251,13 +251,13 @@ patient_2_assessment_2_difficulty_breathing:
   bool_value: false
   condition_id: 1004
   type: "BoolSymptom"
-patient_3_assessment_1_temperature:
+patient_3_assessment_1_fever:
   id: 10051
-  name: "temperature"
-  label: "Temperature"
-  float_value: 103
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1005
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_3_assessment_1_cough:
   id: 10052
   name: "cough"
@@ -272,13 +272,13 @@ patient_3_assessment_1_difficulty_breathing:
   bool_value: false
   condition_id: 1005
   type: "BoolSymptom"
-patient_3_assessment_2_temperature:
+patient_3_assessment_2_fever:
   id: 10061
-  name: "temperature"
-  label: "Temperature"
-  float_value: 104
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1006
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_3_assessment_2_cough:
   id: 10062
   name: "cough"
@@ -293,13 +293,13 @@ patient_3_assessment_2_difficulty_breathing:
   bool_value: true
   condition_id: 1006
   type: "BoolSymptom"
-patient_4_assessment_1_temperature:
+patient_4_assessment_1_fever:
   id: 10071
-  name: "temperature"
-  label: "Temperature"
-  float_value: 98
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1007
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_4_assessment_1_cough:
   id: 10072
   name: "cough"
@@ -314,13 +314,13 @@ patient_4_assessment_1_difficulty_breathing:
   bool_value: false
   condition_id: 1007
   type: "BoolSymptom"
-patient_5_assessment_1_temperature:
+patient_5_assessment_1_fever:
   id: 10081
-  name: "temperature"
-  label: "Temperature"
-  float_value: 102
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1008
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_5_assessment_1_cough:
   id: 10082
   name: "cough"
@@ -335,13 +335,13 @@ patient_5_assessment_1_difficulty_breathing:
   bool_value: true
   condition_id: 1008
   type: "BoolSymptom"
-patient_8_assessment_1_temperature:
+patient_8_assessment_1_fever:
   id: 10091
-  name: "temperature"
-  label: "Temperature"
-  float_value: 99
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1009
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_8_assessment_1_cough:
   id: 10092
   name: "cough"
@@ -356,13 +356,13 @@ patient_8_assessment_1_difficulty_breathing:
   bool_value: false
   condition_id: 1009
   type: "BoolSymptom"
-patient_8_assessment_2_temperature:
+patient_8_assessment_2_fever:
   id: 10101
-  name: "temperature"
-  label: "Temperature"
-  float_value: 97
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1010
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_8_assessment_2_cough:
   id: 10102
   name: "cough"
@@ -377,13 +377,13 @@ patient_8_assessment_2_difficulty_breathing:
   bool_value: false
   condition_id: 1010
   type: "BoolSymptom"
-patient_9_assessment_1_temperature:
+patient_9_assessment_1_fever:
   id: 10111
-  name: "temperature"
-  label: "Temperature"
-  float_value: 98
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1011
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_9_assessment_1_cough:
   id: 10112
   name: "cough"
@@ -398,13 +398,13 @@ patient_9_assessment_1_difficulty_breathing:
   bool_value: false
   condition_id: 1011
   type: "BoolSymptom"
-patient_9_assessment_2_temperature:
+patient_9_assessment_2_fever:
   id: 10121
-  name: "temperature"
-  label: "Temperature"
-  float_value: 101
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1012
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_9_assessment_2_cough:
   id: 10122
   name: "cough"
@@ -419,13 +419,13 @@ patient_9_assessment_2_difficulty_breathing:
   bool_value: true
   condition_id: 1012
   type: "BoolSymptom"
-patient_9_assessment_3_temperature:
+patient_9_assessment_3_fever:
   id: 10131
-  name: "temperature"
-  label: "Temperature"
-  float_value: 102
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1013
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_9_assessment_3_cough:
   id: 10132
   name: "cough"
@@ -440,13 +440,13 @@ patient_9_assessment_3_difficulty_breathing:
   bool_value: true
   condition_id: 1013
   type: "BoolSymptom"
-patient_9_assessment_4_temperature:
+patient_9_assessment_4_fever:
   id: 10141
-  name: "temperature"
-  label: "Temperature"
-  float_value: 100
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1014
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_9_assessment_4_cough:
   id: 10142
   name: "cough"
@@ -461,13 +461,13 @@ patient_9_assessment_4_difficulty_breathing:
   bool_value: false
   condition_id: 1014
   type: "BoolSymptom"
-patient_10_assessment_1_temperature:
+patient_10_assessment_1_fever:
   id: 10151
-  name: "temperature"
-  label: "Temperature"
-  float_value: 96
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1015
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_10_assessment_1_cough:
   id: 10152
   name: "cough"
@@ -482,13 +482,13 @@ patient_10_assessment_1_difficulty_breathing:
   bool_value: false
   condition_id: 1015
   type: "BoolSymptom"
-patient_10_assessment_2_temperature:
+patient_10_assessment_2_fever:
   id: 10161
-  name: "temperature"
-  label: "Temperature"
-  float_value: 97
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1016
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_10_assessment_2_cough:
   id: 10162
   name: "cough"
@@ -503,13 +503,13 @@ patient_10_assessment_2_difficulty_breathing:
   bool_value: false
   condition_id: 1016
   type: "BoolSymptom"
-patient_10_assessment_3_temperature:
+patient_10_assessment_3_fever:
   id: 10171
-  name: "temperature"
-  label: "Temperature"
-  float_value: 97
+  name: "fever"
+  label: "Fever"
+  bool_value: false
   condition_id: 1017
-  type: "FloatSymptom"
+  type: "BoolSymptom"
 patient_10_assessment_3_cough:
   id: 10172
   name: "cough"

@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   get '/public_health/non_reporting_patients', to: 'public_health#non_reporting_patients', as: :public_health_non_reporting_patients
   get '/public_health/symptomatic_patients', to: 'public_health#symptomatic_patients', as: :public_health_symptomatic_patients
   get '/public_health/closed_patients', to: 'public_health#closed_patients', as: :public_health_closed_patients
+  get '/public_health/transferred_patients', to: 'public_health#transferred_patients', as: :public_health_transferred_patients
   get '/public_health', to: 'public_health#index', as: :public_health
 
   get '/analytics', to: 'analytics#index', as: :analytics

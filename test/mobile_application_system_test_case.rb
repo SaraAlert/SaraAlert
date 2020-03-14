@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
+class MobileApplicationSystemTestCase < ActionDispatch::SystemTestCase
   if ENV['APP_IN_CI']
     Capybara.register_driver(:gitlab_chrome_headless) do |app|
       options = ::Selenium::WebDriver::Chrome::Options.new

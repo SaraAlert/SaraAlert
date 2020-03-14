@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'application_system_test_case'
+require 'mobile_application_system_test_case'
 
 require_relative 'components/assessment/form'
 require_relative 'lib/system_test_utils'
 
-class MonitoreeTest < ApplicationSystemTestCase
+class MonitoreeTestMobile < MobileApplicationSystemTestCase
   @@assessment_form = AssessmentForm.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
