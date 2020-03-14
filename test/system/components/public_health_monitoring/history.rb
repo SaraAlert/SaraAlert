@@ -3,7 +3,6 @@
 require 'application_system_test_case'
 
 class PublicHealthMonitoringHistory < ApplicationSystemTestCase
-  
   @@system_test_utils = SystemTestUtils.new(nil)
   
   USERS = @@system_test_utils.get_users
@@ -62,5 +61,4 @@ class PublicHealthMonitoringHistory < ApplicationSystemTestCase
     assert_selector 'b', text: USERS[user_name]['email']
     assert_selector 'span', text: 'Reports Cleared'
   end
-
 end

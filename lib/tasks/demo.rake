@@ -121,9 +121,8 @@ namespace :demo do
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
-    assessment_columns = Assessment.column_names - %w[id created_at updated_at patient_id symptomatic temperature who_reported]
+    assessment_columns = Assessment.column_names - %w[id created_at updated_at patient_id symptomatic who_reported]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
-    all_false[:temperature] = '98'
 
     jurisdictions = Jurisdiction.all
 
@@ -147,13 +146,11 @@ namespace :demo do
               number_of_symptoms = rand(bool_symps.count) + 1
               bool_symps.each do |symp|  symp['bool_value'] = false end
               bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
-              reported_condition.symptoms.select {|s| s.name == 'temperature' }.first.float_value = "#{100 + rand(3)}"
               patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
             else
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               bool_symps.each do |symp|  symp['bool_value'] = false end
-                reported_condition.symptoms.select {|s| s.name == 'temperature' }.first.float_value = "99.8"
-              patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
+              patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
             end
           end
         end

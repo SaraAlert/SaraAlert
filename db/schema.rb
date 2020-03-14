@@ -168,6 +168,7 @@ ActiveRecord::Schema.define(version: 2020_02_28_204449) do
   create_table "symptoms", force: :cascade do |t|
     t.string "name"
     t.string "label"
+    t.string "notes"
     t.boolean "bool_value"
     t.float "float_value"
     t.integer "int_value"
