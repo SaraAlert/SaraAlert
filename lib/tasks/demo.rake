@@ -117,7 +117,7 @@ namespace :demo do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     days = (ENV['DAYS'] || 14).to_i
-    count = 2000
+    count = (ENV['COUNT'] || 25).to_i
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
