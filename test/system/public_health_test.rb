@@ -15,6 +15,8 @@ class PublicHealthTest < ApplicationSystemTestCase
   @@public_health_monitoring_reports = PublicHealthMonitoringReports.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
+  ASSESSMENTS = @@system_test_utils.get_assessments
+
   test 'epis can only view and search for patients under their jurisdiction' do
     search_for_and_verify_patients_under_jurisdiction('state1_epi', [3], [1, 2, 6, 7], [4, 8], [5])
     search_for_and_verify_patients_under_jurisdiction('locals1c1_epi', [], [], [4], [])
@@ -59,11 +61,15 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'add report' do
-    add_report('locals1c1_epi', 'patient_4', 'Asymptomatic', 98, false, false)
+    add_report('locals1c1_epi', 'patient_4', 'Asymptomatic', ASSESSMENTS["assessment_1"])
   end
 
   test 'edit report' do
-    edit_report('locals2c4_epi', 'patient_10', 'Asymptomatic', 'Symptomatic', 3, 102, true, false)
+    edit_report('locals2c4_epi', 'patient_10', 'Asymptomatic', 3, ASSESSMENTS["assessment_2"], 'Symptomatic')
+  end
+
+  test 'edit report and cancel' do
+    edit_report_and_cancel('locals2c4_epi', 'patient_10', 'Asymptomatic', 3, ASSESSMENTS["assessment_2"])
   end
 
   test 'clear all reports' do
@@ -138,44 +144,38 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_name)
     @@public_health_monitoring_history.verify_comment(user_name, comment)
     @@system_test_utils.logout
-    @@system_test_utils.login(user_name)
-    @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_name)
-    @@public_health_monitoring_history.verify_comment(user_name, comment)
-    @@system_test_utils.logout
   end
 
   def view_reports(user_name, patient_name, tab, report_numbers)
     @@system_test_utils.login(user_name)
     @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_name)
-    @@public_health_monitoring_reports.verify_reports(patient_name, report_numbers)
+    @@public_health_monitoring_reports.verify_existing_reports(patient_name, report_numbers)
     @@system_test_utils.logout
   end
 
-  def add_report(user_name, patient_name, tab, temperature, cough, difficulty_breathing)
+  def add_report(user_name, patient_name, tab, assessment)
     @@system_test_utils.login(user_name)
     @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_name)
-    @@public_health_monitoring_reports.add_report(temperature, cough, difficulty_breathing)
-    @@public_health_monitoring_reports.verify_new_report(user_name, temperature, cough, difficulty_breathing)
-    @@public_health_monitoring_history.verify_add_report(user_name)
-    @@system_test_utils.logout
-    @@system_test_utils.login(user_name)
-    @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_name)
-    @@public_health_monitoring_reports.verify_new_report(user_name, temperature, cough, difficulty_breathing)
+    @@public_health_monitoring_reports.add_report(assessment)
+    @@public_health_monitoring_reports.verify_new_report(user_name, assessment)
     @@public_health_monitoring_history.verify_add_report(user_name)
     @@system_test_utils.logout
   end
 
-  def edit_report(user_name, patient_name, old_tab, new_tab, report_number, temperature, cough, difficulty_breathing)
+  def edit_report(user_name, patient_name, old_tab, report_number, assessment, new_tab)
     @@system_test_utils.login(user_name)
     @@public_health_monitoring_dashboard.search_for_and_view_patient(old_tab, patient_name)
-    @@public_health_monitoring_reports.edit_report(patient_name, report_number, temperature, cough, difficulty_breathing)
-    @@public_health_monitoring_reports.verify_new_report(user_name, temperature, cough, difficulty_breathing)
+    @@public_health_monitoring_reports.edit_report(patient_name, report_number, assessment)
+    @@public_health_monitoring_reports.verify_new_report(user_name, assessment)
     @@public_health_monitoring_history.verify_edit_report(user_name)
     @@system_test_utils.logout
+  end
+
+  def edit_report_and_cancel(user_name, patient_name, old_tab, report_number, assessment)
     @@system_test_utils.login(user_name)
-    @@public_health_monitoring_dashboard.search_for_and_view_patient(new_tab, patient_name)
-    @@public_health_monitoring_reports.verify_new_report(user_name, temperature, cough, difficulty_breathing)
-    @@public_health_monitoring_history.verify_edit_report(user_name)
+    @@public_health_monitoring_dashboard.search_for_and_view_patient(old_tab, patient_name)
+    @@public_health_monitoring_reports.edit_report_and_cancel(patient_name, report_number, assessment)
+    ## add some assertions
     @@system_test_utils.logout
   end
 
@@ -183,10 +183,6 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@system_test_utils.login(user_name)
     @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_name)
     @@public_health_monitoring_reports.mark_all_as_reviewed(reasoning)
-    @@public_health_monitoring_history.verify_all_marked_as_reviewed(user_name)
-    @@system_test_utils.logout
-    @@system_test_utils.login(user_name)
-    @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_name)
     @@public_health_monitoring_history.verify_all_marked_as_reviewed(user_name)
     @@system_test_utils.logout
   end

@@ -1,112 +1,61 @@
 assessment_1:
   submission_token: de8c267224b17cb977cd1787c2237693df17b703
-  experiencing_symptoms: false
   symptoms:
     - id: 1
-      name: "temperature"
-      label: "Temperature"
-      bool_value: nil
-      float_value: 101.4
-      int_value: nil
-      condition_id: 1
-      type: "FloatSymptom"
+      label: "Fever"
+      bool_value: true
+      type: "BoolSymptom"
     - id: 2
-      name: "cough"
       label: "Cough"
       bool_value: true
-      float_value: nil
-      int_value: nil
-      condition_id: 1
       type: "BoolSymptom"
     - id: 3
-      name: "difficulty-breathing"
       label: "Difficulty Breathing"
       bool_value: true
-      float_value: nil
-      int_value: nil
-      condition_id: 1
       type: "BoolSymptom"
 assessment_2:
   submission_token: 0badf6de985b9d1d954db6f6c80d1d367e5975d5
-  experiencing_symptoms: true
   symptoms:
     - id: 1
-      name: "temperature"
-      label: "Temperature"
-      bool_value: nil
-      float_value: 101.4
-      int_value: nil
-      condition_id: 1
-      type: "FloatSymptom"
+      label: "Fever"
+      bool_value: false
+      type: "BoolSymptom"
     - id: 2
-      name: "cough"
       label: "Cough"
       bool_value: true
-      float_value: nil
-      int_value: nil
-      condition_id: 1
       type: "BoolSymptom"
     - id: 3
-      name: "difficulty-breathing"
       label: "Difficulty Breathing"
       bool_value: true
-      float_value: nil
-      int_value: nil
-      condition_id: 1
       type: "BoolSymptom"
 assessment_3:
   submission_token: 0badf6de985b9d1d954db6f6c80d1d367e5975d5
-  experiencing_symptoms: true
   symptoms:
-  - id: 1
-    name: "temperature"
-    label: "Temperature"
-    bool_value: nil
-    float_value: 101.4
-    int_value: nil
-    condition_id: 1
-    type: "FloatSymptom"
-  - id: 2
-    name: "cough"
-    label: "Cough"
-    bool_value: true
-    float_value: nil
-    int_value: nil
-    condition_id: 1
-    type: "BoolSymptom"
-  - id: 3
-    name: "difficulty-breathing"
-    label: "Difficulty Breathing"
-    bool_value: true
-    float_value: nil
-    int_value: nil
-    condition_id: 1
-    type: "BoolSymptom"
+    - id: 1
+      label: "Fever"
+      bool_value: false
+      type: "BoolSymptom"
+    - id: 2
+      label: "Cough"
+      bool_value: false
+      type: "BoolSymptom"
+    - id: 3
+      label: "Difficulty Breathing"
+      bool_value: false
+      type: "BoolSymptom"
 assessment_4:
   submission_token: 0badf6de985b9d1d954db6f6c80d1d367e5975d5
   experiencing_symptoms: true
   symptoms:
     - id: 1
-      name: "temperature"
-      label: "Temperature"
-      bool_value: nil
-      float_value: 101.4
-      int_value: nil
-      condition_id: 1
-      type: "FloatSymptom"
+      label: "Fever"
+      bool_value: false
+      type: "BoolSymptom"
     - id: 2
-      name: "cough"
       label: "Cough"
       bool_value: true
-      float_value: nil
-      int_value: nil
-      condition_id: 1
       type: "BoolSymptom"
     - id: 3
-      name: "difficulty-breathing"
       label: "Difficulty Breathing"
-      bool_value: true
-      float_value: nil
-      int_value: nil
-      condition_id: 1
+      bool_value: false
       type: "BoolSymptom"
