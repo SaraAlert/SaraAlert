@@ -6,6 +6,6 @@ every 4.hours do
     runner "CloseSubjectsJob.perform_now"
 end
 
-every 6.hours do
+every 30.minutes do
     "rake analytics:cache_current_analytics"
 end
