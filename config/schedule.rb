@@ -5,3 +5,7 @@ set :output, "/tmp/cronlog.log"
 every 4.hours do
     runner "CloseSubjectsJob.perform_now"
 end
+
+every 6.hours do
+    "rake analytics:cache_current_analytics"
+end

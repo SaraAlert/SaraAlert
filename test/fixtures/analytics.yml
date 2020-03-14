@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  monitorees_count: 1
+  symptomatic_monitorees_count: 1
+  confirmed_cases_count: 1
+  closed_cases_count: 1
+  total_reports_count: 1
+  jurisdiction_state: MyString
+  jurisdiction_zip_code: MyString
+
+two:
+  monitorees_count: 1
+  symptomatic_monitorees_count: 1
+  confirmed_cases_count: 1
+  closed_cases_count: 1
+  total_reports_count: 1
+  jurisdiction_state: MyString
+  jurisdiction_zip_code: MyString

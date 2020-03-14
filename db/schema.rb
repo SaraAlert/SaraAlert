@@ -10,10 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_28_204449) do
+ActiveRecord::Schema.define(version: 2020_03_13_134912) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "analytics", force: :cascade do |t|
+    t.integer "jurisdiction_id"
+    t.integer "monitorees_count"
+    t.integer "symptomatic_monitorees_count"
+    t.integer "confirmed_cases_count"
+    t.integer "closed_cases_count"
+    t.integer "open_cases_count"
+    t.integer "total_reports_count"
+    t.integer "non_reporting_monitorees_count"
+    t.string "monitoree_state_map"
+    t.string "symptomatic_state_map"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "assessments", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false

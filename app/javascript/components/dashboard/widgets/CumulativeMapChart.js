@@ -7,8 +7,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import { USAMap, stateOptions } from '../../data';
 import { PropTypes } from 'prop-types';
-// import Slider from 'rc-slider/lib/Slider';
-// import 'rc-slider/assets/index.css';
+import Slider from 'rc-slider/lib/Slider';
+import 'rc-slider/assets/index.css';
 
 class CumulativeMapChart extends React.Component {
   constructor(props) {
@@ -28,7 +28,6 @@ class CumulativeMapChart extends React.Component {
       maximumCount: 0,
       selectedDateData: {},
       selectedDay: null,
-      cumulativeDateData: {},
       // All this `map` does is to translate `{'Kansas' : 5}` to `{'KA' : 5}` for all states
       mappedSymptomaticPatientCountByStateAndDay: this.props.stats.symptomatic_patient_count_by_state_and_day.map(x => {
         let mappedValues = {};
@@ -62,7 +61,6 @@ class CumulativeMapChart extends React.Component {
     // maximumCount
     this.setState({ selectedDay: _.head(x).day });
     this.setState({ maximumCount: Math.max(..._.valuesIn(_.omit(_.last(x), 'day'))) });
-    this.setState({ cumulativeDateData: x });
     this.setState({ selectedDateData: this.state.mappedSymptomaticPatientCountByStateAndDay[0] });
   }
 
@@ -115,13 +113,16 @@ class CumulativeMapChart extends React.Component {
   }
 
   handleDateRangeChange(value) {
-    this.setState({ selectedDateData: _.omit(this.state.cumulativeDateData[value], 'day') });
-    this.setState({ selectedDay: this.state.cumulativeDateData[value].day });
+    this.setState({ selectedDateData: _.omit(this.state.mappedSymptomaticPatientCountByStateAndDay[value], 'day') });
+    this.setState({ selectedDay: this.state.mappedSymptomaticPatientCountByStateAndDay[value].day });
   }
 
   render() {
     const colorScale = scaleQuantize()
-      .domain([0, this.state.maximumCount])
+      .domain([
+        0,
+        Math.max(...Object.values(this.state.mappedSymptomaticPatientCountByStateAndDay.map(x => _.omit(x, 'day'))).map(x => Math.max(...Object.values(x)))),
+      ])
       .range(['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']);
 
     return (
@@ -166,7 +167,7 @@ class CumulativeMapChart extends React.Component {
                 </Geographies>
               </ZoomableGroup>
             </ComposableMap>
-            {/* <div className="mx-5 mt-4">
+            <div className="mx-5 mt-4">
               <Slider
                 max={this.state.mappedSymptomaticPatientCountByStateAndDay.length - 1}
                 marks={this.getDateRange()}
@@ -176,7 +177,7 @@ class CumulativeMapChart extends React.Component {
                 dotStyle={{ borderColor: '#333', backgroundColor: 'white' }}
                 onChange={this.handleDateRangeChange}
               />
-            </div> */}
+            </div>
             <div className="mt-5 text-center display-6 font-weight-bold"> {moment(this.state.selectedDay).format('MM - DD - YYYY')}</div>
             <div className="controls">
               <button className="btn btn-outline-primary" onClick={this.handleZoomIn}>

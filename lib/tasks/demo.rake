@@ -117,7 +117,7 @@ namespace :demo do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     days = (ENV['DAYS'] || 14).to_i
-    count = (ENV['COUNT'] || 25).to_i
+    count = 2000
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
@@ -142,7 +142,7 @@ namespace :demo do
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
           if rand < 0.7 # 70% reporting rate on any given day
             reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
-            if rand < 0.03 # 3% report some sort of symptoms
+            if rand < 0.3 # 30% report some sort of symptoms
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               number_of_symptoms = rand(bool_symps.count) + 1
               bool_symps.each do |symp|  symp['bool_value'] = false end
@@ -153,11 +153,10 @@ namespace :demo do
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               bool_symps.each do |symp|  symp['bool_value'] = false end
                 reported_condition.symptoms.select {|s| s.name == 'temperature' }.first.float_value = "99.8"
-              patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
+              patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
             end
           end
         end
-
         # Some proportion of patients who are symptomatic may be confirmed cases
         Patient.find_each do |patient|
           next if patient.confirmed_case
@@ -263,6 +262,15 @@ namespace :demo do
 
         # Cases increase 10-20% every day
         count += (count * (0.1 + (rand / 10))).round
+        # Run the analytics cache update at the end of each simulation day
+        before_analytics_count = Analytic.count
+        Rake::Task["analytics:cache_current_analytics"].reenable
+        Rake::Task["analytics:cache_current_analytics"].invoke
+        after_analytics_count = Analytic.count
+        Analytic.all[before_analytics_count..after_analytics_count].each do |analytic|
+          analytic.update!(created_at: today, updated_at: today)
+        end
+
       end
 
       puts ' done!'

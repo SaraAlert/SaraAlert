@@ -7,8 +7,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import { USAMap, stateOptions } from '../../data';
 import { PropTypes } from 'prop-types';
-// import Slider from 'rc-slider/lib/Slider';
-// import 'rc-slider/assets/index.css';
+import Slider from 'rc-slider/lib/Slider';
+import 'rc-slider/assets/index.css';
 
 class MapChart extends React.Component {
   constructor(props) {
@@ -147,7 +147,7 @@ class MapChart extends React.Component {
                 </Geographies>
               </ZoomableGroup>
             </ComposableMap>
-            {/* <div className="mx-5 mt-4">
+            <div className="mx-5 mt-4">
               <Slider
                 max={this.state.mappedTotalPatientCountByStateAndDay.length - 1}
                 marks={this.getDateRange()}
@@ -156,8 +156,8 @@ class MapChart extends React.Component {
                 handleStyle={{ borderColor: '#595959', backgroundColor: 'white' }}
                 dotStyle={{ borderColor: '#333', backgroundColor: 'white' }}
                 onChange={this.handleDateRangeChange}
-                />
-            </div> */}
+              />
+            </div>
             <div className="mt-5 text-center display-6 font-weight-bold"> {moment(this.state.selectedDay).format('MM - DD - YYYY')}</div>
             <div className="controls">
               <button className="btn btn-outline-primary" onClick={this.handleZoomIn}>

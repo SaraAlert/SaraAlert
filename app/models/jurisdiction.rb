@@ -11,6 +11,16 @@ class Jurisdiction < ApplicationRecord
 
   has_many :threshold_conditions, class_name: 'ThresholdCondition'
 
+  has_many :analytics, class_name: 'Analytic'
+
+  scope :leaf_nodes, lambda {
+    Jurisdiction.all.select{ |jur| jur.has_children? == false }
+  }
+
+  scope :non_leaf_nodes, lambda {
+    Jurisdiction.all.select{ |jur| jur.has_children? == true }
+  }
+
   # All patients are all those in this or descendent jurisdictions
   def all_patients
     Patient.where(jurisdiction_id: subtree_ids)
