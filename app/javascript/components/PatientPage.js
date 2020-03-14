@@ -1,12 +1,12 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Collapse } from 'react-bootstrap';
 import Patient from './Patient';
 import { PropTypes } from 'prop-types';
 
 class PatientPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { showAddAssessment: false };
+    this.state = { showAddAssessment: false, showBody: true };
     this.reloadHook = this.reloadHook.bind(this);
   }
 
@@ -19,13 +19,19 @@ class PatientPage extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">
+          <Card.Header
+            as="h5"
+            onClick={() => {
+              this.setState({ showBody: !this.state.showBody });
+            }}>
             Monitoree Details {this.props.patient.user_defined_id ? `(ID: ${this.props.patient.user_defined_id})` : ''}{' '}
             {this.props.patient.id && <a href={'/patients/' + this.props.patient.id + '/edit'}>(click here to edit)</a>}
           </Card.Header>
-          <Card.Body>
-            <Patient details={this.props.patient || {}} groupMembers={this.props.group_members || []} />
-          </Card.Body>
+          <Collapse in={this.state.showBody}>
+            <Card.Body>
+              <Patient details={this.props.patient || {}} groupMembers={this.props.group_members || []} />
+            </Card.Body>
+          </Collapse>
         </Card>
       </React.Fragment>
     );

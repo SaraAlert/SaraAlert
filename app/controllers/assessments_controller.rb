@@ -42,18 +42,19 @@ class AssessmentsController < ApplicationController
     # Determine if a user created this assessment or a monitoree
     if current_user.nil?
       @assessment.who_reported = 'Monitoree'
+      @assessment.save!
     else
       @assessment.who_reported = current_user.email
+      @assessment.save!
       history = History.new
       history.created_by = current_user.email
-      comment = 'User created a new subject report.'
+      comment = 'User created a new subject report. ID: ' + @assessment.id.to_s
       history.comment = comment
       history.patient = patient
       history.history_type = 'Report Created'
       history.save!
     end
-    # Attempt to save and continue; else if failed redirect to index
-    redirect_to(patient_assessments_url) && return if @assessment.save!
+    redirect_to(patient_assessments_url)
   end
 
   def update
