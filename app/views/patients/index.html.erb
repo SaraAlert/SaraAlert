@@ -1,8 +1,8 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Dashboard", href: nil} ] } %>
 
-<%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-lg btn-primary btn-square ml-2 mb-3" %>
+<%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-primary btn-square ml-2 mb-3" %>
 
-<%= link_to '<i class="fas fa-chart-pie"></i> View Enrollment Analytics'.html_safe, {controller: :analytics, action: "index"}, class: "btn btn-lg btn-primary btn-square ml-3 mb-3" %>
+<%= link_to '<i class="fas fa-chart-pie"></i> View Enrollment Analytics'.html_safe, {controller: :analytics, action: "index"}, class: "btn btn-primary btn-square ml-3 mb-3" %>
 
 <div class="mx-2 pb-4">
   <div class="card card-square">

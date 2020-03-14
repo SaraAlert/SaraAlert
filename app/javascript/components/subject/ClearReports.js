@@ -3,24 +3,29 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 
-class ClearAssessments extends React.Component {
+class ClearReports extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showClearAssessmentsModal: false,
+      showClearReportsModal: false,
     };
-    this.toggleClearAssessmentsModal = this.toggleClearAssessmentsModal.bind(this);
-    this.clearAssessments = this.clearAssessments.bind(this);
+    this.toggleClearReportsModal = this.toggleClearReportsModal.bind(this);
+    this.clearReports = this.clearReports.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  toggleClearAssessmentsModal() {
-    let current = this.state.showClearAssessmentsModal;
+  toggleClearReportsModal() {
+    let current = this.state.showClearReportsModal;
     this.setState({
-      showClearAssessmentsModal: !current,
+      showClearReportsModal: !current,
     });
   }
 
-  clearAssessments() {
+  handleChange(event) {
+    this.setState({ [event.target.id]: event.target.value });
+  }
+
+  clearReports() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post('/patients/' + this.props.patient.id + '/status/clear', {
@@ -30,7 +35,7 @@ class ClearAssessments extends React.Component {
         location.href = '/patients/' + this.props.patient.id;
       })
       .catch(error => {
-        console.log(error);
+        console.error(error);
       });
   }
 
@@ -65,20 +70,20 @@ class ClearAssessments extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button onClick={this.toggleClearAssessmentsModal} className="btn-lg btn-square">
+        <Button onClick={this.toggleClearReportsModal} className="btn-lg btn-square">
           Mark All As Reviewed
         </Button>
-        {this.state.showClearAssessmentsModal && this.createModal('Mark All As Reviewed', this.toggleClearAssessmentsModal, this.clearAssessments)}
+        {this.state.showClearReportsModal && this.createModal('Mark All As Reviewed', this.toggleClearReportsModal, this.clearReports)}
       </React.Fragment>
     );
   }
 }
 
-ClearAssessments.propTypes = {
+ClearReports.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.array,
   jurisdiction_id: PropTypes.number,
 };
 
-export default ClearAssessments;
+export default ClearReports;

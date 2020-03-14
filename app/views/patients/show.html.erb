@@ -10,8 +10,8 @@
 <% end %>
 
 <% if current_user.can_view_patient_assessments? %>
-  <div class="modal" tabindex="-1" role="dialog" id="modal-new">
-    <div class="modal-dialog" role="document">
+  <div class="modal fade" tabindex="-1" role="dialog" id="modal-new">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -28,16 +28,13 @@
   <div class="card mx-2 mt-3 mb-4 card-square">
     <h5 class="card-header"> Reports <a href="#" data-toggle="modal" data-target="#modal-new">(add new)</a></h5>
     <div class="m-4">
-      <div class="pb-4">
-        <%= react_component("subject/ClearAssessments", { current_user: current_user, authenticity_token: form_authenticity_token, patient: @patient } ) %>
-      </div>
       <% columns= [] %>
       <% @patient.assessments.each do |assessment| columns.concat(assessment.all_symptom_names) end %>
       <% columns = columns.uniq%>
       <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
         <thead>
           <tr>
-            <th style="display:none;">id</th>
+            <th class="DataTable-table-header">ID</th>
             <th class="DataTable-table-header">Needs Review</th>
             <th class="DataTable-table-header">Reporter</th>
             <th class="DataTable-table-header">Date and Time</th>
@@ -50,7 +47,7 @@
         <tbody>
           <% @patient.assessments.order('created_at').each do |assessment| -%>
             <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
-              <td style="display:none;"><%= assessment.id %></th>
+              <td><%= assessment.id %></th>
               <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
               <td><%= assessment.who_reported %></td>
               <td><%= assessment.created_at %></td>
@@ -66,19 +63,23 @@
                 <% end %>
               <% end -%>
               <td>
-                <a href="#" data-toggle="modal" data-target="#modal-<%= assessment.id %>">
-                  Edit
-                </a>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="btn btn-link py-0"><i class="fas fa-edit"></i> Edit</button>
+                  <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                </div>
               </td>
             </tr>
           <% end -%>
         </tbody>
       </table>
+      <div class="pb-4">
+        <%= react_component("subject/ClearReports", { current_user: current_user, authenticity_token: form_authenticity_token, patient: @patient } ) %>
+      </div>
     </div>
   </div>
   <% @patient.assessments.order('created_at').each do |assessment| -%>
-    <div class="modal" tabindex="-1" role="dialog" id="<%= 'modal-' + assessment.id.to_s %>" key="<%= 'modal-' + assessment.id.to_s %>">
-      <div class="modal-dialog" role="document">
+    <div class="modal fade" tabindex="-1" role="dialog" id="<%= 'modal-' + assessment.id.to_s %>" key="<%= 'modal-' + assessment.id.to_s %>">
+      <div class="modal-dialog modal-dialog-centered" role="document">
          <div class="modal-content">
             <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">

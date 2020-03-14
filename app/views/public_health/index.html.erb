@@ -1,15 +1,15 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Dashboard", href: nil} ] } %>
 
 <% if current_user.can_view_analytics? %>
-  <%= link_to '<i class="fas fa-chart-pie"></i> View Analytics'.html_safe, {controller: "analytics", action: "index"}, class: "btn btn-lg btn-primary btn-square ml-2 mb-4" %>
+  <%= link_to '<i class="fas fa-chart-pie"></i> View Analytics'.html_safe, {controller: "analytics", action: "index"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
 <% end %>
 
 <% if current_user.can_create_patient? %>
-  <%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-lg btn-primary btn-square ml-2 mb-4" %>
+  <%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
 <% end %>
 
 <% if current_user.can_import? %>
-  <button type="button" class="btn btn-primary btn-lg mb-4 ml-2" data-toggle="modal" data-target="#epixModal">
+  <button type="button" class="btn btn-primary mb-4 ml-2" data-toggle="modal" data-target="#epixModal">
     <i class="fas fa-upload"></i> Import Epi-X
   </button>
   <div class="modal fade" id="epixModal" tabindex="-1" role="dialog" aria-labelledby="epixModalLabel" aria-hidden="true">
