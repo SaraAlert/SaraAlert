@@ -1,6 +1,6 @@
 namespace :analytics do
 
-    desc "Cache Current Analytis"
+    desc "Cache Current Analytics"
     task cache_current_analytics: :environment do
         jurisdiction_analytic_map = {}
 
