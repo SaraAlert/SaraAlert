@@ -33,45 +33,44 @@ class AnalyticsController < ApplicationController
   end
 
   def epi_stats # rubocop:todo Metrics/AbcSize
-
-    jurisdiction_analytics =  current_user.jurisdiction.analytics
+    jurisdiction_analytics = current_user.jurisdiction.analytics
     root_jurisdiction_analytics = current_user.jurisdiction.root.analytics
     patient_count_by_day_array = []
     assessment_result_by_day_array = []
     total_patient_count_by_state_and_day = []
     symptomatic_patient_count_by_state_and_day = []
-    dates = (jurisdiction_analytics.pluck(:created_at).min().to_date..jurisdiction_analytics.pluck(:created_at).max().to_date).to_a
+    dates = (jurisdiction_analytics.pluck(:created_at).min.to_date..jurisdiction_analytics.pluck(:created_at).max.to_date).to_a
 
     dates.each do |date|
+      next if date.nil?
+
       # Get last saved analytic for each date
       analytic = jurisdiction_analytics.where(created_at: date.beginning_of_day..date.end_of_day).last
       root_analytic = root_jurisdiction_analytics.where(created_at: date.beginning_of_day..date.end_of_day).last
-      if date != nil
-        open_cases = analytic&.open_cases_count != nil ? analytic.open_cases_count : 0
-        patient_count_by_day_array << { day: date, cases: open_cases}
-        symp_count = analytic&.symptomatic_monitorees_count != nil ? analytic.symptomatic_monitorees_count : 0
-        assessment_result_by_day_array << {
+      open_cases = !analytic&.open_cases_count.nil? ? analytic.open_cases_count : 0
+      patient_count_by_day_array << { day: date, cases: open_cases }
+      symp_count = !analytic&.symptomatic_monitorees_count.nil? ? analytic.symptomatic_monitorees_count : 0
+      assessment_result_by_day_array << {
         'name' => date.to_s,
         'Symptomatic Assessments' => symp_count,
-        'Asymptomatic Assessments' => open_cases - symp_count,
-        }
-        # Map analytics are pulled from the root (most likely USA) jurisdiction
-        sym_map = root_analytic&.monitoree_state_map != nil ? (JSON.parse root_analytic.monitoree_state_map.gsub('=>', ':')) : {}
-        symptomatic_patient_count_by_state_and_day << { day: date }.merge(sym_map)
-        count_map = root_analytic&.symptomatic_state_map != nil ? (JSON.parse root_analytic.symptomatic_state_map.gsub('=>', ':')) : {}
-        total_patient_count_by_state_and_day << { day: date }.merge(count_map)
-      end
+        'Asymptomatic Assessments' => open_cases - symp_count
+      }
+      # Map analytics are pulled from the root (most likely USA) jurisdiction
+      sym_map = root_analytic&.monitoree_state_map.nil? ? (JSON.parse root_analytic.monitoree_state_map.gsub('=>', ':')) : {}
+      symptomatic_patient_count_by_state_and_day << { day: date }.merge(sym_map)
+      count_map = !root_analytic&.symptomatic_state_map.nil? ? (JSON.parse root_analytic.symptomatic_state_map.gsub('=>', ':')) : {}
+      total_patient_count_by_state_and_day << { day: date }.merge(count_map)
     end
 
     most_recent_analytics = current_user.jurisdiction.analytics.last
-  
+
     {
       last_updated_at: most_recent_analytics.updated_at,
       subject_status: [
         # TODO: Determine if asymptomatic included closed patients too
-        { name: 'Asymptomatic', value: most_recent_analytics.open_cases_count - most_recent_analytics.symptomatic_monitorees_count},
-        { name: 'Non-Reporting', value: most_recent_analytics.non_reporting_monitorees_count},
-        { name: 'Symptomatic', value: most_recent_analytics.symptomatic_monitorees_count},
+        { name: 'Asymptomatic', value: most_recent_analytics.open_cases_count - most_recent_analytics.symptomatic_monitorees_count },
+        { name: 'Non-Reporting', value: most_recent_analytics.non_reporting_monitorees_count },
+        { name: 'Symptomatic', value: most_recent_analytics.symptomatic_monitorees_count },
         { name: 'Closed', value: most_recent_analytics.closed_cases_count }
       ],
       reporting_summmary: [
@@ -81,7 +80,7 @@ class AnalyticsController < ApplicationController
       monitoring_distribution_by_day: patient_count_by_day_array,
       symptomatic_patient_count_by_state_and_day: symptomatic_patient_count_by_state_and_day,
       total_patient_count_by_state_and_day: total_patient_count_by_state_and_day,
-      assessment_result_by_day: assessment_result_by_day_array,
+      assessment_result_by_day: assessment_result_by_day_array
     }
   end
 end

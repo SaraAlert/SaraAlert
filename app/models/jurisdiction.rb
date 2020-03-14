@@ -14,11 +14,11 @@ class Jurisdiction < ApplicationRecord
   has_many :analytics, class_name: 'Analytic'
 
   scope :leaf_nodes, lambda {
-    Jurisdiction.all.select{ |jur| jur.has_children? == false }
+    Jurisdiction.all.select { |jur| jur.has_children? == false }
   }
 
   scope :non_leaf_nodes, lambda {
-    Jurisdiction.all.select{ |jur| jur.has_children? == true }
+    Jurisdiction.all.select { |jur| jur.has_children? == true }
   }
 
   # All patients are all those in this or descendent jurisdictions
