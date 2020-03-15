@@ -4,7 +4,7 @@
 
 Sara Alert is an open source tool built to allow public health officials to monitor potentially exposed individuals (“monitorees”, e.g., contacts of cases or travelers from affected areas) over time for symptoms by enrolling them in the system. During enrollment, the potentially exposed individual indicates their preferred method for daily contact. The enrolled monitoree receives a daily reminder from Sara Alert to enter temperature and any symptoms. If any symptoms are reported, the public health official receives an alert in order to coordinate care. If the monitoree fails to report, the public health official can follow up after a pre-defined period. Public health officials have access to reports and aggregated data based on their level of access.
 
-Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that is can be deployed to support future outbreaks.
+Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that it can be deployed to support future outbreaks.
 
 ![ConOps](https://user-images.githubusercontent.com/14923551/76426329-4c48ec80-6381-11ea-819e-fcef98c66a2a.png)
 
