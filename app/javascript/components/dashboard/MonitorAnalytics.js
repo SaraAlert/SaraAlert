@@ -45,6 +45,9 @@ class MonitorAnalytics extends React.Component {
               EXPORT ANALYSIS AS PNG
             </Button>
           </Col>
+          <Col md="24" className="mx-2 my-4">
+            <h5>Last Updated At: {moment(this.props.stats.last_updated_at).format('YYYY-MM-DD HH:mm:ss')}</h5>
+          </Col>
         </Row>
         <div className="mx-2 pb-4">
           <Row>

@@ -30,6 +30,10 @@ class Patient < ApplicationRecord
     where('monitoring = ?', false)
   }
 
+  scope :confirmed_case, lambda {
+    where('confirmed_case = ?', true)
+  }
+
   scope :symptomatic, lambda {
     where('monitoring = ?', true)
       .joins(:assessments)
@@ -37,6 +41,7 @@ class Patient < ApplicationRecord
       .where('assessments.symptomatic = ?', true)
   }
 
+  # Non reporting asymptomatic individuals
   scope :non_reporting, lambda {
     where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       .where('monitoring = ?', true)
