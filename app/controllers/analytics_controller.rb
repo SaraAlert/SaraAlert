@@ -40,7 +40,6 @@ class AnalyticsController < ApplicationController
     total_patient_count_by_state_and_day = []
     symptomatic_patient_count_by_state_and_day = []
     dates = (jurisdiction_analytics.pluck(:created_at).min.to_date..jurisdiction_analytics.pluck(:created_at).max.to_date).to_a
-
     dates.each do |date|
       next if date.nil?
 
@@ -50,10 +49,11 @@ class AnalyticsController < ApplicationController
       open_cases = !analytic&.open_cases_count.nil? ? analytic.open_cases_count : 0
       patient_count_by_day_array << { day: date, cases: open_cases }
       symp_count = !analytic&.symptomatic_monitorees_count.nil? ? analytic.symptomatic_monitorees_count : 0
+      asymp_count = !analytic&.asymptomatic_monitorees_count.nil? ? analytic.asymptomatic_monitorees_count : 0
       assessment_result_by_day_array << {
         'name' => date.to_s,
         'Symptomatic Assessments' => symp_count,
-        'Asymptomatic Assessments' => open_cases - symp_count
+        'Asymptomatic Assessments' => asymp_count
       }
       # Map analytics are pulled from the root (most likely USA) jurisdiction
       sym_map = !root_analytic&.monitoree_state_map.nil? ? (JSON.parse root_analytic.monitoree_state_map.gsub('=>', ':')) : {}
@@ -67,8 +67,7 @@ class AnalyticsController < ApplicationController
     {
       last_updated_at: most_recent_analytics.updated_at,
       subject_status: [
-        # TODO: Determine if asymptomatic included closed patients too
-        { name: 'Asymptomatic', value: most_recent_analytics.open_cases_count - most_recent_analytics.symptomatic_monitorees_count },
+        { name: 'Asymptomatic', value: most_recent_analytics.asymptomatic_monitorees_count },
         { name: 'Non-Reporting', value: most_recent_analytics.non_reporting_monitorees_count },
         { name: 'Symptomatic', value: most_recent_analytics.symptomatic_monitorees_count },
         { name: 'Closed', value: most_recent_analytics.closed_cases_count }

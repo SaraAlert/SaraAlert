@@ -33,6 +33,7 @@ namespace :analytics do
     jurisdiction_monitorees = jurisdiction.immediate_patients
     analytic.monitorees_count = jurisdiction_monitorees.count
     analytic.symptomatic_monitorees_count = jurisdiction_monitorees.symptomatic.count
+    analytic.asymptomatic_monitorees_count = jurisdiction_monitorees.asymptomatic.count
     analytic.confirmed_cases_count = jurisdiction_monitorees.confirmed_case.count
     analytic.closed_cases_count = jurisdiction_monitorees.monitoring_closed.count
     analytic.open_cases_count = jurisdiction_monitorees.monitoring_open.count
@@ -56,6 +57,7 @@ namespace :analytics do
 
     parent_analytic.monitorees_count += analytic.monitorees_count
     parent_analytic.symptomatic_monitorees_count += analytic.symptomatic_monitorees_count
+    parent_analytic.asymptomatic_monitorees_count += analytic.asymptomatic_monitorees_count
     parent_analytic.confirmed_cases_count += analytic.confirmed_cases_count
     parent_analytic.closed_cases_count += analytic.closed_cases_count
     parent_analytic.open_cases_count += analytic.open_cases_count

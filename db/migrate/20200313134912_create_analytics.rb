@@ -5,6 +5,7 @@ class CreateAnalytics < ActiveRecord::Migration[6.0]
 
       t.integer :monitorees_count
       t.integer :symptomatic_monitorees_count
+      t.integer :asymptomatic_monitorees_count
       t.integer :confirmed_cases_count
       t.integer :closed_cases_count
       t.integer :open_cases_count

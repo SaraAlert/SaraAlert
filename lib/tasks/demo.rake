@@ -117,7 +117,7 @@ namespace :demo do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     days = (ENV['DAYS'] || 14).to_i
-    count = (ENV['COUNT'] || 25).to_i
+    count = (ENV['COUNT'] || 50).to_i
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
@@ -128,7 +128,6 @@ namespace :demo do
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
-
       # Create the patients for this day
       print "Creating synthetic monitorees for day #{day + 1} (#{today})..."
 
@@ -139,7 +138,7 @@ namespace :demo do
           next unless patient.created_at <= today
           next if patient.confirmed_case
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
-          if rand < 0.7 # 70% reporting rate on any given day
+          if rand < 0.9 # 70% reporting rate on any given day
             reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
             if rand < 0.3 # 30% report some sort of symptoms
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
@@ -150,7 +149,6 @@ namespace :demo do
             else
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               bool_symps.each do |symp|  symp['bool_value'] = false end
-              reported_condition.symptoms.select {|s| s.name == 'temperature' }.first.float_value = "99.8"
               patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
             end
           end
@@ -265,8 +263,11 @@ namespace :demo do
         Rake::Task["analytics:cache_current_analytics"].reenable
         Rake::Task["analytics:cache_current_analytics"].invoke
         after_analytics_count = Analytic.count
-        Analytic.all[before_analytics_count..after_analytics_count].each do |analytic|
-          analytic.update!(created_at: today, updated_at: today)
+        # Add time onto update time for more realistic reports
+        t = Time.now
+        date_time_update = DateTime.new(today.year, today.month, today.day, t.hour, t.min, t.sec, t.zone)
+        Analytic.all.order(:id)[before_analytics_count..after_analytics_count].each do |analytic|
+          analytic.update!(created_at: date_time_update, updated_at: date_time_update)
         end
 
       end

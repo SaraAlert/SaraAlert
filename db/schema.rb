@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.integer "jurisdiction_id"
     t.integer "monitorees_count"
     t.integer "symptomatic_monitorees_count"
+    t.integer "asymptomatic_monitorees_count"
     t.integer "confirmed_cases_count"
     t.integer "closed_cases_count"
     t.integer "open_cases_count"
@@ -183,6 +184,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
   create_table "symptoms", force: :cascade do |t|
     t.string "name"
     t.string "label"
+    t.string "notes"
     t.boolean "bool_value"
     t.float "float_value"
     t.integer "int_value"
