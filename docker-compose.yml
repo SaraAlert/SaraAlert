@@ -14,7 +14,7 @@ services:
     depends_on:
       - redis-bridge
       - redis-enrollment
-      - postgres
+      - postgres-enrollment
     command: "bin/bundle exec rails s -u puma -p 3000 -b 'ssl://0.0.0.0?key=/app/disease-trakker/tls/puma.key&cert=/app/disease-trakker/tls/puma.crt'"
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
@@ -74,7 +74,7 @@ services:
       - .env-prod-enrollment
     restart: unless-stopped
     networks:
-      - dt-net
+      - dt-net-enrollment
     command: "bin/bundle exec sidekiq -q default -q mailers"
     depends_on:
       - redis-enrollment
