@@ -12,19 +12,13 @@ class AssessmentsController < ApplicationController
   end
 
   def new
-    if ADMIN_OPTIONS['report_mode']
-      @assessment = Assessment.new
-      @patient_submission_token = params[:patient_submission_token]
-      reporting_condition = Jurisdiction.find_by_id(params[:jurisdiction_id]).hierarchical_condition_unpopulated_symptoms
-      @symptoms = reporting_condition.symptoms
-      @threshold_hash = reporting_condition.threshold_condition_hash
-    else
-      @assessment = Assessment.new
-      @patient_submission_token = params[:patient_submission_token]
-      reporting_condition = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction.hierarchical_condition_unpopulated_symptoms
-      @symptoms = reporting_condition.symptoms
-      @threshold_hash = reporting_condition.threshold_condition_hash
-    end
+    @assessment = Assessment.new
+    @patient_submission_token = params[:patient_submission_token]
+    jurisdiction = Jurisdiction.find_by_id(params[:jurisdiction_id]) if ADMIN_OPTIONS['report_mode']
+    jurisdiction = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction unless ADMIN_OPTIONS['report_mode']
+    reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
+    @symptoms = reporting_condition.symptoms
+    @threshold_hash = reporting_condition.threshold_condition_hash
   end
 
   def create
