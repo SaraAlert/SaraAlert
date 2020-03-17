@@ -32,8 +32,10 @@ class MapChart extends React.Component {
         let mappedValues = {};
         mappedValues['day'] = x.day;
         _.forIn(_.omit(x, 'day'), (value, key) => {
-          let abbreviation = stateOptions.find(state => state.name === key).abbrv;
-          mappedValues[abbreviation] = value;
+          let abbreviation = stateOptions.find(state => state.name === key)?.abbrv;
+          if (abbreviation) {
+            mappedValues[abbreviation] = value;
+          }
         });
         return mappedValues;
       }),
