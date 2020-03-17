@@ -30,16 +30,16 @@ class AssessmentsController < ApplicationController
       ProduceAssessmentJob.perform_later assessment_placeholder
     else
       # If not in report mode, make sure user is authenticated!
-      redirect_to root_url unless current_user&.can_create_patient_assessments?
+      redirect_to root_url && return unless current_user&.can_create_patient_assessments?
 
       # The patient providing this assessment is identified through the submission_token
       patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
 
-      redirect_to root_url unless patient
+      redirect_to root_url && return unless patient
       threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
       threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
 
-      redirect_to root_url unless threshold_condition
+      redirect_to root_url && return unless threshold_condition
 
       reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes] }).to_h['symptoms']
 
