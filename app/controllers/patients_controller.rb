@@ -155,11 +155,11 @@ class PatientsController < ApplicationController
     end
     history = History.new
     history.created_by = current_user.email
-    comment = 'User cleared all reports.'
+    comment = 'User reviewed all reports.'
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
     history.comment = comment
     history.patient = patient
-    history.history_type = 'Reports Cleared'
+    history.history_type = 'Reports Reviewed'
     history.save!
   end
 

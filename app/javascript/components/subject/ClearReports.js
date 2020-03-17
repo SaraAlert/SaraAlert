@@ -47,8 +47,7 @@ class ClearReports extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            You are about to mark all reports as reviewed for this subject. This will mark any &quot;Needs Review&quot; reports as &quot;No&quot;. This subject
-            will be considered asymptomatic (or non-reporting, if the subject has not reported recently).
+            This will change any reports where the &quot;Needs Review&quot; column is &quot;Yes&quot; to &quot;No&quot;. This subject will be moved from the &quot;Symptomatic&quot; line list to either the asymptomatic or non reporting line list as appropriate.
           </p>
           <Form.Group>
             <Form.Label>Please describe your reasoning:</Form.Label>
