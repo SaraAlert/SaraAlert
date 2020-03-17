@@ -1,8 +1,4 @@
 # frozen_string_literal: true
-<<<<<<< HEAD
-
-=======
->>>>>>> Add assessment active jobs
 require 'redis'
 
 # ConsumeAssessmentsJob: Pulls assessments created in the split instance and saves them
