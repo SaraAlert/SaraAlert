@@ -14,7 +14,7 @@ class AssessmentsController < ApplicationController
   def new
     @assessment = Assessment.new
     @patient_submission_token = params[:patient_submission_token]
-    jurisdiction = Jurisdiction.find_by_id(params[:jurisdiction_id]) if ADMIN_OPTIONS['report_mode']
+    jurisdiction = Jurisdiction.find_by(unique_identifier: params[:unique_identifier]) if ADMIN_OPTIONS['report_mode']
     jurisdiction = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction unless ADMIN_OPTIONS['report_mode']
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
     @symptoms = reporting_condition.symptoms

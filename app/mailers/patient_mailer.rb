@@ -6,11 +6,13 @@ class PatientMailer < ApplicationMailer
 
   def assessment_email(patient)
     @patient = patient
+    @jurisdiction_unique_id = Jurisdiction.find_by_id(@patient.jurisdiction_id).unique_identifier
     mail(to: patient.email, subject: 'SaraAlert Report Reminder')
   end
 
   def enrollment_email(patient)
     @patient = patient
+    @jurisdiction_unique_id = Jurisdiction.find_by_id(@patient.jurisdiction_id).unique_identifier
     mail(to: patient.email, subject: 'SaraAlert Enrollment')
   end
 

@@ -63,6 +63,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "name"
+    t.string "unique_identifier"
     t.string "ancestry"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
