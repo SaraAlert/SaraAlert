@@ -29,6 +29,9 @@ class AssessmentsController < ApplicationController
       assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
       ProduceAssessmentJob.perform_later assessment_placeholder
     else
+      # If not in report mode, make sure user is authenticated!
+      redirect_to root_url unless current_user&.can_create_patient_assessments?
+
       # The patient providing this assessment is identified through the submission_token
       patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
 

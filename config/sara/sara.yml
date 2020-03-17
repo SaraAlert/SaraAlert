@@ -11,4 +11,4 @@ enable_email: <%= ENV["SARA_ALERT_ENABLE_EMAIL"] || true %>
 enable_sms: <%= ENV["SARA_ALERT_ENABLE_SMS"] || false %>
 
 # Assessment Report Mode
-report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || true %>
+report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || false %>
