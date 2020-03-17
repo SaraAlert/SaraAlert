@@ -59,6 +59,6 @@ class PublicHealthMonitoringHistory < ApplicationSystemTestCase
 
   def verify_all_marked_as_reviewed(user_name)
     assert_selector 'b', text: USERS[user_name]['email']
-    assert_selector 'span', text: 'Reports Cleared'
+    assert_selector 'span', text: 'Reports Reviewed'
   end
 end
