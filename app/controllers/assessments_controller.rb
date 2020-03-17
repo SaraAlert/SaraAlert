@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'redis'
 
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
@@ -12,49 +13,67 @@ class AssessmentsController < ApplicationController
   end
 
   def new
-    @assessment = Assessment.new
-    @patient_submission_token = params[:patient_submission_token]
-    reporting_condition = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction.hierarchical_condition_unpopulated_symptoms
-    @symptoms = reporting_condition.symptoms
-    @threshold_hash = reporting_condition.threshold_condition_hash
+    if ADMIN_OPTIONS['report_mode']
+      @assessment = Assessment.new
+      @patient_submission_token = params[:patient_submission_token]
+      reporting_condition = Jurisdiction.find_by_id(params[:jurisdiction_id]).hierarchical_condition_unpopulated_symptoms
+      @symptoms = reporting_condition.symptoms
+      @threshold_hash = reporting_condition.threshold_condition_hash
+    else
+      @assessment = Assessment.new
+      @patient_submission_token = params[:patient_submission_token]
+      reporting_condition = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction.hierarchical_condition_unpopulated_symptoms
+      @symptoms = reporting_condition.symptoms
+      @threshold_hash = reporting_condition.threshold_condition_hash
+    end
   end
 
   def create
-    # The patient providing this assessment is identified through the submission_token
-    patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
-
-    redirect_to root_url unless patient
-    threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
-    threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
-
-    redirect_to root_url unless threshold_condition
-
-    reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes] }).to_h['symptoms']
-
-    typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
-
-    reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash)
-
-    @assessment = Assessment.new(reported_condition: reported_condition)
-    @assessment.symptomatic = @assessment.symptomatic?
-    @assessment.patient = patient
-
-    # Determine if a user created this assessment or a monitoree
-    if current_user.nil?
-      @assessment.who_reported = 'Monitoree'
-      @assessment.save!
+    if ADMIN_OPTIONS['report_mode']
+      threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
+      reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes] }).to_h['symptoms']
+      patient_submission_token = params.permit(:patient_submission_token)[:patient_submission_token]
+      connection = Redis.new
+      connection.publish 'reports', {threshold_condition_hash: threshold_condition_hash,
+                                     reported_symptoms_array: reported_symptoms_array,
+                                     patient_submission_token: patient_submission_token}.to_json
     else
-      @assessment.who_reported = current_user.email
-      @assessment.save!
-      history = History.new
-      history.created_by = current_user.email
-      comment = 'User created a new subject report. ID: ' + @assessment.id.to_s
-      history.comment = comment
-      history.patient = patient
-      history.history_type = 'Report Created'
-      history.save!
+      # The patient providing this assessment is identified through the submission_token
+      patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
+
+      redirect_to root_url unless patient
+      threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
+      threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
+
+      redirect_to root_url unless threshold_condition
+
+      reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes] }).to_h['symptoms']
+
+      typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
+
+      reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash)
+
+      @assessment = Assessment.new(reported_condition: reported_condition)
+      @assessment.symptomatic = @assessment.symptomatic?
+      @assessment.patient = patient
+
+      # Determine if a user created this assessment or a monitoree
+      if current_user.nil?
+        @assessment.who_reported = 'Monitoree'
+        @assessment.save!
+      else
+        @assessment.who_reported = current_user.email
+        @assessment.save!
+        history = History.new
+        history.created_by = current_user.email
+        comment = 'User created a new subject report. ID: ' + @assessment.id.to_s
+        history.comment = comment
+        history.patient = patient
+        history.history_type = 'Report Created'
+        history.save!
+      end
+      redirect_to(patient_assessments_url)
     end
-    redirect_to(patient_assessments_url)
   end
 
   def update

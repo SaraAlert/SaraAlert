@@ -9,3 +9,6 @@ enable_email: true
 
 # Should Sara Alert send SMS messages?
 enable_sms: false
+
+# Assessment Report Mode
+report_mode: true

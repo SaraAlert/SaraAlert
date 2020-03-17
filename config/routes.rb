@@ -31,6 +31,8 @@ Rails.application.routes.draw do
     resources :assessments, only: [:create, :new, :index]
   end
 
+  get '/patients/:patient_submission_token/:jurisdiction_id', to: 'assessments#new'
+
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
   post '/patients/assessments', to: 'assessments#new_from_email'
