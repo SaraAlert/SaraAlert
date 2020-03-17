@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'redis'
 
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
@@ -30,13 +29,11 @@ class AssessmentsController < ApplicationController
 
   def create
     if ADMIN_OPTIONS['report_mode']
-      threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
-      reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes] }).to_h['symptoms']
-      patient_submission_token = params.permit(:patient_submission_token)[:patient_submission_token]
-      connection = Redis.new
-      connection.publish 'reports', {threshold_condition_hash: threshold_condition_hash,
-                                     reported_symptoms_array: reported_symptoms_array,
-                                     patient_submission_token: patient_submission_token}.to_json
+      assessment_placeholder = {}
+      assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
+      assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes] }).to_h)
+      assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
+      ProduceAssessmentJob.perform_later assessment_placeholder
     else
       # The patient providing this assessment is identified through the submission_token
       patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
