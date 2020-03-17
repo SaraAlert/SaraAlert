@@ -1,8 +1,10 @@
 version: "3"
 
 services:
-  sara-alert:
+  sara-alert-enrollment:
     image: ${SARA_ALERT_IMAGE}:latest
-  sidekiq:
+  sara-alert-assessment:
+    image: ${SARA_ALERT_IMAGE}:latest
+  sidekiq-enrollment:
     image: ${SARA_ALERT_IMAGE}:latest
 

@@ -1,53 +1,93 @@
 version: "3"
 
 services:
-  sara-alert:
+  sara-alert-enrollment:
     image: "${SARA_ALERT_IMAGE}:development-test"
     ports:
       - "443:3000"
     env_file:
-      - .env-prod
+      - .env-prod-enrollment
     restart: unless-stopped
     networks:
-      - dt-net
+      - dt-net-enrollment
+      - dt-net-bridge
     depends_on:
-      - redis
+      - redis-bridge
+      - redis-enrollment
       - postgres
     command: "bin/bundle exec rails s -u puma -p 3000 -b 'ssl://0.0.0.0?key=/app/disease-trakker/tls/puma.key&cert=/app/disease-trakker/tls/puma.crt'"
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
-  postgres:
+  sara-alert-assessment:
+      image: "${SARA_ALERT_IMAGE}:development-test"
+      ports:
+        - "4343:3000"
+      env_file:
+        - .env-prod-assessment
+      restart: unless-stopped
+      networks:
+        - dt-net-assessment
+        - dt-net-bridge
+      depends_on:
+        - redis-bridge
+        - postgres-assessment
+      command: "bin/bundle exec rails s -u puma -p 3000 -b 'ssl://0.0.0.0?key=/app/disease-trakker/tls/puma.key&cert=/app/disease-trakker/tls/puma.crt'"
+      volumes:
+        - '~/tls:/app/disease-trakker/tls:ro'
+  postgres-enrollment:
     image: 'postgres:10.3-alpine'
     volumes:
-      - 'postgres:/var/lib/postgresql/data'
+      - 'postgres-enrollment:/var/lib/postgresql/data'
     env_file:
-      - .env-prod
+      - .env-prod-enrollment
     restart: unless-stopped
     networks:
-      - dt-net
-  redis:
+      - dt-net-enrollment
+  postgres-assessment:
+    image: 'postgres:10.3-alpine'
+    volumes:
+      - 'postgres-assessment:/var/lib/postgresql/data'
+    env_file:
+      - .env-prod-enrollment
+    restart: unless-stopped
+    networks:
+      - dt-net-assessment
+  redis-enrollment:
     image: "redis:rc-alpine"
     volumes:
-      - 'redis:/data'
+      - 'redis-enrollment:/data'
     command: redis-server
     restart: unless-stopped
     networks:
-      - dt-net
-  sidekiq:
+      - dt-net-enrollment
+  redis-bridge:
+    image: "redis:rc-alpine"
+    volumes:
+      - 'redis-bridge:/data'
+    command: redis-server
+    restart: unless-stopped
+    networks:
+      - dt-net-bridge
+  sidekiq-enrollment:
     image: "${SARA_ALERT_IMAGE}:development-test"
     env_file:
-      - .env-prod
+      - .env-prod-enrollment
     restart: unless-stopped
     networks:
       - dt-net
     command: "bin/bundle exec sidekiq -q default -q mailers"
     depends_on:
-      - redis
-      - sara-alert
+      - redis-enrollment
+      - sara-alert-enrollment
+      - postgres-enrollment
 
 volumes:
-  redis:
-  postgres:
+  redis-enrollment:
+  redis-bridge:
+  postgres-assessment:
+  postgres-enrollment:
 
 networks:
-  dt-net:
+  dt-net-enrollment:
+  dt-net-assessment:
+  dt-net-bridge:
