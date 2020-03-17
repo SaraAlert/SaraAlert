@@ -56,9 +56,9 @@ class AnalyticsController < ApplicationController
         'Asymptomatic Assessments' => asymp_count
       }
       # Map analytics are pulled from the root (most likely USA) jurisdiction
-      sym_map = !root_analytic&.monitoree_state_map.nil? ? (JSON.parse root_analytic.monitoree_state_map.gsub('=>', ':')) : {}
+      sym_map = !root_analytic&.monitoree_state_map.nil? ? (JSON.parse root_analytic.monitoree_state_map.gsub('=>', ':').gsub('nil', '"Unknown"')) : {}
       symptomatic_patient_count_by_state_and_day << { day: date }.merge(sym_map)
-      count_map = !root_analytic&.symptomatic_state_map.nil? ? (JSON.parse root_analytic.symptomatic_state_map.gsub('=>', ':')) : {}
+      count_map = !root_analytic&.symptomatic_state_map.nil? ? (JSON.parse root_analytic.symptomatic_state_map.gsub('=>', ':').gsub('nil', '"Unknown"')) : {}
       total_patient_count_by_state_and_day << { day: date }.merge(count_map)
     end
 
