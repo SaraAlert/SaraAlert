@@ -11,6 +11,13 @@ class ConsumeAssessmentsJob < ApplicationJob
       on.message do |_channel, msg|
         message = JSON.parse(msg)
         patient = Patient.find_by(submission_token: message['patient_submission_token'])
+        next if patient.nil?
+
+        # Prevent duplicate patient assessment spam
+        unless patient.latest_assessment.nil? # Only check for latest assessment if there is one
+          next if patient.latest_assessment.created_at > 15.minutes.ago
+        end
+
         threshold_condition = ThresholdCondition.where(threshold_condition_hash: message['threshold_condition_hash']).first
         next unless threshold_condition
 
