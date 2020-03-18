@@ -2,7 +2,6 @@
 
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
-  before_action :check_patient_token, only: %i[new create update]
   protect_from_forgery except: %i[new_from_email]
 
   def index; end
@@ -29,6 +28,8 @@ class AssessmentsController < ApplicationController
       assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
       ProduceAssessmentJob.perform_later assessment_placeholder
     else
+      check_patient_token
+
       # If not in report mode, make sure user is authenticated!
       redirect_to root_url && return unless current_user&.can_create_patient_assessments?
 
@@ -71,6 +72,8 @@ class AssessmentsController < ApplicationController
   end
 
   def update
+    check_patient_token
+
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
@@ -95,6 +98,8 @@ class AssessmentsController < ApplicationController
     history.save!
     redirect_to(patient_assessments_url) && return
   end
+
+  protected
 
   def check_patient_token
     redirect_to(root_url) && return if params.nil? || params[:patient_submission_token].nil?
