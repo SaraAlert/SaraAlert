@@ -5,7 +5,7 @@ ARG cert
 RUN echo "${cert}" > /usr/local/share/ca-certificates/ca-certificates.crt
 RUN update-ca-certificates
 
-RUN apt-get update && apt-get install -y postgresql nodejs npm netcat tzdata git chromium && npm install -g yarn
+RUN apt-get update && apt-get install -y postgresql nodejs npm tzdata git chromium && npm install -g yarn
 
 RUN yarn config set cafile /etc/ssl/certs/ca-certificates.crt
 
