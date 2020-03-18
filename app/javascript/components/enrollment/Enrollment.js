@@ -184,7 +184,7 @@ Enrollment.propTypes = {
   authenticity_token: PropTypes.string,
   enrollmentState: PropTypes.object,
   editMode: PropTypes.bool,
-  parent_id: PropTypes.string,
+  parent_id: PropTypes.number,
   can_add_group: PropTypes.bool,
 };
 
