@@ -21,19 +21,24 @@ class Patient < ApplicationRecord
   belongs_to :jurisdiction
   has_many :histories
   has_many :transfers
+  has_one :latest_transfer, -> { order(created_at: :desc) }, class_name: 'Transfer'
 
+  # All individuals currently being monitored
   scope :monitoring_open, lambda {
     where('monitoring = ?', true)
   }
 
+  # All individuals non currently being monitored
   scope :monitoring_closed, lambda {
     where('monitoring = ?', false)
   }
 
+  # All individuals who are confirmed cases
   scope :confirmed_case, lambda {
     where('confirmed_case = ?', true)
   }
 
+  # Any individual whose latest report was symptomatic
   scope :symptomatic, lambda {
     where('monitoring = ?', true)
       .joins(:assessments)
@@ -57,12 +62,14 @@ class Patient < ApplicationRecord
       )
   }
 
+  # Newly enrolled individuals
   scope :new_subject, lambda {
     where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       .where('monitoring = ?', true)
       .where('id NOT IN (SELECT DISTINCT(patient_id) FROM assessments)')
   }
 
+  # Individuals who have reported recently and are not symptomatic
   scope :asymptomatic, lambda {
     where('monitoring = ?', true)
       .left_outer_joins(:assessments)
@@ -77,6 +84,7 @@ class Patient < ApplicationRecord
       )
   }
 
+  # Order individuals based on their public health assigned risk assessment
   def self.order_by_risk(asc = true)
     order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
                 "WHEN exposure_risk_assessment='Medium' THEN 1",
@@ -119,7 +127,8 @@ class Patient < ApplicationRecord
       end_of_monitoring: end_of_monitoring&.strftime('%F') || '',
       risk_level: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
-      latest_report: latest_assessment&.created_at&.strftime('%F') || ''
+      latest_report: latest_assessment&.created_at&.strftime('%F') || '',
+      transferred: latest_transfer&.created_at&.to_s || ''
     }
   end
 

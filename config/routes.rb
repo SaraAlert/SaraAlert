@@ -24,8 +24,8 @@ Rails.application.routes.draw do
   get '/import/error', to: 'import#error'
 
   post '/patients/:id/status', to: 'patients#update_status'
-
   post '/patients/:id/status/clear', to: 'patients#clear_assessments'
+  post '/patients/:id/reminder', to: 'patients#send_reminder_email'
 
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]

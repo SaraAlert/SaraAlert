@@ -10,7 +10,7 @@
         <th class="DataTable-table-header">End of Monitoring</th>
         <th class="DataTable-table-header">Risk Level</th>
         <th class="DataTable-table-header">Monitoring Plan</th>
-        <th class="DataTable-table-header">Latest Report</th>
+        <% if type == 'transferred_patients' %><th class="DataTable-table-header">Transferred At</th><% else %><th class="DataTable-table-header">Latest Report</th><% end %>
       </tr>
     </thead>
   </table>
@@ -37,7 +37,7 @@
         { "data": "linelist.end_of_monitoring" },
         { "data": "linelist.risk_level" },
         { "data": "linelist.monitoring_plan" },
-        { "data": "linelist.latest_report" }
+        <% if type == 'transferred_patients' %>{ "data": "linelist.transferred" }<% else %>{ "data": "linelist.latest_report" }<% end %>
       ],
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });

@@ -79,6 +79,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.boolean "confirmed_case", default: false
     t.string "exposure_risk_assessment"
     t.string "monitoring_plan"
+    t.datetime "last_assessment_reminder_sent"
     t.string "user_defined_id_statelocal"
     t.string "user_defined_id_cdc"
     t.string "user_defined_id_nndss"

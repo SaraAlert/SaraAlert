@@ -98,6 +98,11 @@ class User < ApplicationRecord
     has_role?(:public_health) || has_role?(:public_health_enroller)
   end
 
+  # Can this user send a reminder email?
+  def can_remind_patient?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
   # Can this user view the public health dashboard?
   def can_view_public_health_dashboard?
     has_role?(:public_health) || has_role?(:public_health_enroller)

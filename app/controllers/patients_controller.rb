@@ -177,6 +177,25 @@ class PatientsController < ApplicationController
     history.save!
   end
 
+  def send_reminder_email
+    # Send a new report reminder email to the monitoree
+    redirect_to(root_url) && return unless current_user.can_remind_patient?
+    patient = current_user.get_patient(params.permit(:id)[:id])
+    redirect_to(root_url) && return if patient.nil?
+    unless patient.last_assessment_reminder_sent.nil?
+      return if patient.last_assessment_reminder_sent > 24.hours.ago
+    end
+    PatientMailer.assessment_email(patient).deliver_later
+    patient.last_assessment_reminder_sent = DateTime.now
+    return unless patient.save!
+    history = History.new
+    history.created_by = current_user.email
+    history.comment = 'User sent a report reminder email to the monitoree.'
+    history.patient = patient
+    history.history_type = 'Report Reminder'
+    history.save!
+  end
+
   # Parameters allowed for saving to database
   def allowed_params
     %i[
