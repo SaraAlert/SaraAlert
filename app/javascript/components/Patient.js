@@ -316,11 +316,23 @@ class Patient extends React.Component {
                   {this.props.details.contact_of_known_case ? <br /> : ''}
                 </span>
                 <span className="font-weight-light text-danger">
+                  {this.props.details.member_of_a_common_exposure_cohort
+                    ? 'MEMBER OF A COMMON EXPOSURE COHORT: ' +
+                      (this.props.details.member_of_a_common_exposure_cohort_type ? this.props.details.member_of_a_common_exposure_cohort_type : '')
+                    : ''}
+                  {this.props.details.member_of_a_common_exposure_cohort ? <br /> : ''}
+                </span>
+                <span className="font-weight-light text-danger">
                   {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL TO AFFECTED COUNTRY OR AREA' : ''}
                   {this.props.details.travel_to_affected_country_or_area ? <br /> : ''}
                 </span>
                 <span className="font-weight-light text-danger">
-                  {this.props.details.was_in_health_care_facility_with_known_cases ? 'WAS IN HEALTH CARE FACILITY WITH KNOWN CASES' : ''}
+                  {this.props.details.was_in_health_care_facility_with_known_cases
+                    ? 'WAS IN HEALTH CARE FACILITY WITH KNOWN CASES: ' +
+                      (this.props.details.was_in_health_care_facility_with_known_cases_facility_name
+                        ? this.props.details.was_in_health_care_facility_with_known_cases_facility_name
+                        : '')
+                    : ''}
                   {this.props.details.was_in_health_care_facility_with_known_cases ? <br /> : ''}
                 </span>
                 <span className="font-weight-light text-danger">
@@ -328,7 +340,10 @@ class Patient extends React.Component {
                   {this.props.details.laboratory_personnel ? <br /> : ''}
                 </span>
                 <span className="font-weight-light text-danger">
-                  {this.props.details.healthcare_personnel ? 'HEALTHCARE PERSONNEL' : ''}
+                  {this.props.details.healthcare_personnel
+                    ? 'HEALTHCARE PERSONNEL: ' +
+                      (this.props.details.healthcare_personnel_facility_name ? this.props.details.healthcare_personnel_facility_name : '')
+                    : ''}
                   {this.props.details.healthcare_personnel ? <br /> : ''}
                 </span>
                 <span className="font-weight-light text-danger">
