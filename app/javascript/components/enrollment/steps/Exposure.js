@@ -107,7 +107,7 @@ class Exposure extends React.Component {
               <Form.Row className="pt-3 pb-4 h-100">
                 <Form.Group as={Col} className="my-auto">
                   <Form.Label className="nav-input-label">EXPOSURE RISK FACTORS</Form.Label>
-                  <Form.Row>
+                  <Form.Row className="pb-1">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         type="switch"
@@ -128,7 +128,7 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row>
+                  <Form.Row className="pb-1">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -140,7 +140,7 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row>
+                  <Form.Row className="pb-1">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -151,8 +151,18 @@ class Exposure extends React.Component {
                         onChange={this.handleChange}
                       />
                     </Form.Group>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+                      <Form.Control
+                        size="sm"
+                        className="form-square"
+                        id="was_in_health_care_facility_with_known_cases_facility_name"
+                        placeholder="enter facility name"
+                        value={this.state.current.was_in_health_care_facility_with_known_cases_facility_name || ''}
+                        onChange={this.handleChange}
+                      />
+                    </Form.Group>
                   </Form.Row>
-                  <Form.Row>
+                  <Form.Row className="pb-1">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -164,7 +174,7 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row>
+                  <Form.Row className="pb-1">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -175,8 +185,18 @@ class Exposure extends React.Component {
                         onChange={this.handleChange}
                       />
                     </Form.Group>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+                      <Form.Control
+                        size="sm"
+                        className="form-square"
+                        id="healthcare_personnel_facility_name"
+                        placeholder="enter facility name"
+                        value={this.state.current.healthcare_personnel_facility_name || ''}
+                        onChange={this.handleChange}
+                      />
+                    </Form.Group>
                   </Form.Row>
-                  <Form.Row>
+                  <Form.Row className="pb-1">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -184,6 +204,27 @@ class Exposure extends React.Component {
                         id="crew_on_passenger_or_cargo_flight"
                         label="CREW ON PASSENGER OR CARGO FLIGHT"
                         checked={this.state.current.crew_on_passenger_or_cargo_flight === true || false}
+                        onChange={this.handleChange}
+                      />
+                    </Form.Group>
+                  </Form.Row>
+                  <Form.Row className="pb-1">
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                      <Form.Check
+                        type="switch"
+                        id="member_of_a_common_exposure_cohort"
+                        label="MEMBER OF A COMMON EXPOSURE COHORT"
+                        checked={this.state.current.member_of_a_common_exposure_cohort === true || false}
+                        onChange={this.handleChange}
+                      />
+                    </Form.Group>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+                      <Form.Control
+                        size="sm"
+                        className="form-square"
+                        id="member_of_a_common_exposure_cohort_type"
+                        placeholder="enter description"
+                        value={this.state.current.member_of_a_common_exposure_cohort_type || ''}
                         onChange={this.handleChange}
                       />
                     </Form.Group>

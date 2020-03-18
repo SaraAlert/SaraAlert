@@ -240,12 +240,16 @@ class PatientsController < ApplicationController
       contact_of_known_case_id
       travel_to_affected_country_or_area
       was_in_health_care_facility_with_known_cases
+      was_in_health_care_facility_with_known_cases_facility_name
       laboratory_personnel
       healthcare_personnel
+      healthcare_personnel_facility_name
       exposure_notes
       crew_on_passenger_or_cargo_flight
       monitoring_plan
       exposure_risk_assessment
+      member_of_a_common_exposure_cohort
+      member_of_a_common_exposure_cohort_type
     ]
   end
 
@@ -307,10 +311,14 @@ class PatientsController < ApplicationController
       contact_of_known_case_id
       travel_to_affected_country_or_area
       was_in_health_care_facility_with_known_cases
+      was_in_health_care_facility_with_known_cases_facility_name
       laboratory_personnel
       healthcare_personnel
+      healthcare_personnel_facility_name
       exposure_notes
       crew_on_passenger_or_cargo_flight
+      member_of_a_common_exposure_cohort
+      member_of_a_common_exposure_cohort_type
     ]
   end
 end
