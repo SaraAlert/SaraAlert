@@ -14,11 +14,11 @@ class SystemTestUtils < ApplicationSystemTestCase
   SIGN_IN_URL = '/users/sign_in'
   USER_PASSWORD = '123456ab'
 
-  ENROLLMENT_PAGE_TRANSITION_DELAY = 0.8 # wait for carousel animation to finish loading
   ENROLLMENT_SUBMISSION_DELAY = 4 # wait for submission alert animation to finish
+  ENROLLMENT_PAGE_TRANSITION_DELAY = 0.8 # wait for carousel animation to finish loading
   POP_UP_ALERT_ANIMATION_DELAY = 0.5 # wait for alert to pop up or dismiss
   CHECKBOX_ANIMATION_DELAY = 0.5 # wait for checkbox to load
-  MODAL_ANIMATION_DELAY = 0 # wait for modal to load
+  DASHBOARD_LOAD_DELAY = 0.2 # wait for dashboard to load saved tab
 
   def login(user_name)
     visit '/'
@@ -26,6 +26,7 @@ class SystemTestUtils < ApplicationSystemTestCase
     fill_in 'user_email', with: USERS[user_name]['email']
     fill_in 'user_password', with: USER_PASSWORD
     click_on 'login'
+    wait_for_dashboard_load
   end
 
   def login_with_custom_password(email, password)
@@ -42,6 +43,7 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   def return_to_dashboard
     click_on 'Return To Dashboard'
+    wait_for_dashboard_load
   end
 
   def go_to_next_page
@@ -54,12 +56,12 @@ class SystemTestUtils < ApplicationSystemTestCase
     click_on 'Previous'
   end
 
-  def wait_for_enrollment_page_transition
-    sleep(inspection_time = ENROLLMENT_PAGE_TRANSITION_DELAY)
-  end
-
   def wait_for_enrollment_submission
     sleep(inspection_time = ENROLLMENT_SUBMISSION_DELAY)
+  end
+
+  def wait_for_enrollment_page_transition
+    sleep(inspection_time = ENROLLMENT_PAGE_TRANSITION_DELAY)
   end
 
   def wait_for_pop_up_alert
@@ -70,8 +72,8 @@ class SystemTestUtils < ApplicationSystemTestCase
     sleep(inspection_time = CHECKBOX_ANIMATION_DELAY)
   end
 
-  def wait_for_modal_animation
-    sleep(inspection_time = MODAL_ANIMATION_DELAY)
+  def wait_for_dashboard_load
+    sleep(inspection_time = DASHBOARD_LOAD_DELAY)
   end
 
   def get_dashboard_display_name(monitoree)
@@ -95,7 +97,6 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def get_reports
-    # REPORTS.each{|k,v| v['reported_condition'] = ReportedCondition.new(symptoms: [FloatSymptom.new(name: 'temperature', label: 'Temperature', float_value: 101.1)])}
     REPORTS
   end
 

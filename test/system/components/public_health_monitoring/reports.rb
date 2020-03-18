@@ -38,7 +38,6 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
 
   def mark_all_as_reviewed(reasoning)
     click_on 'Mark All As Reviewed'
-    @@system_test_utils.wait_for_modal_animation
     fill_in 'reasoning', with: reasoning
     click_on 'Submit'
   end
