@@ -36,27 +36,27 @@
 
   <ul class="nav nav-tabs">
     <li class="nav-item">
-      <a class="nav-link active" id="symptomatic-tab" data-toggle="tab" href="#symptomatic">
+      <a class="nav-link active" id="symptomatic-tab" data-toggle="tab" href="#symptomatic" role="tab">
         Symptomatic <span class="badge badge-danger badge-larger-font"><%= @symptomatic_count %></span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="non-reporting-tab" data-toggle="tab" href="#non-reporting">
+      <a class="nav-link" id="non-reporting-tab" data-toggle="tab" href="#non-reporting" role="tab">
         Non-Reporting <span class="badge badge-warning badge-larger-font"><%= @non_reporting_count %></span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic">
+      <a class="nav-link" id="asymptomatic-tab" data-toggle="tab" href="#asymptomatic" role="tab">
         Asymptomatic <span class="badge badge-success badge-larger-font"><%= @asymptomatic_count %></span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="closed-tab" data-toggle="tab" href="#closed">
+      <a class="nav-link" id="closed-tab" data-toggle="tab" href="#closed" role="tab">
         Closed <span class="badge badge-secondary badge-larger-font"><%= @closed_count %></span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="closed-tab" data-toggle="tab" href="#transferred">
+      <a class="nav-link" id="transferred-tab" data-toggle="tab" href="#transferred" role="tab">
         Transferred <span class="badge badge-secondary badge-larger-font"><%= @transferred_count %></span>
       </a>
     </li>
@@ -101,3 +101,18 @@
   </div>
 
 </div>
+
+<script>
+  $(document).ready(function() {
+    if (localStorage.getItem('dashboardCurrentTab') !== null) {
+      $(localStorage.getItem('dashboardCurrentTab') + '-tab').find('span').trigger('click')
+    }
+    $('a[data-toggle="tab"]').on('click', function(e) {
+      if ($(e.target).attr('href') === undefined) {
+        localStorage.setItem('dashboardCurrentTab', $(e.target).parent().attr('href'))
+      } else {
+        localStorage.setItem('dashboardCurrentTab', $(e.target).attr('href'))
+      }
+    })
+  });
+</script>
