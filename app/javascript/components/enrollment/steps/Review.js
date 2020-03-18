@@ -1,18 +1,55 @@
 import React from 'react';
-import { Card, Button } from 'react-bootstrap';
+import { Card, Button, Modal } from 'react-bootstrap';
 import Patient from '../../Patient';
 import { PropTypes } from 'prop-types';
 
 class Review extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { submitDisabled: false };
+    this.state = { submitDisabled: false, showGroupAddNotification: false };
     this.submit = this.submit.bind(this);
+    this.toggleGroupAddNotification = this.toggleGroupAddNotification.bind(this);
   }
 
   submit(event, groupMember) {
     this.setState({ submitDisabled: true });
     this.props.submit(event, groupMember);
+  }
+
+  toggleGroupAddNotification() {
+    let current = this.state.showGroupAddNotification;
+    this.setState({
+      showGroupAddNotification: !current,
+    });
+  }
+
+  createModal(title, toggle, submit) {
+    return (
+      <Modal size="lg" show centered>
+        <Modal.Header>
+          <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Household enrollment allows for the Head of Household to submit reports on behalf of other members of the household. The head of household is the
+            first household member enrolled. By clicking “continue”, any additional household members who are added will have their daily reports submitted by
+            the Head of Household.
+          </p>
+          <p>
+            Any household members who wish to report on their own behalf should be enrolled separately and not be added using the “Finish and Add a Household
+            Member” button. Select “Cancel” then “Finish” to return to the main enrollment screen.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary btn-square" onClick={submit}>
+            Continue
+          </Button>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
   }
 
   render() {
@@ -51,12 +88,14 @@ class Review extends React.Component {
                 size="lg"
                 className="float-right btn-square px-5 mr-4"
                 disabled={this.state.submitDisabled}
-                onClick={event => this.submit(event, true)}>
-                Finish and add a Group Member
+                onClick={this.toggleGroupAddNotification}>
+                Finish and Add a Household Member
               </Button>
             )}
           </Card.Body>
         </Card>
+        {this.state.showGroupAddNotification &&
+          this.createModal('Enroll Household Members', this.toggleGroupAddNotification, event => this.submit(event, true))}
       </React.Fragment>
     );
   }

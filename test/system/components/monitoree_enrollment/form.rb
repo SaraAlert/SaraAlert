@@ -41,7 +41,8 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     click_link 'Enroll New Monitoree'
     @@monitoree_enrollment_form_populator.populate_monitoree_info(existing_monitoree)
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree)
-    click_on 'Finish and add a Group Member'
+    click_on 'Finish and Add a Household Member'
+    click_on 'Continue'
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree)
     @@system_test_utils.wait_for_enrollment_submission
     @@monitoree_enrollment_form_populator.populate_monitoree_info(new_monitoree)
