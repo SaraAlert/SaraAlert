@@ -50,7 +50,7 @@ services:
     volumes:
       - 'postgres-assessment:/var/lib/postgresql/data'
     env_file:
-      - .env-prod-enrollment
+      - .env-prod-assessment
     restart: unless-stopped
     networks:
       - dt-net-assessment
