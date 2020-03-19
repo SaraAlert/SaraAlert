@@ -188,6 +188,7 @@ class PatientsController < ApplicationController
     PatientMailer.assessment_email(patient).deliver_later
     patient.last_assessment_reminder_sent = DateTime.now
     return unless patient.save!
+
     history = History.new
     history.created_by = current_user.email
     history.comment = 'User sent a report reminder email to the monitoree.'
