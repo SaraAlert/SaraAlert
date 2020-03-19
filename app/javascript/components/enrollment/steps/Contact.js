@@ -302,8 +302,10 @@ yup.addMethod(yup.string, 'phone', function() {
     message: 'Please enter a valid Phone Number',
     test: value => {
       try {
-        const phone = phoneUtil.parse(value, 'US');
-        return phoneUtil.isValidNumber(phone);
+        if (!value) {
+          return true; // Blank numbers are allowed
+        }
+        return !!phoneUtil.parse(value, 'US');
       } catch (e) {
         return false;
       }
