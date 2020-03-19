@@ -9,11 +9,16 @@ class Review extends React.Component {
     this.state = { submitDisabled: false, showGroupAddNotification: false };
     this.submit = this.submit.bind(this);
     this.toggleGroupAddNotification = this.toggleGroupAddNotification.bind(this);
+    this.reenableSubmit = this.reenableSubmit.bind(this);
   }
 
   submit(event, groupMember) {
     this.setState({ submitDisabled: true });
-    this.props.submit(event, groupMember);
+    this.props.submit(event, groupMember, this.reenableSubmit);
+  }
+
+  reenableSubmit() {
+    this.setState({ submitDisabled: false });
   }
 
   toggleGroupAddNotification() {

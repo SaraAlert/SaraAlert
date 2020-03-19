@@ -20,13 +20,13 @@ class ImportController < ApplicationController
     # Load and parse Epi-X file
     begin
       xlxs = Roo::Excelx.new(params[:epix].tempfile.path, file_warning: :ignore)
-
       @patients = []
-
       xlxs.sheet(0).each_with_index do |row, index|
         next if index.zero? # Skip headers
 
-        epix_fields = {
+        sex = 'Male' if row[13] == 'M'
+        sex = 'Female' if row[13] == 'F'
+        @patients << {
           user_defined_id_statelocal: row[0],
           flight_or_vessel_number: row[1],
           user_defined_id_cdc: row[4],
@@ -36,7 +36,7 @@ class ImportController < ApplicationController
           last_name: row[10],
           first_name: row[11],
           date_of_birth: row[12],
-          sex: row[13],
+          sex: sex,
           address_line_1: row[16],
           address_city: row[17],
           address_state: row[18],
@@ -52,9 +52,9 @@ class ImportController < ApplicationController
           potential_exposure_country: row[35],
           date_of_departure: row[36],
           contact_of_known_case: !row[41].blank?,
-          was_in_health_care_facility_with_known_cases: !row[42].blank?
+          was_in_health_care_facility_with_known_cases: !row[42].blank?,
+          appears_to_be_duplicate: current_user.viewable_patients.matches(row[11], row[10], sex, row[12]).count.positive?
         }
-        @patients << epix_fields
       end
     rescue StandardError
       redirect_to(controller: 'import', action: 'error') && (return)
