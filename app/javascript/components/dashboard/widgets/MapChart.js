@@ -34,7 +34,7 @@ class MapChart extends React.Component {
         _.forIn(_.omit(x, 'day'), (value, key) => {
           let abbreviation = stateOptions.find(state => state.name === key)?.abbrv;
           if (abbreviation) {
-            mappedValues[abbreviation] = value;
+            mappedValues[String(abbreviation)] = value;
           }
         });
         return mappedValues;
@@ -83,20 +83,20 @@ class MapChart extends React.Component {
       return obj.name == stateName;
     });
     const stateAbvr = state ? state.abbrv : '';
-    return data && data[stateAbvr] ? data[stateAbvr] : 0;
+    return data && data[String(stateAbvr)] ? data[String(stateAbvr)] : 0;
   }
 
   getDateRange() {
     let retVal = {};
     this.state.mappedTotalPatientCountByStateAndDay.forEach((dayData, index) => {
-      retVal[index] = moment(dayData.day).format('DD');
+      retVal[parseInt(index)] = moment(dayData.day).format('DD');
     });
     return retVal;
   }
 
   handleDateRangeChange(value) {
-    this.setState({ selectedDateData: _.omit(this.state.mappedTotalPatientCountByStateAndDay[value], 'day') });
-    this.setState({ selectedDay: this.state.mappedTotalPatientCountByStateAndDay[value].day });
+    this.setState({ selectedDateData: _.omit(this.state.mappedTotalPatientCountByStateAndDay[parseInt(value)], 'day') });
+    this.setState({ selectedDay: this.state.mappedTotalPatientCountByStateAndDay[parseInt(value)].day });
   }
 
   render() {

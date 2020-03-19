@@ -64,8 +64,8 @@ class Assessment extends React.Component {
     let symptoms = ['cough', 'difficulty_breathing', 'symptomatic'];
     // Having falsey values on them causes the comparison to fail.
     symptoms.forEach(symptom => {
-      if (currentAssessment[symptom] === false) {
-        delete currentAssessment[symptom];
+      if (currentAssessment[parseInt(symptom)] === false) {
+        delete currentAssessment[parseInt(symptom)];
       }
     });
     return !_.isEqual(this.state.assessmentState, currentAssessment);
@@ -75,7 +75,7 @@ class Assessment extends React.Component {
     const keysToIgnore = ['who_reported'];
     let allFieldsEmpty = true;
     _.map(object, (value, key) => {
-      if (object[key] !== null && !keysToIgnore.includes(key)) {
+      if (object[String(key)] !== null && !keysToIgnore.includes(key)) {
         allFieldsEmpty = false;
       }
     });

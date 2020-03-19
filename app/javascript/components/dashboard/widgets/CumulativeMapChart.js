@@ -33,8 +33,10 @@ class CumulativeMapChart extends React.Component {
         let mappedValues = {};
         mappedValues['day'] = x.day;
         _.forIn(_.omit(x, 'day'), (value, key) => {
-          let abbreviation = stateOptions.find(state => state.name === key).abbrv;
-          mappedValues[abbreviation] = value;
+          let abbreviation = stateOptions.find(state => state.name === key)?.abbrv;
+          if (abbreviation) {
+            mappedValues[String(abbreviation)] = value;
+          }
         });
         return mappedValues;
       }),
@@ -101,20 +103,20 @@ class CumulativeMapChart extends React.Component {
       return obj.name == stateName;
     });
     const stateAbvr = state ? state.abbrv : '';
-    return data && data[stateAbvr] ? data[stateAbvr] : 0;
+    return data && data[String(stateAbvr)] ? data[String(stateAbvr)] : 0;
   }
 
   getDateRange() {
     let retVal = {};
     this.state.mappedSymptomaticPatientCountByStateAndDay.forEach((dayData, index) => {
-      retVal[index] = moment(dayData.day).format('DD');
+      retVal[parseInt(index)] = moment(dayData.day).format('DD');
     });
     return retVal;
   }
 
   handleDateRangeChange(value) {
-    this.setState({ selectedDateData: _.omit(this.state.mappedSymptomaticPatientCountByStateAndDay[value], 'day') });
-    this.setState({ selectedDay: this.state.mappedSymptomaticPatientCountByStateAndDay[value].day });
+    this.setState({ selectedDateData: _.omit(this.state.mappedSymptomaticPatientCountByStateAndDay[parseInt(value)], 'day') });
+    this.setState({ selectedDay: this.state.mappedSymptomaticPatientCountByStateAndDay[parseInt(value)].day });
   }
 
   render() {

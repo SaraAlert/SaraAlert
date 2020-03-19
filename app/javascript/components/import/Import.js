@@ -18,7 +18,7 @@ class Import extends React.Component {
   importAll(withDuplicates) {
     for (let i = 0; i < this.state.patients.length; i++) {
       if (!(this.state.accepted.includes(i) || this.state.rejected.includes(i))) {
-        if (!this.state.patients[i]['appears_to_be_duplicate'] || withDuplicates) {
+        if (!this.state.patients[parseInt(i)]['appears_to_be_duplicate'] || withDuplicates) {
           this.importSub(i);
         } else {
           this.rejectSub(i);
@@ -28,7 +28,7 @@ class Import extends React.Component {
   }
 
   importSub(num) {
-    this.submit(this.state.patients[num], num);
+    this.submit(this.state.patients[parseInt(num)], num);
   }
 
   rejectSub(num) {

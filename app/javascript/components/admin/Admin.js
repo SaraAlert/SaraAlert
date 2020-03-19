@@ -10,7 +10,7 @@ class Admin extends React.Component {
     super(props);
     var dataLen = props.data.length;
     for (var i = 0; i < dataLen; i++) {
-      props.data[i]['role'] = props.roles[i]['name'];
+      props.data[parseInt(i)]['role'] = props.roles[parseInt(i)]['name'];
     }
     this.onAddRow = this.onAddRow.bind(this);
   }
