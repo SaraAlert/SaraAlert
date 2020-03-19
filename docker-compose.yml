@@ -3,8 +3,6 @@ version: "3"
 services:
   sara-alert-enrollment:
     image: "${SARA_ALERT_IMAGE}:development-test"
-    ports:
-      - "443:3000"
     environment:
       - REDIS_URL=redis://redis-enrollment:6379/1
     env_file:
@@ -20,8 +18,6 @@ services:
       - '~/tls:/app/disease-trakker/tls:ro'
   sara-alert-assessment:
       image: "${SARA_ALERT_IMAGE}:development-test"
-      ports:
-        - "4343:3000"
       environment:
         - REDIS_URL=redis://redis-bridge:6379/1
       env_file:
@@ -114,6 +110,23 @@ services:
       - redis-bridge
       - sara-alert-assessment
       - postgres-assessment
+  nginx:
+    image: nginx:latest
+    volumes:
+      - '~/tls/nginx.conf:/etc/nginx/nginx.conf:ro'
+      - '~/tls/puma.key:/etc/nginx/puma.key:ro'
+      - '~/tls/puma.crt:/etc/nginx/puma.crt:ro'
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    command: nginx -g 'daemon off;'
+    depends_on:
+      - sara-alert-assessment
+      - sara-alert-enrollment
+    networks:
+      - dt-net-assessment
+      - dt-net-enrollment
 
 volumes:
   redis-enrollment:
