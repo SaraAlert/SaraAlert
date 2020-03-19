@@ -25,7 +25,7 @@ class PatientPage extends React.Component {
               this.setState({ showBody: !this.state.showBody });
             }}>
             Monitoree Details {this.props.patient.user_defined_id ? `(ID: ${this.props.patient.user_defined_id})` : ''}{' '}
-            {this.props.patient.id && <a href={'/patients/' + this.props.patient.id + '/edit'}>(click here to edit)</a>}
+            {this.props.patient.id && <a href={'/patients/' + this.props.patient.id + '/edit'}>(edit details)</a>}
           </Card.Header>
           <Collapse in={this.state.showBody}>
             <Card.Body>
