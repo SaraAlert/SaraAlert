@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_13_134912) do
+ActiveRecord::Schema.define(version: 2020_03_20_055002) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -72,6 +72,37 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.string "unique_identifier"
     t.string "ancestry"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
+  end
+
+  create_table "monitoree_counts", force: :cascade do |t|
+    t.bigint "analytic_id"
+    t.boolean "active_monitoring"
+    t.string "category_type"
+    t.string "category"
+    t.string "risk_level"
+    t.integer "total"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["analytic_id"], name: "index_monitoree_counts_on_analytic_id"
+  end
+
+  create_table "monitoree_snapshots", force: :cascade do |t|
+    t.bigint "analytic_id"
+    t.string "time_frame"
+    t.integer "new_enrollments"
+    t.integer "transferred_in"
+    t.integer "closed"
+    t.integer "transferred_out"
+    t.integer "referral_for_medical_evaluation"
+    t.integer "document_completed_medical_evaluation"
+    t.integer "document_medical_evaluation_summary_and_plan"
+    t.integer "referral_for_public_health_test"
+    t.integer "public_health_test_specimen_received_by_lab_results_pending"
+    t.integer "results_of_public_health_test_positive"
+    t.integer "results_of_public_health_test_negative"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
   end
 
   create_table "patients", force: :cascade do |t|

@@ -59,6 +59,11 @@ class Patient < ApplicationRecord
       .where('purged = ?', false)
   }
 
+  # All individuals currently not being monitored
+  scope :monitoring_closed, lambda {
+    where('monitoring = ?', false)
+  }
+
   # All individuals that have been closed (not including purged)
   scope :monitoring_closed_without_purged, lambda {
     where('monitoring = ?', false)
@@ -145,6 +150,117 @@ class Patient < ApplicationRecord
         .where(assessments: { patient_id: nil })
       )
       .distinct
+  }
+
+  # All individuals currently being monitored if true, all individuals otherwise
+  scope :with_active_monitoring, lambda { |active_monitoring|
+    where(monitoring: true) if active_monitoring
+  }
+
+  # All individuals with the given risk level
+  scope :with_risk_level, lambda { |risk_level|
+    where(exposure_risk_assessment: nil) if risk_level.nil?
+    where(exposure_risk_assessment: risk_level)
+  }
+
+  # All individuals with the given filter
+  scope :with_filter, lambda { |category_type, category|
+    case category_type
+    when 'monitoring_status'
+      with_monitoring_status(category)
+    when 'age_group'
+      with_age_group(category)
+    when 'sex'
+      where(sex: category)
+    when 'risk_factor'
+      with_risk_factor(category)
+    when 'exposure_country'
+      where(potential_exposure_country: category)
+    when 'last_exposure_date'
+      where(last_date_of_exposure: category)
+    when 'last_exposure_week'
+      where('last_date_of_exposure >= ? AND last_date_of_exposure < ?', category, category + 1.week)
+    when 'last_exposure_month'
+      where('last_date_of_exposure >= ? AND last_date_of_exposure < ?', category, category + 1.month)
+    end
+  }
+
+  # All individuals with the given monitoring status
+  scope :with_monitoring_status, lambda { |monitoring_status|
+    case monitoring_status
+    when 'symptomatic'
+      symptomatic
+    when 'non_reporting'
+      non_reporting
+    when 'asymptomatic'
+      asymptomatic
+    end
+  }
+
+  # All individuals with the given age group
+  scope :with_age_group, lambda { |age_group|
+    case age_group
+    when '0-19'
+      where('date_of_birth > ?', 20.years.ago.to_date)
+    when '20-29'
+      where('date_of_birth < ? AND date_of_birth >= ?', 20.years.ago.to_date, 30.years.ago.to_date)
+    when '30-39'
+      where('date_of_birth < ? AND date_of_birth >= ?', 30.years.ago.to_date, 40.years.ago.to_date)
+    when '40-49'
+      where('date_of_birth < ? AND date_of_birth >= ?', 40.years.ago.to_date, 50.years.ago.to_date)
+    when '50-59'
+      where('date_of_birth < ? AND date_of_birth >= ?', 50.years.ago.to_date, 60.years.ago.to_date)
+    when '60-69'
+      where('date_of_birth < ? AND date_of_birth >= ?', 60.years.ago.to_date, 70.years.ago.to_date)
+    when '70-79'
+      where('date_of_birth < ? AND date_of_birth >= ?', 70.years.ago.to_date, 80.years.ago.to_date)
+    when '>=80'
+      where('date_of_birth <= ?', 80.years.ago.to_date)
+    end
+  }
+
+  # All individuals with the given risk factor
+  scope :with_risk_factor, lambda { |risk_factor|
+    case risk_factor
+    when 'Close Contact with Known Case'
+      where(contact_of_known_case: true)
+    when 'Travel to Affected Country or Area'
+      where(travel_to_affected_country_or_area: true)
+    when 'Was in Healthcare Facility with Known Cases'
+      where(was_in_health_care_facility_with_known_cases: true)
+    when 'Healthcare Personnel'
+      where(healthcare_personnel: true)
+    when 'Common Exposure Cohort'
+      where(member_of_a_common_exposure_cohort: true)
+    when 'Crew on Passenger or Cargo Flight'
+      where(crew_on_passenger_or_cargo_flight: true)
+    when 'Laboratory Personnel'
+      where(laboratory_personnel: true)
+    when 'Total'
+      where(contact_of_known_case: true)
+      .or(where(travel_to_affected_country_or_area: true))
+      .or(where(was_in_health_care_facility_with_known_cases: true))
+      .or(where(healthcare_personnel: true))
+      .or(where(member_of_a_common_exposure_cohort: true))
+      .or(where(crew_on_passenger_or_cargo_flight: true))
+      .or(where(laboratory_personnel: true))
+    end
+  }
+
+  # All individuals with the given exposure country
+  scope :with_exposure_country, lambda { |exposure_country|
+    where.not(potential_exposure_country: nil) if exposure_country == 'Total'
+    where(potential_exposure_country: category)
+  }
+
+  # All individuals enrolled within the given time frame
+  scope :enrolled_in_time_frame, lambda { |time_frame|
+    case time_frame
+    when 'Last 24 Hours'
+      where('patients.created_at >= ?', 24.hours.ago.to_date)
+    when 'Last 14 Days'
+      where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date, Date.today)
+    end
   }
 
   # Order individuals based on their public health assigned risk assessment

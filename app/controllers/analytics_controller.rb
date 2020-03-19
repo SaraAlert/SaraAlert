@@ -79,7 +79,9 @@ class AnalyticsController < ApplicationController
       monitoring_distribution_by_day: patient_count_by_day_array,
       symptomatic_patient_count_by_state_and_day: symptomatic_patient_count_by_state_and_day,
       total_patient_count_by_state_and_day: total_patient_count_by_state_and_day,
-      assessment_result_by_day: assessment_result_by_day_array
+      assessment_result_by_day: assessment_result_by_day_array,
+      monitoree_counts: MonitoreeCount.where(analytic_id: most_recent_analytics.id),
+      monitoree_snapshots: MonitoreeSnapshot.where(analytic_id: most_recent_analytics.id)
     }
   end
 end

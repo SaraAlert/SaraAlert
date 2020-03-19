@@ -48,10 +48,5 @@ class AnalystTest < ApplicationSystemTestCase
   def verify_analytics_page
     ## verify jurisdiction
     assert_selector 'button', text: 'EXPORT ANALYSIS AS PNG'
-    assert_selector 'h5', text: 'System Statistics'
-    assert_selector 'h5', text: 'Symptomatic Monitorees'
-    assert_selector 'h5', text: 'Total Assessments Over Time'
-    assert_selector 'h5', text: 'Total Monitorees'
-    assert_selector 'h5', text: 'Monitoring Distribution by Day'
   end
 end
