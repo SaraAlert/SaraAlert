@@ -2,6 +2,8 @@ import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
+import libphonenumber from 'google-libphonenumber';
+const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 class Contact extends React.Component {
   constructor(props) {
@@ -28,12 +30,12 @@ class Contact extends React.Component {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
-            .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+            .phone()
             .required('Please provide a primary telephone number')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone: yup
             .string()
-            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+            .phone()
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup
             .string()
@@ -54,11 +56,11 @@ class Contact extends React.Component {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
-            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+            .phone()
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone: yup
             .string()
-            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+            .phone()
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
@@ -293,15 +295,33 @@ class Contact extends React.Component {
   }
 }
 
+yup.addMethod(yup.string, 'phone', function() {
+  return this.test({
+    name: 'phone',
+    exclusive: true,
+    message: 'Please enter a valid Phone Number',
+    test: value => {
+      try {
+        if (!value) {
+          return true; // Blank numbers are allowed
+        }
+        return !!phoneUtil.parse(value, 'US');
+      } catch (e) {
+        return false;
+      }
+    },
+  });
+});
+
 var schema = yup.object().shape({
   primary_telephone: yup
     .string()
-    .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number')
+    .phone()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   secondary_telephone: yup
     .string()
-    .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+    .phone()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   primary_telephone_type: yup
