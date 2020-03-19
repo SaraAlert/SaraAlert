@@ -5,7 +5,7 @@ namespace :admin do
   desc "Import/Update Jurisdictions"
   task import_or_update_jurisdictions: :environment do
     config_contents = YAML.load_file('config/sara/jurisdictions.yml')
-    
+
     config_contents.each do |jur_name, jur_values|
       parse_jurisdiction(nil, jur_name, jur_values)
     end
@@ -26,8 +26,9 @@ namespace :admin do
     end
     # Create jurisdiction for it does not already exist
     if jurisdiction == nil
-      random_id = SecureRandom.hex
-      jurisdiction = Jurisdiction.create(name: jur_name , parent: parent, unique_identifier: random_id)
+      jurisdiction = Jurisdiction.create(name: jur_name , parent: parent)
+      unique_identifier = Digest::SHA256.hexdigest(jurisdiction.jurisdiction_path_string)
+      jurisdiction.update(unique_identifier: unique_identifier)
     end
 
     # Parse and add symptoms list to jurisdiction if included
