@@ -15,6 +15,9 @@ class PatientsController < ApplicationController
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
 
+    # If we failed to find a subject given the id, redirect to index
+    redirect_to(root_url) && return if @patient.nil?
+
     @group_members = @patient.dependents.where.not(id: @patient.id)
 
     # If we failed to find a subject given the id, redirect to index
@@ -60,6 +63,17 @@ class PatientsController < ApplicationController
   def create
     redirect_to(root_url) && return unless current_user.can_create_patient? || current_user.can_import?
 
+    # Check for potential duplicate
+    unless params[:bypass_duplicate]
+      duplicate = current_user.viewable_patients.matches(params[:patient].permit(*allowed_params)[:first_name],
+                                                         params[:patient].permit(*allowed_params)[:last_name],
+                                                         params[:patient].permit(*allowed_params)[:sex],
+                                                         params[:patient].permit(*allowed_params)[:date_of_birth]).count.positive?
+      if duplicate
+        render(json: { duplicate: true }) && return
+      end
+    end
+
     # Add patient details that were collected from the form
     patient = Patient.new(params[:patient].permit(*allowed_params))
 
@@ -98,7 +112,7 @@ class PatientsController < ApplicationController
         # TODO: Enable when deploying externally
         PatientMailer.enrollment_sms(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
       end
-      render json: patient
+      render(json: patient) && return
     else
       render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
     end

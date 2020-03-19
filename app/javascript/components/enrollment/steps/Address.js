@@ -208,7 +208,7 @@ class Address extends React.Component {
                       <h5>
                         Address at Destination in USA Where Monitored
                         <Button size="md" variant="outline-primary" className="ml-4 btn-square px-3" onClick={this.whereMonitoredSameAsHome}>
-                          Set to Home Address
+                          Copy from Home Address
                         </Button>
                       </h5>
                     </Form.Group>

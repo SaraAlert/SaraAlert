@@ -35,24 +35,58 @@ class Enrollment extends React.Component {
     this.setState({ enrollmentState: { ...currentEnrollmentState, ...enrollmentState } });
   }
 
-  submit(_event, groupMember) {
+  submit(_event, groupMember, reenableSubmit) {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    const data = new Object({ patient: this.state.enrollmentState });
+    let data = new Object({ patient: this.state.enrollmentState });
     const message = this.props.editMode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
     if (this.props.parent_id) {
       data['responder_id'] = this.props.parent_id;
     }
+    data['bypass_duplicate'] = false;
     axios({
       method: this.props.editMode ? 'patch' : 'post',
       url: this.props.editMode ? '/patients/' + this.props.patient.id : '/patients',
       data: data,
     })
-      .then(data => {
-        // Inform user and redirect to home on success
-        toast.success(message, {
-          onClose: () => (location.href = groupMember ? '/patients/' + data['data']['id'] + '/group' : '/patients/' + data['data']['id']),
-        });
+      .then(response => {
+        if (response['data']['duplicate']) {
+          // Duplicate, ask if want to continue with create
+          if (window.confirm('This monitoree appears to be a duplicate of an existing record in the system. Are you sure you want to enroll this monitoree?')) {
+            data['bypass_duplicate'] = true;
+            axios({
+              method: this.props.editMode ? 'patch' : 'post',
+              url: this.props.editMode ? '/patients/' + this.props.patient.id : '/patients',
+              data: data,
+            })
+              .then(response => {
+                toast.success(message, {
+                  onClose: () => (location.href = groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id']),
+                });
+              })
+              .catch(() => {
+                toast.error(
+                  <div>
+                    <div> Failed to communicate with the Sara Alert System Server. </div>
+                    <div> If the error continues, please contact a System Administrator. </div>
+                  </div>,
+                  {
+                    autoClose: 10000,
+                  }
+                );
+              });
+          } else {
+            window.onbeforeunload = function() {
+              return 'All progress will be lost. Are you sure?';
+            };
+            reenableSubmit();
+          }
+        } else {
+          // Success, inform user and redirect to home
+          toast.success(message, {
+            onClose: () => (location.href = groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id']),
+          });
+        }
       })
       .catch(() => {
         toast.error(

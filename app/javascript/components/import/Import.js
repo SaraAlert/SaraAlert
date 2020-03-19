@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Row, Col, Container } from 'react-bootstrap';
+import { Button, Card, Row, Col, Alert } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,10 +15,14 @@ class Import extends React.Component {
     this.submit = this.submit.bind(this);
   }
 
-  importAll() {
+  importAll(withDuplicates) {
     for (let i = 0; i < this.state.patients.length; i++) {
       if (!(this.state.accepted.includes(i) || this.state.rejected.includes(i))) {
-        this.importSub(i);
+        if (!this.state.patients[i]['appears_to_be_duplicate'] || withDuplicates) {
+          this.importSub(i);
+        } else {
+          this.rejectSub(i);
+        }
       }
     }
   }
@@ -64,20 +68,34 @@ class Import extends React.Component {
     return (
       <React.Fragment>
         <div className="m-4">
-          <h5>Please review the patients that are about to be imported below. You can individually accept each patient, or accept all at once.</h5>
+          <h5>Please review the monitorees that are about to be imported below. You can individually accept each monitoree, or accept all at once.</h5>
           <Button
             variant="primary"
             className="btn-lg my-2"
             onClick={() => {
               if (
                 window.confirm(
-                  'Are you sure you want to import all subjects? Note: This will not import already rejected or re-import already accepted subjects listed below.'
+                  'Are you sure you want to import all monitorees? Note: This will not import already rejected or re-import already accepted monitorees listed below, but will import any potential duplicates.'
                 )
               ) {
-                this.importAll();
+                this.importAll(true);
               }
             }}>
-            Accept All
+            Accept All (Including Potential Duplicates)
+          </Button>
+          <Button
+            variant="primary"
+            className="btn-lg my-2 ml-3"
+            onClick={() => {
+              if (
+                window.confirm(
+                  'Are you sure you want to import all monitorees? Note: This will not import already rejected or re-import already accepted monitorees listed below.'
+                )
+              ) {
+                this.importAll(false);
+              }
+            }}>
+            Accept All (Without Potential Duplicates)
           </Button>
           {this.state.patients.map((patient, index) => {
             return (
@@ -87,7 +105,8 @@ class Import extends React.Component {
                 className="card-square mt-3"
                 bg="light"
                 border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
-                <Container fluid>
+                <React.Fragment fluid>
+                  {patient.appears_to_be_duplicate && <Alert variant="danger">Warning: This monitoree already appears to exist in the system!</Alert>}
                   <Row>
                     <Col>
                       <b>State/Local ID:</b> {patient.user_defined_id_statelocal}
@@ -137,7 +156,7 @@ class Import extends React.Component {
                       <b>Was in HC Fac. w/ Known Cases:</b> {patient.was_in_health_care_facility_with_known_cases}
                     </Col>
                   </Row>
-                </Container>
+                </React.Fragment>
                 {!(this.state.accepted.includes(index) || this.state.rejected.includes(index)) && (
                   <React.Fragment>
                     <Button

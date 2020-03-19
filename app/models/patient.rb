@@ -89,6 +89,14 @@ class Patient < ApplicationRecord
     order((['CASE'] + (asc ? order_by : order_by_rev) + ['END']).join(' '))
   end
 
+  # Check for potential matches based on first and last name, sex, and date of birth
+  def self.matches(first_name, last_name, sex, date_of_birth)
+    where('lower(first_name) = ?', first_name&.downcase)
+      .where('lower(last_name) = ?', last_name&.downcase)
+      .where('lower(sex) = ?', sex&.downcase)
+      .where('date_of_birth = ?', date_of_birth)
+  end
+
   # Allow information on the monitoree's jurisdiction to be displayed
   def jurisdiction_path
     jurisdiction&.path&.map(&:name)

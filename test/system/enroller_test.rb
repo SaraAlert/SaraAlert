@@ -39,7 +39,7 @@ class EnrollerTest < ApplicationSystemTestCase
     @@monitoree_enrollment_form.enroll_monitorees_in_group('locals2c4_enroller', 'monitoree_4', 'monitoree_9')
   end
 
-  test 'copy home address to monitored address when set to home address button is clicked' do
+  test 'copy home address to monitored address when copy from home address button is clicked' do
     @@monitoree_enrollment_form.enroll_monitoree_with_same_monitored_address_as_home('state2_enroller', 'monitoree_10')
   end
 

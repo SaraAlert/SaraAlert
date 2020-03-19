@@ -19,7 +19,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
   def populate_monitoree_info_with_same_monitored_address_as_home(monitoree)
     populate_identification(monitoree['identification'], true)
     populate_address(monitoree['address'], false)
-    click_on 'Set to Home Address'
+    click_on 'Copy from Home Address'
     assert_equal(monitoree['address']['address_line_1'], find('#monitored_address_line_1')['value'])
     assert_equal(monitoree['address']['address_city'], find('#monitored_address_city')['value'])
     assert_equal(monitoree['address']['address_line_2'], find('#monitored_address_line_2')['value'])
