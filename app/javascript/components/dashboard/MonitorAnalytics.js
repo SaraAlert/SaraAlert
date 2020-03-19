@@ -1,8 +1,11 @@
 import React from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
-import SystemStatisticsPie from './widgets/SystemStatisticsPie';
+// import SystemStatisticsPie from './widgets/SystemStatisticsPie';
+// import SystemStatistics from './widgets/SystemStatistics';
+// import YourStatistics from './widgets/YourStatistics';
+import MonitoreeCount from './widgets/MonitoreeCount';
 import moment from 'moment';
-import MonitoringDistributionDay from './widgets/MonitoringDistributionDay';
+// import MonitoringDistributionDay from './widgets/MonitoringDistributionDay';
 // import AssessmentsDay from './widgets/AssessmentsDay';
 import { PropTypes } from 'prop-types';
 import MapChart from './widgets/MapChart';
@@ -14,6 +17,7 @@ class MonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    // debugger
   }
   handleClick() {
     var node = document.getElementById('sara-alert-body');
@@ -54,7 +58,7 @@ class MonitorAnalytics extends React.Component {
             <Col md="12">
               <Row>
                 <Col md="24">
-                  <SystemStatisticsPie stats={this.props.stats} />
+                  <MonitoreeCount stats={this.props.stats} />
                 </Col>
               </Row>
               <Row className="mt-4">
@@ -64,7 +68,12 @@ class MonitorAnalytics extends React.Component {
               </Row>
               <Row className="mt-4">
                 <Col md="24">
-                  <MonitoringDistributionDay stats={this.props.stats} />
+                  {/* <MonitoreeCount stats={this.props.stats} /> */}
+
+                  {/* <SystemStatisticsPie stats={this.props.stats} /> */}
+                  {/* <YourStatistics stats={this.props.stats} /> */}
+
+                  {/* <MonitoringDistributionDay stats={this.props.stats} /> */}
                 </Col>
               </Row>
             </Col>
