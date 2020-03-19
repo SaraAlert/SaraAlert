@@ -7,4 +7,8 @@ services:
     image: ${SARA_ALERT_IMAGE}:latest
   sidekiq-enrollment:
     image: ${SARA_ALERT_IMAGE}:latest
+  sidekiq-bridge-enrollment:
+    image: ${SARA_ALERT_IMAGE}:latest
+  sidekiq-bridge-assessment:
+    image: ${SARA_ALERT_IMAGE}:latest
 

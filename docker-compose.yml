@@ -5,14 +5,14 @@ services:
     image: "${SARA_ALERT_IMAGE}:development-test"
     ports:
       - "443:3000"
+    environment:
+      - REDIS_URL=redis://redis-enrollment:6379/1
     env_file:
       - .env-prod-enrollment
     restart: unless-stopped
     networks:
       - dt-net-enrollment
-      - dt-net-bridge
     depends_on:
-      - redis-bridge
       - redis-enrollment
       - postgres-enrollment
     command: "bin/bundle exec rails s -u puma -p 3000 -b 'ssl://0.0.0.0?key=/app/disease-trakker/tls/puma.key&cert=/app/disease-trakker/tls/puma.crt'"
@@ -22,6 +22,8 @@ services:
       image: "${SARA_ALERT_IMAGE}:development-test"
       ports:
         - "4343:3000"
+      environment:
+        - REDIS_URL=redis://redis-bridge:6379/1
       env_file:
         - .env-prod-assessment
       restart: unless-stopped
@@ -70,6 +72,8 @@ services:
       - dt-net-bridge
   sidekiq-enrollment:
     image: "${SARA_ALERT_IMAGE}:development-test"
+    environment:
+      - REDIS_URL=redis://redis-enrollment:6379/1
     env_file:
       - .env-prod-enrollment
     restart: unless-stopped
@@ -80,6 +84,36 @@ services:
       - redis-enrollment
       - sara-alert-enrollment
       - postgres-enrollment
+  sidekiq-bridge-enrollment:
+    image: "${SARA_ALERT_IMAGE}:development-test"
+    environment:
+      - REDIS_URL=redis://redis-bridge:6379/1
+    env_file:
+      - .env-prod-enrollment
+    restart: unless-stopped
+    networks:
+      - dt-net-bridge
+      - dt-net-enrollment
+    command: "bin/bundle exec rake reports:receive_and_process_reports"
+    depends_on:
+      - redis-bridge
+      - sara-alert-enrollment
+      - postgres-enrollment
+  sidekiq-bridge-assessment:
+    image: "${SARA_ALERT_IMAGE}:development-test"
+    environment:
+      - REDIS_URL=redis://redis-bridge:6379/1
+    env_file:
+      - .env-prod-assessment
+    restart: unless-stopped
+    networks:
+      - dt-net-bridge
+      - dt-net-assessment
+    command: "bin/bundle exec sidekiq -q default"
+    depends_on:
+      - redis-bridge
+      - sara-alert-assessment
+      - postgres-assessment
 
 volumes:
   redis-enrollment:
