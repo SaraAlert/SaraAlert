@@ -18,6 +18,7 @@
 <script>
   $(document).ready(function() {
     $('#patients_table_<%= type %>').DataTable({
+      "iDisplayLength": 25,
       "serverSide": true,
       "ajax": "public_health/<%= type %>",
       "columns": [
