@@ -33,7 +33,7 @@ class MonitoringStatus extends React.Component {
     if (event?.target?.name && event.target.name === 'jurisdictionList') {
       // Jurisdiction is a weird case; the datalist and input work differently together
       this.setState({
-        message: 'jurisdiction to "' + event.target.value + '".',
+        message: 'jurisdiction from "' + this.state.current_jurisdiction + '" to "' + event.target.value + '".',
         message_warning: '',
         jurisdiction: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
@@ -108,7 +108,7 @@ class MonitoringStatus extends React.Component {
   toggleJurisdictionModal() {
     let current = this.state.showJurisdictionModal;
     this.setState({
-      message: 'jurisdiction to "' + this.state.jurisdiction + '".',
+      message: 'jurisdiction from "' + this.state.current_jurisdiction + '" to "' + this.state.jurisdiction + '".',
       showJurisdictionModal: !current,
       jurisdiction: current ? this.state.current_jurisdiction : this.state.jurisdiction, // Reset select jurisdiction if cancel
     });
