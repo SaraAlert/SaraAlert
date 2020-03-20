@@ -109,7 +109,6 @@ class PatientsController < ApplicationController
         # deliver_later forces the use of ActiveJob
         # sidekiq and redis should be running for this to work
         # If these are not running, all jobs will be completed when services start
-        # TODO: Enable when deploying externally
         PatientMailer.enrollment_sms(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
       end
 
@@ -194,9 +193,12 @@ class PatientsController < ApplicationController
     unless patient.last_assessment_reminder_sent.nil?
       return if patient.last_assessment_reminder_sent > 24.hours.ago
     end
+
+    # Reminder email
     PatientMailer.assessment_email(patient).deliver_later
+
     patient.last_assessment_reminder_sent = DateTime.now
-    return unless patient.save!
+    return unless patient.save
 
     history = History.new
     history.created_by = current_user.email

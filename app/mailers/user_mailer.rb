@@ -7,6 +7,6 @@ class UserMailer < ApplicationMailer
   def welcome_email(user, password)
     @user = user
     @password = password
-    mail(to: user.email, subject: 'Welcome to the SaraAlert system')
+    mail(to: user.email, subject: 'Welcome to the Sara Alert system')
   end
 end

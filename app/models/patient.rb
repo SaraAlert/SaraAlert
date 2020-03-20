@@ -19,6 +19,7 @@ class Patient < ApplicationRecord
                                                   'Transferred to another jurisdiction',
                                                   'Person Under Investigation (PUI)',
                                                   'Case confirmed',
+                                                  'Past monitoring period',
                                                   nil, ''] }
 
   validates :monitoring_plan, inclusion: { in: ['Daily active monitoring',
@@ -123,6 +124,11 @@ class Patient < ApplicationRecord
       .where('lower(last_name) = ?', last_name&.downcase)
       .where('lower(sex) = ?', sex&.downcase)
       .where('date_of_birth = ?', date_of_birth)
+  end
+
+  # True if this person is responsible for reporting
+  def self_reporter_or_proxy?
+    responder_id == id
   end
 
   # Allow information on the monitoree's jurisdiction to be displayed

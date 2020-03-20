@@ -245,6 +245,13 @@ namespace :demo do
           patient.responder = patient
           patient.save
 
+          history = History.new
+          history.created_by = 'demo@example.com'
+          history.comment = 'This fake monitoree was randomly generated.'
+          history.patient = patient
+          history.history_type = 'Enrollment'
+          history.save
+
           print '.' if (i % 100).zero?
         end
 

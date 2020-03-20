@@ -5,12 +5,14 @@
   </head>
 
   <body>
-    <h1>Welcome to the Sara Alert System!</h1>
-    <br />
-    <p>Please do not forward this email. It is unique and intended only for you.</p>
-    <p>Please do not reply to this message. This message was sent to you using an automated system that cannot accept incoming messages.<p>
-    <br />
-    <p>Please provide your daily report <a href="<%= new_patient_assessment_jurisdiction_report_url(@patient.submission_token, @jurisdiction_unique_id) %>">using our online reporting tool</a>.</p>
+    <h2>Welcome to the Sara Alert System!</h2>
+    <% @patients.each do |patient| %>
+      <p>Please provide the daily report for <b><%= "#{patient[:patient]&.first_name&.first || ''}#{patient[:patient]&.last_name&.first || ''}-#{patient[:patient]&.age || '0'}" %></b> <a href="<%= new_patient_assessment_jurisdiction_report_url(patient[:patient].submission_token, patient[:jurisdiction_unique_id]) %>">by clicking here</a>.</p>
+    <% end %>
+    <p>
+      Please do not forward this email. It is unique and intended only for you.<br />
+      Please do not reply to this message. This message was sent to you using an automated system that cannot accept incoming messages.
+    <p>
   </body>
 
 </html>
