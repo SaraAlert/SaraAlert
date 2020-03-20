@@ -1,12 +1,12 @@
 ![Sara Alert](https://user-images.githubusercontent.com/14923551/76420768-025c0880-6379-11ea-8342-0a9aebd9d287.png)
 
-[![Build Status](https://travis-ci.com/SaraAlert/SaraAlert.svg?branch=master)](https://travis-ci.com/SaraAlert/SaraAlert)
+![Build](https://img.shields.io/travis/com/SaraAlert/SaraAlert/master?style=for-the-badge)
+![Release)](https://img.shields.io/github/v/release/SaraAlert/SaraAlert?style=for-the-badge)
+![License](https://img.shields.io/github/license/SaraAlert/SaraAlert?style=for-the-badge)
 
 Sara Alert is an open source tool built to allow public health officials to monitor potentially exposed individuals (“monitorees”, e.g., contacts of cases or travelers from affected areas) over time for symptoms by enrolling them in the system. During enrollment, the potentially exposed individual indicates their preferred method for daily contact. The enrolled monitoree receives a daily reminder from Sara Alert to enter temperature and any symptoms. If any symptoms are reported, the public health official receives an alert in order to coordinate care. If the monitoree fails to report, the public health official can follow up after a pre-defined period. Public health officials have access to reports and aggregated data based on their level of access.
 
 Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that it can be deployed to support future outbreaks.
-
-![ConOps](https://user-images.githubusercontent.com/14923551/76426329-4c48ec80-6381-11ea-819e-fcef98c66a2a.png)
 
 Created by [The MITRE Corporation](https://www.mitre.org).
 
@@ -109,7 +109,7 @@ Deploying a staging server is done with `docker-compose.yml`, `docker-compose.pr
 
 **Environment Variable Setup**
 
-To set up Sara Alert in a staging configuration, generate two environment variable files: `.env-prod-assessment` and `.env-prod-enrollment`. The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least. It is also important to note that the xxxx should be set to `false` for the assessment file and `true` for the enrollment file.
+To set up Sara Alert in a staging configuration, generate two environment variable files: `.env-prod-assessment` and `.env-prod-enrollment`. The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least. It is also important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file.
 
 **Container Dependencies**
 
@@ -117,7 +117,7 @@ Create a directory for the deployment. Move both docker compose files and both e
 
 **Deployment**
 
-Before any of the following commands, export the image you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert-rails`
+Before any of the following commands, export the image you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert`
 
 * `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull`
 * `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphan`
@@ -128,7 +128,7 @@ Before any of the following commands, export the image you're working with. For 
 
 **Post-deployment Setup**
 
-Before any of the following commands, export the image you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert-rails`
+Before any of the following commands, export the image you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert`
 
 Load Jurisdictions:
 

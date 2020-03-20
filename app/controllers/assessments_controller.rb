@@ -99,6 +99,11 @@ class AssessmentsController < ApplicationController
     redirect_to(patient_assessments_url) && return
   end
 
+  # For report mode instances, this is the default landing
+  def landing
+    redirect_to(root_url) && return unless ADMIN_OPTIONS['report_mode']
+  end
+
   protected
 
   def check_patient_token

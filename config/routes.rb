@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  root to: "home#index"
+  if ADMIN_OPTIONS['report_mode']
+    root to: 'assessments#landing'
+  else
+    root to: 'home#index'
+  end
 
   devise_for :users, only: [:sessions]
   as :user do
@@ -32,6 +36,7 @@ Rails.application.routes.draw do
   end
 
   get '/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: 'new_patient_assessment_jurisdiction'
+  get '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: 'new_patient_assessment_jurisdiction_report'
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
