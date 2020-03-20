@@ -160,7 +160,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
-                  <Form.Label className="nav-input-label">RACE</Form.Label>
+                  <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
                   <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.white === true || false} onChange={this.handleChange} />
                   <Form.Check
                     className="pt-2"
