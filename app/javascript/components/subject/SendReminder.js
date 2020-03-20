@@ -42,7 +42,7 @@ class SendReminder extends React.Component {
         <Modal.Body>
           <p>You are about to send a report reminder email to this monitoree.</p>
           <p>
-            <b>You can only send one reminder every 24 hours.</b> Are you sure you want to do this?
+            <b>You can only send one reminder per monitoree per 24 hours.</b> Are you sure you want to do this?
           </p>
         </Modal.Body>
         <Modal.Footer>
