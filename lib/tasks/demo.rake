@@ -136,7 +136,6 @@ namespace :demo do
         # Any existing patients may or may not report
         Patient.find_each do |patient|
           next unless patient.created_at <= today
-          next if patient.confirmed_case
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
           if rand < 0.9 # 70% reporting rate on any given day
             reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
@@ -152,13 +151,6 @@ namespace :demo do
               patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
             end
           end
-        end
-        # Some proportion of patients who are symptomatic may be confirmed cases
-        Patient.find_each do |patient|
-          next if patient.confirmed_case
-          next unless patient.assessments.order(:created_at).last(3).all?(&:symptomatic)
-
-          patient.update_attributes(confirmed_case: true) if rand < 0.1 # 10% actually become confirmed cases
         end
 
         # Create count patients

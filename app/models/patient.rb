@@ -13,6 +13,26 @@ class Patient < ApplicationRecord
     end
   end
 
+  validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
+                                                  'Lost to follow-up during monitoring period',
+                                                  'Lost to follow-up (contact never established)',
+                                                  'Transferred to another jurisdiction',
+                                                  'Person Under Investigation (PUI)',
+                                                  'Case confirmed',
+                                                  nil, ''] }
+
+  validates :monitoring_plan, inclusion: { in: ['Daily active monitoring',
+                                                'Self-monitoring with public health supervision',
+                                                'Self-monitoring with delegated supervision',
+                                                'Self-observation',
+                                                nil, ''] }
+
+  validates :exposure_risk_assessment, inclusion: { in: ['High',
+                                                         'Medium',
+                                                         'Low',
+                                                         'No Identified Risk',
+                                                         nil, ''] }
+
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
   has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
@@ -35,7 +55,7 @@ class Patient < ApplicationRecord
 
   # All individuals who are confirmed cases
   scope :confirmed_case, lambda {
-    where('confirmed_case = ?', true)
+    where('monitoring_reason = ?', 'Case confirmed')
   }
 
   # Any individual whose latest report was symptomatic
@@ -128,7 +148,8 @@ class Patient < ApplicationRecord
       risk_level: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       latest_report: latest_assessment&.created_at&.strftime('%F') || '',
-      transferred: latest_transfer&.created_at&.to_s || ''
+      transferred: latest_transfer&.created_at&.to_s || '',
+      reason_for_closure: monitoring_reason || ''
     }
   end
 

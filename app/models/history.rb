@@ -14,5 +14,14 @@ class History < ApplicationRecord
     end
   end
 
+  validates :history_type, inclusion: { in: ['Report Created',
+                                             'Report Updated',
+                                             'Comment',
+                                             'Enrollment',
+                                             'Monitoring Change',
+                                             'Reports Reviewed',
+                                             'Report Reminder',
+                                             'Report Note'] }
+
   belongs_to :patient
 end

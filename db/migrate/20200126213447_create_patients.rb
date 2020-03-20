@@ -9,9 +9,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
 
       # Monitoring represents if a monitoree is open and being currently being monitored
       t.boolean :monitoring, default: true
-
-      # Patient status
-      t.boolean :confirmed_case, default: false # TODO: If this is ever true, should this patient continue to exist in the db?
+      t.string :monitoring_reason # Reason for monitoring status
 
       # Workflow categories
       t.string :exposure_risk_assessment
@@ -28,7 +26,6 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :user_defined_id_nndss
 
       # Data collected for each patient
-      # TODO: We may want to break out "notes" into a notes table shared
       t.string :first_name
       t.string :middle_name
       t.string :last_name

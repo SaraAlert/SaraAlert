@@ -76,7 +76,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.integer "jurisdiction_id"
     t.string "submission_token"
     t.boolean "monitoring", default: true
-    t.boolean "confirmed_case", default: false
+    t.string "monitoring_reason"
     t.string "exposure_risk_assessment"
     t.string "monitoring_plan"
     t.datetime "last_assessment_reminder_sent"

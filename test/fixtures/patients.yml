@@ -7,7 +7,6 @@ patient_1:
   jurisdiction_id: 2
   submission_token: "de8c267224b17cb977cd1787c2237693df17b703"
   monitoring: true
-  confirmed_case: false
   user_defined_id_statelocal: "EX-349212"
   first_name: "Domingo54"
   middle_name: "Simonis31"
@@ -59,7 +58,6 @@ patient_2:
   jurisdiction_id: 2
   submission_token: "0badf6de985b9d1d954db6f6c80d1d367e5975d5"
   monitoring: true
-  confirmed_case: false
   user_defined_id_statelocal: "EX-904188"
   first_name: "Chris32"
   middle_name: "Abernathy31"

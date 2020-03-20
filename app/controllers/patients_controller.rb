@@ -147,7 +147,7 @@ class PatientsController < ApplicationController
   def update_status
     redirect_to(root_url) && return unless current_user.can_edit_patient?
     patient = current_user.get_patient(params.permit(:id)[:id])
-    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_plan, :exposure_risk_assessment))
+    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan, :exposure_risk_assessment))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])

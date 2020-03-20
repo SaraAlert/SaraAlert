@@ -20,6 +20,7 @@ class MonitoringStatus extends React.Component {
       jurisdiction: jur ? jur.label : '',
       current_jurisdiction: jur ? jur.label : '', // Used to remember jur on page load in case user cancels change modal
       monitoring_status_options: null,
+      monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -37,7 +38,6 @@ class MonitoringStatus extends React.Component {
         message_warning: '',
         jurisdiction: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
-        monitoring_status_option: null,
       });
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
@@ -46,7 +46,6 @@ class MonitoringStatus extends React.Component {
         message_warning: '',
         exposure_risk_assessment: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
-        monitoring_status_option: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
       this.setState({
@@ -55,7 +54,6 @@ class MonitoringStatus extends React.Component {
         message_warning: '',
         monitoring_plan: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
-        monitoring_status_option: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
@@ -74,7 +72,6 @@ class MonitoringStatus extends React.Component {
                 'Case confirmed',
               ]
             : null,
-        monitoring_status_option: null,
       });
     } else if (event?.target?.id) {
       this.setState({ [event.target.id]: event?.target?.value ? event.target.value : '' });
@@ -124,6 +121,7 @@ class MonitoringStatus extends React.Component {
         monitoring_plan: this.state.monitoring_plan,
         message: this.state.message,
         reasoning: (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
+        monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
         jurisdiction: jur ? jur.value : null,
       })
       .then(() => {
