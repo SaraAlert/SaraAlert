@@ -65,7 +65,7 @@ class AssessmentsController < ApplicationController
         history.comment = comment
         history.patient = patient
         history.history_type = 'Report Created'
-        history.save!
+        history.save
       end
       redirect_to(patient_assessments_url)
     end
@@ -95,7 +95,7 @@ class AssessmentsController < ApplicationController
     history.comment = comment
     history.patient = patient
     history.history_type = 'Report Updated'
-    history.save!
+    history.save
     redirect_to(patient_assessments_url) && return
   end
 

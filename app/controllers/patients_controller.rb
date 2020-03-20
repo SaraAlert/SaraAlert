@@ -112,6 +112,15 @@ class PatientsController < ApplicationController
         # TODO: Enable when deploying externally
         PatientMailer.enrollment_sms(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
       end
+
+      # Create a history for the enrollment
+      history = History.new
+      history.created_by = current_user.email
+      history.comment = 'User enrolled monitoree.'
+      history.patient = patient
+      history.history_type = 'Enrollment'
+      history.save
+
       render(json: patient) && return
     else
       render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
@@ -157,7 +166,7 @@ class PatientsController < ApplicationController
     history.comment = comment
     history.patient = patient
     history.history_type = 'Monitoring Change'
-    history.save!
+    history.save
   end
 
   def clear_assessments
@@ -174,7 +183,7 @@ class PatientsController < ApplicationController
     history.comment = comment
     history.patient = patient
     history.history_type = 'Reports Reviewed'
-    history.save!
+    history.save
   end
 
   def send_reminder_email
@@ -194,7 +203,7 @@ class PatientsController < ApplicationController
     history.comment = 'User sent a report reminder email to the monitoree.'
     history.patient = patient
     history.history_type = 'Report Reminder'
-    history.save!
+    history.save
   end
 
   # Parameters allowed for saving to database
