@@ -1,18 +1,18 @@
 ![Sara Alert](https://user-images.githubusercontent.com/14923551/76420768-025c0880-6379-11ea-8342-0a9aebd9d287.png)
 
-[![Build Status](https://travis-ci.com/SaraAlert/SaraAlert.svg?branch=master)](https://travis-ci.com/SaraAlert/SaraAlert)
+![Build](https://img.shields.io/travis/com/SaraAlert/SaraAlert/master?style=for-the-badge)
+![Release)](https://img.shields.io/github/v/release/SaraAlert/SaraAlert?style=for-the-badge)
+![License](https://img.shields.io/github/license/SaraAlert/SaraAlert?style=for-the-badge)
 
 Sara Alert is an open source tool built to allow public health officials to monitor potentially exposed individuals (“monitorees”, e.g., contacts of cases or travelers from affected areas) over time for symptoms by enrolling them in the system. During enrollment, the potentially exposed individual indicates their preferred method for daily contact. The enrolled monitoree receives a daily reminder from Sara Alert to enter temperature and any symptoms. If any symptoms are reported, the public health official receives an alert in order to coordinate care. If the monitoree fails to report, the public health official can follow up after a pre-defined period. Public health officials have access to reports and aggregated data based on their level of access.
 
 Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that it can be deployed to support future outbreaks.
 
-![ConOps](https://user-images.githubusercontent.com/14923551/76426329-4c48ec80-6381-11ea-819e-fcef98c66a2a.png)
-
 Created by [The MITRE Corporation](https://www.mitre.org).
 
 ## Installing and Running
 
-Sara Alert is a Ruby on Rails application that uses the PostgreSQL database for data storage.
+Sara Alert is a Ruby on Rails application that uses the PostgreSQL database for data storage and Redis for message processing.
 
 ### Prerequisites
 
@@ -21,8 +21,9 @@ To work with the application, you will need to install some prerequisites:
 * [Ruby](https://www.ruby-lang.org/)
 * [Bundler](http://bundler.io/)
 * [Postgres](http://www.postgresql.org/)
+* [Redis](https://redis.io)
 
-### Installation
+### Development Installation
 
 #### Application
 
@@ -79,17 +80,74 @@ To run Sara Alert, execute: `bundle exec rails s`.
 
 ### Installation (Docker)
 
-This application includes a Docker Compose configuration. To get started, do the following:
+#### Getting Started
 
-* Ensure [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed.
-* Generate an `.env-prod` file. To see an example of what needs to be in that file, view `.env-prod-example`. The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least.
-* `docker-compose build .`
-* `docker-compose down` (if it's already running)
-* `docker-compose up -d --force-recreate` (-d starts it daemonized, --force-recreate makes it grab the new build)
-* (optional) `docker-compose logs -f` will follow the log files as these containers are started
-* `docker-compose exec sara-alert rake db:create db:migrate RAILS_ENV=production`
-* `docker-compose exec sara-alert rake admin:import_or_update_jurisdictions RAILS_ENV=production` will build the jurisdictional structure
-* (optional) `docker-compose exec sara-alert rake demo:setup demo:populate RAILS_ENV=production` will populate the database with demonstration (fake) data and accounts
+Ensure [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) are installed.
+
+This application includes several Dockerfiles and Docker Compose configurations. Let's go over each of them:
+
+* `Dockerfile`: This Dockerfile is essentially the same as the `DevelopmentTest.Dockerfile` but provides support for developers that want to get a development and test environment up and running with a simple `docker build .`
+* `DevelopmentTest.Dockerfile`: This Dockerfile is used in the project's Continuous Integration (CI) and allows developers to get started with the full split stack architecture as its the default used in the compose files. It contains the dependencies for running tests.
+* `Production.Dockerfile`: This Dockerfile is built for production or staging deployments.
+* `docker-compose.yml`: This docker compose file sets up the numerous containers, networks, and volumes required for the split architecture.
+* `docker-compose.prod.yml`: The only difference between this file and the normal one is the overwriting of the `DevelopmentTest` image tag with the `latest` tag.
+
+##### Building for Staging
+
+If you are building the image behined a corporate proxy:
+* Create a `certs/` directory in the root of the project
+* Place your company `.crt` file in it
+* `export CERT_PATH=/path/to/crt_from_above.crt`
+
+Building for staging requires the use of the `Production.Dockerfile`.
+
+* `docker build -f Production.Dockerfile --tag sara-alert:latest --build-arg cert="$(cat $CERT_PATH)" .`
+
+##### Deploying Staging
+
+Deploying a staging server is done with `docker-compose.yml`, `docker-compose.prod.yml`, and the image created in the previous section. Make sure the image is on the staging server or it can be pulled from a Docker registry to the staging server.
+
+**Environment Variable Setup**
+
+To set up Sara Alert in a staging configuration, generate two environment variable files: `.env-prod-assessment` and `.env-prod-enrollment`. The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least. It is also important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file.
+
+**Container Dependencies**
+
+Create a directory for the deployment. Move both docker compose files and both environment variable files from the previous section into this folder. Within this deployment directory, create a subdirectory called `tls` and place your `.key` and `.crt` files for the webserver inside. Name the files `puma.key` and `puma.crt`. Ensure the files within the `tls` directory are at least `0x004` permissions so they can be read inside the container.
+
+**Deployment**
+
+Before any of the following commands, export the image you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert`
+
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphan`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake db:create`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake db:migrate`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake db:create`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake db:migrate`
+
+**Post-deployment Setup**
+
+Before any of the following commands, export the image you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert`
+
+Load Jurisdictions:
+
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake admin:import_or_update_jurisdictions`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake admin:import_or_update_jurisdictions`
+
+Setup the demonstration accounts and population:
+
+* Launch a shell inside the sara-alert-enrollment container: `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment /bin/sh`
+* Remove the protections for running the demonstration setup tasks only in development mode:
+  * `vi lib/tasks/demo.rake`
+  * Delete line x and then delete line 116
+  * Save and close the file
+* Execute the demonstration rake tasks:
+  * `bin/bundle exec rake demo:setup`
+  * `bin/bundle exec rake demo:populate`
+* Exit the container with `exit`
+
+The applications should be running on port 443 and 4343.
 
 ## Testing
 

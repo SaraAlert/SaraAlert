@@ -45,3 +45,4 @@ certs/
 dump.rdb
 coverage
 gemsurance_report.html
+tls/

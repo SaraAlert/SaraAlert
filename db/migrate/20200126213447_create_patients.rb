@@ -17,6 +17,9 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :exposure_risk_assessment
       t.string :monitoring_plan
 
+      # DateTime of last assessment reminder sent
+      t.datetime :last_assessment_reminder_sent
+
       # User definable identifier (STATE/LOCAL)
       t.string :user_defined_id_statelocal
       # User definable identifier (CDC)

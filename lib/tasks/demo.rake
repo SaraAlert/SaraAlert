@@ -149,7 +149,7 @@ namespace :demo do
             else
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               bool_symps.each do |symp|  symp['bool_value'] = false end
-              patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
+              patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
             end
           end
         end
@@ -198,8 +198,8 @@ namespace :demo do
             primary_telephone_type: rand < 0.7 ? 'Smartphone' : 'Plain Cell',
             secondary_telephone: '(333) 333-3333',
             secondary_telephone_type: 'Landline',
-            email: Faker::Internet.email,
-            preferred_contact_method: rand < 0.65 ? 'E-mail' : 'Telephone call',
+            email: "#{rand(1000000000..9999999999)}fake@example.com",
+            preferred_contact_method: 'E-mail',
             port_of_origin: Faker::Address.city,
             date_of_departure: today - (rand < 0.3 ? 1.day : 0.days),
             source_of_report: rand < 0.4 ? 'Self-Identified' : 'CDC',

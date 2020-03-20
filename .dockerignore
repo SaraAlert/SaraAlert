@@ -17,3 +17,10 @@ docker-compose.prod.yml
 docker-compose.yml
 yarn-error.log
 .ruby-version
+.travis.yml
+CHANGELOG.md
+.bundle
+.env-prod-assessment
+.env-prod-enrollment
+.env-prod-assessment-example
+.env-prod-enrollment-example

@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  root to: "home#index"
+  if ADMIN_OPTIONS['report_mode']
+    root to: 'assessments#landing'
+  else
+    root to: 'home#index'
+  end
 
   devise_for :users, only: [:sessions]
   as :user do
@@ -24,12 +28,15 @@ Rails.application.routes.draw do
   get '/import/error', to: 'import#error'
 
   post '/patients/:id/status', to: 'patients#update_status'
-
   post '/patients/:id/status/clear', to: 'patients#clear_assessments'
+  post '/patients/:id/reminder', to: 'patients#send_reminder_email'
 
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]
   end
+
+  get '/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: 'new_patient_assessment_jurisdiction'
+  get '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: 'new_patient_assessment_jurisdiction_report'
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 

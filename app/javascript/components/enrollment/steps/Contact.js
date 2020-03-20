@@ -112,6 +112,50 @@ class Contact extends React.Component {
           <Card.Header as="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
             <Form>
+              <Form.Row className="pt-2 pb-3">
+                <Form.Group as={Col} md="8" controlId="preferred_contact_method">
+                  <Form.Label className="nav-input-label">
+                    PREFERRED CONTACT METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
+                  </Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['preferred_contact_method']}
+                    as="select"
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.preferred_contact_method || ''}
+                    onChange={this.handleChange}>
+                    <option></option>
+                    <option>E-mail</option>
+                    <option>Telephone call</option>
+                    <option>SMS Text-message</option>
+                  </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['preferred_contact_method']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                {this.state.current.preferred_contact_method === 'Telephone call' && (
+                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
+                    <Form.Label className="nav-input-label">
+                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
+                    </Form.Label>
+                    <Form.Control
+                      isInvalid={this.state.errors['preferred_contact_time']}
+                      as="select"
+                      size="lg"
+                      className="form-square"
+                      value={this.state.current.preferred_contact_time || ''}
+                      onChange={this.handleChange}>
+                      <option></option>
+                      <option>Morning</option>
+                      <option>Afternoon</option>
+                      <option>Evening</option>
+                    </Form.Control>
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['preferred_contact_time']}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                )}
+              </Form.Row>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="11" controlId="primary_telephone">
                   <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
@@ -200,7 +244,7 @@ class Contact extends React.Component {
                   <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3">
+              <Form.Row className="pt-3 pb-3">
                 <Form.Group as={Col} md="8" controlId="email">
                   <Form.Label className="nav-input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -227,50 +271,6 @@ class Contact extends React.Component {
                     {this.state.errors['confirm_email']}
                   </Form.Control.Feedback>
                 </Form.Group>
-              </Form.Row>
-              <Form.Row className="pt-3 pb-3">
-                <Form.Group as={Col} md="8" controlId="preferred_contact_method">
-                  <Form.Label className="nav-input-label">
-                    PREFERRED CONTACT METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
-                  </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['preferred_contact_method']}
-                    as="select"
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.preferred_contact_method || ''}
-                    onChange={this.handleChange}>
-                    <option></option>
-                    <option>E-mail</option>
-                    <option>Telephone call</option>
-                    <option>SMS Text-message</option>
-                  </Form.Control>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['preferred_contact_method']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                {this.state.current.preferred_contact_method === 'Telephone call' && (
-                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
-                    <Form.Label className="nav-input-label">
-                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
-                    </Form.Label>
-                    <Form.Control
-                      isInvalid={this.state.errors['preferred_contact_time']}
-                      as="select"
-                      size="lg"
-                      className="form-square"
-                      value={this.state.current.preferred_contact_time || ''}
-                      onChange={this.handleChange}>
-                      <option></option>
-                      <option>Morning</option>
-                      <option>Afternoon</option>
-                      <option>Evening</option>
-                    </Form.Control>
-                    <Form.Control.Feedback className="d-block" type="invalid">
-                      {this.state.errors['preferred_contact_time']}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                )}
               </Form.Row>
             </Form>
             {this.props.previous && (

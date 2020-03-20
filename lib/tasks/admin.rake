@@ -1,12 +1,17 @@
+require 'securerandom'
+
 namespace :admin do
 
   desc "Import/Update Jurisdictions"
   task import_or_update_jurisdictions: :environment do
     config_contents = YAML.load_file('config/sara/jurisdictions.yml')
-    
+
     config_contents.each do |jur_name, jur_values|
       parse_jurisdiction(nil, jur_name, jur_values)
     end
+    # Seed newly created jurisdictions with (empty) analytic cache entries
+    Rake::Task["analytics:cache_current_analytics"].reenable
+    Rake::Task["analytics:cache_current_analytics"].invoke
   end
 
   def parse_jurisdiction(parent, jur_name, jur_values)
@@ -22,6 +27,8 @@ namespace :admin do
     # Create jurisdiction for it does not already exist
     if jurisdiction == nil
       jurisdiction = Jurisdiction.create(name: jur_name , parent: parent)
+      unique_identifier = Digest::SHA256.hexdigest(jurisdiction.jurisdiction_path_string)
+      jurisdiction.update(unique_identifier: unique_identifier)
     end
 
     # Parse and add symptoms list to jurisdiction if included
