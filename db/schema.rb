@@ -31,6 +31,12 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "assessment_receipts", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "submission_token"
+  end
+
   create_table "assessments", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -63,6 +69,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "name"
+    t.string "unique_identifier"
     t.string "ancestry"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
@@ -75,9 +82,12 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.integer "jurisdiction_id"
     t.string "submission_token"
     t.boolean "monitoring", default: true
-    t.boolean "confirmed_case", default: false
+    t.string "monitoring_reason"
+    t.boolean "purged", default: false
     t.string "exposure_risk_assessment"
     t.string "monitoring_plan"
+    t.string "public_health_action", default: "None"
+    t.datetime "last_assessment_reminder_sent"
     t.string "user_defined_id_statelocal"
     t.string "user_defined_id_cdc"
     t.string "user_defined_id_nndss"
@@ -217,8 +227,8 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.inet "current_sign_in_ip"
-    t.inet "last_sign_in_ip"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
     t.integer "failed_attempts", default: 0, null: false
     t.datetime "locked_at"
     t.boolean "force_password_change"

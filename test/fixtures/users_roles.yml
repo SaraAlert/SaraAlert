@@ -43,3 +43,6 @@ users_role_14:
 users_role_15:
   user_id: 15
   role_id: 5
+users_role_16:
+  user_id: 16
+  role_id: 2

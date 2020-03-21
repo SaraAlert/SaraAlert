@@ -47,7 +47,8 @@ class ClearReports extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            This will change any reports where the &quot;Needs Review&quot; column is &quot;Yes&quot; to &quot;No&quot;. This subject will be moved from the &quot;Symptomatic&quot; line list to either the asymptomatic or non reporting line list as appropriate.
+            This will change any reports where the &quot;Needs Review&quot; column is &quot;Yes&quot; to &quot;No&quot;. This subject will be moved from the
+            &quot;Symptomatic&quot; line list to either the asymptomatic or non reporting line list as appropriate.
           </p>
           <Form.Group>
             <Form.Label>Please describe your reasoning:</Form.Label>
@@ -69,9 +70,7 @@ class ClearReports extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button onClick={this.toggleClearReportsModal} className="btn-lg btn-square">
-          Mark All As Reviewed
-        </Button>
+        <Button onClick={this.toggleClearReportsModal}>Mark All As Reviewed</Button>
         {this.state.showClearReportsModal && this.createModal('Mark All As Reviewed', this.toggleClearReportsModal, this.clearReports)}
       </React.Fragment>
     );

@@ -2,6 +2,8 @@ import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
+import libphonenumber from 'google-libphonenumber';
+const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 class Contact extends React.Component {
   constructor(props) {
@@ -28,12 +30,12 @@ class Contact extends React.Component {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
-            .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+            .phone()
             .required('Please provide a primary telephone number')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone: yup
             .string()
-            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+            .phone()
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup
             .string()
@@ -54,11 +56,11 @@ class Contact extends React.Component {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
-            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+            .phone()
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone: yup
             .string()
-            .matches(/^$|^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+            .phone()
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
@@ -110,6 +112,50 @@ class Contact extends React.Component {
           <Card.Header as="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
             <Form>
+              <Form.Row className="pt-2 pb-3">
+                <Form.Group as={Col} md="8" controlId="preferred_contact_method">
+                  <Form.Label className="nav-input-label">
+                    PREFERRED CONTACT METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
+                  </Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['preferred_contact_method']}
+                    as="select"
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.preferred_contact_method || ''}
+                    onChange={this.handleChange}>
+                    <option></option>
+                    <option>E-mail</option>
+                    <option>Telephone call</option>
+                    <option>SMS Text-message</option>
+                  </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['preferred_contact_method']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                {this.state.current.preferred_contact_method === 'Telephone call' && (
+                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
+                    <Form.Label className="nav-input-label">
+                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
+                    </Form.Label>
+                    <Form.Control
+                      isInvalid={this.state.errors['preferred_contact_time']}
+                      as="select"
+                      size="lg"
+                      className="form-square"
+                      value={this.state.current.preferred_contact_time || ''}
+                      onChange={this.handleChange}>
+                      <option></option>
+                      <option>Morning</option>
+                      <option>Afternoon</option>
+                      <option>Evening</option>
+                    </Form.Control>
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['preferred_contact_time']}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                )}
+              </Form.Row>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="11" controlId="primary_telephone">
                   <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
@@ -198,7 +244,7 @@ class Contact extends React.Component {
                   <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3">
+              <Form.Row className="pt-3 pb-3">
                 <Form.Group as={Col} md="8" controlId="email">
                   <Form.Label className="nav-input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -226,50 +272,6 @@ class Contact extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3 pb-3">
-                <Form.Group as={Col} md="8" controlId="preferred_contact_method">
-                  <Form.Label className="nav-input-label">
-                    PREFERRED CONTACT METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
-                  </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['preferred_contact_method']}
-                    as="select"
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.preferred_contact_method || ''}
-                    onChange={this.handleChange}>
-                    <option></option>
-                    <option>E-mail</option>
-                    <option>Telephone call</option>
-                    <option>SMS Text-message</option>
-                  </Form.Control>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['preferred_contact_method']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                {this.state.current.preferred_contact_method === 'Telephone call' && (
-                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
-                    <Form.Label className="nav-input-label">
-                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
-                    </Form.Label>
-                    <Form.Control
-                      isInvalid={this.state.errors['preferred_contact_time']}
-                      as="select"
-                      size="lg"
-                      className="form-square"
-                      value={this.state.current.preferred_contact_time || ''}
-                      onChange={this.handleChange}>
-                      <option></option>
-                      <option>Morning</option>
-                      <option>Afternoon</option>
-                      <option>Evening</option>
-                    </Form.Control>
-                    <Form.Control.Feedback className="d-block" type="invalid">
-                      {this.state.errors['preferred_contact_time']}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                )}
-              </Form.Row>
             </Form>
             {this.props.previous && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
@@ -293,15 +295,33 @@ class Contact extends React.Component {
   }
 }
 
+yup.addMethod(yup.string, 'phone', function() {
+  return this.test({
+    name: 'phone',
+    exclusive: true,
+    message: 'Please enter a valid Phone Number',
+    test: value => {
+      try {
+        if (!value) {
+          return true; // Blank numbers are allowed
+        }
+        return !!phoneUtil.parse(value, 'US');
+      } catch (e) {
+        return false;
+      }
+    },
+  });
+});
+
 var schema = yup.object().shape({
   primary_telephone: yup
     .string()
-    .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number')
+    .phone()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   secondary_telephone: yup
     .string()
-    .matches(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, 'Please enter a valid Phone Number.')
+    .phone()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   primary_telephone_type: yup

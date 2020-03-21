@@ -67,7 +67,7 @@ class EnrollerTest < ApplicationSystemTestCase
     @@monitoree_enrollment_form.enroll_monitoree_and_cancel('locals2c4_enroller', 'monitoree_1', 'Return To Dashboard')
   end
 
-  test 'view enrollment analytics' do
+  test 'view analytics' do
     @@monitoree_enrollment_dashboard.login_and_view_enrollment_analytics('locals2c4_enroller')
   end
 end

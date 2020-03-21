@@ -24,9 +24,20 @@ class AssessmentCompleted extends React.Component {
             Daily Self-Report
           </Card.Header>
           <Card.Body className="text-center">
-            <Form.Label className="text-center pt-1">Thank You For Completing Your Self Report</Form.Label>
+            <Form.Label className="text-center pt-1">
+              <b>Thank You For Completing Your Self Report</b>
+            </Form.Label>
             <br />
-            <Form.Label className="fas fa-thumbs-up fa-10x text-center pt-2"> </Form.Label>
+            <Form.Label className="text-left pt-1">
+              <br />• If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.
+              <br />
+              <br />• If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please call your
+              medical provider or local health department. Avoid close contact with other people and stay at home.
+              <br />
+              <br />• If you are experiencing a medical emergency, please call 911 and let them know you are being monitored by the health department.
+            </Form.Label>
+            <br />
+            <Form.Label className="fas fa-check fa-10x text-center pt-2"> </Form.Label>
           </Card.Body>
         </Card>
       </React.Fragment>

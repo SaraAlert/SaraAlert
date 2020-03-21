@@ -9,13 +9,20 @@ class CreatePatients < ActiveRecord::Migration[6.0]
 
       # Monitoring represents if a monitoree is open and being currently being monitored
       t.boolean :monitoring, default: true
+      t.string :monitoring_reason # Reason for monitoring status
 
-      # Patient status
-      t.boolean :confirmed_case, default: false # TODO: If this is ever true, should this patient continue to exist in the db?
+      # Has this record been purged
+      t.boolean :purged, default: false
 
       # Workflow categories
       t.string :exposure_risk_assessment
       t.string :monitoring_plan
+
+      # Latest public health action
+      t.string :public_health_action, default: 'None'
+
+      # DateTime of last assessment reminder sent
+      t.datetime :last_assessment_reminder_sent
 
       # User definable identifier (STATE/LOCAL)
       t.string :user_defined_id_statelocal
@@ -25,7 +32,6 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :user_defined_id_nndss
 
       # Data collected for each patient
-      # TODO: We may want to break out "notes" into a notes table shared
       t.string :first_name
       t.string :middle_name
       t.string :last_name

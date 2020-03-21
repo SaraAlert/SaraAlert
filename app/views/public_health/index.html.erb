@@ -1,36 +1,45 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Dashboard", href: nil} ] } %>
 
-<% if current_user.can_view_analytics? %>
-  <%= link_to '<i class="fas fa-chart-pie"></i> View Analytics'.html_safe, {controller: "analytics", action: "index"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
-<% end %>
+<div class="btn-group">
 
-<% if current_user.can_create_patient? %>
-  <%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
-<% end %>
+  <% if current_user.can_view_analytics? %>
+    <%= link_to '<i class="fas fa-chart-pie"></i> Analytics'.html_safe, {controller: "analytics", action: "index"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
+  <% end %>
 
-<% if current_user.can_import? %>
-  <button type="button" class="btn btn-primary mb-4 ml-2" data-toggle="modal" data-target="#epixModal">
-    <i class="fas fa-upload"></i> Import Epi-X
-  </button>
-  <div class="modal fade" id="epixModal" tabindex="-1" role="dialog" aria-labelledby="epixModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="epixModalLabel">Import Epi-X</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <%= form_tag({controller: :import, action: :epix}, multipart: true) do |f| %>
-            <%= file_field_tag 'epix' %>
-            <%= submit_tag "Upload", class: "btn btn-primary float-right" %>
-          <% end %>
+  <% if current_user.can_create_patient? %>
+    <%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
+  <% end %>
+
+  <% if current_user.can_import? %>
+    <div class="">
+      <button type="button" class="btn btn-primary mb-4 ml-2 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" >
+        <i class="fas fa-upload"></i> Import
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" data-toggle="modal" data-target="#epixModal">Epi-X</a>
+      </div>
+    </div>
+    <div class="modal fade" id="epixModal" tabindex="-1" role="dialog" aria-labelledby="epixModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="epixModalLabel">Import Epi-X</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <%= form_tag({controller: :import, action: :epix}, multipart: true) do |f| %>
+              <%= file_field_tag 'epix' %>
+              <%= submit_tag "Upload", class: "btn btn-primary float-right" %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+
+</div>
 
 <div class="mx-2 pb-4">
 
@@ -51,51 +60,75 @@
       </a>
     </li>
     <li class="nav-item">
+      <a class="nav-link" id="pui-tab" data-toggle="tab" href="#pui" role="tab">
+        PUI <span class="badge badge-dark badge-larger-font"><%= @pui_count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a class="nav-link" id="closed-tab" data-toggle="tab" href="#closed" role="tab">
         Closed <span class="badge badge-secondary badge-larger-font"><%= @closed_count %></span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="transferred-tab" data-toggle="tab" href="#transferred" role="tab">
-        Transferred <span class="badge badge-secondary badge-larger-font"><%= @transferred_count %></span>
+      <a class="nav-link" id="transferred-in-tab" data-toggle="tab" href="#transferred-in" role="tab">
+        Transferred In <span class="badge badge-info badge-larger-font"><%= @transferred_in_count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="transferred-out-tab" data-toggle="tab" href="#transferred-out" role="tab">
+        Transferred Out <span class="badge badge-info badge-larger-font"><%= @transferred_out_count %></span>
       </a>
     </li>
   </ul>
 
-  <div class="tab-content" id="myTabContent">
+  <div class="tab-content">
     <div class="card card-square tab-pane fade show active pb-4" id="symptomatic" role="tabpanel" aria-labelledby="symptomatic-tab">
-      <h3 class="px-4 pt-4 pb-3">Monitorees Who Have Reported Symptoms</h3>
+      <p class="lead px-4 pt-4 pb-3">Monitorees who have reported symptoms, which need to be reviewed.</p>
       <%= render partial: "patients", locals: { type: 'symptomatic_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/symptomatic/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
     <div class="card card-square tab-pane fade pb-4" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
-      <h3 class="px-4 pt-4 pb-3">Monitorees Who Have Failed To Report in the Last Day</h3>
+      <p class="lead px-4 pt-4 pb-3">Monitorees who have failed to report during the last day, who were not also considered symptomatic.</p>
       <%= render partial: "patients", locals: { type: 'non_reporting_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/nonreporting/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
     <div class="card card-square tab-pane fade pb-4" id="asymptomatic" role="tabpanel" aria-labelledby="asymptomatic-tab">
-      <h3 class="px-4 pt-4 pb-3">Monitorees Reporting No Symptoms</h3>
+      <p class="lead px-4 pt-4 pb-3">Monitorees currently reporting no symptoms, who have reported during the last day.</p>
       <%= render partial: "patients", locals: { type: 'asymptomatic_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/asymptomatic/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
+    <div class="card card-square tab-pane fade show pb-4" id="pui" role="tabpanel" aria-labelledby="pui-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees who are currently being followed up on by public health.</p>
+      <%= render partial: "patients", locals: { type: 'pui_patients', p_links: true } %>
+      <% if current_user.can_export? %>
+        <a type="button" class="btn btn-primary ml-4" href="/export/pui/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
+      <% end %>
+    </div>
     <div class="card card-square tab-pane fade pb-4" id="closed" role="tabpanel" aria-labelledby="closed-tab">
-      <h3 class="px-4 pt-4 pb-3">Monitorees Not Being Monitored</h3>
+      <p class="lead px-4 pt-4 pb-3">Monitorees not currently being monitored.</p>
       <%= render partial: "patients", locals: { type: 'closed_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/closed/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
-    <div class="card card-square tab-pane fade pb-4" id="transferred" role="tabpanel" aria-labelledby="transferred-tab">
-      <h3 class="px-4 pt-4 pb-3">Monitorees That Have Been Transferred</h3>
-      <%= render partial: "patients", locals: { type: 'transferred_patients', p_links: false } %>
+    <div class="card card-square tab-pane fade pb-4" id="transferred-in" role="tabpanel" aria-labelledby="transferred-in-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees that have been transferred into this jurisdiction during the last 24 hours.</p>
+      <%= render partial: "patients", locals: { type: 'transferred_in_patients', p_links: true } %>
       <% if current_user.can_export? %>
-        <a type="button" class="btn btn-primary ml-4" href="/export/transferred/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
+        <a type="button" class="btn btn-primary ml-4" href="/export/transferred_in/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
+      <% end %>
+    </div>
+    <div class="card card-square tab-pane fade pb-4" id="transferred-out" role="tabpanel" aria-labelledby="transferred-out-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees that have been transferred out of this jurisdiction.</p>
+      <%= render partial: "patients", locals: { type: 'transferred_out_patients', p_links: false } %>
+      <% if current_user.can_export? %>
+        <a type="button" class="btn btn-primary ml-4" href="/export/transferred_out/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
   </div>

@@ -9,8 +9,8 @@
         <th class="DataTable-table-header">Date of Birth</th>
         <th class="DataTable-table-header">End of Monitoring</th>
         <th class="DataTable-table-header">Risk Level</th>
-        <th class="DataTable-table-header">Monitoring Plan</th>
-        <th class="DataTable-table-header">Latest Report</th>
+        <th class="DataTable-table-header"><% if type == 'closed_patients' %>Reason for Closure<% elsif type == 'pui_patients' %>Latest Public Health Action<% else %>Monitoring Plan<% end %></th>
+        <th class="DataTable-table-header"><% if type.include? 'transferred' %>Transferred At<% else %>Latest Report<% end %></th>
       </tr>
     </thead>
   </table>
@@ -36,8 +36,8 @@
         { "data": "linelist.dob" },
         { "data": "linelist.end_of_monitoring" },
         { "data": "linelist.risk_level" },
-        { "data": "linelist.monitoring_plan" },
-        { "data": "linelist.latest_report" }
+        <% if type == 'closed_patients' %>{ "data": "linelist.reason_for_closure" },<% elsif type == 'pui_patients' %>{ "data": "linelist.public_health_action" },<% else %>{ "data": "linelist.monitoring_plan" },<% end %>
+        <% if type.include? 'transferred' %>{ "data": "linelist.transferred" }<% else %>{ "data": "linelist.latest_report" }<% end %>
       ],
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });

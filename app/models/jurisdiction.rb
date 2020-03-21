@@ -31,9 +31,17 @@ class Jurisdiction < ApplicationRecord
     path&.map(&:name)&.join(', ')
   end
 
-  # All patients that were in the jurisdiction before (but were transferred)
-  def transferred_patients
-    Patient.where(id: Transfer.where(from_jurisdiction_id: subtree_ids).pluck(:patient_id)).where.not(jurisdiction_id: id)
+  # All patients that were in the jurisdiction before (but were transferred), and are not currently in the subtree
+  def transferred_out_patients
+    Patient.where(id: Transfer.where(from_jurisdiction_id: subtree_ids).pluck(:patient_id)).where.not(jurisdiction_id: subtree_ids + [id])
+  end
+
+  # All patients that were transferred into the jurisdiction in the last 24 hours
+  def transferred_in_patients
+    Patient.where(id: Transfer.where(to_jurisdiction_id: subtree_ids + [id])
+                              .where.not(from_jurisdiction_id: subtree_ids + [id])
+                              .where('created_at > ?', 24.hours.ago).pluck(:patient_id))
+           .where(jurisdiction_id: subtree_ids + [id])
   end
 
   # The threadhold_hash is a way for an assessment to reference the set of symptoms and expected values that

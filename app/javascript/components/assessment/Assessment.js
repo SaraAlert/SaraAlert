@@ -64,8 +64,8 @@ class Assessment extends React.Component {
     let symptoms = ['cough', 'difficulty_breathing', 'symptomatic'];
     // Having falsey values on them causes the comparison to fail.
     symptoms.forEach(symptom => {
-      if (currentAssessment[symptom] === false) {
-        delete currentAssessment[symptom];
+      if (currentAssessment[parseInt(symptom)] === false) {
+        delete currentAssessment[parseInt(symptom)];
       }
     });
     return !_.isEqual(this.state.assessmentState, currentAssessment);
@@ -75,7 +75,7 @@ class Assessment extends React.Component {
     const keysToIgnore = ['who_reported'];
     let allFieldsEmpty = true;
     _.map(object, (value, key) => {
-      if (object[key] !== null && !keysToIgnore.includes(key)) {
+      if (object[String(key)] !== null && !keysToIgnore.includes(key)) {
         allFieldsEmpty = false;
       }
     });
@@ -93,7 +93,9 @@ class Assessment extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
-      url: `/patients/${this.props.patient_submission_token}/assessments${this.props.updateId ? '/' + this.props.updateId : ''}`,
+      url: `${this.props.current_user ? '' : '/report'}/patients/${this.props.patient_submission_token}/assessments${
+        this.props.updateId ? '/' + this.props.updateId : ''
+      }`,
       data: submitData,
     })
       .then(function() {
@@ -169,6 +171,7 @@ Assessment.propTypes = {
   updateId: PropTypes.number,
   reload: PropTypes.bool,
   idPre: PropTypes.string,
+  current_user: PropTypes.object,
 };
 
 export default Assessment;

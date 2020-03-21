@@ -136,7 +136,6 @@ namespace :demo do
         # Any existing patients may or may not report
         Patient.find_each do |patient|
           next unless patient.created_at <= today
-          next if patient.confirmed_case
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
           if rand < 0.9 # 70% reporting rate on any given day
             reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
@@ -149,16 +148,9 @@ namespace :demo do
             else
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               bool_symps.each do |symp|  symp['bool_value'] = false end
-              patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })              
+              patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
             end
           end
-        end
-        # Some proportion of patients who are symptomatic may be confirmed cases
-        Patient.find_each do |patient|
-          next if patient.confirmed_case
-          next unless patient.assessments.order(:created_at).last(3).all?(&:symptomatic)
-
-          patient.update_attributes(confirmed_case: true) if rand < 0.1 # 10% actually become confirmed cases
         end
 
         # Create count patients
@@ -198,8 +190,8 @@ namespace :demo do
             primary_telephone_type: rand < 0.7 ? 'Smartphone' : 'Plain Cell',
             secondary_telephone: '(333) 333-3333',
             secondary_telephone_type: 'Landline',
-            email: Faker::Internet.email,
-            preferred_contact_method: rand < 0.65 ? 'E-mail' : 'Telephone call',
+            email: "#{rand(1000000000..9999999999)}fake@example.com",
+            preferred_contact_method: 'E-mail',
             port_of_origin: Faker::Address.city,
             date_of_departure: today - (rand < 0.3 ? 1.day : 0.days),
             source_of_report: rand < 0.4 ? 'Self-Identified' : 'CDC',
@@ -252,6 +244,13 @@ namespace :demo do
           patient.jurisdiction = jurisdictions.sample
           patient.responder = patient
           patient.save
+
+          history = History.new
+          history.created_by = 'demo@example.com'
+          history.comment = 'This fake monitoree was randomly generated.'
+          history.patient = patient
+          history.history_type = 'Enrollment'
+          history.save
 
           print '.' if (i % 100).zero?
         end

@@ -63,7 +63,7 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
   def enroll_monitoree_and_edit_info(user_name, existing_monitoree_name, new_monitoree_name)
     enroll_monitoree(user_name, existing_monitoree_name)
     click_on @@system_test_utils.get_dashboard_display_name(MONITOREES[existing_monitoree_name])
-    click_on '(click here to edit)'
+    click_on '(edit details)'
     @@monitoree_enrollment_info_page.edit_data_on_review_page(MONITOREES[new_monitoree_name])
     click_on 'Finish'
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(MONITOREES[new_monitoree_name])
@@ -99,7 +99,7 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     @@system_test_utils.login(user_name)
     display_name = @patients_dashboard_component_test_helper.search_for_monitoree(MONITOREES[monitoree_name])
     click_on display_name
-    click_on '(click here to edit)'
+    click_on '(edit details)'
     @@monitoree_enrollment_info_page.edit_data_on_review_page(MONITOREES[monitoree_name])
   end
 
