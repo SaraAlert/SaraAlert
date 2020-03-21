@@ -18,7 +18,7 @@ class ExportController < ApplicationController
     elsif params[:type] == 'nonreporting'
       patients = current_user.viewable_patients.non_reporting
     elsif params[:type] == 'closed'
-      patients = current_user.viewable_patients.monitoring_closed
+      patients = current_user.viewable_patients.monitoring_closed_without_purged
     elsif params[:type] == 'transferred'
       patients = current_user.jurisdiction.transferred_patients
     end

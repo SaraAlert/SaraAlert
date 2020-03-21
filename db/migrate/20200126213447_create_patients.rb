@@ -11,6 +11,9 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.boolean :monitoring, default: true
       t.string :monitoring_reason # Reason for monitoring status
 
+      # Has this record been purged
+      t.boolean :purged, default: false
+
       # Workflow categories
       t.string :exposure_risk_assessment
       t.string :monitoring_plan

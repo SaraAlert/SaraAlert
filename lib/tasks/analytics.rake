@@ -35,7 +35,7 @@ namespace :analytics do
     analytic.symptomatic_monitorees_count = jurisdiction_monitorees.symptomatic.count
     analytic.asymptomatic_monitorees_count = jurisdiction_monitorees.asymptomatic.count
     analytic.confirmed_cases_count = jurisdiction_monitorees.confirmed_case.count
-    analytic.closed_cases_count = jurisdiction_monitorees.monitoring_closed.count
+    analytic.closed_cases_count = jurisdiction_monitorees.monitoring_closed_with_purged.count
     analytic.open_cases_count = jurisdiction_monitorees.monitoring_open.count
     analytic.non_reporting_monitorees_count = jurisdiction_monitorees.non_reporting.count
     return analytic
@@ -48,7 +48,7 @@ namespace :analytics do
     end
     # Create analytic for patients local to parent if it does not exist
     parent_path_string = parent.jurisdiction_path_string
-    parent_analytic = jurisdiction_analytic_map[parent_path_string] 
+    parent_analytic = jurisdiction_analytic_map[parent_path_string]
     if parent_analytic == nil
       parent_analytic = calculate_analytic_local_to_jurisdiction(parent)
       add_analytic_to_parent(parent, parent_analytic, jurisdiction_analytic_map)
@@ -64,6 +64,6 @@ namespace :analytics do
     parent_analytic.non_reporting_monitorees_count += analytic.non_reporting_monitorees_count
 
     add_analytic_to_parent(parent, analytic, jurisdiction_analytic_map)
-    
+
   end
 end

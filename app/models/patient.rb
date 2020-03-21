@@ -46,12 +46,28 @@ class Patient < ApplicationRecord
 
   # All individuals currently being monitored
   scope :monitoring_open, lambda {
-    where('monitoring = ?', true)
+    where('monitoring = ?', true).where('purged = ?', false)
   }
 
-  # All individuals non currently being monitored
-  scope :monitoring_closed, lambda {
-    where('monitoring = ?', false)
+  # All individuals that have been closed (not including purged)
+  scope :monitoring_closed_without_purged, lambda {
+    where('monitoring = ?', false).where('purged = ?', false)
+  }
+
+  # All individuals that have been closed (including purged)
+  scope :monitoring_closed_with_purged, lambda {
+    where('monitoring = ?', false).where('purged = ?', true)
+  }
+
+  # Purgeable records
+  scope :purgeable, lambda {
+    where('monitoring = ?', false).where('purged = ?', false)
+      .where('updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.ago)
+  }
+
+  # Purged monitoree records
+  scope :purged, lambda {
+    where('purged = ?', true)
   }
 
   # All individuals who are confirmed cases
@@ -61,7 +77,7 @@ class Patient < ApplicationRecord
 
   # Any individual whose latest report was symptomatic
   scope :symptomatic, lambda {
-    where('monitoring = ?', true)
+    where('monitoring = ?', true).where('purged = ?', false)
       .joins(:assessments)
       .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
       .where('assessments.symptomatic = ?', true)
@@ -70,7 +86,7 @@ class Patient < ApplicationRecord
   # Non reporting asymptomatic individuals
   scope :non_reporting, lambda {
     where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where('monitoring = ?', true)
+      .where('monitoring = ?', true).where('purged = ?', false)
       .left_outer_joins(:assessments)
       .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
       .where('assessments.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
@@ -86,13 +102,13 @@ class Patient < ApplicationRecord
   # Newly enrolled individuals
   scope :new_subject, lambda {
     where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where('monitoring = ?', true)
+      .where('monitoring = ?', true).where('purged = ?', false)
       .where('id NOT IN (SELECT DISTINCT(patient_id) FROM assessments)')
   }
 
   # Individuals who have reported recently and are not symptomatic
   scope :asymptomatic, lambda {
-    where('monitoring = ?', true)
+    where('monitoring = ?', true).where('purged = ?', false)
       .left_outer_joins(:assessments)
       .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
       .where('assessments.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
@@ -145,7 +161,7 @@ class Patient < ApplicationRecord
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
-      name: { name: "#{last_name}, #{first_name}", id: id },
+      name: { name: "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}", id: id },
       jurisdiction: jurisdiction&.name || '',
       state_local_id: user_defined_id_statelocal || '',
       sex: sex || '',
