@@ -2,101 +2,105 @@ import React from 'react';
 import { Card, Table } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 
+const SYMPTOMLEVELS = ['Symptomatic', 'Non-Reporting', 'Asymptomatic'];
+const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
+
 class RiskStratification extends React.Component {
   constructor(props) {
     super(props);
-    console.log(JSON.parse(JSON.stringify(props)));
-    let pr; // = props.stats.current_reporting_summary.monitoring_status_by_risk_level; // pr stands for propsReference
-    // This pr is the correct format as the endpoint will return. Just using fake data for now, because the endpoint isn't working
-    pr = {
-      symptomatic: { high: 15, med: 2, low: 3, none: 4, missing: 1, total: 76 },
-      non_reporting: { high: 1, med: 1, low: 6, none: 8, missing: 0, total: 24 },
-      asymptomatic: { high: 3, med: 5, low: 3, none: 75, missing: 0, total: 189 },
-    };
-    let totalCount = {
-      high: pr.symptomatic.high + pr.non_reporting.high + pr.asymptomatic.high,
-      med: pr.symptomatic.med + pr.non_reporting.med + pr.asymptomatic.med,
-      low: pr.symptomatic.low + pr.non_reporting.low + pr.asymptomatic.low,
-      none: pr.symptomatic.none + pr.non_reporting.none + pr.asymptomatic.none,
-      missing: pr.symptomatic.missing + pr.non_reporting.missing + pr.asymptomatic.missing,
-    };
+    let data = {};
+    let totalCount = { total: 0 };
+    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
+    let x = activeMonitorees.filter(x => x.category_type === 'monitoring_status');
+    SYMPTOMLEVELS.forEach(symptomlevel => {
+      data[symptomlevel] = {};
+      x.filter(y => y.category === symptomlevel).forEach(z => {
+        data[symptomlevel][z.risk_level] = z.total;
+      });
+    });
+    RISKLEVELS.forEach(risklevel => {
+      totalCount[risklevel] = 0;
+      SYMPTOMLEVELS.forEach(symptomlevel => {
+        totalCount.total += data[symptomlevel][risklevel];
+        totalCount[risklevel] += data[symptomlevel][risklevel];
+      });
+    });
+    let tableData = {};
+    // We want to know the value (n) and it's percentage for each risklevel for each symptom
+    // so we create two values the symptom_n value and the symptom_p value
+    RISKLEVELS.forEach(risklevel => {
+      tableData[risklevel] = {};
+      SYMPTOMLEVELS.forEach(symptomlevel => {
+        tableData[risklevel][`${symptomlevel}_n`] = data[symptomlevel][risklevel];
+        tableData[risklevel][`${symptomlevel}_p`] =
+          totalCount[risklevel] === 0 ? 0 : ((data[symptomlevel][risklevel] * 100) / totalCount[risklevel]).toFixed(0);
+      });
+    });
 
-    totalCount['total'] = totalCount['high'] + totalCount['med'] + totalCount['low'] + totalCount['none'] + totalCount['missing'];
-
-    let data = {
-      high: {
-        symptomatic_n: pr.symptomatic.high,
-        symptomatic_p: totalCount.high === 0 ? null : ((pr.symptomatic.high * 100) / totalCount.high).toFixed(0),
-        non_reporting_n: pr.non_reporting.high,
-        non_reporting_p: totalCount.high === 0 ? null : ((pr.non_reporting.high * 100) / totalCount.high).toFixed(0),
-        asymptomatic_n: pr.asymptomatic.high,
-        asymptomatic_p: totalCount.high === 0 ? null : ((pr.asymptomatic.high * 100) / totalCount.high).toFixed(0),
-      },
-      med: {
-        symptomatic_n: pr.symptomatic.med,
-        symptomatic_p: totalCount.med === 0 ? null : ((pr.symptomatic.med * 100) / totalCount.med).toFixed(0),
-        non_reporting_n: pr.non_reporting.med,
-        non_reporting_p: totalCount.med === 0 ? null : ((pr.non_reporting.med * 100) / totalCount.med).toFixed(0),
-        asymptomatic_n: pr.asymptomatic.med,
-        asymptomatic_p: totalCount.med === 0 ? null : ((pr.asymptomatic.med * 100) / totalCount.med).toFixed(0),
-      },
-      low: {
-        symptomatic_n: pr.symptomatic.low,
-        symptomatic_p: totalCount.low === 0 ? null : ((pr.symptomatic.low * 100) / totalCount.low).toFixed(0),
-        non_reporting_n: pr.non_reporting.low,
-        non_reporting_p: totalCount.low === 0 ? null : ((pr.non_reporting.low * 100) / totalCount.low).toFixed(0),
-        asymptomatic_n: pr.asymptomatic.low,
-        asymptomatic_p: totalCount.low === 0 ? null : ((pr.asymptomatic.low * 100) / totalCount.low).toFixed(0),
-      },
-      none: {
-        symptomatic_n: pr.symptomatic.none,
-        symptomatic_p: totalCount.none === 0 ? null : ((pr.symptomatic.none * 100) / totalCount.none).toFixed(0),
-        non_reporting_n: pr.non_reporting.none,
-        non_reporting_p: totalCount.none === 0 ? null : ((pr.non_reporting.none * 100) / totalCount.none).toFixed(0),
-        asymptomatic_n: pr.asymptomatic.none,
-        asymptomatic_p: totalCount.none === 0 ? null : ((pr.asymptomatic.none * 100) / totalCount.none).toFixed(0),
-      },
-      missing: {
-        symptomatic_n: pr.symptomatic.missing,
-        symptomatic_p: totalCount.missing === 0 ? null : ((pr.symptomatic.missing * 100) / totalCount.missing).toFixed(0),
-        non_reporting_n: pr.non_reporting.missing,
-        non_reporting_p: totalCount.missing === 0 ? null : ((pr.non_reporting.missing * 100) / totalCount.missing).toFixed(0),
-        asymptomatic_n: pr.asymptomatic.missing,
-        asymptomatic_p: totalCount.missing === 0 ? null : ((pr.asymptomatic.missing * 100) / totalCount.missing).toFixed(0),
-      },
-      total: {
-        symptomatic_n: pr.symptomatic.high + pr.symptomatic.med + pr.symptomatic.low + pr.symptomatic.none + pr.symptomatic.missing,
-        symptomatic_p:
-          totalCount.total === 0
-            ? null
-            : (pr.symptomatic.high + pr.symptomatic.med + pr.symptomatic.low + pr.symptomatic.none + (pr.symptomatic.missing * 100) / totalCount.total).toFixed(
-                0
-              ),
-        non_reporting_n: pr.non_reporting.high + pr.non_reporting.med + pr.non_reporting.low + pr.non_reporting.none + pr.non_reporting.missing,
-        non_reporting_p:
-          totalCount.total === 0
-            ? null
-            : (
-                pr.non_reporting.high +
-                pr.non_reporting.med +
-                pr.non_reporting.low +
-                pr.non_reporting.none +
-                (pr.non_reporting.missing * 100) / totalCount.total
-              ).toFixed(0),
-        asymptomatic_n: pr.asymptomatic.high + pr.asymptomatic.med + pr.asymptomatic.low + pr.asymptomatic.none + pr.asymptomatic.missing,
-        asymptomatic_p:
-          totalCount.total === 0
-            ? null
-            : (
-                pr.asymptomatic.high +
-                pr.asymptomatic.med +
-                pr.asymptomatic.low +
-                pr.asymptomatic.none +
-                (pr.asymptomatic.missing * 100) / totalCount.total
-              ).toFixed(0),
-      },
+    tableData['total'] = {
+      Symptomatic_n:
+        data['Symptomatic']['High'] +
+        data['Symptomatic']['Medium'] +
+        data['Symptomatic']['Low'] +
+        data['Symptomatic']['No Identified Risk'] +
+        data['Symptomatic']['Missing'],
+      Symptomatic_p:
+        totalCount.total === 0
+          ? null
+          : (
+              (parseFloat(
+                data['Symptomatic']['High'] +
+                  data['Symptomatic']['Medium'] +
+                  data['Symptomatic']['Low'] +
+                  data['Symptomatic']['No Identified Risk'] +
+                  data['Symptomatic']['Missing']
+              ) *
+                100) /
+              totalCount.total
+            ).toFixed(0),
+      'Non-Reporting_n':
+        data['Non-Reporting']['High'] +
+        data['Non-Reporting']['Medium'] +
+        data['Non-Reporting']['Low'] +
+        data['Non-Reporting']['No Identified Risk'] +
+        data['Non-Reporting']['Missing'],
+      'Non-Reporting_p':
+        totalCount.total === 0
+          ? null
+          : (
+              (parseFloat(
+                data['Non-Reporting']['High'] +
+                  data['Non-Reporting']['Medium'] +
+                  data['Non-Reporting']['Low'] +
+                  data['Non-Reporting']['No Identified Risk'] +
+                  data['Non-Reporting']['Missing']
+              ) *
+                100) /
+              totalCount.total
+            ).toFixed(0),
+      Asymptomatic_n:
+        data['Asymptomatic']['High'] +
+        data['Asymptomatic']['Medium'] +
+        data['Asymptomatic']['Low'] +
+        data['Asymptomatic']['No Identified Risk'] +
+        data['Asymptomatic']['Missing'],
+      Asymptomatic_p:
+        totalCount.total === 0
+          ? null
+          : (
+              (parseFloat(
+                data['Asymptomatic']['High'] +
+                  data['Asymptomatic']['Medium'] +
+                  data['Asymptomatic']['Low'] +
+                  data['Asymptomatic']['No Identified Risk'] +
+                  data['Asymptomatic']['Missing']
+              ) *
+                100) /
+              totalCount.total
+            ).toFixed(0),
     };
     this.data = data;
+    this.tableData = tableData;
     this.totalCount = totalCount;
   }
 
@@ -112,26 +116,12 @@ class RiskStratification extends React.Component {
               <thead>
                 <tr>
                   <th></th>
-                  <th>
-                    <div> High Risk </div>
-                    <div className="text-secondary"> n (col %) </div>
-                  </th>
-                  <th>
-                    <div> Medium Risk </div>
-                    <div className="text-secondary"> n (col %) </div>
-                  </th>
-                  <th>
-                    <div> Low Risk </div>
-                    <div className="text-secondary"> n (col %) </div>
-                  </th>
-                  <th>
-                    <div> No Identifiable Risk </div>
-                    <div className="text-secondary"> n (col %) </div>
-                  </th>
-                  <th>
-                    <div> Missing </div>
-                    <div className="text-secondary"> n (col %) </div>
-                  </th>
+                  {RISKLEVELS.map(risklevel => (
+                    <th key={risklevel.toString()}>
+                      <div> {risklevel} </div>
+                      <div className="text-secondary"> n (col %) </div>
+                    </th>
+                  ))}
                   <th>
                     <div> Total </div>
                     <div className="text-secondary"> n (col %) </div>
@@ -141,74 +131,44 @@ class RiskStratification extends React.Component {
               <tbody>
                 <tr style={{ backgroundColor: '#FA897B' }}>
                   <td className="font-weight-bold">Symptomatic</td>
+                  {RISKLEVELS.map(risklevel => (
+                    <td key={risklevel.toString()}>
+                      {this.tableData[risklevel]['Symptomatic_n']} ({this.tableData[risklevel]['Symptomatic_p']}%)
+                    </td>
+                  ))}
                   <td>
-                    {this.data.high.symptomatic_n} ({this.data.high.symptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.med.symptomatic_n} ({this.data.med.symptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.low.symptomatic_n} ({this.data.low.symptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.none.symptomatic_n} ({this.data.none.symptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.missing.symptomatic_n} ({this.data.missing.symptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.total.symptomatic_n} ({this.data.total.symptomatic_p}%)
+                    {this.tableData['total']['Symptomatic_n']} ({this.tableData['total']['Symptomatic_p']}%)
                   </td>
                 </tr>
                 <tr style={{ backgroundColor: '#FFDD94' }}>
-                  <td className="font-weight-bold">Non-Reporting</td>
+                  <td className="font-weight-bold">Asymptomatic</td>
+                  {RISKLEVELS.map(risklevel => (
+                    <td key={risklevel.toString()}>
+                      {this.tableData[risklevel]['Asymptomatic_n']} ({this.tableData[risklevel]['Asymptomatic_p']}%)
+                    </td>
+                  ))}
                   <td>
-                    {this.data.high.non_reporting_n} ({this.data.high.non_reporting_p}%)
-                  </td>
-                  <td>
-                    {this.data.med.non_reporting_n} ({this.data.med.non_reporting_p}%)
-                  </td>
-                  <td>
-                    {this.data.low.non_reporting_n} ({this.data.low.non_reporting_p}%)
-                  </td>
-                  <td>
-                    {this.data.none.non_reporting_n} ({this.data.none.non_reporting_p}%)
-                  </td>
-                  <td>
-                    {this.data.missing.non_reporting_n} ({this.data.missing.non_reporting_p}%)
-                  </td>
-                  <td>
-                    {this.data.total.non_reporting_n} ({this.data.total.non_reporting_p}%)
+                    {this.tableData['total']['Asymptomatic_n']} ({this.tableData['total']['Asymptomatic_p']}%)
                   </td>
                 </tr>
                 <tr style={{ backgroundColor: '#D0E6A5' }}>
-                  <td className="font-weight-bold">Asymptomatic</td>
+                  <td className="font-weight-bold">Non-Reporting</td>
+                  {RISKLEVELS.map(risklevel => (
+                    <td key={risklevel.toString()}>
+                      {this.tableData[risklevel]['Non-Reporting_n']} ({this.tableData[risklevel]['Non-Reporting_p']}%)
+                    </td>
+                  ))}
                   <td>
-                    {this.data.high.asymptomatic_n} ({this.data.high.asymptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.med.asymptomatic_n} ({this.data.med.asymptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.low.asymptomatic_n} ({this.data.low.asymptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.none.asymptomatic_n} ({this.data.none.asymptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.missing.asymptomatic_n} ({this.data.missing.asymptomatic_p}%)
-                  </td>
-                  <td>
-                    {this.data.total.asymptomatic_n} ({this.data.total.asymptomatic_p}%)
+                    {this.tableData['total']['Non-Reporting_n']} ({this.tableData['total']['Non-Reporting_p']}%)
                   </td>
                 </tr>
                 <tr>
                   <td className="font-weight-bold">Total</td>
-                  <td>{this.totalCount.high}</td>
-                  <td>{this.totalCount.med}</td>
-                  <td>{this.totalCount.low}</td>
-                  <td>{this.totalCount.none}</td>
-                  <td>{this.totalCount.missing}</td>
+                  <td>{this.totalCount['High']}</td>
+                  <td>{this.totalCount['Medium']}</td>
+                  <td>{this.totalCount['Low']}</td>
+                  <td>{this.totalCount['No Identified Risk']}</td>
+                  <td>{this.totalCount['Missing']}</td>
                   <td>{this.totalCount.total}</td>
                 </tr>
               </tbody>

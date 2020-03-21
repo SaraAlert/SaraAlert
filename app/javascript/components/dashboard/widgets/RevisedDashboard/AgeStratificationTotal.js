@@ -107,7 +107,6 @@ class AgeStratificationActive extends React.Component {
   }
 
   renderErrors() {
-    console.log('renderErrors');
     return <div className="text-danger display-6"> ERROR: {this.ERRORSTRING}. </div>;
   }
 
