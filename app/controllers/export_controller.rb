@@ -8,7 +8,7 @@ class ExportController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_export?
 
     headers = ['Monitoree', 'Assigned Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
-    'End of Monitoring', 'Risk Level', 'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure']
+               'End of Monitoring', 'Risk Level', 'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure']
 
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'

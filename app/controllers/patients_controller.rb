@@ -69,9 +69,7 @@ class PatientsController < ApplicationController
                                                          params[:patient].permit(*allowed_params)[:last_name],
                                                          params[:patient].permit(*allowed_params)[:sex],
                                                          params[:patient].permit(*allowed_params)[:date_of_birth]).count.positive?
-      if duplicate
-        render(json: { duplicate: true }) && return
-      end
+      render(json: { duplicate: true }) && return if duplicate
     end
 
     # Add patient details that were collected from the form

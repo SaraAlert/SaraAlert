@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'redis'
 
 # ProduceAssessmentJob: Publish a new assessment to redis to be consumed later
