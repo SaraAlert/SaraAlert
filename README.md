@@ -1,14 +1,15 @@
 ![Sara Alert](https://user-images.githubusercontent.com/14923551/76420768-025c0880-6379-11ea-8342-0a9aebd9d287.png)
 
 ![Build](https://img.shields.io/travis/com/SaraAlert/SaraAlert/master?style=flat-square)
-![Release)](https://img.shields.io/github/v/release/SaraAlert/SaraAlert?style=flat-square)
+![Tag)](https://img.shields.io/github/v/tag/SaraAlert/SaraAlert?style=flat-square)
 ![License](https://img.shields.io/github/license/SaraAlert/SaraAlert?style=flat-square)
 
 Sara Alert is an open source tool built to allow public health officials to monitor potentially exposed individuals (“monitorees”, e.g., contacts of cases or travelers from affected areas) over time for symptoms by enrolling them in the system. During enrollment, the potentially exposed individual indicates their preferred method for daily contact. The enrolled monitoree receives a daily reminder from Sara Alert to enter temperature and any symptoms. If any symptoms are reported, the public health official receives an alert in order to coordinate care. If the monitoree fails to report, the public health official can follow up after a pre-defined period. Public health officials have access to reports and aggregated data based on their level of access.
 
 Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that it can be deployed to support future outbreaks.
 
-Created by [The MITRE Corporation](https://www.mitre.org).
+[![mitre](https://user-images.githubusercontent.com/14923551/77242919-240b8a00-6bda-11ea-887d-2a42919eb6fb.jpg)](https://www.mitre.org/)
+
 
 ## Installing and Running
 
@@ -149,7 +150,7 @@ Setup the demonstration accounts and population:
 * Launch a shell inside the sara-alert-enrollment container: `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment /bin/sh`
 * Remove the protections for running the demonstration setup tasks only in development mode:
   * `vi lib/tasks/demo.rake`
-  * Delete line x and then delete line 116
+  * Delete the environment checks at the top of the `setup` and `populate` tasks
   * Save and close the file
 * Execute the demonstration rake tasks:
   * `bin/bundle exec rake demo:setup`
