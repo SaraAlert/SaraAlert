@@ -11,7 +11,7 @@ class PurgeJob < ApplicationJob
       attributes = Patient.new.attributes.keys
       whitelist = ['id', 'created_at', 'updated_at', 'responder_id', 'creator_id', 'jurisdiction_id',
                    'submission_token', 'monitoring_reason', 'exposure_risk_assessment', 'monitoring_plan',
-                   'age', 'sex']
+                   'public_health_action', 'age', 'sex']
       attributes -= whitelist
       mask = Hash[attributes.collect { |a| [a, nil] }].symbolize_keys
       mask[:monitoring] = false

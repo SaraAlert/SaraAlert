@@ -34,6 +34,14 @@ class Patient < ApplicationRecord
                                                          'No Identified Risk',
                                                          nil, ''] }
 
+  validates :public_health_action, inclusion: { in: ['None',
+                                                     'Referral for Medical Evaluation',
+                                                     'Document Completed Medical Evaluation',
+                                                     'Document Medical Evaluation Summary and Plan',
+                                                     'Referral for Public Health Test',
+                                                     'Public Health Test Specimen Received by Lab - results pending',
+                                                     'Results of Public Health Test - positive'] }
+
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
   has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'

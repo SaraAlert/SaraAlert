@@ -12,6 +12,7 @@ class MonitoringStatus extends React.Component {
       showMonitoringPlanModal: false,
       showMonitoringStatusModal: false,
       showJurisdictionModal: false,
+      showPublicHealthActionModal: false,
       message: '',
       reasoning: '',
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
@@ -21,6 +22,7 @@ class MonitoringStatus extends React.Component {
       current_jurisdiction: jur ? jur.label : '', // Used to remember jur on page load in case user cancels change modal
       monitoring_status_options: null,
       monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
+      public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -28,6 +30,7 @@ class MonitoringStatus extends React.Component {
     this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
     this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
+    this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
   }
 
   handleChange(event) {
@@ -53,6 +56,14 @@ class MonitoringStatus extends React.Component {
         message: 'monitoring plan to "' + event.target.value + '".',
         message_warning: '',
         monitoring_plan: event?.target?.value ? event.target.value : '',
+        monitoring_status_options: null,
+      });
+    } else if (event?.target?.id && event.target.id === 'public_health_action') {
+      this.setState({
+        showPublicHealthActionModal: true,
+        message: 'latest public health action to "' + event.target.value + '".',
+        message_warning: '',
+        public_health_action: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
@@ -111,6 +122,14 @@ class MonitoringStatus extends React.Component {
     });
   }
 
+  togglePublicHealthAction() {
+    let current = this.state.showPublicHealthActionModal;
+    this.setState({
+      showPublicHealthActionModal: !current,
+      public_health_action: this.props.patient.public_health_action ? this.props.patient.public_health_action : '',
+    });
+  }
+
   submit() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     const jur = this.props.jurisdiction_paths.find(jur => jur.label === this.state.jurisdiction);
@@ -119,6 +138,7 @@ class MonitoringStatus extends React.Component {
         monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
         exposure_risk_assessment: this.state.exposure_risk_assessment,
         monitoring_plan: this.state.monitoring_plan,
+        public_health_action: this.state.public_health_action,
         message: this.state.message,
         reasoning: (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
         monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
@@ -223,6 +243,20 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
+              <Form.Row>
+                <Form.Group as={Col}>
+                  <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
+                  <Form.Control
+                    as="select"
+                    className="form-control-lg"
+                    id="public_health_action"
+                    onChange={this.handleChange}
+                    value={this.state.public_health_action}>
+                    <option>Actively Monitoring</option>
+                    <option>Not Monitoring</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form.Row>
               <Form.Row className="pt-3 align-items-end">
                 <Form.Group as={Col} md={14}>
                   <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
@@ -257,6 +291,7 @@ class MonitoringStatus extends React.Component {
         {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
         {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
+        {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
       </React.Fragment>
     );
   }

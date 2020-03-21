@@ -18,6 +18,9 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :exposure_risk_assessment
       t.string :monitoring_plan
 
+      # Latest public health action
+      t.string :public_health_action, default: 'None'
+
       # DateTime of last assessment reminder sent
       t.datetime :last_assessment_reminder_sent
 
