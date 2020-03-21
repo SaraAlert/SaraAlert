@@ -12,6 +12,7 @@ class MonitoringStatus extends React.Component {
       showMonitoringPlanModal: false,
       showMonitoringStatusModal: false,
       showJurisdictionModal: false,
+      showPublicHealthActionModal: false,
       message: '',
       reasoning: '',
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
@@ -20,6 +21,8 @@ class MonitoringStatus extends React.Component {
       jurisdiction: jur ? jur.label : '',
       current_jurisdiction: jur ? jur.label : '', // Used to remember jur on page load in case user cancels change modal
       monitoring_status_options: null,
+      monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
+      public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -27,17 +30,17 @@ class MonitoringStatus extends React.Component {
     this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
     this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
+    this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
   }
 
   handleChange(event) {
     if (event?.target?.name && event.target.name === 'jurisdictionList') {
       // Jurisdiction is a weird case; the datalist and input work differently together
       this.setState({
-        message: 'jurisdiction to "' + event.target.value + '".',
+        message: 'jurisdiction from "' + this.state.current_jurisdiction + '" to "' + event.target.value + '".',
         message_warning: '',
         jurisdiction: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
-        monitoring_status_option: null,
       });
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
@@ -46,7 +49,6 @@ class MonitoringStatus extends React.Component {
         message_warning: '',
         exposure_risk_assessment: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
-        monitoring_status_option: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
       this.setState({
@@ -55,7 +57,17 @@ class MonitoringStatus extends React.Component {
         message_warning: '',
         monitoring_plan: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
-        monitoring_status_option: null,
+      });
+    } else if (event?.target?.id && event.target.id === 'public_health_action') {
+      this.setState({
+        showPublicHealthActionModal: true,
+        message: 'latest public health action to "' + event.target.value + '".',
+        message_warning:
+          event.target.value === 'None'
+            ? 'The monitoree will be moved back into the primary status line lists.'
+            : 'The monitoree will be moved into the PUI line list.',
+        public_health_action: event?.target?.value ? event.target.value : '',
+        monitoring_status_options: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
@@ -74,7 +86,6 @@ class MonitoringStatus extends React.Component {
                 'Case confirmed',
               ]
             : null,
-        monitoring_status_option: null,
       });
     } else if (event?.target?.id) {
       this.setState({ [event.target.id]: event?.target?.value ? event.target.value : '' });
@@ -108,9 +119,17 @@ class MonitoringStatus extends React.Component {
   toggleJurisdictionModal() {
     let current = this.state.showJurisdictionModal;
     this.setState({
-      message: 'jurisdiction to "' + this.state.jurisdiction + '".',
+      message: 'jurisdiction from "' + this.state.current_jurisdiction + '" to "' + this.state.jurisdiction + '".',
       showJurisdictionModal: !current,
       jurisdiction: current ? this.state.current_jurisdiction : this.state.jurisdiction, // Reset select jurisdiction if cancel
+    });
+  }
+
+  togglePublicHealthAction() {
+    let current = this.state.showPublicHealthActionModal;
+    this.setState({
+      showPublicHealthActionModal: !current,
+      public_health_action: this.props.patient.public_health_action ? this.props.patient.public_health_action : '',
     });
   }
 
@@ -122,8 +141,10 @@ class MonitoringStatus extends React.Component {
         monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
         exposure_risk_assessment: this.state.exposure_risk_assessment,
         monitoring_plan: this.state.monitoring_plan,
+        public_health_action: this.state.public_health_action,
         message: this.state.message,
         reasoning: (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
+        monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
         jurisdiction: jur ? jur.value : null,
       })
       .then(() => {
@@ -225,6 +246,25 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
+              <Form.Row className="pt-3">
+                <Form.Group as={Col} md={16}>
+                  <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
+                  <Form.Control
+                    as="select"
+                    className="form-control-lg"
+                    id="public_health_action"
+                    onChange={this.handleChange}
+                    value={this.state.public_health_action}>
+                    <option>None</option>
+                    <option>Referral for Medical Evaluation</option>
+                    <option>Document Completed Medical Evaluation</option>
+                    <option>Document Medical Evaluation Summary and Plan</option>
+                    <option>Referral for Public Health Test</option>
+                    <option>Public Health Test Specimen Received by Lab - results pending</option>
+                    <option>Results of Public Health Test - positive</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form.Row>
               <Form.Row className="pt-3 align-items-end">
                 <Form.Group as={Col} md={14}>
                   <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
@@ -259,6 +299,7 @@ class MonitoringStatus extends React.Component {
         {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
         {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
+        {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
       </React.Fragment>
     );
   }

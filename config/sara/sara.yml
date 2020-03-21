@@ -4,6 +4,12 @@ monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 14 %>
 # How many minutes in a reporting period (hint: 1440 mins for 24 hours)
 reporting_period_minutes: <%= ENV["SARA_ALERT_REPORTING_PERIOD_MINUTES"] || 1440 %>
 
+# How many minutes after a closed record last_update it can be purged
+purgeable_after: <%= ENV["SARA_ALERT_PURGEABLE_AFTER_MINUTES"] || 20160 %>
+
+# How many minutes after a report was received the monitoree can re-report
+reporting_limit: <%= ENV["SARA_ALERT_REPORTING_LIMIT_MINUTES"] || 15 %>
+
 # Should Sara Alert send emails?
 enable_email: <%= ENV["SARA_ALERT_ENABLE_EMAIL"] || true %>
 

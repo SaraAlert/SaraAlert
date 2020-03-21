@@ -31,6 +31,12 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "assessment_receipts", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "submission_token"
+  end
+
   create_table "assessments", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -76,9 +82,11 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.integer "jurisdiction_id"
     t.string "submission_token"
     t.boolean "monitoring", default: true
-    t.boolean "confirmed_case", default: false
+    t.string "monitoring_reason"
+    t.boolean "purged", default: false
     t.string "exposure_risk_assessment"
     t.string "monitoring_plan"
+    t.string "public_health_action", default: "None"
     t.datetime "last_assessment_reminder_sent"
     t.string "user_defined_id_statelocal"
     t.string "user_defined_id_cdc"

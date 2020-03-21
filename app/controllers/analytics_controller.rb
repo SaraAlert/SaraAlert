@@ -32,7 +32,7 @@ class AnalyticsController < ApplicationController
     }
   end
 
-  def epi_stats # rubocop:todo Metrics/AbcSize
+  def epi_stats
     jurisdiction_analytics = current_user.jurisdiction.analytics
     root_jurisdiction_analytics = current_user.jurisdiction.root.analytics
     patient_count_by_day_array = []

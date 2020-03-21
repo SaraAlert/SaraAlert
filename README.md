@@ -71,8 +71,17 @@ bundle exec sidekiq -q default -q mailers
 
 ##### Whenever
 
-The [Whenever](https://github.com/javan/whenever) gem is used to schedule ActiveJobs (for things like closing out monitorees that no longer need to be monitored). This gem uses the contents of `config/schedule.rb` to generate a crontab file.
-To update your chrontab (to periodically perform the jobs defined in `config/schedule.rb`), run `bundle exec whenever --update-crontab`.
+The [Whenever](https://github.com/javan/whenever) gem is used to schedule jobs. This gem uses the contents of `config/schedule.rb` to generate a crontab file. These jobs include:
+
+* Automatically closing out monitorees after the monitoring period
+* Purging old monitoree records
+* Updating system analytics
+
+You must update your chrontab for these jobs to run periodically (defined in `config/schedule.rb`). To do so run:
+
+```
+bundle exec whenever --update-crontab
+```
 
 #### Running
 

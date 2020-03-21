@@ -11,7 +11,7 @@ class HistoriesController < ApplicationController
     history.created_by = current_user.email
     history.patient_id = params.permit(:patient_id)[:patient_id]
     history.history_type = params.permit(:type)[:type] || 'Comment'
-    history.save!
+    history.save
     redirect_back fallback_location: root_path
   end
 end

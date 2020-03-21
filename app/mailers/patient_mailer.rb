@@ -5,15 +5,19 @@ class PatientMailer < ApplicationMailer
   default from: 'notifications@SaraAlert.mitre.org'
 
   def assessment_email(patient)
-    @patient = patient
-    @jurisdiction_unique_id = Jurisdiction.find_by_id(@patient.jurisdiction_id).unique_identifier
-    mail(to: patient.email, subject: 'SaraAlert Report Reminder')
+    # Gather patients and jurisdictions
+    @patients = ([patient] + patient.dependents).uniq.collect do |p|
+      { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
+    end
+    mail(to: patient.email, subject: 'Sara Alert Report Reminder')
   end
 
   def enrollment_email(patient)
-    @patient = patient
-    @jurisdiction_unique_id = Jurisdiction.find_by_id(@patient.jurisdiction_id).unique_identifier
-    mail(to: patient.email, subject: 'SaraAlert Enrollment')
+    # Gather patients and jurisdictions
+    @patients = ([patient] + patient.dependents).uniq.collect do |p|
+      { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
+    end
+    mail(to: patient.email, subject: 'Sara Alert Enrollment')
   end
 
   def enrollment_sms(patient)
@@ -31,6 +35,6 @@ class PatientMailer < ApplicationMailer
 
   def closed_email(patient)
     @patient = patient
-    mail(to: patient.email, subject: 'SaraAlert Reporting Complete')
+    mail(to: patient.email, subject: 'Sara Alert Reporting Complete')
   end
 end

@@ -7,6 +7,10 @@ class ExportController < ApplicationController
   def csv
     redirect_to(root_url) && return unless current_user.can_export?
 
+    headers = ['Monitoree', 'Assigned Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
+               'End of Monitoring', 'Risk Level', 'Monitoring Plan', 'Latest Report', 'Transferred At',
+               'Reason For Closure', 'Latest Public Health Action']
+
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'
       patients = current_user.viewable_patients.symptomatic
@@ -15,7 +19,7 @@ class ExportController < ApplicationController
     elsif params[:type] == 'nonreporting'
       patients = current_user.viewable_patients.non_reporting
     elsif params[:type] == 'closed'
-      patients = current_user.viewable_patients.monitoring_closed
+      patients = current_user.viewable_patients.monitoring_closed_without_purged
     elsif params[:type] == 'transferred'
       patients = current_user.jurisdiction.transferred_patients
     end
@@ -25,8 +29,7 @@ class ExportController < ApplicationController
 
     # Build CSV
     csv_result = CSV.generate(headers: true) do |csv|
-      csv << ['Monitoree', 'Assigned Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
-              'End of Monitoring', 'Risk Level', 'Monitoring Plan', 'Latest Report']
+      csv << headers
       patients.each do |patient|
         p = patient.linelist.values
         p[0] = p[0][:name]

@@ -69,9 +69,7 @@ class PatientsController < ApplicationController
                                                          params[:patient].permit(*allowed_params)[:last_name],
                                                          params[:patient].permit(*allowed_params)[:sex],
                                                          params[:patient].permit(*allowed_params)[:date_of_birth]).count.positive?
-      if duplicate
-        render(json: { duplicate: true }) && return
-      end
+      render(json: { duplicate: true }) && return if duplicate
     end
 
     # Add patient details that were collected from the form
@@ -109,9 +107,17 @@ class PatientsController < ApplicationController
         # deliver_later forces the use of ActiveJob
         # sidekiq and redis should be running for this to work
         # If these are not running, all jobs will be completed when services start
-        # TODO: Enable when deploying externally
         PatientMailer.enrollment_sms(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
       end
+
+      # Create a history for the enrollment
+      history = History.new
+      history.created_by = current_user.email
+      history.comment = 'User enrolled monitoree.'
+      history.patient = patient
+      history.history_type = 'Enrollment'
+      history.save
+
       render(json: patient) && return
     else
       render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
@@ -138,7 +144,7 @@ class PatientsController < ApplicationController
   def update_status
     redirect_to(root_url) && return unless current_user.can_edit_patient?
     patient = current_user.get_patient(params.permit(:id)[:id])
-    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_plan, :exposure_risk_assessment))
+    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan, :exposure_risk_assessment, :public_health_action))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
@@ -157,7 +163,7 @@ class PatientsController < ApplicationController
     history.comment = comment
     history.patient = patient
     history.history_type = 'Monitoring Change'
-    history.save!
+    history.save
   end
 
   def clear_assessments
@@ -174,7 +180,7 @@ class PatientsController < ApplicationController
     history.comment = comment
     history.patient = patient
     history.history_type = 'Reports Reviewed'
-    history.save!
+    history.save
   end
 
   def send_reminder_email
@@ -185,16 +191,19 @@ class PatientsController < ApplicationController
     unless patient.last_assessment_reminder_sent.nil?
       return if patient.last_assessment_reminder_sent > 24.hours.ago
     end
+
+    # Reminder email
     PatientMailer.assessment_email(patient).deliver_later
+
     patient.last_assessment_reminder_sent = DateTime.now
-    return unless patient.save!
+    return unless patient.save
 
     history = History.new
     history.created_by = current_user.email
     history.comment = 'User sent a report reminder email to the monitoree.'
     history.patient = patient
     history.history_type = 'Report Reminder'
-    history.save!
+    history.save
   end
 
   # Parameters allowed for saving to database

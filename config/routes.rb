@@ -7,9 +7,9 @@ Rails.application.routes.draw do
 
   devise_for :users, only: [:sessions]
   as :user do
-    get 'users/edit' => 'users/registrations#edit', :as => 'edit_user_registration'
-    put 'users' => 'users/registrations#update', :as => 'user_registration'
-    get 'users/password_expired' => 'users/registrations#password_expired', :as => 'user_password_expired'
+    get 'users/edit', to: 'users/registrations#edit', as: :edit_user_registration
+    put 'users', to: 'users/registrations#update', as: :user_registration
+    get 'users/password_expired', to: 'users/registrations#password_expired', as: :user_password_expired
   end
 
   resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]
@@ -35,18 +35,22 @@ Rails.application.routes.draw do
     resources :assessments, only: [:create, :new, :index]
   end
 
-  get '/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: 'new_patient_assessment_jurisdiction'
-  get '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: 'new_patient_assessment_jurisdiction_report'
+  get '/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction
+  get '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_report
+  get '/already_reported', to: 'assessments#already_reported', as: :already_reported
+  get '/report/already_reported', to: 'assessments#already_reported', as: :already_reported_report
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
   post '/patients/assessments', to: 'assessments#new_from_email'
 
   get '/public_health/asymptomatic_patients', to: 'public_health#asymptomatic_patients', as: :public_health_asymptomatic_patients
+  get '/public_health/pui_patients', to: 'public_health#pui_patients', as: :public_health_pui_patients
   get '/public_health/non_reporting_patients', to: 'public_health#non_reporting_patients', as: :public_health_non_reporting_patients
   get '/public_health/symptomatic_patients', to: 'public_health#symptomatic_patients', as: :public_health_symptomatic_patients
   get '/public_health/closed_patients', to: 'public_health#closed_patients', as: :public_health_closed_patients
-  get '/public_health/transferred_patients', to: 'public_health#transferred_patients', as: :public_health_transferred_patients
+  get '/public_health/transferred_in_patients', to: 'public_health#transferred_in_patients', as: :public_health_transferred_in_patients
+  get '/public_health/transferred_out_patients', to: 'public_health#transferred_out_patients', as: :public_health_transferred_out_patients
   get '/public_health', to: 'public_health#index', as: :public_health
 
   get '/analytics', to: 'analytics#index', as: :analytics
