@@ -62,7 +62,10 @@ class MonitoringStatus extends React.Component {
       this.setState({
         showPublicHealthActionModal: true,
         message: 'latest public health action to "' + event.target.value + '".',
-        message_warning: '',
+        message_warning:
+          event.target.value === 'None'
+            ? 'The monitoree will be moved back into the primary status line lists.'
+            : 'The monitoree will be moved into the PUI line list.',
         public_health_action: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
       });
@@ -243,8 +246,8 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
-              <Form.Row>
-                <Form.Group as={Col}>
+              <Form.Row className="pt-3">
+                <Form.Group as={Col} md={16}>
                   <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
                   <Form.Control
                     as="select"
@@ -252,8 +255,13 @@ class MonitoringStatus extends React.Component {
                     id="public_health_action"
                     onChange={this.handleChange}
                     value={this.state.public_health_action}>
-                    <option>Actively Monitoring</option>
-                    <option>Not Monitoring</option>
+                    <option>None</option>
+                    <option>Referral for Medical Evaluation</option>
+                    <option>Document Completed Medical Evaluation</option>
+                    <option>Document Medical Evaluation Summary and Plan</option>
+                    <option>Referral for Public Health Test</option>
+                    <option>Public Health Test Specimen Received by Lab - results pending</option>
+                    <option>Results of Public Health Test - positive</option>
                   </Form.Control>
                 </Form.Group>
               </Form.Row>

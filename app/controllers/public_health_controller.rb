@@ -8,6 +8,7 @@ class PublicHealthController < ApplicationController
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
     @symptomatic_count = current_user.viewable_patients.symptomatic.count
+    @pui_count = current_user.viewable_patients.under_investigation.count
     @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.count
     @non_reporting_count = current_user.viewable_patients.non_reporting.count
     @asymptomatic_count = current_user.viewable_patients.asymptomatic.count
@@ -20,6 +21,13 @@ class PublicHealthController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
     render json: filter_sort_paginate(params, current_user.viewable_patients.symptomatic)
+  end
+
+  def pui_patients
+    # Restrict access to public health only
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+
+    render json: filter_sort_paginate(params, current_user.viewable_patients.under_investigation)
   end
 
   def closed_patients
