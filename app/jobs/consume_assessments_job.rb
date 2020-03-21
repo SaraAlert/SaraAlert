@@ -19,7 +19,7 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         # Prevent duplicate patient assessment spam
         unless patient.latest_assessment.nil? # Only check for latest assessment if there is one
-          next if patient.latest_assessment.created_at > 15.minutes.ago
+          next if patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago
         end
 
         threshold_condition = ThresholdCondition.where(threshold_condition_hash: message['threshold_condition_hash']).first

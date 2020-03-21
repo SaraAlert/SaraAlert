@@ -31,6 +31,12 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "assessment_receipts", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "submission_token"
+  end
+
   create_table "assessments", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

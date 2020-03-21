@@ -7,9 +7,9 @@ Rails.application.routes.draw do
 
   devise_for :users, only: [:sessions]
   as :user do
-    get 'users/edit' => 'users/registrations#edit', :as => 'edit_user_registration'
-    put 'users' => 'users/registrations#update', :as => 'user_registration'
-    get 'users/password_expired' => 'users/registrations#password_expired', :as => 'user_password_expired'
+    get 'users/edit', to: 'users/registrations#edit', as: :edit_user_registration
+    put 'users', to: 'users/registrations#update', as: :user_registration
+    get 'users/password_expired', to: 'users/registrations#password_expired', as: :user_password_expired
   end
 
   resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]
@@ -35,8 +35,10 @@ Rails.application.routes.draw do
     resources :assessments, only: [:create, :new, :index]
   end
 
-  get '/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: 'new_patient_assessment_jurisdiction'
-  get '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: 'new_patient_assessment_jurisdiction_report'
+  get '/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction
+  get '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_report
+  get '/already_reported', to: 'assessments#already_reported', as: :already_reported
+  get '/report/already_reported', to: 'assessments#already_reported', as: :already_reported_report
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
