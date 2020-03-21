@@ -7,11 +7,10 @@ class PurgeJob < ApplicationJob
   def perform(*_args)
     Patient.purgeable.each do |monitoree|
       # Whitelist attributes to keep
-      debugger
       attributes = Patient.new.attributes.keys
-      whitelist = ['id', 'created_at', 'updated_at', 'responder_id', 'creator_id', 'jurisdiction_id',
-                   'submission_token', 'monitoring_reason', 'exposure_risk_assessment', 'monitoring_plan',
-                   'public_health_action', 'age', 'sex']
+      whitelist = %w[id created_at updated_at responder_id creator_id jurisdiction_id
+                     submission_token monitoring_reason exposure_risk_assessment monitoring_plan
+                     public_health_action age sex]
       attributes -= whitelist
       mask = Hash[attributes.collect { |a| [a, nil] }].symbolize_keys
       mask[:monitoring] = false

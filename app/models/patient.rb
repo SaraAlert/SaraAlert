@@ -54,22 +54,26 @@ class Patient < ApplicationRecord
 
   # All individuals currently being monitored
   scope :monitoring_open, lambda {
-    where('monitoring = ?', true).where('purged = ?', false)
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
   }
 
   # All individuals that have been closed (not including purged)
   scope :monitoring_closed_without_purged, lambda {
-    where('monitoring = ?', false).where('purged = ?', false)
+    where('monitoring = ?', false)
+      .where('purged = ?', false)
   }
 
   # All individuals that have been closed (including purged)
   scope :monitoring_closed_with_purged, lambda {
-    where('monitoring = ?', false).where('purged = ?', true)
+    where('monitoring = ?', false)
+      .where('purged = ?', true)
   }
 
   # Purgeable records
   scope :purgeable, lambda {
-    where('monitoring = ?', false).where('purged = ?', false)
+    where('monitoring = ?', false)
+      .where('purged = ?', false)
       .where('updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.ago)
   }
 
@@ -85,13 +89,15 @@ class Patient < ApplicationRecord
 
   # Any individual who is currently under investigation
   scope :under_investigation, lambda {
-    where('monitoring = ?', true).where('purged = ?', false)
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
       .where.not('public_health_action = ?', 'None')
   }
 
   # Any individual whose latest report was symptomatic
   scope :symptomatic, lambda {
-    where('monitoring = ?', true).where('purged = ?', false)
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
       .joins(:assessments)
       .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
       .where('assessments.symptomatic = ?', true)
@@ -117,7 +123,8 @@ class Patient < ApplicationRecord
 
   # Individuals who have reported recently and are not symptomatic
   scope :asymptomatic, lambda {
-    where('monitoring = ?', true).where('purged = ?', false)
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
       .left_outer_joins(:assessments)
       .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
       .where('assessments.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)

@@ -16,7 +16,8 @@ class AssessmentsController < ApplicationController
 
     # If monitoree, limit number of reports per time period
     if current_user.nil?
-      if AssessmentReceipt.where(submission_token: @patient_submission_token).where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).count.positive?
+      if AssessmentReceipt.where(submission_token: @patient_submission_token)
+                          .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).count.positive?
         redirect_to(already_reported_report_url) && return if ADMIN_OPTIONS['report_mode']
         redirect_to(already_reported_url) && return
       end
@@ -120,8 +121,7 @@ class AssessmentsController < ApplicationController
   end
 
   # The monitoree already reported. Give them an update
-  def already_reported
-  end
+  def already_reported; end
 
   protected
 
