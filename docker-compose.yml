@@ -13,6 +13,8 @@ services:
     depends_on:
       - redis-enrollment
       - postgres-enrollment
+    ports:
+      - 3000:3000
     command: "bin/bundle exec rails s -u puma -p 3000 -b 'ssl://0.0.0.0?key=/app/disease-trakker/tls/puma.key&cert=/app/disease-trakker/tls/puma.crt'"
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
