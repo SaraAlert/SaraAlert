@@ -1,6 +1,6 @@
 ![Sara Alert](https://user-images.githubusercontent.com/14923551/76420768-025c0880-6379-11ea-8342-0a9aebd9d287.png)
 
-![Build](https://img.shields.io/travis/com/SaraAlert/SaraAlert/master?style=flat-square)
+[![Build](https://img.shields.io/travis/com/SaraAlert/SaraAlert/master?style=flat-square)](https://travis-ci.com/SaraAlert/SaraAlert)
 ![Tag)](https://img.shields.io/github/v/tag/SaraAlert/SaraAlert?style=flat-square)
 ![License](https://img.shields.io/github/license/SaraAlert/SaraAlert?style=flat-square)
 
