@@ -19,15 +19,6 @@ class AgeStratificationActive extends React.Component {
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
     if (!this.ERRORS) {
       let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
-      let ageGroups = activeMonitorees.filter(x => x.category_type === 'age_group');
-      this.ageData = AGEGROUPS.map(x => {
-        let thisAgeGroup = ageGroups.filter(group => group.category === x);
-        let retVal = { name: x };
-        RISKLEVELS.forEach(val => {
-          retVal[val] = thisAgeGroup.find(z => z.risk_level === val)?.total;
-        });
-        return retVal;
-      });
 
       let sexGroups = activeMonitorees.filter(x => x.category_type === 'sex');
       this.sexData = SEXES.map(x => {
@@ -38,7 +29,6 @@ class AgeStratificationActive extends React.Component {
         });
         return retVal;
       });
-      console.log(this.sexData);
 
       let coiGroup = activeMonitorees.filter(x => x.category_type === 'exposure_country');
       this.coiData = COUNTRIES_OF_INTEREST.map(x => {
@@ -74,29 +64,6 @@ class AgeStratificationActive extends React.Component {
   renderBarGraph() {
     return (
       <div className="mx-3 mt-2">
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            width={500}
-            height={300}
-            data={this.ageData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="High" stackId="a" fill="#FA897B" />
-            <Bar dataKey="Medium" stackId="a" fill="#FFDD94" />
-            <Bar dataKey="Low" stackId="a" fill="#D0E6A5" />
-            <Bar dataKey="No Identified Risk" stackId="a" fill="#333" />
-            <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
-          </BarChart>
-        </ResponsiveContainer>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
             width={500}
