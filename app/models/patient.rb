@@ -238,12 +238,12 @@ class Patient < ApplicationRecord
       where(laboratory_personnel: true)
     when 'Total'
       where(contact_of_known_case: true)
-      .or(where(travel_to_affected_country_or_area: true))
-      .or(where(was_in_health_care_facility_with_known_cases: true))
-      .or(where(healthcare_personnel: true))
-      .or(where(member_of_a_common_exposure_cohort: true))
-      .or(where(crew_on_passenger_or_cargo_flight: true))
-      .or(where(laboratory_personnel: true))
+        .or(where(travel_to_affected_country_or_area: true))
+        .or(where(was_in_health_care_facility_with_known_cases: true))
+        .or(where(healthcare_personnel: true))
+        .or(where(member_of_a_common_exposure_cohort: true))
+        .or(where(crew_on_passenger_or_cargo_flight: true))
+        .or(where(laboratory_personnel: true))
     end
   }
 
