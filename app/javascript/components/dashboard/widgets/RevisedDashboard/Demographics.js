@@ -127,29 +127,6 @@ class AgeStratificationActive extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {AGEGROUPS.map(agegroup => (
-              <tr key={agegroup.toString() + '1'}>
-                <td key={agegroup.toString() + '2'} className="font-weight-bold">
-                  {' '}
-                  {agegroup}{' '}
-                </td>
-                {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={agegroup.toString() + risklevelIndex.toString()}>{this.ageData.find(x => x.name === agegroup)[risklevel]}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <Table striped hover className="border mt-2">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
             {SEXES.map(sexgroup => (
               <tr key={sexgroup.toString() + '1'}>
                 <td key={sexgroup.toString() + '2'} className="font-weight-bold">

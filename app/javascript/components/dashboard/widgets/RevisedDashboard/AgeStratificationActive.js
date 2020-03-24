@@ -4,9 +4,7 @@ import { PropTypes } from 'prop-types';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import Switch from 'react-switch';
 
-const SEXES = ['Male', 'Female', 'Unknown'];
 const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80'];
-const COUNTRIES_OF_INTEREST = ['United States of America', 'China', 'South Korea', 'Italy', 'United Kingdom'];
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
 
 class AgeStratificationActive extends React.Component {
@@ -25,27 +23,6 @@ class AgeStratificationActive extends React.Component {
         let retVal = { name: x };
         RISKLEVELS.forEach(val => {
           retVal[val] = thisAgeGroup.find(z => z.risk_level === val)?.total;
-        });
-        return retVal;
-      });
-
-      let sexGroups = activeMonitorees.filter(x => x.category_type === 'sex');
-      this.sexData = SEXES.map(x => {
-        let thisSexGroup = sexGroups.filter(group => group.category === x);
-        let retVal = { name: x };
-        RISKLEVELS.forEach(val => {
-          retVal[val] = thisSexGroup.find(z => z.risk_level === val)?.total;
-        });
-        return retVal;
-      });
-      console.log(this.sexData);
-
-      let coiGroup = activeMonitorees.filter(x => x.category_type === 'exposure_country');
-      this.coiData = COUNTRIES_OF_INTEREST.map(x => {
-        let thisCOIGroup = coiGroup.filter(group => group.category === x);
-        let retVal = { name: x };
-        RISKLEVELS.forEach(val => {
-          retVal[val] = thisCOIGroup.find(z => z.risk_level === val)?.total;
         });
         return retVal;
       });
@@ -97,52 +74,6 @@ class AgeStratificationActive extends React.Component {
             <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
           </BarChart>
         </ResponsiveContainer>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            width={500}
-            height={300}
-            data={this.sexData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="High" stackId="a" fill="#FA897B" />
-            <Bar dataKey="Medium" stackId="a" fill="#FFDD94" />
-            <Bar dataKey="Low" stackId="a" fill="#D0E6A5" />
-            <Bar dataKey="No Identified Risk" stackId="a" fill="#333" />
-            <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
-          </BarChart>
-        </ResponsiveContainer>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            width={500}
-            height={300}
-            data={this.coiData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="High" stackId="a" fill="#FA897B" />
-            <Bar dataKey="Medium" stackId="a" fill="#FFDD94" />
-            <Bar dataKey="Low" stackId="a" fill="#D0E6A5" />
-            <Bar dataKey="No Identified Risk" stackId="a" fill="#333" />
-            <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
-          </BarChart>
-        </ResponsiveContainer>
       </div>
     );
   }
@@ -168,52 +99,6 @@ class AgeStratificationActive extends React.Component {
                 </td>
                 {RISKLEVELS.map((risklevel, risklevelIndex) => (
                   <td key={agegroup.toString() + risklevelIndex.toString()}>{this.ageData.find(x => x.name === agegroup)[risklevel]}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <Table striped hover className="border mt-2">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {SEXES.map(sexgroup => (
-              <tr key={sexgroup.toString() + '1'}>
-                <td key={sexgroup.toString() + '2'} className="font-weight-bold">
-                  {' '}
-                  {sexgroup}{' '}
-                </td>
-                {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={sexgroup.toString() + risklevelIndex.toString()}>{this.sexData.find(x => x.name === sexgroup)[risklevel]}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <Table striped hover className="border mt-2">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {COUNTRIES_OF_INTEREST.map(coiGroup => (
-              <tr key={coiGroup.toString() + '1'}>
-                <td key={coiGroup.toString() + '2'} className="font-weight-bold">
-                  {' '}
-                  {coiGroup}{' '}
-                </td>
-                {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[risklevel]}</td>
                 ))}
               </tr>
             ))}

@@ -6,7 +6,6 @@ import MonitoreeFlow from './widgets/RevisedDashboard/MonitoreeFlow';
 import AgeStratificationActive from './widgets/RevisedDashboard/AgeStratificationActive';
 import Demographics from './widgets/RevisedDashboard/Demographics';
 import moment from 'moment';
-import domtoimage from 'dom-to-image';
 
 class RevisedMonitorAnalytics extends React.Component {
   constructor(props) {
@@ -35,10 +34,10 @@ class RevisedMonitorAnalytics extends React.Component {
         </Row>
         <h2> Epidemiological Summary </h2>
         <Row className="mb-4">
-          <Col lg="14" md="24">
+          <Col lg="12" md="24">
             <AgeStratificationActive stats={this.props.stats} />
           </Col>
-          <Col lg="10" md="24">
+          <Col lg="12" md="24">
             <Demographics stats={this.props.stats} />
           </Col>
         </Row>
