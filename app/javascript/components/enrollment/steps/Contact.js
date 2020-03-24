@@ -3,6 +3,8 @@ import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
 import libphonenumber from 'google-libphonenumber';
+
+const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 class Contact extends React.Component {
@@ -26,7 +28,11 @@ class Contact extends React.Component {
 
   updatePrimaryContactMethodValidations(event) {
     if (event?.currentTarget.id == 'preferred_contact_method') {
-      if (event?.currentTarget.value == 'Telephone call' || event?.currentTarget.value == 'SMS Text-message') {
+      if (
+        event?.currentTarget.value == 'Telephone call' ||
+        event?.currentTarget.value == 'SMS Text-message' ||
+        event?.currentTarget.value == 'SMS Texted Weblink'
+      ) {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
@@ -52,7 +58,7 @@ class Contact extends React.Component {
             .required('Please indicate a preferred contact method.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
-      } else if (event?.currentTarget.value == 'E-mail') {
+      } else if (event?.currentTarget.value == 'E-mailed Web Link') {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
@@ -115,7 +121,7 @@ class Contact extends React.Component {
               <Form.Row className="pt-2 pb-3">
                 <Form.Group as={Col} md="8" controlId="preferred_contact_method">
                   <Form.Label className="nav-input-label">
-                    PREFERRED CONTACT METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
+                    PREFERRED REPORTING METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
                   </Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['preferred_contact_method']}
@@ -125,7 +131,8 @@ class Contact extends React.Component {
                     value={this.state.current.preferred_contact_method || ''}
                     onChange={this.handleChange}>
                     <option></option>
-                    <option>E-mail</option>
+                    <option>E-mailed Web Link</option>
+                    <option>SMS Texted Weblink</option>
                     <option>Telephone call</option>
                     <option>SMS Text-message</option>
                   </Form.Control>
@@ -305,7 +312,8 @@ yup.addMethod(yup.string, 'phone', function() {
         if (!value) {
           return true; // Blank numbers are allowed
         }
-        return !!phoneUtil.parse(value, 'US');
+        // Make sure we'll be able to convert to E164 format at submission time
+        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164);
       } catch (e) {
         return false;
       }

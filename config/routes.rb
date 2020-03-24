@@ -42,8 +42,6 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
-  post '/patients/assessments', to: 'assessments#new_from_email'
-
   get '/public_health/asymptomatic_patients', to: 'public_health#asymptomatic_patients', as: :public_health_asymptomatic_patients
   get '/public_health/pui_patients', to: 'public_health#pui_patients', as: :public_health_pui_patients
   get '/public_health/non_reporting_patients', to: 'public_health#non_reporting_patients', as: :public_health_non_reporting_patients

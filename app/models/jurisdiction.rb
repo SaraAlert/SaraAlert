@@ -46,6 +46,8 @@ class Jurisdiction < ApplicationRecord
 
   # The threadhold_hash is a way for an assessment to reference the set of symptoms and expected values that
   # are associated with the assessment
+  # It is better to call hierarchical_symptomatic_condition.threshold_condition_hash because it guarentees that
+  # the threshold condtition that this hash references _actually_ exists
   def jurisdiction_path_threshold_hash
     theshold_conditions_edit_count = 0
     path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
@@ -56,17 +58,16 @@ class Jurisdiction < ApplicationRecord
   # This creates NEW condition that represents a join of all of the symptoms in your jurisdiciton hierarchy
   # Contains the values for the symptoms that will be what are considered as symptomatic
   def hierarchical_symptomatic_condition
-    master_symptoms_list = []
-    # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
-    all_condition_symptoms = path&.map { |symp_defs| symp_defs.threshold_conditions.last&.symptoms }
-    all_condition_symptoms&.each do |symptoms_list|
-      symptoms_list&.each do |symptom|
-        master_symptoms_list.push(symptom.dup) unless master_symptoms_list.include?(symptom.name)
-      end
-    end
-
     symptoms_list_hash = jurisdiction_path_threshold_hash
     if ThresholdCondition.where(threshold_condition_hash: symptoms_list_hash).count.zero?
+      master_symptoms_list = []
+      # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
+      all_condition_symptoms = path&.map { |symp_defs| symp_defs.threshold_conditions.last&.symptoms }
+      all_condition_symptoms&.each do |symptoms_list|
+        symptoms_list&.each do |symptom|
+          master_symptoms_list.push(symptom.dup) unless master_symptoms_list.include?(symptom.name)
+        end
+      end
       ThresholdCondition.create(symptoms: master_symptoms_list, threshold_condition_hash: symptoms_list_hash)
     end
     ThresholdCondition.where(threshold_condition_hash: symptoms_list_hash).first
@@ -83,14 +84,18 @@ class Jurisdiction < ApplicationRecord
         unless master_symptoms_list.include?(symptom.name)
           new_symptom = symptom.dup
           # Should put clear function in the symptom class(es)
-          new_symptom.int_value = nil
-          new_symptom.float_value = nil
-          new_symptom.bool_value = nil
+          new_symptom.value = nil
           master_symptoms_list.push(symptom.name)
           new_cond.symptoms.push(new_symptom)
         end
       end
     end
     new_cond
+  end
+
+  def hierarchical_condition_bool_symptoms_string
+    hierarchical_condition = hierarchical_symptomatic_condition
+    bool_symptom_labels = hierarchical_condition.symptoms.where(type: "BoolSymptom").pluck(:label)
+    bool_symptom_labels.to_sentence(:last_word_connector => " or ")
   end
 end

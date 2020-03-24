@@ -76,7 +76,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
     refute_selector 'div', text: 'Please confirm email'
     assert_selector 'div', text: 'Please provide a primary telephone number'
     assert_selector 'div', text: 'Please indicate the primary phone type'
-    select 'E-mail', from: 'preferred_contact_method'
+    select 'E-mailed Web Link', from: 'preferred_contact_method'
     click_on 'Next'
     assert_selector 'div', text: 'Please provide an email'
     assert_selector 'div', text: 'Please confirm email'

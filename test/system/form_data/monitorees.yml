@@ -52,7 +52,7 @@ monitoree_2:
     secondary_telephone_type: "Landline"
     email: "carey@example.com"
     confirm_email: "carey@example.com"
-    preferred_contact_method: "E-mail"
+    preferred_contact_method: "E-mailed Web Link"
   arrival_info:
     port_of_origin: "Ushashire"
     date_of_departure: "02/15/2020"
@@ -92,7 +92,7 @@ monitoree_3:
   contact_info:
     email: "edda@example.com"
     confirm_email: "edda@example.com"
-    preferred_contact_method: "E-mail"
+    preferred_contact_method: "E-mailed Web Link"
   potential_exposure_info:
     last_date_of_exposure: "12/30/2019"
 monitoree_4:
@@ -117,7 +117,7 @@ monitoree_4:
   contact_info:
     email: "edda@example.com"
     confirm_email: "edda@example.com"
-    preferred_contact_method: "E-mail"
+    preferred_contact_method: "E-mailed Web Link"
   potential_exposure_info:
     last_date_of_exposure: "12/30/2019"
 monitoree_5:
@@ -331,7 +331,7 @@ monitoree_12:
     secondary_telephone_type: "Landline"
     email: "carey@example.com"
     confirm_email: "carey@example.com"
-    preferred_contact_method: "E-mail"
+    preferred_contact_method: "E-mailed Web Link"
   arrival_info:
     port_of_origin: "Ushashire"
     date_of_departure: "02/15/2020"

@@ -12,6 +12,10 @@ import Review from './steps/Review';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import libphonenumber from 'google-libphonenumber';
+
+const PNF = libphonenumber.PhoneNumberFormat;
+const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 class Enrollment extends React.Component {
   constructor(props) {
@@ -39,6 +43,12 @@ class Enrollment extends React.Component {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     let data = new Object({ patient: this.state.enrollmentState });
+    data.patient.primary_telephone = data.patient.primary_telephone
+      ? phoneUtil.format(phoneUtil.parse(data.patient.primary_telephone, 'US'), PNF.E164)
+      : data.patient.primary_telephone;
+    data.patient.secondary_telephone = data.patient.secondary_telephone
+      ? phoneUtil.format(phoneUtil.parse(data.patient.secondary_telephone, 'US'), PNF.E164)
+      : data.patient.secondary_telephone;
     const message = this.props.editMode ? 'Monitoree Successfully Updated.' : 'Monitoree Successfully Saved.';
     if (this.props.parent_id) {
       data['responder_id'] = this.props.parent_id;
