@@ -40,7 +40,8 @@ class Patient < ApplicationRecord
                                                      'Document Medical Evaluation Summary and Plan',
                                                      'Referral for Public Health Test',
                                                      'Public Health Test Specimen Received by Lab - results pending',
-                                                     'Results of Public Health Test - positive'] }
+                                                     'Results of Public Health Test - positive',
+                                                     'Results of Public Health Test - negative'] }
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
