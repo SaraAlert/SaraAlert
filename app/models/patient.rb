@@ -152,6 +152,28 @@ class Patient < ApplicationRecord
       .distinct
   }
 
+  # All individuals currently being monitored if true, all individuals otherwise
+  scope :monitoring_active, lambda { |active_monitoring|
+    where(monitoring: true) if active_monitoring
+  }
+
+  # All individuals with the given monitoring status
+  scope :monitoring_status, lambda { |monitoring_status|
+    case monitoring_status
+    when 'symptomatic'
+      symptomatic
+    when 'non_reporting'
+      non_reporting
+    when 'asymptomatic'
+      asymptomatic
+    end
+  }
+
+  # All individuals with a last date of exposure within the given time frame
+  scope :exposed_in_time_frame, lambda { |time_frame|
+    where('last_date_of_exposure > (CURRENT_DATE - ?::interval)', time_frame)
+  }
+
   # All individuals enrolled within the given time frame
   scope :enrolled_in_time_frame, lambda { |time_frame|
     case time_frame
