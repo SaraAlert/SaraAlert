@@ -13,9 +13,7 @@ services:
     depends_on:
       - redis-enrollment
       - postgres-enrollment
-    ports:
-      - 3000:3000
-    command: "bin/bundle exec rails s -u puma -p 3000 -b 'ssl://0.0.0.0?key=/app/disease-trakker/tls/puma.key&cert=/app/disease-trakker/tls/puma.crt'"
+    command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
   sara-alert-assessment:
@@ -31,7 +29,7 @@ services:
       depends_on:
         - redis-bridge
         - postgres-assessment
-      command: "bin/bundle exec rails s -u puma -p 3000 -b 'ssl://0.0.0.0?key=/app/disease-trakker/tls/puma.key&cert=/app/disease-trakker/tls/puma.crt'"
+      command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
       volumes:
         - '~/tls:/app/disease-trakker/tls:ro'
   postgres-enrollment:
