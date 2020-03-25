@@ -119,7 +119,13 @@ Deploying a staging server is done with `docker-compose.yml`, `docker-compose.pr
 
 **Docker Networking**
 
-The `docker-compose.yml` file sets up three networks which route traffic between the containers. The networks are `dt-net-enrollment`, `dt-net-assessment`, and `dt-net-bridge`. This results in a 'split architecture' where multiple instances of the SaraAlert application are running. This approach attempts to reduces the amount of services that have access to the monitoree database. 
+The `docker-compose.yml` file sets up three networks which route traffic between the containers. The networks are:
+
+* `dt-net-enrollment`: Hosts the applications/services used for enrolling and monitoring.
+* `dt-net-assessment`: Hosts the application/services used by monitorees filling out assessments.
+* `dt-net-bridge`: Facilitiates communication between the two other networks.
+
+This results in a 'split architecture' where multiple instances of the SaraAlert application are running. This approach attempts to reduces the amount of services that have access to the monitoree database. 
 
 A key portion of this is the use of the Nginx reverse proxy container. The configuration (located at `./nginx.conf`) will route traffic from 'untrusted' users submitting assessments to the `dt-net-assessment` application while, at the same time, enrollers and epidemiologists are routed to the enrollment database.
 
@@ -129,11 +135,20 @@ Below is a graphic depicting the services and applications present on each netwo
 
 **Environment Variable Setup**
 
-To set up Sara Alert in a staging configuration, generate two environment variable files: `.env-prod-assessment` and `.env-prod-enrollment`. The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least. It is also important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file.
+To set up Sara Alert in a staging configuration, generate two environment variable files which correspond with the networks described above: 
+
+* `.env-prod-assessment`
+* `.env-prod-enrollment`
+
+The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. 
+
+The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least. These variables should also not be the same between both assessment and enrollment instances of the files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file. 
 
 **Container Dependencies**
 
-Create a directory for the deployment. Move both docker compose files and both environment variable files from the previous section into this folder. Within this deployment directory, create a subdirectory called `tls` and place your `.key` and `.crt` files for the webserver inside. Name the files `puma.key` and `puma.crt`. Ensure the files within the `tls` directory are at least `0x004` permissions so they can be read inside the container.
+Create a directory for the deployment. Move both docker compose files and both environment variable files from the previous section into this folder. Within this deployment directory, create a subdirectory called `tls` and place your `.key` and `.crt` files for the webserver inside. Name the files `puma.key` and `puma.crt`. Ensure the `.crt` and `.key` files within the `tls` directory are at least `0x004` permissions so they can be read inside the container.
+
+The Nginx configuration is also statged within the same directory. You will need to move the `nginx.conf` provided in the root of this repository into `~/tls/nginx.conf`. 
 
 **Deployment**
 
@@ -167,7 +182,7 @@ Setup the demonstration accounts and population:
   * `bin/bundle exec rake demo:populate`
 * Exit the container with `exit`
 
-The applications should be running on port 443 and 4343.
+The applications should be running on port 443 with Nginx proxying traffic between.
 
 ## Testing
 
