@@ -91,25 +91,143 @@ namespace :analytics do
   end
 
   def all_monitoree_counts(monitorees)
-    # exposure_countries = monitorees.distinct.pluck(:potential_exposure_country) # all countries that any monitoree has been exposed in
-    exposure_countries = monitorees.group(:potential_exposure_country).order(count_potential_exposure_country: :desc).limit(5).count(:potential_exposure_country).map{ |c| c[0] }.append('Total')
     all_monitoree_counts = []
-    all_monitoree_counts.concat(monitoree_counts(monitorees, true, 'monitoring_status', MONITORING_STATUSES))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, true, 'total', ['overall']))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, false, 'total', ['overall']))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, true, 'age_group', AGE_GROUPS))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, false, 'age_group', AGE_GROUPS))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, true, 'sex', SEXES))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, false, 'sex', SEXES))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, true, 'risk_factor', RISK_FACTORS))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, false, 'risk_factor', RISK_FACTORS))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, true, 'exposure_country', exposure_countries))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, false, 'exposure_country', exposure_countries))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, true, 'last_exposure_date', last_exposure_dates))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, false, 'last_exposure_date', last_exposure_dates))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, false, 'last_exposure_week', last_exposure_weeks))
-    all_monitoree_counts.concat(monitoree_counts(monitorees, false, 'last_exposure_month', last_exposure_months))
+    all_monitoree_counts.concat(monitoree_counts_by_totals(monitorees))
+    all_monitoree_counts.concat(monitoree_counts_by_monitoring_statuses(monitorees))
+    all_monitoree_counts.concat(monitoree_counts_by_age_groups(monitorees))
+    all_monitoree_counts.concat(monitoree_counts_by_sexes(monitorees))
+    all_monitoree_counts.concat(monitoree_counts_by_risk_factors(monitorees))
+    all_monitoree_counts.concat(monitoree_counts_by_exposure_countries(monitorees))
+    all_monitoree_counts.concat(monitoree_counts_by_last_exposure_date(monitorees))
+    all_monitoree_counts.concat(monitoree_counts_by_last_exposure_week(monitorees))
+    all_monitoree_counts.concat(monitoree_counts_by_last_exposure_month(monitorees))
     all_monitoree_counts
+  end
+  
+  def monitoree_counts_by_totals(monitorees)
+    monitorees.group(:monitoring, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_count(fields[0], 'Total', 'Total', fields[1], total)
+    }
+  end
+
+  def monitoree_counts_by_monitoring_statuses(monitorees)
+    monitorees.symptomatic.group(:exposure_risk_assessment).count.map { |risk_level, total|
+      monitoree_count(true, 'Monitoring Status', 'Symptomatic', risk_level, total)
+    }
+    monitorees.non_reporting.group(:exposure_risk_assessment).count.map { |risk_level, total|
+      monitoree_count(true, 'Monitoring Status', 'Non-Reporting', risk_level, total)
+    }
+    monitorees.asymptomatic.group(:exposure_risk_assessment).count.map { |risk_level, total|
+      monitoree_count(true, 'Monitoring Status', 'Asymptomatic', risk_level, total)
+    }
+  end
+
+  def monitoree_counts_by_age_groups(monitorees)
+    query = <<-SQL
+      SELECT
+        monitoring,
+        CASE
+          WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) < 20 THEN '0-19'
+          WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 20 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 30 THEN '20-29'
+          WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 30 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 40 THEN '30-39'
+          WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 40 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 50 THEN '40-49'
+          WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 50 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 60 THEN '50-59'
+          WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 60 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 70 THEN '60-69'
+          WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 70 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 80 THEN '70-79'
+          WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 80 THEN '>=80'
+        END AS category,
+        exposure_risk_assessment,
+        COUNT(*) AS total
+      FROM patients
+      GROUP BY monitoring, category, exposure_risk_assessment
+    SQL
+    ActiveRecord::Base.connection.exec_query(query).rows.map { |row|
+      monitoree_count(row[0], 'Sex', row[1], row[2], row[3])
+    }
+  end
+
+  def monitoree_counts_by_sexes(monitorees)
+    monitorees.group(:monitoring, :sex, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_count(fields[0], 'Sex', fields[1], fields[2], total)
+    }
+  end
+
+  def monitoree_counts_by_risk_factors(monitorees)
+    monitoree_counts = []
+    monitorees.group(:monitoring, :contact_of_known_case, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_counts.append(monitoree_count(fields[0], 'Risk Factor', 'Close Contact with Known Case', fields[2], total))
+    }
+    monitorees.group(:monitoring, :travel_to_affected_country_or_area, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_counts.append(monitoree_count(fields[0], 'Risk Factor', 'Travel to Affected Country or Area', fields[2], total))
+    }
+    monitorees.group(:monitoring, :was_in_health_care_facility_with_known_cases, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_counts.append(monitoree_count(fields[0], 'Risk Factor', 'Was in Healthcare Facility with Known Cases', fields[2], total))
+    }
+    monitorees.group(:monitoring, :healthcare_personnel, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_counts.append(monitoree_count(fields[0], 'Risk Factor', 'Healthcare Personnel', fields[2], total))
+    }
+    monitorees.group(:monitoring, :member_of_a_common_exposure_cohort, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_counts.append(monitoree_count(fields[0], 'Risk Factor', 'Common Exposure Cohort', fields[2], total))
+    }
+    monitorees.group(:monitoring, :crew_on_passenger_or_cargo_flight, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_counts.append(monitoree_count(fields[0], 'Risk Factor', 'Crew on Passenger or Cargo Flight', fields[2], total))
+    }
+    monitorees.group(:monitoring, :laboratory_personnel, :exposure_risk_assessment).count.map { |fields, total|
+      monitoree_counts.append(monitoree_count(fields[0], 'Risk Factor', 'Laboratory Personnel', fields[2], total))
+    }
+    monitoree_counts
+  end
+
+  def monitoree_counts_by_exposure_countries(monitorees)
+    monitorees.group(:monitoring, :potential_exposure_country, :exposure_risk_assessment).count.map { |fields, total| 
+      monitoree_count(fields[0], 'Exposure Country', fields[1], fields[2], total)
+    }
+  end
+
+  def monitoree_counts_by_last_exposure_date(monitorees)
+    query = <<-SQL
+      SELECT monitoring, DATE_TRUNC('day', last_date_of_exposure::date)::date AS category, exposure_risk_assessment, COUNT(*)
+      FROM patients
+      WHERE last_date_of_exposure > (CURRENT_DATE - '28 days'::interval)
+      GROUP BY monitoring, last_date_of_exposure, exposure_risk_assessment
+    SQL
+    ActiveRecord::Base.connection.exec_query(query).rows.map { |row|
+      monitoree_count(row[0], 'Last Exposure Date', row[1], row[2], row[3])
+    }
+  end
+
+  def monitoree_counts_by_last_exposure_week(monitorees)
+    query = <<-SQL
+      SELECT monitoring, (DATE_TRUNC('week', last_date_of_exposure::date) - '1 day'::interval)::date AS category, exposure_risk_assessment, COUNT(*)
+      FROM patients
+      WHERE last_date_of_exposure > (CURRENT_DATE - '53 weeks'::interval)
+      GROUP BY monitoring, last_date_of_exposure, exposure_risk_assessment
+    SQL
+    ActiveRecord::Base.connection.exec_query(query).rows.map { |row|
+      monitoree_count(row[0], 'Last Exposure Week', row[1], row[2], row[3])
+    }
+  end
+
+  def monitoree_counts_by_last_exposure_month(monitorees)
+    query = <<-SQL
+      SELECT monitoring, DATE_TRUNC('month', last_date_of_exposure::date)::date AS category, exposure_risk_assessment, COUNT(*)
+      FROM patients
+      WHERE last_date_of_exposure > (CURRENT_DATE - '13 months'::interval)
+      GROUP BY monitoring, last_date_of_exposure, exposure_risk_assessment
+    SQL
+    ActiveRecord::Base.connection.exec_query(query).rows.map { |row|
+      monitoree_count(row[0], 'Last Exposure Month', row[1], row[2], row[3])
+    }
+  end
+
+  def monitoree_count(active_monitoring, category_type, category, risk_level, total)
+    MonitoreeCount.new(
+      active_monitoring: active_monitoring,
+      category_type: category_type,
+      category: category,
+      risk_level: risk_level.nil? ? 'Missing' : risk_level,
+      total: total
+    )
   end
 
   def all_monitoree_snapshots(monitorees, jurisdiction_id)
@@ -129,40 +247,5 @@ namespace :analytics do
         results_of_public_health_test_negative: monitorees.joins(:histories).merge(History.results_of_public_health_test_negative.in_time_frame(time_frame)).count,
       )
     }
-  end
-
-  def monitoree_counts(monitorees, active_monitoring, category_type, categories)
-    monitoree_counts = []
-    RISK_LEVELS.each { |risk_level|
-      categories.each { |category|
-        monitoree_counts.append(MonitoreeCount.new(
-          active_monitoring: active_monitoring,
-          category_type: category_type,
-          category: category,
-          risk_level: risk_level.nil? ? 'Missing' : risk_level,
-          total: monitoree_count(monitorees, active_monitoring, risk_level, category_type, category)
-        ))
-      }
-    }
-    monitoree_counts
-  end
-
-  def monitoree_count(monitorees, active_monitoring, risk_level, category_type, category)
-    monitorees.with_active_monitoring(active_monitoring)
-              .with_risk_level(risk_level)
-              .with_filter(category_type, category)
-              .count
-  end
-
-  def last_exposure_dates
-    (0..NUM_PAST_EXPOSURE_DAYS).map { |past_days| past_days.days.ago.to_date }
-  end
-
-  def last_exposure_weeks
-    (0..NUM_PAST_EXPOSURE_WEEKS).map { |past_weeks| past_weeks.weeks.ago.at_beginning_of_week(start_day = :sunday).to_date }
-  end
-
-  def last_exposure_months
-    (0..NUM_PAST_EXPOSURE_MONTHS).map { |past_months| past_months.months.ago.at_beginning_of_month.to_date }
   end
 end
