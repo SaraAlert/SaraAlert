@@ -262,6 +262,7 @@ class MonitoringStatus extends React.Component {
                     <option>Referral for Public Health Test</option>
                     <option>Public Health Test Specimen Received by Lab - results pending</option>
                     <option>Results of Public Health Test - positive</option>
+                    <option>Results of Public Health Test - negative</option>
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
