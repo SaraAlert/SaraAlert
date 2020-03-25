@@ -35,9 +35,9 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :first_name, index: true
       t.string :middle_name
       t.string :last_name, index: true
-      t.date :date_of_birth
+      t.date :date_of_birth, index: true
       t.integer :age
-      t.string :sex
+      t.string :sex, index: true
       t.boolean :white
       t.boolean :black_or_african_american
       t.boolean :american_indian_or_alaska_native
@@ -96,9 +96,9 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.date :additional_planned_travel_start_date
       t.date :additional_planned_travel_end_date
       t.text :additional_planned_travel_related_notes
-      t.date :last_date_of_exposure
+      t.date :last_date_of_exposure, index: true
       t.string :potential_exposure_location
-      t.string :potential_exposure_country
+      t.string :potential_exposure_country, index: true
       t.boolean :contact_of_known_case
       t.string :contact_of_known_case_id
       t.boolean :member_of_a_common_exposure_cohort

@@ -47,6 +47,5 @@ class AnalystTest < ApplicationSystemTestCase
 
   def verify_analytics_page
     ## verify jurisdiction
-    assert_selector 'button', text: 'EXPORT ANALYSIS AS PNG'
   end
 end
