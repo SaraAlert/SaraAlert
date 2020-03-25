@@ -121,7 +121,7 @@ Deploying a staging server is done with `docker-compose.yml`, `docker-compose.pr
 
 The `docker-compose.yml` file sets up three networks which route traffic between the containers. The networks are `dt-net-enrollment`, `dt-net-assessment`, and `dt-net-bridge`. This results in a 'split architecture' where multiple instances of the SaraAlert application are running. This approach attempts to reduces the amount of services that have access to the monitoree database. 
 
-A key portion of this is the use of the Nginx reverse proxy container. The configuration (located at `./nginx.conf`) will route traffic from 'untrusted' users submitting assessments to the `dt-net-assessment` application while, at the same time, enrollers and epidemiologists are routed the enrollment database.
+A key portion of this is the use of the Nginx reverse proxy container. The configuration (located at `./nginx.conf`) will route traffic from 'untrusted' users submitting assessments to the `dt-net-assessment` application while, at the same time, enrollers and epidemiologists are routed to the enrollment database.
 
 Below is a graphic depicting the services and applications present on each network:
 
