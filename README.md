@@ -117,6 +117,16 @@ Building for staging requires the use of the `Production.Dockerfile`.
 
 Deploying a staging server is done with `docker-compose.yml`, `docker-compose.prod.yml`, and the image created in the previous section. Make sure the image is on the staging server or it can be pulled from a Docker registry to the staging server.
 
+**Docker Networking**
+
+The `docker-compose.yml` file sets up three networks which route traffic between the containers. The networks are `dt-net-enrollment`, `dt-net-assessment`, and `dt-net-bridge`. This results in a 'split architecture' where multiple instances of the SaraAlert application are running. This approach attempts to reduces the amount of services that have access to the monitoree database. 
+
+A key portion of this is the use of the Nginx reverse proxy container. The configuration (located at `./nginx.conf`) will route traffic from 'untrusted' users submitting assessments to the `dt-net-assessment` application while, at the same time, enrollers and epidemiologists are routed the enrollment database.
+
+Below is a graphic depicting the services and applications present on each network:
+
+![SaraAlertDockerNetworks](https://user-images.githubusercontent.com/3009651/77551254-7c67b380-6e88-11ea-8d4c-a3f45c2891e1.png)
+
 **Environment Variable Setup**
 
 To set up Sara Alert in a staging configuration, generate two environment variable files: `.env-prod-assessment` and `.env-prod-enrollment`. The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least. It is also important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file.
