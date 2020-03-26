@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/SaraAlert/sara-schema.git
+  revision: 3f8c4c0deec01c8e4187dd176ff3aa140191bc59
+  branch: master
+  specs:
+    sara-schema (0.0.1)
+      json_schemer (~> 0.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -107,6 +115,8 @@ GEM
       devise (>= 4.3.0, < 5.0)
       rails (>= 4.2.0, < 7.0)
     docile (1.3.2)
+    ecma-re-validator (0.2.0)
+      regexp_parser (~> 1.2)
     erubi (1.9.0)
     execjs (2.7.0)
     faker (2.11.0)
@@ -123,12 +133,18 @@ GEM
       rchardet (~> 1.8)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    hana (1.3.5)
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
     jaro_winkler (1.5.4)
     jbuilder (2.10.0)
       activesupport (>= 5.0.0)
     json (2.3.0)
+    json_schemer (0.2.11)
+      ecma-re-validator (~> 0.2)
+      hana (~> 1.3)
+      regexp_parser (~> 1.5)
+      uri_template (~> 0.7)
     jwt (2.2.1)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
@@ -269,6 +285,7 @@ GEM
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
     unicode-display_width (1.6.1)
+    uri_template (0.7.0)
     url (0.3.2)
     warden (1.2.8)
       rack (>= 2.0.6)
@@ -320,6 +337,7 @@ DEPENDENCIES
   rolify
   roo
   rubocop
+  sara-schema!
   sass-rails (>= 6)
   selenium-webdriver
   sidekiq
