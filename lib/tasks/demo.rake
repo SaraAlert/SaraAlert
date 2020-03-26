@@ -259,8 +259,6 @@ namespace :demo do
         count += (count * (0.1 + (rand / 10))).round
         # Run the analytics cache update at the end of each simulation day
         before_analytics_count = Analytic.count
-        require 'rake'
-        Rails.application.load_tasks
         Rake::Task["analytics:cache_current_analytics"].reenable
         Rake::Task["analytics:cache_current_analytics"].invoke
         after_analytics_count = Analytic.count
