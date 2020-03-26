@@ -21,20 +21,20 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
 
   MONITOREES = @@system_test_utils.get_monitorees
 
-  def enroll_monitoree(user_name, monitoree_name)
+  def enroll_monitoree(user_name, monitoree_name, isEpi=false)
     monitoree = MONITOREES[monitoree_name]
     @@system_test_utils.login(user_name)
     click_on 'Enroll New Monitoree'
     @@monitoree_enrollment_form_populator.populate_monitoree_info(monitoree)
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree)
     click_on 'Finish'
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree)
     @@system_test_utils.wait_for_enrollment_submission
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree, isEpi)
     click_on 'Return To Dashboard'
-    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(monitoree)
+    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(monitoree, isEpi)
   end
 
-  def enroll_monitorees_in_group(user_name, existing_monitoree_name, new_monitoree_name)
+  def enroll_monitorees_in_group(user_name, existing_monitoree_name, new_monitoree_name, isEpi=false)
     existing_monitoree = MONITOREES[existing_monitoree_name]
     new_monitoree = MONITOREES[new_monitoree_name]
     @@system_test_utils.login(user_name)
@@ -48,10 +48,10 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     @@monitoree_enrollment_form_populator.populate_monitoree_info(new_monitoree)
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree)
     click_on 'Finish'
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree)
     @@system_test_utils.wait_for_enrollment_submission
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree, isEpi)
     click_on 'Return To Dashboard'
-    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_as_group_member_on_dashboard(existing_monitoree, new_monitoree)
+    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_as_group_member_on_dashboard(existing_monitoree, new_monitoree, isEpi)
   end
 
   def enroll_monitoree_with_same_monitored_address_as_home(user_name, monitoree_name)

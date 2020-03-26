@@ -6,7 +6,7 @@ import { PropTypes } from 'prop-types';
 class PatientPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { showAddAssessment: false, hideBody: true };
+    this.state = { showAddAssessment: false, hideBody: props.hideBody };
     this.reloadHook = this.reloadHook.bind(this);
   }
 
@@ -21,6 +21,7 @@ class PatientPage extends React.Component {
         <Card className="mx-2 card-square">
           <Card.Header
             as="h5"
+            id="patient-info-header"
             onClick={() => {
               this.setState({ hideBody: !this.state.hideBody });
             }}>
@@ -48,6 +49,7 @@ PatientPage.propTypes = {
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
   canAddAssessments: PropTypes.bool,
+  hideBody: PropTypes.bool,
 };
 
 export default PatientPage;
