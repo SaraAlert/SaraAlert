@@ -3,13 +3,38 @@ import { PropTypes } from 'prop-types';
 import { Row, Col, Button } from 'react-bootstrap';
 import RiskStratificationTable from './widgets/RevisedDashboard/RiskStratificationTable';
 import MonitoreeFlow from './widgets/RevisedDashboard/MonitoreeFlow';
-import AgeStratificationActive from './widgets/RevisedDashboard/AgeStratificationActive';
+import AgeStratification from './widgets/RevisedDashboard/AgeStratification';
 import Demographics from './widgets/RevisedDashboard/Demographics';
 import moment from 'moment';
+import domtoimage from 'dom-to-image';
 
 class RevisedMonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    var node = document.getElementById('sara-alert-body');
+    domtoimage
+      .toPng(node)
+      .then(dataUrl => {
+        if (confirm("Are you sure you'd like to download a screenshot of this page?")) {
+          var img = new Image();
+          img.src = dataUrl;
+          let link = document.createElement('a');
+          // console.log(JSON.parse(JSON.stringify(this.props.current_user)))
+          let jurisdiction = this.props.current_user.jurisdiction_path.join('_');
+          let currentDate = moment().format('YYYY_MM_DD');
+          let imageName = `SaraAlert_${jurisdiction}_${currentDate}.png`;
+          link.download = imageName;
+          link.href = dataUrl;
+          link.click();
+        }
+      })
+      .catch(function(error) {
+        console.error(error);
+      });
   }
 
   render() {
@@ -36,7 +61,7 @@ class RevisedMonitorAnalytics extends React.Component {
         <h2> Epidemiological Summary </h2>
         <Row className="mb-4">
           <Col lg="12" md="24" className="mb-4">
-            <AgeStratificationActive stats={this.props.stats} />
+            <AgeStratification stats={this.props.stats} />
           </Col>
           <Col lg="12" md="24">
             <Demographics stats={this.props.stats} />

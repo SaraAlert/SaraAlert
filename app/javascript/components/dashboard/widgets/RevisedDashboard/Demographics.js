@@ -188,7 +188,7 @@ class AgeStratificationActive extends React.Component {
           <Card.Header as="h5" className="text-left">
             Among Those {this.state.viewTotal ? 'Ever Monitored (includes current)' : 'Currently Under Active Monitoring'}
             <span className="float-right display-6">
-              View Total
+              View Overall
               <Switch
                 className="ml-2"
                 onChange={this.toggleBetweenActiveAndTotal}
