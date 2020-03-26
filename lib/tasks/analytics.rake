@@ -14,6 +14,7 @@ namespace :analytics do
     laboratory_personnel: 'Laboratory Personnel'
   }
   MONITOREE_SNAPSHOT_TIME_FRAMES = ['Last 24 Hours', 'Last 14 Days', 'Total']
+  NUM_EXPOSURE_COUNTRIES = 5
   NUM_PAST_EXPOSURE_DAYS = 28
   NUM_PAST_EXPOSURE_WEEKS = 53
   NUM_PAST_EXPOSURE_MONTHS = 13
@@ -206,12 +207,18 @@ namespace :analytics do
   def monitoree_counts_by_exposure_country(monitorees, active_monitoring)
     counts = []
     # Individual countries
+    exposure_countries = monitorees.monitoring_active(active_monitoring)
+                                   .group(:potential_exposure_country)
+                                   .order(count_potential_exposure_country: :desc)
+                                   .limit(NUM_EXPOSURE_COUNTRIES)
+                                   .count(:potential_exposure_country)
+                                   .map { |c| c[0] }
     monitorees.monitoring_active(active_monitoring)
-              .where.not(potential_exposure_country: [nil, ''])
+              .where(:potential_exposure_country => exposure_countries)
               .group(:potential_exposure_country, :exposure_risk_assessment)
               .order(:potential_exposure_country, :exposure_risk_assessment)
               .count
-              .map { |fields, total| 
+              .map { |fields, total|
                 counts.append(monitoree_count(active_monitoring, 'Exposure Country', fields[0], fields[1], total))
               }
     # Total
@@ -219,7 +226,7 @@ namespace :analytics do
               .where.not(potential_exposure_country: [nil, ''])
               .group(:exposure_risk_assessment).order(:exposure_risk_assessment)
               .count
-              .map { |risk_level, total| 
+              .map { |risk_level, total|
                 counts.append(monitoree_count(active_monitoring, 'Exposure Country', 'Total', risk_level, total))
               }
     counts
