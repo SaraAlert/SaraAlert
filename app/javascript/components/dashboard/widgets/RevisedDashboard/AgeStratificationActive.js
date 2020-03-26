@@ -18,7 +18,7 @@ class AgeStratificationActive extends React.Component {
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
     if (!this.ERRORS) {
-      this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'age_group', this.state.viewTotal);
+      this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', this.state.viewTotal);
     }
   }
 
@@ -42,7 +42,7 @@ class AgeStratificationActive extends React.Component {
   handleChange = checked => this.setState({ checked });
 
   toggleBetweenActiveAndTotal = viewTotal => {
-    this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'age_group', viewTotal);
+    this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', viewTotal);
     this.setState({ viewTotal });
   };
 

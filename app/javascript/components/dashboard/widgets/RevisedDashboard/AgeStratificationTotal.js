@@ -16,7 +16,7 @@ class AgeStratificationActive extends React.Component {
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
     if (!this.ERRORS) {
       let activeMonitorees = this.props.stats.risk_level_counts.filter(x => x.active_monitoring);
-      let ageGroups = activeMonitorees.filter(x => x.category_type === 'age_group');
+      let ageGroups = activeMonitorees.filter(x => x.category_type === 'Age Group');
       this.data = AGEGROUPS.map(x => {
         let thisAgeGroup = ageGroups.filter(group => group.category === x);
         let retVal = { name: x };
@@ -36,7 +36,7 @@ class AgeStratificationActive extends React.Component {
     if (viewTotal) {
       activeMonitorees = activeMonitorees.filter(x => x.active_monitoring);
     }
-    let ageGroups = activeMonitorees.filter(x => x.category_type === 'age_group');
+    let ageGroups = activeMonitorees.filter(x => x.category_type === 'Age Group');
     this.data = AGEGROUPS.map(x => {
       let thisAgeGroup = ageGroups.filter(group => group.category === x);
       let retVal = { name: x };

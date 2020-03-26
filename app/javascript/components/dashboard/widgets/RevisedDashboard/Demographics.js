@@ -52,7 +52,7 @@ class AgeStratificationActive extends React.Component {
   handleChange = checked => this.setState({ checked });
 
   toggleBetweenActiveAndTotal = viewTotal => {
-    this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'sex', viewTotal);
+    this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', viewTotal);
     this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'exposure_country', viewTotal);
     this.coiData = this.coiData
       .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
