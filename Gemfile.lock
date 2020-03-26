@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/SaraAlert/sara-schema.git
-  revision: 3f8c4c0deec01c8e4187dd176ff3aa140191bc59
-  branch: master
+  revision: 1b4a46720cc78cae257e8f953017b2974f76a058
+  tag: 1.0.1
   specs:
-    sara-schema (0.0.1)
+    sara-schema (1.0.1)
       json_schemer (~> 0.2)
 
 GEM

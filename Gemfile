@@ -53,7 +53,7 @@ gem 'will_paginate'
 # Excel
 gem 'roo'
 
-gem 'sara-schema', git: 'https://github.com/SaraAlert/sara-schema.git', branch: 'master'
+gem 'sara-schema', git: 'https://github.com/SaraAlert/sara-schema.git', tag: '1.0.1'
 
 group :development, :test do
   gem 'brakeman'
