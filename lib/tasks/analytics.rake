@@ -210,6 +210,7 @@ namespace :analytics do
     exposure_countries = monitorees.monitoring_active(active_monitoring)
                                    .group(:potential_exposure_country)
                                    .order(count_potential_exposure_country: :desc)
+                                   .order(:potential_exposure_country)
                                    .limit(NUM_EXPOSURE_COUNTRIES)
                                    .count(:potential_exposure_country)
                                    .map { |c| c[0] }
