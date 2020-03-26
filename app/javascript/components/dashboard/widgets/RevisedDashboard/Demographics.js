@@ -3,9 +3,9 @@ import { Card, Table } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import Switch from 'react-switch';
+import _ from 'lodash';
 
 const SEXES = ['Male', 'Female', 'Unknown'];
-const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80'];
 const COUNTRIES_OF_INTEREST = ['United States of America', 'China', 'South Korea', 'Italy', 'United Kingdom'];
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
 
@@ -15,52 +15,39 @@ class AgeStratificationActive extends React.Component {
     this.state = { checked: true, viewTotal: false };
     this.handleChange = this.handleChange.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
+    this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
     if (!this.ERRORS) {
-      let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
-
-      let sexGroups = activeMonitorees.filter(x => x.category_type === 'sex');
-      this.sexData = SEXES.map(x => {
-        let thisSexGroup = sexGroups.filter(group => group.category === x);
-        let retVal = { name: x };
-        RISKLEVELS.forEach(val => {
-          retVal[val] = thisSexGroup.find(z => z.risk_level === val)?.total;
-        });
-        return retVal;
-      });
-
-      let coiGroup = activeMonitorees.filter(x => x.category_type === 'exposure_country');
-      this.coiData = COUNTRIES_OF_INTEREST.map(x => {
-        let thisCOIGroup = coiGroup.filter(group => group.category === x);
-        let retVal = { name: x };
-        RISKLEVELS.forEach(val => {
-          retVal[val] = thisCOIGroup.find(z => z.risk_level === val)?.total;
-        });
-        return retVal;
-      });
+      this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'sex', this.state.viewTotal);
+      this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'exposure_country', this.state.viewTotal);
     }
   }
 
-  handleChange = checked => this.setState({ checked });
-
-  toggleBetweenActiveAndTotal = viewTotal => {
-    this.setState({ viewTotal });
-    let activeMonitorees = this.props.stats.monitoree_counts;
-    if (!viewTotal) {
-      activeMonitorees = activeMonitorees.filter(x => x.active_monitoring);
-    }
-    let ageGroups = activeMonitorees.filter(x => x.category_type === 'age_group');
-    this.ageData = AGEGROUPS.map(x => {
-      let thisAgeGroup = ageGroups.filter(group => group.category === x);
+  obtainValueFromMonitoreeCounts = (enumerations, category_type, onlyActive) => {
+    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === onlyActive);
+    let thisCategoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
+    return enumerations.map(x => {
+      let thisGroup = thisCategoryGroups.filter(group => group.category === x);
       let retVal = { name: x };
       RISKLEVELS.forEach(val => {
-        retVal[val] = thisAgeGroup.find(z => z.risk_level === val)?.total;
+        retVal[val] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
+        if (onlyActive) {
+          // REMOVE THIS CODE IT IS BAD AND ONLY FOR TESTING
+          retVal[val] += 5;
+        }
       });
       return retVal;
     });
   };
 
+  handleChange = checked => this.setState({ checked });
+
+  toggleBetweenActiveAndTotal = viewTotal => {
+    this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'sex', viewTotal);
+    this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'exposure_country', viewTotal);
+    this.setState({ viewTotal });
+  };
   renderBarGraph() {
     return (
       <div className="mx-3 mt-2">
@@ -188,9 +175,20 @@ class AgeStratificationActive extends React.Component {
       <React.Fragment>
         <Card className="card-square text-center">
           <Card.Header as="h5" className="text-left">
-            Among Those Currently Under Active Monitoring
-            {/* <span className="mr-2 ml-5 display-6"> View Total </span>
-              <Switch onChange={this.toggleBetweenActiveAndTotal} onColor="#82A0E4" height={18} width={40} uncheckedIcon={false} checked={this.state.viewTotal} /> */}
+            Among Those {this.state.viewTotal ? 'Ever Monitored (includes current)' : 'Currently Under Active Monitoring'}
+            <span className="float-right display-6">
+              {' '}
+              View Total
+              <Switch
+                className="ml-2"
+                onChange={this.toggleBetweenActiveAndTotal}
+                onColor="#82A0E4"
+                height={18}
+                width={40}
+                uncheckedIcon={false}
+                checked={this.state.viewTotal}
+              />
+            </span>
           </Card.Header>
           <Card.Body>{this.ERRORS ? this.renderErrors() : this.renderCard()}</Card.Body>
         </Card>

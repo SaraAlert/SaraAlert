@@ -10,7 +10,6 @@ const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; /
 class AgeStratificationActive extends React.Component {
   constructor(props) {
     super(props);
-    console.log(JSON.parse(JSON.stringify(props)));
     this.state = { checked: false, viewTotal: false };
     this.handleChange = this.handleChange.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'risk_level_counts');
