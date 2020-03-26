@@ -18,11 +18,11 @@ class AgeStratificationActive extends React.Component {
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
-    COUNTRIES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'exposure_country').map(x => x.category)).sort();
+    COUNTRIES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).sort();
     COUNTRIES_OF_INTEREST = COUNTRIES_OF_INTEREST.filter(country => country !== 'Total');
     if (!this.ERRORS) {
-      this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'sex', this.state.viewTotal);
-      this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'exposure_country', this.state.viewTotal);
+      this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', this.state.viewTotal);
+      this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
       // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
       // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
       // for each country, then sort them, then take the top 5.
@@ -53,7 +53,7 @@ class AgeStratificationActive extends React.Component {
 
   toggleBetweenActiveAndTotal = viewTotal => {
     this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', viewTotal);
-    this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'exposure_country', viewTotal);
+    this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', viewTotal);
     this.coiData = this.coiData
       .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
       .slice(0, 5);
@@ -147,16 +147,18 @@ class AgeStratificationActive extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {COUNTRIES_OF_INTEREST.map(coiGroup => (
-              <tr key={coiGroup.toString() + '1'}>
-                <td key={coiGroup.toString() + '2'} className="font-weight-bold">
-                  {coiGroup}
-                </td>
-                {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[risklevel]}</td>
-                ))}
-              </tr>
-            ))}
+            {this.coiData
+              .map(x => x.name)
+              .map(coiGroup => (
+                <tr key={coiGroup.toString() + '1'}>
+                  <td key={coiGroup.toString() + '2'} className="font-weight-bold">
+                    {coiGroup}
+                  </td>
+                  {RISKLEVELS.map((risklevel, risklevelIndex) => (
+                    <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[risklevel]}</td>
+                  ))}
+                </tr>
+              ))}
           </tbody>
         </Table>
       </div>

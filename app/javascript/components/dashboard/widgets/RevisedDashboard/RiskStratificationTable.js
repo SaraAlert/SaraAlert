@@ -11,7 +11,7 @@ class RiskStratification extends React.Component {
     let data = {};
     let totalCount = { total: 0 };
     let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
-    let x = activeMonitorees.filter(x => x.category_type === 'Monitoring');
+    let x = activeMonitorees.filter(x => x.category_type === 'Monitoring Status');
     SYMPTOMLEVELS.forEach(symptomlevel => {
       data[symptomlevel] = {};
       x.filter(y => y.category === symptomlevel).forEach(z => {
