@@ -6,21 +6,29 @@ import Switch from 'react-switch';
 import _ from 'lodash';
 
 const SEXES = ['Male', 'Female', 'Unknown'];
-const COUNTRIES_OF_INTEREST = ['United States of America', 'China', 'South Korea', 'Italy', 'United Kingdom'];
+let COUNTRIES_OF_INTEREST = [];
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
 
 class AgeStratificationActive extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { checked: true, viewTotal: false };
+    this.state = { checked: false, viewTotal: false };
     this.handleChange = this.handleChange.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
+    COUNTRIES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'exposure_country').map(x => x.category)).sort();
+    COUNTRIES_OF_INTEREST = COUNTRIES_OF_INTEREST.filter(country => country !== 'Total');
     if (!this.ERRORS) {
       this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'sex', this.state.viewTotal);
       this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'exposure_country', this.state.viewTotal);
+      // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
+      // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
+      // for each country, then sort them, then take the top 5.
+      this.coiData = this.coiData
+        .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
+        .slice(0, 5);
     }
   }
 
@@ -46,6 +54,9 @@ class AgeStratificationActive extends React.Component {
   toggleBetweenActiveAndTotal = viewTotal => {
     this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'sex', viewTotal);
     this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'exposure_country', viewTotal);
+    this.coiData = this.coiData
+      .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
+      .slice(0, 5);
     this.setState({ viewTotal });
   };
   renderBarGraph() {
@@ -177,7 +188,6 @@ class AgeStratificationActive extends React.Component {
           <Card.Header as="h5" className="text-left">
             Among Those {this.state.viewTotal ? 'Ever Monitored (includes current)' : 'Currently Under Active Monitoring'}
             <span className="float-right display-6">
-              {' '}
               View Total
               <Switch
                 className="ml-2"
