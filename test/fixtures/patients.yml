@@ -261,7 +261,6 @@ patient_10:
   first_name: "Hettinger54"
   last_name: "Schmitt03"
   date_of_birth: "2011-09-10"
-  sex: "Male"
   address_line_1: "7135 Michaela Stravenue"
   address_city: "North Maciefort"
   address_state: "Kansas"
@@ -285,7 +284,6 @@ patient_11:
   last_name: "Nikolaus58"
   date_of_birth: "2011-09-10"
   exposure_risk_assessment: 'Medium'
-  sex: "Male"
   address_line_1: "55660 McCullough Summit"
   address_city: "South Arthur"
   address_state: "Massachusetts"

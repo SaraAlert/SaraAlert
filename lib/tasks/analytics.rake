@@ -172,7 +172,7 @@ namespace :analytics do
               .order(:sex, :exposure_risk_assessment)
               .count
               .map { |fields, total|
-                monitoree_count(active_monitoring, 'Sex', fields[0], fields[1], total)
+                monitoree_count(active_monitoring, 'Sex', fields[0].nil? ? 'Missing' : fields[0], fields[1], total)
               }
   end
 
