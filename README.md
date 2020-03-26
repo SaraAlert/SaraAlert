@@ -8,7 +8,7 @@ Sara Alert is an open source tool built to allow public health officials to moni
 
 Sara Alert was built in response to the COVID-19 outbreak, but was designed to be customizable such that it can be deployed to support future outbreaks.
 
-[![mitre](https://user-images.githubusercontent.com/14923551/77242919-240b8a00-6bda-11ea-887d-2a42919eb6fb.jpg)](https://www.mitre.org/)
+[![MITRE](https://user-images.githubusercontent.com/14923551/77707514-b4abe680-6f9b-11ea-98f6-0f062a71d89c.png)](https://www.mitre.org/)
 
 
 ## Installing and Running
