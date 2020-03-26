@@ -12,7 +12,6 @@ patient_1:
   middle_name: "Simonis31"
   last_name: "Boehm62"
   date_of_birth: "1995-05-20"
-  age: 25
   sex: "Male"
   american_indian_or_alaska_native: true
   ethnicity: "Not Hispanic or Latino"
@@ -46,9 +45,8 @@ patient_1:
   additional_planned_travel_end_date: "2020-02-21"
   last_date_of_exposure: "2020-02-10"
   potential_exposure_location: "East Troy"
-  potential_exposure_country: "Georgia"
-  travel_to_affected_country_or_area: "false"
-  was_in_health_care_facility_with_known_cases: false
+  potential_exposure_country: "Malaysia"
+  travel_to_affected_country_or_area: true
 patient_2:
   id: 2
   created_at: "2020-02-11 14:30:07"
@@ -63,7 +61,6 @@ patient_2:
   middle_name: "Abernathy31"
   last_name: "Kirlin44"
   date_of_birth: "1991-01-25"
-  age: 29
   sex: "Male"
   native_hawaiian_or_other_pacific_islander: true
   ethnicity: "Hispanic or Latino"
@@ -92,8 +89,7 @@ patient_2:
   last_date_of_exposure: "2020-02-08"
   potential_exposure_location: "East Vernaland"
   potential_exposure_country: "United States Minor Outlying Islands"
-  travel_to_affected_country_or_area: "false"
-  was_in_health_care_facility_with_known_cases: false
+  was_in_health_care_facility_with_known_cases: true
 patient_3:
   id: 3
   created_at: "2020-02-11 14:30:07"
@@ -106,7 +102,7 @@ patient_3:
   first_name: "Brianne43"
   last_name: "Johnson09"
   date_of_birth: "1979-04-19"
-  age: 41
+  sex: "Female"
   address_line_1: "41585 Sauer Divide"
   address_city: "North Ranae"
   address_state: "California"
@@ -128,7 +124,7 @@ patient_4:
   first_name: "Lavern91"
   last_name: "Ruecker20"
   date_of_birth: "2004-03-16"
-  age: 16
+  sex: "Female"
   address_line_1: "91227 Rueben Skyway"
   address_city: "Port Kaycee"
   address_state: "Connecticut"
@@ -150,7 +146,7 @@ patient_5:
   first_name: "Nicolas00"
   last_name: "McClure72"
   date_of_birth: "2006-07-11"
-  age: 14
+  sex: "Unknown"
   address_line_1: "74671 Beahan Stravenue"
   address_city: "South Wilmertown"
   address_state: "New York"
@@ -159,6 +155,7 @@ patient_5:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "Self_Identified"
+  exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "2020-01-20"
 patient_6:
   id: 6
@@ -172,7 +169,7 @@ patient_6:
   first_name: "Kendall65"
   last_name: "Roberts79"
   date_of_birth: "1979-10-07"
-  age: 40
+  sex: "Male"
   address_line_1: "3212 Granville Corners"
   address_city: "Emoryburgh"
   address_state: "Wisconsin"
@@ -181,6 +178,7 @@ patient_6:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
+  exposure_risk_assessment: 'Low'
   last_date_of_exposure: "2020-03-04"
 patient_7:
   id: 7
@@ -194,7 +192,7 @@ patient_7:
   first_name: "Emory10"
   last_name: "O'Reilly83"
   date_of_birth: "1973-08-28"
-  age: 47
+  sex: "Unknown"
   address_line_1: "55068 Elliott Garden"
   address_city: "Mohammedville"
   address_state: "North Dakota"
@@ -203,6 +201,7 @@ patient_7:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
+  exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "2020-01-04"
 patient_8:
   id: 8
@@ -216,7 +215,7 @@ patient_8:
   first_name: "Carmelina02"
   last_name: "Kunze43"
   date_of_birth: "2011-09-10"
-  age: 8
+  sex: "Female"
   address_line_1: "94238 Douglas Tunnel"
   address_city: "Port Kermithaven"
   address_state: "Delaware"
@@ -225,6 +224,7 @@ patient_8:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
+  exposure_risk_assessment: 'Low'
   last_date_of_exposure: "2020-02-15"
 patient_9:
   id: 9
@@ -238,7 +238,7 @@ patient_9:
   first_name: "Borer35"
   last_name: "Pollich01"
   date_of_birth: "2014-01-20"
-  age: 6
+  sex: "Female"
   address_line_1: "65278 Ledner Island"
   address_city: "West Amosfurt"
   address_state: "Hawaii"
@@ -247,6 +247,7 @@ patient_9:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
+  exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "2020-02-15"
 patient_10:
   id: 10
@@ -260,7 +261,7 @@ patient_10:
   first_name: "Hettinger54"
   last_name: "Schmitt03"
   date_of_birth: "2011-09-10"
-  age: 8
+  sex: "Male"
   address_line_1: "7135 Michaela Stravenue"
   address_city: "North Maciefort"
   address_state: "Kansas"
@@ -269,6 +270,7 @@ patient_10:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
+  exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "2020-03-05"
 patient_11:
   id: 11
@@ -282,7 +284,8 @@ patient_11:
   first_name: "Danelle24"
   last_name: "Nikolaus58"
   date_of_birth: "2011-09-10"
-  age: 8
+  exposure_risk_assessment: 'Medium'
+  sex: "Male"
   address_line_1: "55660 McCullough Summit"
   address_city: "South Arthur"
   address_state: "Massachusetts"
@@ -292,3 +295,165 @@ patient_11:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   last_date_of_exposure: "2020-02-29"
+patient_12:
+  id: 12
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "David"
+  last_name: "Smith"
+  sex: "Male"
+  date_of_birth: "1920-02-13"
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: "2020-02-21"
+  potential_exposure_country: "China"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: false
+  laboratory_personnel: true
+patient_13:
+  id: 13
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Stephen"
+  last_name: "Yoo"
+  sex: "Male"
+  date_of_birth: "1950-03-31"
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: "2019-09-30"
+  potential_exposure_country: "Korea"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: false
+patient_14:
+  id: 14
+  jurisdiction_id: 1
+  monitoring: false
+  first_name: "Sarah"
+  last_name: "Chung"
+  sex: "Female"
+  date_of_birth: "1954-05-19"
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "2019-05-14"
+  potential_exposure_country: "Brazil"
+  contact_of_known_case: true
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: false
+  healthcare_personnel: true
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: false
+  laboratory_personnel: false
+patient_15:
+  id: 15
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Jon"
+  last_name: "Snow"
+  sex: "Unknown"
+  date_of_birth: "1969-10-21"
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: "2019-11-14"
+  potential_exposure_country: "Iceland"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: false
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: true
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: false
+patient_16:
+  id: 16
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Stephen"
+  last_name: "Curry"
+  sex: "Male"
+  date_of_birth: "1975-12-22"
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: "2020-03-01"
+  potential_exposure_country: "Faroe Islands"
+  contact_of_known_case: true
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: false
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: false
+patient_17:
+  id: 17
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Arya"
+  last_name: "Stark"
+  sex: "Unknown"
+  date_of_birth: "1984-11-17"
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: "2020-01-03"
+  potential_exposure_country: "Faroe Islands"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: false
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: false
+patient_18:
+  id: 18
+  jurisdiction_id: 1
+  monitoring: false
+  first_name: "Theon"
+  last_name: "Greyjoy"
+  sex: "Unknown"
+  date_of_birth: "1989-12-02"
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "2019-05-10"
+  potential_exposure_country: "Malaysia"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: true
+patient_19:
+  id: 19
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Laura"
+  last_name: "Smith"
+  sex: "Female"
+  date_of_birth: "2000-12-05"
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: "2020-02-22"
+  potential_exposure_country: "Malaysia"
+  contact_of_known_case: true
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: false
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: false
+  laboratory_personnel: true
+patient_20:
+  id: 20
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Ruby"
+  last_name: "Kim"
+  sex: "Female"
+  date_of_birth: "2014-04-19"
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: "2020-03-25"
+  potential_exposure_country: "Malaysia"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: true
+  crew_on_passenger_or_cargo_flight: false
+  laboratory_personnel: false

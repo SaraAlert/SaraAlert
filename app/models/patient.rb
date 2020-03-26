@@ -160,11 +160,11 @@ class Patient < ApplicationRecord
   # All individuals with the given monitoring status
   scope :monitoring_status, lambda { |monitoring_status|
     case monitoring_status
-    when 'symptomatic'
+    when 'Symptomatic'
       symptomatic
-    when 'non_reporting'
+    when 'Non-Reporting'
       non_reporting
-    when 'asymptomatic'
+    when 'Asymptomatic'
       asymptomatic
     end
   }

@@ -85,6 +85,7 @@ namespace :analytics do
     add_analytic_to_parent(parent, analytic, jurisdiction_analytic_map)
   end
 
+  # Compute all monitoree counts
   def all_monitoree_counts(monitorees)
     counts = []
 
@@ -116,22 +117,32 @@ namespace :analytics do
     counts
   end
   
+  # Total monitoree counts
   def monitoree_counts_by_total(monitorees, active_monitoring)
-    monitorees.monitoring_active(active_monitoring).group(:exposure_risk_assessment).count.map { |risk_level, total|
-      monitoree_count(active_monitoring, 'Overall Total', 'Total', risk_level, total)
-    }
+    monitorees.monitoring_active(active_monitoring)
+              .group(:exposure_risk_assessment)
+              .order(:exposure_risk_assessment)
+              .count.map { |risk_level, total|
+                monitoree_count(active_monitoring, 'Overall Total', 'Total', risk_level, total)
+              }
   end
 
+  # Monitoree counts by monitoring status (symptomatic, non-reporting, asymptomatic)
   def monitoree_counts_by_monitoring_status(monitorees)
     counts = []
     MONITORING_STATUSES.each { |monitoring_status|
-      monitorees.monitoring_status(monitoring_status).group(:exposure_risk_assessment).count.each { |risk_level, total|
-        counts.append(monitoree_count(true, 'Monitoring Status', monitoring_status, risk_level, total))
-      }
+      monitorees.monitoring_status(monitoring_status)
+                .group(:exposure_risk_assessment)
+                .order(:exposure_risk_assessment)
+                .count
+                .each { |risk_level, total|
+                  counts.append(monitoree_count(true, 'Monitoring Status', monitoring_status, risk_level, total))
+                }
     }
     counts
   end
 
+  # Monitoree counts by age group
   def monitoree_counts_by_age_group(monitorees, active_monitoring)
     age_groups = <<-SQL
       CASE
@@ -145,68 +156,121 @@ namespace :analytics do
         WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 80 THEN '>=80'
       END
     SQL
-    monitorees.monitoring_active(active_monitoring).group(age_groups, :exposure_risk_assessment).count.map { |fields, total|
-      monitoree_count(active_monitoring, 'Age Group', fields[0], fields[1], total)
-    }
+    monitorees.monitoring_active(active_monitoring)
+              .group(age_groups, :exposure_risk_assessment)
+              .order(Arel.sql(age_groups), :exposure_risk_assessment)
+              .count
+              .map { |fields, total|
+                monitoree_count(active_monitoring, 'Age Group', fields[0], fields[1], total)
+              }
   end
 
+  # Monitoree counts by sex
   def monitoree_counts_by_sex(monitorees, active_monitoring)
-    monitorees.monitoring_active(active_monitoring).group(:sex, :exposure_risk_assessment).count.map { |fields, total|
-      monitoree_count(active_monitoring, 'Sex', fields[0], fields[1], total)
-    }
+    monitorees.monitoring_active(active_monitoring)
+              .group(:sex, :exposure_risk_assessment)
+              .order(:sex, :exposure_risk_assessment)
+              .count
+              .map { |fields, total|
+                monitoree_count(active_monitoring, 'Sex', fields[0], fields[1], total)
+              }
   end
 
+  # Monitoree counts by exposure risk factors
   def monitoree_counts_by_risk_factor(monitorees, active_monitoring)
     counts = []
+    # Individual risk factors
     RISK_FACTORS.each do |risk_factor, label|
-      monitorees.monitoring_active(active_monitoring).group(risk_factor, :exposure_risk_assessment).count.map { |fields, total|
-        counts.append(monitoree_count(active_monitoring, 'Risk Factor', label, fields[1], total))
-      }
+      monitorees.monitoring_active(active_monitoring)
+                .where(risk_factor => true)
+                .group(risk_factor, :exposure_risk_assessment)
+                .order(:exposure_risk_assessment)
+                .count
+                .map { |fields, total|
+                  counts.append(monitoree_count(active_monitoring, 'Risk Factor', label, fields[1], total))
+                }
     end
-    monitorees.monitoring_active(active_monitoring).where(RISK_FACTORS.keys.join(' OR ')).group(:exposure_risk_assessment).count.map { |risk_level, total|
-      counts.append(monitoree_count(active_monitoring, 'Risk Factor', 'Total', risk_level, total))
-    }
+    # Total
+    monitorees.monitoring_active(active_monitoring)
+              .where(RISK_FACTORS.keys.join(' OR '))
+              .group(:exposure_risk_assessment)
+              .order(:exposure_risk_assessment)
+              .count
+              .map { |risk_level, total|
+                counts.append(monitoree_count(active_monitoring, 'Risk Factor', 'Total', risk_level, total))
+              }
     counts
   end
 
+  # Monitoree counts by exposure country
   def monitoree_counts_by_exposure_country(monitorees, active_monitoring)
     counts = []
-    monitorees.monitoring_active(active_monitoring).group(:potential_exposure_country, :exposure_risk_assessment).count.map { |fields, total| 
-      counts.append(monitoree_count(active_monitoring, 'Exposure Country', fields[0], fields[1], total))
-    }
-    monitorees.monitoring_active(active_monitoring).where.not(potential_exposure_country: [nil, ""]).group(:exposure_risk_assessment).count.map { |risk_level, total| 
-      counts.append(monitoree_count(active_monitoring, 'Exposure Country', 'Total', risk_level, total))
-    }
+    # Individual countries
+    monitorees.monitoring_active(active_monitoring)
+              .where.not(potential_exposure_country: [nil, ''])
+              .group(:potential_exposure_country, :exposure_risk_assessment)
+              .order(:potential_exposure_country, :exposure_risk_assessment)
+              .count
+              .map { |fields, total| 
+                counts.append(monitoree_count(active_monitoring, 'Exposure Country', fields[0], fields[1], total))
+              }
+    # Total
+    monitorees.monitoring_active(active_monitoring)
+              .where.not(potential_exposure_country: [nil, ''])
+              .group(:exposure_risk_assessment).order(:exposure_risk_assessment)
+              .count
+              .map { |risk_level, total| 
+                counts.append(monitoree_count(active_monitoring, 'Exposure Country', 'Total', risk_level, total))
+              }
     counts
   end
 
+  # Monitoree counts by last date of exposure by days
   def monitoree_counts_by_last_exposure_date(monitorees, active_monitoring)
     exposure_dates = <<-SQL
       DATE_TRUNC('day', last_date_of_exposure::date)::date
     SQL
-    monitorees.monitoring_active(active_monitoring).exposed_in_time_frame(NUM_PAST_EXPOSURE_DAYS.to_s + ' days').group(exposure_dates, :exposure_risk_assessment).count.map { |fields, total|
-      monitoree_count(active_monitoring, 'Last Exposure Date', fields[0], fields[1], total)
-    }
+    monitorees.monitoring_active(active_monitoring)
+              .exposed_in_time_frame(NUM_PAST_EXPOSURE_DAYS.to_s + ' days')
+              .group(exposure_dates, :exposure_risk_assessment)
+              .order(Arel.sql(exposure_dates), :exposure_risk_assessment)
+              .count
+              .map { |fields, total|
+                monitoree_count(active_monitoring, 'Last Exposure Date', fields[0], fields[1], total)
+              }
   end
 
+  # Monitoree counts by last date of exposure by weeks
   def monitoree_counts_by_last_exposure_week(monitorees, active_monitoring)
     exposure_weeks = <<-SQL
       (DATE_TRUNC('week', last_date_of_exposure::date) - '1 day'::interval)::date
     SQL
-    monitorees.monitoring_active(active_monitoring).exposed_in_time_frame(NUM_PAST_EXPOSURE_WEEKS.to_s + ' weeks').group(exposure_weeks, :exposure_risk_assessment).count.map { |fields, total|
-      monitoree_count(active_monitoring, 'Last Exposure Week', fields[0], fields[1], total)
-    }
+    monitorees.monitoring_active(active_monitoring)
+              .exposed_in_time_frame(NUM_PAST_EXPOSURE_WEEKS.to_s + ' weeks')
+              .group(exposure_weeks, :exposure_risk_assessment)
+              .order(Arel.sql(exposure_weeks), :exposure_risk_assessment)
+              .count
+              .map { |fields, total|
+                monitoree_count(active_monitoring, 'Last Exposure Week', fields[0], fields[1], total)
+              }
   end
 
+  # Monitoree counts by last date of exposure by months
   def monitoree_counts_by_last_exposure_month(monitorees, active_monitoring)
     exposure_months = <<-SQL
       DATE_TRUNC('month', last_date_of_exposure::date)::date
     SQL
-    monitorees.monitoring_active(active_monitoring).exposed_in_time_frame(NUM_PAST_EXPOSURE_MONTHS.to_s + ' months').group(exposure_months, :exposure_risk_assessment).count.map { |fields, total|
-      monitoree_count(active_monitoring, 'Last Exposure Month', fields[0], fields[1], total)
-    }
+    monitorees.monitoring_active(active_monitoring)
+              .exposed_in_time_frame(NUM_PAST_EXPOSURE_MONTHS.to_s + ' months')
+              .group(exposure_months, :exposure_risk_assessment)
+              .order(Arel.sql(exposure_months), :exposure_risk_assessment)
+              .count
+              .map { |fields, total|
+                monitoree_count(active_monitoring, 'Last Exposure Month', fields[0], fields[1], total)
+              }
   end
 
+  # New monitoree count with given fields
   def monitoree_count(active_monitoring, category_type, category, risk_level, total)
     MonitoreeCount.new(
       active_monitoring: active_monitoring,
@@ -217,6 +281,7 @@ namespace :analytics do
     )
   end
 
+  # Monitoree flow over time and monitoree action summary
   def all_monitoree_snapshots(monitorees, jurisdiction_id)
     MONITOREE_SNAPSHOT_TIME_FRAMES.map { |time_frame|
       MonitoreeSnapshot.new(
