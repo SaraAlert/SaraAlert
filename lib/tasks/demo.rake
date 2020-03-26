@@ -125,6 +125,8 @@ namespace :demo do
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
 
     jurisdictions = Jurisdiction.all
+    Analytic.destroy_all
+    ActiveRecord::Base.connection.execute("TRUNCATE analytics RESTART IDENTITY")
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days

@@ -10,8 +10,8 @@ namespace :admin do
       parse_jurisdiction(nil, jur_name, jur_values)
     end
     # Seed newly created jurisdictions with (empty) analytic cache entries
-    # Rake::Task["analytics:cache_current_analytics"].reenable
-    # Rake::Task["analytics:cache_current_analytics"].invoke
+    Rake::Task["analytics:cache_current_analytics"].reenable
+    Rake::Task["analytics:cache_current_analytics"].invoke
   end
 
   def parse_jurisdiction(parent, jur_name, jur_values)
