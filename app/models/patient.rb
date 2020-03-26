@@ -190,7 +190,9 @@ class Patient < ApplicationRecord
       latest_report: latest_assessment&.created_at&.strftime('%F') || '',
       transferred: latest_transfer&.created_at&.to_s || '',
       reason_for_closure: monitoring_reason || '',
-      public_health_action: public_health_action || ''
+      public_health_action: public_health_action || '',
+      transferred_from: latest_transfer&.from_path || '',
+      transferred_to: latest_transfer&.to_path || ''
     }
   end
 

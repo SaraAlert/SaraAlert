@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Row, Button } from 'react-bootstrap';
+import { Col, Row, Button, Collapse, Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 
 class Patient extends React.Component {
@@ -14,13 +14,13 @@ class Patient extends React.Component {
     return (
       <React.Fragment>
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
-          <Row className="pb-4 my-2 mx-4">
+          <Row className="pb-4 mb-4 mx-4">
             The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
             <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
           </Row>
         )}
         {this.props?.groupMembers && this.props?.groupMembers?.length > 0 && (
-          <Row className="pb-4 my-2 mx-4">
+          <Row className="pb-4 mb-4 mx-4">
             <Col>
               <Row>This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
               {this.props?.groupMembers?.map((member, index) => {
@@ -35,7 +35,7 @@ class Patient extends React.Component {
             </Col>
           </Row>
         )}
-        <Row className="g-border-bottom-2 pb-4 my-2 mx-2">
+        <Row className="pt-4 mx-2 mb-4">
           <Col md="11">
             <Row>
               <Col>
@@ -149,211 +149,220 @@ class Patient extends React.Component {
             </Row>
           </Col>
         </Row>
-        <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-2">
-          <Col md="11">
-            <Row>
-              <Col>
-                <div className="float-left">
-                  <h5>
-                    <u>Contact Information</u>
-                  </h5>
-                </div>
-                <div className="float-right">
-                  {this.props.goto && (
-                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
-                      <h5>Edit</h5>
-                    </Button>
-                  )}
-                </div>
-                <div className="clearfix"></div>
+        <Collapse in={!this.props.hideBody}>
+          <Card.Body className="mx-0 px-0 my-0 py-0">
+            <Row className="g-border-bottom-2 mx-2 pb-4 mb-2"></Row>
+            <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-2">
+              <Col md="11">
+                <Row>
+                  <Col>
+                    <div className="float-left">
+                      <h5>
+                        <u>Contact Information</u>
+                      </h5>
+                    </div>
+                    <div className="float-right">
+                      {this.props.goto && (
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
+                          <h5>Edit</h5>
+                        </Button>
+                      )}
+                    </div>
+                    <div className="clearfix"></div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col className="text-truncate">
+                    <span className="font-weight-normal">Phone:</span>{' '}
+                    <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
+                    <br />
+                    <span className="font-weight-normal">Preferred Contact Time:</span>{' '}
+                    <span className="font-weight-light">{this.props.details.preferred_contact_time && `${this.props.details.preferred_contact_time}`}</span>
+                    <br />
+                    <span className="font-weight-normal">Type:</span>{' '}
+                    <span className="font-weight-light">{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : ''}`}</span>
+                    <br />
+                    <span className="font-weight-normal">Email:</span>{' '}
+                    <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
+                    <br />
+                    <span className="font-weight-normal">Preferred Contact:</span>{' '}
+                    <span className="font-weight-light">{`${
+                      this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''
+                    }`}</span>
+                  </Col>
+                </Row>
+              </Col>
+              <Col md="1"></Col>
+              <Col md="11">
+                <Row>
+                  <Col>
+                    <div className="float-left">
+                      <h5>
+                        <u>Arrival Information</u>
+                      </h5>
+                    </div>
+                    <div className="float-right">
+                      {this.props.goto && (
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}>
+                          <h5>Edit</h5>
+                        </Button>
+                      )}
+                    </div>
+                    <div className="clearfix"></div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col className="text-truncate">
+                    <h6>DEPARTED</h6>
+                    <span className="font-weight-light">{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
+                    <br />
+                    <span className="font-weight-light">{`${this.props.details.date_of_departure ? this.props.details.date_of_departure : ''}`}</span>
+                  </Col>
+                  <Col className="text-truncate">
+                    <h6>ARRIVAL</h6>
+                    <span className="font-weight-light">{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
+                    <br />
+                    <span className="font-weight-light">{`${this.props.details.date_of_arrival ? this.props.details.date_of_arrival : ''}`}</span>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col className="text-truncate pt-1">
+                    <span className="font-weight-light">{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
+                    <br />
+                    <span className="font-weight-light">{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
+                  </Col>
+                </Row>
               </Col>
             </Row>
-            <Row>
-              <Col className="text-truncate">
-                <span className="font-weight-normal">Phone:</span>{' '}
-                <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
-                <br />
-                <span className="font-weight-normal">Preferred Contact Time:</span>{' '}
-                <span className="font-weight-light">{this.props.details.preferred_contact_time && `${this.props.details.preferred_contact_time}`}</span>
-                <br />
-                <span className="font-weight-normal">Type:</span>{' '}
-                <span className="font-weight-light">{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : ''}`}</span>
-                <br />
-                <span className="font-weight-normal">Email:</span>{' '}
-                <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
-                <br />
-                <span className="font-weight-normal">Preferred Contact:</span>{' '}
-                <span className="font-weight-light">{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''}`}</span>
+            <Row className="pb-2 mb-2 mt-4 mx-2">
+              <Col md="11">
+                <Row>
+                  <Col>
+                    <div className="float-left">
+                      <h5>
+                        <u>Additional Planned Travel</u>
+                      </h5>
+                    </div>
+                    <div className="float-right">
+                      {this.props.goto && (
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}>
+                          <h5>Edit</h5>
+                        </Button>
+                      )}
+                    </div>
+                    <div className="clearfix"></div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col className="text-truncate">
+                    <span className="font-weight-normal">Type:</span>{' '}
+                    <span className="font-weight-light">
+                      {this.props.details.additional_planned_travel_type && `${this.props.details.additional_planned_travel_type}`}
+                    </span>
+                    <br />
+                    <span className="font-weight-normal">Place:</span>{' '}
+                    <span className="font-weight-light">
+                      {`${
+                        this.props.details.additional_planned_travel_destination_country ? this.props.details.additional_planned_travel_destination_country : ''
+                      }`}
+                      {`${
+                        this.props.details.additional_planned_travel_destination_state ? this.props.details.additional_planned_travel_destination_state : ''
+                      }`}
+                    </span>
+                    <br />
+                    <span className="font-weight-normal">Port Of Departure:</span>{' '}
+                    <span className="font-weight-light">{`${
+                      this.props.details.additional_planned_travel_port_of_departure ? this.props.details.additional_planned_travel_port_of_departure : ''
+                    }`}</span>
+                    <br />
+                    <span className="font-weight-normal">End Date:</span>{' '}
+                    <span className="font-weight-light">{`${
+                      this.props.details.additional_planned_travel_start_date ? this.props.details.additional_planned_travel_start_date : ''
+                    }`}</span>
+                    <br />
+                    <span className="font-weight-normal">Start Date:</span>{' '}
+                    <span className="font-weight-light">{`${
+                      this.props.details.additional_planned_travel_end_date ? this.props.details.additional_planned_travel_end_date : ''
+                    }`}</span>
+                  </Col>
+                </Row>
+              </Col>
+              <Col md="1"></Col>
+              <Col md="11">
+                <Row>
+                  <Col>
+                    <div className="float-left">
+                      <h5>
+                        <u>Potential Exposure Information</u>
+                      </h5>
+                    </div>
+                    <div className="float-right">
+                      {this.props.goto && (
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
+                          <h5>Edit</h5>
+                        </Button>
+                      )}
+                    </div>
+                    <div className="clearfix"></div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col className="text-truncate">
+                    <h6>LAST EXPOSURE</h6>
+                    <span className="font-weight-light">
+                      {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
+                      {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
+                    </span>
+                    <br />
+                    <span className="font-weight-light">{`${this.props.details.last_date_of_exposure ? this.props.details.last_date_of_exposure : ''}`}</span>
+                    <br />
+                    <span className="font-weight-light text-danger">
+                      {this.props.details.contact_of_known_case
+                        ? 'CLOSE CONTACT WITH A KNOWN CASE: ' + (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '')
+                        : ''}
+                      {this.props.details.contact_of_known_case ? <br /> : ''}
+                    </span>
+                    <span className="font-weight-light text-danger">
+                      {this.props.details.member_of_a_common_exposure_cohort
+                        ? 'MEMBER OF A COMMON EXPOSURE COHORT: ' +
+                          (this.props.details.member_of_a_common_exposure_cohort_type ? this.props.details.member_of_a_common_exposure_cohort_type : '')
+                        : ''}
+                      {this.props.details.member_of_a_common_exposure_cohort ? <br /> : ''}
+                    </span>
+                    <span className="font-weight-light text-danger">
+                      {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL TO AFFECTED COUNTRY OR AREA' : ''}
+                      {this.props.details.travel_to_affected_country_or_area ? <br /> : ''}
+                    </span>
+                    <span className="font-weight-light text-danger">
+                      {this.props.details.was_in_health_care_facility_with_known_cases
+                        ? 'WAS IN HEALTH CARE FACILITY WITH KNOWN CASES: ' +
+                          (this.props.details.was_in_health_care_facility_with_known_cases_facility_name
+                            ? this.props.details.was_in_health_care_facility_with_known_cases_facility_name
+                            : '')
+                        : ''}
+                      {this.props.details.was_in_health_care_facility_with_known_cases ? <br /> : ''}
+                    </span>
+                    <span className="font-weight-light text-danger">
+                      {this.props.details.laboratory_personnel ? 'LABORATORY PERSONNEL' : ''}
+                      {this.props.details.laboratory_personnel ? <br /> : ''}
+                    </span>
+                    <span className="font-weight-light text-danger">
+                      {this.props.details.healthcare_personnel
+                        ? 'HEALTHCARE PERSONNEL: ' +
+                          (this.props.details.healthcare_personnel_facility_name ? this.props.details.healthcare_personnel_facility_name : '')
+                        : ''}
+                      {this.props.details.healthcare_personnel ? <br /> : ''}
+                    </span>
+                    <span className="font-weight-light text-danger">
+                      {this.props.details.crew_on_passenger_or_cargo_flight ? 'CREW ON PASSENGER OR CARGO FLIGHT' : ''}
+                      {this.props.details.crew_on_passenger_or_cargo_flight ? <br /> : ''}
+                    </span>
+                  </Col>
+                </Row>
               </Col>
             </Row>
-          </Col>
-          <Col md="1"></Col>
-          <Col md="11">
-            <Row>
-              <Col>
-                <div className="float-left">
-                  <h5>
-                    <u>Arrival Information</u>
-                  </h5>
-                </div>
-                <div className="float-right">
-                  {this.props.goto && (
-                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}>
-                      <h5>Edit</h5>
-                    </Button>
-                  )}
-                </div>
-                <div className="clearfix"></div>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-truncate">
-                <h6>DEPARTED</h6>
-                <span className="font-weight-light">{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
-                <br />
-                <span className="font-weight-light">{`${this.props.details.date_of_departure ? this.props.details.date_of_departure : ''}`}</span>
-              </Col>
-              <Col className="text-truncate">
-                <h6>ARRIVAL</h6>
-                <span className="font-weight-light">{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
-                <br />
-                <span className="font-weight-light">{`${this.props.details.date_of_arrival ? this.props.details.date_of_arrival : ''}`}</span>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-truncate pt-1">
-                <span className="font-weight-light">{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
-                <br />
-                <span className="font-weight-light">{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        <Row className="pb-2 mb-2 mt-4 mx-2">
-          <Col md="11">
-            <Row>
-              <Col>
-                <div className="float-left">
-                  <h5>
-                    <u>Additional Planned Travel</u>
-                  </h5>
-                </div>
-                <div className="float-right">
-                  {this.props.goto && (
-                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}>
-                      <h5>Edit</h5>
-                    </Button>
-                  )}
-                </div>
-                <div className="clearfix"></div>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-truncate">
-                <span className="font-weight-normal">Type:</span>{' '}
-                <span className="font-weight-light">
-                  {this.props.details.additional_planned_travel_type && `${this.props.details.additional_planned_travel_type}`}
-                </span>
-                <br />
-                <span className="font-weight-normal">Place:</span>{' '}
-                <span className="font-weight-light">
-                  {`${
-                    this.props.details.additional_planned_travel_destination_country ? this.props.details.additional_planned_travel_destination_country : ''
-                  }`}
-                  {`${this.props.details.additional_planned_travel_destination_state ? this.props.details.additional_planned_travel_destination_state : ''}`}
-                </span>
-                <br />
-                <span className="font-weight-normal">Port Of Departure:</span>{' '}
-                <span className="font-weight-light">{`${
-                  this.props.details.additional_planned_travel_port_of_departure ? this.props.details.additional_planned_travel_port_of_departure : ''
-                }`}</span>
-                <br />
-                <span className="font-weight-normal">End Date:</span>{' '}
-                <span className="font-weight-light">{`${
-                  this.props.details.additional_planned_travel_start_date ? this.props.details.additional_planned_travel_start_date : ''
-                }`}</span>
-                <br />
-                <span className="font-weight-normal">Start Date:</span>{' '}
-                <span className="font-weight-light">{`${
-                  this.props.details.additional_planned_travel_end_date ? this.props.details.additional_planned_travel_end_date : ''
-                }`}</span>
-              </Col>
-            </Row>
-          </Col>
-          <Col md="1"></Col>
-          <Col md="11">
-            <Row>
-              <Col>
-                <div className="float-left">
-                  <h5>
-                    <u>Potential Exposure Information</u>
-                  </h5>
-                </div>
-                <div className="float-right">
-                  {this.props.goto && (
-                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
-                      <h5>Edit</h5>
-                    </Button>
-                  )}
-                </div>
-                <div className="clearfix"></div>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-truncate">
-                <h6>LAST EXPOSURE</h6>
-                <span className="font-weight-light">
-                  {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
-                  {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
-                </span>
-                <br />
-                <span className="font-weight-light">{`${this.props.details.last_date_of_exposure ? this.props.details.last_date_of_exposure : ''}`}</span>
-                <br />
-                <span className="font-weight-light text-danger">
-                  {this.props.details.contact_of_known_case
-                    ? 'CLOSE CONTACT WITH A KNOWN CASE: ' + (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '')
-                    : ''}
-                  {this.props.details.contact_of_known_case ? <br /> : ''}
-                </span>
-                <span className="font-weight-light text-danger">
-                  {this.props.details.member_of_a_common_exposure_cohort
-                    ? 'MEMBER OF A COMMON EXPOSURE COHORT: ' +
-                      (this.props.details.member_of_a_common_exposure_cohort_type ? this.props.details.member_of_a_common_exposure_cohort_type : '')
-                    : ''}
-                  {this.props.details.member_of_a_common_exposure_cohort ? <br /> : ''}
-                </span>
-                <span className="font-weight-light text-danger">
-                  {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL TO AFFECTED COUNTRY OR AREA' : ''}
-                  {this.props.details.travel_to_affected_country_or_area ? <br /> : ''}
-                </span>
-                <span className="font-weight-light text-danger">
-                  {this.props.details.was_in_health_care_facility_with_known_cases
-                    ? 'WAS IN HEALTH CARE FACILITY WITH KNOWN CASES: ' +
-                      (this.props.details.was_in_health_care_facility_with_known_cases_facility_name
-                        ? this.props.details.was_in_health_care_facility_with_known_cases_facility_name
-                        : '')
-                    : ''}
-                  {this.props.details.was_in_health_care_facility_with_known_cases ? <br /> : ''}
-                </span>
-                <span className="font-weight-light text-danger">
-                  {this.props.details.laboratory_personnel ? 'LABORATORY PERSONNEL' : ''}
-                  {this.props.details.laboratory_personnel ? <br /> : ''}
-                </span>
-                <span className="font-weight-light text-danger">
-                  {this.props.details.healthcare_personnel
-                    ? 'HEALTHCARE PERSONNEL: ' +
-                      (this.props.details.healthcare_personnel_facility_name ? this.props.details.healthcare_personnel_facility_name : '')
-                    : ''}
-                  {this.props.details.healthcare_personnel ? <br /> : ''}
-                </span>
-                <span className="font-weight-light text-danger">
-                  {this.props.details.crew_on_passenger_or_cargo_flight ? 'CREW ON PASSENGER OR CARGO FLIGHT' : ''}
-                  {this.props.details.crew_on_passenger_or_cargo_flight ? <br /> : ''}
-                </span>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+          </Card.Body>
+        </Collapse>
       </React.Fragment>
     );
   }
@@ -364,6 +373,7 @@ Patient.propTypes = {
   group_members: PropTypes.array,
   details: PropTypes.object,
   goto: PropTypes.func,
+  hideBody: PropTypes.bool,
 };
 
 export default Patient;
