@@ -9,19 +9,19 @@ class MonitoreeEnrollmentDashboardVerifier < ApplicationSystemTestCase
   @@monitoree_enrollment_info_page_verifier = MonitoreeEnrollmentInfoPageVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_monitoree_info_on_dashboard(monitoree)
+  def verify_monitoree_info_on_dashboard(monitoree, isEpi=false)
     displayed_name = search_for_monitoree(monitoree)
     click_on displayed_name
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree)
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree, isEpi)
     @@system_test_utils.return_to_dashboard
   end
 
-  def verify_monitoree_info_as_group_member_on_dashboard(existing_monitoree, new_monitoree)
+  def verify_monitoree_info_as_group_member_on_dashboard(existing_monitoree, new_monitoree, isEpi=false)
     displayed_name = search_for_monitoree(new_monitoree)
     click_on displayed_name
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree)
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree, isEpi)
     click_on 'Click here to view that monitoree'
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree)
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree, isEpi)
     @@system_test_utils.return_to_dashboard
   end
 

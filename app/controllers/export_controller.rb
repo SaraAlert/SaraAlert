@@ -7,7 +7,7 @@ class ExportController < ApplicationController
   def csv
     redirect_to(root_url) && return unless current_user.can_export?
 
-    headers = ['Monitoree', 'Assigned Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
+    headers = ['Monitoree', 'Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
                'End of Monitoring', 'Risk Level', 'Monitoring Plan', 'Latest Report', 'Transferred At',
                'Reason For Closure', 'Latest Public Health Action']
 
