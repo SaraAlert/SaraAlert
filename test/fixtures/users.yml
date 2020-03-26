@@ -6,9 +6,9 @@ state1_enroller:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 2
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 locals1c1_enroller:
   id: 2
   email: "locals1c1_enroller@example.com"
@@ -17,9 +17,9 @@ locals1c1_enroller:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 4
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 locals1c2_enroller:
   id: 3
   email: "locals1c2_enroller@example.com"
@@ -28,9 +28,9 @@ locals1c2_enroller:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 5
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 state2_enroller:
   id: 4
   email: "state2_enroller@example.com"
@@ -39,9 +39,9 @@ state2_enroller:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 3
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 locals2c3_enroller:
   id: 5
   email: "locals2c3_enroller@example.com"
@@ -50,9 +50,9 @@ locals2c3_enroller:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 6
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 locals2c4_enroller:
   id: 6
   email: "locals2c4_enroller@example.com"
@@ -61,9 +61,9 @@ locals2c4_enroller:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 7
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 state1_epi:
   id: 7
   email: "state1_epi@example.com"
@@ -72,9 +72,9 @@ state1_epi:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 2
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 locals1c1_epi:
   id: 8
   email: "locals1c1_epi@example.com"
@@ -83,9 +83,9 @@ locals1c1_epi:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 4
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 locals1c2_epi:
   id: 9
   email: "locals1c2_epi@example.com"
@@ -94,9 +94,9 @@ locals1c2_epi:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 5
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 state2_epi:
   id: 10
   email: "state2_epi@example.com"
@@ -105,9 +105,9 @@ state2_epi:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 3
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 locals2c3_epi:
   id: 11
   email: "locals2c3_epi@example.com"
@@ -116,9 +116,9 @@ locals2c3_epi:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 6
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 locals2c4_epi:
   id: 12
   email: "locals2c4_epi@example.com"
@@ -127,9 +127,9 @@ locals2c4_epi:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 7
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 state1_epi_enroller:
   id: 13
   email: "state1_epi_enroller@example.com"
@@ -138,9 +138,9 @@ state1_epi_enroller:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 2
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 admin1:
   id: 14
   email: "admin1@example.com"
@@ -149,9 +149,9 @@ admin1:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 1
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 analyst_all:
   id: 15
   email: "analyst_all@example.com"
@@ -160,9 +160,9 @@ analyst_all:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 1
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
 usa_epi:
   id: 16
   email: "usa_epi@example.com"
@@ -171,6 +171,6 @@ usa_epi:
   failed_attempts: 0
   force_password_change: false
   jurisdiction_id: 1
-  password_changed_at: "2020-02-26 20:02:49.250963"
-  created_at: "2020-02-26 20:02:49.250963"
-  updated_at: "2020-02-26 20:02:49.250963"
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"

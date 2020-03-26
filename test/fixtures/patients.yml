@@ -1,7 +1,7 @@
 patient_1:
   id: 1
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 35.days.ago %>"
+  updated_at: "<%= 35.days.ago %>"
   responder_id: 1
   creator_id: 1
   jurisdiction_id: 2
@@ -39,18 +39,18 @@ patient_1:
   additional_planned_travel_destination: "Saulchester"
   additional_planned_travel_destination_state: "Carolside"
   additional_planned_travel_port_of_departure: "New Vaughn"
-  date_of_departure: "2020-02-11"
-  date_of_arrival: "2020-02-11"
-  additional_planned_travel_start_date: "2020-02-12"
-  additional_planned_travel_end_date: "2020-02-21"
-  last_date_of_exposure: "2020-02-10"
+  date_of_departure: "<%= 45.days.ago %>"
+  date_of_arrival: "<%= 45.days.ago %>"
+  additional_planned_travel_start_date: "<%= 44.days.ago %>"
+  additional_planned_travel_end_date: "<%= 35.days.ago %>"
+  last_date_of_exposure: "<%= 45.days.ago %>"
   potential_exposure_location: "East Troy"
   potential_exposure_country: "Malaysia"
   travel_to_affected_country_or_area: true
 patient_2:
   id: 2
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 2
   creator_id: 4
   jurisdiction_id: 2
@@ -84,16 +84,16 @@ patient_2:
   flight_or_vessel_number: "T343"
   flight_or_vessel_carrier: "Morton Airlines"
   port_of_entry_into_usa: "Brittanieshire"
-  date_of_departure: "2020-02-11"
-  date_of_arrival: "2020-02-11"
-  last_date_of_exposure: "2020-02-08"
+  date_of_departure: "<%= 45.days.ago %>"
+  date_of_arrival: "<%= 45.days.ago %>"
+  last_date_of_exposure: "<%= 47.days.ago %>"
   potential_exposure_location: "East Vernaland"
   potential_exposure_country: "United States Minor Outlying Islands"
   was_in_health_care_facility_with_known_cases: true
 patient_3:
   id: 3
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 3
   creator_id: 2
   jurisdiction_id: 2
@@ -111,11 +111,11 @@ patient_3:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-02-08"
+  last_date_of_exposure: "<%= 47.days.ago %>"
 patient_4:
   id: 4
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 4
   creator_id: 3
   jurisdiction_id: 4
@@ -133,11 +133,11 @@ patient_4:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-02-28"
+  last_date_of_exposure: "<%= 27.days.ago %>"
 patient_5:
   id: 5
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 5
   creator_id: 2
   jurisdiction_id: 2
@@ -156,11 +156,11 @@ patient_5:
   preferred_contact_method: "Telephone call"
   source_of_report: "Self_Identified"
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "2020-01-20"
+  last_date_of_exposure: "<%= 66.days.ago %>"
 patient_6:
   id: 6
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 6
   creator_id: 2
   jurisdiction_id: 5
@@ -179,11 +179,11 @@ patient_6:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "2020-03-04"
+  last_date_of_exposure: "<%= 22.days.ago %>"
 patient_7:
   id: 7
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 7
   creator_id: 3
   jurisdiction_id: 2
@@ -202,11 +202,11 @@ patient_7:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "2020-01-04"
+  last_date_of_exposure: "<%= 83.days.ago %>"
 patient_8:
   id: 8
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 17.days.ago %>"
+  updated_at: "<%= 17.days.ago %>"
   responder_id: 8
   creator_id: 3
   jurisdiction_id: 2
@@ -225,11 +225,11 @@ patient_8:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "2020-02-15"
+  last_date_of_exposure: "<%= 41.days.ago %>"
 patient_9:
   id: 9
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 17.days.ago %>"
+  updated_at: "<%= 17.days.ago %>"
   responder_id: 9
   creator_id: 3
   jurisdiction_id: 3
@@ -248,11 +248,11 @@ patient_9:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "2020-02-15"
+  last_date_of_exposure: "<%= 41.days.ago %>"
 patient_10:
   id: 10
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 8.days.ago %>"
+  updated_at: "<%= 8.days.ago %>"
   responder_id: 10
   creator_id: 3
   jurisdiction_id: 7
@@ -270,11 +270,11 @@ patient_10:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "2020-03-05"
+  last_date_of_exposure: "<%= 22.days.ago %>"
 patient_11:
   id: 11
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 8.days.ago %>"
+  updated_at: "<%= 8.days.ago %>"
   responder_id: 11
   creator_id: 3
   jurisdiction_id: 6
@@ -292,9 +292,11 @@ patient_11:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-02-29"
+  last_date_of_exposure: "<%= 27.days.ago %>"
 patient_12:
   id: 12
+  created_at: "<%= 6.days.ago %>"
+  updated_at: "<%= 6.days.ago %>"
   jurisdiction_id: 1
   monitoring: true
   first_name: "David"
@@ -302,7 +304,7 @@ patient_12:
   sex: "Male"
   date_of_birth: "<%= 100.years.ago %>"
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "2020-02-21"
+  last_date_of_exposure: "<%= 35.days.ago %>"
   potential_exposure_country: "China"
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
@@ -313,6 +315,8 @@ patient_12:
   laboratory_personnel: true
 patient_13:
   id: 13
+  created_at: "<%= 4.days.ago %>"
+  updated_at: "<%= 4.days.ago %>"
   jurisdiction_id: 1
   monitoring: true
   first_name: "Stephen"
@@ -320,7 +324,7 @@ patient_13:
   sex: "Male"
   date_of_birth: "<%= 69.years.ago %>"
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "2019-09-30"
+  last_date_of_exposure: "<%= 179.days.ago %>"
   potential_exposure_country: "Korea"
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
@@ -331,6 +335,8 @@ patient_13:
   laboratory_personnel: false
 patient_14:
   id: 14
+  created_at: "<%= 4.days.ago %>"
+  updated_at: "<%= 4.days.ago %>"
   jurisdiction_id: 1
   monitoring: false
   first_name: "Sarah"
@@ -338,7 +344,7 @@ patient_14:
   sex: "Female"
   date_of_birth: "<%= 66.years.ago %>"
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "2019-05-14"
+  last_date_of_exposure: "<%= 318.days.ago %>"
   potential_exposure_country: "Brazil"
   contact_of_known_case: true
   travel_to_affected_country_or_area: true
@@ -349,6 +355,8 @@ patient_14:
   laboratory_personnel: false
 patient_15:
   id: 15
+  created_at: "<%= 3.days.ago %>"
+  updated_at: "<%= 3.days.ago %>"
   jurisdiction_id: 1
   monitoring: true
   first_name: "Jon"
@@ -356,7 +364,7 @@ patient_15:
   sex: "Unknown"
   date_of_birth: "<%= 50.years.ago %>"
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: "2019-11-14"
+  last_date_of_exposure: "<%= 134.days.ago %>"
   potential_exposure_country: "Iceland"
   contact_of_known_case: false
   travel_to_affected_country_or_area: false
@@ -367,6 +375,8 @@ patient_15:
   laboratory_personnel: false
 patient_16:
   id: 16
+  created_at: "<%= 2.days.ago %>"
+  updated_at: "<%= 2.days.ago %>"
   jurisdiction_id: 1
   monitoring: true
   first_name: "Stephen"
@@ -374,7 +384,7 @@ patient_16:
   sex: "Male"
   date_of_birth: "<%= 45.years.ago %>"
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: "2020-03-01"
+  last_date_of_exposure: "<%= 26.days.ago %>"
   potential_exposure_country: "Faroe Islands"
   contact_of_known_case: true
   travel_to_affected_country_or_area: true
@@ -385,6 +395,8 @@ patient_16:
   laboratory_personnel: false
 patient_17:
   id: 17
+  created_at: "<%= 1.day.ago %>"
+  updated_at: "<%= 1.day.ago %>"
   jurisdiction_id: 1
   monitoring: true
   first_name: "Arya"
@@ -392,7 +404,7 @@ patient_17:
   sex: "Unknown"
   date_of_birth: "<%= 36.years.ago %>"
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "2020-01-03"
+  last_date_of_exposure: "<%= 84.days.ago %>"
   potential_exposure_country: "Faroe Islands"
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
@@ -403,6 +415,8 @@ patient_17:
   laboratory_personnel: false
 patient_18:
   id: 18
+  created_at: "<%= 23.hours.ago %>"
+  updated_at: "<%= 23.hours.ago %>"
   jurisdiction_id: 1
   monitoring: false
   first_name: "Theon"
@@ -410,7 +424,7 @@ patient_18:
   sex: "Unknown"
   date_of_birth: "<%= 35.years.ago %>"
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "2019-05-10"
+  last_date_of_exposure: "<%= 322.days.ago %>"
   potential_exposure_country: "Malaysia"
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
@@ -421,6 +435,8 @@ patient_18:
   laboratory_personnel: true
 patient_19:
   id: 19
+  created_at: "<%= 15.hours.ago %>"
+  updated_at: "<%= 15.hours.ago %>"
   jurisdiction_id: 1
   monitoring: true
   first_name: "Laura"
@@ -428,7 +444,7 @@ patient_19:
   sex: "Female"
   date_of_birth: "<%= 19.years.ago %>"
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "2020-02-22"
+  last_date_of_exposure: "<%= 34.days.ago %>"
   potential_exposure_country: "Malaysia"
   contact_of_known_case: true
   travel_to_affected_country_or_area: true
@@ -439,6 +455,8 @@ patient_19:
   laboratory_personnel: true
 patient_20:
   id: 20
+  created_at: "<%= 4.hours.ago %>"
+  updated_at: "<%= 4.hours.ago %>"
   jurisdiction_id: 1
   monitoring: true
   first_name: "Ruby"
@@ -446,7 +464,7 @@ patient_20:
   sex: "Female"
   date_of_birth: "<%= 5.years.ago %>"
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: "2020-03-25"
+  last_date_of_exposure: "<%= 1.day.ago %>"
   potential_exposure_country: "Malaysia"
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
