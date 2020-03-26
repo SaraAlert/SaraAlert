@@ -164,6 +164,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.string "member_of_a_common_exposure_cohort_type"
     t.boolean "travel_to_affected_country_or_area"
     t.boolean "laboratory_personnel"
+    t.string "laboratory_personnel_facility_name"
     t.boolean "healthcare_personnel"
     t.string "healthcare_personnel_facility_name"
     t.boolean "crew_on_passenger_or_cargo_flight"

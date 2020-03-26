@@ -343,7 +343,10 @@ class Patient extends React.Component {
                       {this.props.details.was_in_health_care_facility_with_known_cases ? <br /> : ''}
                     </span>
                     <span className="font-weight-light text-danger">
-                      {this.props.details.laboratory_personnel ? 'LABORATORY PERSONNEL' : ''}
+                      {this.props.details.laboratory_personnel
+                        ? 'HEALTHCARE PERSONNEL: ' +
+                          (this.props.details.laboratory_personnel_facility_name ? this.props.details.laboratory_personnel_facility_name : '')
+                        : ''}
                       {this.props.details.laboratory_personnel ? <br /> : ''}
                     </span>
                     <span className="font-weight-light text-danger">

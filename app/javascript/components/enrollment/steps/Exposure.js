@@ -106,8 +106,8 @@ class Exposure extends React.Component {
               </Form.Row>
               <Form.Row className="pt-3 pb-4 h-100">
                 <Form.Group as={Col} className="my-auto">
-                  <Form.Label className="nav-input-label">EXPOSURE RISK FACTORS</Form.Label>
-                  <Form.Row className="pb-1">
+                  <Form.Label className="nav-input-label pb-4">EXPOSURE RISK FACTORS (USE COMMAS TO SEPERATE MULTIPLE SPECIFIED VALUES)</Form.Label>
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         type="switch"
@@ -126,9 +126,12 @@ class Exposure extends React.Component {
                         value={this.state.current.contact_of_known_case_id || ''}
                         onChange={this.handleChange}
                       />
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['contact_of_known_case_id']}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-1">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -140,7 +143,7 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-1">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -160,9 +163,12 @@ class Exposure extends React.Component {
                         value={this.state.current.was_in_health_care_facility_with_known_cases_facility_name || ''}
                         onChange={this.handleChange}
                       />
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['was_in_health_care_facility_with_known_cases_facility_name']}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-1">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -173,8 +179,21 @@ class Exposure extends React.Component {
                         onChange={this.handleChange}
                       />
                     </Form.Group>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+                      <Form.Control
+                        size="sm"
+                        className="form-square"
+                        id="laboratory_personnel_facility_name"
+                        placeholder="enter facility name"
+                        value={this.state.current.laboratory_personnel_facility_name || ''}
+                        onChange={this.handleChange}
+                      />
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['laboratory_personnel_facility_name']}
+                      </Form.Control.Feedback>
+                    </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-1">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -194,9 +213,12 @@ class Exposure extends React.Component {
                         value={this.state.current.healthcare_personnel_facility_name || ''}
                         onChange={this.handleChange}
                       />
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['healthcare_personnel_facility_name']}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-1">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         className="pt-2 my-auto"
@@ -208,7 +230,7 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-1">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md="auto" className="mb-0 my-auto">
                       <Form.Check
                         type="switch"
@@ -227,6 +249,9 @@ class Exposure extends React.Component {
                         value={this.state.current.member_of_a_common_exposure_cohort_type || ''}
                         onChange={this.handleChange}
                       />
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['member_of_a_common_exposure_cohort_type']}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-4 g-border-bottom-2" />
@@ -336,6 +361,22 @@ const schema = yup.object().shape({
     .nullable(),
   contact_of_known_case: yup.boolean().nullable(),
   contact_of_known_case_id: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  healthcare_personnel_facility_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  laboratory_personnel_facility_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  was_in_health_care_facility_with_known_cases_facility_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  member_of_a_common_exposure_cohort_type: yup
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),

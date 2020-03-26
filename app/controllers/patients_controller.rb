@@ -285,6 +285,7 @@ class PatientsController < ApplicationController
       was_in_health_care_facility_with_known_cases
       was_in_health_care_facility_with_known_cases_facility_name
       laboratory_personnel
+      laboratory_personnel_facility_name
       healthcare_personnel
       healthcare_personnel_facility_name
       exposure_notes
@@ -356,6 +357,7 @@ class PatientsController < ApplicationController
       was_in_health_care_facility_with_known_cases
       was_in_health_care_facility_with_known_cases_facility_name
       laboratory_personnel
+      laboratory_personnel_facility_name
       healthcare_personnel
       healthcare_personnel_facility_name
       exposure_notes
