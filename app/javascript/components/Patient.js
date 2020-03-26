@@ -14,13 +14,13 @@ class Patient extends React.Component {
     return (
       <React.Fragment>
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
-          <Row className="pb-4 mx-4">
+          <Row className="pb-3 mx-3">
             The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
             <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
           </Row>
         )}
         {this.props?.groupMembers && this.props?.groupMembers?.length > 0 && (
-          <Row className="pb-4 mx-4">
+          <Row className="pb-3 mx-3">
             <Col>
               <Row>This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
               {this.props?.groupMembers?.map((member, index) => {
@@ -35,7 +35,7 @@ class Patient extends React.Component {
             </Col>
           </Row>
         )}
-        <Row className="pt-4 mx-2 mb-4">
+        <Row className="pt-4 mx-1 mb-4">
           <Col md="11">
             <Row>
               <Col>
@@ -107,7 +107,7 @@ class Patient extends React.Component {
               </Row>
             )}
           </Col>
-          <Col md="1"></Col>
+          <Col md="2"></Col>
           <Col md="11">
             <Row>
               <Col>
@@ -152,7 +152,7 @@ class Patient extends React.Component {
         <Collapse in={!this.props.hideBody}>
           <Card.Body className="mx-0 px-0 my-0 py-0">
             <Row className="g-border-bottom-2 mx-2 pb-4 mb-2"></Row>
-            <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-2">
+            <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
               <Col md="11">
                 <Row>
                   <Col>
@@ -192,7 +192,7 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
               </Col>
-              <Col md="1"></Col>
+              <Col md="2"></Col>
               <Col md="11">
                 <Row>
                   <Col>
@@ -234,7 +234,7 @@ class Patient extends React.Component {
                 </Row>
               </Col>
             </Row>
-            <Row className="pb-2 mb-2 mt-4 mx-2">
+            <Row className="pb-2 mb-2 mt-4 mx-1">
               <Col md="11">
                 <Row>
                   <Col>
@@ -287,7 +287,7 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
               </Col>
-              <Col md="1"></Col>
+              <Col md="2"></Col>
               <Col md="11">
                 <Row>
                   <Col>

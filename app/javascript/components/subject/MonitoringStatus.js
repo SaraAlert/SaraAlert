@@ -23,6 +23,7 @@ class MonitoringStatus extends React.Component {
       monitoring_status_options: null,
       monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
+      apply_to_group: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -88,7 +89,8 @@ class MonitoringStatus extends React.Component {
             : null,
       });
     } else if (event?.target?.id) {
-      this.setState({ [event.target.id]: event?.target?.value ? event.target.value : '' });
+      let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+      this.setState({ [event.target.id]: event?.target?.value ? value : '' });
     }
   }
 
@@ -97,6 +99,7 @@ class MonitoringStatus extends React.Component {
     this.setState({
       showMonitoringStatusModal: !current,
       monitoring_status: this.props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
+      apply_to_group: false,
     });
   }
 
@@ -105,6 +108,7 @@ class MonitoringStatus extends React.Component {
     this.setState({
       showMonitoringPlanModal: !current,
       monitoring_plan: this.props.patient.monitoring_plan ? this.props.patient.monitoring_plan : '',
+      apply_to_group: false,
     });
   }
 
@@ -113,6 +117,7 @@ class MonitoringStatus extends React.Component {
     this.setState({
       showExposureRiskAssessmentModal: !current,
       exposure_risk_assessment: this.props.patient.exposure_risk_assessment ? this.props.patient.exposure_risk_assessment : '',
+      apply_to_group: false,
     });
   }
 
@@ -122,6 +127,7 @@ class MonitoringStatus extends React.Component {
       message: 'jurisdiction from "' + this.state.current_jurisdiction + '" to "' + this.state.jurisdiction + '".',
       showJurisdictionModal: !current,
       jurisdiction: current ? this.state.current_jurisdiction : this.state.jurisdiction, // Reset select jurisdiction if cancel
+      apply_to_group: false,
     });
   }
 
@@ -130,6 +136,7 @@ class MonitoringStatus extends React.Component {
     this.setState({
       showPublicHealthActionModal: !current,
       public_health_action: this.props.patient.public_health_action ? this.props.patient.public_health_action : '',
+      apply_to_group: false,
     });
   }
 
@@ -146,6 +153,7 @@ class MonitoringStatus extends React.Component {
         reasoning: (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
         monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
         jurisdiction: jur ? jur.value : null,
+        apply_to_group: this.state.apply_to_group,
       })
       .then(() => {
         location.href = '/patients/' + this.props.patient.id;
@@ -182,6 +190,17 @@ class MonitoringStatus extends React.Component {
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
+          {this.props.has_group_members && (
+            <Form.Group className="mt-2">
+              <Form.Check
+                type="switch"
+                id="apply_to_group"
+                label="Apply this change to the entire household that this monitoree is responsible for"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group === true || false}
+              />
+            </Form.Group>
+          )}
         </Modal.Body>
         <Modal.Footer>
           {this.state.monitoring_status_options && !this.state.monitoring_status_option ? (
@@ -311,6 +330,7 @@ MonitoringStatus.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.array,
   jurisdiction_id: PropTypes.number,
+  has_group_members: PropTypes.bool,
 };
 
 export default MonitoringStatus;

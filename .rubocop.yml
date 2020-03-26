@@ -18,9 +18,9 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Max: 100
 Metrics/AbcSize:
-  Max: 80
+  Enabled: false
 Metrics/ClassLength:
-  Max: 300
+  Max: 400
 Metrics/BlockLength:
   Max: 35
 Style/ClassAndModuleChildren:
