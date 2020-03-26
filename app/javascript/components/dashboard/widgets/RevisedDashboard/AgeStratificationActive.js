@@ -11,7 +11,7 @@ const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; /
 class AgeStratificationActive extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { checked: true, viewTotal: false };
+    this.state = { checked: false, viewTotal: false };
     this.handleChange = this.handleChange.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);

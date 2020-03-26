@@ -6,7 +6,7 @@ import Switch from 'react-switch';
 import _ from 'lodash';
 
 const SEXES = ['Male', 'Female', 'Unknown'];
-let COUNTRIES_OF_INTEREST = [];
+let COUNTRIES_OF_INTEREST = []; // If certain countries are desired, they can be specified here
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
 
 class AgeStratificationActive extends React.Component {
@@ -128,8 +128,7 @@ class AgeStratificationActive extends React.Component {
             {SEXES.map(sexgroup => (
               <tr key={sexgroup.toString() + '1'}>
                 <td key={sexgroup.toString() + '2'} className="font-weight-bold">
-                  {' '}
-                  {sexgroup}{' '}
+                  {sexgroup}
                 </td>
                 {RISKLEVELS.map((risklevel, risklevelIndex) => (
                   <td key={sexgroup.toString() + risklevelIndex.toString()}>{this.sexData.find(x => x.name === sexgroup)[risklevel]}</td>
@@ -151,8 +150,7 @@ class AgeStratificationActive extends React.Component {
             {COUNTRIES_OF_INTEREST.map(coiGroup => (
               <tr key={coiGroup.toString() + '1'}>
                 <td key={coiGroup.toString() + '2'} className="font-weight-bold">
-                  {' '}
-                  {coiGroup}{' '}
+                  {coiGroup}
                 </td>
                 {RISKLEVELS.map((risklevel, risklevelIndex) => (
                   <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[risklevel]}</td>

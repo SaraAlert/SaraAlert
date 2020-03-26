@@ -35,7 +35,7 @@ class RevisedMonitorAnalytics extends React.Component {
         </Row>
         <h2> Epidemiological Summary </h2>
         <Row className="mb-4">
-          <Col lg="12" md="24">
+          <Col lg="12" md="24" className="mb-4">
             <AgeStratificationActive stats={this.props.stats} />
           </Col>
           <Col lg="12" md="24">
