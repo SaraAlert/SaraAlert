@@ -14,5 +14,4 @@ class Transfer < ApplicationRecord
   def to_path
     to_jurisdiction&.jurisdiction_path_string
   end
-
 end
