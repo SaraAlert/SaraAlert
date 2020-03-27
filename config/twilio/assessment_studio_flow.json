@@ -1,281 +1,572 @@
 {
-    "description": "A New Flow",
-    "states": [
-      {
-        "name": "Trigger",
-        "type": "InitialState",
-        "properties": {
-          "offset": {
-            "x": 0,
-            "y": -30
-          },
-          "flow_url": "https://webhooks.twilio.com/v1/Accounts/AC5da744a87f534182ecedbc19c472a06b/Flows/FW6e9479580a8040dbdfed3b057d244534"
+  "description": "A New Flow",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "InitialState",
+      "properties": {
+        "offset": {
+          "x": 0,
+          "y": -30
         },
-        "transitions": [
-          {
-            "event": "incomingMessage",
-            "conditions": [],
-            "next": null,
-            "uuid": "f908bfb2-8af7-4706-908e-dff9e1b019a1"
-          },
-          {
-            "event": "incomingCall",
-            "conditions": [],
-            "next": null,
-            "uuid": "e1163815-5c6a-46ee-9a50-ab6e4079e8b2"
-          },
-          {
-            "event": "incomingRequest",
-            "conditions": [],
-            "next": "FF2c4b25df6abe968be2f86418ae6e0874",
-            "uuid": "307b1bdc-5493-4a4c-915a-180ebe841ca7"
-          }
-        ],
-        "sid": "FF16008cb7b1ddffb2d27e5b6dde48c30a"
+        "flow_url": "https://webhooks.twilio.com/v1/Accounts/AC5da744a87f534182ecedbc19c472a06b/Flows/FW6e9479580a8040dbdfed3b057d244534"
       },
-      {
-        "name": "assessment_prompt",
-        "type": "MessagePrompt",
-        "properties": {
-          "offset": {
-            "x": 260,
-            "y": 300
-          },
-          "body": "{{flow.data.prompt}}",
-          "from": "{{flow.channel.address}}",
-          "timeout": 3600,
-          "save_response_as": null,
-          "media_url": null,
-          "service": "{{trigger.message.InstanceSid}}",
-          "channel": "{{trigger.message.ChannelSid}}",
-          "attributes": null
+      "transitions": [
+        {
+          "event": "incomingMessage",
+          "conditions": [],
+          "next": null,
+          "uuid": "0ea61391-a49e-4ded-ac44-c81259c39005"
         },
-        "transitions": [
-          {
-            "event": "incomingMessage",
-            "conditions": [],
-            "next": "FF380c2112d24ace950e2ef35a5cd381ae",
-            "uuid": "c23298ed-d8d7-4985-ae59-43ad1f77ad00"
-          },
-          {
-            "event": "timeout",
-            "conditions": [],
-            "next": null,
-            "uuid": "33e6eb07-d90e-4234-b1b4-6af39ab7d12a"
-          },
-          {
-            "event": "deliveryFailure",
-            "conditions": [],
-            "next": null,
-            "uuid": "975afa9e-5b83-4921-84c3-edbe73693329"
-          }
-        ],
-        "sid": "FF2c4b25df6abe968be2f86418ae6e0874"
+        {
+          "event": "incomingCall",
+          "conditions": [],
+          "next": null,
+          "uuid": "5b31defa-cb1e-4a6d-8b75-0e8444bd4f70"
+        },
+        {
+          "event": "incomingRequest",
+          "conditions": [],
+          "next": "FFf7aec2bf1eefc48abdfccd68596ac826",
+          "uuid": "eab9dc55-72d2-4c5d-a8e8-596cf841bc01"
+        }
+      ],
+      "sid": "FF16008cb7b1ddffb2d27e5b6dde48c30a"
+    },
+    {
+      "name": "sms_assessment_prompt",
+      "type": "MessagePrompt",
+      "properties": {
+        "offset": {
+          "x": 270,
+          "y": 570
+        },
+        "body": "{{flow.data.prompt}}",
+        "from": "{{flow.channel.address}}",
+        "timeout": 3600,
+        "save_response_as": null,
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
       },
-      {
-        "name": "send_assessment_data",
-        "type": "Webhook",
-        "properties": {
-          "offset": {
-            "x": 250,
-            "y": 1560
-          },
-          "method": "POST",
-          "url": "https://webhook.site/af48a339-f818-4e72-8086-571b1bef0701",
-          "body": "{\"experiencing_symptoms\":\"{{widgets.assessment_prompt.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\",\n\"post_url\": \"{{flow.data.post_url}}\"}",
-          "timeout": null,
-          "parameters": null,
-          "save_response_as": null,
-          "content_type": "application/json;charset=utf-8"
+      "transitions": [
+        {
+          "event": "incomingMessage",
+          "conditions": [],
+          "next": "FF380c2112d24ace950e2ef35a5cd381ae",
+          "uuid": "1fdf2274-30b4-4546-8a42-42d42eb4adc5"
         },
-        "transitions": [
-          {
-            "event": "success",
-            "conditions": [],
-            "next": "FFf365befdecfd11e0ccf788e27946d979",
-            "uuid": "ef3e71cd-c24e-41f4-acef-0b5741d18161"
-          },
-          {
-            "event": "failed",
-            "conditions": [],
-            "next": null,
-            "uuid": "7f26f098-475b-4ddc-a3b9-c65a84c65e4d"
-          }
-        ],
-        "sid": "FF9fb760e515a78d87351093be14314ad4"
+        {
+          "event": "timeout",
+          "conditions": [],
+          "next": null,
+          "uuid": "6933b809-d1ba-4ad7-b1c2-3e6b82c431df"
+        },
+        {
+          "event": "deliveryFailure",
+          "conditions": [],
+          "next": null,
+          "uuid": "98c80c9b-9971-46d8-adab-9a498ade2844"
+        }
+      ],
+      "sid": "FF2c4b25df6abe968be2f86418ae6e0874"
+    },
+    {
+      "name": "send_assessment_data",
+      "type": "Webhook",
+      "properties": {
+        "offset": {
+          "x": 250,
+          "y": 1560
+        },
+        "method": "POST",
+        "url": "https://webhook.site/af48a339-f818-4e72-8086-571b1bef0701",
+        "body": "{\"experiencing_symptoms\":\"{{widgets.sms_assessment_prompt.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\",\n\"post_url\": \"{{flow.data.post_url}}\"}",
+        "timeout": null,
+        "parameters": null,
+        "save_response_as": null,
+        "content_type": "application/json;charset=utf-8"
       },
-      {
-        "name": "check_yes_no",
-        "type": "Branch",
-        "properties": {
-          "offset": {
-            "x": 280,
-            "y": 890
-          },
-          "input": "{{widgets.assessment_prompt.inbound.Body}}"
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": "FFf365befdecfd11e0ccf788e27946d979",
+          "uuid": "c6cf984b-f487-4385-873d-a2575b7f6da5"
         },
-        "transitions": [
-          {
-            "event": "noMatch",
-            "conditions": [],
-            "next": "FFbbb0e9c92951108c6d1f1171204f4067",
-            "uuid": "2e8be749-847a-420c-9cff-e067e80b148b"
-          },
-          {
-            "event": "match",
-            "conditions": [
-              {
-                "friendly_name": "If value matches_any_of yes,Yes,no,No",
-                "type": "matches_any_of",
-                "arguments": [
-                  "{{widgets.assessment_prompt.inbound.Body}}"
-                ],
-                "value": "yes,Yes,no,No"
-              }
-            ],
-            "next": "FF9fb760e515a78d87351093be14314ad4",
-            "uuid": "6693c473-c139-41b3-94a3-6128ac09c2f9"
-          }
-        ],
-        "sid": "FF380c2112d24ace950e2ef35a5cd381ae"
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "219f9a9e-01d0-424e-b7f5-53c4637e9bf2"
+        }
+      ],
+      "sid": "FF9fb760e515a78d87351093be14314ad4"
+    },
+    {
+      "name": "check_yes_no",
+      "type": "Branch",
+      "properties": {
+        "offset": {
+          "x": 280,
+          "y": 890
+        },
+        "input": "{{widgets.sms_assessment_prompt.inbound.Body}}"
       },
-      {
-        "name": "bad_response",
-        "type": "MessagePrompt",
-        "properties": {
-          "offset": {
-            "x": -290,
-            "y": 1100
-          },
-          "body": "We did not understand your response, please respond with Yes or No.",
-          "from": "{{flow.channel.address}}",
-          "timeout": 3600,
-          "save_response_as": null,
-          "media_url": null,
-          "service": "{{trigger.message.InstanceSid}}",
-          "channel": "{{trigger.message.ChannelSid}}",
-          "attributes": null
+      "transitions": [
+        {
+          "event": "noMatch",
+          "conditions": [],
+          "next": "FFbbb0e9c92951108c6d1f1171204f4067",
+          "uuid": "040aa154-2437-49af-bcbb-a23d7f811c8c"
         },
-        "transitions": [
-          {
-            "event": "incomingMessage",
-            "conditions": [],
-            "next": "FFe439ce712c0212597be23e1803ac2738",
-            "uuid": "c8af8840-5da6-45e5-8a06-b15094155742"
-          },
-          {
-            "event": "timeout",
-            "conditions": [],
-            "next": null,
-            "uuid": "778d066f-c96c-4de2-bef6-229182a02bb1"
-          },
-          {
-            "event": "deliveryFailure",
-            "conditions": [],
-            "next": null,
-            "uuid": "3ed8c9d3-37a6-4244-9ce0-200bae8f2baa"
-          }
-        ],
-        "sid": "FFbbb0e9c92951108c6d1f1171204f4067"
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value matches_any_of yes,Yes,no,No",
+              "type": "matches_any_of",
+              "arguments": [
+                "{{widgets.sms_assessment_prompt.inbound.Body}}"
+              ],
+              "value": "yes,Yes,no,No,YES,NO,Yes.,No."
+            }
+          ],
+          "next": "FF9fb760e515a78d87351093be14314ad4",
+          "uuid": "6a6b7c22-e4f9-43c7-b205-70cdf92abb01"
+        }
+      ],
+      "sid": "FF380c2112d24ace950e2ef35a5cd381ae"
+    },
+    {
+      "name": "bad_response",
+      "type": "MessagePrompt",
+      "properties": {
+        "offset": {
+          "x": -290,
+          "y": 1100
+        },
+        "body": "We did not understand your response, please respond with Yes or No.",
+        "from": "{{flow.channel.address}}",
+        "timeout": 3600,
+        "save_response_as": null,
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
       },
-      {
-        "name": "send_message_1",
-        "type": "Message",
-        "properties": {
-          "offset": {
-            "x": 250,
-            "y": 1880
-          },
-          "body": "Thank you for completeing your daily report.",
-          "from": "{{flow.channel.address}}",
-          "to": "{{contact.channel.address}}",
-          "media_url": null,
-          "service": "{{trigger.message.InstanceSid}}",
-          "channel": "{{trigger.message.ChannelSid}}",
-          "attributes": null
+      "transitions": [
+        {
+          "event": "incomingMessage",
+          "conditions": [],
+          "next": "FFe439ce712c0212597be23e1803ac2738",
+          "uuid": "ac5f6a8a-eaf5-4d5e-88c1-57cb53a100ab"
         },
-        "transitions": [
-          {
-            "event": "sent",
-            "conditions": [],
-            "next": null,
-            "uuid": "a954914b-db6a-448e-a9c7-d5ee65488e01"
-          },
-          {
-            "event": "failed",
-            "conditions": [],
-            "next": null,
-            "uuid": "e34afec2-0d6f-4a5c-98e6-d5578ecdac9e"
-          }
-        ],
-        "sid": "FFf365befdecfd11e0ccf788e27946d979"
+        {
+          "event": "timeout",
+          "conditions": [],
+          "next": null,
+          "uuid": "773d0af3-9b9b-496e-a36f-6adb564996b9"
+        },
+        {
+          "event": "deliveryFailure",
+          "conditions": [],
+          "next": null,
+          "uuid": "dd285f5a-3030-4837-aeff-3af8422bc1cd"
+        }
+      ],
+      "sid": "FFbbb0e9c92951108c6d1f1171204f4067"
+    },
+    {
+      "name": "send_message_1",
+      "type": "Message",
+      "properties": {
+        "offset": {
+          "x": 250,
+          "y": 1880
+        },
+        "body": "Thank you for completing your daily report!",
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "media_url": null,
+        "service": "{{trigger.message.InstanceSid}}",
+        "channel": "{{trigger.message.ChannelSid}}",
+        "attributes": null
       },
-      {
-        "name": "Copy_of_check_yes_no",
-        "type": "Branch",
-        "properties": {
-          "offset": {
-            "x": -270,
-            "y": 1310
-          },
-          "input": "{{widgets.bad_response.inbound.Body}}"
+      "transitions": [
+        {
+          "event": "sent",
+          "conditions": [],
+          "next": null,
+          "uuid": "9addef9d-bf58-4135-89e6-3910e188c472"
         },
-        "transitions": [
-          {
-            "event": "noMatch",
-            "conditions": [],
-            "next": "FFbbb0e9c92951108c6d1f1171204f4067",
-            "uuid": "3f78d1e6-bd34-4895-94f4-9c640f9ee96c"
-          },
-          {
-            "event": "match",
-            "conditions": [
-              {
-                "friendly_name": "If value matches_any_of yes,Yes,no,No",
-                "type": "matches_any_of",
-                "arguments": [
-                  "{{widgets.bad_response.inbound.Body}}"
-                ],
-                "value": "yes,Yes,no,No"
-              }
-            ],
-            "next": "FF80363aa634a8a8793c85961ca963edf4",
-            "uuid": "9760a46c-3375-40a1-beb5-5f2f3dcf029a"
-          }
-        ],
-        "sid": "FFe439ce712c0212597be23e1803ac2738"
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "4396d0e2-d10c-471a-b71b-bd44eba4bfb3"
+        }
+      ],
+      "sid": "FFf365befdecfd11e0ccf788e27946d979"
+    },
+    {
+      "name": "Copy_of_check_yes_no",
+      "type": "Branch",
+      "properties": {
+        "offset": {
+          "x": -270,
+          "y": 1310
+        },
+        "input": "{{widgets.bad_response.inbound.Body}}"
       },
-      {
-        "name": "Copy_of_send_assessment_data",
-        "type": "Webhook",
-        "properties": {
-          "offset": {
-            "x": -60,
-            "y": 1560
-          },
-          "method": "POST",
-          "url": "https://webhook.site/af48a339-f818-4e72-8086-571b1bef0701",
-          "body": "{\"experiencing_symptoms\":\"{{widgets.bad_response.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\",\n\"post_url\": \"{{flow.data.post_url}}\"}",
-          "timeout": null,
-          "parameters": null,
-          "save_response_as": null,
-          "content_type": "application/json;charset=utf-8"
+      "transitions": [
+        {
+          "event": "noMatch",
+          "conditions": [],
+          "next": "FFbbb0e9c92951108c6d1f1171204f4067",
+          "uuid": "06f08498-6c4a-4a47-8552-f9e3d1d4b754"
         },
-        "transitions": [
-          {
-            "event": "success",
-            "conditions": [],
-            "next": "FFf365befdecfd11e0ccf788e27946d979",
-            "uuid": "8df26935-4125-41f5-b43a-4b882b176c41"
-          },
-          {
-            "event": "failed",
-            "conditions": [],
-            "next": null,
-            "uuid": "bba53627-207d-437e-8bd8-8f1a765e2f29"
-          }
-        ],
-        "sid": "FF80363aa634a8a8793c85961ca963edf4"
-      }
-    ]
-  }
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value matches_any_of yes,Yes,no,No",
+              "type": "matches_any_of",
+              "arguments": [
+                "{{widgets.bad_response.inbound.Body}}"
+              ],
+              "value": "yes,Yes,no,No,YES,NO,Yes.,No."
+            }
+          ],
+          "next": "FF80363aa634a8a8793c85961ca963edf4",
+          "uuid": "43f80e73-47ae-4849-b70d-14b3dce35cfd"
+        }
+      ],
+      "sid": "FFe439ce712c0212597be23e1803ac2738"
+    },
+    {
+      "name": "Copy_of_send_assessment_data",
+      "type": "Webhook",
+      "properties": {
+        "offset": {
+          "x": -60,
+          "y": 1560
+        },
+        "method": "POST",
+        "url": "https://webhook.site/af48a339-f818-4e72-8086-571b1bef0701",
+        "body": "{\"experiencing_symptoms\":\"{{widgets.bad_response.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\",\n\"post_url\": \"{{flow.data.post_url}}\"}",
+        "timeout": null,
+        "parameters": null,
+        "save_response_as": null,
+        "content_type": "application/json;charset=utf-8"
+      },
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": "FFf365befdecfd11e0ccf788e27946d979",
+          "uuid": "08513207-36b0-4cab-8837-86cc2797a05d"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "20482554-dd47-4592-81e9-95c6610aa4a7"
+        }
+      ],
+      "sid": "FF80363aa634a8a8793c85961ca963edf4"
+    },
+    {
+      "name": "sms_or_voice",
+      "type": "Branch",
+      "properties": {
+        "offset": {
+          "x": 260,
+          "y": 170
+        },
+        "input": "{{flow.data.medium}}"
+      },
+      "transitions": [
+        {
+          "event": "noMatch",
+          "conditions": [],
+          "next": null,
+          "uuid": "7f82ec02-72cd-492d-ab31-e0ddc2bc58d3"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to SMS",
+              "type": "equal_to",
+              "arguments": [
+                "{{flow.data.medium}}"
+              ],
+              "value": "SMS"
+            }
+          ],
+          "next": "FF2c4b25df6abe968be2f86418ae6e0874",
+          "uuid": "58d6f67a-0292-49bc-861f-87d9202caf45"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to VOICE",
+              "type": "equal_to",
+              "arguments": [
+                "{{flow.data.medium}}"
+              ],
+              "value": "VOICE"
+            }
+          ],
+          "next": "FFb013f8c9016772d3c0e326414515b61c",
+          "uuid": "0cff506e-edbb-402f-82f3-6f25464bb459"
+        }
+      ],
+      "sid": "FFf7aec2bf1eefc48abdfccd68596ac826"
+    },
+    {
+      "name": "call_user",
+      "type": "DialV2",
+      "properties": {
+        "offset": {
+          "x": 1050,
+          "y": 570
+        },
+        "from": "{{flow.channel.address}}",
+        "to": "{{contact.channel.address}}",
+        "record": false,
+        "recording_channels": "mono",
+        "recording_status_callback": null,
+        "trim": "do-not-trim",
+        "detect_answering_machine": false,
+        "machine_detection": "Enable",
+        "machine_detection_timeout": "30",
+        "machine_detection_speech_threshold": "2400",
+        "machine_detection_speech_end_threshold": "1200",
+        "machine_detection_silence_timeout": "5000",
+        "send_digits": null,
+        "timeout": 60,
+        "sip_auth_username": null,
+        "sip_auth_password": null
+      },
+      "transitions": [
+        {
+          "event": "answered",
+          "conditions": [],
+          "next": "FF6e1ecf24e7c79c0285a590186072fe81",
+          "uuid": "8f893a30-1136-4930-98bc-eea12c9c7b7f"
+        },
+        {
+          "event": "busy",
+          "conditions": [],
+          "next": null,
+          "uuid": "092a715a-276f-407a-9f3c-e8ad2780e1bb"
+        },
+        {
+          "event": "noAnswer",
+          "conditions": [],
+          "next": null,
+          "uuid": "fed2f3de-dce3-43df-91da-0364b66e863b"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "6d3a699f-b1b1-42d9-bfad-42ccbb948c6e"
+        }
+      ],
+      "sid": "FFb013f8c9016772d3c0e326414515b61c"
+    },
+    {
+      "name": "welcome_prompt",
+      "type": "SayPlay",
+      "properties": {
+        "offset": {
+          "x": 1070,
+          "y": 920
+        },
+        "say": "Hello, this is Sara, the automated public health assistant calling for your daily report.",
+        "play": null,
+        "voice": "Polly.Joanna",
+        "language": "en-US",
+        "loop": 1,
+        "digits": null
+      },
+      "transitions": [
+        {
+          "event": "audioComplete",
+          "conditions": [],
+          "next": "FF331f493715ccd46c7feb4ea3b0f3043c",
+          "uuid": "5f2aae79-d8b3-4b5d-808d-6506cd051ee0"
+        }
+      ],
+      "sid": "FF6e1ecf24e7c79c0285a590186072fe81"
+    },
+    {
+      "name": "voice_reply_to_prompt",
+      "type": "Gather",
+      "properties": {
+        "offset": {
+          "x": 1090,
+          "y": 1340
+        },
+        "timeout": 8,
+        "finish_on_key": "#",
+        "stop_gather": true,
+        "number_of_digits": null,
+        "save_response_as": null,
+        "say": "{{flow.data.prompt}}",
+        "play": null,
+        "voice": "Polly.Joanna",
+        "language": "en-US",
+        "loop": 1,
+        "hints": null,
+        "gather_language": "en-US",
+        "speech_timeout": "auto",
+        "speech_model": null,
+        "profanity_filter": "true"
+      },
+      "transitions": [
+        {
+          "event": "keypress",
+          "conditions": [],
+          "next": null,
+          "uuid": "ee46616a-4a7a-4f65-8a15-ce57311ce64a"
+        },
+        {
+          "event": "speech",
+          "conditions": [],
+          "next": "FF3f713f5d60779d9473915e11e56130fa",
+          "uuid": "bb8d41e6-11b2-4db4-8fdd-9710ced4f921"
+        },
+        {
+          "event": "timeout",
+          "conditions": [],
+          "next": "FF6d7351c7d1280f35e6c9664648cbaa22",
+          "uuid": "d9f7b14e-d000-4ee0-b9a2-a12232cb6b07"
+        }
+      ],
+      "sid": "FF331f493715ccd46c7feb4ea3b0f3043c"
+    },
+    {
+      "name": "check_yes_no_voice",
+      "type": "Branch",
+      "properties": {
+        "offset": {
+          "x": 1230,
+          "y": 1670
+        },
+        "input": "{{widgets.voice_reply_to_prompt.SpeechResult}}"
+      },
+      "transitions": [
+        {
+          "event": "noMatch",
+          "conditions": [],
+          "next": "FF6d7351c7d1280f35e6c9664648cbaa22",
+          "uuid": "76bb6852-b3fb-4baa-82ae-b40f3938ac7a"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value matches_any_of yes,Yes,no,No",
+              "type": "matches_any_of",
+              "arguments": [
+                "{{widgets.voice_reply_to_prompt.SpeechResult}}"
+              ],
+              "value": "yes,Yes,no,No,Yes.,No.,Yeah,yeah,Yeah."
+            }
+          ],
+          "next": "FF4232968feb3ce800048625da08d70e1a",
+          "uuid": "9c619665-2552-4ad0-9cfa-8cd7ad552502"
+        }
+      ],
+      "sid": "FF3f713f5d60779d9473915e11e56130fa"
+    },
+    {
+      "name": "voice_send_assessment_data",
+      "type": "Webhook",
+      "properties": {
+        "offset": {
+          "x": 1440,
+          "y": 1990
+        },
+        "method": "POST",
+        "url": "https://webhook.site/af48a339-f818-4e72-8086-571b1bef0701",
+        "body": "{\"experiencing_symptoms\":\"{{widgets.voice_reply_to_prompt.SpeechResult}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\",\n\"post_url\": \"{{flow.data.post_url}}\"}",
+        "timeout": null,
+        "parameters": null,
+        "save_response_as": null,
+        "content_type": "application/json;charset=utf-8"
+      },
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": "FF8fd0c59db3de52d1054c033575298bc0",
+          "uuid": "f0af2eca-9318-447b-a95a-f22d845ab185"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "fc95e288-6365-4c7a-ad50-5170ab564dbc"
+        }
+      ],
+      "sid": "FF4232968feb3ce800048625da08d70e1a"
+    },
+    {
+      "name": "thank_you_voice",
+      "type": "SayPlay",
+      "properties": {
+        "offset": {
+          "x": 1450,
+          "y": 2290
+        },
+        "say": "Thank you for completing your daily report!",
+        "play": null,
+        "voice": "Polly.Joanna",
+        "language": "en-US",
+        "loop": 1,
+        "digits": null
+      },
+      "transitions": [
+        {
+          "event": "audioComplete",
+          "conditions": [],
+          "next": null,
+          "uuid": "25c1c9b5-b221-440d-9989-51aad2c408c5"
+        }
+      ],
+      "sid": "FF8fd0c59db3de52d1054c033575298bc0"
+    },
+    {
+      "name": "say_lets_try_again",
+      "type": "SayPlay",
+      "properties": {
+        "offset": {
+          "x": 1800,
+          "y": 1280
+        },
+        "say": "I'm sorry, I didn't quite get that. Let's try again.",
+        "play": null,
+        "voice": "Polly.Joanna",
+        "language": "en-US",
+        "loop": 1,
+        "digits": null
+      },
+      "transitions": [
+        {
+          "event": "audioComplete",
+          "conditions": [],
+          "next": "FF331f493715ccd46c7feb4ea3b0f3043c",
+          "uuid": "a9443933-aac8-48b8-89af-e7855c623796"
+        }
+      ],
+      "sid": "FF6d7351c7d1280f35e6c9664648cbaa22"
+    }
+  ]
+}

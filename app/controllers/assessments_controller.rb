@@ -35,7 +35,8 @@ class AssessmentsController < ApplicationController
         assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
         # The generic 'experiencing_symptoms' boolean is used in cases where a user does not specify _which_ symptoms they are experiencing,
         # a value of true will result in an asesssment being marked as symptomatic regardless of if symptoms are specified
-        assessment_placeholder['experiencing_symptoms'] = (params.permit(:experiencing_symptoms)['experiencing_symptoms'].downcase == 'yes')
+        experiencing_symptoms = (%w[yes yeah].include? params.permit(:experiencing_symptoms)['experiencing_symptoms'].downcase.gsub(/\W/, ''))
+        assessment_placeholder['experiencing_symptoms'] = experiencing_symptoms
         ProduceAssessmentJob.perform_later assessment_placeholder
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save

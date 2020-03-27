@@ -16,5 +16,8 @@ enable_email: <%= ENV["SARA_ALERT_ENABLE_EMAIL"] || true %>
 # Should Sara Alert send SMS messages?
 enable_sms: <%= ENV["SARA_ALERT_ENABLE_SMS"] || false %>
 
+# Should Sara Alert make telephone calls?
+enable_voice: <%= ENV["SARA_ALERT_ENABLE_VOICE"] || false %>
+
 # Assessment Report Mode
 report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || false %>

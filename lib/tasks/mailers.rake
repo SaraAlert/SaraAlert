@@ -49,6 +49,17 @@ namespace :mailers do
     PatientMailer.assessment_sms(patient).deliver_now
   end
 
+  desc "Test making an assessment phone call"
+  task test_asessment_voice: :environment do
+    # patient = Patient.first.dup
+    # patient.first_name = "Test"
+    # patient.last_name = "McTest"
+    # patient.age = 27
+    # patient.primary_telephone = <Test Number in E164 format>
+    # patient.save
+    PatientMailer.assessment_voice(patient).deliver_now
+  end
+
 
   desc "Send Assessments and Assessment Reminders To Non-Reporting Individuals"
   task send_assessments: :environment do
@@ -66,6 +77,9 @@ namespace :mailers do
       end
       if (patient.preferred_contact_method == "SMS Texted Weblink")
         PatientMailer.assessment_sms_weblink(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
+      end
+      if (patient.preferred_contact_method == "Telephone call")
+        PatientMailer.assessment_voice(patient).deliver_later if ADMIN_OPTIONS['enable_voice']
       end
     end
   end

@@ -95,7 +95,7 @@ class Jurisdiction < ApplicationRecord
 
   def hierarchical_condition_bool_symptoms_string
     hierarchical_condition = hierarchical_symptomatic_condition
-    bool_symptom_labels = hierarchical_condition.symptoms.where(type: "BoolSymptom").pluck(:label)
-    bool_symptom_labels.to_sentence(:last_word_connector => " or ")
+    bool_symptom_labels = hierarchical_condition.symptoms.where(type: 'BoolSymptom').pluck(:label)
+    bool_symptom_labels.to_sentence(last_word_connector: ' or ')
   end
 end
