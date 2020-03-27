@@ -20,7 +20,7 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
 
   def edit_report(patient_name, report_number, assessment)
     report = REPORTS[@@system_test_utils.get_assessment_name(patient_name, report_number)]
-    search_for_report(report['created_at'])
+    search_for_report(report['id'])
     click_on 'Edit'
     @@assessment_form.populate_assessment(assessment['symptoms'])
     page.driver.browser.switch_to.alert.accept
@@ -28,7 +28,7 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
 
   def edit_report_and_cancel(patient_name, report_number, assessment)
     report = REPORTS[@@system_test_utils.get_assessment_name(patient_name, report_number)]
-    search_for_report(report['created_at'])
+    search_for_report(report['id'])
     click_on 'Edit'
     @@assessment_form.populate_assessment(assessment['symptoms'])
     page.driver.browser.switch_to.alert.dismiss
@@ -47,10 +47,10 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
   end
 
   def verify_existing_reports(patient_name, report_numbers)
-    report_numbers.each { |report_number| 
+    report_numbers.each { |report_number|
       assessment_name = @@system_test_utils.get_assessment_name(patient_name, report_number)
       report = REPORTS[assessment_name]
-      search_for_report(@@system_test_utils.trim_ms_from_date(report['created_at']))
+      search_for_report(report['id'])
       assert_selector 'td', text: report['who_reported']
       SYMPTOMS.keys().each { |symptom_key|
         if symptom_key.include? assessment_name

@@ -22,13 +22,11 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
   end
 
   def search_for_and_verify_patient(patient_name, should_exist)
-    search_for_patient(patient_name)    
+    search_for_patient(patient_name)
     if should_exist
-      assert_selector 'td', text: @@system_test_utils.get_patient_display_name(patient_name)
-      assert_selector 'td', text: PATIENTS[patient_name]['date_of_birth']
+      assert_selector 'a', text: @@system_test_utils.get_patient_display_name(patient_name)
     else
-      refute_selector 'td', text: @@system_test_utils.get_patient_display_name(patient_name)
-      refute_selector 'td', text: PATIENTS[patient_name]['date_of_birth']
+      refute_selector 'a', text: @@system_test_utils.get_patient_display_name(patient_name)
     end
   end
 

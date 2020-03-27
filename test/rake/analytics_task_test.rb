@@ -28,17 +28,6 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 1, true, 'Monitoring Status', 'Non-Reporting', 'Missing', 2)
     verify_monitoree_count(active_counts, 2, true, 'Monitoring Status', 'Asymptomatic', 'Missing', 1)
     assert_equal(3, active_counts.length)
-    # verify_monitoree_count(active_counts, 0, true, 'Monitoring Status', 'Symptomatic', 'Missing', 2)
-    # verify_monitoree_count(active_counts, 1, true, 'Monitoring Status', 'Non-Reporting', 'High', 2)
-    # verify_monitoree_count(active_counts, 2, true, 'Monitoring Status', 'Non-Reporting', 'Low', 1)
-    # verify_monitoree_count(active_counts, 3, true, 'Monitoring Status', 'Non-Reporting', 'Medium', 3)
-    # verify_monitoree_count(active_counts, 4, true, 'Monitoring Status', 'Non-Reporting', 'No Identified Risk', 2)
-    # verify_monitoree_count(active_counts, 5, true, 'Monitoring Status', 'Non-Reporting', 'Missing', 2)
-    # verify_monitoree_count(active_counts, 6, true, 'Monitoring Status', 'Asymptomatic', 'High', 1)
-    # verify_monitoree_count(active_counts, 7, true, 'Monitoring Status', 'Asymptomatic', 'Low', 1)
-    # verify_monitoree_count(active_counts, 8, true, 'Monitoring Status', 'Asymptomatic', 'Medium', 1)
-    # verify_monitoree_count(active_counts, 9, true, 'Monitoring Status', 'Asymptomatic', 'No Identified Risk', 2)
-    # assert_equal(11, active_counts.length)
   end
 
   test "monitoree counts by age group" do

@@ -1,23 +1,27 @@
 patient_3_from_4_to_2:
   id: 1
+  patient_id: 3
   to_jurisdiction_id: 2
   from_jurisdiction_id: 4
   who_id: 13
   created_at: <%= 4.hours.ago %>
 patient_4_from_2_to_4:
   id: 2
+  patient_id: 4
   to_jurisdiction_id: 4
   from_jurisdiction_id: 2
   who_id: 13
   created_at: <%= 10.hours.ago %>
 patient_6_from_2_to_5:
   id: 3
+  patient_id: 6
   to_jurisdiction_id: 2
   from_jurisdiction_id: 5
   who_id: 13
   created_at: <%= 7.days.ago %>
 patient_8_from_5_to_2:
   id: 4
+  patient_id: 8
   to_jurisdiction_id: 5
   from_jurisdiction_id: 2
   who_id: 13
