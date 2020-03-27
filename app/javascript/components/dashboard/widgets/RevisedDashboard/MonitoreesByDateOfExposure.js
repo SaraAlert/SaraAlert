@@ -22,9 +22,9 @@ class MonitoreesByDateOfExposure extends React.Component {
 
   obtainValueFromMonitoreeCounts = (enumerations, category_type) => {
     let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
-    let thisCategoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
+    let categoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
     return enumerations.map(x => {
-      let thisGroup = thisCategoryGroups.filter(group => group.category === x);
+      let thisGroup = categoryGroups.filter(group => group.category === x);
       let retVal = { name: x };
       RISKLEVELS.forEach(val => {
         retVal[String(val)] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));

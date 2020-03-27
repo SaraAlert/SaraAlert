@@ -9,12 +9,15 @@ import MonitoreesByDateOfExposure from './widgets/RevisedDashboard/MonitoreesByD
 import MapChart from './widgets/MapChart';
 import CumulativeMapChart from './widgets/CumulativeMapChart';
 import moment from 'moment';
+import Switch from 'react-switch';
 import domtoimage from 'dom-to-image';
 
 class RevisedMonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { checked: false, viewTotal: false };
     this.handleClick = this.handleClick.bind(this);
+    this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
   }
 
   handleClick() {
@@ -39,6 +42,8 @@ class RevisedMonitorAnalytics extends React.Component {
       });
   }
 
+  toggleBetweenActiveAndTotal = viewTotal => this.setState({ viewTotal });
+
   render() {
     return (
       <React.Fragment>
@@ -60,13 +65,27 @@ class RevisedMonitorAnalytics extends React.Component {
             <MonitoreeFlow stats={this.props.stats} />
           </Col>
         </Row>
-        <h2> Epidemiological Summary </h2>
+        <div className="h2 mx-3">
+          Epidemiological Summary
+          <span className="float-right display-6">
+            View Overall
+            <Switch
+              className="ml-2"
+              onChange={this.toggleBetweenActiveAndTotal}
+              onColor="#82A0E4"
+              height={18}
+              width={40}
+              uncheckedIcon={false}
+              checked={this.state.viewTotal}
+            />
+          </span>
+        </div>
         <Row className="mb-4">
           <Col lg="12" md="24" className="mb-4">
-            <AgeStratification stats={this.props.stats} />
+            <AgeStratification stats={this.props.stats} viewTotal={this.state.viewTotal} />
           </Col>
           <Col lg="12" md="24">
-            <Demographics stats={this.props.stats} />
+            <Demographics stats={this.props.stats} viewTotal={this.state.viewTotal} />
           </Col>
         </Row>
         <Row className="mb-4">
@@ -76,10 +95,10 @@ class RevisedMonitorAnalytics extends React.Component {
         </Row>
         <h2> Geographical Summary </h2>
         <Row className="mb-4">
-          <Col>
+          <Col lg="12" md="24" className="mb-4">
             <CumulativeMapChart stats={this.props.stats} />
           </Col>
-          <Col>
+          <Col lg="12" md="24">
             <MapChart stats={this.props.stats} />
           </Col>
         </Row>

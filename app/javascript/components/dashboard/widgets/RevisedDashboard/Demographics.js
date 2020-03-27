@@ -8,11 +8,11 @@ import _ from 'lodash';
 const SEXES = ['Male', 'Female', 'Unknown'];
 let COUNTRIES_OF_INTEREST = []; // If certain countries are desired, they can be specified here
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
-
+const NUMBER_OF_COUNTRIES_TO_SHOW = 5;
 class AgeStratificationActive extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { checked: false, viewTotal: false };
+    this.state = { checked: false, viewTotal: this.props.viewTotal };
     this.handleChange = this.handleChange.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
@@ -25,29 +25,32 @@ class AgeStratificationActive extends React.Component {
       this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
       // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
       // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
-      // for each country, then sort them, then take the top 5.
+      // for each country, then sort them, then take the top NUMBER_OF_COUNTRIES_TO_SHOW.
       this.coiData = this.coiData
         .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
-        .slice(0, 5);
+        .slice(0, NUMBER_OF_COUNTRIES_TO_SHOW);
     }
   }
 
-  obtainValueFromMonitoreeCounts = (enumerations, category_type, onlyActive) => {
+  componentDidUpdate(prevProps) {
+    if (this.props.viewTotal !== prevProps.viewTotal) {
+      this.toggleBetweenActiveAndTotal(this.props.viewTotal);
+    }
+  }
+
+  obtainValueFromMonitoreeCounts(enumerations, category_type, onlyActive) {
     let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === onlyActive);
-    let thisCategoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
+    let categoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
     return enumerations.map(x => {
-      let thisGroup = thisCategoryGroups.filter(group => group.category === x);
-      let retVal = { name: x };
+      let thisGroup = categoryGroups.filter(group => group.category === x);
+      let retVal = { name: x, total: 0 };
       RISKLEVELS.forEach(val => {
         retVal[String(val)] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
-        if (onlyActive) {
-          // REMOVE THIS CODE IT IS BAD AND ONLY FOR TESTING
-          retVal[String(val)] += 5;
-        }
+        retVal.total += _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
       });
       return retVal;
     });
-  };
+  }
 
   handleChange = checked => this.setState({ checked });
 
@@ -108,6 +111,10 @@ class AgeStratificationActive extends React.Component {
             <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
           </BarChart>
         </ResponsiveContainer>
+        <div className="text-secondary text-right">
+          <i className="fas fa-exclamation-circle mr-1"></i>
+          Showing top {NUMBER_OF_COUNTRIES_TO_SHOW} countries with highest total number of monitorees
+        </div>
       </div>
     );
   }
@@ -122,6 +129,7 @@ class AgeStratificationActive extends React.Component {
               {RISKLEVELS.map(risklevel => (
                 <th key={risklevel.toString()}>{risklevel}</th>
               ))}
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -133,6 +141,7 @@ class AgeStratificationActive extends React.Component {
                 {RISKLEVELS.map((risklevel, risklevelIndex) => (
                   <td key={sexgroup.toString() + risklevelIndex.toString()}>{this.sexData.find(x => x.name === sexgroup)[String(risklevel)]}</td>
                 ))}
+                <td>{this.sexData.find(x => x.name === sexgroup)['total']}</td>
               </tr>
             ))}
           </tbody>
@@ -144,6 +153,7 @@ class AgeStratificationActive extends React.Component {
               {RISKLEVELS.map(risklevel => (
                 <th key={risklevel.toString()}>{risklevel}</th>
               ))}
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -157,6 +167,7 @@ class AgeStratificationActive extends React.Component {
                   {RISKLEVELS.map((risklevel, risklevelIndex) => (
                     <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[String(risklevel)]}</td>
                   ))}
+                  <td>{this.coiData.find(x => x.name === coiGroup)['total']}</td>
                 </tr>
               ))}
           </tbody>
@@ -187,18 +198,6 @@ class AgeStratificationActive extends React.Component {
         <Card className="card-square text-center">
           <Card.Header as="h5" className="text-left">
             Among Those {this.state.viewTotal ? 'Ever Monitored (includes current)' : 'Currently Under Active Monitoring'}
-            <span className="float-right display-6">
-              View Overall
-              <Switch
-                className="ml-2"
-                onChange={this.toggleBetweenActiveAndTotal}
-                onColor="#82A0E4"
-                height={18}
-                width={40}
-                uncheckedIcon={false}
-                checked={this.state.viewTotal}
-              />
-            </span>
           </Card.Header>
           <Card.Body>{this.ERRORS ? this.renderErrors() : this.renderCard()}</Card.Body>
         </Card>
@@ -209,6 +208,7 @@ class AgeStratificationActive extends React.Component {
 
 AgeStratificationActive.propTypes = {
   stats: PropTypes.object,
+  viewTotal: PropTypes.bool,
 };
 
 export default AgeStratificationActive;

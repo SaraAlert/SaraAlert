@@ -11,7 +11,7 @@ const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; /
 class AgeStratificationActive extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { checked: false, viewTotal: false };
+    this.state = { checked: false, viewTotal: this.props.viewTotal };
     this.handleChange = this.handleChange.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
@@ -22,22 +22,25 @@ class AgeStratificationActive extends React.Component {
     }
   }
 
-  obtainValueFromMonitoreeCounts = (enumerations, category_type, onlyActive) => {
-    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === !onlyActive);
-    let thisCategoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
+  componentDidUpdate(prevProps) {
+    if (this.props.viewTotal !== prevProps.viewTotal) {
+      this.toggleBetweenActiveAndTotal(this.props.viewTotal);
+    }
+  }
+
+  obtainValueFromMonitoreeCounts(enumerations, category_type, onlyActive) {
+    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === onlyActive);
+    let categoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
     return enumerations.map(x => {
-      let thisGroup = thisCategoryGroups.filter(group => group.category === x);
-      let retVal = { name: x };
+      let thisGroup = categoryGroups.filter(group => group.category === x);
+      let retVal = { name: x, total: 0 };
       RISKLEVELS.forEach(val => {
         retVal[String(val)] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
-        if (onlyActive) {
-          // REMOVE THIS CODE IT IS BAD AND ONLY FOR TESTING
-          retVal[String(val)] += 5;
-        }
+        retVal.total += _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
       });
       return retVal;
     });
-  };
+  }
 
   handleChange = checked => this.setState({ checked });
 
@@ -86,6 +89,7 @@ class AgeStratificationActive extends React.Component {
               {RISKLEVELS.map(risklevel => (
                 <th key={risklevel.toString()}>{risklevel}</th>
               ))}
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -98,6 +102,7 @@ class AgeStratificationActive extends React.Component {
                 {RISKLEVELS.map((risklevel, risklevelIndex) => (
                   <td key={agegroup.toString() + risklevelIndex.toString()}>{this.ageData.find(x => x.name === agegroup)[String(risklevel)]}</td>
                 ))}
+                <td>{this.ageData.find(x => x.name === agegroup)['total']}</td>
               </tr>
             ))}
           </tbody>
@@ -128,18 +133,6 @@ class AgeStratificationActive extends React.Component {
         <Card className="card-square text-center">
           <Card.Header as="h5" className="text-left">
             Among Those {this.state.viewTotal ? 'Ever Monitored (includes current)' : 'Currently Under Active Monitoring'}
-            <span className="float-right display-6">
-              View Overall
-              <Switch
-                className="ml-2"
-                onChange={this.toggleBetweenActiveAndTotal}
-                onColor="#82A0E4"
-                height={18}
-                width={40}
-                uncheckedIcon={false}
-                checked={this.state.viewTotal}
-              />
-            </span>
           </Card.Header>
           <Card.Body>{this.ERRORS ? this.renderErrors() : this.renderCard()}</Card.Body>
         </Card>
@@ -150,6 +143,7 @@ class AgeStratificationActive extends React.Component {
 
 AgeStratificationActive.propTypes = {
   stats: PropTypes.object,
+  viewTotal: PropTypes.bool,
 };
 
 export default AgeStratificationActive;

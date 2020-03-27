@@ -44,10 +44,10 @@ class RiskStratification extends React.Component {
 
   getTotals = () => {
     let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
-    let thisCategoryGroups = activeMonitorees.filter(x => x.category_type === 'Overall Total');
+    let categoryGroups = activeMonitorees.filter(x => x.category_type === 'Overall Total');
     let retVal = {};
     RISKLEVELS.forEach(val => {
-      let thisGroup = thisCategoryGroups.filter(group => group.risk_level === val);
+      let thisGroup = categoryGroups.filter(group => group.risk_level === val);
       retVal[String(val)] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
     });
     retVal['total'] = _.sum(_.valuesIn(retVal));
