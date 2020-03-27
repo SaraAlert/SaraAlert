@@ -11,26 +11,23 @@ const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; /
 class MonitoreesByDateOfExposure extends React.Component {
   constructor(props) {
     super(props);
+    // console.log(JSON.parse(JSON.stringify(props)));
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
 
     DATES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Last Exposure Date').map(x => x.category))
       .sort()
       .slice(0, 14);
-    this.lastExposureDateDate = this.obtainValueFromMonitoreeCounts(DATES_OF_INTEREST, 'Last Exposure Date', true);
+    this.lastExposureDateDate = this.obtainValueFromMonitoreeCounts(DATES_OF_INTEREST, 'Last Exposure Date');
   }
 
-  obtainValueFromMonitoreeCounts = (enumerations, category_type, onlyActive) => {
-    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === onlyActive);
+  obtainValueFromMonitoreeCounts = (enumerations, category_type) => {
+    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
     let thisCategoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
     return enumerations.map(x => {
       let thisGroup = thisCategoryGroups.filter(group => group.category === x);
       let retVal = { name: x };
       RISKLEVELS.forEach(val => {
         retVal[String(val)] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
-        if (onlyActive) {
-          // REMOVE THIS CODE IT IS BAD AND ONLY FOR TESTING
-          retVal[String(val)] += 5;
-        }
       });
       return retVal;
     });
@@ -67,6 +64,12 @@ class MonitoreesByDateOfExposure extends React.Component {
                 <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
               </BarChart>
             </ResponsiveContainer>
+            <div className="text-secondary text-right">
+              <i className="fas fa-exclamation-circle mr-1"></i>
+              Illnesses that began
+              {` ${this.lastExposureDateDate[this.lastExposureDateDate.length - 1].name} `}
+              may not yet be reported
+            </div>
           </Card.Body>
         </Card>
       </React.Fragment>

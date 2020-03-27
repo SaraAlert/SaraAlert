@@ -6,6 +6,8 @@ import MonitoreeFlow from './widgets/RevisedDashboard/MonitoreeFlow';
 import AgeStratification from './widgets/RevisedDashboard/AgeStratification';
 import Demographics from './widgets/RevisedDashboard/Demographics';
 import MonitoreesByDateOfExposure from './widgets/RevisedDashboard/MonitoreesByDateOfExposure';
+import MapChart from './widgets/MapChart';
+import CumulativeMapChart from './widgets/CumulativeMapChart';
 import moment from 'moment';
 import domtoimage from 'dom-to-image';
 
@@ -70,6 +72,15 @@ class RevisedMonitorAnalytics extends React.Component {
         <Row className="mb-4">
           <Col>
             <MonitoreesByDateOfExposure stats={this.props.stats} />
+          </Col>
+        </Row>
+        <h2> Geographical Summary </h2>
+        <Row className="mb-4">
+          <Col>
+            <CumulativeMapChart stats={this.props.stats} />
+          </Col>
+          <Col>
+            <MapChart stats={this.props.stats} />
           </Col>
         </Row>
       </React.Fragment>
