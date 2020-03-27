@@ -317,11 +317,11 @@ class Patient < ApplicationRecord
       # If you are a dependent ie: someone whose responder.id is not your own  an assessment will not be sent to you
       # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
       # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
-      PatientMailer.assessment_sms(self).deliver_later if ADMIN_OPTIONS['enable_sms']
+      PatientMailer.assessment_sms(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test
     elsif preferred_contact_method == 'SMS Texted Weblink'
-      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms']
+      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test
     elsif preferred_contact_method == 'Telephone call'
-      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice']
+      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test
     end
     # TODO: perhaps this should only performed on response ie: patient completed assessment. Especially relevent for voice
     patient.last_assessment_reminder_sent = Time.now

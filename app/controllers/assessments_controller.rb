@@ -21,7 +21,7 @@ class AssessmentsController < ApplicationController
     jurisdiction = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction unless ADMIN_OPTIONS['report_mode']
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
     @symptoms = reporting_condition.symptoms
-    @threshold_hash = reporting_condition.hierarchical_symptomatic_condition.threshold_condition_hash
+    @threshold_hash = jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash
   end
 
   def create
