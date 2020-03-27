@@ -5,6 +5,7 @@ import RiskStratificationTable from './widgets/RevisedDashboard/RiskStratificati
 import MonitoreeFlow from './widgets/RevisedDashboard/MonitoreeFlow';
 import AgeStratification from './widgets/RevisedDashboard/AgeStratification';
 import Demographics from './widgets/RevisedDashboard/Demographics';
+import MonitoreesByDateOfExposure from './widgets/RevisedDashboard/MonitoreesByDateOfExposure';
 import moment from 'moment';
 import domtoimage from 'dom-to-image';
 
@@ -64,6 +65,11 @@ class RevisedMonitorAnalytics extends React.Component {
           </Col>
           <Col lg="12" md="24">
             <Demographics stats={this.props.stats} />
+          </Col>
+        </Row>
+        <Row className="mb-4">
+          <Col>
+            <MonitoreesByDateOfExposure stats={this.props.stats} />
           </Col>
         </Row>
       </React.Fragment>
