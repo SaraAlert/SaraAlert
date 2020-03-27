@@ -26,8 +26,8 @@ class RiskStratification extends React.Component {
       });
     });
     let tableData = {};
-    // We want to know the value (n) and it's percentage for each risklevel for each symptom
-    // so we create two values the symptom_n value and the symptom_p value
+    // We want to know the value (n) and it's percentage (p) for each risklevel for each symptom
+    // so we create two values: the symptom_n value and the symptom_p value
     RISKLEVELS.forEach(risklevel => {
       tableData[String(risklevel)] = {};
       SYMPTOMLEVELS.forEach(symptomlevel => {

@@ -23,7 +23,6 @@ class RevisedMonitorAnalytics extends React.Component {
           var img = new Image();
           img.src = dataUrl;
           let link = document.createElement('a');
-          // console.log(JSON.parse(JSON.stringify(this.props.current_user)))
           let jurisdiction = this.props.current_user.jurisdiction_path.join('_');
           let currentDate = moment().format('YYYY_MM_DD');
           let imageName = `SaraAlert_${jurisdiction}_${currentDate}.png`;
@@ -41,13 +40,13 @@ class RevisedMonitorAnalytics extends React.Component {
     return (
       <React.Fragment>
         <Row className="text-left mb-4">
-          <Col>
+          <Col xs="10">
             <Button variant="primary" className="ml-2 btn-square" onClick={this.handleClick}>
               EXPORT ANALYSIS AS PNG
             </Button>
           </Col>
-          <Col className="text-right">
-            <span className="display-6 pt-3"> Last Updated At: {moment(this.props.stats.last_updated_at).format('YYYY-MM-DD HH:mm:ss')} </span>
+          <Col xs="14" className="text-right">
+            <h5 className="display-6 pt-3"> Last Updated At: {moment(this.props.stats.last_updated_at).format('YYYY-MM-DD HH:mm:ss')} UTC </h5>
           </Col>
         </Row>
         <Row className="mb-4">

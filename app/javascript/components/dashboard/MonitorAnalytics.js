@@ -17,8 +17,8 @@ class MonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
-    // debugger
   }
+
   handleClick() {
     var node = document.getElementById('sara-alert-body');
     domtoimage
@@ -40,6 +40,7 @@ class MonitorAnalytics extends React.Component {
         console.error(error);
       });
   }
+
   render() {
     return (
       <React.Fragment>
