@@ -28,7 +28,8 @@
   <div class="card mx-2 mt-3 mb-4 card-square">
     <h5 class="card-header"> Reports <a href="#" data-toggle="modal" data-target="#modal-new">(add new)</a></h5>
     <div class="m-4">
-      <% columns= [] %>
+      <%= react_component("subject/CurrentStatus", { status: @patient.status } ) %>
+      <% columns = [] %>
       <% @patient.assessments.each do |assessment| columns.concat(assessment.all_symptom_names) end %>
       <% columns = columns.uniq%>
       <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">

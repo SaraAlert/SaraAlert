@@ -184,6 +184,47 @@ class Patient < ApplicationRecord
     return created_at + ADMIN_OPTIONS['monitoring_period_days'].days if created_at
   end
 
+  # Is this patient symptomatic?
+  def symptomatic?
+    Patient.symptomatic.where(id: id).count.positive?
+  end
+
+  # Is this patient symptomatic?
+  def asymptomatic?
+    Patient.asymptomatic.where(id: id).count.positive?
+  end
+
+  # Is this patient non_reporting?
+  def non_reporting?
+    Patient.non_reporting.where(id: id).count.positive?
+  end
+
+  # Is this patient under investigation?
+  def pui?
+    Patient.under_investigation.where(id: id).count.positive?
+  end
+
+  # Has this patient purged?
+  def purged?
+    Patient.purged.where(id: id).count.positive?
+  end
+
+  # Has this patient purged?
+  def closed?
+    Patient.monitoring_closed_without_purged.where(id: id).count.positive?
+  end
+
+  # Current patient status
+  def status
+    return :symptomatic if symptomatic?
+    return :asymptomatic if asymptomatic?
+    return :non_reporting if non_reporting?
+    return :pui if pui?
+    return :purged if purged?
+    return :closed if closed?
+    :unknown
+  end
+
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
