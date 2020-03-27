@@ -5,9 +5,12 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import Switch from 'react-switch';
 import _ from 'lodash';
 
-let RISK_FACTORS = [];
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
-class RiskFactor extends React.Component {
+let RISK_FACTORS = [];
+let COUNTRIES_OF_INTEREST = []; // If certain countries are desired, they can be specified here
+const NUMBER_OF_COUNTRIES_TO_SHOW = 5;
+
+class RiskFactors extends React.Component {
   constructor(props) {
     super(props);
     this.state = { checked: false, viewTotal: this.props.viewTotal };
@@ -16,10 +19,25 @@ class RiskFactor extends React.Component {
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
+    COUNTRIES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).sort();
+    COUNTRIES_OF_INTEREST = [...COUNTRIES_OF_INTEREST.filter(riskFactor => riskFactor !== 'Total'), 'Total']; // Risk Factor has a category of Total
+    // // COUNTRIES_OF_INTEREST = COUNTRIES_OF_INTEREST.filter(country => country !== 'Total');
     RISK_FACTORS = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Risk Factor').map(x => x.category)).sort();
-
+    RISK_FACTORS = [...RISK_FACTORS.filter(riskFactor => riskFactor !== 'Total'), 'Total']; // Risk Factor has a category of Total
+    // This complex looking statement essentially removes the hardcoded string Total from the array, and makes sure that it is at the end
+    // So that the UI shows Total at the bottom of the table
     if (!this.ERRORS) {
       this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', this.state.viewTotal);
+      this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
+      // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
+      // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
+      // for each country, then sort them, then take the top NUMBER_OF_COUNTRIES_TO_SHOW.
+      this.coiData = this.coiData
+        .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
+        .slice(0, NUMBER_OF_COUNTRIES_TO_SHOW + 1); // the +1 is for one extra row for `Total`
+      // 'Total' will always the most number of monitorees, so it will be at [0]
+      // This array/spread creation essentially just reorders 'Total' to be at the bottom
+      this.coiData = [...this.coiData.slice(1, 6), this.coiData[0]];
     }
   }
 
@@ -47,8 +65,17 @@ class RiskFactor extends React.Component {
 
   toggleBetweenActiveAndTotal = viewTotal => {
     this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', viewTotal);
+    this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
+    // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
+    // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
+    // for each country, then sort them, then take the top NUMBER_OF_COUNTRIES_TO_SHOW.
+    this.coiData = this.coiData
+      .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
+      .slice(0, NUMBER_OF_COUNTRIES_TO_SHOW + 1); // the +1 is for one extra row for `Total`
+    // 'Total' will always the most number of monitorees, so it will be at [0]
+    // This array/spread creation essentially just reorders 'Total' to be at the bottom
+    this.coiData = [...this.coiData.slice(1, 6), this.coiData[0]];
   };
-
   renderBarGraph() {
     return (
       <div className="mx-3 mt-2">
@@ -56,7 +83,30 @@ class RiskFactor extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.riskFactor}
+            data={this.riskData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="High" stackId="a" fill="#FA897B" />
+            <Bar dataKey="Medium" stackId="a" fill="#FFDD94" />
+            <Bar dataKey="Low" stackId="a" fill="#D0E6A5" />
+            <Bar dataKey="No Identified Risk" stackId="a" fill="#333" />
+            <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
+          </BarChart>
+        </ResponsiveContainer>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            width={500}
+            height={300}
+            data={this.coiData}
             margin={{
               top: 20,
               right: 30,
@@ -82,6 +132,7 @@ class RiskFactor extends React.Component {
   renderTable() {
     return (
       <div>
+        <h4 className="text-left">Exposure Risk Factors</h4>
         <Table striped hover className="border mt-2">
           <thead>
             <tr>
@@ -93,17 +144,42 @@ class RiskFactor extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.riskData
+            {RISK_FACTORS.map(riskGroup => (
+              <tr key={riskGroup.toString() + '1'}>
+                <td key={riskGroup.toString() + '2'} className="font-weight-bold">
+                  {riskGroup}
+                </td>
+                {RISKLEVELS.map((risklevel, risklevelIndex) => (
+                  <td key={riskGroup.toString() + risklevelIndex.toString()}>{this.riskData.find(x => x.name === riskGroup)[String(risklevel)]}</td>
+                ))}
+                <td>{this.riskData.find(x => x.name === riskGroup)['total']}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <h4 className="text-left">Country of Exposure</h4>
+        <Table striped hover className="border mt-2">
+          <thead>
+            <tr>
+              <th></th>
+              {RISKLEVELS.map(risklevel => (
+                <th key={risklevel.toString()}>{risklevel}</th>
+              ))}
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.coiData
               .map(x => x.name)
-              .map(riskGroup => (
-                <tr key={riskGroup.toString() + '1'}>
-                  <td key={riskGroup.toString() + '2'} className="font-weight-bold">
-                    {riskGroup}
+              .map(coiGroup => (
+                <tr key={coiGroup.toString() + '1'}>
+                  <td key={coiGroup.toString() + '2'} className="font-weight-bold">
+                    {coiGroup}
                   </td>
                   {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                    <td key={riskGroup.toString() + risklevelIndex.toString()}>{this.riskData.find(x => x.name === riskGroup)[String(risklevel)]}</td>
+                    <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[String(risklevel)]}</td>
                   ))}
-                  <td>{this.riskData.find(x => x.name === riskGroup)['total']}</td>
+                  <td>{this.coiData.find(x => x.name === coiGroup)['total']}</td>
                 </tr>
               ))}
           </tbody>
@@ -124,6 +200,10 @@ class RiskFactor extends React.Component {
           <Switch onChange={this.handleChange} onColor="#82A0E4" height={18} width={40} uncheckedIcon={false} checked={this.state.checked} />
         </div>
         {this.state.checked ? this.renderBarGraph() : this.renderTable()}
+        <div className="text-secondary text-right">
+          <i className="fas fa-exclamation-circle mr-1"></i>
+          Showing top {NUMBER_OF_COUNTRIES_TO_SHOW} countries with highest total number of monitorees
+        </div>
       </span>
     );
   }
@@ -142,9 +222,9 @@ class RiskFactor extends React.Component {
   }
 }
 
-RiskFactor.propTypes = {
+RiskFactors.propTypes = {
   stats: PropTypes.object,
   viewTotal: PropTypes.bool,
 };
 
-export default RiskFactor;
+export default RiskFactors;

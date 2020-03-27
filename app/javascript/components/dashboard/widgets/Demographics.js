@@ -5,11 +5,11 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import Switch from 'react-switch';
 import _ from 'lodash';
 
-const SEXES = ['Male', 'Female', 'Unknown'];
-let COUNTRIES_OF_INTEREST = []; // If certain countries are desired, they can be specified here
+const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80'];
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
-const NUMBER_OF_COUNTRIES_TO_SHOW = 5;
-class AgeStratificationActive extends React.Component {
+const SEXES = ['Male', 'Female', 'Unknown'];
+
+class Demographics extends React.Component {
   constructor(props) {
     super(props);
     this.state = { checked: false, viewTotal: this.props.viewTotal };
@@ -18,17 +18,9 @@ class AgeStratificationActive extends React.Component {
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
-    COUNTRIES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).sort();
-    COUNTRIES_OF_INTEREST = COUNTRIES_OF_INTEREST.filter(country => country !== 'Total');
     if (!this.ERRORS) {
+      this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', this.state.viewTotal);
       this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', this.state.viewTotal);
-      this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
-      // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
-      // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
-      // for each country, then sort them, then take the top NUMBER_OF_COUNTRIES_TO_SHOW.
-      this.coiData = this.coiData
-        .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
-        .slice(0, NUMBER_OF_COUNTRIES_TO_SHOW);
     }
   }
 
@@ -55,13 +47,10 @@ class AgeStratificationActive extends React.Component {
   handleChange = checked => this.setState({ checked });
 
   toggleBetweenActiveAndTotal = viewTotal => {
+    this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', viewTotal);
     this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', viewTotal);
-    this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', viewTotal);
-    this.coiData = this.coiData
-      .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
-      .slice(0, 5);
-    this.setState({ viewTotal });
   };
+
   renderBarGraph() {
     return (
       <div className="mx-3 mt-2">
@@ -69,7 +58,7 @@ class AgeStratificationActive extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.sexData}
+            data={this.ageData}
             margin={{
               top: 20,
               right: 30,
@@ -92,7 +81,7 @@ class AgeStratificationActive extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.coiData}
+            data={this.sexData}
             margin={{
               top: 20,
               right: 30,
@@ -118,6 +107,33 @@ class AgeStratificationActive extends React.Component {
   renderTable() {
     return (
       <div>
+        <h4 className="text-left">Age (Years)</h4>
+        <Table striped hover className="border mt-2">
+          <thead>
+            <tr>
+              <th></th>
+              {RISKLEVELS.map(risklevel => (
+                <th key={risklevel.toString()}>{risklevel}</th>
+              ))}
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {AGEGROUPS.map(agegroup => (
+              <tr key={agegroup.toString() + '1'}>
+                <td key={agegroup.toString() + '2'} className="font-weight-bold">
+                  {' '}
+                  {agegroup}{' '}
+                </td>
+                {RISKLEVELS.map((risklevel, risklevelIndex) => (
+                  <td key={agegroup.toString() + risklevelIndex.toString()}>{this.ageData.find(x => x.name === agegroup)[String(risklevel)]}</td>
+                ))}
+                <td>{this.ageData.find(x => x.name === agegroup)['total']}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <h4 className="text-left">Sex</h4>
         <Table striped hover className="border mt-2">
           <thead>
             <tr>
@@ -142,32 +158,6 @@ class AgeStratificationActive extends React.Component {
             ))}
           </tbody>
         </Table>
-        <Table striped hover className="border mt-2">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.coiData
-              .map(x => x.name)
-              .map(coiGroup => (
-                <tr key={coiGroup.toString() + '1'}>
-                  <td key={coiGroup.toString() + '2'} className="font-weight-bold">
-                    {coiGroup}
-                  </td>
-                  {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                    <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[String(risklevel)]}</td>
-                  ))}
-                  <td>{this.coiData.find(x => x.name === coiGroup)['total']}</td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
       </div>
     );
   }
@@ -184,10 +174,6 @@ class AgeStratificationActive extends React.Component {
           <Switch onChange={this.handleChange} onColor="#82A0E4" height={18} width={40} uncheckedIcon={false} checked={this.state.checked} />
         </div>
         {this.state.checked ? this.renderBarGraph() : this.renderTable()}
-        <div className="text-secondary text-right">
-          <i className="fas fa-exclamation-circle mr-1"></i>
-          Showing top {NUMBER_OF_COUNTRIES_TO_SHOW} countries with highest total number of monitorees
-        </div>
       </span>
     );
   }
@@ -206,9 +192,9 @@ class AgeStratificationActive extends React.Component {
   }
 }
 
-AgeStratificationActive.propTypes = {
+Demographics.propTypes = {
   stats: PropTypes.object,
   viewTotal: PropTypes.bool,
 };
 
-export default AgeStratificationActive;
+export default Demographics;

@@ -3,10 +3,9 @@ import { PropTypes } from 'prop-types';
 import { Row, Col, Button } from 'react-bootstrap';
 import RiskStratificationTable from './widgets/RiskStratificationTable';
 import MonitoreeFlow from './widgets/MonitoreeFlow';
-import AgeStratification from './widgets/AgeStratification';
 import Demographics from './widgets/Demographics';
-import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
 import RiskFactors from './widgets/RiskFactors';
+import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
 import MapChart from './widgets/MapChart';
 import CumulativeMapChart from './widgets/CumulativeMapChart';
 import moment from 'moment';
@@ -83,11 +82,10 @@ class MonitorAnalytics extends React.Component {
         </div>
         <Row className="mb-4">
           <Col lg="12" md="24" className="mb-4">
-            <AgeStratification stats={this.props.stats} viewTotal={this.state.viewTotal} />
-            <RiskFactors stats={this.props.stats} viewTotal={this.state.viewTotal} />
+            <Demographics stats={this.props.stats} viewTotal={this.state.viewTotal} />
           </Col>
           <Col lg="12" md="24">
-            <Demographics stats={this.props.stats} viewTotal={this.state.viewTotal} />
+            <RiskFactors stats={this.props.stats} viewTotal={this.state.viewTotal} />
           </Col>
         </Row>
         <Row className="mb-4">
