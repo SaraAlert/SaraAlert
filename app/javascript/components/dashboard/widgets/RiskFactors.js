@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Table } from 'react-bootstrap';
+import { Card, Table, Button, Row, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import Switch from 'react-switch';
@@ -14,6 +14,7 @@ class RiskFactors extends React.Component {
   constructor(props) {
     super(props);
     this.state = { checked: false, viewTotal: this.props.viewTotal };
+    this.exportFullCountryData = this.exportFullCountryData.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
@@ -29,6 +30,7 @@ class RiskFactors extends React.Component {
     if (!this.ERRORS) {
       this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', this.state.viewTotal);
       this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
+      this.fullCountryData = JSON.parse(JSON.stringify(this.coiData));
       // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
       // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
       // for each country, then sort them, then take the top NUMBER_OF_COUNTRIES_TO_SHOW.
@@ -38,6 +40,7 @@ class RiskFactors extends React.Component {
       // 'Total' will always the most number of monitorees, so it will be at [0]
       // This array/spread creation essentially just reorders 'Total' to be at the bottom
       this.coiData = [...this.coiData.slice(1, 6), this.coiData[0]];
+      this.coiTableData = this.coiData;
     }
   }
 
@@ -61,11 +64,25 @@ class RiskFactors extends React.Component {
     });
   }
 
+  exportFullCountryData = () => {
+    let entryArray = this.fullCountryData.map(x => _.join(_.valuesIn(x).map(y => _.startCase(y))));
+    let contentString = _.join(entryArray, '\n');
+    let headerString = _.join(_.keysIn(this.fullCountryData[0]).map(x => _.startCase(x)));
+    let csvContent = _.join([headerString, contentString], '\n');
+    const url = window.URL.createObjectURL(new Blob([csvContent]));
+    const link = document.createElement('a');
+    link.href = url;
+    self.csvFileName = `CompleteCountryData.csv`;
+    link.setAttribute('download', `${self.csvFileName}`);
+    document.body.appendChild(link);
+    link.click();
+  };
   handleChange = checked => this.setState({ checked });
 
   toggleBetweenActiveAndTotal = viewTotal => {
     this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', viewTotal);
     this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
+    this.fullCountryData = JSON.parse(JSON.stringify(this.coiData));
     // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
     // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
     // for each country, then sort them, then take the top NUMBER_OF_COUNTRIES_TO_SHOW.
@@ -133,7 +150,7 @@ class RiskFactors extends React.Component {
     return (
       <div>
         <h4 className="text-left">Exposure Risk Factors</h4>
-        <Table striped hover className="border mt-2">
+        <Table striped hover className="border mt-2 mb-0">
           <thead>
             <tr>
               <th></th>
@@ -157,8 +174,20 @@ class RiskFactors extends React.Component {
             ))}
           </tbody>
         </Table>
-        <h4 className="text-left">Country of Exposure</h4>
-        <Table striped hover className="border mt-2">
+        <div className="text-secondary text-right mb-3">
+          <i className="fas fa-info-circle mr-1"></i>
+          Cumulative percentage may not sum to 100 as monitorees may report more than one exposure risk factor
+        </div>
+        <Row>
+          <Col className="h4 text-left">Country of Exposure</Col>
+          <Col className="text-right">
+            <Button variant="primary" className="ml-2 btn-square" onClick={this.exportFullCountryData}>
+              <i className="fas fa-download mr-1"></i>
+              Export Complete Country Data
+            </Button>
+          </Col>
+        </Row>
+        <Table striped hover className="border mt-2 mb-0">
           <thead>
             <tr>
               <th></th>
@@ -184,6 +213,10 @@ class RiskFactors extends React.Component {
               ))}
           </tbody>
         </Table>
+        <div className="text-secondary text-right mb-3">
+          <i className="fas fa-info-circle mr-1"></i>
+          Excludes monitorees where exposure country is not reported
+        </div>
       </div>
     );
   }
@@ -200,10 +233,6 @@ class RiskFactors extends React.Component {
           <Switch onChange={this.handleChange} onColor="#82A0E4" height={18} width={40} uncheckedIcon={false} checked={this.state.checked} />
         </div>
         {this.state.checked ? this.renderBarGraph() : this.renderTable()}
-        <div className="text-secondary text-right">
-          <i className="fas fa-exclamation-circle mr-1"></i>
-          Showing top {NUMBER_OF_COUNTRIES_TO_SHOW} countries with highest total number of monitorees
-        </div>
       </span>
     );
   }
