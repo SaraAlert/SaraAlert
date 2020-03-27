@@ -16,7 +16,7 @@ services:
   - mysql
   - redis-server
 before_script:
-  - mysql -u root -e "CREATE USER 'disease_trakker'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'disease_trakker'@'localhost';"
+  - mysql -u root -e "CREATE USER 'disease_trakker'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'disease_trakker'@'localhost'; create database disease_trakker_test;"
   - yarn install --ignore-engines
 script:
   - ./node_modules/.bin/eslint app/javascript/components/
