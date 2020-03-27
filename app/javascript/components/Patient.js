@@ -344,7 +344,7 @@ class Patient extends React.Component {
                     </span>
                     <span className="font-weight-light text-danger">
                       {this.props.details.laboratory_personnel
-                        ? 'HEALTHCARE PERSONNEL: ' +
+                        ? 'LABORATORY PERSONNEL: ' +
                           (this.props.details.laboratory_personnel_facility_name ? this.props.details.laboratory_personnel_facility_name : '')
                         : ''}
                       {this.props.details.laboratory_personnel ? <br /> : ''}
