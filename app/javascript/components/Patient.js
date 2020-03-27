@@ -185,7 +185,7 @@ class Patient extends React.Component {
                     <span className="font-weight-normal">Email:</span>{' '}
                     <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
                     <br />
-                    <span className="font-weight-normal">Preferred Contact:</span>{' '}
+                    <span className="font-weight-normal">Preferred Reporting Method:</span>{' '}
                     <span className="font-weight-light">{`${
                       this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''
                     }`}</span>
@@ -344,7 +344,7 @@ class Patient extends React.Component {
                     </span>
                     <span className="font-weight-light text-danger">
                       {this.props.details.laboratory_personnel
-                        ? 'HEALTHCARE PERSONNEL: ' +
+                        ? 'LABORATORY PERSONNEL: ' +
                           (this.props.details.laboratory_personnel_facility_name ? this.props.details.laboratory_personnel_facility_name : '')
                         : ''}
                       {this.props.details.laboratory_personnel ? <br /> : ''}

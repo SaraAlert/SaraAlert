@@ -10,12 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_13_134912) do
+ActiveRecord::Schema.define(version: 2020_03_20_055002) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
-  create_table "analytics", force: :cascade do |t|
+  create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
     t.integer "monitorees_count"
     t.integer "symptomatic_monitorees_count"
@@ -25,19 +22,19 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.integer "open_cases_count"
     t.integer "total_reports_count"
     t.integer "non_reporting_monitorees_count"
-    t.string "monitoree_state_map"
-    t.string "symptomatic_state_map"
+    t.text "monitoree_state_map"
+    t.text "symptomatic_state_map"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "assessment_receipts", force: :cascade do |t|
+  create_table "assessment_receipts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "submission_token"
   end
 
-  create_table "assessments", force: :cascade do |t|
+  create_table "assessments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "patient_id"
@@ -46,7 +43,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.index ["patient_id"], name: "index_assessments_on_patient_id"
   end
 
-  create_table "conditions", force: :cascade do |t|
+  create_table "conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "jurisdiction_id"
@@ -55,7 +52,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.string "type"
   end
 
-  create_table "histories", force: :cascade do |t|
+  create_table "histories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "patient_id"
     t.text "comment"
     t.string "created_by"
@@ -65,7 +62,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.index ["patient_id"], name: "index_histories_on_patient_id"
   end
 
-  create_table "jurisdictions", force: :cascade do |t|
+  create_table "jurisdictions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "name"
@@ -74,7 +71,38 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
-  create_table "patients", force: :cascade do |t|
+  create_table "monitoree_counts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "analytic_id"
+    t.boolean "active_monitoring"
+    t.string "category_type"
+    t.string "category"
+    t.string "risk_level"
+    t.integer "total"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["analytic_id"], name: "index_monitoree_counts_on_analytic_id"
+  end
+
+  create_table "monitoree_snapshots", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "analytic_id"
+    t.string "time_frame"
+    t.integer "new_enrollments"
+    t.integer "transferred_in"
+    t.integer "closed"
+    t.integer "transferred_out"
+    t.integer "referral_for_medical_evaluation"
+    t.integer "document_completed_medical_evaluation"
+    t.integer "document_medical_evaluation_summary_and_plan"
+    t.integer "referral_for_public_health_test"
+    t.integer "public_health_test_specimen_received_by_lab_results_pending"
+    t.integer "results_of_public_health_test_positive"
+    t.integer "results_of_public_health_test_negative"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
+  end
+
+  create_table "patients", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "responder_id"
@@ -172,18 +200,22 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.string "was_in_health_care_facility_with_known_cases_facility_name"
     t.text "exposure_notes"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
+    t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
     t.index ["first_name"], name: "index_patients_on_first_name"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
+    t.index ["last_date_of_exposure"], name: "index_patients_on_last_date_of_exposure"
     t.index ["last_name"], name: "index_patients_on_last_name"
     t.index ["monitoring"], name: "index_patients_on_monitoring"
+    t.index ["potential_exposure_country"], name: "index_patients_on_potential_exposure_country"
     t.index ["public_health_action"], name: "index_patients_on_public_health_action"
     t.index ["purged"], name: "index_patients_on_purged"
     t.index ["responder_id"], name: "index_patients_on_responder_id"
+    t.index ["sex"], name: "index_patients_on_sex"
     t.index ["submission_token"], name: "index_patients_on_submission_token"
     t.index ["user_defined_id_statelocal"], name: "index_patients_on_user_defined_id_statelocal"
   end
 
-  create_table "roles", force: :cascade do |t|
+  create_table "roles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "resource_type"
     t.bigint "resource_id"
@@ -193,7 +225,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.index ["resource_type", "resource_id"], name: "index_roles_on_resource_type_and_resource_id"
   end
 
-  create_table "sessions", force: :cascade do |t|
+  create_table "sessions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
     t.datetime "created_at", precision: 6, null: false
@@ -202,7 +234,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
-  create_table "symptoms", force: :cascade do |t|
+  create_table "symptoms", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "label"
     t.string "notes"
@@ -215,7 +247,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "transfers", force: :cascade do |t|
+  create_table "transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "patient_id"
     t.integer "to_jurisdiction_id"
     t.integer "from_jurisdiction_id"
@@ -228,7 +260,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.index ["who_id"], name: "index_transfers_on_who_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.integer "sign_in_count", default: 0, null: false
@@ -248,7 +280,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.index ["password_changed_at"], name: "index_users_on_password_changed_at"
   end
 
-  create_table "users_roles", id: false, force: :cascade do |t|
+  create_table "users_roles", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "role_id"
     t.index ["role_id"], name: "index_users_roles_on_role_id"

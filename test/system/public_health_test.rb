@@ -18,13 +18,13 @@ class PublicHealthTest < ApplicationSystemTestCase
   ASSESSMENTS = @@system_test_utils.get_assessments
 
   test 'epis can only view and search for patients under their jurisdiction' do
-    search_for_and_verify_patients_under_jurisdiction('state1_epi', [3], [1, 2, 6, 7], [4, 8], [5])
-    search_for_and_verify_patients_under_jurisdiction('locals1c1_epi', [], [], [4], [])
-    search_for_and_verify_patients_under_jurisdiction('locals1c2_epi', [], [6], [], [])
-    search_for_and_verify_patients_under_jurisdiction('state2_epi', [9], [11], [10], [])
-    search_for_and_verify_patients_under_jurisdiction('locals2c3_epi', [], [11], [], [])
-    search_for_and_verify_patients_under_jurisdiction('locals2c4_epi', [], [], [10], [])
-    search_for_and_verify_patients_under_jurisdiction('state1_epi_enroller', [3], [1, 2, 6, 7], [4, 8], [5])
+    search_for_and_verify_patients_under_jurisdiction('state1_epi', [3], [1, 2], [4], [6, 7, 8], [5])
+    search_for_and_verify_patients_under_jurisdiction('locals1c1_epi', [], [], [4], [], [])
+    search_for_and_verify_patients_under_jurisdiction('locals1c2_epi', [], [], [], [6], [])
+    search_for_and_verify_patients_under_jurisdiction('state2_epi', [], [], [], [9, 10, 11], [])
+    search_for_and_verify_patients_under_jurisdiction('locals2c3_epi', [], [], [], [11], [])
+    search_for_and_verify_patients_under_jurisdiction('locals2c4_epi', [], [], [], [10], [])
+    search_for_and_verify_patients_under_jurisdiction('state1_epi_enroller', [3], [1, 2], [4], [6, 7, 8], [5])
   end
 
   test 'update monitoring status' do
@@ -36,14 +36,14 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'update monitoring plan' do
-    update_monitoring_plan('locals1c2_epi', 'patient_6', 'Non-Reporting', 'Daily active monitoring', 'details')
+    update_monitoring_plan('locals1c2_epi', 'patient_6', 'PUI', 'Daily active monitoring', 'details')
   end
 
   test 'update assigned jurisdiction' do
-    update_jurisdiction('state2_epi', 'patient_11', 'Non-Reporting', 'USA, State 2, County 4', 'details')
-    search_for_and_verify_patients_under_jurisdiction('state2_epi', [9], [11], [10], [])
-    search_for_and_verify_patients_under_jurisdiction('locals2c3_epi', [], [], [], [])
-    search_for_and_verify_patients_under_jurisdiction('locals2c4_epi', [], [11], [10], [])
+    update_jurisdiction('state2_epi', 'patient_11', 'PUI', 'USA, State 2, County 4', 'details')
+    search_for_and_verify_patients_under_jurisdiction('state2_epi', [], [], [], [9, 10, 11], [])
+    search_for_and_verify_patients_under_jurisdiction('locals2c3_epi', [], [], [], [], [])
+    search_for_and_verify_patients_under_jurisdiction('locals2c4_epi', [], [], [], [10, 11], [])
   end
 
   test 'view reports' do
@@ -52,12 +52,12 @@ class PublicHealthTest < ApplicationSystemTestCase
     view_reports('state1_epi', 'patient_3', 'Symptomatic', [1, 2])
     view_reports('locals1c1_epi', 'patient_4', 'Asymptomatic', [1])
     view_reports('state1_epi', 'patient_5', 'Closed', [1])
-    view_reports('state1_epi', 'patient_6', 'Non-Reporting', [])
-    view_reports('state1_epi', 'patient_7', 'Non-Reporting', [])
-    view_reports('state1_epi', 'patient_8', 'Asymptomatic', [1, 2])
-    view_reports('state2_epi', 'patient_9', 'Symptomatic', [1, 2, 3, 4])
-    view_reports('locals2c4_epi', 'patient_10', 'Asymptomatic', [1, 2, 3])
-    view_reports('locals2c3_epi', 'patient_11', 'Non-Reporting', [])
+    view_reports('state1_epi', 'patient_6', 'PUI', [])
+    view_reports('state1_epi', 'patient_7', 'PUI', [])
+    view_reports('state1_epi', 'patient_8', 'PUI', [1, 2])
+    view_reports('state2_epi', 'patient_9', 'PUI', [1, 2, 3, 4])
+    view_reports('locals2c4_epi', 'patient_10', 'PUI', [1, 2, 3])
+    view_reports('locals2c3_epi', 'patient_11', 'PUI', [])
   end
 
   test 'add report' do
@@ -65,11 +65,11 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'edit report' do
-    edit_report('locals2c4_epi', 'patient_10', 'Asymptomatic', 3, ASSESSMENTS["assessment_2"], 'Symptomatic')
+    edit_report('locals2c4_epi', 'patient_10', 'PUI', 3, ASSESSMENTS["assessment_2"], 'Symptomatic')
   end
 
   test 'edit report and cancel' do
-    edit_report_and_cancel('locals2c4_epi', 'patient_10', 'Asymptomatic', 3, ASSESSMENTS["assessment_2"])
+    edit_report_and_cancel('locals2c4_epi', 'patient_10', 'PUI', 3, ASSESSMENTS["assessment_2"])
   end
 
   test 'clear all reports' do
@@ -77,18 +77,19 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'add comment' do
-    add_comment('locals2c3_epi', 'patient_11', 'Non-Reporting', 'comment')
+    add_comment('locals2c3_epi', 'patient_11', 'PUI', 'comment')
   end
 
   test 'export data to csv' do
     export_data_to_csv('locals2c4_epi')
   end
 
-  def search_for_and_verify_patients_under_jurisdiction(user_name, symptomatic_patients, non_reporting_patients, asymptomatic_patients, closed_patients)
+  def search_for_and_verify_patients_under_jurisdiction(user_name, symptomatic_patients, non_reporting_patients, asymptomatic_patients, pui_patients, closed_patients)
     @@system_test_utils.login(user_name)
     @@public_health_monitoring_dashboard.verify_patients_under_tab('Symptomatic', symptomatic_patients)
     @@public_health_monitoring_dashboard.verify_patients_under_tab('Non-Reporting', non_reporting_patients)
     @@public_health_monitoring_dashboard.verify_patients_under_tab('Asymptomatic', asymptomatic_patients)
+    @@public_health_monitoring_dashboard.verify_patients_under_tab('PUI', pui_patients)
     @@public_health_monitoring_dashboard.verify_patients_under_tab('Closed', closed_patients)
     @@system_test_utils.logout
   end

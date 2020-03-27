@@ -29,7 +29,7 @@ Rails.application.routes.draw do
 
   post '/patients/:id/status', to: 'patients#update_status'
   post '/patients/:id/status/clear', to: 'patients#clear_assessments'
-  post '/patients/:id/reminder', to: 'patients#send_reminder_email'
+  post '/patients/:id/reminder', to: 'patients#send_reminder'
 
   resources :patients, param: :submission_token do
     resources :assessments, only: [:create, :new, :index]
@@ -41,8 +41,6 @@ Rails.application.routes.draw do
   get '/report/already_reported', to: 'assessments#already_reported', as: :already_reported_report
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
-
-  post '/patients/assessments', to: 'assessments#new_from_email'
 
   get '/public_health/asymptomatic_patients', to: 'public_health#asymptomatic_patients', as: :public_health_asymptomatic_patients
   get '/public_health/pui_patients', to: 'public_health#pui_patients', as: :public_health_pui_patients

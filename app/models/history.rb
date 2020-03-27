@@ -24,4 +24,54 @@ class History < ApplicationRecord
                                              'Report Note'] }
 
   belongs_to :patient
+
+  # All histories within the given time frame
+  scope :in_time_frame, lambda { |time_frame|
+    case time_frame
+    when 'Last 24 Hours'
+      where('histories.created_at >= ?', 24.hours.ago)
+    when 'Last 14 Days'
+      where('histories.created_at >= ? AND histories.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+    end
+  }
+
+  # All histories that are monitoring changes in which a patient is no longer monitored
+  scope :not_monitoring, lambda {
+    where('comment LIKE \'%Not Monitoring%\'')
+  }
+
+  # All histories that are public health actions for medical evaluation referrals
+  scope :referral_for_medical_evaluation, lambda {
+    where('comment LIKE \'%Referral for Medical Evaluation%\'')
+  }
+
+  # All histories that are public health actions for documenting completed medical evaluations
+  scope :document_completed_medical_evaluation, lambda {
+    where('comment LIKE \'%Document Completed Medical Evaluation%\'')
+  }
+
+  # All histories that are public health actions for documenting medical evaluation summaries and plans
+  scope :document_medical_evaluation_summary_and_plan, lambda {
+    where('comment LIKE \'%Document Medical Evaluation Summary and Plan%\'')
+  }
+
+  # All histories that are public health actions for public health test referrals
+  scope :referral_for_public_health_test, lambda {
+    where('comment LIKE \'%Referral for Public Health Test%\'')
+  }
+
+  # All histories that are public health actions for pending test results
+  scope :public_health_test_specimen_received_by_lab_results_pending, lambda {
+    where('comment LIKE \'%Public Health Test Specimen Received by Lab - results pending%\'')
+  }
+
+  # All histories that are public health actions for positive public health test results
+  scope :results_of_public_health_test_positive, lambda {
+    where('comment LIKE \'%Results of Public Health Test - positive%\'')
+  }
+
+  # All histories that are public health actions for negative public health test results
+  scope :results_of_public_health_test_negative, lambda {
+    where('comment LIKE \'%Results of Public Health Test - negative%\'')
+  }
 end

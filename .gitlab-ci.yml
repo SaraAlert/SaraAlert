@@ -36,14 +36,13 @@ system-test:
   stage: test
   image: $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:development-test
   services:
-    - postgres:10.3-alpine
+    - mysql:latest
     - redis:latest
   variables:
     RAILS_ENV: test
-    POSTGRES_DB: disease_trakker_test
-    POSTGRES_PASSWORD: ''
-    POSTGRES_HOST_AUTH_METHOD: trust
-    POSTGRES_USER: runner
+    MYSQL_DATABASE: disease_trakker_test
+    MYSQL_ROOT_PASSWORD: ''
+    MYSQL_USER: root
     APP_IN_CI: 'true'
     REDIS_URL: redis://redis:6379
   before_script:

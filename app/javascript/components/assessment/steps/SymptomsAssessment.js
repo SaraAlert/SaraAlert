@@ -25,6 +25,8 @@ class SymptomsAssessment extends React.Component {
   }
 
   boolSymptom = symp => {
+    // null bool values will default to false
+    symp.value = symp.value === true;
     return (
       <Form.Check
         type="switch"

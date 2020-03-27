@@ -1,8 +1,8 @@
 test:
-  adapter: postgresql
+  adapter: mysql
   pool: 5
   timeout: 5000
   database: disease_trakker_test
-  host: postgres
+  host: mysql
   user: runner
   password: ''

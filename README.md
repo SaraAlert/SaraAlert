@@ -10,18 +10,17 @@ Sara Alert was built in response to the COVID-19 outbreak, but was designed to b
 
 [![MITRE](https://user-images.githubusercontent.com/14923551/77707514-b4abe680-6f9b-11ea-98f6-0f062a71d89c.png)](https://www.mitre.org/)
 
-
 ## Installing and Running
 
-Sara Alert is a Ruby on Rails application that uses the PostgreSQL database for data storage and Redis for message processing.
+Sara Alert is a Ruby on Rails application that uses the MySQL database for data storage and Redis for message processing.
 
 ### Prerequisites
 
 To work with the application, you will need to install some prerequisites:
 
 * [Ruby](https://www.ruby-lang.org/)
-* [Bundler](http://bundler.io/)
-* [Postgres](http://www.postgresql.org/)
+* [Bundler](https://bundler.io/)
+* [MySQL](https://www.mysql.com/)
 * [Redis](https://redis.io)
 
 ### Development Installation
@@ -35,7 +34,7 @@ Run the following commands from the root directory to pull in both frontend and 
 
 #### Database
 
-Run the following command from the root directory to intialize the database (note: make sure you have a Postgres database running):
+Run the following command from the root directory to intialize the database (note: make sure you have a MySQL database running):
 
 * `bundle exec rake db:drop db:create db:migrate db:setup`
 * `bundle exec rake admin:import_or_update_jurisdictions`
@@ -125,7 +124,7 @@ The `docker-compose.yml` file sets up three networks which route traffic between
 * `dt-net-assessment`: Hosts the application/services used by monitorees filling out assessments.
 * `dt-net-bridge`: Facilitiates communication between the two other networks.
 
-This results in a 'split architecture' where multiple instances of the SaraAlert application are running. This approach attempts to reduces the amount of services that have access to the monitoree database. 
+This results in a 'split architecture' where multiple instances of the SaraAlert application are running. This approach attempts to reduces the amount of services that have access to the monitoree database.
 
 A key portion of this is the use of the Nginx reverse proxy container. The configuration (located at `./nginx.conf`) will route traffic from 'untrusted' users submitting assessments to the `dt-net-assessment` application while, at the same time, enrollers and epidemiologists are routed to the enrollment database.
 
@@ -135,20 +134,20 @@ Below is a graphic depicting the services and applications present on each netwo
 
 **Environment Variable Setup**
 
-To set up Sara Alert in a staging configuration, generate two environment variable files which correspond with the networks described above: 
+To set up Sara Alert in a staging configuration, generate two environment variable files which correspond with the networks described above:
 
 * `.env-prod-assessment`
 * `.env-prod-enrollment`
 
-The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files. 
+The content for these files can be based off of the `.env-prod-assessment-example` and `.env-prod-enrollment-example` files.
 
-The `SECRET_KEY_BASE` and `POSTGRES_PASSWORD` variables should be changed at the very least. These variables should also not be the same between both assessment and enrollment instances of the files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file. 
+The `SECRET_KEY_BASE` and `MYSQL_PASSWORD` variables should be changed at the very least. These variables should also not be the same between both assessment and enrollment instances of the files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file.
 
 **Container Dependencies**
 
 Create a directory for the deployment. Move both docker compose files and both environment variable files from the previous section into this folder. Within this deployment directory, create a subdirectory called `tls` and place your `.key` and `.crt` files for the webserver inside. Name the files `puma.key` and `puma.crt`. Ensure the `.crt` and `.key` files within the `tls` directory are at least `0x004` permissions so they can be read inside the container.
 
-The Nginx configuration is also statged within the same directory. You will need to move the `nginx.conf` provided in the root of this repository into `~/tls/nginx.conf`. 
+The Nginx configuration is also statged within the same directory. You will need to move the `nginx.conf` provided in the root of this repository into `~/tls/nginx.conf`.
 
 **Deployment**
 
@@ -217,8 +216,6 @@ To report issues with the Sara Alert code, please submit tickets to [GitHub](htt
 ## Version History
 
 This project adheres to [Semantic Versioning](http://semver.org/).
-
-Releases are documented in the [CHANGELOG.md](https://github.com/SaraAlert/SaraAlert/blob/master/CHANGELOG.md).
 
 ## License
 

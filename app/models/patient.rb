@@ -59,6 +59,11 @@ class Patient < ApplicationRecord
       .where('purged = ?', false)
   }
 
+  # All individuals currently not being monitored
+  scope :monitoring_closed, lambda {
+    where('monitoring = ?', false)
+  }
+
   # All individuals that have been closed (not including purged)
   scope :monitoring_closed_without_purged, lambda {
     where('monitoring = ?', false)
@@ -135,7 +140,7 @@ class Patient < ApplicationRecord
       .left_outer_joins(:assessments)
       .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, symptomatic: true)
-      .where_assoc_not_exists(:latest_assessment, ['created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .where_assoc_not_exists(:latest_assessment, ['created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago], ignore_limit: true)
       .or(
         where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
         .where('monitoring = ?', true)
@@ -145,6 +150,38 @@ class Patient < ApplicationRecord
         .where(assessments: { patient_id: nil })
       )
       .distinct
+  }
+
+  # All individuals currently being monitored if true, all individuals otherwise
+  scope :monitoring_active, lambda { |active_monitoring|
+    where(monitoring: true) if active_monitoring
+  }
+
+  # All individuals with the given monitoring status
+  scope :monitoring_status, lambda { |monitoring_status|
+    case monitoring_status
+    when 'Symptomatic'
+      symptomatic
+    when 'Non-Reporting'
+      non_reporting
+    when 'Asymptomatic'
+      asymptomatic
+    end
+  }
+
+  # All individuals with a last date of exposure within the given time frame
+  scope :exposed_in_time_frame, lambda { |time_frame|
+    where('last_date_of_exposure > ?', time_frame)
+  }
+
+  # All individuals enrolled within the given time frame
+  scope :enrolled_in_time_frame, lambda { |time_frame|
+    case time_frame
+    when 'Last 24 Hours'
+      where('patients.created_at >= ?', 24.hours.ago)
+    when 'Last 14 Days'
+      where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+    end
   }
 
   # Order individuals based on their public health assigned risk assessment
@@ -184,6 +221,48 @@ class Patient < ApplicationRecord
     return created_at + ADMIN_OPTIONS['monitoring_period_days'].days if created_at
   end
 
+  # Is this patient symptomatic?
+  def symptomatic?
+    Patient.symptomatic.where(id: id).count.positive?
+  end
+
+  # Is this patient symptomatic?
+  def asymptomatic?
+    Patient.asymptomatic.where(id: id).count.positive?
+  end
+
+  # Is this patient non_reporting?
+  def non_reporting?
+    Patient.non_reporting.where(id: id).count.positive?
+  end
+
+  # Is this patient under investigation?
+  def pui?
+    Patient.under_investigation.where(id: id).count.positive?
+  end
+
+  # Has this patient purged?
+  def purged?
+    Patient.purged.where(id: id).count.positive?
+  end
+
+  # Has this patient purged?
+  def closed?
+    Patient.monitoring_closed_without_purged.where(id: id).count.positive?
+  end
+
+  # Current patient status
+  def status
+    return :symptomatic if symptomatic?
+    return :asymptomatic if asymptomatic?
+    return :non_reporting if non_reporting?
+    return :pui if pui?
+    return :purged if purged?
+    return :closed if closed?
+
+    :unknown
+  end
+
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
@@ -208,4 +287,45 @@ class Patient < ApplicationRecord
   def as_json(options = {})
     super((options || {}).merge(methods: :linelist))
   end
+
+  # rubocop:todo Metrics/PerceivedComplexity
+  def send_assessment(force = false) # rubocop:todo Metrics/CyclomaticComplexity
+    unless last_assessment_reminder_sent.nil?
+      return if last_assessment_reminder_sent < 24.hours.ago
+    end
+
+    # If force is set, the preferred contact time will be ignored
+    unless force
+      hour = Time.now.hour
+      # These are the hours that we consider to be morning, afternoon and evening
+      morning = (7..11)
+      afternoon = (12..16)
+      evening = (17..20)
+      if preferred_contact_time == 'Morning'
+        return unless morning.include? hour
+      elsif preferred_contact_time == 'Afternoon'
+        return unless afternoon.include? hour
+      elsif preferred_contact_time == 'Evening'
+        return unless evening.include? hour
+      end
+    end
+
+    if preferred_contact_method == 'E-mailed Web Link'
+      PatientMailer.assessment_email(self).deliver_later if ADMIN_OPTIONS['enable_email']
+    elsif preferred_contact_method == 'SMS Text-message' && responder.id == id && !force
+      # SMS-based assessments assess the patient _and_ all of their dependents
+      # If you are a dependent ie: someone whose responder.id is not your own  an assessment will not be sent to you
+      # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
+      # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
+      PatientMailer.assessment_sms(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test
+    elsif preferred_contact_method == 'SMS Texted Weblink'
+      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test
+    elsif preferred_contact_method == 'Telephone call'
+      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test
+    end
+    # TODO: perhaps this should only performed on response ie: patient completed assessment. Especially relevent for voice
+    patient.last_assessment_reminder_sent = Time.now
+    patient.save!
+  end
+  # rubocop:enable Metrics/PerceivedComplexity
 end

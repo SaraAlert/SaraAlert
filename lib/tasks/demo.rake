@@ -125,6 +125,7 @@ namespace :demo do
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
 
     jurisdictions = Jurisdiction.all
+    Analytic.delete_all
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
@@ -191,7 +192,7 @@ namespace :demo do
             secondary_telephone: '(333) 333-3333',
             secondary_telephone_type: 'Landline',
             email: "#{rand(1000000000..9999999999)}fake@example.com",
-            preferred_contact_method: 'E-mail',
+            preferred_contact_method: "E-mailed Web Link",
             port_of_origin: Faker::Address.city,
             date_of_departure: today - (rand < 0.3 ? 1.day : 0.days),
             source_of_report: rand < 0.4 ? 'Self-Identified' : 'CDC',
@@ -203,10 +204,14 @@ namespace :demo do
             last_date_of_exposure: today - rand(5).days,
             potential_exposure_location: Faker::Address.city,
             potential_exposure_country: Faker::Address.country,
-            # contact_of_known_case
+            contact_of_known_case: rand < 0.3,
             # contact_of_known_case_id
             travel_to_affected_country_or_area: rand < 0.1,
             was_in_health_care_facility_with_known_cases: rand < 0.15,
+            laboratory_personnel: rand < 0.05,
+            healthcare_personnel: rand < 0.2,
+            crew_on_passenger_or_cargo_flight: rand < 0.25,
+            member_of_a_common_exposure_cohort: rand < 0.1,
             creator: enrollers.sample,
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
@@ -239,6 +244,20 @@ namespace :demo do
             patient.additional_planned_travel_start_date = today + rand(6).days
             patient.additional_planned_travel_end_date = patient.additional_planned_travel_start_date + rand(10).days
             # patient.additional_planned_travel_related_notes
+          end
+
+          if rand < 0.1
+            patient.exposure_risk_assessment = 'High'
+            patient.monitoring_plan = 'Self-monitoring with delegated supervision'
+          elsif rand < 0.3
+            patient.exposure_risk_assessment = 'Medium'
+            patient.monitoring_plan = 'Daily active monitoring'
+          elsif rand < 0.55
+            patient.exposure_risk_assessment = 'Low'
+            patient.monitoring_plan = 'Self-monitoring with public health supervision'
+          elsif rand < 0.7
+            patient.exposure_risk_assessment = 'No Identified Risk'
+            patient.monitoring_plan = 'Self-observation'
           end
 
           patient.jurisdiction = jurisdictions.sample
