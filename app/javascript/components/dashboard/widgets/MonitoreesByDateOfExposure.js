@@ -5,13 +5,12 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 
 import _ from 'lodash';
 
-let DATES_OF_INTEREST = []; // If certain countries are desired, they can be specified here
+let DATES_OF_INTEREST = []; // If certain dates are desired, they can be specified here
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
 
 class MonitoreesByDateOfExposure extends React.Component {
   constructor(props) {
     super(props);
-    // console.log(JSON.parse(JSON.stringify(props)));
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
 
     DATES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Last Exposure Date').map(x => x.category))
