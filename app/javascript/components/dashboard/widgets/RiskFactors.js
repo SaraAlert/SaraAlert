@@ -100,7 +100,7 @@ class RiskFactors extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.riskData}
+            data={this.riskData.filter(x => x.name !== 'Total')}
             margin={{
               top: 20,
               right: 30,
@@ -123,7 +123,7 @@ class RiskFactors extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.coiData}
+            data={this.coiData.filter(x => x.name !== 'Total')}
             margin={{
               top: 20,
               right: 30,
