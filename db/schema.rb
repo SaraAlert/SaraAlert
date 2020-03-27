@@ -172,9 +172,15 @@ ActiveRecord::Schema.define(version: 2020_03_13_134912) do
     t.string "was_in_health_care_facility_with_known_cases_facility_name"
     t.text "exposure_notes"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
+    t.index ["first_name"], name: "index_patients_on_first_name"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
+    t.index ["last_name"], name: "index_patients_on_last_name"
+    t.index ["monitoring"], name: "index_patients_on_monitoring"
+    t.index ["public_health_action"], name: "index_patients_on_public_health_action"
+    t.index ["purged"], name: "index_patients_on_purged"
     t.index ["responder_id"], name: "index_patients_on_responder_id"
     t.index ["submission_token"], name: "index_patients_on_submission_token"
+    t.index ["user_defined_id_statelocal"], name: "index_patients_on_user_defined_id_statelocal"
   end
 
   create_table "roles", force: :cascade do |t|

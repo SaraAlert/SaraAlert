@@ -44,6 +44,9 @@ gem 'whenever', require: false
 # Store sessions in DB
 gem 'activerecord-session_store'
 
+# Useful association queries
+gem 'activerecord_where_assoc'
+
 # Pagination
 gem 'will_paginate'
 
