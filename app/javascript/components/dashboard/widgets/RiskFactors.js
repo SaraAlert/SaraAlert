@@ -5,10 +5,9 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import Switch from 'react-switch';
 import _ from 'lodash';
 
-const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80'];
+let RISK_FACTORS = [];
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
-
-class AgeStratificationActive extends React.Component {
+class RiskFactor extends React.Component {
   constructor(props) {
     super(props);
     this.state = { checked: false, viewTotal: this.props.viewTotal };
@@ -17,8 +16,10 @@ class AgeStratificationActive extends React.Component {
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
+    RISK_FACTORS = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Risk Factor').map(x => x.category)).sort();
+
     if (!this.ERRORS) {
-      this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', this.state.viewTotal);
+      this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', this.state.viewTotal);
     }
   }
 
@@ -45,7 +46,7 @@ class AgeStratificationActive extends React.Component {
   handleChange = checked => this.setState({ checked });
 
   toggleBetweenActiveAndTotal = viewTotal => {
-    this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', viewTotal);
+    this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', viewTotal);
   };
 
   renderBarGraph() {
@@ -55,7 +56,7 @@ class AgeStratificationActive extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.ageData}
+            data={this.riskFactor}
             margin={{
               top: 20,
               right: 30,
@@ -92,18 +93,19 @@ class AgeStratificationActive extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {AGEGROUPS.map(agegroup => (
-              <tr key={agegroup.toString() + '1'}>
-                <td key={agegroup.toString() + '2'} className="font-weight-bold">
-                  {' '}
-                  {agegroup}{' '}
-                </td>
-                {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={agegroup.toString() + risklevelIndex.toString()}>{this.ageData.find(x => x.name === agegroup)[String(risklevel)]}</td>
-                ))}
-                <td>{this.ageData.find(x => x.name === agegroup)['total']}</td>
-              </tr>
-            ))}
+            {this.riskData
+              .map(x => x.name)
+              .map(riskGroup => (
+                <tr key={riskGroup.toString() + '1'}>
+                  <td key={riskGroup.toString() + '2'} className="font-weight-bold">
+                    {riskGroup}
+                  </td>
+                  {RISKLEVELS.map((risklevel, risklevelIndex) => (
+                    <td key={riskGroup.toString() + risklevelIndex.toString()}>{this.riskData.find(x => x.name === riskGroup)[String(risklevel)]}</td>
+                  ))}
+                  <td>{this.riskData.find(x => x.name === riskGroup)['total']}</td>
+                </tr>
+              ))}
           </tbody>
         </Table>
       </div>
@@ -140,9 +142,9 @@ class AgeStratificationActive extends React.Component {
   }
 }
 
-AgeStratificationActive.propTypes = {
+RiskFactor.propTypes = {
   stats: PropTypes.object,
   viewTotal: PropTypes.bool,
 };
 
-export default AgeStratificationActive;
+export default RiskFactor;
