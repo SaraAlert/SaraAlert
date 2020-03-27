@@ -235,13 +235,10 @@ namespace :analytics do
 
   # Monitoree counts by last date of exposure by days
   def monitoree_counts_by_last_exposure_date(monitorees, active_monitoring)
-    exposure_dates = <<-SQL
-      DATE_TRUNC('day', last_date_of_exposure::date)::date
-    SQL
     monitorees.monitoring_active(active_monitoring)
               .exposed_in_time_frame(NUM_PAST_EXPOSURE_DAYS.to_s + ' days')
-              .group(exposure_dates, :exposure_risk_assessment)
-              .order(Arel.sql(exposure_dates), :exposure_risk_assessment)
+              .group(:last_date_of_exposure, :exposure_risk_assessment)
+              .order(:last_date_of_exposure, :exposure_risk_assessment)
               .count
               .map { |fields, total|
                 monitoree_count(active_monitoring, 'Last Exposure Date', fields[0], fields[1], total)
@@ -251,7 +248,7 @@ namespace :analytics do
   # Monitoree counts by last date of exposure by weeks
   def monitoree_counts_by_last_exposure_week(monitorees, active_monitoring)
     exposure_weeks = <<-SQL
-      (DATE_TRUNC('week', last_date_of_exposure::date) - '1 day'::interval)::date
+      CAST((DATE_TRUNC('week', last_date_of_exposure) - CAST('1 day' AS interval)) AS date)
     SQL
     monitorees.monitoring_active(active_monitoring)
               .exposed_in_time_frame(NUM_PAST_EXPOSURE_WEEKS.to_s + ' weeks')
@@ -266,7 +263,7 @@ namespace :analytics do
   # Monitoree counts by last date of exposure by months
   def monitoree_counts_by_last_exposure_month(monitorees, active_monitoring)
     exposure_months = <<-SQL
-      DATE_TRUNC('month', last_date_of_exposure::date)::date
+      CAST(DATE_TRUNC('month', last_date_of_exposure) AS date)
     SQL
     monitorees.monitoring_active(active_monitoring)
               .exposed_in_time_frame(NUM_PAST_EXPOSURE_MONTHS.to_s + ' months')
