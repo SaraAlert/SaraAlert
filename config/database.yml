@@ -1,9 +1,11 @@
 default: &default
-  adapter: <%= ENV['DISEASE_TRAKKER_DATABASE_ADAPTER'].presence || 'postgresql' %>
-  encoding: <%= ENV['DISEASE_TRAKKER_DATABASE_ENCODING'].presence || 'unicode' %>
+  adapter: <%= ENV['DISEASE_TRAKKER_DATABASE_ADAPTER'].presence || 'mysql2' %>
+  encoding: <%= ENV['DISEASE_TRAKKER_DATABASE_ENCODING'].presence || 'utf8' %>
   pool: <%= ENV['DISEASE_TRAKKER_DATABASE_POOL'].presence || ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
   reconnect: <%= ENV['DISEASE_TRAKKER_DATABASE_RECONNECT'].presence || 'true' %>
-  <%= ENV['DISEASE_TRAKKER_DATABASE_SOCKET'].presence ? 'socket: ' + ENV['DISEASE_TRAKKER_DATABASE_SOCKET'].presence : '' %>
+  username: <%= ENV['DISEASE_TRAKKER_DATABASE_USERNAME'].presence || 'disease_trakker' %>
+  password: <%= ENV['DISEASE_TRAKKER_DATABASE_PASSWORD'] %>
+  socket: <%= ENV['DISEASE_TRAKKER_DATABASE_SOCKET'].presence || '/tmp/mysql.sock' %>
 
 development:
   <<: *default
@@ -16,7 +18,5 @@ test:
 production:
   <<: *default
   database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'disease_trakker_production' %>
-  username: <%= ENV['DISEASE_TRAKKER_DATABASE_USERNAME'].presence || 'disease_trakker' %>
-  password: <%= ENV['DISEASE_TRAKKER_DATABASE_PASSWORD'] %>
-  host: <%= ENV['DISEASE_TRAKKER_DATABASE_HOST'] || 'localhost' %>
-  port: <%= ENV['DISEASE_TRAKKER_DATABASE_PORT'] || '5432' %>
+  host: <%= ENV['DISEASE_TRAKKER_DATABASE_HOST'] || '' %>
+  port: <%= ENV['DISEASE_TRAKKER_DATABASE_PORT'] || '' %>

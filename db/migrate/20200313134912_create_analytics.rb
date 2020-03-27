@@ -12,8 +12,8 @@ class CreateAnalytics < ActiveRecord::Migration[6.0]
       t.integer :total_reports_count
       t.integer :non_reporting_monitorees_count
 
-      t.string :monitoree_state_map
-      t.string :symptomatic_state_map
+      t.text :monitoree_state_map
+      t.text :symptomatic_state_map
 
       t.timestamps
     end
