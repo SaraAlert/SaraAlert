@@ -115,7 +115,7 @@ class Patient < ApplicationRecord
       .left_outer_joins(:assessments)
       .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, symptomatic: true)
-      .where_assoc_not_exists(:assessments, ["created_at >= ?", ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
       .or(
         where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
         .where('monitoring = ?', true)
@@ -135,7 +135,7 @@ class Patient < ApplicationRecord
       .left_outer_joins(:assessments)
       .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, symptomatic: true)
-      .where_assoc_not_exists(:latest_assessment, ["created_at < ?", ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .where_assoc_not_exists(:latest_assessment, ['created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
       .or(
         where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
         .where('monitoring = ?', true)
