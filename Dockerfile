@@ -5,7 +5,7 @@ ARG cert_dir=./certs
 COPY ${cert_dir}/ /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
-RUN apt-get update && apt-get install -y postgresql nodejs npm netcat tzdata git chromium && npm install -g yarn
+RUN apt-get update && apt-get install -y libmysqlclient-dev nodejs npm netcat tzdata git chromium && npm install -g yarn
 
 RUN yarn config set cafile /etc/ssl/certs/ca-certificates.crt
 

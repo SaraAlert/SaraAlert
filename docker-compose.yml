@@ -12,7 +12,7 @@ services:
       - dt-net-enrollment
     depends_on:
       - redis-enrollment
-      - postgres-enrollment
+      - mysql-enrollment
     command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
@@ -28,23 +28,23 @@ services:
         - dt-net-bridge
       depends_on:
         - redis-bridge
-        - postgres-assessment
+        - mysql-assessment
       command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
       volumes:
         - '~/tls:/app/disease-trakker/tls:ro'
-  postgres-enrollment:
-    image: 'postgres:10.3-alpine'
+  mysql-enrollment:
+    image: 'mysql'
     volumes:
-      - 'postgres-enrollment:/var/lib/postgresql/data'
+      - 'mysql-enrollment:/var/lib/mysql'
     env_file:
       - .env-prod-enrollment
     restart: unless-stopped
     networks:
       - dt-net-enrollment
-  postgres-assessment:
-    image: 'postgres:10.3-alpine'
+  mysql-assessment:
+    image: 'mysql'
     volumes:
-      - 'postgres-assessment:/var/lib/postgresql/data'
+      - 'mysql-assessment:/var/lib/mysql'
     env_file:
       - .env-prod-assessment
     restart: unless-stopped
@@ -79,7 +79,7 @@ services:
     depends_on:
       - redis-enrollment
       - sara-alert-enrollment
-      - postgres-enrollment
+      - mysql-enrollment
   sidekiq-bridge-enrollment:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
@@ -94,7 +94,7 @@ services:
     depends_on:
       - redis-bridge
       - sara-alert-enrollment
-      - postgres-enrollment
+      - mysql-enrollment
   sidekiq-bridge-assessment:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
@@ -109,7 +109,7 @@ services:
     depends_on:
       - redis-bridge
       - sara-alert-assessment
-      - postgres-assessment
+      - mysql-assessment
   nginx:
     image: nginx:latest
     volumes:
@@ -131,8 +131,8 @@ services:
 volumes:
   redis-enrollment:
   redis-bridge:
-  postgres-assessment:
-  postgres-enrollment:
+  mysql-assessment:
+  mysql-enrollment:
 
 networks:
   dt-net-enrollment:
