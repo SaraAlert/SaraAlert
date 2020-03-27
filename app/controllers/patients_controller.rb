@@ -155,6 +155,33 @@ class PatientsController < ApplicationController
       end
     end
     patient.save!
+
+    # Do we need to propogate to household?
+    if params.permit(:apply_to_group)[:apply_to_group]
+      patient.dependents.where.not(id: patient.id).each do |member|
+        member.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan, :exposure_risk_assessment, :public_health_action))
+        if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != member.jurisdiction_id
+          # Jurisdiction has changed
+          jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
+          unless jur.nil?
+            transfer = Transfer.new(patient: member, from_jurisdiction: member.jurisdiction, to_jurisdiction: jur, who: current_user)
+            transfer.save!
+            member.jurisdiction_id = jur.id
+          end
+        end
+        member.save!
+        history = History.new
+        history.created_by = current_user.email
+        comment = 'User changed '
+        comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
+        comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+        history.comment = comment
+        history.patient = member
+        history.history_type = 'Monitoring Change'
+        history.save
+      end
+    end
+
     history = History.new
     history.created_by = current_user.email
     comment = 'User changed '
@@ -285,6 +312,7 @@ class PatientsController < ApplicationController
       was_in_health_care_facility_with_known_cases
       was_in_health_care_facility_with_known_cases_facility_name
       laboratory_personnel
+      laboratory_personnel_facility_name
       healthcare_personnel
       healthcare_personnel_facility_name
       exposure_notes
@@ -356,6 +384,7 @@ class PatientsController < ApplicationController
       was_in_health_care_facility_with_known_cases
       was_in_health_care_facility_with_known_cases_facility_name
       laboratory_personnel
+      laboratory_personnel_facility_name
       healthcare_personnel
       healthcare_personnel_facility_name
       exposure_notes

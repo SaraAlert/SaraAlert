@@ -8,33 +8,33 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :submission_token, index: true
 
       # Monitoring represents if a monitoree is open and being currently being monitored
-      t.boolean :monitoring, default: true
+      t.boolean :monitoring, default: true, index: true
       t.string :monitoring_reason # Reason for monitoring status
 
       # Has this record been purged
-      t.boolean :purged, default: false
+      t.boolean :purged, default: false, index: true
 
       # Workflow categories
       t.string :exposure_risk_assessment
       t.string :monitoring_plan
 
       # Latest public health action
-      t.string :public_health_action, default: 'None'
+      t.string :public_health_action, default: 'None', index: true
 
       # DateTime of last assessment reminder sent
       t.datetime :last_assessment_reminder_sent
 
       # User definable identifier (STATE/LOCAL)
-      t.string :user_defined_id_statelocal
+      t.string :user_defined_id_statelocal, index: true
       # User definable identifier (CDC)
       t.string :user_defined_id_cdc
       # User definable identifier (NNDSS)
       t.string :user_defined_id_nndss
 
       # Data collected for each patient
-      t.string :first_name
+      t.string :first_name, index: true
       t.string :middle_name
-      t.string :last_name
+      t.string :last_name, index: true
       t.date :date_of_birth
       t.integer :age
       t.string :sex
@@ -105,6 +105,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
       t.string :member_of_a_common_exposure_cohort_type
       t.boolean :travel_to_affected_country_or_area
       t.boolean :laboratory_personnel
+      t.string :laboratory_personnel_facility_name
       t.boolean :healthcare_personnel
       t.string :healthcare_personnel_facility_name
       t.boolean :crew_on_passenger_or_cargo_flight

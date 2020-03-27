@@ -20,11 +20,11 @@ class EnrollerTest < ApplicationSystemTestCase
   end
 
   test 'state epi enroller enroll monitoree with foreign address' do
-    @@monitoree_enrollment_form.enroll_monitoree('state1_epi_enroller', 'monitoree_4')
+    @@monitoree_enrollment_form.enroll_monitoree('state1_epi_enroller', 'monitoree_4', true)
   end
 
   test 'state epi enroller enroll monitoree with all races and exposure risks' do
-    @@monitoree_enrollment_form.enroll_monitoree('state1_epi_enroller', 'monitoree_5')
+    @@monitoree_enrollment_form.enroll_monitoree('state1_epi_enroller', 'monitoree_5', true)
   end
 
   test 'local enroller add group member after enrolling monitoree with international additional planned travel' do
@@ -32,7 +32,7 @@ class EnrollerTest < ApplicationSystemTestCase
   end
 
   test 'state epi enroller add group member after enrolling monitoree with domestic additional planned travel' do
-    @@monitoree_enrollment_form.enroll_monitorees_in_group('state1_epi_enroller', 'monitoree_2', 'monitoree_8')
+    @@monitoree_enrollment_form.enroll_monitorees_in_group('state1_epi_enroller', 'monitoree_2', 'monitoree_8', true)
   end
 
   test 'local enroller add group member after enrolling monitoree with foreign address' do

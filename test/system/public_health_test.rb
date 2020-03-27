@@ -21,7 +21,7 @@ class PublicHealthTest < ApplicationSystemTestCase
     search_for_and_verify_patients_under_jurisdiction('state1_epi', [3], [1, 2, 6, 7], [4, 8], [5])
     search_for_and_verify_patients_under_jurisdiction('locals1c1_epi', [], [], [4], [])
     search_for_and_verify_patients_under_jurisdiction('locals1c2_epi', [], [6], [], [])
-    search_for_and_verify_patients_under_jurisdiction('state2_epi', [], [11], [9, 10], [])
+    search_for_and_verify_patients_under_jurisdiction('state2_epi', [9], [11], [10], [])
     search_for_and_verify_patients_under_jurisdiction('locals2c3_epi', [], [11], [], [])
     search_for_and_verify_patients_under_jurisdiction('locals2c4_epi', [], [], [10], [])
     search_for_and_verify_patients_under_jurisdiction('state1_epi_enroller', [3], [1, 2, 6, 7], [4, 8], [5])
@@ -41,11 +41,11 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   test 'update assigned jurisdiction' do
     update_jurisdiction('state2_epi', 'patient_11', 'Non-Reporting', 'USA, State 2, County 4', 'details')
-    search_for_and_verify_patients_under_jurisdiction('state2_epi', [], [11], [9, 10], [])
+    search_for_and_verify_patients_under_jurisdiction('state2_epi', [9], [11], [10], [])
     search_for_and_verify_patients_under_jurisdiction('locals2c3_epi', [], [], [], [])
     search_for_and_verify_patients_under_jurisdiction('locals2c4_epi', [], [11], [10], [])
   end
-  
+
   test 'view reports' do
     view_reports('state1_epi', 'patient_1', 'Non-Reporting', [1, 2])
     view_reports('state1_epi', 'patient_2', 'Non-Reporting', [1, 2])
@@ -55,7 +55,7 @@ class PublicHealthTest < ApplicationSystemTestCase
     view_reports('state1_epi', 'patient_6', 'Non-Reporting', [])
     view_reports('state1_epi', 'patient_7', 'Non-Reporting', [])
     view_reports('state1_epi', 'patient_8', 'Asymptomatic', [1, 2])
-    view_reports('state2_epi', 'patient_9', 'Asymptomatic', [1, 2, 3, 4])
+    view_reports('state2_epi', 'patient_9', 'Symptomatic', [1, 2, 3, 4])
     view_reports('locals2c4_epi', 'patient_10', 'Asymptomatic', [1, 2, 3])
     view_reports('locals2c3_epi', 'patient_11', 'Non-Reporting', [])
   end

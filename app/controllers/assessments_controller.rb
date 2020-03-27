@@ -32,11 +32,17 @@ class AssessmentsController < ApplicationController
 
   def create
     if ADMIN_OPTIONS['report_mode']
-      assessment_placeholder = {}
-      assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
-      assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes] }).to_h)
-      assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
-      ProduceAssessmentJob.perform_later assessment_placeholder
+      # Limit number of reports per time period
+      unless AssessmentReceipt.where(submission_token: @patient_submission_token)
+                              .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).count.positive?
+        assessment_placeholder = {}
+        assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
+        assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes] }).to_h)
+        assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
+        ProduceAssessmentJob.perform_later assessment_placeholder
+        assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
+        assessment_receipt.save
+      end
     else
       check_patient_token
 

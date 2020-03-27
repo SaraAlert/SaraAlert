@@ -95,48 +95,56 @@ class Patient < ApplicationRecord
       .where.not('public_health_action = ?', 'None')
   }
 
-  # Any individual whose latest report was symptomatic
+  # Any individual who has any assessments still considered symptomatic
   scope :symptomatic, lambda {
     where('monitoring = ?', true)
       .where('purged = ?', false)
-      .joins(:assessments)
-      .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
+      .left_outer_joins(:assessments)
+      .where('assessments.patient_id = patients.id')
       .where('assessments.symptomatic = ?', true)
       .where('public_health_action = ?', 'None')
+      .distinct
   }
 
   # Non reporting asymptomatic individuals
   scope :non_reporting, lambda {
     where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where('monitoring = ?', true).where('purged = ?', false)
+      .where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('public_health_action = ?', 'None')
       .left_outer_joins(:assessments)
-      .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
-      .where('assessments.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where('assessments.symptomatic = ?', false)
+      .where('assessments.patient_id = patients.id')
+      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
       .or(
         where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
         .where('monitoring = ?', true)
+        .where('purged = ?', false)
+        .where('public_health_action = ?', 'None')
         .left_outer_joins(:assessments)
         .where(assessments: { patient_id: nil })
       )
-      .where('public_health_action = ?', 'None')
+      .distinct
   }
 
   # Individuals who have reported recently and are not symptomatic
   scope :asymptomatic, lambda {
     where('monitoring = ?', true)
       .where('purged = ?', false)
+      .where('public_health_action = ?', 'None')
       .left_outer_joins(:assessments)
-      .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
-      .where('assessments.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where('assessments.symptomatic = ?', false)
+      .where('assessments.patient_id = patients.id')
+      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_not_exists(:latest_assessment, ['created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
       .or(
         where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
         .where('monitoring = ?', true)
+        .where('purged = ?', false)
+        .where('public_health_action = ?', 'None')
         .left_outer_joins(:assessments)
         .where(assessments: { patient_id: nil })
       )
-      .where('public_health_action = ?', 'None')
+      .distinct
   }
 
   # Order individuals based on their public health assigned risk assessment
@@ -190,7 +198,9 @@ class Patient < ApplicationRecord
       latest_report: latest_assessment&.created_at&.strftime('%F') || '',
       transferred: latest_transfer&.created_at&.to_s || '',
       reason_for_closure: monitoring_reason || '',
-      public_health_action: public_health_action || ''
+      public_health_action: public_health_action || '',
+      transferred_from: latest_transfer&.from_path || '',
+      transferred_to: latest_transfer&.to_path || ''
     }
   end
 

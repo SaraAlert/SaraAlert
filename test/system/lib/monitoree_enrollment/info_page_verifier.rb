@@ -7,7 +7,8 @@ require_relative '../system_test_utils'
 class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_monitoree_info(monitoree)
+  def verify_monitoree_info(monitoree, isEpi=false)
+    find('#patient-info-header').click if isEpi
     verify_identification(monitoree['identification'])
     verify_address(monitoree['address'])
     verify_contact_info(monitoree['contact_info'])
@@ -16,7 +17,8 @@ class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
     verify_potential_exposure_info(monitoree['potential_exposure_info'])
   end
 
-  def verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree)
+  def verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree, isEpi=false)
+    find('#patient-info-header').click if isEpi
     verify_identification(new_monitoree['identification'])
     verify_address(existing_monitoree['address'])
     verify_contact_info(existing_monitoree['contact_info'])
