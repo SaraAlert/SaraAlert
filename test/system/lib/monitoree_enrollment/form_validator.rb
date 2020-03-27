@@ -63,7 +63,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
 
   def verify_input_validation_for_contact_info(contact_info)
     @@system_test_utils.go_to_next_page
-    assert_selector 'div', text: 'Please indicate a preferred contact method.'
+    assert_selector 'div', text: 'Please indicate a preferred reporting method.'
     select 'Telephone call', from: 'preferred_contact_method'
     click_on 'Next'
     refute_selector 'div', text: 'Please provide an email'

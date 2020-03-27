@@ -55,8 +55,6 @@ class PatientMailer < ApplicationMailer
       to: patient.primary_telephone,
       body: contents
     )
-    patient.last_assessment_reminder_sent = Time.now
-    patient.save!
   end
 
   def assessment_sms(patient)
@@ -89,8 +87,6 @@ class PatientMailer < ApplicationMailer
       to: patient.primary_telephone,
       parameters: params
     )
-    patient.last_assessment_reminder_sent = Time.now
-    patient.save!
   end
 
   def assessment_voice(patient)
@@ -123,9 +119,6 @@ class PatientMailer < ApplicationMailer
       to: patient.primary_telephone,
       parameters: params
     )
-    # TODO: perhaps this should only performed on _successful_ response ie: User actually picked up and completed assessment
-    patient.last_assessment_reminder_sent = Time.now
-    patient.save!
   end
 
   def assessment_email(patient)
@@ -134,8 +127,6 @@ class PatientMailer < ApplicationMailer
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
     mail(to: patient.email, subject: 'Sara Alert Report Reminder')
-    patient.last_assessment_reminder_sent = Time.now
-    patient.save!
   end
 
   def closed_email(patient)

@@ -223,15 +223,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_remind_patient?
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
-    unless patient.last_assessment_reminder_sent.nil?
-      return if patient.last_assessment_reminder_sent > 24.hours.ago
-    end
-
-    # Reminder email
-    PatientMailer.assessment_email(patient).deliver_later
-
-    patient.last_assessment_reminder_sent = DateTime.now
-    return unless patient.save
+    patient.send_assessment(true)
 
     history = History.new
     history.created_by = current_user.email

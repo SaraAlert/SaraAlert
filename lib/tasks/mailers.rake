@@ -6,7 +6,7 @@ namespace :mailers do
     user = User.new(email: 'foobar@foobar.foo', password: 'foobarfoobar2')
     test_patient = Patient.new(creator: user)
     test_patient.responder = test_patient
-    test_patient.email = 'mmayer@mitre.org'
+    test_patient.email = '<test_email>'
     test_patient.submission_token = SecureRandom.hex(20)
     test_patient.save!
     PatientMailer.assessment_email(test_patient).deliver_now
@@ -17,7 +17,7 @@ namespace :mailers do
     user = User.new(email: 'foobar@foobar.foo', password: 'foobarfoobar2')
     test_patient = Patient.new(creator: user)
     test_patient.responder = test_patient
-    test_patient.email = 'mmayer@mitre.org'
+    test_patient.email = '<test_email>'
     test_patient.submission_token = SecureRandom.hex(20)
     test_patient.save!
     PatientMailer.enrollment_email(test_patient).deliver_now
@@ -64,23 +64,7 @@ namespace :mailers do
   desc "Send Assessments and Assessment Reminders To Non-Reporting Individuals"
   task send_assessments: :environment do
     Patient.non_reporting.each do |patient|
-      unless patient.last_assessment_reminder_sent.nil?
-        next if patient.last_assessment_reminder_sent < 24.hours.ago
-      end
-      if (patient.preferred_contact_method == "E-mailed Web Link")
-        PatientMailer.assessment_email(patient).deliver_later if ADMIN_OPTIONS['enable_email']
-      end
-      # SMS-based assessments assess the patient _and_ all of their dependents
-      # If you are a dependent ie: someone whose responder.id is not your own  an assessment will not be sent to you
-      if (patient.preferred_contact_method == "SMS Text-message" && patient.responder.id == patient.id)
-        PatientMailer.assessment_sms(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
-      end
-      if (patient.preferred_contact_method == "SMS Texted Weblink")
-        PatientMailer.assessment_sms_weblink(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
-      end
-      if (patient.preferred_contact_method == "Telephone call")
-        PatientMailer.assessment_voice(patient).deliver_later if ADMIN_OPTIONS['enable_voice']
-      end
+      patient.send_assessment
     end
   end
 

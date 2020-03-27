@@ -14,10 +14,10 @@ reporting_limit: <%= ENV["SARA_ALERT_REPORTING_LIMIT_MINUTES"] || 15 %>
 enable_email: <%= ENV["SARA_ALERT_ENABLE_EMAIL"] || true %>
 
 # Should Sara Alert send SMS messages?
-enable_sms: <%= ENV["SARA_ALERT_ENABLE_SMS"] || false %>
+enable_sms: <%= ENV["SARA_ALERT_ENABLE_SMS"] || true %>
 
 # Should Sara Alert make telephone calls?
-enable_voice: <%= ENV["SARA_ALERT_ENABLE_VOICE"] || false %>
+enable_voice: <%= ENV["SARA_ALERT_ENABLE_VOICE"] || true %>
 
 # Assessment Report Mode
 report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || false %>

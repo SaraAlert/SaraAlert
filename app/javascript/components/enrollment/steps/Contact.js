@@ -351,7 +351,7 @@ var schema = yup.object().shape({
     .nullable(),
   preferred_contact_method: yup
     .string()
-    .required('Please indicate a preferred contact method.')
+    .required('Please indicate a preferred reporting method.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   preferred_contact_time: yup
