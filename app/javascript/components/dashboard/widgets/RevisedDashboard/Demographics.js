@@ -111,10 +111,6 @@ class AgeStratificationActive extends React.Component {
             <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
           </BarChart>
         </ResponsiveContainer>
-        <div className="text-secondary text-right">
-          <i className="fas fa-exclamation-circle mr-1"></i>
-          Showing top {NUMBER_OF_COUNTRIES_TO_SHOW} countries with highest total number of monitorees
-        </div>
       </div>
     );
   }
@@ -188,6 +184,10 @@ class AgeStratificationActive extends React.Component {
           <Switch onChange={this.handleChange} onColor="#82A0E4" height={18} width={40} uncheckedIcon={false} checked={this.state.checked} />
         </div>
         {this.state.checked ? this.renderBarGraph() : this.renderTable()}
+        <div className="text-secondary text-right">
+          <i className="fas fa-exclamation-circle mr-1"></i>
+          Showing top {NUMBER_OF_COUNTRIES_TO_SHOW} countries with highest total number of monitorees
+        </div>
       </span>
     );
   }
