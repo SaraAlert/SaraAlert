@@ -10,7 +10,6 @@ Sara Alert was built in response to the COVID-19 outbreak, but was designed to b
 
 [![mitre](https://user-images.githubusercontent.com/14923551/77242919-240b8a00-6bda-11ea-887d-2a42919eb6fb.jpg)](https://www.mitre.org/)
 
-
 ## Installing and Running
 
 Sara Alert is a Ruby on Rails application that uses the MySQL database for data storage and Redis for message processing.
@@ -217,8 +216,6 @@ To report issues with the Sara Alert code, please submit tickets to [GitHub](htt
 ## Version History
 
 This project adheres to [Semantic Versioning](http://semver.org/).
-
-Releases are documented in the [CHANGELOG.md](https://github.com/SaraAlert/SaraAlert/blob/master/CHANGELOG.md).
 
 ## License
 

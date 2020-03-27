@@ -11,7 +11,7 @@ class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
     find('#patient-info-header').click if isEpi
     verify_identification(monitoree['identification'])
     verify_address(monitoree['address'])
-    verify_contact_info(monitoree['contact_info'])
+    #verify_contact_info(monitoree['contact_info'])
     verify_arrival_info(monitoree['arrival_info'])
     verify_additional_planned_travel(monitoree['additional_planned_travel'])
     verify_potential_exposure_info(monitoree['potential_exposure_info'])
@@ -21,7 +21,7 @@ class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
     find('#patient-info-header').click if isEpi
     verify_identification(new_monitoree['identification'])
     verify_address(existing_monitoree['address'])
-    verify_contact_info(existing_monitoree['contact_info'])
+    #verify_contact_info(existing_monitoree['contact_info'])
     verify_arrival_info(existing_monitoree['arrival_info'])
     verify_additional_planned_travel(existing_monitoree['additional_planned_travel'])
     verify_potential_exposure_info(existing_monitoree['potential_exposure_info'])
