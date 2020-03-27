@@ -59,6 +59,11 @@ class Patient < ApplicationRecord
       .where('purged = ?', false)
   }
 
+  # All individuals currently not being monitored
+  scope :monitoring_closed, lambda {
+    where('monitoring = ?', false)
+  }
+
   # All individuals that have been closed (not including purged)
   scope :monitoring_closed_without_purged, lambda {
     where('monitoring = ?', false)
@@ -145,6 +150,38 @@ class Patient < ApplicationRecord
         .where(assessments: { patient_id: nil })
       )
       .distinct
+  }
+
+  # All individuals currently being monitored if true, all individuals otherwise
+  scope :monitoring_active, lambda { |active_monitoring|
+    where(monitoring: true) if active_monitoring
+  }
+
+  # All individuals with the given monitoring status
+  scope :monitoring_status, lambda { |monitoring_status|
+    case monitoring_status
+    when 'Symptomatic'
+      symptomatic
+    when 'Non-Reporting'
+      non_reporting
+    when 'Asymptomatic'
+      asymptomatic
+    end
+  }
+
+  # All individuals with a last date of exposure within the given time frame
+  scope :exposed_in_time_frame, lambda { |time_frame|
+    where('last_date_of_exposure > (CURRENT_DATE - CAST(? AS interval))', time_frame)
+  }
+
+  # All individuals enrolled within the given time frame
+  scope :enrolled_in_time_frame, lambda { |time_frame|
+    case time_frame
+    when 'Last 24 Hours'
+      where('patients.created_at >= ?', 24.hours.ago)
+    when 'Last 14 Days'
+      where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+    end
   }
 
   # Order individuals based on their public health assigned risk assessment

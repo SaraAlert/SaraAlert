@@ -1,7 +1,7 @@
 patient_1:
   id: 1
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 35.days.ago %>"
+  updated_at: "<%= 35.days.ago %>"
   responder_id: 1
   creator_id: 1
   jurisdiction_id: 2
@@ -11,8 +11,7 @@ patient_1:
   first_name: "Domingo54"
   middle_name: "Simonis31"
   last_name: "Boehm62"
-  date_of_birth: "1995-05-20"
-  age: 25
+  date_of_birth: "<%= 25.years.ago %>"
   sex: "Male"
   american_indian_or_alaska_native: true
   ethnicity: "Not Hispanic or Latino"
@@ -40,19 +39,18 @@ patient_1:
   additional_planned_travel_destination: "Saulchester"
   additional_planned_travel_destination_state: "Carolside"
   additional_planned_travel_port_of_departure: "New Vaughn"
-  date_of_departure: "2020-02-11"
-  date_of_arrival: "2020-02-11"
-  additional_planned_travel_start_date: "2020-02-12"
-  additional_planned_travel_end_date: "2020-02-21"
-  last_date_of_exposure: "2020-02-10"
+  date_of_departure: "<%= 45.days.ago %>"
+  date_of_arrival: "<%= 45.days.ago %>"
+  additional_planned_travel_start_date: "<%= 44.days.ago %>"
+  additional_planned_travel_end_date: "<%= 35.days.ago %>"
+  last_date_of_exposure: "<%= 45.days.ago %>"
   potential_exposure_location: "East Troy"
-  potential_exposure_country: "Georgia"
-  travel_to_affected_country_or_area: "false"
-  was_in_health_care_facility_with_known_cases: false
+  potential_exposure_country: "Malaysia"
+  travel_to_affected_country_or_area: true
 patient_2:
   id: 2
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 2
   creator_id: 4
   jurisdiction_id: 2
@@ -62,8 +60,7 @@ patient_2:
   first_name: "Chris32"
   middle_name: "Abernathy31"
   last_name: "Kirlin44"
-  date_of_birth: "1991-01-25"
-  age: 29
+  date_of_birth: "<%= 29.years.ago %>"
   sex: "Male"
   native_hawaiian_or_other_pacific_islander: true
   ethnicity: "Hispanic or Latino"
@@ -87,17 +84,16 @@ patient_2:
   flight_or_vessel_number: "T343"
   flight_or_vessel_carrier: "Morton Airlines"
   port_of_entry_into_usa: "Brittanieshire"
-  date_of_departure: "2020-02-11"
-  date_of_arrival: "2020-02-11"
-  last_date_of_exposure: "2020-02-08"
+  date_of_departure: "<%= 45.days.ago %>"
+  date_of_arrival: "<%= 45.days.ago %>"
+  last_date_of_exposure: "<%= 47.days.ago %>"
   potential_exposure_location: "East Vernaland"
   potential_exposure_country: "United States Minor Outlying Islands"
-  travel_to_affected_country_or_area: "false"
-  was_in_health_care_facility_with_known_cases: false
+  was_in_health_care_facility_with_known_cases: true
 patient_3:
   id: 3
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 3
   creator_id: 2
   jurisdiction_id: 2
@@ -105,8 +101,8 @@ patient_3:
   monitoring: true
   first_name: "Brianne43"
   last_name: "Johnson09"
-  date_of_birth: "1979-04-19"
-  age: 41
+  date_of_birth: "<%= 42.years.ago %>"
+  sex: "Female"
   address_line_1: "41585 Sauer Divide"
   address_city: "North Ranae"
   address_state: "California"
@@ -115,11 +111,11 @@ patient_3:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-02-08"
+  last_date_of_exposure: "<%= 47.days.ago %>"
 patient_4:
   id: 4
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 4
   creator_id: 3
   jurisdiction_id: 4
@@ -127,8 +123,8 @@ patient_4:
   monitoring: true
   first_name: "Lavern91"
   last_name: "Ruecker20"
-  date_of_birth: "2004-03-16"
-  age: 16
+  date_of_birth: "<%= 16.years.ago %>"
+  sex: "Female"
   address_line_1: "91227 Rueben Skyway"
   address_city: "Port Kaycee"
   address_state: "Connecticut"
@@ -137,11 +133,11 @@ patient_4:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-02-28"
+  last_date_of_exposure: "<%= 27.days.ago %>"
 patient_5:
   id: 5
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 5
   creator_id: 2
   jurisdiction_id: 2
@@ -149,8 +145,8 @@ patient_5:
   monitoring: false
   first_name: "Nicolas00"
   last_name: "McClure72"
-  date_of_birth: "2006-07-11"
-  age: 14
+  date_of_birth: "<%= 14.years.ago %>"
+  sex: "Unknown"
   address_line_1: "74671 Beahan Stravenue"
   address_city: "South Wilmertown"
   address_state: "New York"
@@ -159,11 +155,12 @@ patient_5:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "Self_Identified"
-  last_date_of_exposure: "2020-01-20"
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: "<%= 66.days.ago %>"
 patient_6:
   id: 6
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 6
   creator_id: 2
   jurisdiction_id: 5
@@ -171,8 +168,8 @@ patient_6:
   monitoring: true
   first_name: "Kendall65"
   last_name: "Roberts79"
-  date_of_birth: "1979-10-07"
-  age: 40
+  date_of_birth: "<%= 42.years.ago %>"
+  sex: "Male"
   address_line_1: "3212 Granville Corners"
   address_city: "Emoryburgh"
   address_state: "Wisconsin"
@@ -181,11 +178,13 @@ patient_6:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-03-04"
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "<%= 22.days.ago %>"
+  public_health_action: 'Results of Public Health Test - negative'
 patient_7:
   id: 7
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 45.days.ago %>"
+  updated_at: "<%= 45.days.ago %>"
   responder_id: 7
   creator_id: 3
   jurisdiction_id: 2
@@ -193,8 +192,8 @@ patient_7:
   monitoring: true
   first_name: "Emory10"
   last_name: "O'Reilly83"
-  date_of_birth: "1973-08-28"
-  age: 47
+  date_of_birth: "<%= 46.years.ago %>"
+  sex: "Unknown"
   address_line_1: "55068 Elliott Garden"
   address_city: "Mohammedville"
   address_state: "North Dakota"
@@ -203,11 +202,13 @@ patient_7:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-01-04"
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: "<%= 83.days.ago %>"
+  public_health_action: 'Results of Public Health Test - negative'
 patient_8:
   id: 8
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 17.days.ago %>"
+  updated_at: "<%= 17.days.ago %>"
   responder_id: 8
   creator_id: 3
   jurisdiction_id: 2
@@ -215,8 +216,8 @@ patient_8:
   monitoring: true
   first_name: "Carmelina02"
   last_name: "Kunze43"
-  date_of_birth: "2011-09-10"
-  age: 8
+  date_of_birth: "<%= 8.years.ago %>"
+  sex: "Female"
   address_line_1: "94238 Douglas Tunnel"
   address_city: "Port Kermithaven"
   address_state: "Delaware"
@@ -225,11 +226,13 @@ patient_8:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-02-15"
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "<%= 41.days.ago %>"
+  public_health_action: 'Results of Public Health Test - positive'
 patient_9:
   id: 9
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 17.days.ago %>"
+  updated_at: "<%= 17.days.ago %>"
   responder_id: 9
   creator_id: 3
   jurisdiction_id: 3
@@ -237,8 +240,8 @@ patient_9:
   monitoring: true
   first_name: "Borer35"
   last_name: "Pollich01"
-  date_of_birth: "2014-01-20"
-  age: 6
+  date_of_birth: "<%= 6.years.ago %>"
+  sex: "Female"
   address_line_1: "65278 Ledner Island"
   address_city: "West Amosfurt"
   address_state: "Hawaii"
@@ -247,11 +250,13 @@ patient_9:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-02-15"
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: "<%= 41.days.ago %>"
+  public_health_action: 'Results of Public Health Test - positive'
 patient_10:
   id: 10
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 8.days.ago %>"
+  updated_at: "<%= 8.days.ago %>"
   responder_id: 10
   creator_id: 3
   jurisdiction_id: 7
@@ -259,8 +264,7 @@ patient_10:
   monitoring: true
   first_name: "Hettinger54"
   last_name: "Schmitt03"
-  date_of_birth: "2011-09-10"
-  age: 8
+  date_of_birth: "<%= 9.years.ago %>"
   address_line_1: "7135 Michaela Stravenue"
   address_city: "North Maciefort"
   address_state: "Kansas"
@@ -269,11 +273,13 @@ patient_10:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-03-05"
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: "<%= 22.days.ago %>"
+  public_health_action: 'Public Health Test Specimen Received by Lab - results pending'
 patient_11:
   id: 11
-  created_at: "2020-02-11 14:30:07"
-  updated_at: "2020-02-11 14:30:07"
+  created_at: "<%= 8.days.ago %>"
+  updated_at: "<%= 8.days.ago %>"
   responder_id: 11
   creator_id: 3
   jurisdiction_id: 6
@@ -281,8 +287,8 @@ patient_11:
   monitoring: true
   first_name: "Danelle24"
   last_name: "Nikolaus58"
-  date_of_birth: "2011-09-10"
-  age: 8
+  date_of_birth: "<%= 6.years.ago %>"
+  exposure_risk_assessment: 'Medium'
   address_line_1: "55660 McCullough Summit"
   address_city: "South Arthur"
   address_state: "Massachusetts"
@@ -291,4 +297,194 @@ patient_11:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "2020-02-29"
+  last_date_of_exposure: "<%= 27.days.ago %>"
+  public_health_action: 'Public Health Test Specimen Received by Lab - results pending'
+patient_12:
+  id: 12
+  created_at: "<%= 6.days.ago %>"
+  updated_at: "<%= 6.days.ago %>"
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "David"
+  last_name: "Smith"
+  sex: "Male"
+  date_of_birth: "<%= 100.years.ago %>"
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: "<%= 35.days.ago %>"
+  potential_exposure_country: "China"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: false
+  laboratory_personnel: true
+  public_health_action: 'Referral for Public Health Test'
+patient_13:
+  id: 13
+  created_at: "<%= 4.days.ago %>"
+  updated_at: "<%= 4.days.ago %>"
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Stephen"
+  last_name: "Yoo"
+  sex: "Male"
+  date_of_birth: "<%= 69.years.ago %>"
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: "<%= 179.days.ago %>"
+  potential_exposure_country: "Korea"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: false
+  public_health_action: 'Referral for Public Health Test'
+patient_14:
+  id: 14
+  created_at: "<%= 4.days.ago %>"
+  updated_at: "<%= 4.days.ago %>"
+  jurisdiction_id: 1
+  monitoring: false
+  first_name: "Sarah"
+  last_name: "Chung"
+  sex: "Female"
+  date_of_birth: "<%= 66.years.ago %>"
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "<%= 318.days.ago %>"
+  potential_exposure_country: "Brazil"
+  contact_of_known_case: true
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: false
+  healthcare_personnel: true
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: false
+  laboratory_personnel: false
+  public_health_action: 'Document Medical Evaluation Summary and Plan'
+patient_15:
+  id: 15
+  created_at: "<%= 3.days.ago %>"
+  updated_at: "<%= 3.days.ago %>"
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Jon"
+  last_name: "Snow"
+  sex: "Unknown"
+  date_of_birth: "<%= 50.years.ago %>"
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: "<%= 134.days.ago %>"
+  potential_exposure_country: "Iceland"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: false
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: true
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: false
+  public_health_action: 'Document Medical Evaluation Summary and Plan'
+patient_16:
+  id: 16
+  created_at: "<%= 2.days.ago %>"
+  updated_at: "<%= 2.days.ago %>"
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Stephen"
+  last_name: "Curry"
+  sex: "Male"
+  date_of_birth: "<%= 45.years.ago %>"
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: "<%= 26.days.ago %>"
+  potential_exposure_country: "Faroe Islands"
+  contact_of_known_case: true
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: false
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: false
+  public_health_action: 'Document Completed Medical Evaluation'
+patient_17:
+  id: 17
+  created_at: "<%= 1.day.ago %>"
+  updated_at: "<%= 1.day.ago %>"
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Arya"
+  last_name: "Stark"
+  sex: "Unknown"
+  date_of_birth: "<%= 36.years.ago %>"
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: "<%= 84.days.ago %>"
+  potential_exposure_country: "Faroe Islands"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: false
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: false
+  public_health_action: 'Referral for Medical Evaluation'
+patient_18:
+  id: 18
+  created_at: "<%= 23.hours.ago %>"
+  updated_at: "<%= 23.hours.ago %>"
+  jurisdiction_id: 1
+  monitoring: false
+  first_name: "Theon"
+  last_name: "Greyjoy"
+  sex: "Unknown"
+  date_of_birth: "<%= 35.years.ago %>"
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "<%= 322.days.ago %>"
+  potential_exposure_country: "Malaysia"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: true
+  laboratory_personnel: true
+  public_health_action: 'Document Completed Medical Evaluation'
+patient_19:
+  id: 19
+  created_at: "<%= 15.hours.ago %>"
+  updated_at: "<%= 15.hours.ago %>"
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Laura"
+  last_name: "Smith"
+  sex: "Female"
+  date_of_birth: "<%= 19.years.ago %>"
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: "<%= 34.days.ago %>"
+  potential_exposure_country: "Malaysia"
+  contact_of_known_case: true
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: false
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: false
+  crew_on_passenger_or_cargo_flight: false
+  laboratory_personnel: true
+  public_health_action: 'Referral for Medical Evaluation'
+patient_20:
+  id: 20
+  created_at: "<%= 4.hours.ago %>"
+  updated_at: "<%= 4.hours.ago %>"
+  jurisdiction_id: 1
+  monitoring: true
+  first_name: "Ruby"
+  last_name: "Kim"
+  sex: "Female"
+  date_of_birth: "<%= 5.years.ago %>"
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: "<%= 1.day.ago %>"
+  potential_exposure_country: "Malaysia"
+  contact_of_known_case: false
+  travel_to_affected_country_or_area: true
+  was_in_health_care_facility_with_known_cases: true
+  healthcare_personnel: false
+  member_of_a_common_exposure_cohort: true
+  crew_on_passenger_or_cargo_flight: false
+  laboratory_personnel: false
+  public_health_action: 'Referral for Medical Evaluation'
