@@ -20,6 +20,10 @@
     $('#patients_table_<%= type %>').DataTable({
       "serverSide": true,
       "ajax": "public_health/<%= type %>",
+      "lengthMenu": [10, 15, 25, 50, 100],
+      "pageLength": 15,
+      'processing': true,
+      "language": { processing: '<i class="fas fa-cog fa-spin fa-2x"></i>'},
       "columns": [
         { "data": "linelist.name",
           "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
@@ -41,5 +45,6 @@
       ],
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });
+    $.fn.dataTable.ext.errMode = 'throw';
   });
 </script>

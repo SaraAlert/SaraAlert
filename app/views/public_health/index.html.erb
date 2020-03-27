@@ -82,49 +82,49 @@
   </ul>
 
   <div class="tab-content">
-    <div class="card card-square tab-pane fade show active pb-4" id="symptomatic" role="tabpanel" aria-labelledby="symptomatic-tab">
+    <div class="card card-square tab-pane show active pb-4" id="symptomatic" role="tabpanel" aria-labelledby="symptomatic-tab">
       <p class="lead px-4 pt-4 pb-3">Monitorees who have reported symptoms, which need to be reviewed.</p>
       <%= render partial: "patients", locals: { type: 'symptomatic_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/symptomatic/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
-    <div class="card card-square tab-pane fade pb-4" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
+    <div class="card card-square tab-pane pb-4" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
       <p class="lead px-4 pt-4 pb-3">Monitorees who have failed to report during the last day, who were not also considered symptomatic.</p>
       <%= render partial: "patients", locals: { type: 'non_reporting_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/nonreporting/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
-    <div class="card card-square tab-pane fade pb-4" id="asymptomatic" role="tabpanel" aria-labelledby="asymptomatic-tab">
+    <div class="card card-square tab-pane pb-4" id="asymptomatic" role="tabpanel" aria-labelledby="asymptomatic-tab">
       <p class="lead px-4 pt-4 pb-3">Monitorees currently reporting no symptoms, who have reported during the last day.</p>
       <%= render partial: "patients", locals: { type: 'asymptomatic_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/asymptomatic/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
-    <div class="card card-square tab-pane fade show pb-4" id="pui" role="tabpanel" aria-labelledby="pui-tab">
+    <div class="card card-square tab-pane show pb-4" id="pui" role="tabpanel" aria-labelledby="pui-tab">
       <p class="lead px-4 pt-4 pb-3">Monitorees who are currently being followed up on by public health.</p>
       <%= render partial: "patients", locals: { type: 'pui_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/pui/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
-    <div class="card card-square tab-pane fade pb-4" id="closed" role="tabpanel" aria-labelledby="closed-tab">
+    <div class="card card-square tab-pane pb-4" id="closed" role="tabpanel" aria-labelledby="closed-tab">
       <p class="lead px-4 pt-4 pb-3">Monitorees not currently being monitored.</p>
       <%= render partial: "patients", locals: { type: 'closed_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/closed/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
-    <div class="card card-square tab-pane fade pb-4" id="transferred-in" role="tabpanel" aria-labelledby="transferred-in-tab">
+    <div class="card card-square tab-pane pb-4" id="transferred-in" role="tabpanel" aria-labelledby="transferred-in-tab">
       <p class="lead px-4 pt-4 pb-3">Monitorees that have been transferred into this jurisdiction during the last 24 hours.</p>
       <%= render partial: "patients", locals: { type: 'transferred_in_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/transferred_in/csv"><i class="fas fa-file-csv"></i> Export CSV</a>
       <% end %>
     </div>
-    <div class="card card-square tab-pane fade pb-4" id="transferred-out" role="tabpanel" aria-labelledby="transferred-out-tab">
+    <div class="card card-square tab-pane pb-4" id="transferred-out" role="tabpanel" aria-labelledby="transferred-out-tab">
       <p class="lead px-4 pt-4 pb-3">Monitorees that have been transferred out of this jurisdiction.</p>
       <%= render partial: "patients", locals: { type: 'transferred_out_patients', p_links: false } %>
       <% if current_user.can_export? %>
