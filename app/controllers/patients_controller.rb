@@ -210,8 +210,8 @@ class PatientsController < ApplicationController
     history.save
   end
 
-  def send_reminder_email
-    # Send a new report reminder email to the monitoree
+  def send_reminder
+    # Send a new report reminder to the monitoree
     redirect_to(root_url) && return unless current_user.can_remind_patient?
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
@@ -227,7 +227,7 @@ class PatientsController < ApplicationController
 
     history = History.new
     history.created_by = current_user.email
-    history.comment = 'User sent a report reminder email to the monitoree.'
+    history.comment = 'User sent a report reminder to the monitoree.'
     history.patient = patient
     history.history_type = 'Report Reminder'
     history.save

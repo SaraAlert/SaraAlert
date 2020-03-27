@@ -75,7 +75,7 @@
       <div class="pb-1">
         <div class="btn-group" role="group">
           <%= react_component("subject/ClearReports", { current_user: current_user, authenticity_token: form_authenticity_token, patient: @patient } ) %>
-          <%= react_component("subject/SendReminder", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <%= react_component("subject/SendReminder", { authenticity_token: form_authenticity_token, patient: @patient, disabled: (!@patient.last_assessment_reminder_sent.nil? && @patient.last_assessment_reminder_sent > 24.hours.ago) } ) %>
         </div>
       </div>
     </div>

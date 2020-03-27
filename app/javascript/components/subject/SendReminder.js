@@ -40,7 +40,7 @@ class SendReminder extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>You are about to send a report reminder email to this monitoree.</p>
+          <p>You are about to send a report reminder to this monitoree.</p>
           <p>
             <b>You can only send one reminder per monitoree per 24 hours.</b> Are you sure you want to do this?
           </p>
@@ -60,7 +60,7 @@ class SendReminder extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button onClick={this.toggleReportReminderModal} className="ml-2">
+        <Button onClick={this.toggleReportReminderModal} className="ml-2" disabled={this.props.disabled}>
           Send Report Reminder
         </Button>
         {this.state.showReportReminderModal && this.createModal('Send Report Reminder', this.toggleReportReminderModal, this.sendReminder)}
@@ -72,6 +72,7 @@ class SendReminder extends React.Component {
 SendReminder.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default SendReminder;
