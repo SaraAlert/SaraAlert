@@ -59,6 +59,7 @@ class Assessment extends React.Component {
     }
   }
 
+  // TODO: This needs to use generic symptoms lists and not be hard-coded
   hasChanges() {
     let currentAssessment = _.cloneDeep(this.props.assessment);
     let symptoms = ['cough', 'difficulty_breathing', 'symptomatic'];

@@ -287,4 +287,45 @@ class Patient < ApplicationRecord
   def as_json(options = {})
     super((options || {}).merge(methods: :linelist))
   end
+
+  # rubocop:todo Metrics/PerceivedComplexity
+  def send_assessment(force = false) # rubocop:todo Metrics/CyclomaticComplexity
+    unless last_assessment_reminder_sent.nil?
+      return if last_assessment_reminder_sent < 24.hours.ago
+    end
+
+    # If force is set, the preferred contact time will be ignored
+    unless force
+      hour = Time.now.hour
+      # These are the hours that we consider to be morning, afternoon and evening
+      morning = (7..11)
+      afternoon = (12..16)
+      evening = (17..20)
+      if preferred_contact_time == 'Morning'
+        return unless morning.include? hour
+      elsif preferred_contact_time == 'Afternoon'
+        return unless afternoon.include? hour
+      elsif preferred_contact_time == 'Evening'
+        return unless evening.include? hour
+      end
+    end
+
+    if preferred_contact_method == 'E-mailed Web Link'
+      PatientMailer.assessment_email(self).deliver_later if ADMIN_OPTIONS['enable_email']
+    elsif preferred_contact_method == 'SMS Text-message' && responder.id == id && !force
+      # SMS-based assessments assess the patient _and_ all of their dependents
+      # If you are a dependent ie: someone whose responder.id is not your own  an assessment will not be sent to you
+      # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
+      # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
+      PatientMailer.assessment_sms(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test
+    elsif preferred_contact_method == 'SMS Texted Weblink'
+      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test
+    elsif preferred_contact_method == 'Telephone call'
+      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test
+    end
+    # TODO: perhaps this should only performed on response ie: patient completed assessment. Especially relevent for voice
+    patient.last_assessment_reminder_sent = Time.now
+    patient.save!
+  end
+  # rubocop:enable Metrics/PerceivedComplexity
 end

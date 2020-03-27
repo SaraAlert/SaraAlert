@@ -2,13 +2,7 @@
 
 # AssessmentsController: for assessment actions
 class AssessmentsController < ApplicationController
-  protect_from_forgery except: %i[new_from_email]
-
   def index; end
-
-  def new_from_email
-    redirect_to new_patient_assessment_url(params[:patient_submission_token])
-  end
 
   def new
     @assessment = Assessment.new
@@ -27,7 +21,7 @@ class AssessmentsController < ApplicationController
     jurisdiction = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction unless ADMIN_OPTIONS['report_mode']
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
     @symptoms = reporting_condition.symptoms
-    @threshold_hash = reporting_condition.threshold_condition_hash
+    @threshold_hash = jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash
   end
 
   def create
@@ -39,6 +33,10 @@ class AssessmentsController < ApplicationController
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes] }).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
+        # The generic 'experiencing_symptoms' boolean is used in cases where a user does not specify _which_ symptoms they are experiencing,
+        # a value of true will result in an asesssment being marked as symptomatic regardless of if symptoms are specified
+        experiencing_symptoms = (%w[yes yeah].include? params.permit(:experiencing_symptoms)['experiencing_symptoms'].downcase.gsub(/\W/, ''))
+        assessment_placeholder['experiencing_symptoms'] = experiencing_symptoms
         ProduceAssessmentJob.perform_later assessment_placeholder
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save

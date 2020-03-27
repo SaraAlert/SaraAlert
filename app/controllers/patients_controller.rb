@@ -94,21 +94,7 @@ class PatientsController < ApplicationController
 
     # Attempt to save and continue; else if failed redirect to index
     if patient.save
-      # TODO: An error should be raised to the user if no email/text was delivered (e.g. if redis is not running)
-      # TODO: Also consider recording on the patient whether an email/text was sent and run a regular job to retry sending unsent
-      # TODO: Switch on preferred primary contact
-      if patient.email.present?
-        # deliver_later forces the use of ActiveJob
-        # sidekiq and redis should be running for this to work
-        # If these are not running, all jobs will be completed when services start
-        PatientMailer.enrollment_email(patient).deliver_later if ADMIN_OPTIONS['enable_email']
-      end
-      if patient.primary_telephone.present?
-        # deliver_later forces the use of ActiveJob
-        # sidekiq and redis should be running for this to work
-        # If these are not running, all jobs will be completed when services start
-        PatientMailer.enrollment_sms(patient).deliver_later if ADMIN_OPTIONS['enable_sms']
-      end
+      send_enrollment_notification(patient)
 
       # Create a history for the enrollment
       history = History.new
@@ -121,6 +107,28 @@ class PatientsController < ApplicationController
       render(json: patient) && return
     else
       render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
+    end
+  end
+
+  def send_enrollment_notification(patient)
+    # TODO: An error should be raised to the user if no email/text was delivered (e.g. if redis is not running)
+    # TODO: Also consider recording on the patient whether an email/text was sent and run a regular job to retry sending unsent
+    # TODO: Switch on preferred primary contact
+    if patient.email.present? && patient.preferred_contact_method == 'E-mailed Web Link'
+      # deliver_later forces the use of ActiveJob
+      # sidekiq and redis should be running for this to work
+      # If these are not running, all jobs will be completed when services start
+      PatientMailer.enrollment_email(patient).deliver_later if ADMIN_OPTIONS['enable_email'] && !Rails.env.test?
+    elsif patient.primary_telephone.present? && patient.preferred_contact_method == 'SMS Texted Weblink'
+      # deliver_later forces the use of ActiveJob
+      # sidekiq and redis should be running for this to work
+      # If these are not running, all jobs will be completed when services start
+      PatientMailer.enrollment_sms_weblink(patient).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+    elsif patient.primary_telephone.present? && patient.preferred_contact_method == 'SMS Text-message'
+      # deliver_later forces the use of ActiveJob
+      # sidekiq and redis should be running for this to work
+      # If these are not running, all jobs will be completed when services start
+      PatientMailer.enrollment_sms_text_based(patient).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
     end
   end
 
@@ -215,15 +223,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_remind_patient?
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
-    unless patient.last_assessment_reminder_sent.nil?
-      return if patient.last_assessment_reminder_sent > 24.hours.ago
-    end
-
-    # Reminder email
-    PatientMailer.assessment_email(patient).deliver_later
-
-    patient.last_assessment_reminder_sent = DateTime.now
-    return unless patient.save
+    patient.send_assessment(true)
 
     history = History.new
     history.created_by = current_user.email

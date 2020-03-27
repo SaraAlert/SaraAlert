@@ -192,7 +192,7 @@ namespace :demo do
             secondary_telephone: '(333) 333-3333',
             secondary_telephone_type: 'Landline',
             email: "#{rand(1000000000..9999999999)}fake@example.com",
-            preferred_contact_method: 'E-mail',
+            preferred_contact_method: "E-mailed Web Link",
             port_of_origin: Faker::Address.city,
             date_of_departure: today - (rand < 0.3 ? 1.day : 0.days),
             source_of_report: rand < 0.4 ? 'Self-Identified' : 'CDC',
