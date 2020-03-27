@@ -13,27 +13,27 @@ class RiskStratification extends React.Component {
     let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
     let x = activeMonitorees.filter(x => x.category_type === 'Monitoring Status');
     SYMPTOMLEVELS.forEach(symptomlevel => {
-      data[symptomlevel] = {};
+      data[String(symptomlevel)] = {};
       x.filter(y => y.category === symptomlevel).forEach(z => {
-        data[symptomlevel][z.risk_level] = z.total;
+        data[String(symptomlevel)][z.risk_level] = z.total;
       });
     });
     RISKLEVELS.forEach(risklevel => {
-      totalCount[risklevel] = 0;
+      totalCount[String(risklevel)] = 0;
       SYMPTOMLEVELS.forEach(symptomlevel => {
-        totalCount.total += data[symptomlevel][risklevel];
-        totalCount[risklevel] += data[symptomlevel][risklevel];
+        totalCount.total += data[String(symptomlevel)][String(risklevel)];
+        totalCount[String(symptomlevel)] += data[String(symptomlevel)][String(risklevel)];
       });
     });
     let tableData = {};
     // We want to know the value (n) and it's percentage for each risklevel for each symptom
     // so we create two values the symptom_n value and the symptom_p value
     RISKLEVELS.forEach(risklevel => {
-      tableData[risklevel] = {};
+      tableData[String(risklevel)] = {};
       SYMPTOMLEVELS.forEach(symptomlevel => {
-        tableData[risklevel][`${symptomlevel}_n`] = data[symptomlevel][risklevel];
-        tableData[risklevel][`${symptomlevel}_p`] =
-          totalCount[risklevel] === 0 ? 0 : ((data[symptomlevel][risklevel] * 100) / totalCount[risklevel]).toFixed(0);
+        tableData[String(risklevel)][`${symptomlevel}_n`] = data[String(symptomlevel)][String(risklevel)];
+        tableData[String(risklevel)][`${symptomlevel}_p`] =
+          totalCount[String(risklevel)] === 0 ? 0 : ((data[String(symptomlevel)][String(risklevel)] * 100) / totalCount[String(risklevel)]).toFixed(0);
       });
     });
 
@@ -133,7 +133,7 @@ class RiskStratification extends React.Component {
                   <td className="font-weight-bold">Symptomatic</td>
                   {RISKLEVELS.map(risklevel => (
                     <td key={risklevel.toString()}>
-                      {this.tableData[risklevel]['Symptomatic_n']} ({this.tableData[risklevel]['Symptomatic_p']}%)
+                      {this.tableData[String(risklevel)]['Symptomatic_n']} ({this.tableData[String(risklevel)]['Symptomatic_p']}%)
                     </td>
                   ))}
                   <td>
@@ -144,7 +144,7 @@ class RiskStratification extends React.Component {
                   <td className="font-weight-bold">Asymptomatic</td>
                   {RISKLEVELS.map(risklevel => (
                     <td key={risklevel.toString()}>
-                      {this.tableData[risklevel]['Asymptomatic_n']} ({this.tableData[risklevel]['Asymptomatic_p']}%)
+                      {this.tableData[String(risklevel)]['Asymptomatic_n']} ({this.tableData[String(risklevel)]['Asymptomatic_p']}%)
                     </td>
                   ))}
                   <td>
@@ -155,7 +155,7 @@ class RiskStratification extends React.Component {
                   <td className="font-weight-bold">Non-Reporting</td>
                   {RISKLEVELS.map(risklevel => (
                     <td key={risklevel.toString()}>
-                      {this.tableData[risklevel]['Non-Reporting_n']} ({this.tableData[risklevel]['Non-Reporting_p']}%)
+                      {this.tableData[String(risklevel)]['Non-Reporting_n']} ({this.tableData[String(risklevel)]['Non-Reporting_p']}%)
                     </td>
                   ))}
                   <td>

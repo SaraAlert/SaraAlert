@@ -5,8 +5,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import Switch from 'react-switch';
 import _ from 'lodash';
 
-const SEXES = ['Male', 'Female', 'Unknown'];
-let COUNTRIES_OF_INTEREST = []; // If certain countries are desired, they can be specified here
+const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80'];
 const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
 
 class AgeStratificationActive extends React.Component {
@@ -18,22 +17,13 @@ class AgeStratificationActive extends React.Component {
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
-    COUNTRIES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).sort();
-    COUNTRIES_OF_INTEREST = COUNTRIES_OF_INTEREST.filter(country => country !== 'Total');
     if (!this.ERRORS) {
-      this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', this.state.viewTotal);
-      this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
-      // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
-      // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
-      // for each country, then sort them, then take the top 5.
-      this.coiData = this.coiData
-        .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
-        .slice(0, 5);
+      this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', this.state.viewTotal);
     }
   }
 
   obtainValueFromMonitoreeCounts = (enumerations, category_type, onlyActive) => {
-    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === onlyActive);
+    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === !onlyActive);
     let thisCategoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
     return enumerations.map(x => {
       let thisGroup = thisCategoryGroups.filter(group => group.category === x);
@@ -52,13 +42,10 @@ class AgeStratificationActive extends React.Component {
   handleChange = checked => this.setState({ checked });
 
   toggleBetweenActiveAndTotal = viewTotal => {
-    this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', viewTotal);
-    this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', viewTotal);
-    this.coiData = this.coiData
-      .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
-      .slice(0, 5);
+    this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', viewTotal);
     this.setState({ viewTotal });
   };
+
   renderBarGraph() {
     return (
       <div className="mx-3 mt-2">
@@ -66,30 +53,7 @@ class AgeStratificationActive extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.sexData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="High" stackId="a" fill="#FA897B" />
-            <Bar dataKey="Medium" stackId="a" fill="#FFDD94" />
-            <Bar dataKey="Low" stackId="a" fill="#D0E6A5" />
-            <Bar dataKey="No Identified Risk" stackId="a" fill="#333" />
-            <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
-          </BarChart>
-        </ResponsiveContainer>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            width={500}
-            height={300}
-            data={this.coiData}
+            data={this.ageData}
             margin={{
               top: 20,
               right: 30,
@@ -125,40 +89,17 @@ class AgeStratificationActive extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {SEXES.map(sexgroup => (
-              <tr key={sexgroup.toString() + '1'}>
-                <td key={sexgroup.toString() + '2'} className="font-weight-bold">
-                  {sexgroup}
+            {AGEGROUPS.map(agegroup => (
+              <tr key={agegroup.toString() + '1'}>
+                <td key={agegroup.toString() + '2'} className="font-weight-bold">
+                  {' '}
+                  {agegroup}{' '}
                 </td>
                 {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={sexgroup.toString() + risklevelIndex.toString()}>{this.sexData.find(x => x.name === sexgroup)[String(risklevel)]}</td>
+                  <td key={agegroup.toString() + risklevelIndex.toString()}>{this.ageData.find(x => x.name === agegroup)[String(risklevel)]}</td>
                 ))}
               </tr>
             ))}
-          </tbody>
-        </Table>
-        <Table striped hover className="border mt-2">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {this.coiData
-              .map(x => x.name)
-              .map(coiGroup => (
-                <tr key={coiGroup.toString() + '1'}>
-                  <td key={coiGroup.toString() + '2'} className="font-weight-bold">
-                    {coiGroup}
-                  </td>
-                  {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                    <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[String(risklevel)]}</td>
-                  ))}
-                </tr>
-              ))}
           </tbody>
         </Table>
       </div>
