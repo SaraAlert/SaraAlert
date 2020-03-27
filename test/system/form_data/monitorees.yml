@@ -10,7 +10,7 @@ monitoree_1:
     address_state: "Wyoming"
     address_zip: "81210-6722"
   contact_info:
-    primary_telephone: "(555) 555-0111"
+    primary_telephone: "+15555550111"
     primary_telephone_type: "Plain Cell"
     preferred_contact_method: "Telephone call"
   potential_exposure_info:
@@ -46,8 +46,8 @@ monitoree_2:
     monitored_address_zip: "12345"
     monitored_address_county: "White Plains"
   contact_info:
-    primary_telephone: "(555) 555-0112"
-    secondary_telephone: "(555) 555-0113"
+    primary_telephone: "+15555550112"
+    secondary_telephone: "+15555550113"
     primary_telephone_type: "Smartphone"
     secondary_telephone_type: "Landline"
     email: "carey@example.com"
@@ -138,7 +138,7 @@ monitoree_5:
     address_state: "North Carolina"
     address_zip: "50099-6977"
   contact_info:
-    primary_telephone: "(555) 555-0114"
+    primary_telephone: "+15555550114"
     primary_telephone_type: "Smartphone"
     preferred_contact_method: "SMS Text-message"
   potential_exposure_info:
@@ -180,8 +180,8 @@ monitoree_6:
     monitored_address_zip: "91829"
     monitored_address_county: "Sussex"
   contact_info:
-    primary_telephone: "(555) 555-0115"
-    secondary_telephone: "(555) 555-0116"
+    primary_telephone: "+15555550115"
+    secondary_telephone: "+15555550116"
     primary_telephone_type: "Landline"
     secondary_telephone_type: "Plain Cell"
     email: "roberta@example.com"
@@ -251,7 +251,7 @@ monitoree_10:
     address_zip: "33194-7675"
     address_county: "Bergen"
   contact_info:
-    primary_telephone: "(555) 555-0117"
+    primary_telephone: "+15555550117"
     primary_telephone_type: "Landline"
     preferred_contact_method: "Telephone call"
     preferred_contact_time: "Evening"
@@ -270,7 +270,7 @@ monitoree_11:
     address_zip: "33194-7675"
     address_county: "Bergen"
   contact_info:
-    primary_telephone: "(555) 555-0118"
+    primary_telephone: "+15555550118"
     primary_telephone_type: "Landline"
     preferred_contact_method: "Telephone call"
     preferred_contact_time: "Evening"
@@ -325,8 +325,8 @@ monitoree_12:
     foreign_monitored_address_zip: "68039"
     foreign_monitored_address_county: "Lake Bryant"
   contact_info:
-    primary_telephone: "(555) 555-0121"
-    secondary_telephone: "(555) 555-0122"
+    primary_telephone: "+15555550121"
+    secondary_telephone: "+15555550122"
     primary_telephone_type: "Smartphone"
     secondary_telephone_type: "Landline"
     email: "carey@example.com"
