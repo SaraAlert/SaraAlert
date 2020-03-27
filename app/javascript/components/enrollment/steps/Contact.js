@@ -55,7 +55,7 @@ class Contact extends React.Component {
           confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
           preferred_contact_method: yup
             .string()
-            .required('Please indicate a preferred contact method.')
+            .required('Please indicate a preferred reporting method.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       } else if (event?.currentTarget.value == 'E-mailed Web Link') {
@@ -81,7 +81,7 @@ class Contact extends React.Component {
             .oneOf([yup.ref('email'), null], 'Confirm email must match.'),
           preferred_contact_method: yup
             .string()
-            .required('Please indicate a preferred contact method.')
+            .required('Please indicate a preferred reporting method.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       }
