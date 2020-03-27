@@ -18,7 +18,7 @@ namespace :analytics do
   NUM_PAST_EXPOSURE_DAYS = 28
   NUM_PAST_EXPOSURE_WEEKS = 53
   NUM_PAST_EXPOSURE_MONTHS = 13
-  
+
   task cache_current_analytics: :environment do
     jurisdiction_analytic_map = {}
 
@@ -110,14 +110,10 @@ namespace :analytics do
     # Active and overall counts for date of last exposure
     counts.concat(monitoree_counts_by_last_exposure_date(monitorees, true))
     counts.concat(monitoree_counts_by_last_exposure_date(monitorees, false))
-    counts.concat(monitoree_counts_by_last_exposure_week(monitorees, true))
-    counts.concat(monitoree_counts_by_last_exposure_week(monitorees, false))
-    counts.concat(monitoree_counts_by_last_exposure_month(monitorees, true))
-    counts.concat(monitoree_counts_by_last_exposure_month(monitorees, false))
 
     counts
   end
-  
+
   # Total monitoree counts
   def monitoree_counts_by_total(monitorees, active_monitoring)
     monitorees.monitoring_active(active_monitoring)
@@ -147,14 +143,14 @@ namespace :analytics do
   def monitoree_counts_by_age_group(monitorees, active_monitoring)
     age_groups = <<-SQL
       CASE
-        WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) < 20 THEN '0-19'
-        WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 20 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 30 THEN '20-29'
-        WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 30 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 40 THEN '30-39'
-        WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 40 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 50 THEN '40-49'
-        WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 50 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 60 THEN '50-59'
-        WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 60 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 70 THEN '60-69'
-        WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 70 AND EXTRACT(YEAR FROM AGE(date_of_birth)) < 80 THEN '70-79'
-        WHEN EXTRACT(YEAR FROM AGE(date_of_birth)) >= 80 THEN '>=80'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 20 THEN '0-19'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 20 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 30 THEN '20-29'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 30 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 40 THEN '30-39'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 40 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 50 THEN '40-49'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 50 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 60 THEN '50-59'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 60 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 70 THEN '60-69'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 70 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 80 THEN '70-79'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 80 THEN '>=80'
       END
     SQL
     monitorees.monitoring_active(active_monitoring)
@@ -236,42 +232,12 @@ namespace :analytics do
   # Monitoree counts by last date of exposure by days
   def monitoree_counts_by_last_exposure_date(monitorees, active_monitoring)
     monitorees.monitoring_active(active_monitoring)
-              .exposed_in_time_frame(NUM_PAST_EXPOSURE_DAYS.to_s + ' days')
+              .exposed_in_time_frame(NUM_PAST_EXPOSURE_DAYS.days.ago.to_date.to_datetime)
               .group(:last_date_of_exposure, :exposure_risk_assessment)
               .order(:last_date_of_exposure, :exposure_risk_assessment)
               .count
               .map { |fields, total|
                 monitoree_count(active_monitoring, 'Last Exposure Date', fields[0], fields[1], total)
-              }
-  end
-
-  # Monitoree counts by last date of exposure by weeks
-  def monitoree_counts_by_last_exposure_week(monitorees, active_monitoring)
-    exposure_weeks = <<-SQL
-      CAST((DATE_TRUNC('week', last_date_of_exposure) - CAST('1 day' AS interval)) AS date)
-    SQL
-    monitorees.monitoring_active(active_monitoring)
-              .exposed_in_time_frame(NUM_PAST_EXPOSURE_WEEKS.to_s + ' weeks')
-              .group(exposure_weeks, :exposure_risk_assessment)
-              .order(Arel.sql(exposure_weeks), :exposure_risk_assessment)
-              .count
-              .map { |fields, total|
-                monitoree_count(active_monitoring, 'Last Exposure Week', fields[0], fields[1], total)
-              }
-  end
-
-  # Monitoree counts by last date of exposure by months
-  def monitoree_counts_by_last_exposure_month(monitorees, active_monitoring)
-    exposure_months = <<-SQL
-      CAST(DATE_TRUNC('month', last_date_of_exposure) AS date)
-    SQL
-    monitorees.monitoring_active(active_monitoring)
-              .exposed_in_time_frame(NUM_PAST_EXPOSURE_MONTHS.to_s + ' months')
-              .group(exposure_months, :exposure_risk_assessment)
-              .order(Arel.sql(exposure_months), :exposure_risk_assessment)
-              .count
-              .map { |fields, total|
-                monitoree_count(active_monitoring, 'Last Exposure Month', fields[0], fields[1], total)
               }
   end
 

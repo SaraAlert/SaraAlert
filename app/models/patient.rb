@@ -140,7 +140,7 @@ class Patient < ApplicationRecord
       .left_outer_joins(:assessments)
       .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, symptomatic: true)
-      .where_assoc_not_exists(:latest_assessment, ['created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .where_assoc_not_exists(:latest_assessment, ['created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago], ignore_limit: true)
       .or(
         where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
         .where('monitoring = ?', true)
@@ -171,7 +171,7 @@ class Patient < ApplicationRecord
 
   # All individuals with a last date of exposure within the given time frame
   scope :exposed_in_time_frame, lambda { |time_frame|
-    where('last_date_of_exposure > (CURRENT_DATE - CAST(? AS interval))', time_frame)
+    where('last_date_of_exposure > ?', time_frame)
   }
 
   # All individuals enrolled within the given time frame
@@ -259,6 +259,7 @@ class Patient < ApplicationRecord
     return :pui if pui?
     return :purged if purged?
     return :closed if closed?
+
     :unknown
   end
 

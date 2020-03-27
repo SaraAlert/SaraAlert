@@ -13,10 +13,10 @@ before_install:
   - bundle exec gemsurance
 services:
   - xvfb
-  - postgresql
+  - mysql
   - redis-server
 before_script:
-  - psql -c 'create database disease_trakker_test;' -U postgres
+  - mysql -u root -e "CREATE USER 'disease_trakker'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'disease_trakker'@'localhost';"
   - yarn install --ignore-engines
 script:
   - ./node_modules/.bin/eslint app/javascript/components/
