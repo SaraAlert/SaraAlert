@@ -17,6 +17,7 @@
 </div>
 <script>
   $(document).ready(function() {
+    $.fn.dataTable.ext.errMode = 'throw';
     $('#patients_table_<%= type %>').DataTable({
       "serverSide": true,
       "ajax": "public_health/<%= type %>",
@@ -45,6 +46,5 @@
       ],
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });
-    $.fn.dataTable.ext.errMode = 'throw';
   });
 </script>
