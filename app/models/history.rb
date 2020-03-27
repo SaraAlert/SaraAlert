@@ -27,8 +27,12 @@ class History < ApplicationRecord
 
   # All histories within the given time frame
   scope :in_time_frame, lambda { |time_frame|
-    where('histories.created_at >= ?', 24.hours.ago) if time_frame == 'Last 24 Hours'
-    where('histories.created_at >= ? AND histories.created_at < ?', 14.days.ago.to_date, Date.today) if time_frame == 'Last 14 Days'
+    case time_frame
+    when 'Last 24 Hours'
+      where('histories.created_at >= ?', 24.hours.ago)
+    when 'Last 14 Days'
+      where('histories.created_at >= ? AND histories.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+    end
   }
 
   # All histories that are monitoring changes in which a patient is no longer monitored

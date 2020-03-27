@@ -180,6 +180,7 @@ patient_6:
   source_of_report: "CDC"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 22.days.ago %>"
+  public_health_action: 'Results of Public Health Test - negative'
 patient_7:
   id: 7
   created_at: "<%= 45.days.ago %>"
@@ -203,6 +204,7 @@ patient_7:
   source_of_report: "CDC"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 83.days.ago %>"
+  public_health_action: 'Results of Public Health Test - negative'
 patient_8:
   id: 8
   created_at: "<%= 17.days.ago %>"
@@ -226,6 +228,7 @@ patient_8:
   source_of_report: "CDC"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 41.days.ago %>"
+  public_health_action: 'Results of Public Health Test - positive'
 patient_9:
   id: 9
   created_at: "<%= 17.days.ago %>"
@@ -249,6 +252,7 @@ patient_9:
   source_of_report: "CDC"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 41.days.ago %>"
+  public_health_action: 'Results of Public Health Test - positive'
 patient_10:
   id: 10
   created_at: "<%= 8.days.ago %>"
@@ -271,6 +275,7 @@ patient_10:
   source_of_report: "CDC"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 22.days.ago %>"
+  public_health_action: 'Public Health Test Specimen Received by Lab - results pending'
 patient_11:
   id: 11
   created_at: "<%= 8.days.ago %>"
@@ -293,6 +298,7 @@ patient_11:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   last_date_of_exposure: "<%= 27.days.ago %>"
+  public_health_action: 'Public Health Test Specimen Received by Lab - results pending'
 patient_12:
   id: 12
   created_at: "<%= 6.days.ago %>"
@@ -313,6 +319,7 @@ patient_12:
   member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: true
+  public_health_action: 'Referral for Public Health Test'
 patient_13:
   id: 13
   created_at: "<%= 4.days.ago %>"
@@ -333,6 +340,7 @@ patient_13:
   member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
+  public_health_action: 'Referral for Public Health Test'
 patient_14:
   id: 14
   created_at: "<%= 4.days.ago %>"
@@ -353,6 +361,7 @@ patient_14:
   member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: false
+  public_health_action: 'Document Medical Evaluation Summary and Plan'
 patient_15:
   id: 15
   created_at: "<%= 3.days.ago %>"
@@ -373,6 +382,7 @@ patient_15:
   member_of_a_common_exposure_cohort: true
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
+  public_health_action: 'Document Medical Evaluation Summary and Plan'
 patient_16:
   id: 16
   created_at: "<%= 2.days.ago %>"
@@ -393,6 +403,7 @@ patient_16:
   member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
+  public_health_action: 'Document Completed Medical Evaluation'
 patient_17:
   id: 17
   created_at: "<%= 1.day.ago %>"
@@ -413,6 +424,7 @@ patient_17:
   member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
+  public_health_action: 'Referral for Medical Evaluation'
 patient_18:
   id: 18
   created_at: "<%= 23.hours.ago %>"
@@ -433,6 +445,7 @@ patient_18:
   member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: true
+  public_health_action: 'Document Completed Medical Evaluation'
 patient_19:
   id: 19
   created_at: "<%= 15.hours.ago %>"
@@ -453,6 +466,7 @@ patient_19:
   member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: true
+  public_health_action: 'Referral for Medical Evaluation'
 patient_20:
   id: 20
   created_at: "<%= 4.hours.ago %>"
@@ -473,3 +487,4 @@ patient_20:
   member_of_a_common_exposure_cohort: true
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: false
+  public_health_action: 'Referral for Medical Evaluation'

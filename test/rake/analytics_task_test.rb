@@ -24,17 +24,21 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
 
   test "monitoree counts by monitoring status" do
     active_counts = monitoree_counts_by_monitoring_status(@@monitorees)
-    verify_monitoree_count(active_counts, 0, true, 'Monitoring Status', 'Symptomatic', 'Missing', 2)
-    verify_monitoree_count(active_counts, 1, true, 'Monitoring Status', 'Non-Reporting', 'High', 2)
-    verify_monitoree_count(active_counts, 2, true, 'Monitoring Status', 'Non-Reporting', 'Low', 1)
-    verify_monitoree_count(active_counts, 3, true, 'Monitoring Status', 'Non-Reporting', 'Medium', 3)
-    verify_monitoree_count(active_counts, 4, true, 'Monitoring Status', 'Non-Reporting', 'No Identified Risk', 2)
-    verify_monitoree_count(active_counts, 5, true, 'Monitoring Status', 'Non-Reporting', 'Missing', 2)
-    verify_monitoree_count(active_counts, 6, true, 'Monitoring Status', 'Asymptomatic', 'High', 1)
-    verify_monitoree_count(active_counts, 7, true, 'Monitoring Status', 'Asymptomatic', 'Low', 1)
-    verify_monitoree_count(active_counts, 8, true, 'Monitoring Status', 'Asymptomatic', 'Medium', 1)
-    verify_monitoree_count(active_counts, 9, true, 'Monitoring Status', 'Asymptomatic', 'No Identified Risk', 2)
-    assert_equal(11, active_counts.length)
+    verify_monitoree_count(active_counts, 0, true, 'Monitoring Status', 'Symptomatic', 'Missing', 1)
+    verify_monitoree_count(active_counts, 1, true, 'Monitoring Status', 'Non-Reporting', 'Missing', 2)
+    verify_monitoree_count(active_counts, 2, true, 'Monitoring Status', 'Asymptomatic', 'Missing', 1)
+    assert_equal(3, active_counts.length)
+    # verify_monitoree_count(active_counts, 0, true, 'Monitoring Status', 'Symptomatic', 'Missing', 2)
+    # verify_monitoree_count(active_counts, 1, true, 'Monitoring Status', 'Non-Reporting', 'High', 2)
+    # verify_monitoree_count(active_counts, 2, true, 'Monitoring Status', 'Non-Reporting', 'Low', 1)
+    # verify_monitoree_count(active_counts, 3, true, 'Monitoring Status', 'Non-Reporting', 'Medium', 3)
+    # verify_monitoree_count(active_counts, 4, true, 'Monitoring Status', 'Non-Reporting', 'No Identified Risk', 2)
+    # verify_monitoree_count(active_counts, 5, true, 'Monitoring Status', 'Non-Reporting', 'Missing', 2)
+    # verify_monitoree_count(active_counts, 6, true, 'Monitoring Status', 'Asymptomatic', 'High', 1)
+    # verify_monitoree_count(active_counts, 7, true, 'Monitoring Status', 'Asymptomatic', 'Low', 1)
+    # verify_monitoree_count(active_counts, 8, true, 'Monitoring Status', 'Asymptomatic', 'Medium', 1)
+    # verify_monitoree_count(active_counts, 9, true, 'Monitoring Status', 'Asymptomatic', 'No Identified Risk', 2)
+    # assert_equal(11, active_counts.length)
   end
 
   test "monitoree counts by age group" do
@@ -220,7 +224,7 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
 
   test "monitoree counts by last exposure week" do
     active_counts = monitoree_counts_by_last_exposure_week(@@monitorees, true)
-    verify_monitoree_count(active_counts, 0, true, 'Last Exposure Week', weeks_ago(26), 'Medium', 1)
+    verify_monitoree_count(active_counts, 0, true, 'Last Exposure Week', weeks_ago(25), 'Medium', 1)
     verify_monitoree_count(active_counts, 1, true, 'Last Exposure Week', weeks_ago(19), 'High', 1)
     verify_monitoree_count(active_counts, 2, true, 'Last Exposure Week', weeks_ago(12), 'Medium', 1)
     verify_monitoree_count(active_counts, 3, true, 'Last Exposure Week', weeks_ago(12), 'No Identified Risk', 1)
@@ -240,7 +244,7 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
     overall_counts = monitoree_counts_by_last_exposure_week(@@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Week', weeks_ago(46), 'Low', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Week', weeks_ago(45), 'Low', 1)
-    verify_monitoree_count(overall_counts, 2, false, 'Last Exposure Week', weeks_ago(26), 'Medium', 1)
+    verify_monitoree_count(overall_counts, 2, false, 'Last Exposure Week', weeks_ago(25), 'Medium', 1)
     verify_monitoree_count(overall_counts, 3, false, 'Last Exposure Week', weeks_ago(19), 'High', 1)
     verify_monitoree_count(overall_counts, 4, false, 'Last Exposure Week', weeks_ago(12), 'Medium', 1)
     verify_monitoree_count(overall_counts, 5, false, 'Last Exposure Week', weeks_ago(12), 'No Identified Risk', 1)
@@ -266,37 +270,39 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 1, true, 'Last Exposure Month', months_ago(4), 'High', 1)
     verify_monitoree_count(active_counts, 2, true, 'Last Exposure Month', months_ago(2), 'Medium', 1)
     verify_monitoree_count(active_counts, 3, true, 'Last Exposure Month', months_ago(2), 'No Identified Risk', 1)
-    verify_monitoree_count(active_counts, 4, true, 'Last Exposure Month', months_ago(1), 'High', 1)
-    verify_monitoree_count(active_counts, 5, true, 'Last Exposure Month', months_ago(1), 'Low', 1)
-    verify_monitoree_count(active_counts, 6, true, 'Last Exposure Month', months_ago(1), 'Medium', 2)
-    verify_monitoree_count(active_counts, 7, true, 'Last Exposure Month', months_ago(1), 'No Identified Risk', 2)
-    verify_monitoree_count(active_counts, 8, true, 'Last Exposure Month', months_ago(1), 'Missing', 4)
-    verify_monitoree_count(active_counts, 9, true, 'Last Exposure Month', months_ago(0), 'High', 1)
-    verify_monitoree_count(active_counts, 10, true, 'Last Exposure Month', months_ago(0), 'Low', 1)
-    verify_monitoree_count(active_counts, 11, true, 'Last Exposure Month', months_ago(0), 'No Identified Risk', 1)
-    assert_equal(12, active_counts.length)
+    verify_monitoree_count(active_counts, 4, true, 'Last Exposure Month', months_ago(1), 'Low', 1)
+    verify_monitoree_count(active_counts, 5, true, 'Last Exposure Month', months_ago(1), 'Medium', 2)
+    verify_monitoree_count(active_counts, 6, true, 'Last Exposure Month', months_ago(1), 'No Identified Risk', 2)
+    verify_monitoree_count(active_counts, 7, true, 'Last Exposure Month', months_ago(1), 'Missing', 4)
+    verify_monitoree_count(active_counts, 8, true, 'Last Exposure Month', months_ago(0), 'High', 2)
+    verify_monitoree_count(active_counts, 9, true, 'Last Exposure Month', months_ago(0), 'Low', 1)
+    verify_monitoree_count(active_counts, 10, true, 'Last Exposure Month', months_ago(0), 'No Identified Risk', 1)
+    assert_equal(11, active_counts.length)
     overall_counts = monitoree_counts_by_last_exposure_month(@@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Month', months_ago(10), 'Low', 2)
     verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Month', months_ago(6), 'Medium', 1)
     verify_monitoree_count(overall_counts, 2, false, 'Last Exposure Month', months_ago(4), 'High', 1)
     verify_monitoree_count(overall_counts, 3, false, 'Last Exposure Month', months_ago(2), 'Medium', 2)
     verify_monitoree_count(overall_counts, 4, false, 'Last Exposure Month', months_ago(2), 'No Identified Risk', 1)
-    verify_monitoree_count(overall_counts, 5, false, 'Last Exposure Month', months_ago(1), 'High', 1)
-    verify_monitoree_count(overall_counts, 6, false, 'Last Exposure Month', months_ago(1), 'Low', 1)
-    verify_monitoree_count(overall_counts, 7, false, 'Last Exposure Month', months_ago(1), 'Medium', 2)
-    verify_monitoree_count(overall_counts, 8, false, 'Last Exposure Month', months_ago(1), 'No Identified Risk', 2)
-    verify_monitoree_count(overall_counts, 9, false, 'Last Exposure Month', months_ago(1), 'Missing', 4)
-    verify_monitoree_count(overall_counts, 10, false, 'Last Exposure Month', months_ago(0), 'High', 1)
-    verify_monitoree_count(overall_counts, 11, false, 'Last Exposure Month', months_ago(0), 'Low', 1)
-    verify_monitoree_count(overall_counts, 12, false, 'Last Exposure Month', months_ago(0), 'No Identified Risk', 1)
-    assert_equal(13, overall_counts.length)
+    verify_monitoree_count(overall_counts, 5, false, 'Last Exposure Month', months_ago(1), 'Low', 1)
+    verify_monitoree_count(overall_counts, 6, false, 'Last Exposure Month', months_ago(1), 'Medium', 2)
+    verify_monitoree_count(overall_counts, 7, false, 'Last Exposure Month', months_ago(1), 'No Identified Risk', 2)
+    verify_monitoree_count(overall_counts, 8, false, 'Last Exposure Month', months_ago(1), 'Missing', 4)
+    verify_monitoree_count(overall_counts, 9, false, 'Last Exposure Month', months_ago(0), 'High', 2)
+    verify_monitoree_count(overall_counts, 10, false, 'Last Exposure Month', months_ago(0), 'Low', 1)
+    verify_monitoree_count(overall_counts, 11, false, 'Last Exposure Month', months_ago(0), 'No Identified Risk', 1)
+    assert_equal(12, overall_counts.length)
   end
 
   test "monitoree snapshots" do
     snapshots = all_monitoree_snapshots(@@monitorees, 1)
-    verify_snapshot(snapshots, 0, 'Last 24 Hours', 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-    verify_snapshot(snapshots, 1, 'Last 14 Days', 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-    verify_snapshot(snapshots, 2, 'Total', 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    verify_snapshot(snapshots, 0, 'Last 24 Hours', 3, 0, 1, 0, 2, 2, 1, 1, 1, 1, 1)
+    # verify_snapshot(snapshots, 1, 'Last 14 Days', 7, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1) # test is dependent on time zone
+    verify_snapshot(snapshots, 2, 'Total', 20, 0, 3, 0, 3, 3, 2, 2, 2, 2, 2)
+    snapshots = all_monitoree_snapshots(Patient.where(jurisdiction_id: 2), 2)
+    verify_snapshot(snapshots, 0, 'Last 24 Hours', 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0)
+    # verify_snapshot(snapshots, 1, 'Last 14 Days', 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1) # test is dependent on time zone
+    verify_snapshot(snapshots, 2, 'Total', 6, 2, 1, 2, 0, 0, 0, 0, 0, 1, 1)
   end
 
   def verify_monitoree_count(monitoree_counts, index, active_monitoring, category_type, category, risk_level, count)
@@ -338,6 +344,6 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
   end
 
   def monitoree_count_err_msg(index, active_monitoring, category_type)
-    "Incorrect count for #{category_type}: #{index} (#{active_monitoring ? 'Active' : 'Overall'})"
+    "Incorrect count for #{category_type}: #{index} (#{active_monitoring ? 'active' : 'overall'})"
   end
 end

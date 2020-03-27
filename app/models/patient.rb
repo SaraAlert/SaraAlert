@@ -178,9 +178,9 @@ class Patient < ApplicationRecord
   scope :enrolled_in_time_frame, lambda { |time_frame|
     case time_frame
     when 'Last 24 Hours'
-      where('patients.created_at >= ?', 24.hours.ago.to_date)
+      where('patients.created_at >= ?', 24.hours.ago)
     when 'Last 14 Days'
-      where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date, Date.today)
+      where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     end
   }
 
