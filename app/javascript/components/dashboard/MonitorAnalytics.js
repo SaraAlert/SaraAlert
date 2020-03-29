@@ -16,26 +16,24 @@ class MonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.state = { checked: false, viewTotal: false };
-    this.handleClick = this.handleClick.bind(this);
+    this.exportAsPNG = this.exportAsPNG.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
   }
 
-  handleClick() {
+  exportAsPNG() {
     var node = document.getElementById('sara-alert-body');
     domtoimage
       .toPng(node)
       .then(dataUrl => {
-        if (confirm("Are you sure you'd like to download a screenshot of this page?")) {
-          var img = new Image();
-          img.src = dataUrl;
-          let link = document.createElement('a');
-          let jurisdiction = this.props.current_user.jurisdiction_path.join('_');
-          let currentDate = moment().format('YYYY_MM_DD');
-          let imageName = `SaraAlert_${jurisdiction}_${currentDate}.png`;
-          link.download = imageName;
-          link.href = dataUrl;
-          link.click();
-        }
+        var img = new Image();
+        img.src = dataUrl;
+        let link = document.createElement('a');
+        let email = this.props.current_user.email;
+        let currentDate = moment().format('YYYY_MM_DD');
+        let imageName = `SaraAlert_Analytics_${email}_${currentDate}.png`;
+        link.download = imageName;
+        link.href = dataUrl;
+        link.click();
       })
       .catch(function(error) {
         console.error(error);
@@ -47,58 +45,62 @@ class MonitorAnalytics extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Row className="text-left mb-4">
-          <Col xs="10">
-            <Button variant="primary" className="ml-2 btn-square" onClick={this.handleClick}>
-              EXPORT ANALYSIS AS PNG
+        <Row className="mb-2 mx-0 px-0 pt-2">
+          <Col md="24" className="mx-2 px-0">
+            <Button variant="primary" className="btn-square" onClick={this.exportAsPNG}>
+              <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
             </Button>
-          </Col>
-          <Col xs="14" className="text-right">
-            <h5 className="display-6 pt-3"> Last Updated At: {moment(this.props.stats.last_updated_at).format('YYYY-MM-DD HH:mm:ss')} UTC </h5>
+            <p className="display-6 pt-3">Last Updated At: {moment(this.props.stats.last_updated_at).format('YYYY-MM-DD HH:mm:ss')} UTC</p>
           </Col>
         </Row>
-        <Row className="mb-4">
-          <Col lg="14" md="24">
+        <Row className="mb-4 mx-2 px-0">
+          <Col md="14" className="ml-0 pl-0">
             <RiskStratificationTable stats={this.props.stats} />
           </Col>
-          <Col lg="10" md="24">
+          <Col md="10" className="mr-0 pr-0">
             <MonitoreeFlow stats={this.props.stats} />
           </Col>
         </Row>
-        <div className="h2 mx-3">
-          Epidemiological Summary
-          <span className="float-right display-6">
-            View {this.state.viewTotal ? 'Current' : 'Overall'}
-            <Switch
-              className="ml-2"
-              onChange={this.toggleBetweenActiveAndTotal}
-              onColor="#82A0E4"
-              height={18}
-              width={40}
-              uncheckedIcon={false}
-              checked={this.state.viewTotal}
-            />
-          </span>
-        </div>
-        <Row className="mb-4">
-          <Col lg="12" md="24" className="mb-4">
+        <Row className="mb-4 mx-2 px-0 pt-4">
+          <Col md="24" className="mx-0 px-0">
+            <span className="display-5">Epidemiological Summary</span>
+            <span className="float-right display-6">
+              View {this.state.viewTotal ? 'Current' : 'Overall'}
+              <Switch
+                className="ml-2"
+                onChange={this.toggleBetweenActiveAndTotal}
+                onColor="#82A0E4"
+                height={18}
+                width={40}
+                uncheckedIcon={false}
+                checked={this.state.viewTotal}
+              />
+            </span>
+          </Col>
+        </Row>
+        <Row className="mb-4 mx-2 px-0">
+          <Col md="12" className="ml-0 pl-0">
             <Demographics stats={this.props.stats} viewTotal={this.state.viewTotal} />
           </Col>
-          <Col lg="12" md="24">
+          <Col md="12" className="mr-0 pr-0">
             <RiskFactors stats={this.props.stats} viewTotal={this.state.viewTotal} />
           </Col>
         </Row>
-        <Row className="mb-4">
-          <Col>
+        <Row className="mb-4 mx-2 px-0">
+          <Col md="24" className="mx-0 px-0">
             <MonitoreesByDateOfExposure stats={this.props.stats} />
           </Col>
         </Row>
-        <h2> Geographical Summary </h2>
-        <Row className="mb-4">
-          <Col lg="12" md="24" className="mb-4">
+        <Row className="mb-4 mx-2 px-0 pt-4">
+          <Col md="24" className="mx-0 px-0">
+            <span className="display-5">Geographical Summary</span>
+          </Col>
+        </Row>
+        <Row className="mb-4 mx-2 px-0">
+          <Col md="12" className="ml-0 pl-0">
             <CumulativeMapChart stats={this.props.stats} />
           </Col>
-          <Col lg="12" md="24">
+          <Col md="12" className="mr-0 pr-0">
             <MapChart stats={this.props.stats} />
           </Col>
         </Row>
