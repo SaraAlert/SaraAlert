@@ -288,8 +288,7 @@ class Patient < ApplicationRecord
     super((options || {}).merge(methods: :linelist))
   end
 
-  # rubocop:todo Metrics/PerceivedComplexity
-  def send_assessment(force = false) # rubocop:todo Metrics/CyclomaticComplexity
+  def send_assessment(force = false)
     unless last_assessment_reminder_sent.nil?
       return if last_assessment_reminder_sent < 24.hours.ago
     end
@@ -323,9 +322,7 @@ class Patient < ApplicationRecord
     elsif preferred_contact_method == 'Telephone call'
       PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test
     end
-    
-    last_assessment_reminder_sent = Time.now
-    save
+
+    update(last_assessment_reminder_sent: DateTime.now)
   end
-  # rubocop:enable Metrics/PerceivedComplexity
 end

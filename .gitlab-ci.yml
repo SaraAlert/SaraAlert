@@ -36,7 +36,7 @@ system-test:
   stage: test
   image: $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:development-test
   services:
-    - mysql:latest
+    - mariadb:latest
     - redis:latest
   variables:
     RAILS_ENV: test
