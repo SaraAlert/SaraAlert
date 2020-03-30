@@ -57,10 +57,13 @@ class ConsumeAssessmentsJob < ApplicationJob
             assessment.save!
           end
         end
-
       rescue JSON::ParserError
         next
       end
     end
+  rescue Redis::ConnectionError, Redis::CannotConnectError => e
+    puts "ConsumeAssessmentsJob: Redis::ConnectionError (#{e}), retrying..."
+    sleep(1)
+    retry
   end
 end
