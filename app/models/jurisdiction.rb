@@ -59,6 +59,7 @@ class Jurisdiction < ApplicationRecord
   # Contains the values for the symptoms that will be what are considered as symptomatic
   def hierarchical_symptomatic_condition
     symptoms_list_hash = jurisdiction_path_threshold_hash
+    # This condition _should_ only be true when the jurisdiction add/update task is run
     if ThresholdCondition.where(threshold_condition_hash: symptoms_list_hash).count.zero?
       master_symptoms_list = []
       # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...

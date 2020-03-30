@@ -9,9 +9,19 @@ namespace :admin do
     config_contents.each do |jur_name, jur_values|
       parse_jurisdiction(nil, jur_name, jur_values)
     end
+
+    # Call hierarchical_symptomatic_condition on each jurisdiction
+    # Will pre-generate all possible thresholdConditions
+    Jurisdiction.all.each do |jur|
+      jur.hierarchical_symptomatic_condition
+    end
+
     # Seed newly created jurisdictions with (empty) analytic cache entries
     Rake::Task["analytics:cache_current_analytics"].reenable
     Rake::Task["analytics:cache_current_analytics"].invoke
+    puts "\e[41mNOTICE: Make sure that this rake task has been run the exact same number of times on the enrollment and assessment servers\e[0m"
+    puts "\e[41mThe output of ThresholdCondition.count on each of the servers should be EXACTLY EQUAL\e[0m"
+
   end
 
   def parse_jurisdiction(parent, jur_name, jur_values)
