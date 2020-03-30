@@ -17,21 +17,21 @@ services:
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
   sara-alert-assessment:
-      image: "${SARA_ALERT_IMAGE}:development-test"
-      environment:
-        - REDIS_URL=redis://redis-bridge:6379/1
-      env_file:
-        - .env-prod-assessment
-      restart: unless-stopped
-      networks:
-        - dt-net-assessment
-        - dt-net-bridge
-      depends_on:
-        - redis-bridge
-        - mysql-assessment
-      command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
-      volumes:
-        - '~/tls:/app/disease-trakker/tls:ro'
+    image: "${SARA_ALERT_IMAGE}:development-test"
+    environment:
+      - REDIS_URL=redis://redis-bridge:6379/1
+    env_file:
+      - .env-prod-assessment
+    restart: unless-stopped
+    networks:
+      - dt-net-assessment
+      - dt-net-bridge
+    depends_on:
+      - redis-bridge
+      - mysql-assessment
+    command: "bin/bundle exec rails s -u puma -p 3000 -b 0.0.0.0"
+    volumes:
+      - '~/tls:/app/disease-trakker/tls:ro'
   mysql-enrollment:
     image: 'mariadb:latest'
     volumes:
