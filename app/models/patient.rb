@@ -323,9 +323,9 @@ class Patient < ApplicationRecord
     elsif preferred_contact_method == 'Telephone call'
       PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test
     end
-    # TODO: perhaps this should only performed on response ie: patient completed assessment. Especially relevent for voice
-    patient.last_assessment_reminder_sent = Time.now
-    patient.save!
+    
+    last_assessment_reminder_sent = Time.now
+    save
   end
   # rubocop:enable Metrics/PerceivedComplexity
 end
