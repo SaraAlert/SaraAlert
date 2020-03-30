@@ -488,3 +488,121 @@ patient_20:
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: false
   public_health_action: 'Referral for Medical Evaluation'
+patient_21:
+  id: 21
+  jurisdiction_id: 8
+  monitoring: true
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: "<%= 1.week.ago %>"
+patient_22:
+  id: 22
+  jurisdiction_id: 8
+  monitoring: true
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: "<%= 3.weeks.ago %>"
+patient_23:
+  id: 23
+  jurisdiction_id: 8
+  monitoring: false
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "<%= 3.weeks.ago %>"
+patient_24:
+  id: 24
+  jurisdiction_id: 8
+  monitoring: false
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: "<%= 11.weeks.ago %>"
+patient_25:
+  id: 25
+  jurisdiction_id: 8
+  monitoring: true
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: "<%= 19.weeks.ago %>"
+patient_26:
+  id: 26
+  jurisdiction_id: 8
+  monitoring: false
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: "<%= 21.weeks.ago %>"
+patient_27:
+  id: 27
+  jurisdiction_id: 8
+  monitoring: true
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "<%= 25.weeks.ago %>"
+patient_28:
+  id: 28
+  jurisdiction_id: 8
+  monitoring: true
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: "<%= 25.weeks.ago %>"
+patient_29:
+  id: 29
+  jurisdiction_id: 8
+  monitoring: true
+  last_date_of_exposure: "<%= 52.weeks.ago %>"
+patient_30:
+  id: 30
+  jurisdiction_id: 8
+  monitoring: true
+  last_date_of_exposure: "<%= 54.weeks.ago %>"
+patient_31:
+  id: 31
+  jurisdiction_id: 9
+  monitoring: true
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: '<%= 1.month.ago %>'
+patient_32:
+  id: 32
+  jurisdiction_id: 9
+  monitoring: true
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: '<%= 1.month.ago %>'
+patient_33:
+  id: 33
+  jurisdiction_id: 9
+  monitoring: false
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: '<%= 2.months.ago %>'
+patient_34:
+  id: 34
+  jurisdiction_id: 9
+  monitoring: true
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: '<%= 2.months.ago %>'
+patient_35:
+  id: 35
+  jurisdiction_id: 9
+  monitoring: true
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: '<%= 5.months.ago %>'
+patient_36:
+  id: 36
+  jurisdiction_id: 9
+  monitoring: true
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: '<%= 5.months.ago %>'
+patient_37:
+  id: 37
+  jurisdiction_id: 9
+  monitoring: true
+  exposure_risk_assessment: 'No Identified Risk'
+  last_date_of_exposure: '<%= 11.months.ago %>'
+patient_38:
+  id: 38
+  jurisdiction_id: 9
+  monitoring: false
+  exposure_risk_assessment: 'Medium'
+  last_date_of_exposure: '<%= 11.months.ago %>'
+patient_39:
+  id: 39
+  jurisdiction_id: 9
+  monitoring: true
+  exposure_risk_assessment: 'Low'
+  last_date_of_exposure: '<%= 13.months.ago %>'
+patient_40:
+  id: 40
+  jurisdiction_id: 9
+  monitoring: true
+  exposure_risk_assessment: 'High'
+  last_date_of_exposure: '<%= 14.months.ago %>'

@@ -110,6 +110,10 @@ namespace :analytics do
     # Active and overall counts for date of last exposure
     counts.concat(monitoree_counts_by_last_exposure_date(monitorees, true))
     counts.concat(monitoree_counts_by_last_exposure_date(monitorees, false))
+    counts.concat(monitoree_counts_by_last_exposure_week(monitorees, true))
+    counts.concat(monitoree_counts_by_last_exposure_week(monitorees, false))
+    counts.concat(monitoree_counts_by_last_exposure_month(monitorees, true))
+    counts.concat(monitoree_counts_by_last_exposure_month(monitorees, false))
 
     counts
   end
@@ -238,6 +242,36 @@ namespace :analytics do
               .count
               .map { |fields, total|
                 monitoree_count(active_monitoring, 'Last Exposure Date', fields[0], fields[1], total)
+              }
+  end
+
+  # Monitoree counts by last date of exposure by weeks
+  def monitoree_counts_by_last_exposure_week(monitorees, active_monitoring)
+    exposure_weeks = <<-SQL
+      DATE_ADD(last_date_of_exposure, interval -WEEKDAY(last_date_of_exposure)-1 day) 
+    SQL
+    monitorees.monitoring_active(active_monitoring)
+              .exposed_in_time_frame(NUM_PAST_EXPOSURE_WEEKS.weeks.ago.to_date.to_datetime)
+              .group(exposure_weeks, :exposure_risk_assessment)
+              .order(Arel.sql(exposure_weeks), :exposure_risk_assessment)
+              .count
+              .map { |fields, total|
+                monitoree_count(active_monitoring, 'Last Exposure Week', fields[0], fields[1], total)
+              }
+  end
+
+  # Monitoree counts by last date of exposure by months
+  def monitoree_counts_by_last_exposure_month(monitorees, active_monitoring)
+    exposure_months = <<-SQL
+      DATE_FORMAT(last_date_of_exposure ,'%Y-%m-01')
+    SQL
+    monitorees.monitoring_active(active_monitoring)
+              .exposed_in_time_frame(NUM_PAST_EXPOSURE_MONTHS.months.ago.to_date.to_datetime)
+              .group(exposure_months, :exposure_risk_assessment)
+              .order(Arel.sql(exposure_months), :exposure_risk_assessment)
+              .count
+              .map { |fields, total|
+                monitoree_count(active_monitoring, 'Last Exposure Month', fields[0], fields[1], total)
               }
   end
 

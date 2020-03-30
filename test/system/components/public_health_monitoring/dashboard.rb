@@ -12,7 +12,9 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
   def verify_patients_under_tab(tab, patient_ids)
     click_on tab
     PATIENTS.each do |patient_name, patient|
-      search_for_and_verify_patient(patient_name, patient_ids.include?(patient['id']))
+      if !patient['first_name'].nil? && !patient['last_name'].nil?
+        search_for_and_verify_patient(patient_name, patient_ids.include?(patient['id']))
+      end
     end
   end
 

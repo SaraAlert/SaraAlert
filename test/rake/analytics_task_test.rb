@@ -3,8 +3,10 @@ load 'lib/tasks/analytics.rake'
 
 class AnalyticsTaskTest < ActiveSupport::TestCase
 
-  @@monitorees = Patient.all
-
+  @@monitorees = Patient.where('jurisdiction_id >= ?', 1).where('jurisdiction_id <= ?', 7)
+  @@monitorees_by_exposure_week = Patient.where(jurisdiction_id: 8)
+  @@monitorees_by_exposure_month = Patient.where(jurisdiction_id: 9)
+  
   test "monitoree counts by total" do
     active_counts = monitoree_counts_by_total(@@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Overall Total', 'Total', 'Missing', 4)
@@ -211,6 +213,48 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
     assert_equal(6, overall_counts.length)
   end
 
+  test "monitoree counts by last exposure week" do
+    active_counts = monitoree_counts_by_last_exposure_week(@@monitorees_by_exposure_week, true)
+    verify_monitoree_count(active_counts, 0, true, 'Last Exposure Week', weeks_ago(52), 'Missing', 1)
+    verify_monitoree_count(active_counts, 1, true, 'Last Exposure Week', weeks_ago(25), 'Low', 2)
+    verify_monitoree_count(active_counts, 2, true, 'Last Exposure Week', weeks_ago(19), 'Medium', 1)
+    verify_monitoree_count(active_counts, 3, true, 'Last Exposure Week', weeks_ago(3), 'High', 1)
+    verify_monitoree_count(active_counts, 4, true, 'Last Exposure Week', weeks_ago(1), 'High', 1)
+    assert_equal(5, active_counts.length)
+    overall_counts = monitoree_counts_by_last_exposure_week(@@monitorees_by_exposure_week, false)
+    verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Week', weeks_ago(52), 'Missing', 1)
+    verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Week', weeks_ago(25), 'Low', 2)
+    verify_monitoree_count(overall_counts, 2, false, 'Last Exposure Week', weeks_ago(21), 'No Identified Risk', 1)
+    verify_monitoree_count(overall_counts, 3, false, 'Last Exposure Week', weeks_ago(19), 'Medium', 1)
+    verify_monitoree_count(overall_counts, 4, false, 'Last Exposure Week', weeks_ago(11), 'Medium', 1)
+    verify_monitoree_count(overall_counts, 5, false, 'Last Exposure Week', weeks_ago(3), 'High', 1)
+    verify_monitoree_count(overall_counts, 6, false, 'Last Exposure Week', weeks_ago(3), 'Low', 1)
+    verify_monitoree_count(overall_counts, 7, false, 'Last Exposure Week', weeks_ago(1), 'High', 1)
+    assert_equal(8, overall_counts.length)
+  end
+
+  test "monitoree counts by last exposure month" do
+    active_counts = monitoree_counts_by_last_exposure_month(@@monitorees_by_exposure_month, true)
+    verify_monitoree_count(active_counts, 0, true, 'Last Exposure Month', months_ago(13), 'Low', 1)
+    verify_monitoree_count(active_counts, 1, true, 'Last Exposure Month', months_ago(11), 'No Identified Risk', 1)
+    verify_monitoree_count(active_counts, 2, true, 'Last Exposure Month', months_ago(5), 'Low', 1)
+    verify_monitoree_count(active_counts, 3, true, 'Last Exposure Month', months_ago(5), 'No Identified Risk', 1)
+    verify_monitoree_count(active_counts, 4, true, 'Last Exposure Month', months_ago(2), 'Medium', 1)
+    verify_monitoree_count(active_counts, 5, true, 'Last Exposure Month', months_ago(1), 'High', 1)
+    verify_monitoree_count(active_counts, 6, true, 'Last Exposure Month', months_ago(1), 'Low', 1)
+    assert_equal(7, active_counts.length)
+    overall_counts = monitoree_counts_by_last_exposure_month(@@monitorees_by_exposure_month, false)
+    verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Month', months_ago(13), 'Low', 1)
+    verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Month', months_ago(11), 'Medium', 1)
+    verify_monitoree_count(overall_counts, 2, false, 'Last Exposure Month', months_ago(11), 'No Identified Risk', 1)
+    verify_monitoree_count(overall_counts, 3, false, 'Last Exposure Month', months_ago(5), 'Low', 1)
+    verify_monitoree_count(overall_counts, 4, false, 'Last Exposure Month', months_ago(5), 'No Identified Risk', 1)
+    verify_monitoree_count(overall_counts, 5, false, 'Last Exposure Month', months_ago(2), 'Medium', 2)
+    verify_monitoree_count(overall_counts, 6, false, 'Last Exposure Month', months_ago(1), 'High', 1)
+    verify_monitoree_count(overall_counts, 7, false, 'Last Exposure Month', months_ago(1), 'Low', 1)
+    assert_equal(8, overall_counts.length)
+  end
+
   test "monitoree snapshots" do
     snapshots = all_monitoree_snapshots(@@monitorees, 1)
     verify_snapshot(snapshots, 0, 'Last 24 Hours', 3, 0, 1, 0, 2, 2, 1, 1, 1, 1, 1)
@@ -244,6 +288,10 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
     assert_equal(public_health_test_specimen_received_by_lab_results_pending, snapshots[index].public_health_test_specimen_received_by_lab_results_pending, 'Public Health Test Specimen Received by Lab - results pending')
     assert_equal(results_of_public_health_test_positive, snapshots[index].results_of_public_health_test_positive, 'Results of Public Health Test - positive')
     assert_equal(results_of_public_health_test_negative, snapshots[index].results_of_public_health_test_negative, 'Results of Public Health Test - negative')
+  end
+
+  def get_absolute_date(relative_date)
+    eval(relative_date.tr('<%=  =>', ''))
   end
 
   def days_ago(num_days)
