@@ -228,14 +228,19 @@ class Patient < ApplicationRecord
 
   # Is this patient symptomatic?
   def asymptomatic?
-    (assessments.where(symptomatic: true).count.zero? && latest_assessment&.created_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago) ||
-    (latest_assessment == nil && created_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+    (!latest_assessment.nil? &&
+     assessments.where(symptomatic: true).count.zero? &&
+     latest_assessment.created_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago) ||
+      (latest_assessment.nil? &&
+       created_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
   end
 
   # Is this patient non_reporting?
   def non_reporting?
-    (assessments.where(symptomatic: true).count.zero? && latest_assessment&.created_at < ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago) ||
-    (latest_assessment == nil && created_at < ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+    (!latest_assessment.nil? &&
+     assessments.where(symptomatic: true).count.zero? &&
+     latest_assessment.created_at < ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago) ||
+      (latest_assessment.nil? && created_at < ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
   end
 
   # Is this patient under investigation?
