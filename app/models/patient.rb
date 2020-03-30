@@ -223,32 +223,32 @@ class Patient < ApplicationRecord
 
   # Is this patient symptomatic?
   def symptomatic?
-    Patient.symptomatic.where(id: id).count.positive?
+    Patient.where(id: id).symptomatic.count.positive?
   end
 
   # Is this patient symptomatic?
   def asymptomatic?
-    Patient.asymptomatic.where(id: id).count.positive?
+    Patient.where(id: id).asymptomatic.count.positive?
   end
 
   # Is this patient non_reporting?
   def non_reporting?
-    Patient.non_reporting.where(id: id).count.positive?
+    Patient.where(id: id).non_reporting.count.positive?
   end
 
   # Is this patient under investigation?
   def pui?
-    Patient.under_investigation.where(id: id).count.positive?
+    monitoring && !purged && public_health_action != 'None'
   end
 
   # Has this patient purged?
   def purged?
-    Patient.purged.where(id: id).count.positive?
+    purged
   end
 
   # Has this patient purged?
   def closed?
-    Patient.monitoring_closed_without_purged.where(id: id).count.positive?
+    !monitoring && !purged
   end
 
   # Current patient status
