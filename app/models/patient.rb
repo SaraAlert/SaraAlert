@@ -260,12 +260,12 @@ class Patient < ApplicationRecord
 
   # Current patient status
   def status
-    return :symptomatic if symptomatic?
-    return :asymptomatic if asymptomatic?
-    return :non_reporting if non_reporting?
     return :pui if pui?
     return :purged if purged?
     return :closed if closed?
+    return :symptomatic if symptomatic?
+    return :asymptomatic if asymptomatic?
+    return :non_reporting if non_reporting?
 
     :unknown
   end
