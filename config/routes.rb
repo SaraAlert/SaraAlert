@@ -23,8 +23,11 @@ Rails.application.routes.draw do
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   get '/export/:type/csv', to: 'export#csv'
+  get '/export/:type/csv_comprehensive', to: 'export#csv_comprehensive'
 
   post '/import/epix', to: 'import#epix'
+  post '/import/comprehensive_monitorees', to: 'import#comprehensive_monitorees'
+  get '/import/download_guidance', to: 'import#download_guidance'
   get '/import/error', to: 'import#error'
 
   post '/patients/:id/status', to: 'patients#update_status'
