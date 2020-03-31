@@ -35,6 +35,8 @@ Rails.application.routes.draw do
     resources :assessments, only: [:create, :new, :index]
   end
 
+  post '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report
+
   get '/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction
   get '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_report
   get '/already_reported', to: 'assessments#already_reported', as: :already_reported
