@@ -38,6 +38,7 @@ class SymptomsAssessment extends React.Component {
             <b>{symp.label}</b> {symp.notes ? ' ' + symp.notes : ''}
           </div>
         }
+        className="pb-4"
         onChange={this.handleChange}></Form.Check>
     );
   };
