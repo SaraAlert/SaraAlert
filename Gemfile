@@ -53,6 +53,8 @@ gem 'will_paginate'
 # Excel
 gem 'roo'
 
+gem 'sara-schema'
+
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
