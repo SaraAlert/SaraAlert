@@ -73,7 +73,10 @@ Rails.application.configure do
 
   config.action_mailer.smtp_settings = {
     address: ENV['ACTION_MAILER_SMTP_ADDRESS'] || 'localhost',
-    port: ENV['ACTION_MAILER_SMTP_PORT'] || 25
+    port: ENV['ACTION_MAILER_SMTP_PORT'] || 25,
+    user_name: !ENV['ACTION_MAILER_SMTP_USERNAME'].blank? ? ENV['ACTION_MAILER_SMTP_USERNAME'] : nil,
+    password: !ENV['ACTION_MAILER_SMTP_PASSWORD'].blank? ? ENV['ACTION_MAILER_SMTP_PASSWORD'] : nil,
+    authentication: !ENV['ACTION_MAILER_SMTP_USERNAME'].blank? ? 'login' : nil
   }
 
   # Ignore bad email addresses and do not raise email delivery errors.
