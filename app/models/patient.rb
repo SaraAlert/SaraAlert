@@ -291,7 +291,7 @@ class Patient < ApplicationRecord
   end
 
   # All information about this subject
-  def comprehensive_details # rubocop:todo Metrics/CyclomaticComplexity # rubocop:todo Metrics/PerceivedComplexity
+  def comprehensive_details # rubocop:todo Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
