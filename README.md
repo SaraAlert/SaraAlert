@@ -130,7 +130,7 @@ A key portion of this is the use of the Nginx reverse proxy container. The confi
 
 Below is a graphic depicting the services and applications present on each network:
 
-![SaraAlertDockerNetworks](https://user-images.githubusercontent.com/3009651/77551254-7c67b380-6e88-11ea-8d4c-a3f45c2891e1.png)
+![SaraAlertDockerNetworks](https://user-images.githubusercontent.com/3009651/78150057-c27ec300-7404-11ea-8db3-4c65666f5d60.png)
 
 **Environment Variable Setup**
 
