@@ -64,8 +64,8 @@ class ImportController < ApplicationController
   def download_guidance
     send_file(
       "#{Rails.root}/public/sara_alert_comprehensive_monitoree.xlsx",
-      filename: "sara_alert_comprehensive_monitoree.xlsx",
-      type: "application/vnd.ms-excel"
+      filename: 'sara_alert_comprehensive_monitoree.xlsx',
+      type: 'application/vnd.ms-excel'
     )
   end
 
@@ -76,8 +76,9 @@ class ImportController < ApplicationController
     begin
       xlxs = Roo::Excelx.new(params[:comprehensive_monitorees].tempfile.path, file_warning: :ignore)
       @patients = []
-      xlxs.sheet(0).each_with_index do |row, index|
+      xlxs.sheet(0).each_with_index do |row, index| # rubocop:todo Metrics/BlockLength
         next if index.zero? # Skip headers
+
         @patients << {
           first_name: row[0],
           middle_name: row[1],
@@ -163,7 +164,7 @@ class ImportController < ApplicationController
           exposure_risk_assessment: row[81],
           monitoring_plan: row[82],
           exposure_notes: row[83],
-          #appears_to_be_duplicate: current_user.viewable_patients.matches(row[0], row[2], sex, row[3]).count.positive?
+          appears_to_be_duplicate: current_user.viewable_patients.matches(row[0], row[2], row[4], row[3]).count.positive?
         }
       end
     rescue StandardError

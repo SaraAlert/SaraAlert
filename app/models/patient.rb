@@ -291,7 +291,7 @@ class Patient < ApplicationRecord
   end
 
   # All information about this subject
-  def comprehensive_details
+  def comprehensive_details # rubocop:todo Metrics/CyclomaticComplexity # rubocop:todo Metrics/PerceivedComplexity
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
@@ -378,7 +378,6 @@ class Patient < ApplicationRecord
       monitoring_plan: monitoring_plan || '',
       exposure_notes: exposure_notes || ''
     }
-
   end
 
   # Override as_json to include linelist
