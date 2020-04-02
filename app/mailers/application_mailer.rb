@@ -2,6 +2,6 @@
 
 # ApplicationMailer: base mailer
 class ApplicationMailer < ActionMailer::Base
-  default from: 'notifications@SaraAlert.mitre.org'
+  default from: 'notifications@saraalert.org'
   layout 'mailer'
 end

@@ -2,7 +2,7 @@
 
 # UserMailer: mailers for users
 class UserMailer < ApplicationMailer
-  default from: 'notifications@SaraAlert.mitre.org'
+  default from: 'notifications@saraalert.org'
 
   def welcome_email(user, password)
     @user = user

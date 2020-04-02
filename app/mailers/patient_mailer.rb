@@ -2,7 +2,7 @@
 
 # PatientMailer: mailers for monitorees
 class PatientMailer < ApplicationMailer
-  default from: 'notifications@SaraAlert.mitre.org'
+  default from: 'notifications@saraalert.org'
 
   def enrollment_email(patient)
     # Gather patients and jurisdictions
