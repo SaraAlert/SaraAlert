@@ -38,6 +38,7 @@ Run the following command from the root directory to intialize the database (not
 
 * `bundle exec rake db:drop db:create db:migrate db:setup`
 * `bundle exec rake admin:import_or_update_jurisdictions`
+* `bundle exec rake admin:create_roles`
 * (optional) `bundle exec rake demo:setup demo:populate`
 
 #### ActiveJob + Sidkiq + Redis + Whenever
@@ -82,6 +83,17 @@ You must update your chrontab for these jobs to run periodically (defined in `co
 ```
 bundle exec whenever --update-crontab
 ```
+
+##### Periodic Tasks
+  These tasks are configured to run periodically. Their run timing parameters are specified in `config/schedule.rb`
+  * `CloseSubjectsJob` 
+    - Active job that closes cases that meet duration/symptomatic conditions
+  * `PurgeJob`
+      - Active job that redacts PII of cases that have been closed for N many days
+  * `rake analytics:cache_current_analytics`
+      - Caches analytics information for faster retrieval 
+  * `rake mailers:send_assessments`
+      - Send assessment reminders to non-reporting individuals
 
 #### Running
 
@@ -168,6 +180,10 @@ Load Jurisdictions:
 
 * `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake admin:import_or_update_jurisdictions`
 * `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake admin:import_or_update_jurisdictions`
+Note: If you need to make live-changes to the jurisdictions loaded on they system, you'll have to update `config/sara/jurisdictions.yml` on the sara-alert-assessment and sara-alert-enrollment containers. The changes made to each of the jurisdictions.yml files **NEED TO BE IDENTICAL**
+
+Load User Roles
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake admin:create_roles`
 
 Setup the demonstration accounts and population:
 

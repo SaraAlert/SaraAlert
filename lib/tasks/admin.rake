@@ -72,4 +72,14 @@ namespace :admin do
 
   end
 
+  desc "Create User Role Types"
+  task create_roles: :environment do
+    role_names = ['admin', 'analyst', 'enroller', 'public_health', 'public_health_enroller']
+    role_names.each do |role_name|
+      if Role.where(name: role_name).count == 0
+        Role.create(name: role_name)
+      end
+    end
+  end
+
 end
