@@ -29,9 +29,16 @@ class RiskStratification extends React.Component {
       tableData[String(symptomlevel)] = { total_n: 0 };
       RISKLEVELS.forEach(risklevel => {
         tableData[String(symptomlevel)][`${risklevel}_n`] = data[String(symptomlevel)][String(risklevel)];
+        tableData[String(symptomlevel)][`${risklevel}_n`] = _.isFinite(tableData[String(symptomlevel)][`${risklevel}_n`])
+          ? tableData[String(symptomlevel)][`${risklevel}_n`]
+          : 'None';
         tableData[String(symptomlevel)][`${risklevel}_p`] =
           totalCount[String(risklevel)] === 0 ? 0 : ((data[String(symptomlevel)][String(risklevel)] * 100) / totalCount[String(risklevel)]).toFixed(0);
-        tableData[String(symptomlevel)][`total_n`] += data[String(symptomlevel)][String(risklevel)];
+        tableData[String(symptomlevel)][`${risklevel}_p`] = _.isFinite(tableData[String(symptomlevel)][`${risklevel}_p`])
+          ? tableData[String(symptomlevel)][`${risklevel}_p`]
+          : (tableData[String(symptomlevel)][`total_n`] += _.isFinite(data[String(symptomlevel)][String(risklevel)])
+              ? data[String(symptomlevel)][String(risklevel)]
+              : 0);
       });
     });
     SYMPTOMLEVELS.forEach(symptomlevel => {
