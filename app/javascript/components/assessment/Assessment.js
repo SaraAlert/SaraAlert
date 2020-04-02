@@ -132,6 +132,7 @@ class Assessment extends React.Component {
       <React.Fragment>
         <Carousel
           controls={false}
+          slide={false}
           indicators={false}
           interval={null}
           keyboard={false}

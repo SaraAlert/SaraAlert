@@ -65,7 +65,7 @@ class MonitorAnalytics extends React.Component {
           <Col md="24" className="mx-0 px-0">
             <span className="display-5">Epidemiological Summary</span>
             <span className="float-right display-6">
-              View {this.state.viewTotal ? 'Current' : 'Overall'}
+              View Overall
               <Switch
                 className="ml-2"
                 onChange={this.toggleBetweenActiveAndTotal}
