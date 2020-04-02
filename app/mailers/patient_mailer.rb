@@ -57,6 +57,19 @@ class PatientMailer < ApplicationMailer
     )
   end
 
+  def assessment_sms_reminder(patient)
+    contents = 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
+    account_sid = ENV['TWILLIO_API_ACCOUNT']
+    auth_token = ENV['TWILLIO_API_KEY']
+    from = ENV['TWILLIO_SENDING_NUMBER']
+    client = Twilio::REST::Client.new(account_sid, auth_token)
+    client.messages.create(
+      from: from,
+      to: patient.primary_telephone,
+      body: contents
+    )
+  end
+
   def assessment_sms(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
       "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.age || '0'}"
