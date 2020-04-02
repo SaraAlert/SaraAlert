@@ -297,7 +297,7 @@ class Patient < ApplicationRecord
     super((options || {}).merge(methods: :linelist))
   end
 
-  def send_assessment(force = false)
+  def send_assessment(force = false) # rubocop:todo Metrics/PerceivedComplexity
     unless last_assessment_reminder_sent.nil?
       return if last_assessment_reminder_sent < 24.hours.ago
     end
