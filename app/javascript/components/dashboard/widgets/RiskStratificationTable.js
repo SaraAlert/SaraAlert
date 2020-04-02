@@ -97,7 +97,7 @@ class RiskStratification extends React.Component {
                     {this.tableData['Symptomatic']['total_n']} ({this.tableData['Symptomatic']['total_p']}%)
                   </td>
                 </tr>
-                <tr style={{ backgroundColor: '#FFDD94' }}>
+                <tr style={{ backgroundColor: '#D0E6A5' }}>
                   <td className="font-weight-bold">Asymptomatic</td>
                   {RISKLEVELS.map(risklevel => (
                     <td key={risklevel.toString()}>
@@ -108,7 +108,7 @@ class RiskStratification extends React.Component {
                     {this.tableData['Asymptomatic']['total_n']} ({this.tableData['Asymptomatic']['total_p']}%)
                   </td>
                 </tr>
-                <tr style={{ backgroundColor: '#D0E6A5' }}>
+                <tr style={{ backgroundColor: '#FFDD94' }}>
                   <td className="font-weight-bold">Non-Reporting</td>
                   {RISKLEVELS.map(risklevel => (
                     <td key={risklevel.toString()}>
