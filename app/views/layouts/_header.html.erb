@@ -10,6 +10,10 @@
     </form>
   <% end %>
 </nav>
-<div class="navbar navbar-dark bg-warning mb-3" >
-  This system is for demonstration use only, please do not provide any personal identifying information other than business contact data that may be required for testing.
-</div>
+<% unless ENV['SHOW_DEMO_WARNING'].blank? %>
+  <div class="navbar navbar-dark bg-warning mb-3" >
+    This system is for demonstration use only, please do not provide any personal identifying information other than business contact data that may be required for testing.
+  </div>
+<% else %>
+  <div class="mb-3" ></div>
+<% end %>
