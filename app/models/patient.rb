@@ -305,6 +305,10 @@ class Patient < ApplicationRecord
     # If force is set, the preferred contact time will be ignored
     unless force
       hour = Time.now.hour
+      if !address_state.blank? && address_state == 'Northern Mariana Islands'
+        # CNMI Local
+        hour = Time.now.getlocal('+10:00').hour
+      end
       # These are the hours that we consider to be morning, afternoon and evening
       morning = (7..11)
       afternoon = (12..16)
@@ -320,7 +324,7 @@ class Patient < ApplicationRecord
 
     if preferred_contact_method == 'E-mailed Web Link'
       PatientMailer.assessment_email(self).deliver_later if ADMIN_OPTIONS['enable_email']
-    elsif preferred_contact_method == 'SMS Text-message' && responder.id == id && !force
+    elsif preferred_contact_method == 'SMS Text-message' && responder.id == id && force
       # SMS-based assessments assess the patient _and_ all of their dependents
       # If you are a dependent ie: someone whose responder.id is not your own  an assessment will not be sent to you
       # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
