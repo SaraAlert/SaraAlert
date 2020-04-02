@@ -11,8 +11,6 @@ class ConsumeAssessmentsJob < ApplicationJob
     connection.subscribe 'reports' do |on| # rubocop:todo Metrics/BlockLength
       on.message do |_channel, msg| # rubocop:todo Metrics/BlockLength
         message = JSON.parse(msg)
-        # Validate message against SaraAlert JSON Schema for assessments.
-        next unless SaraSchema::Validator.validate(:assessment, message)
 
         message = message.slice('threshold_condition_hash', 'reported_symptoms_array', 'patient_submission_token', 'experiencing_symptoms')
         next if message.nil?
