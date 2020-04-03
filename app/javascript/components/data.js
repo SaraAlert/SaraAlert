@@ -32,7 +32,6 @@ export const totalMonitoreesMap = {
     numberOfItems: 4,
     position: 'side',
     title: 'Count of Monitorees',
-    // description: 'Legend Text',
     type: 'equalnumber',
     specialClasses: [],
     data: [],

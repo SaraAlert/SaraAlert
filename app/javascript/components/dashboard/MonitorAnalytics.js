@@ -15,11 +15,11 @@ class MonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.state = { checked: false, viewTotal: false };
+    this.exportAsPNG = this.exportAsPNG.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
-    this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick() {
+  exportAsPNG() {
     var node = document.getElementById('sara-alert-body');
     domtoimage
       .toPng(node)
@@ -34,7 +34,8 @@ class MonitorAnalytics extends React.Component {
         link.href = dataUrl;
         link.click();
       })
-      .catch(function(error) {
+      .catch(error => {
+        alert('An error occured.');
         console.error(error);
       });
   }
