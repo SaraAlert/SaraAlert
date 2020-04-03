@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Form } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
@@ -12,11 +12,14 @@ class MonitoreesByDateOfExposure extends React.Component {
   constructor(props) {
     super(props);
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
+    this.setTimeResolution = this.setTimeResolution.bind(this);
+    this.state = {
+      lastExposureDateDate: [],
+    };
+  }
 
-    DATES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Last Exposure Date').map(x => x.category))
-      .sort()
-      .slice(0, 14);
-    this.lastExposureDateDate = this.obtainValueFromMonitoreeCounts(DATES_OF_INTEREST, 'Last Exposure Date');
+  componentDidMount() {
+    this.setTimeResolution('Day');
   }
 
   obtainValueFromMonitoreeCounts = (enumerations, category_type) => {
@@ -32,6 +35,21 @@ class MonitoreesByDateOfExposure extends React.Component {
     });
   };
 
+  setTimeResolution(timeRes) {
+    let categoryString;
+    if (timeRes === 'Day') {
+      categoryString = 'Last Exposure Date';
+    } else if (timeRes === 'Week') {
+      categoryString = 'Last Exposure Week';
+    } else if (timeRes === 'Month') {
+      categoryString = 'Last Exposure Month';
+    }
+    DATES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === categoryString).map(x => x.category))
+      .sort()
+      .slice(0, 14);
+    this.setState({ lastExposureDateDate: _.cloneDeep(this.obtainValueFromMonitoreeCounts(DATES_OF_INTEREST, categoryString)) });
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -40,11 +58,22 @@ class MonitoreesByDateOfExposure extends React.Component {
             Total Monitorees by Date of Last Exposure By Risk Status
           </Card.Header>
           <Card.Body>
+            <Form.Group
+              onChange={val => {
+                this.setTimeResolution(val.target.value);
+              }}>
+              <Form.Label>Time Resolution</Form.Label>
+              <Form.Control as="select" size="md">
+                <option>Day</option>
+                <option>Week</option>
+                <option>Month</option>
+              </Form.Control>
+            </Form.Group>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart
                 width={500}
                 height={300}
-                data={this.lastExposureDateDate}
+                data={this.state.lastExposureDateDate}
                 margin={{
                   top: 20,
                   right: 30,
@@ -66,7 +95,7 @@ class MonitoreesByDateOfExposure extends React.Component {
             <div className="text-secondary text-right">
               <i className="fas fa-exclamation-circle mr-1"></i>
               Illnesses that began
-              {` ${this.lastExposureDateDate[this.lastExposureDateDate.length - 1].name} `}
+              {` ${this.state.lastExposureDateDate[this.state.lastExposureDateDate.length - 1]?.name} `}
               may not yet be reported
             </div>
           </Card.Body>
