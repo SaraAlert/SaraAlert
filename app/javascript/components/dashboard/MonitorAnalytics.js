@@ -6,8 +6,7 @@ import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
 import RiskFactors from './widgets/RiskFactors';
 import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
-import MapChart from './widgets/MapChart';
-import CumulativeMapChart from './widgets/CumulativeMapChart';
+import CDCMaps from './widgets/CDCMaps';
 import moment from 'moment';
 import Switch from 'react-switch';
 import domtoimage from 'dom-to-image';
@@ -16,11 +15,11 @@ class MonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.state = { checked: false, viewTotal: false };
-    this.exportAsPNG = this.exportAsPNG.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  exportAsPNG() {
+  handleClick() {
     var node = document.getElementById('sara-alert-body');
     domtoimage
       .toPng(node)
@@ -97,11 +96,8 @@ class MonitorAnalytics extends React.Component {
           </Col>
         </Row>
         <Row className="mb-4 mx-2 px-0">
-          <Col md="12" className="ml-0 pl-0">
-            <CumulativeMapChart stats={this.props.stats} />
-          </Col>
-          <Col md="12" className="mr-0 pr-0">
-            <MapChart stats={this.props.stats} />
+          <Col md="24">
+            <CDCMaps stats={this.props.stats} />
           </Col>
         </Row>
       </React.Fragment>

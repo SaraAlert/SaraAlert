@@ -1,0 +1,162 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import moment from 'moment';
+import _ from 'lodash';
+import { PropTypes } from 'prop-types';
+import { totalMonitoreesMap, stateOptions } from '../../data';
+import CdcMap from 'cdc-map';
+import 'cdc-map/build/static/css/index.css';
+import Slider from 'rc-slider/lib/Slider';
+import 'rc-slider/assets/index.css';
+
+class CumulativeMapChart extends React.Component {
+  constructor(props) {
+    super(props);
+    this.renderSlider = this.renderSlider.bind(this);
+    this.addSlider = this.addSlider.bind(this);
+    this.updateMapWithDay = this.updateMapWithDay.bind(this);
+    this.monitoreesMap = _.cloneDeep(totalMonitoreesMap);
+    this.selectedDateIndex = 0;
+    this.canChangeDate = true;
+    this.firstUpdate = true; // the init logic locks the semaphore so we need a separate variable
+    this.state = {
+      // As far as I can tell, the CDC Map cannot have its data changed (it wont re-render and generate the colorschemes).
+      // React will regenerate a value if its KEY is changed. So we use this boolean as a key, and flip it every time
+      // we want to re-render the CDC Map
+      updateKey: true,
+      // All this `map` does is to translate `{'Kansas' : 5}` to `{'KA' : 5}` for all states
+      mappedSymptomaticPatientCountByStateAndDay: this.props.stats.symptomatic_patient_count_by_state_and_day.map(x => {
+        let mappedValues = {};
+        mappedValues['day'] = x.day;
+        _.forIn(_.omit(x, 'day'), (value, key) => {
+          let abbreviation = stateOptions.find(state => state.name === key)?.abbrv;
+          if (abbreviation) {
+            mappedValues[String(abbreviation)] = value;
+          }
+        });
+        return mappedValues;
+      }),
+      mappedTotalPatientCountByStateAndDay: this.props.stats.total_patient_count_by_state_and_day.map(x => {
+        let mappedValues = {};
+        mappedValues['day'] = x.day;
+        _.forIn(_.omit(x, 'day'), (value, key) => {
+          let abbreviation = stateOptions.find(state => state.name === key)?.abbrv;
+          if (abbreviation) {
+            mappedValues[String(abbreviation)] = value;
+          }
+        });
+        return mappedValues;
+      }),
+    };
+  }
+
+  getDateRange() {
+    let retVal = {};
+    this.state.mappedSymptomaticPatientCountByStateAndDay.forEach((dayData, index) => {
+      retVal[parseInt(index)] = moment(dayData.day).format('DD');
+    });
+    return retVal;
+  }
+
+  componentDidMount() {
+    this.addSlider();
+    setTimeout(() => {
+      // Here's another oddity. I think comes from setState not being entirely synchronous
+      // But a promise fails if this is called synchronously after this.addSlider()
+      // So delay it by a neglible amount of time
+      this.updateMapWithDay(0);
+    }, 100);
+  }
+
+  componentDidUpdate() {
+    // When the component updates, and the Map remounts, our HTML injection goes away
+    // so we must re-inject the slider
+    this.addSlider();
+  }
+
+  updateMapWithDay(dateIndex) {
+    // dateIndex = this.state.mappedSymptomaticPatientCountByStateAndDay.length - 1
+    // There was a wierd bug, where this function was getting called twice in correctly (with the max value).
+    // By using `canChangeDate` as a semaphore and locking/unlocking it in `onAfterChange`, that bug is fixed.
+    // In theory, this semaphore should not be required, as the Slider should unmount and not call its own
+    // onChange() function. But it is ¯\_(ツ)_/¯
+    let highestValue = 0;
+    if (this.canChangeDate) {
+      this.selectedDateIndex = dateIndex;
+      if (!this.firstUpdate) {
+        this.canChangeDate = !this.canChangeDate;
+      } else {
+        this.firstUpdate = false;
+      }
+      let data1 = _.omit(this.state.mappedSymptomaticPatientCountByStateAndDay[String(dateIndex)], 'day');
+      let data2 = _.omit(this.state.mappedTotalPatientCountByStateAndDay[String(dateIndex)], 'day');
+      this.monitoreesMap.data = this.monitoreesMap.data.map(x => {
+        x['Total'] = Object.prototype.hasOwnProperty.call(data2, x.STATE) ? data2[String(x.STATE)] : 0;
+        if (x['Total'] > highestValue) highestValue = x['Total'];
+        x['Symptomatic'] = Object.prototype.hasOwnProperty.call(data1, x.STATE) ? data1[String(x.STATE)] : 0;
+        return x;
+      });
+      // These are pretty much arbitrary and can (maybe should) be changed
+      // (They count the number of entries in the legend)
+      if (highestValue === 1) {
+        this.monitoreesMap.legend.numberOfItems = 1;
+      } else if (highestValue < 10) {
+        this.monitoreesMap.legend.numberOfItems = 2;
+      } else if (highestValue < 30) {
+        this.monitoreesMap.legend.numberOfItems = 3;
+      } else {
+        this.monitoreesMap.legend.numberOfItems = 4;
+      }
+      this.setState({ updateKey: !this.state.updateKey });
+    }
+  }
+
+  renderSlider() {
+    return (
+      <div className="mb-5" style={{ width: '50%', marginLeft: '25%' }}>
+        <Slider
+          max={this.state.mappedSymptomaticPatientCountByStateAndDay.length - 1}
+          marks={this.getDateRange()}
+          defaultValue={0}
+          value={this.selectedDateIndex}
+          railStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
+          trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
+          handleStyle={{ border: '2px solid #595959', height: '15px', width: '15px', backgroundColor: 'white', marginTop: '-5px', marginLeft: '2px' }}
+          dotStyle={{ border: '2px solid #333', backgroundColor: 'white' }}
+          onChange={this.updateMapWithDay}
+          onAfterChange={() => {
+            this.canChangeDate = true;
+          }}
+        />
+      </div>
+    );
+  }
+
+  addSlider() {
+    // This isnt the best way to do this, but because we dont have access to the CDC Maps component
+    // we have to inject our component at an anchor point we create
+    let newNode = document.createElement('div');
+    newNode.innerHTML = '<div id="slider"> </div>';
+
+    let referenceNode1 = document.querySelector('.map-container');
+    referenceNode1.parentNode.insertBefore(newNode, referenceNode1.nextSibling);
+    ReactDOM.render(this.renderSlider(), document.querySelector('#slider'));
+
+    let referenceNode2 = document.querySelector('.full-container');
+    referenceNode2.style.cssText = 'border: 1px solid #dedede';
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <CdcMap key={this.state.updateKey} config={this.monitoreesMap} />
+      </React.Fragment>
+    );
+  }
+}
+
+CumulativeMapChart.propTypes = {
+  stats: PropTypes.object,
+};
+
+export default CumulativeMapChart;
