@@ -125,8 +125,9 @@ class CumulativeMapChart extends React.Component {
   }
 
   renderSlider() {
+    const selectedDay = this.state.mappedTotalPatientCountByStateAndDay[parseInt(this.selectedDateIndex)].day;
     return (
-      <div className="mb-5" style={{ width: '50%', marginLeft: '25%' }}>
+      <div style={{ width: '50%', marginLeft: '25%' }}>
         <Slider
           max={this.state.mappedSymptomaticPatientCountByStateAndDay.length - 1}
           marks={this.getDateRange()}
@@ -141,6 +142,10 @@ class CumulativeMapChart extends React.Component {
             this.canChangeDate = true;
           }}
         />
+        <div className="mt-4 text-center font-weight-bold" style={{ fontSize: '20px' }}>
+          {' '}
+          {moment(selectedDay).format('MM - DD - YYYY')}
+        </div>
       </div>
     );
   }
