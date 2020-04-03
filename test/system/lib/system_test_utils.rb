@@ -3,22 +3,21 @@
 require 'application_system_test_case'
 
 class SystemTestUtils < ApplicationSystemTestCase
-  ASSESSMENTS = YAML.safe_load(File.read(__dir__ + '/../form_data/assessments.yml'))
-  CONDITIONS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/conditions.yml'))
-  MONITOREES = YAML.safe_load(File.read(__dir__ + '/../form_data/monitorees.yml'))
-  PATIENTS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/patients.yml'))
-  REPORTS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/assessments.yml'))
-  SYMPTOMS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/symptoms.yml'))
-  USERS = YAML.safe_load(File.read(__dir__ + '/../../fixtures/users.yml'))
+  ASSESSMENTS = YAML.safe_load(File.read("#{__dir__}/../form_data/assessments.yml"))
+  CONDITIONS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/conditions.yml"))
+  MONITOREES = YAML.safe_load(File.read("#{__dir__}/../form_data/monitorees.yml"))
+  PATIENTS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/patients.yml"))
+  REPORTS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/assessments.yml"))
+  SYMPTOMS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/symptoms.yml"))
+  USERS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/users.yml"))
 
   SIGN_IN_URL = '/users/sign_in'
   USER_PASSWORD = '123456ab'
 
   ENROLLMENT_SUBMISSION_DELAY = 5 # wait for submission alert animation to finish
-  ENROLLMENT_PAGE_TRANSITION_DELAY = 1 # wait for carousel animation to finish loading
+  ENROLLMENT_PAGE_TRANSITION_DELAY = 1 # wait for carousel animation to finish
   POP_UP_ALERT_ANIMATION_DELAY = 1 # wait for alert to pop up or dismiss
-  CHECKBOX_ANIMATION_DELAY = 1 # wait for checkbox to load
-  DASHBOARD_LOAD_DELAY = 2 # wait for dashboard to load saved tab
+  MODAL_ANIMATION_DELAY = 0.5 # wait for modal to load
 
   def login(user_name)
     visit '/'
@@ -26,33 +25,39 @@ class SystemTestUtils < ApplicationSystemTestCase
     fill_in 'user_email', with: USERS[user_name]['email']
     fill_in 'user_password', with: USER_PASSWORD
     click_on 'login'
-    wait_for_dashboard_load
-  end
-
-  def login_with_custom_password(email, password)
-    visit '/'
-    assert_equal(SIGN_IN_URL, page.current_path)
-    fill_in 'user_email', with: email
-    fill_in 'user_password', with: password
-    click_on 'login'
+    jurisdiction_id = verify_user_jurisdiction(user_name)
+    jurisdiction_id
   end
 
   def logout
     click_on 'Logout'
   end
 
-  def return_to_dashboard
-    visit '/'
-    wait_for_dashboard_load
+  def return_to_dashboard(workflow, isEpi=true)
+    if !isEpi
+      click_on 'Return To Dashboard'
+    elsif !workflow.nil?
+      click_on "Return to #{workflow.capitalize} Dashboard"
+    else
+      click_on 'Return to '
+    end
   end
 
-  def go_to_next_page
-    wait_for_enrollment_page_transition
+  def go_to_workflow(workflow)
+    click_on "#{workflow.capitalize} Monitoring"
+  end
+
+  def go_to_tab(tab)
+    find("##{tab}-tab").click
+  end
+
+  def go_to_next_page(wait=true)
+    wait_for_enrollment_page_transition if wait
     click_on 'Next'
   end
 
-  def go_to_prev_page
-    wait_for_enrollment_page_transition
+  def go_to_prev_page(wait=true)
+    wait_for_enrollment_page_transition if wait
     click_on 'Previous'
   end
 
@@ -68,16 +73,26 @@ class SystemTestUtils < ApplicationSystemTestCase
     sleep(inspection_time = POP_UP_ALERT_ANIMATION_DELAY)
   end
 
-  def wait_for_checkbox_animation
-    sleep(inspection_time = CHECKBOX_ANIMATION_DELAY)
+  def wait_for_modal_animation
+    sleep(inspection_time = MODAL_ANIMATION_DELAY)
   end
 
   def wait_for_dashboard_load
     sleep(inspection_time = DASHBOARD_LOAD_DELAY)
   end
 
+  def verify_user_jurisdiction(user_name)
+    jurisdiction = User.where(email: "#{user_name}@example.com").includes(:jurisdiction).first.jurisdiction
+    assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) if !user_name.include?('admin')
+    jurisdiction.id
+  end
+
   def get_dashboard_display_name(monitoree)
-    monitoree['identification']['last_name'] + ', ' + monitoree['identification']['first_name']
+    "#{monitoree['identification']['last_name']}, #{monitoree['identification']['first_name']}"
+  end
+
+  def get_err_msg(component, field, value)
+    "#{component} - #{field} should be: #{value}"
   end
 
   def get_assessments
@@ -108,24 +123,20 @@ class SystemTestUtils < ApplicationSystemTestCase
     USERS
   end
 
-  def get_sign_in_url
-    SIGN_IN_URL
+  def get_assessment_name(patient_key, report_key)
+    "#{patient_key}_assessment_#{report_key.to_s}"
   end
 
-  def get_assessments_url(submission_token)
-    '/patients/' + submission_token + '/assessments/new'
+  def get_patient_display_name(patient_key)
+    "#{PATIENTS[patient_key]['last_name']}, #{PATIENTS[patient_key]['first_name']}"
   end
 
-  def get_assessment_name(patient_name, report_number)
-    patient_name + '_assessment_' + report_number.to_s
-  end
-
-  def get_patient_display_name(patient_name)
-    PATIENTS[patient_name]['last_name'] + ', ' + PATIENTS[patient_name]['first_name']
+  def get_monitoree_display_name(monitoree_key)
+    "#{MONITOREES[monitoree_key]['identification']['last_name']}, #{MONITOREES[monitoree_key]['identification']['first_name']}"
   end
 
   def format_date(value)
-    value[6..9] + '-' + value[0..1] + '-' + value[3..4]
+    "#{value[6..9]}-#{value[0..1]}-#{value[3..4]}"
   end
 
   def trim_ms_from_date(value)

@@ -150,6 +150,7 @@ monitoree_5:
     laboratory_personnel: true
     healthcare_personnel: true
     crew_on_passenger_or_cargo_flight: true
+    member_of_a_common_exposure_cohort: true
 monitoree_6:
   identification:
     first_name: "Ken43"

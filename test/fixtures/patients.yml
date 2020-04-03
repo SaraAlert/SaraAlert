@@ -90,6 +90,7 @@ patient_2:
   potential_exposure_location: "East Vernaland"
   potential_exposure_country: "United States Minor Outlying Islands"
   was_in_health_care_facility_with_known_cases: true
+  pause_notifications: true
 patient_3:
   id: 3
   created_at: "<%= 45.days.ago %>"
@@ -157,6 +158,7 @@ patient_5:
   source_of_report: "Self_Identified"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 66.days.ago %>"
+  pause_notifications: true
 patient_6:
   id: 6
   created_at: "<%= 45.days.ago %>"
@@ -229,6 +231,7 @@ patient_8:
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 41.days.ago %>"
   public_health_action: 'Laboratory report results – positive'
+  pause_notifications: true
 patient_9:
   id: 9
   created_at: "<%= 17.days.ago %>"
@@ -253,6 +256,7 @@ patient_9:
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 41.days.ago %>"
   public_health_action: 'Laboratory report results – positive'
+  pause_notifications: true
 patient_10:
   id: 10
   created_at: "<%= 8.days.ago %>"
@@ -383,6 +387,7 @@ patient_15:
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
   public_health_action: 'Laboratory specimen collected'
+  pause_notifications: true
 patient_16:
   id: 16
   created_at: "<%= 2.days.ago %>"
@@ -467,6 +472,7 @@ patient_19:
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: true
   public_health_action: 'Recommended medical evaluation of symptoms'
+  pause_notifications: true
 patient_20:
   id: 20
   created_at: "<%= 4.hours.ago %>"
@@ -606,3 +612,226 @@ patient_40:
   monitoring: true
   exposure_risk_assessment: 'High'
   last_date_of_exposure: '<%= 14.months.ago %>'
+patient_41:
+  id: 41
+  created_at: "<%= 2.days.ago %>"
+  updated_at: "<%= 2.days.ago %>"
+  responder_id: 41
+  creator_id: 5
+  jurisdiction_id: 7
+  monitoring: true
+  first_name: "Anderson32"
+  last_name: "Alec38"
+  sex: "Female"
+  date_of_birth: "<%= 35.years.ago %>"
+  address_line_1: "796 Lesch Heights"
+  address_city: "Laurenceborough"
+  address_state: "Rhode Island"
+  address_zip: "55335"
+  primary_telephone: "(555) 555-0175"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 3.days.ago %>"
+  pause_notifications: true
+patient_42:
+  id: 42
+  created_at: "<%= 2.days.ago %>"
+  updated_at: "<%= 2.days.ago %>"
+  responder_id: 42
+  creator_id: 6
+  jurisdiction_id: 6
+  monitoring: true
+  first_name: "Armstrong46"
+  last_name: "Shirly90"
+  sex: "Male"
+  date_of_birth: "<%= 48.years.ago %>"
+  address_line_1: "45727 Skiles Parkways"
+  address_city: "Yundtborough"
+  address_state: "Indiana"
+  address_zip: "53922"
+  primary_telephone: "(555) 555-0176"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 5.days.ago %>"
+patient_43:
+  id: 43
+  created_at: "<%= 6.days.ago %>"
+  updated_at: "<%= 6.days.ago %>"
+  responder_id: 43
+  creator_id: 1
+  jurisdiction_id: 4
+  monitoring: true
+  isolation: true
+  first_name: "Bruen19"
+  last_name: "Bayer45"
+  sex: "Male"
+  date_of_birth: "<%= 79.years.ago %>"
+  address_line_1: "656 Gracie Drives"
+  address_city: "East Dewayneberg"
+  address_state: "West Virginia"
+  address_zip: "27382"
+  primary_telephone: "(555) 555-0177"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 5.days.ago %>"
+  pause_notifications: true
+patient_44:
+  id: 44
+  created_at: "<%= 9.days.ago %>"
+  updated_at: "<%= 9.days.ago %>"
+  responder_id: 44
+  creator_id: 1
+  jurisdiction_id: 5
+  monitoring: true
+  isolation: true
+  first_name: "Edward54"
+  last_name: "Kilback94"
+  sex: "Female"
+  date_of_birth: "<%= 61.years.ago %>"
+  address_line_1: "5309 Nan Centers Suite 344"
+  address_city: "Ailenemouth"
+  address_state: "Vermont"
+  address_zip: "93872"
+  primary_telephone: "(555) 555-0177"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 9.days.ago %>"
+patient_45:
+  id: 45
+  created_at: "<%= 3.days.ago %>"
+  updated_at: "<%= 3.days.ago %>"
+  responder_id: 45
+  creator_id: 1
+  jurisdiction_id: 2
+  monitoring: true
+  isolation: true
+  first_name: "Gibson07"
+  last_name: "Altenwerth59"
+  sex: "Female"
+  date_of_birth: "<%= 2.years.ago %>"
+  address_line_1: "544 Saul Green"
+  address_city: "Port Walter"
+  address_state: "Oklahoma"
+  address_zip: "61411-4761"
+  primary_telephone: "(555) 555-0178"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 9.days.ago %>"
+patient_46:
+  id: 46
+  created_at: "<%= 4.days.ago %>"
+  updated_at: "<%= 4.days.ago %>"
+  responder_id: 46
+  creator_id: 1
+  jurisdiction_id: 2
+  monitoring: true
+  isolation: true
+  first_name: "Sung30"
+  last_name: "Bartoletti13"
+  sex: "Unknown"
+  date_of_birth: "<%= 18.years.ago %>"
+  address_line_1: "630 Frederick Land Apt. 170"
+  address_city: "Haydenburgh"
+  address_state: "Pennsylvania"
+  address_zip: "82912-2919"
+  primary_telephone: "(555) 555-0179"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 11.days.ago %>"
+  pause_notifications: true
+patient_47:
+  id: 47
+  created_at: "<%= 2.days.ago %>"
+  updated_at: "<%= 2.days.ago %>"
+  responder_id: 47
+  creator_id: 1
+  jurisdiction_id: 2
+  monitoring: true
+  isolation: true
+  first_name: "Ryan00"
+  last_name: "Auer09"
+  sex: "Unknown"
+  date_of_birth: "<%= 22.years.ago %>"
+  address_line_1: "37549 Von Overpass Suite 450"
+  address_city: "Boston"
+  address_state: "Massachusetts"
+  address_zip: "82912-2918"
+  primary_telephone: "(555) 555-0185"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 11.days.ago %>"
+patient_48:
+  id: 48
+  created_at: "<%= 4.days.ago %>"
+  updated_at: "<%= 4.days.ago %>"
+  responder_id: 48
+  creator_id: 1
+  jurisdiction_id: 2
+  monitoring: true
+  isolation: true
+  first_name: "Champlin07"
+  last_name: "Hills72"
+  sex: "Male"
+  date_of_birth: "<%= 31.years.ago %>"
+  address_line_1: "7854 Funk Junctions"
+  address_city: "South Douglasview"
+  address_state: "Texas"
+  address_zip: "82922-2919"
+  primary_telephone: "(555) 555-0182"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 12.days.ago %>"
+patient_49:
+  id: 49
+  created_at: "<%= 2.hours.ago %>"
+  updated_at: "<%= 2.hours.ago %>"
+  responder_id: 49
+  creator_id: 1
+  jurisdiction_id: 2
+  monitoring: true
+  isolation: true
+  first_name: "Bayer47"
+  last_name: "Mann80"
+  sex: "Male"
+  date_of_birth: "<%= 63.years.ago %>"
+  address_line_1: "630 Frederick Land Apt. 170"
+  address_city: "Port Clementeland"
+  address_state: "Nevada"
+  address_zip: "99920"
+  primary_telephone: "(555) 555-0188"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 10.days.ago %>"
+  pause_notifications: true
+patient_50:
+  id: 50
+  created_at: "<%= 5.hours.ago %>"
+  updated_at: "<%= 5.hours.ago %>"
+  responder_id: 50
+  creator_id: 1
+  jurisdiction_id: 2
+  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  monitoring: true
+  isolation: true
+  first_name: "Abbott24"
+  last_name: "Mante21"
+  sex: "Male"
+  date_of_birth: "<%= 52.years.ago %>"
+  address_line_1: "144 Jama Spurs"
+  address_city: "West April"
+  address_state: "Wisconsin"
+  address_zip: "22804"
+  primary_telephone: "(555) 555-0189"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 12.days.ago %>"

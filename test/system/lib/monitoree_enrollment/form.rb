@@ -4,7 +4,7 @@ require 'application_system_test_case'
 
 require_relative '../system_test_utils'
 
-class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
+class MonitoreeEnrollmentForm < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def populate_monitoree_info(monitoree)
@@ -138,6 +138,7 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
       populate_checkbox_input(potential_exposure_info, 'laboratory_personnel')
       populate_checkbox_input(potential_exposure_info, 'healthcare_personnel')
       populate_checkbox_input(potential_exposure_info, 'crew_on_passenger_or_cargo_flight')
+      populate_checkbox_input(potential_exposure_info, 'member_of_a_common_exposure_cohort')
       populate_text_input(potential_exposure_info, 'contact_of_known_case_id')
       populate_select_input(potential_exposure_info, 'exposure_risk_assessment')
       populate_select_input(potential_exposure_info, 'monitoring_plan')

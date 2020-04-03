@@ -1,0 +1,492 @@
+analytic_1_active_overall_total_missing:
+  id: 10001
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'Missing'
+  total: 158
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_overall_total_high:
+  id: 10002
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'High'
+  total: 211
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_overall_total_low:
+  id: 10003
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'Low'
+  total: 709
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_overall_total_medium:
+  id: 10004
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'Medium'
+  total: 544
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_overall_total_no_identified_risk:
+  id: 10005
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'No Identified Risk'
+  total: 544
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_overall_overall_total_missing:
+  id: 10006
+  analytic_id: 1
+  active_monitoring: false
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'Missing'
+  total: 158
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_overall_overall_total_high:
+  id: 10007
+  analytic_id: 1
+  active_monitoring: false
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'High'
+  total: 211
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_overall_overall_total_low:
+  id: 10008
+  analytic_id: 1
+  active_monitoring: false
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'Low'
+  total: 709
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_overall_overall_total_medium:
+  id: 10009
+  analytic_id: 1
+  active_monitoring: false
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'Medium'
+  total: 544
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_overall_overall_total_no_identified_risk:
+  id: 10010
+  analytic_id: 1
+  active_monitoring: false
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'No Identified Risk'
+  total: 544
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_symptomatic_missing:
+  id: 10101
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Symptomatic'
+  risk_level: 'Missing'
+  total: 82
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_symptomatic_high:
+  id: 10102
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Symptomatic'
+  risk_level: 'High'
+  total: 116
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_symptomatic_low:
+  id: 10103
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Symptomatic'
+  risk_level: 'Low'
+  total: 389
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_symptomatic_medium:
+  id: 10104
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Symptomatic'
+  risk_level: 'Medium'
+  total: 322
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_symptomatic_no_identified_risk:
+  id: 10105
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Symptomatic'
+  risk_level: 'No Identified Risk'
+  total: 242
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_non_reporting_high:
+  id: 10112
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Non-Reporting'
+  risk_level: 'High'
+  total: 2
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_non_reporting_low:
+  id: 10113
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Non-Reporting'
+  risk_level: 'Low'
+  total: 18
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_non_reporting_medium:
+  id: 10114
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Non-Reporting'
+  risk_level: 'Medium'
+  total: 6
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_non_reporting_no_identified_risk:
+  id: 10115
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Non-Reporting'
+  risk_level: 'No Identified Risk'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_asymptomatic_missing:
+  id: 10121
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Asymptomatic'
+  risk_level: 'Missing'
+  total: 76
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_asymptomatic_high:
+  id: 10122
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Asymptomatic'
+  risk_level: 'High'
+  total: 93
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_asymptomatic_low:
+  id: 10123
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Asymptomatic'
+  risk_level: 'Low'
+  total: 302
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_asymptomatic_medium:
+  id: 10124
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Asymptomatic'
+  risk_level: 'Medium'
+  total: 216
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_monitoring_status_asymptomatic_no_identified_risk:
+  id: 10125
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Asymptomatic'
+  risk_level: 'No Identified Risk'
+  total: 154
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_age_group_0_19_missing:
+  id: 10201
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Age Group'
+  category: '0-19'
+  risk_level: 'Missing'
+  total: 30
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_sex_female_missing:
+  id: 10301
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Sex'
+  category: 'Female'
+  risk_level: 'Missing'
+  total: 66
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_risk_factor_close_contact_with_known_case_missing:
+  id: 10401
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Risk Factor'
+  category: 'Close Contact with Known Case'
+  risk_level: 'Missing'
+  total: 52
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_exposure_country_high:
+  id: 10502
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Exposure Country'
+  category: 'Congo'
+  risk_level: 'High'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_last_exposure_date_1_missing:
+  id: 10601
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Last Exposure Date'
+  category: <%= 14.days.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_last_exposure_week_1_missing:
+  id: 10701
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Last Exposure Week'
+  category: <%= 3.weeks.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_1_active_last_exposure_month_1_missing:
+  id: 10801
+  analytic_id: 1
+  active_monitoring: true
+  category_type: 'Last Exposure Month'
+  category: <%= 1.month.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+
+analytic_2_active_overall_total_missing:
+  id: 20001
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'Missing'
+  total: 158
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_monitoring_status_symptomatic_missing:
+  id: 20101
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Symptomatic'
+  risk_level: 'Missing'
+  total: 82
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_age_group_0_19_missing:
+  id: 20201
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Age Group'
+  category: '0-19'
+  risk_level: 'Missing'
+  total: 30
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_sex_female_missing:
+  id: 20301
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Sex'
+  category: 'Female'
+  risk_level: 'Missing'
+  total: 66
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_risk_factor_close_contact_with_known_case_missing:
+  id: 20401
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Risk Factor'
+  category: 'Close Contact with Known Case'
+  risk_level: 'Missing'
+  total: 52
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_exposure_country_high:
+  id: 20502
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Exposure Country'
+  category: 'Congo'
+  risk_level: 'High'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_last_exposure_date_1_missing:
+  id: 20601
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Last Exposure Date'
+  category: <%= 14.days.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_last_exposure_week_1_missing:
+  id: 20701
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Last Exposure Week'
+  category: <%= 3.weeks.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_2_active_last_exposure_month_1_missing:
+  id: 20801
+  analytic_id: 2
+  active_monitoring: true
+  category_type: 'Last Exposure Month'
+  category: <%= 1.month.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+
+analytic_3_active_overall_total_missing:
+  id: 30001
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Overall Total'
+  category: 'Total'
+  risk_level: 'Missing'
+  total: 158
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_monitoring_status_symptomatic_missing:
+  id: 30101
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Monitoring Status'
+  category: 'Symptomatic'
+  risk_level: 'Missing'
+  total: 82
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_age_group_0_19_missing:
+  id: 30201
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Age Group'
+  category: '0-19'
+  risk_level: 'Missing'
+  total: 30
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_sex_female_missing:
+  id: 30301
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Sex'
+  category: 'Female'
+  risk_level: 'Missing'
+  total: 66
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_risk_factor_close_contact_with_known_case_missing:
+  id: 30401
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Risk Factor'
+  category: 'Close Contact with Known Case'
+  risk_level: 'Missing'
+  total: 52
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_exposure_country_high:
+  id: 30502
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Exposure Country'
+  category: 'Congo'
+  risk_level: 'High'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_last_exposure_date_1_missing:
+  id: 30601
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Last Exposure Date'
+  category: <%= 14.days.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_last_exposure_week_1_missing:
+  id: 30701
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Last Exposure Week'
+  category: <%= 3.weeks.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>
+analytic_3_active_last_exposure_month_1_missing:
+  id: 30801
+  analytic_id: 3
+  active_monitoring: true
+  category_type: 'Last Exposure Month'
+  category: <%= 1.month.ago %>
+  risk_level: 'Missing'
+  total: 1
+  created_at: <%= 1.minute.ago %>
+  updated_at: <%= 1.minute.ago %>

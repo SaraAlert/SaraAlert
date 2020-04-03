@@ -2,66 +2,48 @@
 
 require 'application_system_test_case'
 
+require_relative 'lib/admin/helper'
 require_relative 'lib/system_test_utils'
 
 class AdminTest < ApplicationSystemTestCase
+  @@admin_helper = AdminHelper.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
+  test 'view users' do
+    @@admin_helper.view_users('admin1')
+  end
+
   test 'add users with different jurisdictions and roles' do
-    verify_add_user('locals1c1_enroller2@example.com', 'USA,State 1,County 1', 'enroller')
-    verify_add_user('state1_enroller2@example.com', 'USA,State 1', 'enroller')
-    verify_add_user('usa_enroller2@example.com', 'USA', 'enroller')
-    verify_add_user('locals1c1_epi2@example.com', 'USA,State 1,County 1', 'public_health')
-    verify_add_user('state1_epi2@example.com', 'USA,State 1', 'public_health')
-    verify_add_user('usa_epi2@example.com', 'USA', 'public_health')
-    verify_add_user('locals1c1_epi_enroller2@example.com', 'USA,State 1,County 1', 'public_health_enroller')
-    verify_add_user('state1_epi_enroller2@example.com', 'USA,State 1', 'public_health_enroller')
-    verify_add_user('usa_epi_enroller2@example.com', 'USA', 'public_health_enroller')
-    verify_add_user('locals1c1_adminr2@example.com', 'USA,State 1,County 1', 'admin')
-    verify_add_user('state1_admin2@example.com', 'USA,State 1', 'admin')
-    verify_add_user('usa_admin2@example.com', 'USA', 'admin')
-    verify_add_user('locals1c1_analyst2@example.com', 'USA,State 1,County 1', 'analyst')
-    verify_add_user('state1_analyst2@example.com', 'USA,State 1', 'analyst')
-    verify_add_user('usa_analyst2@example.com', 'USA', 'analyst')
+    @@admin_helper.add_user('admin1', 'locals1c1_enroller2@example.com', 'USA,State 1,County 1', 'enroller')
+    @@admin_helper.add_user('admin1', 'state1_enroller2@example.com', 'USA,State 1', 'enroller')
+    @@admin_helper.add_user('admin1', 'usa_enroller2@example.com', 'USA', 'enroller')
+    @@admin_helper.add_user('admin1', 'locals1c2_epi2@example.com', 'USA,State 1,County 2', 'public_health')
+    @@admin_helper.add_user('admin1', 'state1_epi2@example.com', 'USA,State 1', 'public_health')
+    @@admin_helper.add_user('admin1', 'usa_epi2@example.com', 'USA', 'public_health')
+    @@admin_helper.add_user('admin1', 'locals2c3_epi_enroller2@example.com', 'USA,State 2,County 3', 'public_health_enroller')
+    @@admin_helper.add_user('admin1', 'state1_epi_enroller2@example.com', 'USA,State 1', 'public_health_enroller')
+    @@admin_helper.add_user('admin1', 'usa_epi_enroller2@example.com', 'USA', 'public_health_enroller')
+    @@admin_helper.add_user('admin1', 'locals1c1_admin2@example.com', 'USA,State 1,County 1', 'admin')
+    @@admin_helper.add_user('admin1', 'state2_admin2@example.com', 'USA,State 2', 'admin')
+    @@admin_helper.add_user('admin1', 'usa_admin2@example.com', 'USA', 'admin')
+    @@admin_helper.add_user('admin1', 'locals2c4_analyst2@example.com', 'USA,State 2,County 4', 'analyst')
+    @@admin_helper.add_user('admin1', 'state1_analyst2@example.com', 'USA,State 1', 'analyst')
+    @@admin_helper.add_user('admin1', 'usa_analyst2@example.com', 'USA', 'analyst')
   end
 
   test 'should not add user if close button is clicked' do
-    @@system_test_utils.login('admin1')
-    add_user_and_cancel('user@example.com', 'USA', 'enroller')
+    @@admin_helper.add_user('admin1', 'another_user@example.com', 'USA', 'enroller', false)
   end
 
   test 'should display error message if user is added with email of an existing user' do
-    @@system_test_utils.login('admin1')
-    add_user('locals1c1_enroller@example.com', 'USA,State 1,County 1', 'enroller')
-    assert_equal('User already exists', page.driver.browser.switch_to.alert.text)
+    @@admin_helper.add_existing_user('admin1', 'locals1c1_enroller@example.com', 'USA,State 1,County 1', 'enroller')
   end
 
-  def verify_add_user(email, jurisdiction, role)
-    @@system_test_utils.login('admin1')
-    add_user(email, jurisdiction, role)
-    assert_selector 'td', text: email
-    assert_selector 'td', text: jurisdiction
-    assert_selector 'td', text: role
-    @@system_test_utils.logout
-    # @@system_test_utils.login_with_custom_password(email, '123456ab') # verify login with generated password
+  test 'lock user' do
+    @@admin_helper.lock_user('admin1', 'state1_epi@example.com')
   end
 
-  def add_user(email, jurisdiction, role)
-    click_on 'Add User'
-    populate_user_info(email, jurisdiction, role)
-    find('.modal-footer').click_on('Add User')
-  end
-
-  def add_user_and_cancel(email, jurisdiction, role)
-    click_on 'Add User'
-    populate_user_info(email, jurisdiction, role)
-    find('.modal-footer').click_on('Close')
-    refute_selector 'td', text: email
-  end
-
-  def populate_user_info(email, jurisdiction, role)
-    fill_in 'Email', with: email
-    select jurisdiction, from: 'Jurisdiction'
-    select role, from: 'Role'
+  test 'reset user password' do
+    @@admin_helper.reset_user_password('admin1', 'locals1c1_epi@example.com')
   end
 end

@@ -3,8 +3,8 @@ require 'active_support'
 namespace :analytics do
 
   desc "Cache Current Analytics"
-  MONITORING_STATUSES = ['Symptomatic', 'Non-Reporting', 'Asymptomatic']
-  RISK_FACTORS = {
+  MONITORING_STATUSES ||= ['Symptomatic', 'Non-Reporting', 'Asymptomatic']
+  RISK_FACTORS ||= {
     contact_of_known_case: 'Close Contact with Known Case',
     travel_to_affected_country_or_area: 'Travel from Affected Country or Area',
     was_in_health_care_facility_with_known_cases: 'Was in Healthcare Facility with Known Cases',
@@ -13,11 +13,11 @@ namespace :analytics do
     crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
     laboratory_personnel: 'Laboratory Personnel'
   }
-  MONITOREE_SNAPSHOT_TIME_FRAMES = ['Last 24 Hours', 'Last 14 Days', 'Total']
-  NUM_EXPOSURE_COUNTRIES = 5
-  NUM_PAST_EXPOSURE_DAYS = 28
-  NUM_PAST_EXPOSURE_WEEKS = 53
-  NUM_PAST_EXPOSURE_MONTHS = 13
+  MONITOREE_SNAPSHOT_TIME_FRAMES ||= ['Last 24 Hours', 'Last 14 Days', 'Total']
+  NUM_EXPOSURE_COUNTRIES ||= 5
+  NUM_PAST_EXPOSURE_DAYS ||= 28
+  NUM_PAST_EXPOSURE_WEEKS ||= 53
+  NUM_PAST_EXPOSURE_MONTHS ||= 13
 
   task cache_current_analytics: :environment do
     jurisdiction_analytic_map = {}
