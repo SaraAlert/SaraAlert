@@ -20,11 +20,11 @@ class CumulativeMapChart extends React.Component {
     this.canChangeDate = true;
     this.firstUpdate = true; // the init logic locks the semaphore so we need a separate variable
     this.state = {
-      // As far as I can tell, the CDC Map cannot have its data changed (it wont re-render and generate the colorschemes).
-      // React will regenerate a value if its KEY is changed. So we use this boolean as a key, and flip it every time
+      // As far as I can tell, the CDC Map cannot have its data changed (it wont re-render and re-generate the colorschemes).
+      // React will re-generate/render a component if its KEY is changed. So we use this boolean as a key, and flip it every time
       // we want to re-render the CDC Map
       updateKey: true,
-      // All this `map` does is to translate `{'Kansas' : 5}` to `{'KA' : 5}` for all states
+      // All these two `map`s do is translate `{'Kansas' : 5}` to `{'KA' : 5}` for all states in both of the fields
       mappedSymptomaticPatientCountByStateAndDay: this.props.stats.symptomatic_patient_count_by_state_and_day.map(x => {
         let mappedValues = {};
         mappedValues['day'] = x.day;
@@ -74,9 +74,22 @@ class CumulativeMapChart extends React.Component {
     this.addSlider();
   }
 
+  addSlider() {
+    // This isnt the best way to do this, but because we dont have access to the CDC Maps component
+    // we have to inject our component at an anchor point we create
+    let newNode = document.createElement('div');
+    newNode.innerHTML = '<div id="slider"> </div>';
+
+    let referenceNode1 = document.querySelector('.map-container');
+    referenceNode1.parentNode.insertBefore(newNode, referenceNode1.nextSibling);
+    ReactDOM.render(this.renderSlider(), document.querySelector('#slider'));
+
+    let referenceNode2 = document.querySelector('.full-container');
+    referenceNode2.style.cssText = 'border: 1px solid #dedede';
+  }
+
   updateMapWithDay(dateIndex) {
-    // dateIndex = this.state.mappedSymptomaticPatientCountByStateAndDay.length - 1
-    // There was a wierd bug, where this function was getting called twice in correctly (with the max value).
+    // There was a wierd bug, where this function was getting called twice incorrectly (the second time, with the max value).
     // By using `canChangeDate` as a semaphore and locking/unlocking it in `onAfterChange`, that bug is fixed.
     // In theory, this semaphore should not be required, as the Slider should unmount and not call its own
     // onChange() function. But it is ¯\_(ツ)_/¯
@@ -130,20 +143,6 @@ class CumulativeMapChart extends React.Component {
         />
       </div>
     );
-  }
-
-  addSlider() {
-    // This isnt the best way to do this, but because we dont have access to the CDC Maps component
-    // we have to inject our component at an anchor point we create
-    let newNode = document.createElement('div');
-    newNode.innerHTML = '<div id="slider"> </div>';
-
-    let referenceNode1 = document.querySelector('.map-container');
-    referenceNode1.parentNode.insertBefore(newNode, referenceNode1.nextSibling);
-    ReactDOM.render(this.renderSlider(), document.querySelector('#slider'));
-
-    let referenceNode2 = document.querySelector('.full-container');
-    referenceNode2.style.cssText = 'border: 1px solid #dedede';
   }
 
   render() {
