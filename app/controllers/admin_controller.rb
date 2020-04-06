@@ -63,7 +63,9 @@ class AdminController < ApplicationController
   def lock_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    user = User.find_by_id(params.permit[:id])
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
+    email = permitted_params[:email]
+    user = User.find_by(email: email)
     cur_jur = current_user.jurisdiction
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
 
@@ -73,7 +75,9 @@ class AdminController < ApplicationController
   def unlock_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    user = User.find_by_id(params.permit[:id])
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
+    email = permitted_params[:email]
+    user = User.find_by(email: email)
     cur_jur = current_user.jurisdiction
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
 
@@ -83,7 +87,9 @@ class AdminController < ApplicationController
   def reset_password
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    user = User.find_by_id(params.permit[:id])
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
+    email = permitted_params[:email]
+    user = User.find_by(email: email)
     cur_jur = current_user.jurisdiction
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
 

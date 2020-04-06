@@ -1,3 +1,6 @@
+# Version
+version: v1.2.0
+
 # How many days an enrolled monitoree should be monitored
 monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 14 %>
 

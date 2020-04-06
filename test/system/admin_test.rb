@@ -8,19 +8,19 @@ class AdminTest < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   test 'add users with different jurisdictions and roles' do
-    verify_add_user('locals1c1_enroller2@example.com', 'USA, State 1, County 1', 'enroller')
+    verify_add_user('locals1c1_enroller2@example.com', 'USA,State 1,County 1', 'enroller')
     verify_add_user('state1_enroller2@example.com', 'USA, State 1', 'enroller')
     verify_add_user('usa_enroller2@example.com', 'USA', 'enroller')
-    verify_add_user('locals1c1_epi2@example.com', 'USA, State 1, County 1', 'public_health')
+    verify_add_user('locals1c1_epi2@example.com', 'USA,State 1,County 1', 'public_health')
     verify_add_user('state1_epi2@example.com', 'USA, State 1', 'public_health')
     verify_add_user('usa_epi2@example.com', 'USA', 'public_health')
-    verify_add_user('locals1c1_epi_enroller2@example.com', 'USA, State 1, County 1', 'public_health_enroller')
+    verify_add_user('locals1c1_epi_enroller2@example.com', 'USA,State 1,County 1', 'public_health_enroller')
     verify_add_user('state1_epi_enroller2@example.com', 'USA, State 1', 'public_health_enroller')
     verify_add_user('usa_epi_enroller2@example.com', 'USA', 'public_health_enroller')
-    verify_add_user('locals1c1_adminr2@example.com', 'USA, State 1, County 1', 'admin')
+    verify_add_user('locals1c1_adminr2@example.com', 'USA,State 1,County 1', 'admin')
     verify_add_user('state1_admin2@example.com', 'USA, State 1', 'admin')
     verify_add_user('usa_admin2@example.com', 'USA', 'admin')
-    verify_add_user('locals1c1_analyst2@example.com', 'USA, State 1, County 1', 'analyst')
+    verify_add_user('locals1c1_analyst2@example.com', 'USA,State 1,County 1', 'analyst')
     verify_add_user('state1_analyst2@example.com', 'USA, State 1', 'analyst')
     verify_add_user('usa_analyst2@example.com', 'USA', 'analyst')
   end
@@ -32,7 +32,7 @@ class AdminTest < ApplicationSystemTestCase
 
   test 'should display error message if user is added with email of an existing user' do
     @@system_test_utils.login('admin1')
-    add_user('locals1c1_enroller@example.com', 'USA, State 1, County 1', 'enroller')
+    add_user('locals1c1_enroller@example.com', 'USA,State 1,County 1', 'enroller')
     assert_equal('User already exists', page.driver.browser.switch_to.alert.text)
   end
 
