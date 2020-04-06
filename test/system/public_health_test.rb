@@ -80,8 +80,12 @@ class PublicHealthTest < ApplicationSystemTestCase
     add_comment('locals2c3_epi', 'patient_11', 'PUI', 'comment')
   end
 
-  test 'export data to csv' do
-    export_data_to_csv('locals2c4_epi')
+  test 'export linelist data to csv' do
+    export_linelist_data_to_csv('locals2c4_epi')
+  end
+
+  test 'export comprehensive data to csv' do
+    export_comprehensive_data_to_csv('locals2c4_epi')
   end
 
   def search_for_and_verify_patients_under_jurisdiction(user_name, symptomatic_patients, non_reporting_patients, asymptomatic_patients, pui_patients, closed_patients)
@@ -188,10 +192,17 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_data_to_csv(user_name)
+  def export_linelist_data_to_csv(user_name)
     @@system_test_utils.login(user_name)
-    assert_selector 'a', text: 'CSV'
-    click_on 'CSV'
+    assert_selector 'a', text: 'Export Line-list CSV'
+    click_on 'Export Line-list CSV'
+    @@system_test_utils.logout
+  end
+
+  def export_comprehensive_data_to_csv(user_name)
+    @@system_test_utils.login(user_name)
+    assert_selector 'a', text: 'Export Comprehensive CSV'
+    click_on 'Export Comprehensive CSV'
     @@system_test_utils.logout
   end
 end
