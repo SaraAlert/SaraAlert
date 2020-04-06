@@ -34,7 +34,7 @@ namespace :analytics do
     root_nodes = Jurisdiction.where(ancestry: nil)
     root_nodes.each do |root_jurisdiction|
       symp_by_state = root_jurisdiction.all_patients.pluck(:monitored_address_state).each_with_object(Hash.new(0)) { |state,counts| counts[state] += 1 }
-      monitored_by_state = root_jurisdiction.all_patients.symptomatic.pluck(:monitored_address_state).each_with_object(Hash.new(0)) { |state,counts| counts[state] += 1 }
+      monitored_by_state = root_jurisdiction.all_patients.symptomatic.uniq.pluck(:monitored_address_state).each_with_object(Hash.new(0)) { |state,counts| counts[state] += 1 }
       root_node_path = root_jurisdiction.jurisdiction_path_string
       # These maps can be retrieved back into a hash by running the following
       # JSON.parse <analytic>.monitoree_state_map.to_s.gsub('=>', ':')
