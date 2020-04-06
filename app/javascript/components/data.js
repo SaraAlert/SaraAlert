@@ -186,7 +186,7 @@ export const symptomaticMonitoreesMap = {
   legend: {
     numberOfItems: 4,
     position: 'side',
-    title: 'Count of Monitorees',
+    title: 'Count of Symptomatic Monitorees',
     type: 'equalnumber',
     specialClasses: [],
     data: [],
