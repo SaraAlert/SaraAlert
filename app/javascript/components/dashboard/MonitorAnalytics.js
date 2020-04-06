@@ -117,7 +117,7 @@ class MonitorAnalytics extends React.Component {
         </Row>
         <Row className="mb-4 mx-2 px-0 pt-4">
           <Col md="24" className="mx-0 px-0">
-            <span className="display-5">Geographical Summary</span>
+            <span className="display-5">Geographic Summary</span>
           </Col>
         </Row>
         <Row className="mb-4 mx-2 px-0">
