@@ -6,7 +6,8 @@ import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
 import RiskFactors from './widgets/RiskFactors';
 import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
-import CDCMaps from './widgets/CDCMaps';
+import CDCMapsTotal from './widgets/CDCMapsTotal';
+import CDCMapsSymptomatic from './widgets/CDCMapsSymptomatic';
 import moment from 'moment';
 import Switch from 'react-switch';
 import domtoimage from 'dom-to-image';
@@ -97,8 +98,11 @@ class MonitorAnalytics extends React.Component {
           </Col>
         </Row>
         <Row className="mb-4 mx-2 px-0">
-          <Col md="24">
-            <CDCMaps stats={this.props.stats} />
+          <Col lg="12" md="24">
+            <CDCMapsTotal stats={this.props.stats} />
+          </Col>
+          <Col lg="12" md="24">
+            <CDCMapsSymptomatic stats={this.props.stats} />
           </Col>
         </Row>
       </React.Fragment>

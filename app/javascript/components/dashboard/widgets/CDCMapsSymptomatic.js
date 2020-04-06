@@ -3,19 +3,19 @@ import ReactDOM from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
 import { PropTypes } from 'prop-types';
-import { totalMonitoreesMap, stateOptions } from '../../data';
+import { symptomaticMonitoreesMap, stateOptions } from '../../data';
 import CdcMap from 'cdc-map';
 import 'cdc-map/build/static/css/index.css';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
 
-class CumulativeMapChart extends React.Component {
+class CDCMapsSymptomatic extends React.Component {
   constructor(props) {
     super(props);
     this.renderSlider = this.renderSlider.bind(this);
     this.addSlider = this.addSlider.bind(this);
     this.updateMapWithDay = this.updateMapWithDay.bind(this);
-    this.monitoreesMap = _.cloneDeep(totalMonitoreesMap);
+    this.monitoreesMap = _.cloneDeep(symptomaticMonitoreesMap);
     this.selectedDateIndex = 0;
     this.canChangeDate = true;
     this.firstUpdate = true; // the init logic locks the semaphore so we need a separate variable
@@ -24,19 +24,8 @@ class CumulativeMapChart extends React.Component {
       // React will re-generate/render a component if its KEY is changed. So we use this boolean as a key, and flip it every time
       // we want to re-render the CDC Map
       updateKey: true,
-      // All these two `map`s do is translate `{'Kansas' : 5}` to `{'KA' : 5}` for all states in both of the fields
+      // All this does is translate`{'Kansas' : 5}` to `{'KA' : 5}` for all states
       mappedSymptomaticPatientCountByStateAndDay: this.props.stats.symptomatic_patient_count_by_state_and_day.map(x => {
-        let mappedValues = {};
-        mappedValues['day'] = x.day;
-        _.forIn(_.omit(x, 'day'), (value, key) => {
-          let abbreviation = stateOptions.find(state => state.name === key)?.abbrv;
-          if (abbreviation) {
-            mappedValues[String(abbreviation)] = value;
-          }
-        });
-        return mappedValues;
-      }),
-      mappedTotalPatientCountByStateAndDay: this.props.stats.total_patient_count_by_state_and_day.map(x => {
         let mappedValues = {};
         mappedValues['day'] = x.day;
         _.forIn(_.omit(x, 'day'), (value, key) => {
@@ -78,13 +67,13 @@ class CumulativeMapChart extends React.Component {
     // This isnt the best way to do this, but because we dont have access to the CDC Maps component
     // we have to inject our component at an anchor point we create
     let newNode = document.createElement('div');
-    newNode.innerHTML = '<div id="slider"> </div>';
+    newNode.innerHTML = '<div id="sliderSymptomatic"> </div>';
 
-    let referenceNode1 = document.querySelector('.map-container');
+    let referenceNode1 = document.querySelector('.symptomatic-cdc-map').querySelector('.map-container');
     referenceNode1.parentNode.insertBefore(newNode, referenceNode1.nextSibling);
-    ReactDOM.render(this.renderSlider(), document.querySelector('#slider'));
+    ReactDOM.render(this.renderSlider(), document.querySelector('#sliderSymptomatic'));
 
-    let referenceNode2 = document.querySelector('.full-container');
+    let referenceNode2 = document.querySelector('.symptomatic-cdc-map').querySelector('.full-container');
     referenceNode2.style.cssText = 'border: 1px solid #dedede';
   }
 
@@ -102,16 +91,13 @@ class CumulativeMapChart extends React.Component {
         this.firstUpdate = false;
       }
       let data1 = _.omit(this.state.mappedSymptomaticPatientCountByStateAndDay[String(dateIndex)], 'day');
-      let data2 = _.omit(this.state.mappedTotalPatientCountByStateAndDay[String(dateIndex)], 'day');
       this.monitoreesMap.data = this.monitoreesMap.data.map(x => {
-        x['Total'] = Object.prototype.hasOwnProperty.call(data2, x.STATE) ? data2[String(x.STATE)] : 0;
-        if (x['Total'] > highestValue) highestValue = x['Total'];
         x['Symptomatic'] = Object.prototype.hasOwnProperty.call(data1, x.STATE) ? data1[String(x.STATE)] : 0;
         return x;
       });
       // These are pretty much arbitrary and can (maybe should) be changed
       // (They count the number of entries in the legend)
-      if (highestValue === 1) {
+      if (highestValue <= 1) {
         this.monitoreesMap.legend.numberOfItems = 1;
       } else if (highestValue < 10) {
         this.monitoreesMap.legend.numberOfItems = 2;
@@ -125,7 +111,7 @@ class CumulativeMapChart extends React.Component {
   }
 
   renderSlider() {
-    const selectedDay = this.state.mappedTotalPatientCountByStateAndDay[parseInt(this.selectedDateIndex)].day;
+    const selectedDay = this.state.mappedSymptomaticPatientCountByStateAndDay[parseInt(this.selectedDateIndex)].day;
     return (
       <div style={{ width: '50%', marginLeft: '25%' }}>
         <Slider
@@ -153,14 +139,16 @@ class CumulativeMapChart extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <CdcMap key={this.state.updateKey} config={this.monitoreesMap} />
+        <div className="symptomatic-cdc-map">
+          <CdcMap key={this.state.updateKey} config={this.monitoreesMap} />
+        </div>
       </React.Fragment>
     );
   }
 }
 
-CumulativeMapChart.propTypes = {
+CDCMapsSymptomatic.propTypes = {
   stats: PropTypes.object,
 };
 
-export default CumulativeMapChart;
+export default CDCMapsSymptomatic;
