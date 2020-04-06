@@ -14,8 +14,8 @@ class SystemTestUtils < ApplicationSystemTestCase
   SIGN_IN_URL = '/users/sign_in'
   USER_PASSWORD = '123456ab'
 
-  ENROLLMENT_SUBMISSION_DELAY = 6 # wait for submission alert animation to finish
-  ENROLLMENT_PAGE_TRANSITION_DELAY = 1.6 # wait for carousel animation to finish loading
+  ENROLLMENT_SUBMISSION_DELAY = 4 # wait for submission alert animation to finish
+  ENROLLMENT_PAGE_TRANSITION_DELAY = 0.8 # wait for carousel animation to finish loading
   POP_UP_ALERT_ANIMATION_DELAY = 0.5 # wait for alert to pop up or dismiss
   CHECKBOX_ANIMATION_DELAY = 0.5 # wait for checkbox to load
   DASHBOARD_LOAD_DELAY = 0.2 # wait for dashboard to load saved tab
