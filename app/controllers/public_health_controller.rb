@@ -92,7 +92,13 @@ class PublicHealthController < ApplicationController
     if search.present?
       data.where('lower(first_name) like ?', "%#{search.downcase}%").or(
         data.where('lower(last_name) like ?', "%#{search.downcase}%").or(
-          data.where('lower(user_defined_id_statelocal) like ?', "%#{search.downcase}%")
+          data.where('lower(user_defined_id_statelocal) like ?', "%#{search.downcase}%").or(
+            data.where('lower(user_defined_id_cdc) like ?', "%#{search.downcase}%").or(
+              data.where('lower(user_defined_id_nndss) like ?', "%#{search.downcase}%").or(
+                data.where('date_of_birth like ?', "%#{search}%")
+              )
+            )
+          )
         )
       )
     else

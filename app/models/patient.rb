@@ -419,7 +419,7 @@ class Patient < ApplicationRecord
       PatientMailer.assessment_email(self).deliver_later if ADMIN_OPTIONS['enable_email']
     elsif preferred_contact_method == 'SMS Text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
       # SMS-based assessments assess the patient _and_ all of their dependents
-      # If you are a dependent ie: someone whose responder.id is not your own  an assessment will not be sent to you
+      # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
       # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
       # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
       if !force
