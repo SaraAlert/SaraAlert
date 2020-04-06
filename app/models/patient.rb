@@ -22,11 +22,12 @@ class Patient < ApplicationRecord
                                                   'Past monitoring period',
                                                   nil, ''] }
 
-  validates :monitoring_plan, inclusion: { in: ['Daily active monitoring',
+  validates :monitoring_plan, inclusion: { in: ['None',
+                                                'Daily active monitoring',
                                                 'Self-monitoring with public health supervision',
                                                 'Self-monitoring with delegated supervision',
                                                 'Self-observation',
-                                                nil, ''] }
+                                                ''] }
 
   validates :exposure_risk_assessment, inclusion: { in: ['High',
                                                          'Medium',
@@ -287,6 +288,7 @@ class Patient < ApplicationRecord
       transferred: latest_transfer&.created_at&.to_s || '',
       reason_for_closure: monitoring_reason || '',
       public_health_action: public_health_action || '',
+      status: status&.to_s&.humanize || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || ''
     }

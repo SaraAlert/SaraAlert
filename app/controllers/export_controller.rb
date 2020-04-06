@@ -9,7 +9,7 @@ class ExportController < ApplicationController
 
     headers = ['Monitoree', 'Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
                'End of Monitoring', 'Risk Level', 'Monitoring Plan', 'Latest Report', 'Transferred At',
-               'Reason For Closure', 'Latest Public Health Action']
+               'Reason For Closure', 'Latest Public Health Action', 'Status']
 
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'
@@ -22,6 +22,8 @@ class ExportController < ApplicationController
       patients = current_user.viewable_patients.monitoring_closed_without_purged
     elsif params[:type] == 'transferred'
       patients = current_user.jurisdiction.transferred_patients
+    elsif params[:type] == 'all'
+      patients = current_user.viewable_patients
     end
 
     # Do nothing if issue with request/permissions
@@ -73,6 +75,8 @@ class ExportController < ApplicationController
       patients = current_user.viewable_patients.monitoring_closed_without_purged
     elsif params[:type] == 'transferred'
       patients = current_user.jurisdiction.transferred_patients
+    elsif params[:type] == 'all'
+      patients = current_user.viewable_patients
     end
 
     # Do nothing if issue with request/permissions

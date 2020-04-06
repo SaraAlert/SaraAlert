@@ -291,7 +291,7 @@ class Exposure extends React.Component {
                         className="form-square"
                         onChange={this.handleChange}
                         value={this.state.current.monitoring_plan || ''}>
-                        <option></option>
+                        <option>None</option>
                         <option>Daily active monitoring</option>
                         <option>Self-monitoring with public health supervision</option>
                         <option>Self-monitoring with delegated supervision</option>

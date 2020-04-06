@@ -257,7 +257,7 @@ class MonitoringStatus extends React.Component {
                 <Form.Group as={Col}>
                   <Form.Label className="nav-input-label">MONITORING PLAN</Form.Label>
                   <Form.Control as="select" className="form-control-lg" id="monitoring_plan" onChange={this.handleChange} value={this.state.monitoring_plan}>
-                    <option disabled></option>
+                    <option>None</option>
                     <option>Daily active monitoring</option>
                     <option>Self-monitoring with public health supervision</option>
                     <option>Self-monitoring with delegated supervision</option>

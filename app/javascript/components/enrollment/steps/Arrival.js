@@ -86,7 +86,10 @@ class Arrival extends React.Component {
                     value={this.state.current.source_of_report || ''}
                     onChange={this.handleChange}>
                     <option></option>
+                    <option>Health Screening</option>
+                    <option>Surveillance Screening</option>
                     <option>Self-Identified</option>
+                    <option>Contact Tracing</option>
                     <option>CDC</option>
                     <option>Other</option>
                   </Form.Control>

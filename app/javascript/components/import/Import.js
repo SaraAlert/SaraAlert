@@ -81,21 +81,7 @@ class Import extends React.Component {
                 this.importAll(true);
               }
             }}>
-            Accept All (Including Potential Duplicates)
-          </Button>
-          <Button
-            variant="primary"
-            className="btn-lg my-2 ml-3"
-            onClick={() => {
-              if (
-                window.confirm(
-                  'Are you sure you want to import all monitorees? Note: This will not import already rejected or re-import already accepted monitorees listed below.'
-                )
-              ) {
-                this.importAll(false);
-              }
-            }}>
-            Accept All (Without Potential Duplicates)
+            Accept All
           </Button>
           {this.state.patients.map((patient, index) => {
             return (

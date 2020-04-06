@@ -113,7 +113,7 @@ ActiveRecord::Schema.define(version: 2020_03_20_055002) do
     t.string "monitoring_reason"
     t.boolean "purged", default: false
     t.string "exposure_risk_assessment"
-    t.string "monitoring_plan"
+    t.string "monitoring_plan", default: "None"
     t.string "public_health_action", default: "None"
     t.datetime "last_assessment_reminder_sent"
     t.string "user_defined_id_statelocal"
