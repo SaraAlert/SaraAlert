@@ -11,8 +11,12 @@ class Admin extends React.Component {
     var dataLen = props.data.length;
     for (var i = 0; i < dataLen; i++) {
       props.data[parseInt(i)]['role'] = props.roles[parseInt(i)]['name'];
+      if (Array.isArray(props.data[parseInt(i)]['jurisdiction_path'])) {
+        props.data[parseInt(i)]['jurisdiction_path'] = props.data[parseInt(i)]['jurisdiction_path'].join(',');
+      }
     }
     this.onAddRow = this.onAddRow.bind(this);
+    this.afterSaveCell = this.afterSaveCell.bind(this);
   }
 
   onAddRow(row) {
@@ -40,6 +44,29 @@ class Admin extends React.Component {
         this.setState({ data: this.props.data });
       } else {
         alert('Error adding new user.');
+      }
+    });
+  }
+
+  afterSaveCell(row) {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path.replace(/,/g, ', ')], email: row.email, role_title: row.role };
+    let send_result = axios({
+      method: 'post',
+      url: '/admin/edit_user',
+      data: submit_data,
+    })
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
+    send_result.then(success => {
+      if (success) {
+        this.setState({ data: this.props.data });
+      } else {
+        alert('Error editing user.');
       }
     });
   }
@@ -72,13 +99,19 @@ class Admin extends React.Component {
       insertModalHeader: this.addUserModalHeader,
       insertModalFooter: this.addUserModalFooter,
     };
-
+    const cellEdit = {
+      mode: 'click',
+      afterSaveCell: this.afterSaveCell,
+      blurToSave: true,
+    };
     return (
-      <BootstrapTable data={this.props.data} insertRow={true} options={options} className="table table-striped">
+      <BootstrapTable data={this.props.data} cellEdit={cellEdit} insertRow={true} options={options} className="table table-striped">
         <TableHeaderColumn dataField="email" isKey>
           Email
         </TableHeaderColumn>
-        <TableHeaderColumn dataField="jurisdiction_path" editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths) } }}>
+        <TableHeaderColumn
+          dataField="jurisdiction_path"
+          editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths).map(p => p.replace(/, /g, ',')) } }}>
           Jurisdiction
         </TableHeaderColumn>
         <TableHeaderColumn dataField="role" editable={{ type: 'select', options: { values: this.props.role_types } }}>
