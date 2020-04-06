@@ -33,7 +33,7 @@ class MonitorAnalytics extends React.Component {
     let retVal = {};
     let dates = this.props.stats.total_patient_count_by_state_and_day.map(x => x.day);
     dates.forEach((day, index) => {
-      retVal[parseInt(index)] = moment(day).format('DD');
+      retVal[parseInt(index)] = moment(day).format('MM/DD');
     });
     return retVal;
   }
@@ -131,7 +131,7 @@ class MonitorAnalytics extends React.Component {
                 trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 handleStyle={{ borderColor: '#595959', backgroundColor: 'white' }}
                 dotStyle={{ borderColor: '#333', backgroundColor: 'white' }}
-                onAfterChange={this.handleDateRangeChange}
+                onChange={this.handleDateRangeChange}
               />
             </div>
           </Col>

@@ -35,25 +35,12 @@ class CDCMapsSymptomatic extends React.Component {
   }
 
   updateMapWithDay(dateIndex) {
-    let highestValue = 0;
-
     let data = _.omit(this.state.mappedSymptomaticPatientCountByStateAndDay[String(dateIndex)], 'day');
-    this.monitoreesMap.data = this.monitoreesMap.data.map(x => {
-      x['Symptomatic'] = Object.prototype.hasOwnProperty.call(data, x.STATE) ? data[String(x.STATE)] : 0;
-      if (x['Symptomatic'] > highestValue) highestValue = x['Symptomatic'];
-      return x;
-    });
-    // These are pretty much arbitrary and can (maybe should) be changed
-    // (They count the number of entries in the legend)
-    if (highestValue <= 1) {
-      this.monitoreesMap.legend.numberOfItems = 1;
-    } else if (highestValue < 10) {
-      this.monitoreesMap.legend.numberOfItems = 2;
-    } else if (highestValue < 30) {
-      this.monitoreesMap.legend.numberOfItems = 3;
-    } else {
-      this.monitoreesMap.legend.numberOfItems = 4;
-    }
+    this.monitoreesMap.data = [];
+    stateOptions.forEach(stateName =>
+      this.monitoreesMap.data.push({ State: stateName['abbrv'], Symptomatic: data[stateName['abbrv']] ? data[stateName['abbrv']] : 0 })
+    );
+    this.monitoreesMap.data.push({ State: null });
   }
 
   render() {
