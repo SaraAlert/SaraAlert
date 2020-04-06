@@ -201,8 +201,8 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   def export_comprehensive_data_to_csv(user_name)
     @@system_test_utils.login(user_name)
-    assert_selector 'a', text: 'Export Comprehensive CSV'
-    click_on 'Export Comprehensive CSV'
+    assert_selector 'a', text: 'Export Sara Alert Format CSV'
+    click_on 'Export Sara Alert Format CSV'
     @@system_test_utils.logout
   end
 end
