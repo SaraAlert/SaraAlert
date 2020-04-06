@@ -10,14 +10,36 @@ import CDCMapsTotal from './widgets/CDCMapsTotal';
 import CDCMapsSymptomatic from './widgets/CDCMapsSymptomatic';
 import moment from 'moment';
 import Switch from 'react-switch';
+import Slider from 'rc-slider/lib/Slider';
+import 'rc-slider/assets/index.css';
 import domtoimage from 'dom-to-image';
 
 class MonitorAnalytics extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { checked: false, viewTotal: false };
     this.exportAsPNG = this.exportAsPNG.bind(this);
+    this.getDateRange = this.getDateRange.bind(this);
+    this.handleDateRangeChange = this.handleDateRangeChange.bind(this);
     this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
+    this.dateRange = this.getDateRange();
+    this.state = {
+      checked: false,
+      viewTotal: false,
+      selectedDateIndex: 0,
+    };
+  }
+
+  getDateRange() {
+    let retVal = {};
+    let dates = this.props.stats.total_patient_count_by_state_and_day.map(x => x.day);
+    dates.forEach((day, index) => {
+      retVal[parseInt(index)] = moment(day).format('DD');
+    });
+    return retVal;
+  }
+
+  handleDateRangeChange(value) {
+    this.setState({ selectedDateIndex: value });
   }
 
   exportAsPNG() {
@@ -44,6 +66,7 @@ class MonitorAnalytics extends React.Component {
   toggleBetweenActiveAndTotal = viewTotal => this.setState({ viewTotal });
 
   render() {
+    const selectedDay = this.props.stats.total_patient_count_by_state_and_day[parseInt(this.state.selectedDateIndex)].day;
     return (
       <React.Fragment>
         <Row className="mb-2 mx-0 px-0 pt-2">
@@ -98,11 +121,25 @@ class MonitorAnalytics extends React.Component {
           </Col>
         </Row>
         <Row className="mb-4 mx-2 px-0">
-          <Col lg="12" md="24">
-            <CDCMapsTotal stats={this.props.stats} />
+          <Col md="24">
+            <div className="text-center display-6 mb-1 mt-1">{moment(selectedDay).format('MMMM DD, YYYY')}</div>
+            <div className="mx-5 mb-4 pb-2">
+              <Slider
+                max={this.props.stats.total_patient_count_by_state_and_day.length - 1}
+                marks={this.dateRange}
+                railStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
+                trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
+                handleStyle={{ borderColor: '#595959', backgroundColor: 'white' }}
+                dotStyle={{ borderColor: '#333', backgroundColor: 'white' }}
+                onChange={this.handleDateRangeChange}
+              />
+            </div>
           </Col>
           <Col lg="12" md="24">
-            <CDCMapsSymptomatic stats={this.props.stats} />
+            <CDCMapsTotal selectedDate={this.state.selectedDateIndex} stats={this.props.stats} />
+          </Col>
+          <Col lg="12" md="24">
+            <CDCMapsSymptomatic selectedDate={this.state.selectedDateIndex} stats={this.props.stats} />
           </Col>
         </Row>
       </React.Fragment>
