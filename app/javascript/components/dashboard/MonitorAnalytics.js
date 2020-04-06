@@ -131,7 +131,7 @@ class MonitorAnalytics extends React.Component {
                 trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 handleStyle={{ borderColor: '#595959', backgroundColor: 'white' }}
                 dotStyle={{ borderColor: '#333', backgroundColor: 'white' }}
-                onChange={this.handleDateRangeChange}
+                onAfterChange={this.handleDateRangeChange}
               />
             </div>
           </Col>
