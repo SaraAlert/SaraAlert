@@ -132,7 +132,7 @@
       <% end %>
     </div>
     <div class="card card-square tab-pane show pb-4" id="pui" role="tabpanel" aria-labelledby="pui-tab">
-      <p class="lead px-4 pt-4 pb-3">Monitorees who are currently being followed up on by public health.</p>
+      <p class="lead px-4 pt-4 pb-3">Monitorees who are currently under investigation.</p>
       <%= render partial: "patients", locals: { type: 'pui_patients', p_links: true } %>
       <% if current_user.can_export? %>
         <a type="button" class="btn btn-primary ml-4" href="/export/pui/csv"><i class="fas fa-file-csv"></i> Export Line-list CSV</a>
