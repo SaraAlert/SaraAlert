@@ -13,6 +13,7 @@ class AssessmentsController < ApplicationController
       if AssessmentReceipt.where(submission_token: @patient_submission_token)
                           .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).count.positive?
         redirect_to(already_reported_report_url) && return if ADMIN_OPTIONS['report_mode']
+
         redirect_to(already_reported_url) && return
       end
     end
@@ -53,6 +54,7 @@ class AssessmentsController < ApplicationController
       patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
 
       redirect_to(root_url) && return unless patient
+
       threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
       threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
 
@@ -133,6 +135,7 @@ class AssessmentsController < ApplicationController
 
   def check_patient_token
     redirect_to(root_url) && return if params.nil? || params[:patient_submission_token].nil?
+
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     redirect_to(root_url) && return if patient.nil?
   end

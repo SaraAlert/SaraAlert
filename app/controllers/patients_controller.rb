@@ -27,6 +27,7 @@ class PatientsController < ApplicationController
   # Returns a new (unsaved) subject, for creating a new subject
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
+
     @patient = Patient.new
   end
 
@@ -151,6 +152,7 @@ class PatientsController < ApplicationController
   # Updates to workflow/tracking status for a subject
   def update_status
     redirect_to(root_url) && return unless current_user.can_edit_patient?
+
     patient = current_user.get_patient(params.permit(:id)[:id])
     patient.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan, :exposure_risk_assessment, :public_health_action))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
@@ -203,6 +205,7 @@ class PatientsController < ApplicationController
 
   def clear_assessments
     redirect_to(root_url) && return unless current_user.can_edit_patient?
+
     patient = current_user.get_patient(params.permit(:id)[:id])
     patient.assessments.each do |assessment|
       assessment.symptomatic = false
@@ -221,8 +224,10 @@ class PatientsController < ApplicationController
   def send_reminder
     # Send a new report reminder to the monitoree
     redirect_to(root_url) && return unless current_user.can_remind_patient?
+
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
+
     patient.send_assessment(true)
 
     history = History.new

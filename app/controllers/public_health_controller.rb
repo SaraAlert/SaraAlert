@@ -7,6 +7,7 @@ class PublicHealthController < ApplicationController
   def index
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+
     @all_count = current_user.viewable_patients.count
     @symptomatic_count = current_user.viewable_patients.symptomatic.count
     @pui_count = current_user.viewable_patients.under_investigation.count
