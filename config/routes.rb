@@ -17,6 +17,10 @@ Rails.application.routes.draw do
   resources :admin, only: [:index, :create_user]
 
   post 'admin/create_user', to: 'admin#create_user'
+  post 'admin/edit_user', to: 'admin#edit_user'
+  post 'admin/lock_user', to: 'admin#lock_user'
+  post 'admin/unlock_user', to: 'admin#unlock_user'
+  post 'admin/reset_password', to: 'admin#reset_password'
 
   resources :histories, only: [:create]
 
