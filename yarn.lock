@@ -2001,7 +2001,7 @@ caseless@~0.12.0:
 
 cdc-map@SaraAlert/CDC-Maps#build_adjustments:
   version "1.0.2"
-  resolved "https://codeload.github.com/SaraAlert/CDC-Maps/tar.gz/8db516eedca312c0b9acd881b8a85026ccd573b3"
+  resolved "https://codeload.github.com/SaraAlert/CDC-Maps/tar.gz/3414d2cb0fbc3188fef6410ef834edc105399163"
   dependencies:
     array-move "^2.1.0"
     chroma "0.0.1"
