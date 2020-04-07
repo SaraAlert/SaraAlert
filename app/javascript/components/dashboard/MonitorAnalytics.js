@@ -127,7 +127,7 @@ class MonitorAnalytics extends React.Component {
         </Row>
         <Row className="mb-4 mx-2 px-0">
           <Col md="24">
-            <div className="text-center display-6 mb-1 mt-1">{moment(selectedDay).format('MMMM DD, YYYY')}</div>
+            <div className="text-center display-5 mb-1 mt-1">{moment(selectedDay).format('MMMM DD, YYYY')}</div>
             <div className="mx-5 mb-4 pb-2">
               <Slider
                 max={this.props.stats.total_patient_count_by_state_and_day.length - 1}
