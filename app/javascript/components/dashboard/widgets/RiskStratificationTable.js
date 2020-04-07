@@ -28,21 +28,22 @@ class RiskStratification extends React.Component {
     SYMPTOMLEVELS.forEach(symptomlevel => {
       tableData[String(symptomlevel)] = { total_n: 0 };
       RISKLEVELS.forEach(risklevel => {
-        tableData[String(symptomlevel)][`${risklevel}_n`] = data[String(symptomlevel)][String(risklevel)];
-        tableData[String(symptomlevel)][`${risklevel}_n`] = _.isFinite(tableData[String(symptomlevel)][`${risklevel}_n`])
-          ? tableData[String(symptomlevel)][`${risklevel}_n`]
+        tableData[String(symptomlevel)][`${risklevel}_n`] = data[String(symptomlevel)][String(risklevel)]
+          ? data[String(symptomlevel)][String(risklevel)]
           : 'None';
-        tableData[String(symptomlevel)][`${risklevel}_p`] =
-          totalCount[String(risklevel)] === 0 ? 0 : ((data[String(symptomlevel)][String(risklevel)] * 100) / totalCount[String(risklevel)]).toFixed(0);
-        tableData[String(symptomlevel)][`${risklevel}_p`] = _.isFinite(tableData[String(symptomlevel)][`${risklevel}_p`])
-          ? tableData[String(symptomlevel)][`${risklevel}_p`]
-          : (tableData[String(symptomlevel)][`total_n`] += _.isFinite(data[String(symptomlevel)][String(risklevel)])
-              ? data[String(symptomlevel)][String(risklevel)]
-              : 0);
+        tableData[String(symptomlevel)][`total_n`] += _.isFinite(data[String(symptomlevel)][String(risklevel)])
+          ? data[String(symptomlevel)][String(risklevel)]
+          : 0;
       });
     });
     SYMPTOMLEVELS.forEach(symptomlevel => {
       tableData[String(symptomlevel)][`total_p`] = ((tableData[String(symptomlevel)][`total_n`] * 100) / totalCount.total).toFixed(0);
+      RISKLEVELS.forEach(risklevel => {
+        tableData[String(symptomlevel)][`${risklevel}_p`] =
+          tableData[String(symptomlevel)][`${risklevel}_n`] !== 'None'
+            ? ((data[String(symptomlevel)][String(risklevel)] * 100) / totalCount[String(risklevel)]).toFixed(0)
+            : 0;
+      });
     });
 
     this.tableData = tableData;

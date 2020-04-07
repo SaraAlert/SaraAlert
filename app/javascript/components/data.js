@@ -1,3 +1,88 @@
+export const totalMonitoreesMap = {
+  columns: {
+    geo: {
+      dataTable: true,
+      label: '',
+      name: 'State',
+      tooltip: false,
+    },
+    primary: {
+      dataTable: true,
+      label: 'Total Monitorees',
+      name: 'Total',
+      prefix: '',
+      suffix: '',
+      tooltip: true,
+    },
+    navigate: {
+      dataTable: false,
+      name: 'URL',
+      tooltip: false,
+    },
+  },
+  legend: {
+    numberOfItems: 4,
+    position: 'side',
+    title: 'Count of Monitorees',
+    type: 'equalnumber',
+    specialClasses: [],
+    data: [],
+  },
+  data: [{ State: null }],
+  general: {
+    title: 'All Monitorees By Location Over Time',
+    type: 'data',
+    geoType: 'us',
+    headerColor: 'theme-slate',
+    showSidebar: true,
+    showDownloadButton: true,
+    expandDataTable: false,
+  },
+  color: 'orangered',
+};
+export const symptomaticMonitoreesMap = {
+  columns: {
+    geo: {
+      dataTable: true,
+      label: '',
+      name: 'State',
+      tooltip: false,
+    },
+    primary: {
+      dataTable: true,
+      label: 'Symptomatic Monitorees',
+      name: 'Symptomatic',
+      prefix: '',
+      suffix: '',
+      tooltip: true,
+    },
+    navigate: {
+      dataTable: false,
+      name: 'URL',
+      tooltip: false,
+    },
+  },
+  legend: {
+    numberOfItems: 4,
+    position: 'side',
+    title: 'Count of Symptomatic Monitorees',
+    type: 'equalnumber',
+    specialClasses: [],
+    data: [],
+  },
+  data: [{ State: null }],
+  general: {
+    title: 'Symptomatic Monitorees By Location Over Time',
+    type: 'data',
+    geoType: 'us',
+    headerColor: 'theme-slate',
+    showSidebar: true,
+    showDownloadButton: true,
+    expandDataTable: false,
+  },
+  color: 'orangered',
+};
+
 export const stateOptions = [
   { name: 'Alabama', abbrv: 'AL' },
   { name: 'Alaska', abbrv: 'AK' },

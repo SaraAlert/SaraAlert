@@ -76,6 +76,18 @@ class PatientsController < ApplicationController
     # Add patient details that were collected from the form
     patient = Patient.new(params[:patient].permit(*allowed_params))
 
+    # Default to copying *required address into monitored address if monitored address is nil
+    if patient.monitored_address_line_1.nil? || patient.monitored_address_state.nil? ||
+       patient.monitored_address_city.nil? || patient.monitored_address_zip.nil?
+      patient.monitored_address_line_1 = patient.address_line_1
+      patient.monitored_address_line_2 = patient.address_line_2
+      patient.monitored_address_city = patient.address_city
+      patient.monitored_address_county = patient.address_county
+      patient.monitored_address_state = patient.address_state
+      patient.monitored_address_zip = patient.address_zip
+    end
+    helpers.normalize_state_names(patient)
+
     # Set the responder for this patient
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
