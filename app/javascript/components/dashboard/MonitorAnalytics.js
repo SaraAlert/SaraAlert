@@ -6,8 +6,7 @@ import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
 import RiskFactors from './widgets/RiskFactors';
 import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
-import CDCMapsTotal from './widgets/CDCMapsTotal';
-import CDCMapsSymptomatic from './widgets/CDCMapsSymptomatic';
+import MapComponent from './widgets/MapComponent';
 import moment from 'moment';
 import Switch from 'react-switch';
 import Slider from 'rc-slider/lib/Slider';
@@ -136,10 +135,14 @@ class MonitorAnalytics extends React.Component {
             </div>
           </Col>
           <Col lg="12" md="24">
-            <CDCMapsTotal selectedDate={this.state.selectedDateIndex} stats={this.props.stats} />
+            <MapComponent selectedDate={this.state.selectedDateIndex} variant="Total" patientInfo={this.props.stats.total_patient_count_by_state_and_day} />
           </Col>
           <Col lg="12" md="24">
-            <CDCMapsSymptomatic selectedDate={this.state.selectedDateIndex} stats={this.props.stats} />
+            <MapComponent
+              selectedDate={this.state.selectedDateIndex}
+              variant="Symptomatic"
+              patientInfo={this.props.stats.symptomatic_patient_count_by_state_and_day}
+            />
           </Col>
         </Row>
       </React.Fragment>
