@@ -6,7 +6,7 @@ namespace :analytics do
   MONITORING_STATUSES = ['Symptomatic', 'Non-Reporting', 'Asymptomatic']
   RISK_FACTORS = {
     contact_of_known_case: 'Close Contact with Known Case',
-    travel_to_affected_country_or_area: 'Travel to Affected Country or Area',
+    travel_to_affected_country_or_area: 'Travel from Affected Country or Area',
     was_in_health_care_facility_with_known_cases: 'Was in Healthcare Facility with Known Cases',
     healthcare_personnel: 'Healthcare Personnel',
     member_of_a_common_exposure_cohort: 'Common Exposure Cohort',

@@ -76,7 +76,7 @@ class ImportController < ApplicationController
     begin
       xlxs = Roo::Excelx.new(params[:comprehensive_monitorees].tempfile.path, file_warning: :ignore)
       @patients = []
-      xlxs.sheet(0).each_with_index do |row, index| # rubocop:todo Metrics/BlockLength
+      xlxs.sheet(0).each_with_index do |row, index|
         next if index.zero? # Skip headers
 
         @patients << {

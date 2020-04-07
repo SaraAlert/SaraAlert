@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Form } from 'react-bootstrap';
+import { Card, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
@@ -58,17 +58,21 @@ class MonitoreesByDateOfExposure extends React.Component {
             Total Monitorees by Date of Last Exposure By Risk Status
           </Card.Header>
           <Card.Body>
-            <Form.Group
-              onChange={val => {
-                this.setTimeResolution(val.target.value);
-              }}>
-              <Form.Label>Time Resolution</Form.Label>
-              <Form.Control as="select" size="md">
-                <option>Day</option>
-                <option>Week</option>
-                <option>Month</option>
-              </Form.Control>
-            </Form.Group>
+            <Form.Row className="justify-content-md-center">
+              <Form.Group
+                as={Col}
+                md="8"
+                onChange={val => {
+                  this.setTimeResolution(val.target.value);
+                }}>
+                <Form.Label>Time Resolution</Form.Label>
+                <Form.Control as="select" size="md">
+                  <option>Day</option>
+                  <option>Week</option>
+                  <option>Month</option>
+                </Form.Control>
+              </Form.Group>
+            </Form.Row>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart
                 width={500}

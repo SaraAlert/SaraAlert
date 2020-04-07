@@ -14,11 +14,11 @@ class SystemTestUtils < ApplicationSystemTestCase
   SIGN_IN_URL = '/users/sign_in'
   USER_PASSWORD = '123456ab'
 
-  ENROLLMENT_SUBMISSION_DELAY = 4 # wait for submission alert animation to finish
-  ENROLLMENT_PAGE_TRANSITION_DELAY = 0.8 # wait for carousel animation to finish loading
-  POP_UP_ALERT_ANIMATION_DELAY = 0.5 # wait for alert to pop up or dismiss
-  CHECKBOX_ANIMATION_DELAY = 0.5 # wait for checkbox to load
-  DASHBOARD_LOAD_DELAY = 0.2 # wait for dashboard to load saved tab
+  ENROLLMENT_SUBMISSION_DELAY = 5 # wait for submission alert animation to finish
+  ENROLLMENT_PAGE_TRANSITION_DELAY = 1 # wait for carousel animation to finish loading
+  POP_UP_ALERT_ANIMATION_DELAY = 1 # wait for alert to pop up or dismiss
+  CHECKBOX_ANIMATION_DELAY = 1 # wait for checkbox to load
+  DASHBOARD_LOAD_DELAY = 2 # wait for dashboard to load saved tab
 
   def login(user_name)
     visit '/'
@@ -42,7 +42,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def return_to_dashboard
-    click_on 'Return To Dashboard'
+    click_on 'Return To Workflow'
     wait_for_dashboard_load
   end
 

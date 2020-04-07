@@ -41,7 +41,7 @@ class Import extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
-      url: '/patients',
+      url: window.BASE_PATH + '/patients',
       data: patient,
     })
       .then(() => {

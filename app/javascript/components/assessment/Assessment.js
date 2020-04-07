@@ -94,14 +94,14 @@ class Assessment extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
-      url: `${this.props.current_user ? '' : '/report'}/patients/${this.props.patient_submission_token}/assessments${
+      url: `${window.BASE_PATH}${this.props.current_user ? '' : '/report'}/patients/${this.props.patient_submission_token}/assessments${
         this.props.updateId ? '/' + this.props.updateId : ''
       }`,
       data: submitData,
     })
       .then(function() {
         if (self.props.reload) {
-          location.href = '/patients/' + self.props.patient_id;
+          location.href = window.BASE_PATH + '/patients/' + self.props.patient_id;
         }
       })
       .catch(function(error) {
@@ -132,7 +132,6 @@ class Assessment extends React.Component {
       <React.Fragment>
         <Carousel
           controls={false}
-          slide={false}
           indicators={false}
           interval={null}
           keyboard={false}

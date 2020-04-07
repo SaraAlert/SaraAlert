@@ -13,6 +13,7 @@ class MonitoringStatus extends React.Component {
       showMonitoringStatusModal: false,
       showJurisdictionModal: false,
       showPublicHealthActionModal: false,
+      showIsolationModal: false,
       message: '',
       reasoning: '',
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
@@ -24,6 +25,8 @@ class MonitoringStatus extends React.Component {
       monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
       apply_to_group: false,
+      isolation: props.patient.isolation,
+      isolation_status: props.patient.isolation ? 'Isolation' : 'Exposure',
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -32,6 +35,7 @@ class MonitoringStatus extends React.Component {
     this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
     this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
+    this.toggleIsolation = this.toggleIsolation.bind(this);
   }
 
   handleChange(event) {
@@ -70,6 +74,18 @@ class MonitoringStatus extends React.Component {
         public_health_action: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
       });
+    } else if (event?.target?.id && event.target.id === 'isolation_status') {
+      this.setState({
+        showIsolationModal: true,
+        message: 'monitoring to "' + event.target.value + '".',
+        message_warning:
+          event.target.value === 'Isolation'
+            ? 'The monitoree will be moved into the Isolation workflow.'
+            : 'The monitoree will be moved into the Exposure workflow.',
+        isolation: event.target.value === 'Isolation',
+        isolation_status: event.target.value,
+        monitoring_status_options: null,
+      });
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
         showMonitoringStatusModal: true,
@@ -85,6 +101,9 @@ class MonitoringStatus extends React.Component {
                 'Transferred to another jurisdiction',
                 'Person Under Investigation (PUI)',
                 'Case confirmed',
+                'Meets criteria to discontinue isolation',
+                'Deceased',
+                'Other',
               ]
             : null,
       });
@@ -140,11 +159,20 @@ class MonitoringStatus extends React.Component {
     });
   }
 
+  toggleIsolation() {
+    let current = this.state.showIsolationModal;
+    this.setState({
+      showIsolationModal: !current,
+      isolation: this.props.patient.isolation ? this.props.patient.isolation : false,
+      apply_to_group: false,
+    });
+  }
+
   submit() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     const jur = this.props.jurisdiction_paths.find(jur => jur.label === this.state.jurisdiction);
     axios
-      .post('/patients/' + this.props.patient.id + '/status', {
+      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
         monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
         exposure_risk_assessment: this.state.exposure_risk_assessment,
         monitoring_plan: this.state.monitoring_plan,
@@ -154,9 +182,10 @@ class MonitoringStatus extends React.Component {
         monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
         jurisdiction: jur ? jur.value : null,
         apply_to_group: this.state.apply_to_group,
+        isolation: this.state.isolation,
       })
       .then(() => {
-        location.href = '/patients/' + this.props.patient.id;
+        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
         console.error(error);
@@ -285,6 +314,15 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
+              <Form.Row className="pt-3">
+                <Form.Group as={Col} md={8}>
+                  <Form.Label className="nav-input-label">CURRENT WORKFLOW</Form.Label>
+                  <Form.Control as="select" className="form-control-lg" id="isolation_status" onChange={this.handleChange} value={this.state.isolation_status}>
+                    <option>Exposure</option>
+                    <option>Isolation</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form.Row>
               <Form.Row className="pt-3 align-items-end">
                 <Form.Group as={Col} md={14}>
                   <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
@@ -320,6 +358,7 @@ class MonitoringStatus extends React.Component {
         {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
         {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
+        {this.state.showIsolationModal && this.createModal('Isolation', this.toggleIsolation, this.submit)}
       </React.Fragment>
     );
   }

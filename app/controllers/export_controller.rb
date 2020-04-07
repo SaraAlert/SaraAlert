@@ -9,21 +9,21 @@ class ExportController < ApplicationController
 
     headers = ['Monitoree', 'Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
                'End of Monitoring', 'Risk Level', 'Monitoring Plan', 'Latest Report', 'Transferred At',
-               'Reason For Closure', 'Latest Public Health Action', 'Status']
+               'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At']
 
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'
-      patients = current_user.viewable_patients.symptomatic
+      patients = current_user.viewable_patients.symptomatic.where(isolation: false)
     elsif params[:type] == 'asymptomatic'
-      patients = current_user.viewable_patients.asymptomatic
+      patients = current_user.viewable_patients.asymptomatic.where(isolation: false)
     elsif params[:type] == 'nonreporting'
-      patients = current_user.viewable_patients.non_reporting
+      patients = current_user.viewable_patients.non_reporting.where(isolation: false)
     elsif params[:type] == 'closed'
-      patients = current_user.viewable_patients.monitoring_closed_without_purged
+      patients = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false)
     elsif params[:type] == 'transferred'
-      patients = current_user.jurisdiction.transferred_patients
+      patients = current_user.jurisdiction.transferred_patients.where(isolation: false)
     elsif params[:type] == 'all'
-      patients = current_user.viewable_patients
+      patients = current_user.viewable_patients.where(isolation: false)
     end
 
     # Do nothing if issue with request/permissions
@@ -59,24 +59,24 @@ class ExportController < ApplicationController
                'Additional Planned Travel Destination', 'Additional Planned Travel Destination State', 'Additional Planned Travel Destination Country',
                'Additional Planned Travel Port of Departure', 'Additional Planned Travel Start Date', 'Additional Planned Travel End Date',
                'Additional Planned Travel Related Notes', 'Last Date of Exposure', 'Potential Exposure Location', 'Potential Exposure Country',
-               'Contact of Known Case?', 'Contact of Known Case ID', 'Travel to Affected Country or Area?', 'Was in Health Care Facility With Known Cases?',
+               'Contact of Known Case?', 'Contact of Known Case ID', 'Travel from Affected Country or Area?', 'Was in Health Care Facility With Known Cases?',
                'Health Care Facility with Known Cases Name', 'Laboratory Personnel?', 'Laboratory Personnel Facility Name', 'Health Care Personnel?',
                'Health Care Personnel Facility Name', 'Crew on Passenger or Cargo Flight?', 'Member of a Common Exposure Cohort?',
-               'Common Exposure Cohort Name', 'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes']
+               'Common Exposure Cohort Name', 'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status']
 
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'
-      patients = current_user.viewable_patients.symptomatic
+      patients = current_user.viewable_patients.symptomatic.where(isolation: false)
     elsif params[:type] == 'asymptomatic'
-      patients = current_user.viewable_patients.asymptomatic
+      patients = current_user.viewable_patients.asymptomatic.where(isolation: false)
     elsif params[:type] == 'nonreporting'
-      patients = current_user.viewable_patients.non_reporting
+      patients = current_user.viewable_patients.non_reporting.where(isolation: false)
     elsif params[:type] == 'closed'
-      patients = current_user.viewable_patients.monitoring_closed_without_purged
+      patients = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false)
     elsif params[:type] == 'transferred'
-      patients = current_user.jurisdiction.transferred_patients
+      patients = current_user.jurisdiction.transferred_patients.where(isolation: false)
     elsif params[:type] == 'all'
-      patients = current_user.viewable_patients
+      patients = current_user.viewable_patients.where(isolation: false)
     end
 
     # Do nothing if issue with request/permissions

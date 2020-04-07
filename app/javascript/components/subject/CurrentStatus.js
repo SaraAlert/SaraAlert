@@ -27,9 +27,11 @@ class CurrentStatus extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <h1 className="display-6 pb-3">
-          The current status of this monitoree is <b>{this.generateStatus(this.props.status)}</b>.
-        </h1>
+        {!this.props.isolation && (
+          <h1 className="display-6 pb-3">
+            The current status of this monitoree is <b>{this.generateStatus(this.props.status)}</b>.
+          </h1>
+        )}
       </React.Fragment>
     );
   }
@@ -37,6 +39,7 @@ class CurrentStatus extends React.Component {
 
 CurrentStatus.propTypes = {
   status: PropTypes.string,
+  isolation: PropTypes.boolean,
 };
 
 export default CurrentStatus;

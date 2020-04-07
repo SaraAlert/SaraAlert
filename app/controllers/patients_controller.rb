@@ -166,7 +166,9 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
     patient = current_user.get_patient(params.permit(:id)[:id])
-    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan, :exposure_risk_assessment, :public_health_action))
+    patient.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
+    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
+                                                    :exposure_risk_assessment, :public_health_action, :isolation))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
@@ -181,7 +183,9 @@ class PatientsController < ApplicationController
     # Do we need to propogate to household?
     if params.permit(:apply_to_group)[:apply_to_group]
       patient.dependents.where.not(id: patient.id).each do |member|
-        member.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan, :exposure_risk_assessment, :public_health_action))
+        member.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != member.monitoring && member.monitoring
+        member.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
+                                                       :exposure_risk_assessment, :public_health_action, :isolation))
         if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != member.jurisdiction_id
           # Jurisdiction has changed
           jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])

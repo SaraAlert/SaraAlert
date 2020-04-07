@@ -28,7 +28,7 @@ class Admin extends React.Component {
     let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path.replace(/,/g, ', ')], email: row.email, role_title: row.role };
     let send_result = axios({
       method: 'post',
-      url: '/admin/create_user',
+      url: window.BASE_PATH + '/admin/create_user',
       data: submit_data,
     })
       .then(() => {
@@ -53,7 +53,7 @@ class Admin extends React.Component {
     let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path.replace(/,/g, ', ')], email: row.email, role_title: row.role };
     let send_result = axios({
       method: 'post',
-      url: '/admin/edit_user',
+      url: window.BASE_PATH + '/admin/edit_user',
       data: submit_data,
     })
       .then(() => {

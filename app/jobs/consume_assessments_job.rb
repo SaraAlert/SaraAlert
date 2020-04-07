@@ -8,8 +8,8 @@ class ConsumeAssessmentsJob < ApplicationJob
 
   def perform
     connection = Redis.new
-    connection.subscribe 'reports' do |on| # rubocop:todo Metrics/BlockLength
-      on.message do |_channel, msg| # rubocop:todo Metrics/BlockLength
+    connection.subscribe 'reports' do |on|
+      on.message do |_channel, msg|
         message = JSON.parse(msg)
 
         message = message.slice('threshold_condition_hash', 'reported_symptoms_array', 'patient_submission_token', 'experiencing_symptoms')

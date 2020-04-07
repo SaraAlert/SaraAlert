@@ -1,0 +1,97 @@
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Exposure Workflow", href: nil} ] } %>
+
+<div class="btn-group">
+
+  <% if current_user.can_view_analytics? %>
+    <%= link_to '<i class="fas fa-chart-pie"></i> Analytics'.html_safe, {controller: "analytics", action: "index"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
+  <% end %>
+
+  <% if current_user.can_create_patient? %>
+    <%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
+  <% end %>
+
+  <% if current_user.can_export? %>
+    <div class="">
+      <button type="button" class="btn btn-primary mb-4 ml-2 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" >
+        <i class="fas fa-download"></i> Export
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="/export/all/csv">Line-list CSV</a>
+        <a class="dropdown-item" href="/export/all/csv_comprehensive">Sara Alert Format CSV</a>
+      </div>
+    </div>
+  <% end %>
+
+  <% if current_user.can_import? %>
+    <div class="">
+      <button type="button" class="btn btn-primary mb-4 ml-2 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" >
+        <i class="fas fa-upload"></i> Import
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" data-toggle="modal" data-target="#epixModal">Epi-X</a>
+        <a class="dropdown-item" data-toggle="modal" data-target="#compModal">Sara Alert Format</a>
+      </div>
+    </div>
+    <div class="modal fade" id="epixModal" tabindex="-1" role="dialog" aria-labelledby="epixModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="epixModalLabel">Import Epi-X</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <%= form_tag({controller: :import, action: :epix}, multipart: true) do |f| %>
+              <%= file_field_tag 'epix' %>
+              <%= submit_tag "Upload", class: "btn btn-primary float-right" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="compModal" tabindex="-1" role="dialog" aria-labelledby="compModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="compModalLabel">Import Sara Alert Format</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <%= link_to 'Download formatting guidance', 'sara_alert_comprehensive_monitoree.xlsx', download: 'public/sara_alert_comprehensive_monitoree.xlsx' %>
+            <div class="mb-3"></div>
+            <%= form_tag({controller: :import, action: :comprehensive_monitorees}, multipart: true) do |f| %>
+              <%= file_field_tag 'comprehensive_monitorees' %>
+              <%= submit_tag "Upload", class: "btn btn-primary float-right" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+</div>
+
+<div class="btn-group mb-4 float-right mr-2" role="group">
+  <a class="btn btn-primary text-white active" href="<%= public_health_url %>"><i class="fas fa-people-arrows"></i> Exposure Monitoring (<%= @all_count %>)</a>
+  <a class="btn btn-primary text-white" href="<%= public_health_isolation_url %>"><i class="fas fa-house-user"></i> Isolation Monitoring (<%= @i_all_count %>)</a>
+</div>
+
+<%= render partial: "exposure_monitoring" %>
+
+<script>
+  $(document).ready(function() {
+    if (localStorage.getItem('dashboardCurrentTab') !== null) {
+      $(localStorage.getItem('dashboardCurrentTab') + '-tab').find('span').trigger('click')
+    }
+    $('a[data-toggle="tab"]').on('click', function(e) {
+      if ($(e.target).attr('href') === undefined) {
+        localStorage.setItem('dashboardCurrentTab', $(e.target).parent().attr('href'))
+      } else {
+        localStorage.setItem('dashboardCurrentTab', $(e.target).attr('href'))
+      }
+    })
+  });
+</script>

@@ -11,7 +11,7 @@ class MonitoreeEnrollmentDashboard < ApplicationSystemTestCase
     @@system_test_utils.login(user_name)
     click_on 'Analytics'
     assert_equal('/analytics', page.current_path)
-    click_on 'Return to Dashboard'
+    click_on 'Return To Workflow'
     assert_equal('/patients', page.current_path)
   end
 end

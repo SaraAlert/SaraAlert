@@ -1,4 +1,4 @@
-<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return To Dashboard", href: '/'}, {value: "Import", href: nil} ] } %>
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return To Workflow", href: '/'}, {value: "Import", href: nil} ] } %>
 
 <% if current_user.can_import? %>
   <div class="card mx-2 mt-3 mb-4 card-square">

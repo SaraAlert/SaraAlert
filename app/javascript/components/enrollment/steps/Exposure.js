@@ -137,7 +137,7 @@ class Exposure extends React.Component {
                         className="pt-2 my-auto"
                         type="switch"
                         id="travel_to_affected_country_or_area"
-                        label="TRAVEL TO AFFECTED COUNTRY OR AREA"
+                        label="TRAVEL FROM AFFECTED COUNTRY OR AREA"
                         checked={this.state.current.travel_to_affected_country_or_area === true || false}
                         onChange={this.handleChange}
                       />

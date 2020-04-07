@@ -2,8 +2,6 @@
 
 # Patient: patient model
 class Patient < ApplicationRecord
-  # TODO: Stricter validation for fields that are handed to other systems (e.g. phone, email address)
-  # TODO: Also add guards on what gets handed to external server (only allow specific validated)
   columns.each do |column|
     case column.type
     when :text
@@ -20,6 +18,9 @@ class Patient < ApplicationRecord
                                                   'Person Under Investigation (PUI)',
                                                   'Case confirmed',
                                                   'Past monitoring period',
+                                                  'Meets criteria to discontinue isolation',
+                                                  'Deceased',
+                                                  'Other',
                                                   nil, ''] }
 
   validates :monitoring_plan, inclusion: { in: ['None',
@@ -99,6 +100,7 @@ class Patient < ApplicationRecord
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where.not('public_health_action = ?', 'None')
+      .where(isolation: false)
   }
 
   # Any individual who has any assessments still considered symptomatic
@@ -150,6 +152,65 @@ class Patient < ApplicationRecord
         .left_outer_joins(:assessments)
         .where(assessments: { patient_id: nil })
       )
+      .distinct
+  }
+
+  scope :isolation_requiring_review, lambda {
+    # Persons with COVID-19 who have symptoms (non-test based)
+    # - At least 7 days since first symptom report
+    # AND
+    # - No fever or medication use reported in last 72 hours
+    # AND
+    # - Latest reports received within 24 hours of previous report
+    #
+    # OR
+    #
+    # Persons with COVID-19 who have symptoms (test based)
+    # - Two documented negative public health test results (documented in public health action)
+    # AND
+    # - No fever or medication use reported in last report
+    # AND
+    # - Latest reports received within 24 hours of previous report
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('isolation = ?', true)
+      .left_outer_joins(:assessments)
+      .where_assoc_exists(:assessments, ['created_at <= ?', 7.days.ago])
+      .where('assessments.created_at > ?', 72.hours.ago)
+      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .left_outer_joins(:histories)
+      .distinct
+      .or(
+        where('monitoring = ?', true)
+        .where('purged = ?', false)
+        .where('isolation = ?', true)
+        .left_outer_joins(:assessments)
+        .where_assoc_not_exists(:assessments, symptomatic: true)
+        .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+        .left_outer_joins(:histories)
+        .where_assoc_count(2, :<=, :histories, 'comment LIKE \'%Results of Public Health Test - negative%\'')
+        .distinct
+      )
+  }
+
+  scope :isolation_non_reporting, lambda {
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('isolation = ?', true)
+      .left_outer_joins(:assessments)
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .distinct
+  }
+
+  scope :isolation_reporting, lambda {
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('isolation = ?', true)
+      .left_outer_joins(:assessments)
+      .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .left_outer_joins(:histories)
+      .where_assoc_count(2, :>, :histories, 'comment LIKE \'%Results of Public Health Test - negative%\'')
       .distinct
   }
 
@@ -288,14 +349,15 @@ class Patient < ApplicationRecord
       transferred: latest_transfer&.created_at&.to_s || '',
       reason_for_closure: monitoring_reason || '',
       public_health_action: public_health_action || '',
-      status: status&.to_s&.humanize || '',
+      status: status&.to_s&.humanize&.downcase || '',
+      closed_at: closed_at&.to_s || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || ''
     }
   end
 
   # All information about this subject
-  def comprehensive_details # rubocop:todo Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  def comprehensive_details
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
@@ -380,7 +442,8 @@ class Patient < ApplicationRecord
       member_of_a_common_exposure_cohort_type: member_of_a_common_exposure_cohort_type || '',
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
-      exposure_notes: exposure_notes || ''
+      exposure_notes: exposure_notes || '',
+      status: status&.to_s&.humanize&.downcase || ''
     }
   end
 
@@ -389,7 +452,7 @@ class Patient < ApplicationRecord
     super((options || {}).merge(methods: :linelist))
   end
 
-  def send_assessment(force = false) # rubocop:todo Metrics/PerceivedComplexity
+  def send_assessment(force = false)
     unless last_assessment_reminder_sent.nil?
       return if last_assessment_reminder_sent < 24.hours.ago
     end
@@ -424,11 +487,11 @@ class Patient < ApplicationRecord
       else
         PatientMailer.assessment_sms_reminder(self).deliver_later
       end
-    elsif preferred_contact_method == 'SMS Texted Weblink'
+    elsif preferred_contact_method == 'SMS Texted Weblink' && responder.id == id
       PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
     elsif preferred_contact_method == 'Telephone call' && responder.id == id
       PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
-    elsif ADMIN_OPTIONS['enable_email']
+    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id
       PatientMailer.assessment_email(self).deliver_later
     end
 
