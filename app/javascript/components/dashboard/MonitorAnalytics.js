@@ -42,6 +42,10 @@ class MonitorAnalytics extends React.Component {
   }
 
   exportAsPNG() {
+    // The two datatables in the cdc-maps cause the export to fail
+    // remove them before the export then reload the page so that they come back
+    document.getElementsByClassName('data-table')[0].remove();
+    document.getElementsByClassName('data-table')[0].remove();
     var node = document.getElementById('sara-alert-body');
     domtoimage
       .toPng(node)
@@ -55,10 +59,12 @@ class MonitorAnalytics extends React.Component {
         link.download = imageName;
         link.href = dataUrl;
         link.click();
+        location.reload();
       })
       .catch(error => {
         alert('An error occured.');
         console.error(error);
+        location.reload();
       });
   }
 
