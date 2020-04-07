@@ -21,6 +21,12 @@ class MapComponent extends React.Component {
           let abbreviation = stateOptions.find(state => state.name === key)?.abbrv;
           if (abbreviation) {
             mappedValues[String(abbreviation)] = value;
+          } else {
+            if (!mappedValues['UKN']) {
+              mappedValues['UKN'] = value;
+            } else {
+              mappedValues['UKN'] += value;
+            }
           }
         });
         return mappedValues;
@@ -40,6 +46,8 @@ class MapComponent extends React.Component {
   updateMapWithDay(dateIndex) {
     let data = _.omit(this.state.mappedPatientsCountByStateAndDay[String(dateIndex)], 'day');
     this.monitoreesMap.data = [];
+    // Add "Unknown" in here so we can display on map but don't need to include it in state dropdowns
+    stateOptions.push({ name: 'Unknown', abbrv: 'UKN' });
     stateOptions.forEach(stateName => {
       let newVal = { State: stateName['abbrv'] };
       newVal[this.props.variant] = data[stateName['abbrv']] ? data[stateName['abbrv']] : 0;
