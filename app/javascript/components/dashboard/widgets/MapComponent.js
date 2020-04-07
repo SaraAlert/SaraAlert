@@ -62,7 +62,7 @@ class MapComponent extends React.Component {
 }
 
 MapComponent.propTypes = {
-  patientInfo: PropTypes.object,
+  patientInfo: PropTypes.array,
   variant: PropTypes.string, // Will be "Symptomatic" for the Symptomatic Map, and "Total" for the Total Map
   selectedDate: PropTypes.number,
 };
