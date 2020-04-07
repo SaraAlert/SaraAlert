@@ -127,6 +127,7 @@ namespace :demo do
     jurisdictions = Jurisdiction.all
     Analytic.delete_all
 
+    # foobar added to list to test "unknown" locations
     territory_names = ['American Samoa',
       'District of Columbia',
       'Federated States of Micronesia',
@@ -135,7 +136,8 @@ namespace :demo do
       'Northern Mariana Islands',
       'Palau',
       'Puerto Rico',
-      'Virgin Island']
+      'Virgin Island',
+      'foobar']
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
