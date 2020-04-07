@@ -389,7 +389,6 @@ class Patient < ApplicationRecord
     super((options || {}).merge(methods: :linelist))
   end
 
-  # rubocop:todo Metrics/CyclomaticComplexity
   def send_assessment(force = false) # rubocop:todo Metrics/PerceivedComplexity
     unless last_assessment_reminder_sent.nil?
       return if last_assessment_reminder_sent < 24.hours.ago
@@ -415,9 +414,7 @@ class Patient < ApplicationRecord
       end
     end
 
-    if preferred_contact_method == 'E-mailed Web Link'
-      PatientMailer.assessment_email(self).deliver_later if ADMIN_OPTIONS['enable_email']
-    elsif preferred_contact_method == 'SMS Text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+    if preferred_contact_method == 'SMS Text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
       # SMS-based assessments assess the patient _and_ all of their dependents
       # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
       # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
@@ -431,9 +428,10 @@ class Patient < ApplicationRecord
       PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
     elsif preferred_contact_method == 'Telephone call' && responder.id == id
       PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
+    elsif ADMIN_OPTIONS['enable_email']
+      PatientMailer.assessment_email(self).deliver_later
     end
 
     update(last_assessment_reminder_sent: DateTime.now)
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
 end
