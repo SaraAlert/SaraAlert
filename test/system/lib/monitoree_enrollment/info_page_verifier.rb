@@ -101,7 +101,6 @@ class MonitoreeEnrollmentInfoPageVerifier < ApplicationSystemTestCase
     verify_text_field(potential_exposure_info['potential_exposure_country'])
     verify_text_field(potential_exposure_info['contact_of_known_case_id'])
     verify_exposure_risk_factor_with_custom_label(potential_exposure_info, 'contact_of_known_case', 'CLOSE CONTACT WITH A KNOWN CASE')
-    verify_exposure_risk_factor(potential_exposure_info, 'travel_to_affected_country_or_area')
     verify_exposure_risk_factor(potential_exposure_info, 'was_in_health_care_facility_with_known_cases')
     verify_exposure_risk_factor(potential_exposure_info, 'laboratory_personel')
     verify_exposure_risk_factor(potential_exposure_info, 'healthcare_personel')
