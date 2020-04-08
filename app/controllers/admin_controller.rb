@@ -63,7 +63,7 @@ class AdminController < ApplicationController
   def lock_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
+    permitted_params = params[:admin].permit(:email)
     email = permitted_params[:email]
     user = User.find_by(email: email)
     cur_jur = current_user.jurisdiction
@@ -75,7 +75,7 @@ class AdminController < ApplicationController
   def unlock_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
+    permitted_params = params[:admin].permit(:email)
     email = permitted_params[:email]
     user = User.find_by(email: email)
     cur_jur = current_user.jurisdiction
@@ -87,7 +87,7 @@ class AdminController < ApplicationController
   def reset_password
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
+    permitted_params = params[:admin].permit(:email)
     email = permitted_params[:email]
     user = User.find_by(email: email)
     cur_jur = current_user.jurisdiction
