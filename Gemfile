@@ -71,10 +71,10 @@ end
 
 group :test do
   gem 'capybara', '>= 2.15'
+  gem 'minitest-retry'
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'webdrivers'
-  gem 'minitest-retry'
 end
 
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
