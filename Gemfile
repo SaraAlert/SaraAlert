@@ -74,6 +74,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'webdrivers'
+  gem 'minitest-retry'
 end
 
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
