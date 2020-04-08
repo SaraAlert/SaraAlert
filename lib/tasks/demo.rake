@@ -127,6 +127,18 @@ namespace :demo do
     jurisdictions = Jurisdiction.all
     Analytic.delete_all
 
+    # foobar added to list to test "unknown" locations
+    territory_names = ['American Samoa',
+      'District of Columbia',
+      'Federated States of Micronesia',
+      'Guam',
+      'Marshall Islands',
+      'Northern Mariana Islands',
+      'Palau',
+      'Puerto Rico',
+      'Virgin Island',
+      'foobar']
+
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
       # Create the patients for this day
@@ -228,9 +240,14 @@ namespace :demo do
             patient.monitored_address_line_2 = patient.address_line_2
             patient.monitored_address_zip = patient.address_zip
           else
+            if rand > 0.5
+              state = Faker::Address.state
+            else
+              state = territory_names[rand(territory_names.count)]
+            end
             patient.monitored_address_line_1 = Faker::Address.street_address
             patient.monitored_address_city = Faker::Address.city
-            patient.monitored_address_state = Faker::Address.state
+            patient.monitored_address_state = state
             patient.monitored_address_line_2 = rand < 0.3 ? Faker::Address.secondary_address : nil
             patient.monitored_address_zip = Faker::Address.zip_code
           end

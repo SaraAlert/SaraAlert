@@ -29,13 +29,13 @@ class AddReportingNote extends React.Component {
   addReportingNote() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post('/histories', {
+      .post(window.BASE_PATH + '/histories', {
         patient_id: this.props.patient.id,
         comment: 'User left a note for a report (ID: ' + this.props.assessment.id + '). Note is: ' + this.state.comment,
         type: 'Report Note',
       })
       .then(() => {
-        location.href = '/patients/' + this.props.patient.id;
+        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
         console.error(error);

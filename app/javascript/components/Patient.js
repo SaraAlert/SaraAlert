@@ -330,7 +330,7 @@ class Patient extends React.Component {
                       {this.props.details.member_of_a_common_exposure_cohort ? <br /> : ''}
                     </span>
                     <span className="font-weight-light text-danger">
-                      {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL TO AFFECTED COUNTRY OR AREA' : ''}
+                      {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL FROM AFFECTED COUNTRY OR AREA' : ''}
                       {this.props.details.travel_to_affected_country_or_area ? <br /> : ''}
                     </span>
                     <span className="font-weight-light text-danger">

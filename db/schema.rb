@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_20_055002) do
+ActiveRecord::Schema.define(version: 2020_04_07_180150) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -113,7 +113,7 @@ ActiveRecord::Schema.define(version: 2020_03_20_055002) do
     t.string "monitoring_reason"
     t.boolean "purged", default: false
     t.string "exposure_risk_assessment"
-    t.string "monitoring_plan"
+    t.string "monitoring_plan", default: "None"
     t.string "public_health_action", default: "None"
     t.datetime "last_assessment_reminder_sent"
     t.string "user_defined_id_statelocal"
@@ -199,6 +199,8 @@ ActiveRecord::Schema.define(version: 2020_03_20_055002) do
     t.boolean "was_in_health_care_facility_with_known_cases"
     t.string "was_in_health_care_facility_with_known_cases_facility_name"
     t.text "exposure_notes"
+    t.boolean "isolation", default: false
+    t.datetime "closed_at"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
     t.index ["first_name"], name: "index_patients_on_first_name"

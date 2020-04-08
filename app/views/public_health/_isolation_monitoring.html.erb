@@ -1,0 +1,72 @@
+<div class="mx-2 pb-4">
+
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" id="requiring-review-tab" data-toggle="tab" href="#requiring-review" role="tab">
+        Records Requiring Review <span class="badge badge-danger badge-larger-font"><%= @requiring_review_count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="non-reporting-tab" data-toggle="tab" href="#non-reporting" role="tab">
+        Non-Reporting <span class="badge badge-warning badge-larger-font"><%= @non_reporting_count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="reporting-tab" data-toggle="tab" href="#reporting" role="tab">
+        Reporting <span class="badge badge-success badge-larger-font"><%= @reporting_count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="closed-tab" data-toggle="tab" href="#closed" role="tab">
+        Closed <span class="badge badge-secondary badge-larger-font"><%= @closed_count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="transferred-in-tab" data-toggle="tab" href="#transferred-in" role="tab">
+        Transferred In <span class="badge badge-info badge-larger-font"><%= @transferred_in_count %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="transferred-out-tab" data-toggle="tab" href="#transferred-out" role="tab">
+        Transferred Out <span class="badge badge-info badge-larger-font"><%= @transferred_out_count %></span>
+      </a>
+    </li>
+    <li class="nav-item ml-auto">
+      <a class="nav-link" id="all-tab" data-toggle="tab" href="#all" role="tab">
+        All Monitorees <span class="badge brand-primary-color badge-larger-font"><%= @all_count %></span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="card card-square tab-pane show active pb-4" id="requiring-review" role="tabpanel" aria-labelledby="requiring-review-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees who require review.</p>
+      <%= render partial: "patients", locals: { type: 'requiring_review_patients', p_links: true, isolation: true } %>
+    </div>
+    <div class="card card-square tab-pane pb-4" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees who have failed to report during the last day.</p>
+      <%= render partial: "patients", locals: { type: 'non_reporting_patients', p_links: true, isolation: true } %>
+    </div>
+    <div class="card card-square tab-pane pb-4" id="reporting" role="tabpanel" aria-labelledby="reporting-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees who have reported in the last day</p>
+      <%= render partial: "patients", locals: { type: 'reporting_patients', p_links: true, isolation: true } %>
+    </div>
+    <div class="card card-square tab-pane pb-4" id="closed" role="tabpanel" aria-labelledby="closed-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees not currently being monitored.</p>
+      <%= render partial: "patients", locals: { type: 'closed_patients', p_links: true, isolation: true } %>
+    </div>
+    <div class="card card-square tab-pane pb-4" id="transferred-in" role="tabpanel" aria-labelledby="transferred-in-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees that have been transferred into this jurisdiction during the last 24 hours.</p>
+      <%= render partial: "patients", locals: { type: 'transferred_in_patients', p_links: true, isolation: true } %>
+    </div>
+    <div class="card card-square tab-pane pb-4" id="transferred-out" role="tabpanel" aria-labelledby="transferred-out-tab">
+      <p class="lead px-4 pt-4 pb-3">Monitorees that have been transferred out of this jurisdiction.</p>
+      <%= render partial: "patients", locals: { type: 'transferred_out_patients', p_links: false, isolation: true } %>
+    </div>
+    <div class="card card-square tab-pane pb-4" id="all" role="tabpanel" aria-labelledby="all-tab">
+      <p class="lead px-4 pt-4 pb-3">All Monitorees in this jurisdiction, in the Isolation workflow.</p>
+      <%= render partial: "patients", locals: { type: 'all_patients', p_links: true, isolation: true } %>
+    </div>
+  </div>
+
+</div>

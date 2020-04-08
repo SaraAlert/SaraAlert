@@ -27,6 +27,7 @@ class PatientsController < ApplicationController
   # Returns a new (unsaved) subject, for creating a new subject
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
+
     @patient = Patient.new
   end
 
@@ -74,6 +75,18 @@ class PatientsController < ApplicationController
 
     # Add patient details that were collected from the form
     patient = Patient.new(params[:patient].permit(*allowed_params))
+
+    # Default to copying *required address into monitored address if monitored address is nil
+    if patient.monitored_address_line_1.nil? || patient.monitored_address_state.nil? ||
+       patient.monitored_address_city.nil? || patient.monitored_address_zip.nil?
+      patient.monitored_address_line_1 = patient.address_line_1
+      patient.monitored_address_line_2 = patient.address_line_2
+      patient.monitored_address_city = patient.address_city
+      patient.monitored_address_county = patient.address_county
+      patient.monitored_address_state = patient.address_state
+      patient.monitored_address_zip = patient.address_zip
+    end
+    helpers.normalize_state_names(patient)
 
     # Set the responder for this patient
     patient.responder = if params.permit(:responder_id)[:responder_id]
@@ -151,8 +164,11 @@ class PatientsController < ApplicationController
   # Updates to workflow/tracking status for a subject
   def update_status
     redirect_to(root_url) && return unless current_user.can_edit_patient?
+
     patient = current_user.get_patient(params.permit(:id)[:id])
-    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan, :exposure_risk_assessment, :public_health_action))
+    patient.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
+    patient.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
+                                                    :exposure_risk_assessment, :public_health_action, :isolation))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
@@ -167,7 +183,9 @@ class PatientsController < ApplicationController
     # Do we need to propogate to household?
     if params.permit(:apply_to_group)[:apply_to_group]
       patient.dependents.where.not(id: patient.id).each do |member|
-        member.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan, :exposure_risk_assessment, :public_health_action))
+        member.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != member.monitoring && member.monitoring
+        member.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
+                                                       :exposure_risk_assessment, :public_health_action, :isolation))
         if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != member.jurisdiction_id
           # Jurisdiction has changed
           jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
@@ -203,6 +221,7 @@ class PatientsController < ApplicationController
 
   def clear_assessments
     redirect_to(root_url) && return unless current_user.can_edit_patient?
+
     patient = current_user.get_patient(params.permit(:id)[:id])
     patient.assessments.each do |assessment|
       assessment.symptomatic = false
@@ -221,8 +240,10 @@ class PatientsController < ApplicationController
   def send_reminder
     # Send a new report reminder to the monitoree
     redirect_to(root_url) && return unless current_user.can_remind_patient?
+
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
+
     patient.send_assessment(true)
 
     history = History.new

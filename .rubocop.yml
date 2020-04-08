@@ -12,9 +12,9 @@ AllCops:
 Metrics/LineLength:
   Max: 160
 Metrics/PerceivedComplexity:
-  Max: 25
+  Enabled: false
 Metrics/CyclomaticComplexity:
-  Max: 25
+  Enabled: false
 Metrics/MethodLength:
   Max: 100
 Metrics/AbcSize:
@@ -22,6 +22,6 @@ Metrics/AbcSize:
 Metrics/ClassLength:
   Max: 400
 Metrics/BlockLength:
-  Max: 35
+  Enabled: false
 Style/ClassAndModuleChildren:
   Enabled: false

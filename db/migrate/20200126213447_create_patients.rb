@@ -16,7 +16,7 @@ class CreatePatients < ActiveRecord::Migration[6.0]
 
       # Workflow categories
       t.string :exposure_risk_assessment
-      t.string :monitoring_plan
+      t.string :monitoring_plan, default: 'None'
 
       # Latest public health action
       t.string :public_health_action, default: 'None', index: true

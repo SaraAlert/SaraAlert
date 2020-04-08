@@ -28,11 +28,11 @@ class ClearReports extends React.Component {
   clearReports() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post('/patients/' + this.props.patient.id + '/status/clear', {
+      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status/clear', {
         reasoning: this.state.reasoning,
       })
       .then(() => {
-        location.href = '/patients/' + this.props.patient.id;
+        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
         console.error(error);

@@ -137,7 +137,7 @@ class Exposure extends React.Component {
                         className="pt-2 my-auto"
                         type="switch"
                         id="travel_to_affected_country_or_area"
-                        label="TRAVEL TO AFFECTED COUNTRY OR AREA"
+                        label="TRAVEL FROM AFFECTED COUNTRY OR AREA"
                         checked={this.state.current.travel_to_affected_country_or_area === true || false}
                         onChange={this.handleChange}
                       />
@@ -291,7 +291,7 @@ class Exposure extends React.Component {
                         className="form-square"
                         onChange={this.handleChange}
                         value={this.state.current.monitoring_plan || ''}>
-                        <option></option>
+                        <option>None</option>
                         <option>Daily active monitoring</option>
                         <option>Self-monitoring with public health supervision</option>
                         <option>Self-monitoring with delegated supervision</option>

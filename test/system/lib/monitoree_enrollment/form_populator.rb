@@ -134,7 +134,6 @@ class MonitoreeEnrollmentFormPopulator < ApplicationSystemTestCase
       populate_text_input(potential_exposure_info, 'potential_exposure_location')
       populate_select_input(potential_exposure_info, 'potential_exposure_country')
       populate_checkbox_input_with_custom_label(potential_exposure_info, 'contact_of_known_case', 'CLOSE CONTACT WITH A KNOWN CASE')
-      populate_checkbox_input(potential_exposure_info, 'travel_to_affected_country_or_area')
       populate_checkbox_input(potential_exposure_info, 'was_in_health_care_facility_with_known_cases')
       populate_checkbox_input(potential_exposure_info, 'laboratory_personnel')
       populate_checkbox_input(potential_exposure_info, 'healthcare_personnel')

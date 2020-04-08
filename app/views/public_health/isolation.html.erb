@@ -1,0 +1,31 @@
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Isolation Workflow", href: nil} ] } %>
+
+<div class="btn-group">
+
+  <% if current_user.can_view_analytics? %>
+    <%= link_to '<i class="fas fa-chart-pie"></i> Analytics'.html_safe, {controller: "analytics", action: "index"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
+  <% end %>
+
+</div>
+
+<div class="btn-group mb-4 float-right mr-2" role="group">
+  <a class="btn btn-primary text-white" href="<%= public_health_url %>"><i class="fas fa-people-arrows"></i> Exposure Monitoring (<%= @e_all_count %>)</a>
+  <a class="btn btn-primary text-white active" href="<%= public_health_isolation_url %>"><i class="fas fa-house-user"></i> Isolation Monitoring (<%= @all_count %>)</a>
+</div>
+
+<%= render partial: "isolation_monitoring" %>
+
+<script>
+  $(document).ready(function() {
+    if (localStorage.getItem('dashboardCurrentTab') !== null) {
+      $(localStorage.getItem('dashboardCurrentTab') + '-tab').find('span').trigger('click')
+    }
+    $('a[data-toggle="tab"]').on('click', function(e) {
+      if ($(e.target).attr('href') === undefined) {
+        localStorage.setItem('dashboardCurrentTab', $(e.target).parent().attr('href'))
+      } else {
+        localStorage.setItem('dashboardCurrentTab', $(e.target).attr('href'))
+      }
+    })
+  });
+</script>

@@ -56,7 +56,7 @@ class Enrollment extends React.Component {
     data['bypass_duplicate'] = false;
     axios({
       method: this.props.editMode ? 'patch' : 'post',
-      url: this.props.editMode ? '/patients/' + this.props.patient.id : '/patients',
+      url: window.BASE_PATH + (this.props.editMode ? '/patients/' + this.props.patient.id : '/patients'),
       data: data,
     })
       .then(response => {
@@ -66,12 +66,14 @@ class Enrollment extends React.Component {
             data['bypass_duplicate'] = true;
             axios({
               method: this.props.editMode ? 'patch' : 'post',
-              url: this.props.editMode ? '/patients/' + this.props.patient.id : '/patients',
+              url: window.BASE_PATH + (this.props.editMode ? '/patients/' + this.props.patient.id : '/patients'),
               data: data,
             })
               .then(response => {
                 toast.success(message, {
-                  onClose: () => (location.href = groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id']),
+                  onClose: () =>
+                    (location.href =
+                      window.BASE_PATH + (groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id'])),
                 });
               })
               .catch(() => {

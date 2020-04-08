@@ -20,12 +20,21 @@ body {
   border-radius: 0 !important;
 }
 
+.brand-primary-color {
+  background-color: #226891;
+  color: #fff;
+}
+
 .card.card-square {
   border-radius: 0;
 }
 
 .table-smaller-font {
   font-size: 0.9em;
+}
+
+.nav-version {
+  font-size: 50%;
 }
 
 .form-control.form-square {

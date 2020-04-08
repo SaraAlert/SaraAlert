@@ -23,13 +23,13 @@ class SendReminder extends React.Component {
   sendReminder() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post('/patients/' + this.props.patient.id + '/reminder', {})
+      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/reminder', {})
       .then(() => {
-        location.href = '/patients/' + this.props.patient.id;
+        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
         console.error(error);
-        location.href = '/patients/' + this.props.patient.id;
+        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       });
   }
 

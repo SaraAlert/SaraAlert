@@ -1,3 +1,9 @@
+# Version
+version: v1.2.0
+
+# Base path (useful for WARP or similar environments)
+base_path: ''
+
 # How many days an enrolled monitoree should be monitored
 monitoring_period_days: <%= ENV["MONITORING_PERIOD_DAYS"] || 14 %>
 

@@ -50,7 +50,7 @@ class SymptomsAssessment extends React.Component {
           <Card.Header as="h4">Daily Self-Report</Card.Header>
           <Card.Body>
             <Form.Row>
-              <Form.Label className="nav-input-label">Please select all symptoms which you are experiencing.</Form.Label> <br />
+              <Form.Label className="nav-input-label pb-3">Please select all symptoms which you are experiencing.</Form.Label> <br />
             </Form.Row>
             <Form.Row>
               <Form.Group className="pt-1">

@@ -2,8 +2,6 @@
 
 # Patient: patient model
 class Patient < ApplicationRecord
-  # TODO: Stricter validation for fields that are handed to other systems (e.g. phone, email address)
-  # TODO: Also add guards on what gets handed to external server (only allow specific validated)
   columns.each do |column|
     case column.type
     when :text
@@ -20,13 +18,17 @@ class Patient < ApplicationRecord
                                                   'Person Under Investigation (PUI)',
                                                   'Case confirmed',
                                                   'Past monitoring period',
+                                                  'Meets criteria to discontinue isolation',
+                                                  'Deceased',
+                                                  'Other',
                                                   nil, ''] }
 
-  validates :monitoring_plan, inclusion: { in: ['Daily active monitoring',
+  validates :monitoring_plan, inclusion: { in: ['None',
+                                                'Daily active monitoring',
                                                 'Self-monitoring with public health supervision',
                                                 'Self-monitoring with delegated supervision',
                                                 'Self-observation',
-                                                nil, ''] }
+                                                ''] }
 
   validates :exposure_risk_assessment, inclusion: { in: ['High',
                                                          'Medium',
@@ -98,6 +100,7 @@ class Patient < ApplicationRecord
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where.not('public_health_action = ?', 'None')
+      .where(isolation: false)
   }
 
   # Any individual who has any assessments still considered symptomatic
@@ -152,6 +155,65 @@ class Patient < ApplicationRecord
       .distinct
   }
 
+  scope :isolation_requiring_review, lambda {
+    # Persons with COVID-19 who have symptoms (non-test based)
+    # - At least 7 days since first symptom report
+    # AND
+    # - No fever or medication use reported in last 72 hours
+    # AND
+    # - Latest reports received within 24 hours of previous report
+    #
+    # OR
+    #
+    # Persons with COVID-19 who have symptoms (test based)
+    # - Two documented negative public health test results (documented in public health action)
+    # AND
+    # - No fever or medication use reported in last report
+    # AND
+    # - Latest reports received within 24 hours of previous report
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('isolation = ?', true)
+      .left_outer_joins(:assessments)
+      .where_assoc_exists(:assessments, ['created_at <= ?', 7.days.ago])
+      .where('assessments.created_at > ?', 72.hours.ago)
+      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .left_outer_joins(:histories)
+      .distinct
+      .or(
+        where('monitoring = ?', true)
+        .where('purged = ?', false)
+        .where('isolation = ?', true)
+        .left_outer_joins(:assessments)
+        .where_assoc_not_exists(:assessments, symptomatic: true)
+        .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+        .left_outer_joins(:histories)
+        .where_assoc_count(2, :<=, :histories, 'comment LIKE \'%Results of Public Health Test - negative%\'')
+        .distinct
+      )
+  }
+
+  scope :isolation_non_reporting, lambda {
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('isolation = ?', true)
+      .left_outer_joins(:assessments)
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .distinct
+  }
+
+  scope :isolation_reporting, lambda {
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('isolation = ?', true)
+      .left_outer_joins(:assessments)
+      .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .left_outer_joins(:histories)
+      .where_assoc_count(2, :>, :histories, 'comment LIKE \'%Results of Public Health Test - negative%\'')
+      .distinct
+  }
+
   # All individuals currently being monitored if true, all individuals otherwise
   scope :monitoring_active, lambda { |active_monitoring|
     where(monitoring: true) if active_monitoring
@@ -171,7 +233,7 @@ class Patient < ApplicationRecord
 
   # All individuals with a last date of exposure within the given time frame
   scope :exposed_in_time_frame, lambda { |time_frame|
-    where('last_date_of_exposure > ?', time_frame)
+    where('last_date_of_exposure >= ?', time_frame)
   }
 
   # All individuals enrolled within the given time frame
@@ -233,7 +295,7 @@ class Patient < ApplicationRecord
     (!latest_assessment.nil? &&
      assessments.where(symptomatic: true).count.zero? &&
      latest_assessment.created_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago) ||
-      (latest_assessment.nil? &&
+      (created_at && latest_assessment.nil? &&
        created_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
   end
 
@@ -242,7 +304,7 @@ class Patient < ApplicationRecord
     (!latest_assessment.nil? &&
      assessments.where(symptomatic: true).count.zero? &&
      latest_assessment.created_at < ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago) ||
-      (latest_assessment.nil? && created_at < ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+      (latest_assessment.nil? && created_at && created_at < ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
   end
 
   # Is this patient under investigation?
@@ -287,8 +349,101 @@ class Patient < ApplicationRecord
       transferred: latest_transfer&.created_at&.to_s || '',
       reason_for_closure: monitoring_reason || '',
       public_health_action: public_health_action || '',
+      status: status&.to_s&.humanize&.downcase || '',
+      closed_at: closed_at&.to_s || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || ''
+    }
+  end
+
+  # All information about this subject
+  def comprehensive_details
+    {
+      first_name: first_name || '',
+      middle_name: middle_name || '',
+      last_name: last_name || '',
+      date_of_birth: date_of_birth&.strftime('%F') || '',
+      sex: sex || '',
+      white: white || false,
+      black_or_african_american: black_or_african_american || false,
+      american_indian_or_alaska_native: american_indian_or_alaska_native || false,
+      asian: asian || false,
+      native_hawaiian_or_other_pacific_islander: native_hawaiian_or_other_pacific_islander || false,
+      ethnicity: ethnicity || '',
+      primary_language: primary_language || '',
+      secondary_language: secondary_language || '',
+      interpretation_required: interpretation_required || false,
+      nationality: nationality || '',
+      user_defined_id_statelocal: user_defined_id_statelocal || '',
+      user_defined_id_cdc: user_defined_id_cdc || '',
+      user_defined_id_nndss: user_defined_id_nndss || '',
+      address_line_1: address_line_1 || '',
+      address_city: address_city || '',
+      address_state: address_state || '',
+      address_line_2: address_line_2 || '',
+      address_zip: address_zip || '',
+      address_county: address_county || '',
+      foreign_address_line_1: foreign_address_line_1 || '',
+      foreign_address_city: foreign_address_city || '',
+      foreign_address_country: foreign_address_country || '',
+      foreign_address_line_2: foreign_address_line_2 || '',
+      foreign_address_zip: foreign_address_zip || '',
+      foreign_address_line_3: foreign_address_line_3 || '',
+      foreign_address_state: foreign_address_state || '',
+      monitored_address_line_1: monitored_address_line_1 || '',
+      monitored_address_city: monitored_address_city || '',
+      monitored_address_state: monitored_address_state || '',
+      monitored_address_line_2: monitored_address_line_2 || '',
+      monitored_address_zip: monitored_address_zip || '',
+      monitored_address_county: monitored_address_county || '',
+      foreign_monitored_address_line_1: foreign_monitored_address_line_1 || '',
+      foreign_monitored_address_city: foreign_monitored_address_city || '',
+      foreign_monitored_address_state: foreign_monitored_address_state || '',
+      foreign_monitored_address_line_2: foreign_monitored_address_line_2 || '',
+      foreign_monitored_address_zip: foreign_monitored_address_zip || '',
+      foreign_monitored_address_county: foreign_monitored_address_county || '',
+      preferred_contact_method: preferred_contact_method || '',
+      primary_telephone: primary_telephone || '',
+      primary_telephone_type: primary_telephone_type || '',
+      secondary_telephone: secondary_telephone || '',
+      secondary_telephone_type: secondary_telephone_type || '',
+      preferred_contact_time: preferred_contact_time || '',
+      email: email || '',
+      port_of_origin: port_of_origin || '',
+      date_of_departure: date_of_departure&.strftime('%F') || '',
+      source_of_report: source_of_report || '',
+      flight_or_vessel_number: flight_or_vessel_number || '',
+      flight_or_vessel_carrier: flight_or_vessel_carrier || '',
+      port_of_entry_into_usa: port_of_entry_into_usa || '',
+      date_of_arrival: date_of_arrival&.strftime('%F') || '',
+      travel_related_notes: travel_related_notes || '',
+      additional_planned_travel_type: additional_planned_travel_type || '',
+      additional_planned_travel_destination: additional_planned_travel_destination || '',
+      additional_planned_travel_destination_state: additional_planned_travel_destination_state || '',
+      additional_planned_travel_destination_country: additional_planned_travel_destination_country || '',
+      additional_planned_travel_port_of_departure: additional_planned_travel_port_of_departure || '',
+      additional_planned_travel_start_date: additional_planned_travel_start_date&.strftime('%F') || '',
+      additional_planned_travel_end_date: additional_planned_travel_end_date&.strftime('%F') || '',
+      additional_planned_travel_related_notes: additional_planned_travel_related_notes || '',
+      last_date_of_exposure: last_date_of_exposure&.strftime('%F') || '',
+      potential_exposure_location: potential_exposure_location || '',
+      potential_exposure_country: potential_exposure_country || '',
+      contact_of_known_case: contact_of_known_case || '',
+      contact_of_known_case_id: contact_of_known_case_id || '',
+      travel_to_affected_country_or_area: travel_to_affected_country_or_area || false,
+      was_in_health_care_facility_with_known_cases: was_in_health_care_facility_with_known_cases || false,
+      was_in_health_care_facility_with_known_cases_facility_name: was_in_health_care_facility_with_known_cases_facility_name || '',
+      laboratory_personnel: laboratory_personnel || false,
+      laboratory_personnel_facility_name: laboratory_personnel_facility_name || '',
+      healthcare_personnel: healthcare_personnel || false,
+      healthcare_personnel_facility_name: healthcare_personnel_facility_name || '',
+      crew_on_passenger_or_cargo_flight: crew_on_passenger_or_cargo_flight || false,
+      member_of_a_common_exposure_cohort: member_of_a_common_exposure_cohort || false,
+      member_of_a_common_exposure_cohort_type: member_of_a_common_exposure_cohort_type || '',
+      exposure_risk_assessment: exposure_risk_assessment || '',
+      monitoring_plan: monitoring_plan || '',
+      exposure_notes: exposure_notes || '',
+      status: status&.to_s&.humanize&.downcase || ''
     }
   end
 
@@ -297,8 +452,7 @@ class Patient < ApplicationRecord
     super((options || {}).merge(methods: :linelist))
   end
 
-  # rubocop:todo Metrics/CyclomaticComplexity
-  def send_assessment(force = false) # rubocop:todo Metrics/PerceivedComplexity
+  def send_assessment(force = false)
     unless last_assessment_reminder_sent.nil?
       return if last_assessment_reminder_sent < 24.hours.ago
     end
@@ -323,11 +477,9 @@ class Patient < ApplicationRecord
       end
     end
 
-    if preferred_contact_method == 'E-mailed Web Link'
-      PatientMailer.assessment_email(self).deliver_later if ADMIN_OPTIONS['enable_email']
-    elsif preferred_contact_method == 'SMS Text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+    if preferred_contact_method == 'SMS Text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
       # SMS-based assessments assess the patient _and_ all of their dependents
-      # If you are a dependent ie: someone whose responder.id is not your own  an assessment will not be sent to you
+      # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
       # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
       # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
       if !force
@@ -335,13 +487,14 @@ class Patient < ApplicationRecord
       else
         PatientMailer.assessment_sms_reminder(self).deliver_later
       end
-    elsif preferred_contact_method == 'SMS Texted Weblink'
+    elsif preferred_contact_method == 'SMS Texted Weblink' && responder.id == id
       PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
     elsif preferred_contact_method == 'Telephone call' && responder.id == id
       PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
+    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id
+      PatientMailer.assessment_email(self).deliver_later
     end
 
     update(last_assessment_reminder_sent: DateTime.now)
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
 end
