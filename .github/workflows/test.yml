@@ -55,7 +55,7 @@ jobs:
       - name: Setup Test Database Configuration
         run: |
           cp config/github-ci/github-database.yml config/database.yml
-          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -p root -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
+          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
       - name: Run Rake Test
         run: bundle exec rake test
         env:
