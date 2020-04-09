@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_07_180150) do
+ActiveRecord::Schema.define(version: 2020_04_08_223013) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -201,6 +201,7 @@ ActiveRecord::Schema.define(version: 2020_04_07_180150) do
     t.text "exposure_notes"
     t.boolean "isolation", default: false
     t.datetime "closed_at"
+    t.string "source_of_report_specify"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
     t.index ["first_name"], name: "index_patients_on_first_name"

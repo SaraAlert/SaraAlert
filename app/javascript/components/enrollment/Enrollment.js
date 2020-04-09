@@ -96,7 +96,8 @@ class Enrollment extends React.Component {
         } else {
           // Success, inform user and redirect to home
           toast.success(message, {
-            onClose: () => (location.href = groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id']),
+            onClose: () =>
+              (location.href = window.BASE_PATH + (groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id'])),
           });
         }
       })

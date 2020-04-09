@@ -19,6 +19,12 @@ class CurrentStatus extends React.Component {
       return <span className="text-muted">purged</span>;
     } else if (status === 'closed') {
       return <span className="text-secondary">not currently being monitored</span>;
+    } else if (status === 'isolation_requiring_review') {
+      return <span className="text-danger">requires review</span>;
+    } else if (status === 'isolation_non_reporting') {
+      return <span className="text-warning">non-reporting</span>;
+    } else if (status === 'isolation_reporting') {
+      return <span className="text-success">reporting</span>;
     } else {
       return <span>unknown</span>;
     }
@@ -29,7 +35,12 @@ class CurrentStatus extends React.Component {
       <React.Fragment>
         {!this.props.isolation && (
           <h1 className="display-6 pb-3">
-            The current status of this monitoree is <b>{this.generateStatus(this.props.status)}</b>.
+            This monitoree is in the <u>exposure</u> workflow, and their current status is <b>{this.generateStatus(this.props.status)}</b>.
+          </h1>
+        )}
+        {this.props.isolation && (
+          <h1 className="display-6 pb-3">
+            This monitoree is in the <u>isolation</u> workflow, and their current status is <b>{this.generateStatus(this.props.status)}</b>.
           </h1>
         )}
       </React.Fragment>
@@ -39,7 +50,7 @@ class CurrentStatus extends React.Component {
 
 CurrentStatus.propTypes = {
   status: PropTypes.string,
-  isolation: PropTypes.boolean,
+  isolation: PropTypes.bool,
 };
 
 export default CurrentStatus;

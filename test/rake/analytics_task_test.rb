@@ -6,7 +6,7 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
   @@monitorees = Patient.where('jurisdiction_id >= ?', 1).where('jurisdiction_id <= ?', 7)
   @@monitorees_by_exposure_week = Patient.where(jurisdiction_id: 8)
   @@monitorees_by_exposure_month = Patient.where(jurisdiction_id: 9)
-  
+
   test "monitoree counts by total" do
     active_counts = monitoree_counts_by_total(@@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Overall Total', 'Total', 'Missing', 4)
@@ -281,13 +281,13 @@ class AnalyticsTaskTest < ActiveSupport::TestCase
     assert_equal(transferred_in, snapshots[index].transferred_in, 'Incoming transfers')
     assert_equal(closed, snapshots[index].closed, 'Closed patients')
     assert_equal(transferred_out, snapshots[index].transferred_out, 'Outgoing transfers')
-    assert_equal(referral_for_medical_evaluation, snapshots[index].referral_for_medical_evaluation, 'Referral for Medical Evaluation')
-    assert_equal(document_completed_medical_evaluation, snapshots[index].document_completed_medical_evaluation, 'Document Completed Medical Evaluation')
-    assert_equal(document_medical_evaluation_summary_and_plan, snapshots[index].document_medical_evaluation_summary_and_plan, 'Document Medical Evaluation Summary and Plan')
-    assert_equal(referral_for_public_health_test, snapshots[index].referral_for_public_health_test, 'Referral for Public Health Test')
-    assert_equal(public_health_test_specimen_received_by_lab_results_pending, snapshots[index].public_health_test_specimen_received_by_lab_results_pending, 'Public Health Test Specimen Received by Lab - results pending')
-    assert_equal(results_of_public_health_test_positive, snapshots[index].results_of_public_health_test_positive, 'Results of Public Health Test - positive')
-    assert_equal(results_of_public_health_test_negative, snapshots[index].results_of_public_health_test_negative, 'Results of Public Health Test - negative')
+    assert_equal(referral_for_medical_evaluation, snapshots[index].referral_for_medical_evaluation, 'Recommended medical evaluation of symptoms')
+    assert_equal(document_completed_medical_evaluation, snapshots[index].document_completed_medical_evaluation, 'Document results of medical evaluation')
+    assert_equal(document_medical_evaluation_summary_and_plan, snapshots[index].document_medical_evaluation_summary_and_plan, 'Laboratory specimen collected')
+    assert_equal(referral_for_public_health_test, snapshots[index].referral_for_public_health_test, 'Recommended laboratory testing')
+    assert_equal(public_health_test_specimen_received_by_lab_results_pending, snapshots[index].public_health_test_specimen_received_by_lab_results_pending, 'Laboratory received specimen – result pending')
+    assert_equal(results_of_public_health_test_positive, snapshots[index].results_of_public_health_test_positive, 'Laboratory report results – positive')
+    assert_equal(results_of_public_health_test_negative, snapshots[index].results_of_public_health_test_negative, 'Laboratory report results – negative')
   end
 
   def get_absolute_date(relative_date)

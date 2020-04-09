@@ -310,6 +310,7 @@ class PatientsController < ApplicationController
       preferred_contact_time
       port_of_origin
       source_of_report
+      source_of_report_specify
       flight_or_vessel_number
       flight_or_vessel_carrier
       port_of_entry_into_usa
@@ -342,6 +343,7 @@ class PatientsController < ApplicationController
       exposure_risk_assessment
       member_of_a_common_exposure_cohort
       member_of_a_common_exposure_cohort_type
+      isolation
     ]
   end
 
@@ -382,6 +384,7 @@ class PatientsController < ApplicationController
       preferred_contact_time
       port_of_origin
       source_of_report
+      source_of_report_specify
       flight_or_vessel_number
       flight_or_vessel_carrier
       port_of_entry_into_usa
@@ -412,6 +415,7 @@ class PatientsController < ApplicationController
       crew_on_passenger_or_cargo_flight
       member_of_a_common_exposure_cohort
       member_of_a_common_exposure_cohort_type
+      isolation
     ]
   end
 end

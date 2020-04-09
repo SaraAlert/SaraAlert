@@ -61,7 +61,7 @@ class Arrival extends React.Component {
                     onChange={this.handleChange}
                   />
                 </Form.Group>
-                <Form.Group as={Col} md="6" controlId="date_of_departure">
+                <Form.Group as={Col} md="8" controlId="date_of_departure">
                   <Form.Label className="nav-input-label">DATE OF DEPARTURE{schema?.fields?.date_of_departure?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['date_of_departure']}
@@ -73,28 +73,6 @@ class Arrival extends React.Component {
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['port_of_origin']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group as={Col} md="2"></Form.Group>
-                <Form.Group as={Col} md="8" controlId="source_of_report">
-                  <Form.Label className="nav-input-label">SOURCE OF REPORT{schema?.fields?.source_of_report?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['source_of_report']}
-                    as="select"
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.source_of_report || ''}
-                    onChange={this.handleChange}>
-                    <option></option>
-                    <option>Health Screening</option>
-                    <option>Surveillance Screening</option>
-                    <option>Self-Identified</option>
-                    <option>Contact Tracing</option>
-                    <option>CDC</option>
-                    <option>Other</option>
-                  </Form.Control>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['source_of_report']}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
@@ -114,7 +92,7 @@ class Arrival extends React.Component {
                     {this.state.errors['flight_or_vessel_number']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md="7" controlId="flight_or_vessel_carrier">
+                <Form.Group as={Col} md="8" controlId="flight_or_vessel_carrier">
                   <Form.Label className="nav-input-label">CARRIER{schema?.fields?.flight_or_vessel_carrier?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['flight_or_vessel_carrier']}
@@ -144,7 +122,7 @@ class Arrival extends React.Component {
                     {this.state.errors['port_of_entry_into_usa']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md="6" controlId="date_of_arrival">
+                <Form.Group as={Col} md="8" controlId="date_of_arrival">
                   <Form.Label className="nav-input-label">DATE OF ARRIVAL{schema?.fields?.date_of_arrival?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['date_of_arrival']}
@@ -158,6 +136,46 @@ class Arrival extends React.Component {
                     {this.state.errors['date_of_arrival']}
                   </Form.Control.Feedback>
                 </Form.Group>
+              </Form.Row>
+              <Form.Row className="pt-2">
+                <Form.Group as={Col} md="8" controlId="source_of_report">
+                  <Form.Label className="nav-input-label">SOURCE OF REPORT{schema?.fields?.source_of_report?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['source_of_report']}
+                    as="select"
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.source_of_report || ''}
+                    onChange={this.handleChange}>
+                    <option></option>
+                    <option>Health Screening</option>
+                    <option>Surveillance Screening</option>
+                    <option>Self-Identified</option>
+                    <option>Contact Tracing</option>
+                    <option>CDC</option>
+                    <option>Other</option>
+                  </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['source_of_report']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                {this.state.current.source_of_report === 'Other' && (
+                  <Form.Group as={Col} md="8" controlId="source_of_report_specify">
+                    <Form.Label className="nav-input-label">
+                      SOURCE OF REPORT (SPECIFY){schema?.fields?.source_of_report_specify?._exclusive?.required && ' *'}
+                    </Form.Label>
+                    <Form.Control
+                      isInvalid={this.state.errors['source_of_report_specify']}
+                      size="lg"
+                      className="form-square"
+                      value={this.state.current.source_of_report_specify || ''}
+                      onChange={this.handleChange}
+                    />
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['source_of_report_specify']}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                )}
               </Form.Row>
               <Form.Row className="pt-2 pb-3">
                 <Form.Group as={Col} md="24" controlId="travel_related_notes">
@@ -214,6 +232,10 @@ const schema = yup.object().shape({
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   flight_or_vessel_number: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  source_of_report_specify: yup
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),

@@ -28,9 +28,11 @@ Rails.application.routes.draw do
 
   get '/export/:type/csv', to: 'export#csv'
   get '/export/:type/csv_comprehensive', to: 'export#csv_comprehensive'
+  get '/export/isolation/:type/csv', to: 'export#csv_isolation'
+  get '/export/isolation/:type/csv_comprehensive', to: 'export#csv_comprehensive_isolation'
 
-  post '/import/epix', to: 'import#epix'
-  post '/import/comprehensive_monitorees', to: 'import#comprehensive_monitorees'
+  post '/import/:workflow/epix', to: 'import#epix'
+  post '/import/:workflow/comprehensive_monitorees', to: 'import#comprehensive_monitorees'
   get '/import/download_guidance', to: 'import#download_guidance'
   get '/import/error', to: 'import#error'
 

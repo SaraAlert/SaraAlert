@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Form, Row, Col, Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 
@@ -8,6 +8,7 @@ class MonitoringStatus extends React.Component {
     super(props);
     const jur = this.props.jurisdiction_paths.find(jur => jur.value === props.jurisdiction_id);
     this.state = {
+      patient: props.patient,
       showExposureRiskAssessmentModal: false,
       showMonitoringPlanModal: false,
       showMonitoringStatusModal: false,
@@ -36,6 +37,8 @@ class MonitoringStatus extends React.Component {
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
     this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
     this.toggleIsolation = this.toggleIsolation.bind(this);
+    this.publicHealthActionRefresh = this.publicHealthActionRefresh.bind(this);
+    this.renderPHARefreshTooltip = this.renderPHARefreshTooltip.bind(this);
   }
 
   handleChange(event) {
@@ -64,23 +67,34 @@ class MonitoringStatus extends React.Component {
         monitoring_status_options: null,
       });
     } else if (event?.target?.id && event.target.id === 'public_health_action') {
-      this.setState({
-        showPublicHealthActionModal: true,
-        message: 'latest public health action to "' + event.target.value + '".',
-        message_warning:
-          event.target.value === 'None'
-            ? 'The monitoree will be moved back into the primary status line lists.'
-            : 'The monitoree will be moved into the PUI line list.',
-        public_health_action: event?.target?.value ? event.target.value : '',
-        monitoring_status_options: null,
-      });
+      if (this.state.patient.isolation) {
+        this.setState({
+          showPublicHealthActionModal: true,
+          message: 'latest public health action to "' + event.target.value + '".',
+          message_warning:
+            'The monitoree will be moved to the "Records Requiring Review" line list if they meet a recovery definition or will remain on the "Reporting" or "Non-Reporting" line list as appropriate until a recovery definition is met.',
+          public_health_action: event?.target?.value ? event.target.value : '',
+          monitoring_status_options: null,
+        });
+      } else {
+        this.setState({
+          showPublicHealthActionModal: true,
+          message: 'latest public health action to "' + event.target.value + '".',
+          message_warning:
+            event.target.value === 'None'
+              ? 'The monitoree will be moved back into the primary status line lists.'
+              : 'The monitoree will be moved into the PUI line list.',
+          public_health_action: event?.target?.value ? event.target.value : '',
+          monitoring_status_options: null,
+        });
+      }
     } else if (event?.target?.id && event.target.id === 'isolation_status') {
       this.setState({
         showIsolationModal: true,
-        message: 'monitoring to "' + event.target.value + '".',
+        message: 'workflow from the "' + this.state.isolation_status + '" workflow to the "' + event.target.value + '" workflow.',
         message_warning:
           event.target.value === 'Isolation'
-            ? 'The monitoree will be moved into the Isolation workflow.'
+            ? 'This should only be done for cases you wish to monitor with Sara Alert to determine when they meet the recovery definition to discontinue isolation. The monitoree will be moved onto the Isolation workflow dashboard.'
             : 'The monitoree will be moved into the Exposure workflow.',
         isolation: event.target.value === 'Isolation',
         isolation_status: event.target.value,
@@ -164,6 +178,7 @@ class MonitoringStatus extends React.Component {
     this.setState({
       showIsolationModal: !current,
       isolation: this.props.patient.isolation ? this.props.patient.isolation : false,
+      isolation_status: this.props.patient.isolation ? 'Isolation' : 'Exposure',
       apply_to_group: false,
     });
   }
@@ -192,6 +207,22 @@ class MonitoringStatus extends React.Component {
       });
   }
 
+  publicHealthActionRefresh() {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios
+      .post(window.BASE_PATH + '/histories', {
+        patient_id: this.props.patient.id,
+        type: 'Monitoring Change',
+        comment: 'User added an additional public health action: "' + this.state.public_health_action + '".',
+      })
+      .then(() => {
+        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
   createModal(title, toggle, submit) {
     return (
       <Modal size="lg" show centered>
@@ -200,7 +231,7 @@ class MonitoringStatus extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            You are about to change this subject&apos;s {this.state.message} {this.state.message_warning && <b>{this.state.message_warning}</b>}
+            You are about to change this monitoree&apos;s {this.state.message} {this.state.message_warning && <b>{this.state.message_warning}</b>}
           </p>
           {this.state.monitoring_status_options && (
             <Form.Group>
@@ -249,6 +280,15 @@ class MonitoringStatus extends React.Component {
     );
   }
 
+  renderPHARefreshTooltip(props) {
+    return (
+      <Tooltip id="button-tooltip" {...props}>
+        {this.state.public_health_action === 'None' && <span>You can&apos;t add an additional &quot;None&quot; public health action.</span>}
+        {this.state.public_health_action != 'None' && <span>Add an additional &quot;{this.state.public_health_action}&quot; public health action.</span>}
+      </Tooltip>
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -294,8 +334,8 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3">
-                <Form.Group as={Col} md={16}>
+              <Form.Row className="pt-3 align-items-end">
+                <Form.Group as={Col} md={14}>
                   <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
                   <Form.Control
                     as="select"
@@ -304,14 +344,39 @@ class MonitoringStatus extends React.Component {
                     onChange={this.handleChange}
                     value={this.state.public_health_action}>
                     <option>None</option>
-                    <option>Referral for Medical Evaluation</option>
-                    <option>Document Completed Medical Evaluation</option>
-                    <option>Document Medical Evaluation Summary and Plan</option>
-                    <option>Referral for Public Health Test</option>
-                    <option>Public Health Test Specimen Received by Lab - results pending</option>
-                    <option>Results of Public Health Test - positive</option>
-                    <option>Results of Public Health Test - negative</option>
+                    <option>Recommended medical evaluation of symptoms</option>
+                    <option>Document results of medical evaluation</option>
+                    <option>Laboratory specimen collected</option>
+                    <option>Recommended laboratory testing</option>
+                    <option>Laboratory received specimen – result pending</option>
+                    <option>Laboratory report results – positive</option>
+                    <option>Laboratory report results – negative</option>
+                    <option>Laboratory report results – indeterminate</option>
                   </Form.Control>
+                </Form.Group>
+                <Form.Group as={Col} md={2}>
+                  {this.state.public_health_action === 'None' && (
+                    <OverlayTrigger placement="right" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
+                      <span className="d-inline-block">
+                        <Button className="btn-lg btn-square" disabled style={{ pointerEvents: 'none' }}>
+                          <i className="fas fa-redo"></i>
+                        </Button>
+                      </span>
+                    </OverlayTrigger>
+                  )}
+                  {this.state.public_health_action != 'None' && (
+                    <OverlayTrigger placement="right" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
+                      <Button
+                        className="btn-lg btn-square"
+                        onClick={() => {
+                          if (window.confirm("This will add an additional duplicate public health action to this monitoree's history. Are you sure?")) {
+                            this.publicHealthActionRefresh();
+                          }
+                        }}>
+                        <i className="fas fa-redo"></i>
+                      </Button>
+                    </OverlayTrigger>
+                  )}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-3">

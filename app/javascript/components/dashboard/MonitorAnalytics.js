@@ -78,7 +78,14 @@ class MonitorAnalytics extends React.Component {
             <Button variant="primary" className="btn-square" onClick={this.exportAsPNG}>
               <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
             </Button>
-            <p className="display-6 pt-4">Last Updated At: {moment(this.props.stats.last_updated_at).format('YYYY-MM-DD HH:mm:ss')} UTC</p>
+          </Col>
+        </Row>
+        <Row className="mb-2 mx-0 px-0 pt-4 pb-2">
+          <Col md="24" className="mx-2 px-0">
+            <p className="display-6">
+              <i className="fas fa-info-circle mr-1"></i> Analytics are generated using data from both exposure and isolation workflows. Last Updated At{' '}
+              {moment(this.props.stats.last_updated_at).format('YYYY-MM-DD HH:mm:ss')} UTC.
+            </p>
           </Col>
         </Row>
         <Row className="mb-4 mx-2 px-0">

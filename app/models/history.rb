@@ -42,36 +42,36 @@ class History < ApplicationRecord
 
   # All histories that are public health actions for medical evaluation referrals
   scope :referral_for_medical_evaluation, lambda {
-    where('comment LIKE \'%Referral for Medical Evaluation%\'')
+    where('comment LIKE \'%Recommended medical evaluation of symptoms%\'')
   }
 
   # All histories that are public health actions for documenting completed medical evaluations
   scope :document_completed_medical_evaluation, lambda {
-    where('comment LIKE \'%Document Completed Medical Evaluation%\'')
+    where('comment LIKE \'%Document results of medical evaluation%\'')
   }
 
   # All histories that are public health actions for documenting medical evaluation summaries and plans
   scope :document_medical_evaluation_summary_and_plan, lambda {
-    where('comment LIKE \'%Document Medical Evaluation Summary and Plan%\'')
+    where('comment LIKE \'%Laboratory specimen collected%\'')
   }
 
   # All histories that are public health actions for public health test referrals
   scope :referral_for_public_health_test, lambda {
-    where('comment LIKE \'%Referral for Public Health Test%\'')
+    where('comment LIKE \'%Recommended laboratory testing%\'')
   }
 
   # All histories that are public health actions for pending test results
   scope :public_health_test_specimen_received_by_lab_results_pending, lambda {
-    where('comment LIKE \'%Public Health Test Specimen Received by Lab - results pending%\'')
+    where('comment LIKE \'%Laboratory received specimen – result pending%\'')
   }
 
   # All histories that are public health actions for positive public health test results
   scope :results_of_public_health_test_positive, lambda {
-    where('comment LIKE \'%Results of Public Health Test - positive%\'')
+    where('comment LIKE \'%Laboratory report results – positive%\'')
   }
 
   # All histories that are public health actions for negative public health test results
   scope :results_of_public_health_test_negative, lambda {
-    where('comment LIKE \'%Results of Public Health Test - negative%\'')
+    where('comment LIKE \'%Laboratory report results – negative%\'')
   }
 end

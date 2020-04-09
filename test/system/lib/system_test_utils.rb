@@ -42,7 +42,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def return_to_dashboard
-    click_on 'Return To Workflow'
+    visit '/'
     wait_for_dashboard_load
   end
 

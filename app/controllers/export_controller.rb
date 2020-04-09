@@ -4,7 +4,11 @@
 class ExportController < ApplicationController
   before_action :authenticate_user!
 
-  def csv
+  def csv_isolation
+    csv(true)
+  end
+
+  def csv(isolation = false)
     redirect_to(root_url) && return unless current_user.can_export?
 
     headers = ['Monitoree', 'Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
@@ -13,17 +17,17 @@ class ExportController < ApplicationController
 
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'
-      patients = current_user.viewable_patients.symptomatic.where(isolation: false)
+      patients = current_user.viewable_patients.symptomatic.where(isolation: isolation)
     elsif params[:type] == 'asymptomatic'
-      patients = current_user.viewable_patients.asymptomatic.where(isolation: false)
+      patients = current_user.viewable_patients.asymptomatic.where(isolation: isolation)
     elsif params[:type] == 'nonreporting'
-      patients = current_user.viewable_patients.non_reporting.where(isolation: false)
+      patients = current_user.viewable_patients.non_reporting.where(isolation: isolation)
     elsif params[:type] == 'closed'
-      patients = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false)
+      patients = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: isolation)
     elsif params[:type] == 'transferred'
-      patients = current_user.jurisdiction.transferred_patients.where(isolation: false)
+      patients = current_user.jurisdiction.transferred_patients.where(isolation: isolation)
     elsif params[:type] == 'all'
-      patients = current_user.viewable_patients.where(isolation: false)
+      patients = current_user.viewable_patients.where(isolation: isolation)
     end
 
     # Do nothing if issue with request/permissions
@@ -42,7 +46,11 @@ class ExportController < ApplicationController
     send_data csv_result, filename: "Sara-Alert-#{params[:type]}-#{DateTime.now}.csv"
   end
 
-  def csv_comprehensive
+  def csv_comprehensive_isolation
+    csv_comprehensive(true)
+  end
+
+  def csv_comprehensive(isolation = false)
     redirect_to(root_url) && return unless current_user.can_export?
 
     headers = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
@@ -66,17 +74,17 @@ class ExportController < ApplicationController
 
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'
-      patients = current_user.viewable_patients.symptomatic.where(isolation: false)
+      patients = current_user.viewable_patients.symptomatic.where(isolation: isolation)
     elsif params[:type] == 'asymptomatic'
-      patients = current_user.viewable_patients.asymptomatic.where(isolation: false)
+      patients = current_user.viewable_patients.asymptomatic.where(isolation: isolation)
     elsif params[:type] == 'nonreporting'
-      patients = current_user.viewable_patients.non_reporting.where(isolation: false)
+      patients = current_user.viewable_patients.non_reporting.where(isolation: isolation)
     elsif params[:type] == 'closed'
-      patients = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false)
+      patients = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: isolation)
     elsif params[:type] == 'transferred'
-      patients = current_user.jurisdiction.transferred_patients.where(isolation: false)
+      patients = current_user.jurisdiction.transferred_patients.where(isolation: isolation)
     elsif params[:type] == 'all'
-      patients = current_user.viewable_patients.where(isolation: false)
+      patients = current_user.viewable_patients.where(isolation: isolation)
     end
 
     # Do nothing if issue with request/permissions

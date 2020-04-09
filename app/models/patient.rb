@@ -28,7 +28,7 @@ class Patient < ApplicationRecord
                                                 'Self-monitoring with public health supervision',
                                                 'Self-monitoring with delegated supervision',
                                                 'Self-observation',
-                                                ''] }
+                                                nil, ''] }
 
   validates :exposure_risk_assessment, inclusion: { in: ['High',
                                                          'Medium',
@@ -37,13 +37,15 @@ class Patient < ApplicationRecord
                                                          nil, ''] }
 
   validates :public_health_action, inclusion: { in: ['None',
-                                                     'Referral for Medical Evaluation',
-                                                     'Document Completed Medical Evaluation',
-                                                     'Document Medical Evaluation Summary and Plan',
-                                                     'Referral for Public Health Test',
-                                                     'Public Health Test Specimen Received by Lab - results pending',
-                                                     'Results of Public Health Test - positive',
-                                                     'Results of Public Health Test - negative'] }
+                                                     'Recommended medical evaluation of symptoms',
+                                                     'Document results of medical evaluation',
+                                                     'Laboratory specimen collected',
+                                                     'Recommended laboratory testing',
+                                                     'Laboratory received specimen – result pending',
+                                                     'Laboratory report results – positive',
+                                                     'Laboratory report results – negative',
+                                                     'Laboratory report results – indeterminate',
+                                                     nil, ''] }
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
@@ -189,7 +191,7 @@ class Patient < ApplicationRecord
         .where_assoc_not_exists(:assessments, symptomatic: true)
         .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
         .left_outer_joins(:histories)
-        .where_assoc_count(2, :<=, :histories, 'comment LIKE \'%Results of Public Health Test - negative%\'')
+        .where_assoc_count(2, :<=, :histories, 'comment LIKE \'%Laboratory report results – negative%\'')
         .distinct
       )
   }
@@ -210,7 +212,7 @@ class Patient < ApplicationRecord
       .left_outer_joins(:assessments)
       .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
       .left_outer_joins(:histories)
-      .where_assoc_count(2, :>, :histories, 'comment LIKE \'%Results of Public Health Test - negative%\'')
+      .where_assoc_count(2, :>, :histories, 'comment LIKE \'%Laboratory report results – negative%\'')
       .distinct
   }
 
@@ -324,12 +326,17 @@ class Patient < ApplicationRecord
 
   # Current patient status
   def status
-    return :pui if pui?
-    return :purged if purged?
-    return :closed if closed?
-    return :symptomatic if symptomatic?
-    return :asymptomatic if asymptomatic?
-    return :non_reporting if non_reporting?
+    unless isolation
+      return :pui if pui?
+      return :purged if purged?
+      return :closed if closed?
+      return :symptomatic if symptomatic?
+      return :asymptomatic if asymptomatic?
+      return :non_reporting if non_reporting?
+    end
+    return :isolation_requiring_review if Patient.isolation_requiring_review.where(id: id).count.positive?
+    return :isolation_non_reporting if Patient.isolation_non_reporting.where(id: id).count.positive?
+    return :isolation_reporting if Patient.isolation_reporting.where(id: id).count.positive?
 
     :unknown
   end
@@ -454,8 +461,11 @@ class Patient < ApplicationRecord
 
   def send_assessment(force = false)
     unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent < 24.hours.ago
+      return if last_assessment_reminder_sent < 12.hours.ago
     end
+
+    # Do not allow messages to go to household members
+    return unless responder.id == id
 
     # If force is set, the preferred contact time will be ignored
     unless force
