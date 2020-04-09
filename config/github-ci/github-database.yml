@@ -4,6 +4,6 @@ test:
   timeout: 5000
   database: disease_trakker_test
   host: '127.0.0.1'
-  port: 3306
+  port: <%= ENV['CI_SQL_PORT'] %>
   username: root
   password: root
