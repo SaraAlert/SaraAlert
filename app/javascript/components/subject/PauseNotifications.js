@@ -48,7 +48,7 @@ class PauseNotifications extends React.Component {
                   "You are about to change this monitoree's notification status to paused. This means that the system will stop sending the monitoree symptom report requests until notifications are resumed by a user."
                 )
               ) {
-                this.submit;
+                this.submit();
               }
             }}>
             <i className="fas fa-pause"></i> Pause Notifications
@@ -64,7 +64,7 @@ class PauseNotifications extends React.Component {
                   "You are about to change this monitoree's notification status to resumed. This means that the system will start sending the monitoree symptom report requests unless notifications are paused by a user or the record is closed."
                 )
               ) {
-                this.submit;
+                this.submit();
               }
             }}>
             <i className="fas fa-play"></i> Resume Notifications
