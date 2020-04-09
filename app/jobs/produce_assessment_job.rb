@@ -8,9 +8,13 @@ class ProduceAssessmentJob < ApplicationJob
 
   def perform(assessment)
     connection = Redis.new
-    connection.publish 'reports', { threshold_condition_hash: assessment['threshold_hash'],
-                                    reported_symptoms_array: assessment['symptoms'],
-                                    experiencing_symptoms: assessment['experiencing_symptoms'],
-                                    patient_submission_token: assessment['patient_submission_token'] }.to_json
+    report = {
+      threshold_condition_hash: assessment['threshold_hash'],
+      reported_symptoms_array: assessment['symptoms'],
+      experiencing_symptoms: assessment['experiencing_symptoms'],
+      patient_submission_token: assessment['patient_submission_token']
+    }
+    report.except!(:reported_symptoms_array) if report[:reported_symptoms_array].blank?
+    connection.publish 'reports', report.to_json
   end
 end
