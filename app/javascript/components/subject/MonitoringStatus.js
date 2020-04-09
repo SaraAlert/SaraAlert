@@ -344,13 +344,14 @@ class MonitoringStatus extends React.Component {
                     onChange={this.handleChange}
                     value={this.state.public_health_action}>
                     <option>None</option>
-                    <option>Referral for Medical Evaluation</option>
-                    <option>Document Completed Medical Evaluation</option>
-                    <option>Document Medical Evaluation Summary and Plan</option>
-                    <option>Referral for Public Health Test</option>
-                    <option>Public Health Test Specimen Received by Lab - results pending</option>
-                    <option>Results of Public Health Test - positive</option>
-                    <option>Results of Public Health Test - negative</option>
+                    <option>Recommended medical evaluation of symptoms</option>
+                    <option>Document results of medical evaluation</option>
+                    <option>Laboratory specimen collected</option>
+                    <option>Recommended laboratory testing</option>
+                    <option>Laboratory received specimen – result pending</option>
+                    <option>Laboratory report results – positive</option>
+                    <option>Laboratory report results – negative</option>
+                    <option>Laboratory report results – indeterminate</option>
                   </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col} md={2}>

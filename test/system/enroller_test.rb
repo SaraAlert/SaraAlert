@@ -63,10 +63,6 @@ class EnrollerTest < ApplicationSystemTestCase
     @@monitoree_enrollment_form.enroll_monitoree_and_cancel('locals2c3_enroller', 'monitoree_10', 'Cancel')
   end
 
-  test 'cancel monitoree enrollment via Return to Exposure Dashboard link' do
-    @@monitoree_enrollment_form.enroll_monitoree_and_cancel('locals2c4_enroller', 'monitoree_1', 'Return to Exposure Dashboard')
-  end
-
   test 'view analytics' do
     @@monitoree_enrollment_dashboard.login_and_view_enrollment_analytics('locals2c4_enroller')
   end

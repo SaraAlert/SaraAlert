@@ -8,7 +8,7 @@ class ExportController < ApplicationController
     csv(true)
   end
 
-  def csv(isolation=false)
+  def csv(isolation = false)
     redirect_to(root_url) && return unless current_user.can_export?
 
     headers = ['Monitoree', 'Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
@@ -50,7 +50,7 @@ class ExportController < ApplicationController
     csv_comprehensive(true)
   end
 
-  def csv_comprehensive(isolation=false)
+  def csv_comprehensive(isolation = false)
     redirect_to(root_url) && return unless current_user.can_export?
 
     headers = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',

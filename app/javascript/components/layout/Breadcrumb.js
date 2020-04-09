@@ -12,6 +12,9 @@ class Breadcrumb extends React.Component {
   }
 
   renderWorkflowName(name) {
+    if (this.props.enroller && name?.includes('Dashboard')) {
+      return 'Return To Dashboard';
+    }
     if (this.props.isolation) {
       return name.replace('Exposure', 'Isolation');
     }
@@ -71,6 +74,7 @@ Breadcrumb.propTypes = {
   crumbs: PropTypes.array,
   jurisdiction: PropTypes.string,
   isolation: PropTypes.bool,
+  enroller: PropTypes.bool,
 };
 
 export default Breadcrumb;

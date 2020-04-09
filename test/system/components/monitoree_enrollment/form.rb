@@ -30,7 +30,7 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree, isEpi)
-    click_on 'Return to Exposure Dashboard'
+    visit '/'
     @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(monitoree, isEpi)
   end
 
@@ -50,7 +50,7 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree, isEpi)
-    click_on 'Return to Exposure Dashboard'
+    visit '/'
     @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_as_group_member_on_dashboard(existing_monitoree, new_monitoree, isEpi)
   end
 
@@ -67,7 +67,7 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
     @@monitoree_enrollment_info_page.edit_data_on_review_page(MONITOREES[new_monitoree_name])
     click_on 'Finish'
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(MONITOREES[new_monitoree_name])
-    click_on 'Return to Exposure Dashboard'
+    visit '/'
     @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[new_monitoree_name])
   end
 
