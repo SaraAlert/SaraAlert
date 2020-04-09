@@ -197,6 +197,8 @@ class PatientsController < ApplicationController
           end
         end
         member.save!
+        next unless params[:comment]
+
         history = History.new
         history.created_by = current_user.email
         comment = 'User changed '
@@ -208,6 +210,8 @@ class PatientsController < ApplicationController
         history.save
       end
     end
+
+    return unless params[:comment]
 
     history = History.new
     history.created_by = current_user.email

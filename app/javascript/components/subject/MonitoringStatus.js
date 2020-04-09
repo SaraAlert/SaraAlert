@@ -208,6 +208,7 @@ class MonitoringStatus extends React.Component {
     const jur = this.props.jurisdiction_paths.find(jur => jur.label === this.state.jurisdiction);
     axios
       .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
+        comment: true,
         monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
         exposure_risk_assessment: this.state.exposure_risk_assessment,
         monitoring_plan: this.state.monitoring_plan,
@@ -408,7 +409,7 @@ class MonitoringStatus extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-3 align-items-end">
-                <Form.Group as={Col} md={13}>
+                <Form.Group as={Col} md={14}>
                   <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
                   <Form.Control
                     as="input"
@@ -428,12 +429,12 @@ class MonitoringStatus extends React.Component {
                     })}
                   </datalist>
                 </Form.Group>
-                <Form.Group as={Col} md={5}>
+                <Form.Group as={Col} md={8}>
                   <Button onClick={this.toggleJurisdictionModal} className="btn-lg btn-square">
                     <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
                   </Button>
                 </Form.Group>
-                <Form.Group as={Col} md={6}>
+                {/* <Form.Group as={Col} md={6}>
                   {!this.props.patient.pause_notifications && (
                     <Button className="btn-lg btn-square float-right" id="pause_notifications" onClick={this.handleChange}>
                       <i className="fas fa-pause"></i> Pause Notifications
@@ -444,7 +445,7 @@ class MonitoringStatus extends React.Component {
                       <i className="fas fa-play"></i> Resume Notifications
                     </Button>
                   )}
-                </Form.Group>
+                </Form.Group> */}
               </Form.Row>
             </Col>
           </Row>
