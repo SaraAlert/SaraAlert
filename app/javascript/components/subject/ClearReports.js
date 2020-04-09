@@ -70,7 +70,9 @@ class ClearReports extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button onClick={this.toggleClearReportsModal}>Mark All As Reviewed</Button>
+        <Button onClick={this.toggleClearReportsModal}>
+          <i className="fas fa-check"></i> Mark All As Reviewed
+        </Button>
         {this.state.showClearReportsModal && this.createModal('Mark All As Reviewed', this.toggleClearReportsModal, this.clearReports)}
       </React.Fragment>
     );

@@ -61,7 +61,7 @@ class SendReminder extends React.Component {
     return (
       <React.Fragment>
         <Button onClick={this.toggleReportReminderModal} className="ml-2" disabled={this.props.disabled}>
-          Send Report Reminder
+          <i className="fas fa-bell"></i> Send Report Reminder
         </Button>
         {this.state.showReportReminderModal && this.createModal('Send Report Reminder', this.toggleReportReminderModal, this.sendReminder)}
       </React.Fragment>

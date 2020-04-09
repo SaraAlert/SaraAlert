@@ -15,6 +15,7 @@ class MonitoringStatus extends React.Component {
       showJurisdictionModal: false,
       showPublicHealthActionModal: false,
       showIsolationModal: false,
+      showNotificationsModal: false,
       message: '',
       reasoning: '',
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
@@ -28,6 +29,7 @@ class MonitoringStatus extends React.Component {
       apply_to_group: false,
       isolation: props.patient.isolation,
       isolation_status: props.patient.isolation ? 'Isolation' : 'Exposure',
+      pause_notifications: props.patient.pause_notifications,
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -37,6 +39,7 @@ class MonitoringStatus extends React.Component {
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
     this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
     this.toggleIsolation = this.toggleIsolation.bind(this);
+    this.toggleNotifications = this.toggleNotifications.bind(this);
     this.publicHealthActionRefresh = this.publicHealthActionRefresh.bind(this);
     this.renderPHARefreshTooltip = this.renderPHARefreshTooltip.bind(this);
   }
@@ -64,6 +67,14 @@ class MonitoringStatus extends React.Component {
         message: 'monitoring plan to "' + event.target.value + '".',
         message_warning: '',
         monitoring_plan: event?.target?.value ? event.target.value : '',
+        monitoring_status_options: null,
+      });
+    } else if (event?.target?.id && event.target.id === 'pause_notifications') {
+      this.setState({
+        showNotificationsModal: true,
+        message: 'notification status to ' + (!this.state.pause_notifications ? 'paused.' : 'resumed.'),
+        message_warning: '',
+        pause_notifications: !this.state.pause_notifications,
         monitoring_status_options: null,
       });
     } else if (event?.target?.id && event.target.id === 'public_health_action') {
@@ -136,6 +147,15 @@ class MonitoringStatus extends React.Component {
     });
   }
 
+  toggleNotifications() {
+    let current = this.state.showNotificationsModal;
+    this.setState({
+      showNotificationsModal: !current,
+      pause_notifications: this.props.patient.pause_notifications,
+      apply_to_group: false,
+    });
+  }
+
   toggleMonitoringPlanModal() {
     let current = this.state.showMonitoringPlanModal;
     this.setState({
@@ -198,6 +218,7 @@ class MonitoringStatus extends React.Component {
         jurisdiction: jur ? jur.value : null,
         apply_to_group: this.state.apply_to_group,
         isolation: this.state.isolation,
+        pause_notifications: this.state.pause_notifications,
       })
       .then(() => {
         location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
@@ -335,6 +356,13 @@ class MonitoringStatus extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-3 align-items-end">
+                <Form.Group as={Col} md={8}>
+                  <Form.Label className="nav-input-label">CURRENT WORKFLOW</Form.Label>
+                  <Form.Control as="select" className="form-control-lg" id="isolation_status" onChange={this.handleChange} value={this.state.isolation_status}>
+                    <option>Exposure</option>
+                    <option>Isolation</option>
+                  </Form.Control>
+                </Form.Group>
                 <Form.Group as={Col} md={14}>
                   <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
                   <Form.Control
@@ -356,7 +384,7 @@ class MonitoringStatus extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md={2}>
                   {this.state.public_health_action === 'None' && (
-                    <OverlayTrigger placement="right" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
+                    <OverlayTrigger placement="top" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
                       <span className="d-inline-block">
                         <Button className="btn-lg btn-square" disabled style={{ pointerEvents: 'none' }}>
                           <i className="fas fa-redo"></i>
@@ -365,7 +393,7 @@ class MonitoringStatus extends React.Component {
                     </OverlayTrigger>
                   )}
                   {this.state.public_health_action != 'None' && (
-                    <OverlayTrigger placement="right" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
+                    <OverlayTrigger placement="top" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
                       <Button
                         className="btn-lg btn-square"
                         onClick={() => {
@@ -379,17 +407,8 @@ class MonitoringStatus extends React.Component {
                   )}
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3">
-                <Form.Group as={Col} md={8}>
-                  <Form.Label className="nav-input-label">CURRENT WORKFLOW</Form.Label>
-                  <Form.Control as="select" className="form-control-lg" id="isolation_status" onChange={this.handleChange} value={this.state.isolation_status}>
-                    <option>Exposure</option>
-                    <option>Isolation</option>
-                  </Form.Control>
-                </Form.Group>
-              </Form.Row>
               <Form.Row className="pt-3 align-items-end">
-                <Form.Group as={Col} md={14}>
+                <Form.Group as={Col} md={13}>
                   <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
                   <Form.Control
                     as="input"
@@ -409,10 +428,22 @@ class MonitoringStatus extends React.Component {
                     })}
                   </datalist>
                 </Form.Group>
-                <Form.Group as={Col} md={10}>
+                <Form.Group as={Col} md={5}>
                   <Button onClick={this.toggleJurisdictionModal} className="btn-lg btn-square">
-                    Change Jurisdiction
+                    <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
                   </Button>
+                </Form.Group>
+                <Form.Group as={Col} md={6}>
+                  {!this.props.patient.pause_notifications && (
+                    <Button className="btn-lg btn-square float-right" id="pause_notifications" onClick={this.handleChange}>
+                      <i className="fas fa-pause"></i> Pause Notifications
+                    </Button>
+                  )}
+                  {this.props.patient.pause_notifications && (
+                    <Button className="btn-lg btn-square float-right" id="pause_notifications" onClick={this.handleChange}>
+                      <i className="fas fa-play"></i> Resume Notifications
+                    </Button>
+                  )}
                 </Form.Group>
               </Form.Row>
             </Col>
@@ -424,6 +455,7 @@ class MonitoringStatus extends React.Component {
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
         {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
         {this.state.showIsolationModal && this.createModal('Isolation', this.toggleIsolation, this.submit)}
+        {this.state.showNotificationsModal && this.createModal('Notifications', this.toggleNotifications, this.submit)}
       </React.Fragment>
     );
   }

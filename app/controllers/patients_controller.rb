@@ -168,7 +168,8 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     patient.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
     patient.update!(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
-                                                    :exposure_risk_assessment, :public_health_action, :isolation))
+                                                    :exposure_risk_assessment, :public_health_action,
+                                                    :isolation, :pause_notifications))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])

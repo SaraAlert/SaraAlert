@@ -63,7 +63,7 @@ class Breadcrumb extends React.Component {
                         {this.renderWorkflowName(crumb['value'])}
                       </a>
                     )}
-                    {!crumb['href'] && this.renderWorkflowName(crumb['value'])}
+                    {!crumb['href'] && crumb['value']}
                   </li>
                 );
               })}

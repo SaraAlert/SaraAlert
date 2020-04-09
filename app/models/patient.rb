@@ -211,8 +211,6 @@ class Patient < ApplicationRecord
       .where('isolation = ?', true)
       .left_outer_joins(:assessments)
       .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-      .left_outer_joins(:histories)
-      .where_assoc_count(2, :>, :histories, 'comment LIKE \'%Laboratory report results – negative%\'')
       .distinct
   }
 
