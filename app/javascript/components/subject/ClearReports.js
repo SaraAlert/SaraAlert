@@ -82,8 +82,6 @@ class ClearReports extends React.Component {
 ClearReports.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  jurisdiction_paths: PropTypes.array,
-  jurisdiction_id: PropTypes.number,
 };
 
 export default ClearReports;
