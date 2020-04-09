@@ -60,5 +60,10 @@ jobs:
         run: bundle exec rake test
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+      - name: Run System Tests
+        run: bundle exec rake test:system
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
 
 
