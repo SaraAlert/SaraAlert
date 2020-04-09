@@ -326,13 +326,17 @@ class Patient < ApplicationRecord
 
   # Current patient status
   def status
-    return :isolation if isolation
-    return :pui if pui?
-    return :purged if purged?
-    return :closed if closed?
-    return :symptomatic if symptomatic?
-    return :asymptomatic if asymptomatic?
-    return :non_reporting if non_reporting?
+    unless isolation
+      return :pui if pui?
+      return :purged if purged?
+      return :closed if closed?
+      return :symptomatic if symptomatic?
+      return :asymptomatic if asymptomatic?
+      return :non_reporting if non_reporting?
+    end
+    return :isolation_requiring_review if Patient.isolation_requiring_review.where(id: id).count.positive?
+    return :isolation_non_reporting if Patient.isolation_non_reporting.where(id: id).count.positive?
+    return :isolation_reporting if Patient.isolation_reporting.where(id: id).count.positive?
 
     :unknown
   end
