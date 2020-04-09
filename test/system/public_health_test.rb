@@ -196,7 +196,7 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@system_test_utils.login(user_name)
     assert_selector 'button', text: 'Export'
     click_on 'Export'
-    click_on 'Line-list CSV'
+    click_on 'Line list CSV'
     @@system_test_utils.logout
   end
 
