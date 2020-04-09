@@ -52,7 +52,13 @@ class Breadcrumb extends React.Component {
                       <a
                         href="#"
                         onClick={() => {
-                          this.goBack(this.props.crumbs.length - (index + 1));
+                          if (this.renderWorkflowName(crumb['value']).includes('Isolation')) {
+                            location.href = window.BASE_PATH + '/public_health/isolation';
+                          } else if (this.renderWorkflowName(crumb['value']).includes('Exposure')) {
+                            location.href = window.BASE_PATH + '/public_health';
+                          } else {
+                            this.goBack(this.props.crumbs.length - (index + 1));
+                          }
                         }}>
                         {this.renderWorkflowName(crumb['value'])}
                       </a>

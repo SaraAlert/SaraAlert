@@ -337,6 +337,8 @@ class Patient < ApplicationRecord
     return :isolation_requiring_review if Patient.isolation_requiring_review.where(id: id).count.positive?
     return :isolation_non_reporting if Patient.isolation_non_reporting.where(id: id).count.positive?
     return :isolation_reporting if Patient.isolation_reporting.where(id: id).count.positive?
+    return :purged if purged?
+    return :closed if closed?
 
     :unknown
   end
