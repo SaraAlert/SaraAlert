@@ -77,19 +77,12 @@ class Jurisdiction < ApplicationRecord
   def hierarchical_condition_unpopulated_symptoms
     threshold_condition = hierarchical_symptomatic_condition
     new_cond = ReportedCondition.new(threshold_condition_hash: threshold_condition.threshold_condition_hash)
-    master_symptoms_list = []
     # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
-    all_condition_symptoms = path&.map { |symp_defs| symp_defs.threshold_conditions.last&.symptoms }
-    all_condition_symptoms&.each do |symptoms_list|
-      symptoms_list&.each do |symptom|
-        unless master_symptoms_list.include?(symptom.name)
-          new_symptom = symptom.dup
-          # Should put clear function in the symptom class(es)
-          new_symptom.value = nil
-          master_symptoms_list.push(symptom.name)
-          new_cond.symptoms.push(new_symptom)
-        end
-      end
+    threshold_condition.symptoms&.each do |symptom|
+      new_symptom = symptom.dup
+      # Should put clear function in the symptom class(es)
+      new_symptom.value = nil
+      new_cond.symptoms.push(new_symptom)
     end
     new_cond
   end
