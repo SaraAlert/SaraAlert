@@ -12,7 +12,11 @@ Minitest::Retry.use!
 
 class ActiveSupport::TestCase
   # Run tests in parallel with specified workers
-  parallelize(workers: 1)
+  if ENV['CI'] == 'true'
+    parallelize(workers: 8)
+  else
+    parallelize(workers: 1)
+  end
 
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
