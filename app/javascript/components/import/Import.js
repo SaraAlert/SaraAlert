@@ -15,20 +15,16 @@ class Import extends React.Component {
     this.submit = this.submit.bind(this);
   }
 
-  importAll(withDuplicates) {
+  importAll() {
     for (let i = 0; i < this.state.patients.length; i++) {
       if (!(this.state.accepted.includes(i) || this.state.rejected.includes(i))) {
-        if (!this.state.patients[parseInt(i)]['appears_to_be_duplicate'] || withDuplicates) {
-          this.importSub(i);
-        } else {
-          this.rejectSub(i);
-        }
+        this.importSub(i, true);
       }
     }
   }
 
-  importSub(num) {
-    this.submit(this.state.patients[parseInt(num)], num);
+  importSub(num, bypass) {
+    this.submit(this.state.patients[parseInt(num)], num, bypass);
   }
 
   rejectSub(num) {
@@ -36,13 +32,13 @@ class Import extends React.Component {
     this.setState({ rejected: next });
   }
 
-  submit(data, num) {
+  submit(data, num, bypass) {
     const patient = { patient: { ...data } };
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
       url: window.BASE_PATH + '/patients',
-      data: patient,
+      data: { ...patient, bypass_duplicate: bypass },
     })
       .then(() => {
         let next = [...this.state.accepted, num];
@@ -78,7 +74,7 @@ class Import extends React.Component {
                   'Are you sure you want to import all monitorees? Note: This will not import already rejected or re-import already accepted monitorees listed below, but will import any potential duplicates.'
                 )
               ) {
-                this.importAll(true);
+                this.importAll();
               }
             }}>
             Accept All
@@ -157,7 +153,7 @@ class Import extends React.Component {
                       variant="primary"
                       className="my-2 float-right"
                       onClick={() => {
-                        this.importSub(index);
+                        this.importSub(index, true);
                       }}>
                       Accept
                     </Button>

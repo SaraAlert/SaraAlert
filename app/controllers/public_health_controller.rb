@@ -184,24 +184,30 @@ class PublicHealthController < ApplicationController
     sorted = data
     params[:order].each do |_num, val|
       direction = val['dir'] == 'asc' ? :asc : :desc
-      if val['column'] == '0' # Name
+      if params[:columns][val['column']][:name] == 'name' # Name
         sorted = sorted.order(last_name: direction).order(first_name: direction)
-      elsif val['column'] == '1' # Jurisdiction
+      elsif params[:columns][val['column']][:name] == 'jurisdiction' # Jurisdiction
         sorted = sorted.includes(:jurisdiction).order('jurisdictions.name ' + direction.to_s)
-      elsif val['column'] == '2' # ID
+      elsif params[:columns][val['column']][:name] == 'state_local_id' # ID
         sorted = sorted.order(user_defined_id_statelocal: direction)
-      elsif val['column'] == '3' # Sex
+      elsif params[:columns][val['column']][:name] == 'sex' # Sex
         sorted = sorted.order(sex: direction)
-      elsif val['column'] == '4' # DOB
+      elsif params[:columns][val['column']][:name] == 'dob' # DOB
         sorted = sorted.order(date_of_birth: direction)
-      elsif val['column'] == '5' # End of Monitoring
+      elsif params[:columns][val['column']][:name] == 'end_of_monitoring' # End of Monitoring
         sorted = sorted.order(last_date_of_exposure: direction)
-      elsif val['column'] == '6' # Risk
+      elsif params[:columns][val['column']][:name] == 'risk' # Risk
         sorted = sorted.order_by_risk(val['dir'] == 'asc')
-      elsif val['column'] == '7' # Plan
+      elsif params[:columns][val['column']][:name] == 'monitoring_plan' # Plan
         sorted = sorted.order(monitoring_plan: direction)
-      elsif val['column'] == '8' # Latest Report
+      elsif params[:columns][val['column']][:name] == 'monitoring_reason' # Reason
+        sorted = sorted.order(monitoring_reason: direction)
+      elsif params[:columns][val['column']][:name] == 'public_health_action' # PHA
+        sorted = sorted.order(public_health_action: direction)
+      elsif params[:columns][val['column']][:name] == 'latest_report' # Latest Report
         sorted = sorted.includes(:latest_assessment).order('assessments.created_at ' + direction.to_s)
+      elsif params[:columns][val['column']][:name] == 'closed_at' # Closed At
+        sorted = sorted.order(closed_at: direction)
       end
     end
     sorted

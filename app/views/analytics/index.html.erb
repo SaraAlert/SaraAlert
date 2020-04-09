@@ -1,7 +1,7 @@
 <% if current_user.has_role? :analyst %>
   <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Analytics", href: nil} ] } %>
 <% else %>
-  <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return To Workflow", href: root_url}, {value: "Analytics", href: nil} ] } %>
+  <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: root_url}, {value: "Analytics", href: nil} ] } %>
 <% end %>
 
 <% if current_user.has_role?(:enroller) %>

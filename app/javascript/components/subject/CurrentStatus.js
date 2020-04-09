@@ -32,6 +32,7 @@ class CurrentStatus extends React.Component {
             The current status of this monitoree is <b>{this.generateStatus(this.props.status)}</b>.
           </h1>
         )}
+        {this.props.isolation && <h1 className="display-6 pb-3">This monitoree is currently in the Isolation monitoring workflow.</h1>}
       </React.Fragment>
     );
   }
@@ -39,7 +40,7 @@ class CurrentStatus extends React.Component {
 
 CurrentStatus.propTypes = {
   status: PropTypes.string,
-  isolation: PropTypes.boolean,
+  isolation: PropTypes.bool,
 };
 
 export default CurrentStatus;

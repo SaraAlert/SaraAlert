@@ -40,6 +40,7 @@
       "columns": [
         <% if isolation %>
           { "data": "linelist.name",
+            "name": "name",
             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
               if (<%= p_links %>) {
                 $(nTd).html("<a href='/patients/"+oData.linelist.name.id+"'>"+oData.linelist.name.name+"</a>");
@@ -48,15 +49,16 @@
               }
             }
           },
-          <% if type == 'transferred_in_patients' %>{ "data": "linelist.transferred_from" },<% elsif type == 'transferred_out_patients' %>{ "data": "linelist.transferred_to" },<% else %>{ "data": "linelist.jurisdiction" },<% end %>
-          { "data": "linelist.state_local_id" },
-          { "data": "linelist.sex" },
-          { "data": "linelist.dob" },
-          <% if type == 'closed_patients' %>{ "data": "linelist.reason_for_closure" },<% elsif type == 'pui_patients' %>{ "data": "linelist.public_health_action" },<% else %>{ "data": "linelist.monitoring_plan" },<% end %>
-          <% if type.include? 'transferred' %>{ "data": "linelist.transferred" }<% elsif type == 'closed_patients' %>{ "data": "linelist.closed_at" }<% else %>{ "data": "linelist.latest_report" }<% end %>
+          <% if type == 'transferred_in_patients' %>{ "data": "linelist.transferred_from", "orderable": false },<% elsif type == 'transferred_out_patients' %>{ "data": "linelist.transferred_to", "orderable": false },<% else %>{ "data": "linelist.jurisdiction", "name": "jurisdiction" },<% end %>
+          { "data": "linelist.state_local_id", "name": "state_local_id" },
+          { "data": "linelist.sex", "name": "sex" },
+          { "data": "linelist.dob", "name": "dob" },
+          <% if type == 'closed_patients' %>{ "data": "linelist.reason_for_closure", "name": "monitoring_reason" },<% elsif type == 'pui_patients' %>{ "data": "linelist.public_health_action", "name": "public_health_action" },<% else %>{ "data": "linelist.monitoring_plan", "name": "monitoring_plan" },<% end %>
+          <% if type.include? 'transferred' %>{ "data": "linelist.transferred", "orderable": false }<% elsif type == 'closed_patients' %>{ "data": "linelist.closed_at", "name": "closed_at" }<% else %>{ "data": "linelist.latest_report", "name": "latest_report" }<% end %>
           <% if type == 'all_patients' %>,{ "data": "linelist.status", "orderable": false }<% end %>
         <% else %>
           { "data": "linelist.name",
+            "name": "name",
             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
               if (<%= p_links %>) {
                 $(nTd).html("<a href='patients/"+oData.linelist.name.id+"'>"+oData.linelist.name.name+"</a>");
@@ -65,14 +67,14 @@
               }
             }
           },
-          <% if type == 'transferred_in_patients' %>{ "data": "linelist.transferred_from" },<% elsif type == 'transferred_out_patients' %>{ "data": "linelist.transferred_to" },<% else %>{ "data": "linelist.jurisdiction" },<% end %>
-          { "data": "linelist.state_local_id" },
-          { "data": "linelist.sex" },
-          { "data": "linelist.dob" },
-          { "data": "linelist.end_of_monitoring" },
-          { "data": "linelist.risk_level" },
-          <% if type == 'closed_patients' %>{ "data": "linelist.reason_for_closure" },<% elsif type == 'pui_patients' %>{ "data": "linelist.public_health_action" },<% else %>{ "data": "linelist.monitoring_plan" },<% end %>
-          <% if type.include? 'transferred' %>{ "data": "linelist.transferred" }<% elsif type == 'closed_patients' %>{ "data": "linelist.closed_at" }<% else %>{ "data": "linelist.latest_report" }<% end %>
+          <% if type == 'transferred_in_patients' %>{ "data": "linelist.transferred_from", "orderable": false },<% elsif type == 'transferred_out_patients' %>{ "data": "linelist.transferred_to", "orderable": false },<% else %>{ "data": "linelist.jurisdiction", "name": "jurisdiction" },<% end %>
+          { "data": "linelist.state_local_id", "name": "state_local_id" },
+          { "data": "linelist.sex", "name": "sex" },
+          { "data": "linelist.dob", "name": "dob" },
+          { "data": "linelist.end_of_monitoring", "name": "end_of_monitoring" },
+          { "data": "linelist.risk_level", "name": "risk" },
+          <% if type == 'closed_patients' %>{ "data": "linelist.reason_for_closure", "name": "monitoring_reason" },<% elsif type == 'pui_patients' %>{ "data": "linelist.public_health_action", "name": "public_health_action" },<% else %>{ "data": "linelist.monitoring_plan", "name": "monitoring_plan" },<% end %>
+          <% if type.include? 'transferred' %>{ "data": "linelist.transferred", "orderable": false }<% elsif type == 'closed_patients' %>{ "data": "linelist.closed_at", "name": "closed_at" }<% else %>{ "data": "linelist.latest_report", "name": "latest_report" }<% end %>
           <% if type == 'all_patients' %>,{ "data": "linelist.status", "orderable": false }<% end %>
         <% end %>
       ],

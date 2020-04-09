@@ -63,8 +63,8 @@ class EnrollerTest < ApplicationSystemTestCase
     @@monitoree_enrollment_form.enroll_monitoree_and_cancel('locals2c3_enroller', 'monitoree_10', 'Cancel')
   end
 
-  test 'cancel monitoree enrollment via Return To Workflow link' do
-    @@monitoree_enrollment_form.enroll_monitoree_and_cancel('locals2c4_enroller', 'monitoree_1', 'Return To Workflow')
+  test 'cancel monitoree enrollment via Return to Exposure Dashboard link' do
+    @@monitoree_enrollment_form.enroll_monitoree_and_cancel('locals2c4_enroller', 'monitoree_1', 'Return to Exposure Dashboard')
   end
 
   test 'view analytics' do

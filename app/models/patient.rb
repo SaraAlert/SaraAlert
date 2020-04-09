@@ -324,6 +324,7 @@ class Patient < ApplicationRecord
 
   # Current patient status
   def status
+    return :isolation if isolation
     return :pui if pui?
     return :purged if purged?
     return :closed if closed?
@@ -454,8 +455,11 @@ class Patient < ApplicationRecord
 
   def send_assessment(force = false)
     unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent < 24.hours.ago
+      return if last_assessment_reminder_sent < 12.hours.ago
     end
+
+    # Do not allow messages to go to household members
+    return unless responder.id == id
 
     # If force is set, the preferred contact time will be ignored
     unless force
