@@ -39,6 +39,8 @@ class Admin extends React.Component {
 
     send_result.then(success => {
       if (success) {
+        row['failed_attempts'] = 0;
+        row['locked'] = 'Unlocked';
         this.props.data.push(row);
         this.setState({ data: this.props.data });
       } else {
@@ -70,6 +72,17 @@ class Admin extends React.Component {
     });
   }
 
+  beforeSaveCell(row, cellName, cellValue) {
+    let previousVal = row[cellName];
+    // make cell name more human-friendly
+    let hrCellName = cellName;
+    if (cellName === 'jurisdiction_path') {
+      hrCellName = 'jurisdiction';
+    }
+    alert(row.email + "'s " + hrCellName + ' will be changed from "' + previousVal + '" to "' + cellValue + '"');
+    return true;
+  }
+
   addUserModalHeader = () => {
     return <InsertModalHeader title="Add User" hideClose={true} />;
   };
@@ -80,14 +93,27 @@ class Admin extends React.Component {
 
   addUserButton = onClick => {
     return (
-      <Button variant="primary" size="md" className="btn-block btn-square" onClick={onClick}>
+      <Button variant="primary" size="lg" className="btn-block btn-square my-2" onClick={onClick}>
         Add User
       </Button>
     );
   };
 
   createCustomButtonGroup = props => {
-    return <ButtonGroup className="mr-2 pb-1">{props.insertBtn}</ButtonGroup>;
+    return (
+      <ButtonGroup size="xs" className="pb-1">
+        {props.insertBtn}
+      </ButtonGroup>
+    );
+  };
+
+  createCustomToolBar = props => {
+    return (
+      <div className="col-4">
+        <div className="row-xs">{props.components.btnGroup}</div>
+        <div className="row-xs">{props.components.searchPanel}</div>
+      </div>
+    );
   };
 
   onClickUnlockButton = row => {
@@ -194,38 +220,52 @@ class Admin extends React.Component {
       insertBtn: this.addUserButton,
       insertModalHeader: this.addUserModalHeader,
       insertModalFooter: this.addUserModalFooter,
+      toolBar: this.createCustomToolBar,
+      sortIndicator: true,
     };
     const cellEdit = {
       mode: 'click',
+      beforeSaveCell: this.beforeSaveCell,
       afterSaveCell: this.afterSaveCell,
       blurToSave: true,
     };
     return (
-      <BootstrapTable data={this.props.data} cellEdit={cellEdit} insertRow={true} options={options} className="table table-striped">
-        <TableHeaderColumn dataField="email" isKey>
-          Email
-        </TableHeaderColumn>
-        <TableHeaderColumn
-          dataField="jurisdiction_path"
-          editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths).map(p => p.replace(/, /g, ',')) } }}>
-          Jurisdiction
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="role" editable={{ type: 'select', options: { values: this.props.role_types } }}>
-          Role
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="failed_attempts" editable={false}>
-          Failed Login Attempts
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="locked" editable={false}>
-          Status
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="button" dataFormat={this.lockUnlockButton.bind(this)} editable={false}>
-          Lock/Unlock
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="button" dataFormat={this.sendResetButton.bind(this)} editable={false}>
-          Send Password Reset E-mail
-        </TableHeaderColumn>
-      </BootstrapTable>
+      <div>
+        <h4>Note: To edit a user, click the cell you would like to edit, select a new value and then click anywhere outside of the table.</h4>
+        <BootstrapTable
+          data={this.props.data}
+          cellEdit={cellEdit}
+          insertRow={true}
+          search={true}
+          multiColumnSearch={true}
+          options={options}
+          className="table table-striped py-2">
+          <TableHeaderColumn dataField="email" dataSort={true} isKey={true}>
+            Email
+          </TableHeaderColumn>
+          <TableHeaderColumn
+            dataField="jurisdiction_path"
+            dataSort={true}
+            editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths).map(p => p.replace(/, /g, ',')) } }}>
+            Jurisdiction
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="role" dataSort={true} editable={{ type: 'select', options: { values: this.props.role_types } }}>
+            Role
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="failed_attempts" searchable={false} editable={false} hiddenOnInsert={true} dataSort={true}>
+            Failed Login Attempts
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="locked" editable={false} hiddenOnInsert={true} dataSort={true}>
+            Status
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="button" dataFormat={this.lockUnlockButton.bind(this)} searchable={false} editable={false} hiddenOnInsert={true}>
+            Lock/Unlock
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="button" dataFormat={this.sendResetButton.bind(this)} searchable={false} editable={false} hiddenOnInsert={true}>
+            Send Password Reset E-mail
+          </TableHeaderColumn>
+        </BootstrapTable>
+      </div>
     );
   }
 }
@@ -234,7 +274,6 @@ Admin.propTypes = {
   data: PropTypes.array,
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
-  roles: PropTypes.array,
   role_types: PropTypes.array,
 };
 
