@@ -73,13 +73,12 @@ class Admin extends React.Component {
   }
 
   beforeSaveCell(row, cellName, cellValue) {
-    let previousVal = row[cellName];
     // make cell name more human-friendly
     let hrCellName = cellName;
     if (cellName === 'jurisdiction_path') {
       hrCellName = 'jurisdiction';
     }
-    alert(row.email + "'s " + hrCellName + ' will be changed from "' + previousVal + '" to "' + cellValue + '"');
+    alert(row.email + "'s " + hrCellName + ' will be changed from "' + row[cellName] + '" to "' + cellValue + '"');
     return true;
   }
 
