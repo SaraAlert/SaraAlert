@@ -65,5 +65,10 @@ jobs:
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: screenshots
+          path: tmp/screenshots/
 
 
