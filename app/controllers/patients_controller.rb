@@ -197,31 +197,31 @@ class PatientsController < ApplicationController
           end
         end
         member.save!
-        if params[:comment]
-          history = History.new
-          history.created_by = current_user.email
-          comment = 'User changed '
-          comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
-          comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-          history.comment = comment
-          history.patient = member
-          history.history_type = 'Monitoring Change'
-          history.save
-        end
+        next unless params[:comment]
+
+        history = History.new
+        history.created_by = current_user.email
+        comment = 'User changed '
+        comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
+        comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+        history.comment = comment
+        history.patient = member
+        history.history_type = 'Monitoring Change'
+        history.save
       end
     end
 
-    if params[:comment]
-      history = History.new
-      history.created_by = current_user.email
-      comment = 'User changed '
-      comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
-      comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-      history.comment = comment
-      history.patient = patient
-      history.history_type = 'Monitoring Change'
-      history.save
-    end
+    return unless params[:comment]
+
+    history = History.new
+    history.created_by = current_user.email
+    comment = 'User changed '
+    comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
+    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+    history.comment = comment
+    history.patient = patient
+    history.history_type = 'Monitoring Change'
+    history.save
   end
 
   def clear_assessments
