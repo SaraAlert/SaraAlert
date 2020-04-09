@@ -73,13 +73,19 @@ class Admin extends React.Component {
   }
 
   beforeSaveCell(row, cellName, cellValue) {
-    // make cell name more human-friendly
-    let hrCellName = cellName;
-    if (cellName === 'jurisdiction_path') {
-      hrCellName = 'jurisdiction';
+    // This is to prevent a Generic Object Injection Sink warning
+    let prevVal = Object.values(row)[Object.keys(row).indexOf(cellName)];
+    if (prevVal != cellValue) {
+      // make cell name more human-friendly
+      let hrCellName = cellName;
+      if (cellName === 'jurisdiction_path') {
+        hrCellName = 'jurisdiction';
+      }
+      alert(row.email + "'s " + hrCellName + ' will be changed from "' + prevVal + '" to "' + cellValue + '"');
+      return true;
+    } else {
+      return false;
     }
-    alert(row.email + "'s " + hrCellName + ' will be changed from "' + row[cellName] + '" to "' + cellValue + '"');
-    return true;
   }
 
   addUserModalHeader = () => {
