@@ -1,0 +1,27 @@
+name: Test Application
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Run Bundle Install
+        run: bundle install
+      - name: Run Gemsurance
+        run: bundle exec gemsurance
+      - name: Run Brakeman
+        run: bundle exec brakeman -qAzw1
+      - name: Run Rails Unit Tests
+        run: bundle exec rake test
