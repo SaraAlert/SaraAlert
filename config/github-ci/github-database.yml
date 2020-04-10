@@ -1,0 +1,9 @@
+test:
+  adapter: mysql2
+  pool: 5
+  timeout: 5000
+  database: disease_trakker_test
+  host: '127.0.0.1'
+  port: <%= ENV['CI_SQL_PORT'] %>
+  username: root
+  password: root
