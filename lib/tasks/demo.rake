@@ -226,7 +226,8 @@ namespace :demo do
             member_of_a_common_exposure_cohort: rand < 0.1,
             creator: enrollers.sample,
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
-            created_at: Faker::Time.between_dates(from: today, to: today, period: :day)
+            created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
+            isolation: rand < 0.30
           )
 
           patient.submission_token = SecureRandom.hex(20)

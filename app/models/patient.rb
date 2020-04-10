@@ -158,40 +158,20 @@ class Patient < ApplicationRecord
   }
 
   scope :isolation_requiring_review, lambda {
-    # Persons with COVID-19 who have symptoms (non-test based)
-    # - At least 7 days since first symptom report
-    # AND
-    # - No fever or medication use reported in last 72 hours
-    # AND
-    # - Latest reports received within 24 hours of previous report
-    #
-    # OR
-    #
-    # Persons with COVID-19 who have symptoms (test based)
-    # - Two documented negative public health test results (documented in public health action)
-    # AND
-    # - No fever or medication use reported in last report
-    # AND
-    # - Latest reports received within 24 hours of previous report
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .left_outer_joins(:assessments)
-      .where_assoc_exists(:assessments, ['created_at <= ?', 7.days.ago])
-      .where('assessments.created_at > ?', 72.hours.ago)
-      .where_assoc_not_exists(:assessments, symptomatic: true)
+      .where_assoc_exists(:assessments, &:at_least_seven_days_since_first_symptomatic)
+      .where_assoc_exists(:assessments, &:seventy_two_hours_since_latest_fever_report)
       .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-      .left_outer_joins(:histories)
       .distinct
       .or(
         where('monitoring = ?', true)
         .where('purged = ?', false)
         .where('isolation = ?', true)
-        .left_outer_joins(:assessments)
-        .where_assoc_not_exists(:assessments, symptomatic: true)
-        .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-        .left_outer_joins(:histories)
         .where_assoc_count(2, :<=, :histories, 'comment LIKE \'%Laboratory report results – negative%\'')
+        .where_assoc_exists(:assessments, &:twenty_four_hours_since_latest_fever_report)
+        .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
         .distinct
       )
   }
@@ -200,7 +180,6 @@ class Patient < ApplicationRecord
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .left_outer_joins(:assessments)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
       .distinct
   }
@@ -209,9 +188,8 @@ class Patient < ApplicationRecord
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .left_outer_joins(:assessments)
       .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-      .distinct
+      .where.not(id: Patient.isolation_requiring_review)
   }
 
   # All individuals currently being monitored if true, all individuals otherwise
@@ -474,8 +452,12 @@ class Patient < ApplicationRecord
         # CNMI Local
         hour = Time.now.getlocal('+10:00').hour
       end
+      if !address_state.blank? && address_state == 'Arkansas'
+        # Arkansas Local
+        hour = Time.now.getlocal('-05:00').hour
+      end
       # These are the hours that we consider to be morning, afternoon and evening
-      morning = (7..11)
+      morning = (8..12)
       afternoon = (12..16)
       evening = (17..20)
       if preferred_contact_time == 'Morning'

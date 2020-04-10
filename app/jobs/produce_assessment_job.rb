@@ -14,7 +14,7 @@ class ProduceAssessmentJob < ApplicationJob
       experiencing_symptoms: assessment['experiencing_symptoms'],
       patient_submission_token: assessment['patient_submission_token']
     }
-    report.except!(:reported_symptoms_array) if report[:reported_symptoms_array].blank?
+    #report.except!(:reported_symptoms_array) if report[:reported_symptoms_array].blank?
     connection.publish 'reports', report.to_json
   end
 end
