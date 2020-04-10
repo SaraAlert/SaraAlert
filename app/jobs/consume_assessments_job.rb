@@ -11,7 +11,7 @@ class ConsumeAssessmentsJob < ApplicationJob
     connection.subscribe 'reports' do |on|
       on.message do |_channel, msg|
         # message = SaraSchema::Validator.validate(:assessment, JSON.parse(msg))
-        message = msg.slice('threshold_condition_hash', 'reported_symptoms_array', 'patient_submission_token', 'experiencing_symptoms')
+        message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array', 'patient_submission_token', 'experiencing_symptoms')
         next if message.nil?
 
         patient = Patient.find_by(submission_token: message['patient_submission_token'])
