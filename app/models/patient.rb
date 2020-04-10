@@ -161,7 +161,6 @@ class Patient < ApplicationRecord
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .where_assoc_exists(:assessments, &:at_least_seven_days_since_first_symptomatic)
       .where_assoc_exists(:assessments, &:seventy_two_hours_since_latest_fever_report)
       .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
       .distinct

@@ -10,6 +10,11 @@ class Symptom < ApplicationRecord
       validates column.name.to_sym, length: { maximum: 200 }
     end
   end
+
+  scope :fever, lambda {
+    where(['name = ? and bool_value = ?', 'fever', true])
+  }
+
   def as_json(options = {})
     super(options).merge({
                            type: type
