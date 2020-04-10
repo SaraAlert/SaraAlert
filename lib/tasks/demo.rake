@@ -118,6 +118,7 @@ namespace :demo do
 
     days = (ENV['DAYS'] || 14).to_i
     count = (ENV['COUNT'] || 50).to_i
+    skip_daily_analytics_update = (ENV['SKIP'] || 'false')
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
@@ -125,8 +126,6 @@ namespace :demo do
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
 
     jurisdictions = Jurisdiction.all
-    threshold_condition = ThresholdCondition.first
-    reported_condition = ReportedCondition.create(threshold_condition_hash: threshold_condition.threshold_condition_hash)
     Analytic.delete_all
 
     # foobar added to list to test "unknown" locations
@@ -153,6 +152,7 @@ namespace :demo do
           next unless patient.created_at <= today
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
           if rand < 0.9 # 70% reporting rate on any given day
+            reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
             if rand < 0.3 # 30% report some sort of symptoms
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               number_of_symptoms = rand(bool_symps.count) + 1
@@ -295,8 +295,8 @@ namespace :demo do
 
         # Cases increase 10-20% every day
         count += (count * (0.1 + (rand / 10))).round
-        # Run the analytics cache update at the end of the final simulation day
-        if ( (day+1) == days)
+        # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
+        if ( skip_daily_analytics_update == 'false' || (day+1) == days)
           before_analytics_count = Analytic.count
           Rake::Task["analytics:cache_current_analytics"].reenable
           Rake::Task["analytics:cache_current_analytics"].invoke
