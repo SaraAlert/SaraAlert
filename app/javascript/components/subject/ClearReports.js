@@ -46,13 +46,13 @@ class ClearReports extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {!this.state.patient.isolation && (
+          {!this.props.patient.isolation && (
             <p>
               This will change any reports where the &quot;Needs Review&quot; column is &quot;Yes&quot; to &quot;No&quot;. This subject will be moved from the
               &quot;Symptomatic&quot; line list to either the asymptomatic or non reporting line list as appropriate.
             </p>
           )}
-          {this.state.patient.isolation && (
+          {this.props.patient.isolation && (
             <p>
               This will change any reports where the &quot;Needs Review&quot; column is &quot;Yes&quot; to &quot;No&quot;. If this case is currently under the
               &quot;Records Requiring Review&quot; line list, they will be moved to the &quot;Reporting&quot; or &quot;Non-Reporting&quot; line list as

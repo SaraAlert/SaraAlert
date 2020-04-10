@@ -14,11 +14,11 @@ class Assessment < ApplicationRecord
   belongs_to :patient
 
   scope :twenty_four_hours_since_latest_fever_report, lambda {
-    where('created_at >= ?', 24.hours.ago).where_assoc_not_exists([:reported_condition, :symptoms], name: 'fever', bool_value: true)
+    where('created_at >= ?', 24.hours.ago).where_assoc_not_exists(%i[reported_condition symptoms], name: 'fever', bool_value: true)
   }
 
   scope :seventy_two_hours_since_latest_fever_report, lambda {
-    where('created_at >= ?', 72.hours.ago).where_assoc_not_exists([:reported_condition, :symptoms], name: 'fever', bool_value: true)
+    where('created_at >= ?', 72.hours.ago).where_assoc_not_exists(%i[reported_condition symptoms], name: 'fever', bool_value: true)
   }
 
   scope :at_least_seven_days_since_first_symptomatic, lambda {
@@ -26,11 +26,11 @@ class Assessment < ApplicationRecord
   }
 
   scope :fever_in_last_seventy_two_hours, lambda {
-    where('created_at >= ?', 72.hours.ago).where_assoc_exists([:reported_condition, :symptoms], name: 'fever', bool_value: true)
+    where('created_at >= ?', 72.hours.ago).where_assoc_exists(%i[reported_condition symptoms], name: 'fever', bool_value: true)
   }
 
   scope :fever_in_last_twenty_four_hours, lambda {
-    where('created_at >= ?', 24.hours.ago).where_assoc_exists([:reported_condition, :symptoms], name: 'fever', bool_value: true)
+    where('created_at >= ?', 24.hours.ago).where_assoc_exists(%i[reported_condition symptoms], name: 'fever', bool_value: true)
   }
 
   def symptomatic?

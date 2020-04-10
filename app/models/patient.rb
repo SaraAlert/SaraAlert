@@ -189,7 +189,7 @@ class Patient < ApplicationRecord
       .where('purged = ?', false)
       .where('isolation = ?', true)
       .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-      .where.not(id: Patient.isolation_requiring_review)
+      .where.not(id: Patient.unscoped.isolation_requiring_review)
   }
 
   # All individuals currently being monitored if true, all individuals otherwise
@@ -439,7 +439,7 @@ class Patient < ApplicationRecord
 
   def send_assessment(force = false)
     unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent < 12.hours.ago
+      return if last_assessment_reminder_sent > 24.hours.ago
     end
 
     # Do not allow messages to go to household members
