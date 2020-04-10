@@ -1,8 +1,8 @@
 test:
-  adapter: mysql
+  adapter: mysql2
   pool: 5
   timeout: 5000
   database: disease_trakker_test
   host: mysql
-  user: runner
+  username: runner
   password: ''
