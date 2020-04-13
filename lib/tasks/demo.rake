@@ -118,6 +118,7 @@ namespace :demo do
 
     days = (ENV['DAYS'] || 14).to_i
     count = (ENV['COUNT'] || 50).to_i
+    skip_daily_analytics_update = (ENV['SKIP'] || 'false')
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
@@ -294,16 +295,18 @@ namespace :demo do
 
         # Cases increase 10-20% every day
         count += (count * (0.1 + (rand / 10))).round
-        # Run the analytics cache update at the end of each simulation day
-        before_analytics_count = Analytic.count
-        Rake::Task["analytics:cache_current_analytics"].reenable
-        Rake::Task["analytics:cache_current_analytics"].invoke
-        after_analytics_count = Analytic.count
-        # Add time onto update time for more realistic reports
-        t = Time.now
-        date_time_update = DateTime.new(today.year, today.month, today.day, t.hour, t.min, t.sec, t.zone)
-        Analytic.all.order(:id)[before_analytics_count..after_analytics_count].each do |analytic|
-          analytic.update!(created_at: date_time_update, updated_at: date_time_update)
+        # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
+        if (skip_daily_analytics_update == 'false' || (day+1) == days)
+          before_analytics_count = Analytic.count
+          Rake::Task["analytics:cache_current_analytics"].reenable
+          Rake::Task["analytics:cache_current_analytics"].invoke
+          after_analytics_count = Analytic.count
+          # Add time onto update time for more realistic reports
+          t = Time.now
+          date_time_update = DateTime.new(today.year, today.month, today.day, t.hour, t.min, t.sec, t.zone)
+          Analytic.all.order(:id)[before_analytics_count..after_analytics_count].each do |analytic|
+            analytic.update!(created_at: date_time_update, updated_at: date_time_update)
+          end
         end
 
       end
