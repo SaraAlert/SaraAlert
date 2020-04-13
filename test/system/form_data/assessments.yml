@@ -1,5 +1,4 @@
 assessment_1:
-  submission_token: de8c267224b17cb977cd1787c2237693df17b703
   symptoms:
     - id: 1
       label: "Fever"
@@ -14,7 +13,6 @@ assessment_1:
       bool_value: true
       type: "BoolSymptom"
 assessment_2:
-  submission_token: 0badf6de985b9d1d954db6f6c80d1d367e5975d5
   symptoms:
     - id: 1
       label: "Fever"
@@ -29,7 +27,6 @@ assessment_2:
       bool_value: true
       type: "BoolSymptom"
 assessment_3:
-  submission_token: 0badf6de985b9d1d954db6f6c80d1d367e5975d5
   symptoms:
     - id: 1
       label: "Fever"
@@ -44,8 +41,6 @@ assessment_3:
       bool_value: false
       type: "BoolSymptom"
 assessment_4:
-  submission_token: 0badf6de985b9d1d954db6f6c80d1d367e5975d5
-  experiencing_symptoms: true
   symptoms:
     - id: 1
       label: "Fever"

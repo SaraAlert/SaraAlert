@@ -2,50 +2,44 @@
 
 require 'application_system_test_case'
 
+require_relative 'lib/analytics/monitoree_counts_verifier'
+require_relative 'lib/analytics/monitoree_snapshots_verifier'
 require_relative 'lib/system_test_utils'
 
 class AnalystTest < ApplicationSystemTestCase
+  @@analytics_monitoree_counts_verifier = AnalyticsMonitoreeCountsVerifier.new(nil)
+  @@analytics_monitoree_snapshots_verifier = AnalyticsMonitoreeSnapshotsVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def setup
-    Jurisdiction.find_each do |jur|
-      empty_analytic = Analytic.create(
-        monitorees_count: 0,
-        symptomatic_monitorees_count: 0,
-        asymptomatic_monitorees_count: 0,
-        confirmed_cases_count: 0,
-        closed_cases_count: 0,
-        open_cases_count: 0,
-        total_reports_count: 0,
-        non_reporting_monitorees_count: 0,
-        monitoree_state_map: {},
-        symptomatic_state_map: {}
-      )
-      jur.analytics.push(empty_analytic)
-    end
+  test 'view analytics as different types of users' do
+    view_analytics('analyst_all')
+    view_analytics('state1_epi')
+    view_analytics('locals1c1_epi')
+    view_analytics('state1_epi_enroller')
   end
 
-  test 'analyst viewing analytics' do
-    login_and_view_analytics('analyst_all', true)
+  test 'export analysis as png' do
+    trigger_export_buttons('state1_epi')
   end
 
-  test 'epi viewing analytics' do
-    login_and_view_analytics('state1_epi', false)
-    login_and_view_analytics('locals1c1_epi', false)
-  end
-
-  test 'epi enroller viewing analytics' do
-    login_and_view_analytics('state1_epi_enroller', false)
-  end
-
-  def login_and_view_analytics(user_name, is_analyst)
-    @@system_test_utils.login(user_name)
-    click_on 'Analytics' unless is_analyst
-    verify_analytics_page
+  def view_analytics(user_name)
+    jurisdiction_id = login_and_view_analytics(user_name)
+    analytic_id = Analytic.where(jurisdiction_id: jurisdiction_id).order(created_at: :desc).first['id']
+    @@analytics_monitoree_counts_verifier.verify_monitoree_counts(analytic_id)
+    @@analytics_monitoree_snapshots_verifier.verify_monitoree_snapshots(analytic_id)
     @@system_test_utils.logout
   end
 
-  def verify_analytics_page
-    ## verify jurisdiction
+  def trigger_export_buttons(user_name)
+    login_and_view_analytics(user_name)
+    click_on 'EXPORT ANALYSIS AS PNG'
+    click_on 'Export Complete Country Data'
+    @@system_test_utils.logout
+  end
+
+  def login_and_view_analytics(user_name)
+    jurisdiction_id = @@system_test_utils.login(user_name)
+    click_on 'Analytics' if !user_name.include? 'analyst'
+    jurisdiction_id
   end
 end

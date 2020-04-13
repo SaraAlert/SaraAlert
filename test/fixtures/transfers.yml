@@ -26,3 +26,31 @@ patient_8_from_5_to_2:
   from_jurisdiction_id: 2
   who_id: 13
   created_at: <%= 7.days.ago %>
+patient_41_from_6_to_7:
+  id: 5
+  patient_id: 41
+  to_jurisdiction_id: 7
+  from_jurisdiction_id: 6
+  who_id: 7
+  created_at: <%= 1.hour.ago %>
+patient_42_from_6_to_7:
+  id: 6
+  patient_id: 42
+  to_jurisdiction_id: 6
+  from_jurisdiction_id: 7
+  who_id: 7
+  created_at: <%= 5.hours.ago %>
+patient_43_from_5_to_4:
+  id: 7
+  patient_id: 43
+  to_jurisdiction_id: 5
+  from_jurisdiction_id: 4
+  who_id: 1
+  created_at: <%= 12.hours.ago %>
+patient_44_from_4_to_5:
+  id: 8
+  patient_id: 44
+  to_jurisdiction_id: 4
+  from_jurisdiction_id: 5
+  who_id: 1
+  created_at: <%= 22.hours.ago %>

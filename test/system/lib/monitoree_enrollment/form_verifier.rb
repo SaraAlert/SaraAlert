@@ -2,36 +2,36 @@
 
 require 'application_system_test_case'
 
-require_relative 'form_populator'
+require_relative 'form'
 require_relative '../system_test_utils'
 
 class MonitoreeEnrollmentFormVerifier < ApplicationSystemTestCase
-  @@monitoree_enrollment_form_populator = MonitoreeEnrollmentFormPopulator.new(nil)
+  @@monitoree_enrollment_form = MonitoreeEnrollmentForm.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_form_data_after_navigation(monitoree)
     click_link 'Enroll New Monitoree'
-    @@monitoree_enrollment_form_populator.populate_identification(monitoree['identification'], true)
+    @@monitoree_enrollment_form.populate_identification(monitoree['identification'], true)
     @@system_test_utils.go_to_prev_page
     verify_form_data_consistency_for_identification(monitoree['identification'])
     @@system_test_utils.go_to_next_page
-    @@monitoree_enrollment_form_populator.populate_address(monitoree['address'], true)
+    @@monitoree_enrollment_form.populate_address(monitoree['address'], true)
     @@system_test_utils.go_to_prev_page
     verify_form_data_consistency_for_address(monitoree['address'])
     @@system_test_utils.go_to_next_page
-    @@monitoree_enrollment_form_populator.populate_contact_info(monitoree['contact_info'], true)
+    @@monitoree_enrollment_form.populate_contact_info(monitoree['contact_info'], true)
     @@system_test_utils.go_to_prev_page
     verify_form_data_consistency_for_contact_info(monitoree['contact_info'])
     @@system_test_utils.go_to_next_page
-    @@monitoree_enrollment_form_populator.populate_arrival_info(monitoree['arrival_info'], true)
+    @@monitoree_enrollment_form.populate_arrival_info(monitoree['arrival_info'], true)
     @@system_test_utils.go_to_prev_page
     verify_form_data_consistency_for_arrival_info(monitoree['arrival_info'])
     @@system_test_utils.go_to_next_page
-    @@monitoree_enrollment_form_populator.populate_additional_planned_travel(monitoree['additional_planned_travel'], true)
+    @@monitoree_enrollment_form.populate_additional_planned_travel(monitoree['additional_planned_travel'], true)
     @@system_test_utils.go_to_prev_page
     verify_form_data_consistency_for_additional_planned_travel(monitoree['additional_planned_travel'])
     @@system_test_utils.go_to_next_page
-    @@monitoree_enrollment_form_populator.populate_potential_exposure_info(monitoree['potential_exposure_info'], true)
+    @@monitoree_enrollment_form.populate_potential_exposure_info(monitoree['potential_exposure_info'], true)
     @@system_test_utils.go_to_prev_page
     verify_form_data_consistency_for_potential_exposure_info(monitoree['potential_exposure_info'])
     @@system_test_utils.go_to_next_page
@@ -129,6 +129,7 @@ class MonitoreeEnrollmentFormVerifier < ApplicationSystemTestCase
     verify_form_data_for_checkbox_input_field(potential_exposure_info, 'laboratory_personnel')
     verify_form_data_for_checkbox_input_field(potential_exposure_info, 'healthcare_personnel')
     verify_form_data_for_checkbox_input_field(potential_exposure_info, 'crew_on_passenger_or_cargo_flight')
+    verify_form_data_for_checkbox_input_field(potential_exposure_info, 'member_of_a_common_exposure_cohort')
     verify_form_data_for_input_field(potential_exposure_info, 'contact_of_known_case_id')
     verify_form_data_for_input_field(potential_exposure_info, 'exposure_risk_assessment')
     verify_form_data_for_input_field(potential_exposure_info, 'monitoring_plan')
@@ -136,15 +137,15 @@ class MonitoreeEnrollmentFormVerifier < ApplicationSystemTestCase
   end
 
   def verify_form_data_for_input_field(data, field)
-    assert_equal(data[field], find('#' + field)['value'], field + ' mismatch') if data[field]
+    assert_equal(data[field], find("##{field}")['value'], "#{field} mismatch") if data[field]
   end
 
   def verify_form_data_for_date_input_field(data, field)
-    assert_equal(@@system_test_utils.format_date(data[field]), find('#' + field)['value'], field + ' mismatch') if data[field]
+    assert_equal(@@system_test_utils.format_date(data[field]), find("##{field}")['value'], "#{field} mismatch") if data[field]
   end
 
   def verify_form_data_for_state_input_field(data, field)
-    assert_equal(data[field], find('#' + field)['value'], field + ' mismatch') if data[field]
+    assert_equal(data[field], find("##{field}")['value'], "#{field} mismatch") if data[field]
   end
 
   def verify_form_data_for_checkbox_input_field(data, field)

@@ -46,3 +46,9 @@ users_role_15:
 users_role_16:
   user_id: 16
   role_id: 2
+users_role_17:
+  user_id: 17
+  role_id: 2
+users_role_18:
+  user_id: 18
+  role_id: 3

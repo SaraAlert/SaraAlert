@@ -1,0 +1,51 @@
+# frozen_string_literal: true
+
+require 'application_system_test_case'
+
+require_relative 'dashboard'
+require_relative 'dashboard_verifier'
+require_relative '../system_test_utils'
+
+class AdminHelper < ApplicationSystemTestCase
+  @@admin_dashboard = AdminDashboard.new(nil)
+  @@admin_dashboard_verifier = AdminDashboardVerifier.new(nil)
+  @@system_test_utils = SystemTestUtils.new(nil)
+
+  def view_users(user_name)
+    @@system_test_utils.login(user_name)
+    User.all.each { |user|
+      @@admin_dashboard.search_for_user(user.email)
+      @@admin_dashboard_verifier.verify_user(user)
+    }
+    @@system_test_utils.logout
+  end
+  
+  def add_user(user_name, email, jurisdiction, role, submit=true)
+    @@system_test_utils.login(user_name)
+    @@admin_dashboard.add_user(email, jurisdiction, role, submit)
+    @@admin_dashboard.search_for_user(email)
+    @@admin_dashboard_verifier.verify_add_user(email, jurisdiction, role, submit)
+    @@system_test_utils.logout
+  end
+  
+  def add_existing_user(user_name, email, jurisdiction, role)
+    @@system_test_utils.login(user_name)
+    @@admin_dashboard.add_user(email, jurisdiction, role)
+    assert_equal('User already exists', page.driver.browser.switch_to.alert.text)
+    page.driver.browser.switch_to.alert.dismiss
+    @@system_test_utils.logout
+  end
+
+  def lock_user(user_name, email)
+    @@system_test_utils.login(user_name)
+    @@admin_dashboard.lock_user(email)
+    @@admin_dashboard.unlock_user(email)
+    @@system_test_utils.logout
+  end
+
+  def reset_user_password(user_name, email)
+    @@system_test_utils.login(user_name)
+    @@admin_dashboard.reset_user_password(email)
+    @@system_test_utils.logout
+  end
+end

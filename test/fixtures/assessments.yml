@@ -117,3 +117,10 @@ patient_10_assessment_3:
   patient_id: 10
   symptomatic: false
   who_reported: "Monitoree"
+patient_50_assessment_1:
+  id: 1018
+  created_at: "<%= 1.hour.ago %>"
+  updated_at: "<%= 1.hour.ago %>"
+  patient_id: 50
+  symptomatic: true
+  who_reported: "Monitoree"
