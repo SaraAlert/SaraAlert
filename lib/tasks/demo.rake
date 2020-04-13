@@ -118,7 +118,7 @@ namespace :demo do
 
     days = (ENV['DAYS'] || 14).to_i
     count = (ENV['COUNT'] || 50).to_i
-    skip_daily_analytics_update = (ENV['SKIP_ANALYTICS'] != 'true')
+    perform_daily_analytics_update = (ENV['SKIP_ANALYTICS'] != 'true')
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
 
@@ -296,7 +296,7 @@ namespace :demo do
         # Cases increase 10-20% every day
         count += (count * (0.1 + (rand / 10))).round
         # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
-        if (skip_daily_analytics_update || (day+1) == days)
+        if (perform_daily_analytics_update || (day+1) == days)
           before_analytics_count = Analytic.count
           Rake::Task["analytics:cache_current_analytics"].reenable
           Rake::Task["analytics:cache_current_analytics"].invoke
