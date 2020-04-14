@@ -5,7 +5,7 @@ class User < ApplicationRecord
   rolify
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable
+  devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable
 
   # Validate password complexity
   validate :password_complexity

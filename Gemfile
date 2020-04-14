@@ -26,6 +26,7 @@ gem 'ancestry'
 
 # Devise, and rolify for auth
 gem 'devise'
+gem 'devise-authy'
 gem 'devise-security'
 gem 'rolify'
 
