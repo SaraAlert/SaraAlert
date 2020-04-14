@@ -171,6 +171,7 @@ namespace :demo do
         count.times do |i|
           sex = Faker::Gender.binary_type
           birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
+          risk_factors = rand < 0.9
           patient = Patient.new(
             first_name: "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}",
             middle_name: "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}",
@@ -215,16 +216,15 @@ namespace :demo do
             date_of_arrival: today,
             # travel_related_notes
             last_date_of_exposure: today - rand(5).days,
-            potential_exposure_location: Faker::Address.city,
-            potential_exposure_country: Faker::Address.country,
-            contact_of_known_case: rand < 0.3,
-            # contact_of_known_case_id
-            travel_to_affected_country_or_area: rand < 0.1,
-            was_in_health_care_facility_with_known_cases: rand < 0.15,
-            laboratory_personnel: rand < 0.05,
-            healthcare_personnel: rand < 0.2,
-            crew_on_passenger_or_cargo_flight: rand < 0.25,
-            member_of_a_common_exposure_cohort: rand < 0.1,
+            potential_exposure_location: rand < 0.7 ? Faker::Address.city : nil,
+            potential_exposure_country: rand < 0.8 ? Faker::Address.country: nil,
+            contact_of_known_case: risk_factors && rand < 0.3,
+            travel_to_affected_country_or_area: risk_factors && rand < 0.1,
+            was_in_health_care_facility_with_known_cases: risk_factors && rand < 0.15,
+            laboratory_personnel: risk_factors && rand < 0.05,
+            healthcare_personnel: risk_factors && rand < 0.2,
+            crew_on_passenger_or_cargo_flight: risk_factors && rand < 0.25,
+            member_of_a_common_exposure_cohort: risk_factors && rand < 0.1,
             creator: enrollers.sample,
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day),

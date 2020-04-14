@@ -20,6 +20,7 @@ class RiskFactors extends React.Component {
     this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
     this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
     this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
+    this.NO_COUNTRY_DATA = false;
     COUNTRIES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).sort();
     COUNTRIES_OF_INTEREST = [...COUNTRIES_OF_INTEREST.filter(riskFactor => riskFactor !== 'Total'), 'Total']; // Risk Factor has a category of Total
     // // COUNTRIES_OF_INTEREST = COUNTRIES_OF_INTEREST.filter(country => country !== 'Total');
@@ -30,6 +31,7 @@ class RiskFactors extends React.Component {
     if (!this.ERRORS) {
       this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', this.state.viewTotal);
       this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
+      this.NO_COUNTRY_DATA = this.coiData.some(x => x.name === null);
       this.fullCountryData = JSON.parse(JSON.stringify(this.coiData));
       // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
       // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
@@ -40,7 +42,6 @@ class RiskFactors extends React.Component {
       // 'Total' will always the most number of monitorees, so it will be at [0]
       // This array/spread creation essentially just reorders 'Total' to be at the bottom
       this.coiData = [...this.coiData.slice(1, 6), this.coiData[0]];
-      this.coiTableData = this.coiData;
     }
   }
 
@@ -178,45 +179,56 @@ class RiskFactors extends React.Component {
           <i className="fas fa-info-circle mr-1"></i>
           Cumulative percentage may not sum to 100 as monitorees may report more than one exposure risk factor
         </div>
-        <Row>
-          <Col className="h4 text-left">Country of Exposure</Col>
-          <Col className="text-right">
-            <Button variant="primary" className="ml-2 btn-square" onClick={this.exportFullCountryData}>
-              <i className="fas fa-download mr-1"></i>
-              Export Complete Country Data
-            </Button>
-          </Col>
-        </Row>
-        <Table striped hover className="border mt-2 mb-0">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.coiData
-              .map(x => x.name)
-              .map(coiGroup => (
-                <tr key={coiGroup.toString() + '1'}>
-                  <td key={coiGroup.toString() + '2'} className="font-weight-bold">
-                    {coiGroup}
-                  </td>
-                  {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                    <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[String(risklevel)]}</td>
+        {this.NO_COUNTRY_DATA ? (
+          <div>
+            <Row>
+              <Col className="h4 text-left">Country of Exposure</Col>
+            </Row>
+            <div className="text-info display-6"> No Country Data Available </div>
+          </div>
+        ) : (
+          <div>
+            <Row>
+              <Col className="h4 text-left">Country of Exposure</Col>
+              <Col className="text-right">
+                <Button variant="primary" className="ml-2 btn-square" onClick={this.exportFullCountryData}>
+                  <i className="fas fa-download mr-1"></i>
+                  Export Complete Country Data
+                </Button>
+              </Col>
+            </Row>
+            <Table striped hover className="border mt-2 mb-0">
+              <thead>
+                <tr>
+                  <th></th>
+                  {RISKLEVELS.map(risklevel => (
+                    <th key={risklevel.toString()}>{risklevel}</th>
                   ))}
-                  <td>{this.coiData.find(x => x.name === coiGroup)['total']}</td>
+                  <th>Total</th>
                 </tr>
-              ))}
-          </tbody>
-        </Table>
-        <div className="text-secondary text-right mb-3">
-          <i className="fas fa-info-circle mr-1"></i>
-          Excludes monitorees where exposure country is not reported
-        </div>
+              </thead>
+              <tbody>
+                {this.coiData
+                  .map(x => x.name)
+                  .map(coiGroup => (
+                    <tr key={coiGroup.toString() + '1'}>
+                      <td key={coiGroup.toString() + '2'} className="font-weight-bold">
+                        {coiGroup}
+                      </td>
+                      {RISKLEVELS.map((risklevel, risklevelIndex) => (
+                        <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[String(risklevel)]}</td>
+                      ))}
+                      <td>{this.coiData.find(x => x.name === coiGroup)['total']}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </Table>
+            <div className="text-secondary text-right mb-3">
+              <i className="fas fa-info-circle mr-1"></i>
+              Excludes monitorees where exposure country is not reported
+            </div>
+          </div>
+        )}
       </div>
     );
   }
