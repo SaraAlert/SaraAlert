@@ -192,6 +192,30 @@ class Admin extends React.Component {
     });
   };
 
+  onClickReset2FAButton = row => {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    let submit_data = { email: row.email };
+    let send_result = axios({
+      method: 'post',
+      url: window.BASE_PATH + '/admin/reset_2fa',
+      data: submit_data,
+    })
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        return false;
+      });
+    send_result.then(success => {
+      if (success) {
+        this.props.data.find(r => r.email === row.email).configured_2fa = 'No';
+        this.setState({ data: this.props.data });
+      } else {
+        alert('Error reseting 2FA Pairing');
+      }
+    });
+  };
+
   // eslint-disable-next-line no-unused-vars
   lockUnlockButton = (cell, row, enumObject, rowIndex) => {
     if (row['locked'] === 'Unlocked') {
@@ -214,6 +238,15 @@ class Admin extends React.Component {
     return (
       <Button variant="primary" size="md" className="btn-block btn-square btn-info" onClick={() => this.onClickSendResetButton(row)}>
         Reset Password and Send Email
+      </Button>
+    );
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  reset2FAButton = (cell, row, enumObject, rowIndex) => {
+    return (
+      <Button variant="primary" size="md" className="btn-block btn-square btn-secondary" onClick={() => this.onClickReset2FAButton(row)}>
+        Reset 2FA Pairing
       </Button>
     );
   };
@@ -257,6 +290,9 @@ class Admin extends React.Component {
           <TableHeaderColumn dataField="role" dataSort={true} editable={{ type: 'select', options: { values: this.props.role_types } }}>
             Role
           </TableHeaderColumn>
+          <TableHeaderColumn dataField="configured_2fa" searchable={false} editable={false} hiddenOnInsert={true} dataSort={true}>
+            Configured 2-Factor Auth
+          </TableHeaderColumn>
           <TableHeaderColumn dataField="failed_attempts" searchable={false} editable={false} hiddenOnInsert={true} dataSort={true}>
             Failed Login Attempts
           </TableHeaderColumn>
@@ -268,6 +304,9 @@ class Admin extends React.Component {
           </TableHeaderColumn>
           <TableHeaderColumn dataField="button" dataFormat={this.sendResetButton.bind(this)} searchable={false} editable={false} hiddenOnInsert={true}>
             Send Password Reset E-mail
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="button" dataFormat={this.reset2FAButton.bind(this)} searchable={false} editable={false} hiddenOnInsert={true}>
+            Reset 2-Factor Auth Pairing
           </TableHeaderColumn>
         </BootstrapTable>
       </div>
