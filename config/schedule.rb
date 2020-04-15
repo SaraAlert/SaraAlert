@@ -11,9 +11,9 @@ every 24.hours do
 end
 
 every 30.minutes do
-  "rake analytics:cache_current_analytics"
+  rake "analytics:cache_current_analytics"
 end
 
 every 1.hours do
-  "rake mailers:send_assessments"
+  rake "mailers:send_assessments"
 end
