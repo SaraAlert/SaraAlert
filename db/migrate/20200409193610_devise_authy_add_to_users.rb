@@ -3,7 +3,7 @@ class DeviseAuthyAddToUsers < ActiveRecord::Migration[6.0]
     change_table :users do |t|
       t.string    :authy_id
       t.datetime  :last_sign_in_with_authy
-      t.boolean   :authy_enabled, :default => false
+      t.boolean   :authy_enabled, :default => true
     end
 
     add_index :users, :authy_id

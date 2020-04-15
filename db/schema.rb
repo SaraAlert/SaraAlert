@@ -281,7 +281,7 @@ ActiveRecord::Schema.define(version: 2020_04_09_193610) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "authy_id"
     t.datetime "last_sign_in_with_authy"
-    t.boolean "authy_enabled", default: false
+    t.boolean "authy_enabled", default: true
     t.index ["authy_id"], name: "index_users_on_authy_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"
