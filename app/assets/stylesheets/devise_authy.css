@@ -24,3 +24,16 @@
   padding: 8px;
   margin: 8px;
 }
+
+.authy-form input[type=text] {
+  width: 17em;
+}
+
+.authy-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 70vh;
+}
