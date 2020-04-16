@@ -137,6 +137,25 @@ class Patient < ApplicationRecord
       .distinct
   }
 
+  scope :reminder_eligible, lambda {
+    where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+      .where(pause_notifications: false)
+      .where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .left_outer_joins(:assessments)
+      .where('assessments.patient_id = patients.id')
+      .where_assoc_not_exists(:assessments, ['created_at >= ?',  Time.zone.now.beginning_of_day])
+      .or(
+        where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where(pause_notifications: false)
+        .where('monitoring = ?', true)
+        .where('purged = ?', false)
+        .left_outer_joins(:assessments)
+        .where(assessments: { patient_id: nil })
+      )
+      .distinct
+  }
+
   # Individuals who have reported recently and are not symptomatic
   scope :asymptomatic, lambda {
     where('monitoring = ?', true)
