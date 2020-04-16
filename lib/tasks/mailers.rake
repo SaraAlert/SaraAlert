@@ -71,7 +71,7 @@ namespace :mailers do
            .where(pause_notifications: false)
            .left_outer_joins(:assessments)
            .where('assessments.patient_id = patients.id')
-           .where_assoc_not_exists(:assessments, ['created_at > ?',  Time.zone.now.beginning_of_day])
+           .where_assoc_not_exists(:assessments, ['created_at >= ?',  Time.zone.now.beginning_of_day])
            .each do |patient|
       patient.send_assessment
     end
