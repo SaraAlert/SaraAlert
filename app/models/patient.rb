@@ -438,7 +438,7 @@ class Patient < ApplicationRecord
 
   def send_assessment(force = false)
     unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent > 24.hours.ago
+      return if last_assessment_reminder_sent > 20.hours.ago
     end
 
     # Do not allow messages to go to household members
@@ -458,7 +458,7 @@ class Patient < ApplicationRecord
       # These are the hours that we consider to be morning, afternoon and evening
       morning = (8..12)
       afternoon = (12..16)
-      evening = (17..20)
+      evening = (16..20)
       if preferred_contact_time == 'Morning'
         return unless morning.include? hour
       elsif preferred_contact_time == 'Afternoon'
