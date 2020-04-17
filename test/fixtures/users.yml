@@ -9,6 +9,7 @@ state1_enroller:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locals1c1_enroller:
   id: 2
   email: "locals1c1_enroller@example.com"
@@ -20,6 +21,7 @@ locals1c1_enroller:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locals1c2_enroller:
   id: 3
   email: "locals1c2_enroller@example.com"
@@ -31,6 +33,7 @@ locals1c2_enroller:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 state2_enroller:
   id: 4
   email: "state2_enroller@example.com"
@@ -42,6 +45,7 @@ state2_enroller:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locals2c3_enroller:
   id: 5
   email: "locals2c3_enroller@example.com"
@@ -53,6 +57,7 @@ locals2c3_enroller:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locals2c4_enroller:
   id: 6
   email: "locals2c4_enroller@example.com"
@@ -64,6 +69,7 @@ locals2c4_enroller:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 state1_epi:
   id: 7
   email: "state1_epi@example.com"
@@ -75,6 +81,7 @@ state1_epi:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locals1c1_epi:
   id: 8
   email: "locals1c1_epi@example.com"
@@ -86,6 +93,7 @@ locals1c1_epi:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locals1c2_epi:
   id: 9
   email: "locals1c2_epi@example.com"
@@ -97,6 +105,7 @@ locals1c2_epi:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 state2_epi:
   id: 10
   email: "state2_epi@example.com"
@@ -108,6 +117,7 @@ state2_epi:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locals2c3_epi:
   id: 11
   email: "locals2c3_epi@example.com"
@@ -119,6 +129,7 @@ locals2c3_epi:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locals2c4_epi:
   id: 12
   email: "locals2c4_epi@example.com"
@@ -130,6 +141,7 @@ locals2c4_epi:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 state1_epi_enroller:
   id: 13
   email: "state1_epi_enroller@example.com"
@@ -141,6 +153,7 @@ state1_epi_enroller:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 admin1:
   id: 14
   email: "admin1@example.com"
@@ -152,6 +165,7 @@ admin1:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 analyst_all:
   id: 15
   email: "analyst_all@example.com"
@@ -163,6 +177,7 @@ analyst_all:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 usa_epi:
   id: 16
   email: "usa_epi@example.com"
@@ -174,6 +189,7 @@ usa_epi:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 forced_password_change_user:
   id: 17
   email: "forced_password_change_user@example.com"
@@ -185,6 +201,7 @@ forced_password_change_user:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
 locked_user:
   id: 18
   email: "locked_user@example.com"
@@ -196,4 +213,5 @@ locked_user:
   password_changed_at: "<%= 50.days.ago %>"
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
   
