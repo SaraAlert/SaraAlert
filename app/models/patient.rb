@@ -137,6 +137,7 @@ class Patient < ApplicationRecord
       .distinct
   }
 
+  # Patients who are eligible for reminders
   scope :reminder_eligible, lambda {
     where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       .where(pause_notifications: false)

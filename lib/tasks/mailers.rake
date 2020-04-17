@@ -63,8 +63,11 @@ namespace :mailers do
   desc "Send Assessments and Assessment Reminders To Non-Reporting Individuals"
   task send_assessments: :environment do
     # Non-reporting but not symptomatic
-    Patient.reminder_eligible.each do |patient|
+    patients = Patient.reminder_eligible
+    puts patients.count.to_s + ' eligible patients for reminder send task. Sending now...'
+    patients.each do |patient|
       patient.send_assessment
     end
+    puts 'Send reminders task finished.'
   end
 end
