@@ -205,6 +205,8 @@ class Enrollment extends React.Component {
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
               currentState={this.state.enrollmentState}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              jurisdiction_id={this.props.patient.jurisdiction_id}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -229,6 +231,7 @@ Enrollment.propTypes = {
   current_user: PropTypes.object,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.array,
   enrollmentState: PropTypes.object,
   editMode: PropTypes.bool,
   parent_id: PropTypes.number,

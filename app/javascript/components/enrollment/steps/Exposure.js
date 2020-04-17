@@ -7,7 +7,15 @@ import * as yup from 'yup';
 class Exposure extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
+    const jur = this.props.jurisdiction_paths.find(jur => jur.value === props.jurisdiction_id);
+    this.state = {
+      ...this.props,
+      current: { ...this.props.currentState },
+      jurisdiction_label: jur ? jur.label : '',
+      original_jurisdiction_id: this.props.currentState.jurisdiction_id,
+      errors: {},
+      modified: {},
+    };
     this.handleChange = this.handleChange.bind(this);
     this.validate = this.validate.bind(this);
   }
@@ -17,6 +25,11 @@ class Exposure extends React.Component {
     let current = this.state.current;
     let modified = this.state.modified;
     value = event.target.type === 'date' && value === '' ? undefined : value;
+    if (event?.target?.name && event.target.name === 'jurisdictionList') {
+      this.setState({ jurisdiction_label: event.target.value });
+      let jurisdiction = this.props.jurisdiction_paths.find(jur => jur.label === event.target.value);
+      value = jurisdiction?.value ? jurisdiction.value : -1;
+    }
     this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.modified });
     });
@@ -29,7 +42,15 @@ class Exposure extends React.Component {
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, () => {
-          callback();
+          if (self.state.current.jurisdiction_id !== self.state.original_jurisdiction_id) {
+            const original_jurisdiction_label = self.props.jurisdiction_paths.find(jur => jur.value === self.state.original_jurisdiction_id).label;
+            const message = `You are about to change the assigned jurisdiction from ${original_jurisdiction_label} to ${self.state.jurisdiction_label}. Are you sure you want to do this?`;
+            if (confirm(message)) {
+              callback();
+            }
+          } else {
+            callback();
+          }
         });
       })
       .catch(err => {
@@ -302,6 +323,34 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
+                  <Form.Row className="pt-3 align-items-end">
+                    <Form.Group as={Col} md="14" controlId="jurisdiction_id">
+                      <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Control
+                        isInvalid={this.state.errors['jurisdiction_id']}
+                        as="input"
+                        list="jurisdiction"
+                        name="jurisdictionList"
+                        autoComplete="off"
+                        size="lg"
+                        className="form-square"
+                        onChange={this.handleChange}
+                        value={this.state.jurisdiction_label}
+                      />
+                      <datalist id="jurisdiction">
+                        {this.props.jurisdiction_paths.map(jur => {
+                          return (
+                            <option value={jur.label} key={`jur-${jur.value}`}>
+                              {jur.label}
+                            </option>
+                          );
+                        })}
+                      </datalist>
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['jurisdiction_id']}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Form.Row>
                   <Form.Row className="pt-4 pb-3">
                     <Form.Group as={Col} md="24" controlId="exposure_notes">
                       <Form.Label className="nav-input-label">EXPOSURE NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
@@ -393,6 +442,10 @@ const schema = yup.object().shape({
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
+  jurisdiction_id: yup
+    .number()
+    .positive('Please enter a valid jurisdiction under your hierarchy.')
+    .required(),
   exposure_notes: yup
     .string()
     .max(2000, 'Max length exceeded, please limit to 2000 characters.')
@@ -405,6 +458,8 @@ Exposure.propTypes = {
   setEnrollmentState: PropTypes.func,
   next: PropTypes.func,
   submit: PropTypes.func,
+  jurisdiction_paths: PropTypes.array,
+  jurisdiction_id: PropTypes.number,
 };
 
 export default Exposure;

@@ -28,7 +28,7 @@ class PatientsController < ApplicationController
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
-    @patient = Patient.new
+    @patient = Patient.new(jurisdiction_id: current_user.jurisdiction_id)
   end
 
   # Similar to 'new', except used for creating a new group member
@@ -97,9 +97,6 @@ class PatientsController < ApplicationController
 
     # Set the creator as the current user
     patient.creator = current_user
-
-    # Set the subject jurisdiction to the creator's jurisdiction
-    patient.jurisdiction = current_user.jurisdiction
 
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
@@ -368,6 +365,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort
       member_of_a_common_exposure_cohort_type
       isolation
+      jurisdiction_id
     ]
   end
 
@@ -440,6 +438,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort
       member_of_a_common_exposure_cohort_type
       isolation
+      jurisdiction_id
     ]
   end
 end

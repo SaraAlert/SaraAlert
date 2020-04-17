@@ -23,6 +23,7 @@ class MonitoringStatus extends React.Component {
       exposure_risk_assessment: props.patient.exposure_risk_assessment ? props.patient.exposure_risk_assessment : '',
       jurisdiction: jur ? jur.label : '',
       current_jurisdiction: jur ? jur.label : '', // Used to remember jur on page load in case user cancels change modal
+      valid_jurisdiction: true,
       monitoring_status_options: null,
       monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
@@ -32,6 +33,7 @@ class MonitoringStatus extends React.Component {
       pause_notifications: props.patient.pause_notifications,
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
     this.submit = this.submit.bind(this);
     this.toggleMonitoringStatusModal = this.toggleMonitoringStatusModal.bind(this);
     this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
@@ -52,6 +54,7 @@ class MonitoringStatus extends React.Component {
         message_warning: '',
         jurisdiction: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
+        valid_jurisdiction: this.props.jurisdiction_paths.map(jur => jur.label).includes(event.target.value),
       });
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
@@ -135,6 +138,15 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
       this.setState({ [event.target.id]: event?.target?.value ? value : '' });
+    }
+  }
+
+  handleKeyPress() {
+    if (event?.target?.name && event.target.name === 'jurisdictionList') {
+      if (event.which === 13) {
+        event.preventDefault();
+        this.toggleJurisdictionModal();
+      }
     }
   }
 
@@ -415,9 +427,11 @@ class MonitoringStatus extends React.Component {
                     as="input"
                     list="jurisdiction"
                     name="jurisdictionList"
+                    autoComplete="off"
                     value={this.state.jurisdiction}
                     className="form-control-lg"
                     onChange={this.handleChange}
+                    onKeyPress={this.handleKeyPress}
                   />
                   <datalist id="jurisdiction">
                     {this.props.jurisdiction_paths.map(jur => {
@@ -430,9 +444,15 @@ class MonitoringStatus extends React.Component {
                   </datalist>
                 </Form.Group>
                 <Form.Group as={Col} md={8}>
-                  <Button onClick={this.toggleJurisdictionModal} className="btn-lg btn-square">
-                    <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
-                  </Button>
+                  {!this.state.valid_jurisdiction || this.state.current_jurisdiction === this.state.jurisdiction ? (
+                    <Button disabled className="btn-lg btn-square">
+                      <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
+                    </Button>
+                  ) : (
+                    <Button onClick={this.toggleJurisdictionModal} className="btn-lg btn-square">
+                      <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
+                    </Button>
+                  )}
                 </Form.Group>
                 {/* <Form.Group as={Col} md={6}>
                   {!this.props.patient.pause_notifications && (
