@@ -466,7 +466,7 @@ class Patient < ApplicationRecord
 
     # If force is set, the preferred contact time will be ignored
     unless force
-      hour = Time.now.hour
+      hour = Time.now.getlocal('-04:00').hour
       if !address_state.blank? && address_state == 'Northern Mariana Islands'
         # CNMI Local
         hour = Time.now.getlocal('+10:00').hour
