@@ -66,5 +66,5 @@ namespace :mailers do
     Patient.reminder_eligible.each do |patient|
       patient.send_assessment
     end
-
+  end
 end
