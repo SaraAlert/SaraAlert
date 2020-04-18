@@ -78,6 +78,11 @@ class User < ApplicationRecord
     has_role?(:public_health) || has_role?(:public_health_enroller)
   end
 
+  # Can this user assign a Patient to any jurisdiction during enrollment?
+  def can_assign_any_jurisdiction?
+    has_role?(:public_health_enroller)
+  end
+
   # Can this user edit a Patient?
   def can_edit_patient?
     has_role?(:enroller) || has_role?(:public_health) || has_role?(:public_health_enroller)

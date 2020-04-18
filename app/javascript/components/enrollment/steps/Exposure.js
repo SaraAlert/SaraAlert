@@ -444,7 +444,7 @@ const schema = yup.object().shape({
     .nullable(),
   jurisdiction_id: yup
     .number()
-    .positive('Please enter a valid jurisdiction under your hierarchy.')
+    .positive('Please enter a valid jurisdiction.')
     .required(),
   exposure_notes: yup
     .string()

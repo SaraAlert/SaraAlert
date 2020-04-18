@@ -98,6 +98,10 @@ class PatientsController < ApplicationController
     # Set the creator as the current user
     patient.creator = current_user
 
+    # Set the subject jurisdiction to the creator's jurisdiction if jurisdiction is not assigned or not assignable by the current user
+    assignable_jurisdictions = current_user.can_assign_any_jurisdiction? ? Jurisdiction.all : Jurisdiction.find(current_user.jurisdiction.subtree_ids)
+    patient.jurisdiction = current_user.jurisdiction unless patient.jurisdiction_id? && assignable_jurisdictions.exists?(patient.jurisdiction_id)
+
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
     patient.submission_token = SecureRandom.hex(20) # 160 bits
@@ -151,6 +155,23 @@ class PatientsController < ApplicationController
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if patient.nil?
+
+    # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user
+    if content[:jurisdiction_id] && content[:jurisdiction_id] != patient.jurisdiction_id
+      assignable_jurisdictions = current_user.can_assign_any_jurisdiction? ? Jurisdiction.all : Jurisdiction.find(current_user.jurisdiction.subtree_ids)
+      if assignable_jurisdictions.exists?(content[:jurisdiction_id])
+        history = History.new
+        history.created_by = current_user.email
+        old_jurisdiction = patient.jurisdiction.jurisdiction_path_string
+        new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id]).jurisdiction_path_string
+        history.comment = "User changed jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
+        history.patient = patient
+        history.history_type = 'Monitoring Change'
+        history.save
+      else
+        content[:jurisdiction_id] = patient.jurisdiction_id
+      end
+    end
 
     # Attempt to update, else return to index if failed
     redirect_to(root_url) && return unless patient.update!(content)
