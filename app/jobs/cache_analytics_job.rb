@@ -251,7 +251,7 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by last date of exposure by weeks
   def self.monitoree_counts_by_last_exposure_week(monitorees, active_monitoring)
     exposure_weeks = <<-SQL
-      DATE_ADD(last_date_of_exposure, interval -WEEKDAY(last_date_of_exposure)-1 day)
+      DATE_ADD(last_date_of_exposure, INTERVAL(1 - DAYOFWEEK(last_date_of_exposure)) DAY)
     SQL
     monitorees.monitoring_active(active_monitoring)
               .exposed_in_time_frame(NUM_PAST_EXPOSURE_WEEKS.weeks.ago.to_date.to_datetime)
