@@ -14,6 +14,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_patient?
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
+    @jurisdiction_path = @patient.jurisdiction_path
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -104,7 +105,7 @@ class PatientsController < ApplicationController
     # Set the subject jurisdiction to the creator's jurisdiction if jurisdiction is not assigned or not assignable by the current user
 
     valid_jurisdiction = (current_user.can_assign_any_jurisdiction? && !Jurisdiction.find(patient.jurisdiction_id).nil?) ||
-                         current_user.jurisdiction.subtree_ids.includes?(patient.jurisdiction_id)
+                         current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id)
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets

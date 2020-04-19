@@ -232,6 +232,7 @@ class Enrollment extends React.Component {
               currentState={this.state.enrollmentState}
               parentId={this.props.parent_id}
               canAddGroup={this.props.can_add_group}
+              jurisdiction_label={this.props.jurisdiction_paths.find(jur => jur.value === this.state.enrollmentState.jurisdiction_id).label}
             />
           </Carousel.Item>
         </Carousel>
