@@ -57,6 +57,9 @@ class PatientsController < ApplicationController
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
+
+    @group_members = @patient.dependents.where.not(id: @patient.id)
+    @propogated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
   # This follows 'new', this will receive the subject details and save a new subject
@@ -99,8 +102,10 @@ class PatientsController < ApplicationController
     patient.creator = current_user
 
     # Set the subject jurisdiction to the creator's jurisdiction if jurisdiction is not assigned or not assignable by the current user
-    assignable_jurisdictions = current_user.can_assign_any_jurisdiction? ? Jurisdiction.all : Jurisdiction.find(current_user.jurisdiction.subtree_ids)
-    patient.jurisdiction = current_user.jurisdiction unless patient.jurisdiction_id? && assignable_jurisdictions.exists?(patient.jurisdiction_id)
+
+    valid_jurisdiction = (current_user.can_assign_any_jurisdiction? && !Jurisdiction.find(patient.jurisdiction_id).nil?) ||
+                         current_user.jurisdiction.subtree_ids.includes?(patient.jurisdiction_id)
+    patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
@@ -156,6 +161,13 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if patient.nil?
 
+    # Propogate desired fields to household except jurisdiction_id
+    propogated_fields = params.permit(*group_member_subset)
+    unless propogated_fields.empty?
+      propogated_content = content.select { |field| propogated_fields.include?(field) && field != 'jurisdiction_id' }
+      patient.dependents.where.not(id: patient.id).update(propogated_content)
+    end
+
     # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user
     if content[:jurisdiction_id] && content[:jurisdiction_id] != patient.jurisdiction_id
       assignable_jurisdictions = current_user.can_assign_any_jurisdiction? ? Jurisdiction.all : Jurisdiction.find(current_user.jurisdiction.subtree_ids)
@@ -168,6 +180,20 @@ class PatientsController < ApplicationController
         history.patient = patient
         history.history_type = 'Monitoring Change'
         history.save
+        transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
+        transfer.save!
+        if propogated_fields.include?('jurisdiction_id')
+          group_members = patient.dependents.where.not(id: patient.id)
+          group_members.update(jurisdiction_id: content[:jurisdiction_id])
+          group_members.each do |group_member|
+            propogated_history = history.dup
+            propogated_transfer = transfer.dup
+            propogated_history.patient = group_member
+            propogated_transfer.patient = group_member
+            propogated_history.save
+            propogated_transfer.save
+          end
+        end
       else
         content[:jurisdiction_id] = patient.jurisdiction_id
       end

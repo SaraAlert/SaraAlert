@@ -11,12 +11,16 @@ class Exposure extends React.Component {
     this.state = {
       ...this.props,
       current: { ...this.props.currentState },
+      propogatedFields: { ...this.props.propogated_fields },
       jurisdiction_label: jur ? jur.label : '',
+      original_jurisdiction_label: jur ? jur.label : '',
       original_jurisdiction_id: this.props.currentState.jurisdiction_id,
       errors: {},
       modified: {},
+      modifiedPropogatedFields: {},
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handlePropogatedFieldChange = this.handlePropogatedFieldChange.bind(this);
     this.validate = this.validate.bind(this);
   }
 
@@ -33,6 +37,20 @@ class Exposure extends React.Component {
     this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
       this.props.setEnrollmentState({ ...this.state.modified });
     });
+  }
+
+  handlePropogatedFieldChange(event) {
+    let propogatedFields = this.propogatedFields;
+    let modifiedPropogatedFields = this.state.modifiedPropogatedFields;
+    this.setState(
+      {
+        propogatedFields: { ...propogatedFields, [event.target.name]: event.target.checked },
+        modifiedPropogatedFields: { ...modifiedPropogatedFields, [event.target.name]: event.target.checked },
+      },
+      () => {
+        this.props.setPropogatedFields({ ...this.state.modifiedPropogatedFields });
+      }
+    );
   }
 
   validate(callback) {
@@ -349,6 +367,20 @@ class Exposure extends React.Component {
                       <Form.Control.Feedback className="d-block" type="invalid">
                         {this.state.errors['jurisdiction_id']}
                       </Form.Control.Feedback>
+                      {this.props.has_group_members &&
+                        this.state.jurisdiction_label !== this.state.original_jurisdiction_label &&
+                        this.state.current.jurisdiction_id >= 0 && (
+                          <Form.Group className="mt-2">
+                            <Form.Check
+                              type="switch"
+                              id="update_group_member_jurisdiction_id"
+                              name="jurisdiction_id"
+                              label="Apply this change to the entire household that this monitoree is responsible for"
+                              onChange={this.handlePropogatedFieldChange}
+                              checked={this.state.propogatedFields.jurisdiction_id === true || false}
+                            />
+                          </Form.Group>
+                        )}
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-4 pb-3">
@@ -456,8 +488,11 @@ Exposure.propTypes = {
   currentState: PropTypes.object,
   previous: PropTypes.func,
   setEnrollmentState: PropTypes.func,
+  setPropogatedFields: PropTypes.func,
   next: PropTypes.func,
   submit: PropTypes.func,
+  propogated_fields: PropTypes.object,
+  has_group_members: PropTypes.bool,
   jurisdiction_paths: PropTypes.array,
   jurisdiction_id: PropTypes.number,
 };
