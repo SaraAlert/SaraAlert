@@ -1,0 +1,27 @@
+<%= stylesheet_link_tag "devise_authy" %>
+    <div class="authy-menu col-24 d-flex flex-column justify-content-center">
+      <div class="row">
+        <div class="col-md-15 col-lg-12 col-xl-10 mx-auto">
+          <div class="pb-4">
+            <%= render partial: 'devise/shared/logo' %>
+          </div>
+          <div class="card shadow shadow-sm card-square text-center">
+          
+            <div class="card-header">
+              <h3 class="mb-0">2-Factor Verification</h3>
+            </div>
+            <div class="card-body">
+
+              <%= verify_authy_form do %>
+                <%= label_tag 'authy-token' %>
+                <%= text_field_tag :token, "", :autocomplete => :off, :id => 'authy-token' %>
+
+                <%= authy_request_sms_link :class => 'btn-success btn-lg'  %>
+                <%= submit_tag I18n.t('submit_token', {:scope => 'devise'}), :class => 'btn-primary btn-lg' %>
+              <% end %>
+
+            </div>
+          </div>
+        </div>
+    </div>
+</div>

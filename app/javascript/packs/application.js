@@ -36,3 +36,7 @@ import "@fortawesome/fontawesome-free/js/all";
 // DataTables
 require("datatables.net-bs4")(window, $);
 require("datatables.net-bs4/css/dataTables.bootstrap4.css");
+
+// Authy Form Helpers
+require("authy-form-helpers/src/form.authy.min.js")
+require("authy-form-helpers/src/form.authy.min.css")

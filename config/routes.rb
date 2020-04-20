@@ -5,7 +5,13 @@ Rails.application.routes.draw do
     root to: 'home#index'
   end
 
-  devise_for :users, only: [:sessions]
+  devise_for :users, only: [:sessions, :authy], :path_names => {
+    verify_authy: "/verify-token",
+    enable_authy: "/enable-two-factor",
+    verify_authy_installation: "/verify-installation",
+    authy_onetouch_status: "/onetouch-status"
+  }
+
   as :user do
     get 'users/edit', to: 'users/registrations#edit', as: :edit_user_registration
     put 'users', to: 'users/registrations#update', as: :user_registration
@@ -21,6 +27,7 @@ Rails.application.routes.draw do
   post 'admin/lock_user', to: 'admin#lock_user'
   post 'admin/unlock_user', to: 'admin#unlock_user'
   post 'admin/reset_password', to: 'admin#reset_password'
+  post 'admin/reset_2fa', to: 'admin#reset_2fa'
 
   resources :histories, only: [:create]
 
