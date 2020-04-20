@@ -17,6 +17,6 @@ class ApplicationController < ActionController::Base
     end
 
     redirect_to edit_user_registration_url if current_user&.force_password_change
-    redirect_to user_enable_authy_url if current_user&.authy_id.nil? && current_user&.authy_enabled
+    redirect_to user_enable_authy_url if current_user&.authy_id.nil? && current_user&.authy_enabled && !current_user&.force_password_change
   end
 end
