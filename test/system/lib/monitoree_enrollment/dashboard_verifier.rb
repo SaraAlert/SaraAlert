@@ -16,10 +16,10 @@ class MonitoreeEnrollmentDashboardVerifier < ApplicationSystemTestCase
     @@system_test_utils.return_to_dashboard('exposure', isEpi)
   end
 
-  def verify_monitoree_info_as_group_member_on_dashboard(existing_monitoree, new_monitoree, isEpi=false)
+  def verify_group_member_on_dashboard(existing_monitoree, new_monitoree, isEpi=false)
     displayed_name = search_for_monitoree(new_monitoree, isEpi)
     click_on displayed_name
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info_as_group_member(existing_monitoree, new_monitoree, isEpi)
+    @@monitoree_enrollment_info_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, isEpi)
     click_on 'Click here to view that monitoree'
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree, isEpi)
     @@system_test_utils.return_to_dashboard('exposure', isEpi)

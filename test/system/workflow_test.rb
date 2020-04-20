@@ -31,6 +31,7 @@ class WorkflowTest < ApplicationSystemTestCase
     user_name = 'state1_epi_enroller'
     monitoree_key = 'monitoree_3'
     @@monitoree_enrollment_helper.enroll_monitoree(user_name, monitoree_key, true)
+    @@system_test_utils.login(user_name)
     @@public_health_monitoring_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_key)
     @@public_health_monitoring_reports_verifier.verify_current_status('asymptomatic')
     @@public_health_monitoring_reports.add_report(user_name, ASSESSMENTS['assessment_1'])
@@ -63,7 +64,6 @@ class WorkflowTest < ApplicationSystemTestCase
     epi_user_name = 'state1_epi'
     monitoree_key = 'monitoree_2'
     @@monitoree_enrollment_helper.enroll_monitoree(enroller_user_name, monitoree_key)
-    @@system_test_utils.logout
     @@system_test_utils.login(epi_user_name)
     @@public_health_monitoring_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_key)
     @@public_health_monitoring_reports_verifier.verify_current_status('asymptomatic')

@@ -35,12 +35,12 @@ class PublicHealthMonitoringDashboardVerifier < ApplicationSystemTestCase
 
   def verify_workflow_count(workflow, expected_count)
     displayed_count = find('a', text: workflow).text.tr("#{workflow} ()", '').to_i
-    assert_equal expected_count, displayed_count, @@system_test_utils.get_err_msg('dashboard', "#{workflow} monitoring type count", expected_count)
+    assert_equal(expected_count, displayed_count, @@system_test_utils.get_err_msg('dashboard', "#{workflow} monitoring type count", expected_count))
   end
   
   def verify_patients_under_tab(tab, patients)
     @@system_test_utils.go_to_tab(tab)
-    assert_equal patients.count, patient_count_under_tab(tab), @@system_test_utils.get_err_msg('dashboard', "#{tab} tab count", patients.count)
+    assert_equal(patients.count, patient_count_under_tab(tab), @@system_test_utils.get_err_msg('dashboard', "#{tab} tab count", patients.count))
     patients.each do |patient|
       verify_patient_under_tab(tab, patient)
     end
