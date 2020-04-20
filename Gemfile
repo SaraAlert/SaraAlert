@@ -51,8 +51,10 @@ gem 'activerecord_where_assoc'
 # Pagination
 gem 'will_paginate'
 
-# Excel
+# Excel Import
 gem 'roo'
+# Excel Export
+gem 'caxlsx'
 
 gem 'sara-schema'
 
