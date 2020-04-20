@@ -1544,6 +1544,11 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+authy-form-helpers@^2.4.4:
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/authy-form-helpers/-/authy-form-helpers-2.4.4.tgz#52e5f4ca7c9f241d673ad35514bea876622a6238"
+  integrity sha1-UuX0ynyfJB1nOtNVFL6odmIqYjg=
+
 autoprefixer@^9.6.1:
   version "9.7.6"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.7.6.tgz#63ac5bbc0ce7934e6997207d5bb00d68fa8293a4"
