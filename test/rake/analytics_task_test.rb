@@ -3,6 +3,7 @@ load 'lib/tasks/analytics.rake'
 
 class AnalyticsTaskTest < ActiveSupport::TestCase
 
+  fixtures :all
   @@monitorees = Patient.where('jurisdiction_id >= ?', 1).where('jurisdiction_id <= ?', 7)
   @@monitorees_by_exposure_week = Patient.where(jurisdiction_id: 8)
   @@monitorees_by_exposure_month = Patient.where(jurisdiction_id: 9)
