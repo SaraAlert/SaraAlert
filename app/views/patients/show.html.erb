@@ -26,7 +26,7 @@
     </div>
   </div>
   <div class="card mx-2 mt-3 mb-4 card-square">
-    <h5 class="card-header"> Reports <a href="#" data-toggle="modal" data-target="#modal-new">(add new)</a></h5>
+    <h5 class="card-header"> Reports</h5>
     <div class="m-4">
       <%= react_component("subject/CurrentStatus", { status: @patient.status, isolation: @patient.isolation } ) %>
       <% columns = [] %>
@@ -67,6 +67,7 @@
                 <div class="btn-group btn-group-sm" role="group">
                   <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="btn btn-link py-0"><i class="fas fa-edit"></i> Edit</button>
                   <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                  <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
                 </div>
               </td>
             </tr>
@@ -75,7 +76,10 @@
       </table>
       <div class="pb-1">
         <div class="btn-group" role="group">
-          <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New</button>
+          <% unless @patient.isolation %>
+            <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <% end %>
           <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
         </div>
       </div>

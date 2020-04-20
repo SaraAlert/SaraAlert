@@ -40,7 +40,6 @@ class PauseNotifications extends React.Component {
       <React.Fragment>
         {!this.props.patient.pause_notifications && (
           <Button
-            className="ml-2"
             id="pause_notifications"
             onClick={() => {
               if (
@@ -56,7 +55,6 @@ class PauseNotifications extends React.Component {
         )}
         {this.props.patient.pause_notifications && (
           <Button
-            className="ml-2"
             id="pause_notifications"
             onClick={() => {
               if (

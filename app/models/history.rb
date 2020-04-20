@@ -20,6 +20,7 @@ class History < ApplicationRecord
                                              'Enrollment',
                                              'Monitoring Change',
                                              'Reports Reviewed',
+                                             'Report Reviewed',
                                              'Report Reminder',
                                              'Report Note'] }
 

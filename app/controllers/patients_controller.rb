@@ -242,6 +242,25 @@ class PatientsController < ApplicationController
     history.save
   end
 
+  def clear_assessment
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    patient = current_user.get_patient(params.permit(:id)[:id])
+    assessment = patient.assessments.find_by(id: params.permit(:assessment_id)[:assessment_id])
+
+    assessment.symptomatic = false
+    assessment.save!
+
+    history = History.new
+    history.created_by = current_user.email
+    comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ').'
+    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+    history.comment = comment
+    history.patient = patient
+    history.history_type = 'Report Reviewed'
+    history.save
+  end
+
   def send_reminder
     # Send a new report reminder to the monitoree
     redirect_to(root_url) && return unless current_user.can_remind_patient?
