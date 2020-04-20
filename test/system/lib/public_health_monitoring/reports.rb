@@ -14,7 +14,7 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def add_report(user_name, assessment)
-    click_on '(add new)'
+    click_on 'Add New'
     @@assessment_form.submit_assessment(assessment['symptoms'])
     @@public_health_monitoring_reports_verifier.verify_add_report(user_name, assessment)
     search_for_report(user_name)
