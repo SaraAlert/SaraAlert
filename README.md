@@ -156,6 +156,13 @@ The content for these files can be based off of the `.env-prod-assessment-exampl
 
 The `SECRET_KEY_BASE` and `MYSQL_PASSWORD` variables should be changed at the very least. These variables should also not be the same between both assessment and enrollment instances of the files. It is important to note that `SARA_ALERT_REPORT_MODE` should be set to `false` for the enrollment file and `true` for the assessment file.
 
+**Twilio/Authy Environment Variables**
+The following environment variables need to be set on the enrollment instances, which are the instances that will be dispatching the SMS/Voice assessments via Twilio and performing Two-Factor Authentication using Authy. These environment variables can be set in a `config/local_env.yml` file, or via a method provided by the deployment environment.
+* `TWILLIO_API_ACCOUNT: <Account number for Twilio Account>`
+* `TWILLIO_API_KEY: <API key for Twilio Account>`
+* `TWILLIO_SENDING_NUMBER: <Phone number registered to Twilio Account for SMS/Voice>`
+* `AUTHY_API_KEY: <API key for Authy project>`
+
 **Container Dependencies**
 
 Create a directory for the deployment. Move both docker compose files and both environment variable files from the previous section into this folder. Within this deployment directory, create a subdirectory called `tls` and place your `.key` and `.crt` files for the webserver inside. Name the files `puma.key` and `puma.crt`. Ensure the `.crt` and `.key` files within the `tls` directory are at least `0x004` permissions so they can be read inside the container.
