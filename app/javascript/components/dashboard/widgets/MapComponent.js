@@ -50,7 +50,7 @@ class MapComponent extends React.Component {
     stateOptions.push({ name: 'Unknown', abbrv: 'UKN' });
     stateOptions.forEach(stateName => {
       let newVal = { State: stateName['abbrv'] };
-      newVal[this.props.variant] = data[stateName['abbrv']] ? data[stateName['abbrv']] : 0;
+      newVal[this.props.variant] = data[stateName['abbrv']] ? data[stateName['abbrv']] : 'Sara Alert Not in Use';
       this.monitoreesMap.data.push(newVal);
     });
     this.monitoreesMap.data.push({ State: null });
