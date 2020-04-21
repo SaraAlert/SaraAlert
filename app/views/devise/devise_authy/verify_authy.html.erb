@@ -16,6 +16,7 @@
                 <%= label_tag 'authy-token' %>
                 <%= text_field_tag :token, "", :autocomplete => :off, :id => 'authy-token' %>
                 <%= authy_request_sms_link :class => 'btn-success btn-lg'  %>
+                <%= authy_request_phone_call_link :class => 'btn-success btn-lg' %>
                 <%= submit_tag I18n.t('submit_token', {:scope => 'devise'}), :class => 'btn-primary btn-lg' %>
               <% end %>
 
