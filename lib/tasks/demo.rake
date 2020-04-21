@@ -23,27 +23,27 @@ namespace :demo do
 
     print 'Creating enroller users...'
 
-    enroller1 = User.new(email: 'state1_enroller@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false)
+    enroller1 = User.new(email: 'state1_enroller@example.com', password: '123456ab', jurisdiction: state1, force_password_change: false, authy_enabled: false)
     enroller1.add_role :enroller
     enroller1.save
 
-    enroller2 = User.new(email: 'localS1C1_enroller@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false)
+    enroller2 = User.new(email: 'localS1C1_enroller@example.com', password: '123456ab', jurisdiction: county1, force_password_change: false, authy_enabled: false)
     enroller2.add_role :enroller
     enroller2.save
 
-    enroller3 = User.new(email: 'localS1C2_enroller@example.com', password: '123456ab', jurisdiction: county2, force_password_change: false)
+    enroller3 = User.new(email: 'localS1C2_enroller@example.com', password: '123456ab', jurisdiction: county2, force_password_change: false, authy_enabled: false)
     enroller3.add_role :enroller
     enroller3.save
 
-    enroller4 = User.new(email: 'state2_enroller@example.com', password: '123456ab', jurisdiction: state2, force_password_change: false)
+    enroller4 = User.new(email: 'state2_enroller@example.com', password: '123456ab', jurisdiction: state2, force_password_change: false, authy_enabled: false)
     enroller4.add_role :enroller
     enroller4.save
 
-    enroller5 = User.new(email: 'localS2C3_enroller@example.com', password: '123456ab', jurisdiction: county3, force_password_change: false)
+    enroller5 = User.new(email: 'localS2C3_enroller@example.com', password: '123456ab', jurisdiction: county3, force_password_change: false, authy_enabled: false)
     enroller5.add_role :enroller
     enroller5.save
 
-    enroller6 = User.new(email: 'localS2C4_enroller@example.com', password: '123456ab', jurisdiction: county4, force_password_change: false)
+    enroller6 = User.new(email: 'localS2C4_enroller@example.com', password: '123456ab', jurisdiction: county4, force_password_change: false, authy_enabled: false)
     enroller6.add_role :enroller
     enroller6.save
 
