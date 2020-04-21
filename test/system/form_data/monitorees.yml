@@ -15,6 +15,7 @@ monitoree_1:
     primary_telephone_type: "Plain Cell"
   potential_exposure_info:
     last_date_of_exposure: "02/05/2020"
+    jurisdiction_id: "USA, State 2"
 monitoree_2:
   identification:
     first_name: "Chi10"
@@ -169,6 +170,7 @@ monitoree_5:
     contact_of_known_case: true
     contact_of_known_case_id: "9BIHOS2819"
     travel_to_affected_country_or_area: true
+    jurisdiction_id: "USA, State 1, County 1"
 monitoree_6:
   identification:
     first_name: "Ken43"

@@ -53,7 +53,7 @@ class MonitoreeEnrollmentSteps < ApplicationSystemTestCase
         { id: 'foreign_monitored_address_county', type: 'text', required: false, info_page: false, tab: 'Home Address Outside USA (Foreign)' }
       ],
       contact_info: [
-        { id: 'preferred_contact_method', type: 'select', required: true, info_page: true },
+        { id: 'preferred_contact_method', type: 'select', required: true, info_page: false },
         { id: 'preferred_contact_time', type: 'select', required: false, info_page: true },
         { id: 'primary_telephone', type: 'text', required: false, info_page: true },
         { id: 'primary_telephone_type', type: 'select', required: false, info_page: true },
@@ -101,7 +101,7 @@ class MonitoreeEnrollmentSteps < ApplicationSystemTestCase
         { id: 'member_of_a_common_exposure_cohort_type', type: 'text', required: false, info_page: true },
         { id: 'exposure_risk_assessment', type: 'select', required: false, info_page: false },
         { id: 'monitoring_plan', type: 'select', required: false, info_page: false },
-        { id: 'jurisdiction_id', type: 'select', required: false, info_page: true },
+        { id: 'jurisdiction_id', type: 'text', required: false, info_page: true },
         { id: 'exposure_notes', type: 'text', required: false, info_page: false }
       ]
     }

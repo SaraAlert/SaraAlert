@@ -115,6 +115,13 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'last_date_of_exposure', with: '10/01/5398'
     click_on 'Next'
     verify_text_displayed('Date can not be in the future')
+    fill_in 'last_date_of_exposure', with: '04/20/2020'
+    fill_in 'jurisdiction_id', with: ''
+    click_on 'Next'
+    verify_text_displayed('Please enter a valid jurisdiction')
+    fill_in 'jurisdiction_id', with: 'fake jurisdiction'
+    click_on 'Next'
+    verify_text_displayed('Please enter a valid jurisdiction')
     @@monitoree_enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
     verify_text_not_displayed('Please enter a last date of exposure')
     verify_text_not_displayed('Date can not be in the future')

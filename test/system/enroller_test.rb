@@ -15,6 +15,14 @@ class EnrollerTest < ApplicationSystemTestCase
     @@monitoree_enrollment_helper.enroll_monitoree('locals1c2_enroller', 'monitoree_3')
   end
 
+  test 'enroll monitoree with jurisdiction within hierarchy' do
+    @@monitoree_enrollment_helper.enroll_monitoree('state1_enroller', 'monitoree_5', false)
+  end
+
+  test 'epi enroll monitoree with any jurisdiction' do
+    @@monitoree_enrollment_helper.enroll_monitoree('state1_epi_enroller', 'monitoree_2', true)
+  end
+
   test 'add group member with foreign address and international additional planned travel' do
     @@monitoree_enrollment_helper.enroll_group_member('locals2c3_enroller', 'monitoree_4', 'monitoree_9')
   end

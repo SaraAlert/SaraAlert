@@ -25,6 +25,7 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
   end
 
   def populate_enrollment_step(step, data, continue=true)
+    jurisdiction_change = false
     if data
       @@monitoree_enrollment_steps.steps[step].each { |field|
         if data[field[:id]]
@@ -36,9 +37,11 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
           elsif field[:type] == 'checkbox' || field[:type] == 'race' || field[:type] == 'risk factor'
             find('label', text: field[:label]).click
           end
+          jurisdiction_change = true if field[:id] == 'jurisdiction_id'
         end
       }
     end
     @@system_test_utils.go_to_next_page if continue
+    page.driver.browser.switch_to.alert.accept if jurisdiction_change
   end
 end
