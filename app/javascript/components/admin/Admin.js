@@ -41,6 +41,7 @@ class Admin extends React.Component {
       if (success) {
         row['failed_attempts'] = 0;
         row['locked'] = 'Unlocked';
+        row['configured_2fa'] = 'No';
         this.props.data.push(row);
         this.setState({ data: this.props.data });
       } else {
