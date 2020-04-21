@@ -85,7 +85,7 @@ class AssessmentsController < ApplicationController
         assessment_receipt.save
         history = History.new
         history.created_by = current_user.email
-        comment = 'User created a new subject report. ID: ' + @assessment.id.to_s
+        comment = 'User created a new report. ID: ' + @assessment.id.to_s
         history.comment = comment
         history.patient = patient
         history.history_type = 'Report Created'
@@ -115,7 +115,7 @@ class AssessmentsController < ApplicationController
 
     history = History.new
     history.created_by = current_user.email
-    comment = 'User updated an existing subject report.'
+    comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
     history.comment = comment
     history.patient = patient
     history.history_type = 'Report Updated'

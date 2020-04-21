@@ -10,7 +10,7 @@ class PublicHealthTest < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   ASSESSMENTS = @@system_test_utils.get_assessments
-  
+
   test 'view patient information on dashboard' do
     @@public_health_monitoring_helper.verify_patients_on_dashboard('state1_epi')
     @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c1_epi')
@@ -75,8 +75,8 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'pause notifications' do
-    @@public_health_monitoring_helper.pause_notifications('state1_epi', 'patient_5', 'closed')
-    @@public_health_monitoring_helper.pause_notifications('state1_epi', 'patient_5', 'closed')
+    @@public_health_monitoring_helper.pause_notifications('state1_epi', 'patient_2', 'non-reporting')
+    @@public_health_monitoring_helper.pause_notifications('state1_epi', 'patient_2', 'non-reporting')
   end
 
   test 'add comment' do

@@ -18,7 +18,7 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
   @@public_health_monitoring_monitoree_page = PublicHealthMonitoringMonitoreePage.new(nil)
   @@public_health_monitoring_dashboard_verifier = PublicHealthMonitoringDashboardVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
-  
+
   def verify_patients_on_dashboard(user_name)
     jurisdiction_id = @@system_test_utils.login(user_name)
     @@public_health_monitoring_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id)
@@ -114,8 +114,8 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
   def pause_notifications(user_name, patient_key, tab)
     @@system_test_utils.login(user_name)
     @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_key)
-    @@public_health_monitoring_reports.pause_notifications(user_name, false)
     @@public_health_monitoring_reports.pause_notifications(user_name, true)
+    @@public_health_monitoring_reports.pause_notifications(user_name, false)
     @@system_test_utils.logout
   end
 

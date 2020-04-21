@@ -8,6 +8,7 @@
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
           <th class="DataTable-table-header">Date of Birth</th>
+          <% if type == 'closed_patients' %><th class="DataTable-table-header">Expected Purge Date</th><% end %>
           <th class="DataTable-table-header"><% if type == 'closed_patients' %>Reason for Closure<% elsif type == 'pui_patients' %>Latest Public Health Action<% else %>Monitoring Plan<% end %></th>
           <th class="DataTable-table-header"><% if type.include? 'transferred' %>Transferred At<% elsif type == 'closed_patients' %>Closed At<% else %>Latest Report<% end %></th>
           <% if type == 'all_patients' %><th class="DataTable-table-header">Status</th><% end %>
@@ -17,8 +18,8 @@
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
           <th class="DataTable-table-header">Date of Birth</th>
-          <th class="DataTable-table-header">End of Monitoring</th>
-          <th class="DataTable-table-header">Risk Level</th>
+          <th class="DataTable-table-header"><% if type == 'closed_patients' %>Expected Purge Date<% else %>End of Monitoring<% end %></th>
+          <% unless type == 'closed_patients' %><th class="DataTable-table-header">Risk Level</th><% end %>
           <th class="DataTable-table-header"><% if type == 'closed_patients' %>Reason for Closure<% elsif type == 'pui_patients' %>Latest Public Health Action<% else %>Monitoring Plan<% end %></th>
           <th class="DataTable-table-header"><% if type.include? 'transferred' %>Transferred At<% elsif type == 'closed_patients' %>Closed At<% else %>Latest Report<% end %></th>
           <% if type == 'all_patients' %><th class="DataTable-table-header">Status</th><% end %>
@@ -53,6 +54,7 @@
           { "data": "linelist.state_local_id", "name": "state_local_id" },
           { "data": "linelist.sex", "name": "sex" },
           { "data": "linelist.dob", "name": "dob" },
+          <% if type == 'closed_patients' %>{ "data": "linelist.expected_purge_date", "name": "expected_purge_date" },<% end %>
           <% if type == 'closed_patients' %>{ "data": "linelist.reason_for_closure", "name": "monitoring_reason" },<% elsif type == 'pui_patients' %>{ "data": "linelist.public_health_action", "name": "public_health_action" },<% else %>{ "data": "linelist.monitoring_plan", "name": "monitoring_plan" },<% end %>
           <% if type.include? 'transferred' %>{ "data": "linelist.transferred", "orderable": false }<% elsif type == 'closed_patients' %>{ "data": "linelist.closed_at", "name": "closed_at" }<% else %>{ "data": "linelist.latest_report", "name": "latest_report" }<% end %>
           <% if type == 'all_patients' %>,{ "data": "linelist.status", "orderable": false }<% end %>
@@ -71,8 +73,8 @@
           { "data": "linelist.state_local_id", "name": "state_local_id" },
           { "data": "linelist.sex", "name": "sex" },
           { "data": "linelist.dob", "name": "dob" },
-          { "data": "linelist.end_of_monitoring", "name": "end_of_monitoring" },
-          { "data": "linelist.risk_level", "name": "risk" },
+          <% if type == 'closed_patients' %>{ "data": "linelist.expected_purge_date", "name": "expected_purge_date" },<% else %>{ "data": "linelist.end_of_monitoring", "name": "end_of_monitoring" },<% end %>
+          <% unless type == 'closed_patients' %>{ "data": "linelist.risk_level", "name": "risk" },<% end %>
           <% if type == 'closed_patients' %>{ "data": "linelist.reason_for_closure", "name": "monitoring_reason" },<% elsif type == 'pui_patients' %>{ "data": "linelist.public_health_action", "name": "public_health_action" },<% else %>{ "data": "linelist.monitoring_plan", "name": "monitoring_plan" },<% end %>
           <% if type.include? 'transferred' %>{ "data": "linelist.transferred", "orderable": false }<% elsif type == 'closed_patients' %>{ "data": "linelist.closed_at", "name": "closed_at" }<% else %>{ "data": "linelist.latest_report", "name": "latest_report" }<% end %>
           <% if type == 'all_patients' %>,{ "data": "linelist.status", "orderable": false }<% end %>

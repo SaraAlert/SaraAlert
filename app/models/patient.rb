@@ -356,7 +356,8 @@ class Patient < ApplicationRecord
       status: status&.to_s&.humanize&.downcase || '',
       closed_at: closed_at&.to_s || '',
       transferred_from: latest_transfer&.from_path || '',
-      transferred_to: latest_transfer&.to_path || ''
+      transferred_to: latest_transfer&.to_path || '',
+      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes).strftime('%F') || '')
     }
   end
 
@@ -502,7 +503,7 @@ class Patient < ApplicationRecord
       PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
     elsif preferred_contact_method == 'Telephone call' && responder.id == id
       PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
-    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id
+    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id && !email.blank?
       PatientMailer.assessment_email(self).deliver_later
     end
 
