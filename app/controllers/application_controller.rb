@@ -12,11 +12,14 @@ class ApplicationController < ActionController::Base
     current_user.lock_access! if current_user.password_changed_at < 3.days.ago
 
     if request.url == edit_user_registration_url || request.url == user_registration_url ||
-       request.url == destroy_user_session_url || request.url == user_enable_authy_url
+       request.url == destroy_user_session_url || request.url == user_enable_authy_url || request.url == user_verify_authy_url
       return
     end
 
-    redirect_to edit_user_registration_url if current_user&.force_password_change
+    if current_user&.force_password_change
+      redirect_to edit_user_registration_url
+      return
+    end
     redirect_to user_enable_authy_url if current_user&.authy_id.nil? && current_user&.authy_enabled
   end
 end
