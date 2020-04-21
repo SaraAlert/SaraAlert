@@ -6,22 +6,48 @@
             <%= render partial: 'devise/shared/logo' %>
           </div>
           <div class="card shadow shadow-sm card-square text-center">
-          
             <div class="card-header">
-              <h3 class="mb-0">2-Factor Verification</h3>
+              <h4 class="mb-0">2-Factor Verification</h4>
             </div>
             <div class="card-body">
-
               <%= verify_authy_form do %>
-                <%= label_tag 'authy-token' %>
-                <%= text_field_tag :token, "", :autocomplete => :off, :id => 'authy-token' %>
-                <%= authy_request_sms_link :class => 'btn-success btn-lg text-nowrap'  %>
-                <%= authy_request_phone_call_link :class => 'btn-success btn-lg text-nowrap' %>
-                <%= submit_tag I18n.t('submit_token', {:scope => 'devise'}), :class => 'btn-primary btn-lg text-nowrap' %>
+                <div class="container">
+                  <div class="row mb-3">
+                    <h5>Step 1: Choose how to receive your secure token.</h5>
+                  </div>
+                  <div class="row mb-5">
+                    <div class="col-12">
+                      <%= authy_request_sms_link class: 'btn-primary btn btn-lg btn-block', id: 'authy-sms'  %>
+                    </div>
+                    <div class="col-12">
+                      <%= authy_request_phone_call_link class: 'btn-primary btn btn-lg btn-block', id: 'authy-phone' %>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <h5>Step 2: Enter the token you receive.</h5>
+                  </div>
+                  <div class="row justify-content-center">
+                    <div class="form-inline">
+                      <%= text_field_tag :token, "", autocomplete: :off, id: 'authy-token', class: "form-control form-control-lg" %>
+                      <%= submit_tag I18n.t('submit_token', {scope: 'devise'}), class: 'btn-primary btn btn-lg' %>
+                    </div>
+                  </div>
+                </div>
               <% end %>
-
             </div>
           </div>
         </div>
     </div>
 </div>
+<script>
+  $(document).ready(function() {
+    $("#authy-phone").on("click", function() {
+      $("#authy-phone").addClass("disabled");
+      $("#authy-sms").addClass("disabled");
+    });
+    $("#authy-sms").on("click", function() {
+      $("#authy-phone").addClass("disabled");
+      $("#authy-sms").addClass("disabled");
+    });
+  });
+</script>

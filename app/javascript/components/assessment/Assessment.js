@@ -133,6 +133,7 @@ class Assessment extends React.Component {
         <Carousel
           controls={false}
           indicators={false}
+          slide={false}
           interval={null}
           keyboard={false}
           activeIndex={this.state.index}

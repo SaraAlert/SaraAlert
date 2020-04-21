@@ -8,18 +8,18 @@
       <div class="card shadow shadow-sm card-square">
         <div class="card text-center">
         <div class="card-header">
-          <h3 class="mb-0">Register For 2-Factor Authorization</h3>
+          <h4 class="mb-0">Register For 2-Factor Authorization</h4>
         </div>
           <div class="card-body">
             <%= enable_authy_form do %>
               <div class="form-row">
-                <div class="form-group col-md-10">
+                <div class="form-group col-md-10 mb-0">
                   <%= text_field_tag :country_code, '', autocomplete: :off, placeholder: I18n.t('devise.country'), id: "authy-countries", class: "form-control form-control-lg" %>
                 </div>
-                <div class="form-group col-md-10">
+                <div class="form-group col-md-10 mb-0">
                   <%= text_field_tag :cellphone, '', autocomplete: :off, placeholder: I18n.t('devise.cellphone'), id: "authy-cellphone", class: "form-control form-control-lg" %>
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-4 mb-0">
                   <%= submit_tag I18n.t('enable_authy', {scope: 'devise'}), class: "btn-primary", value: "Register" %>
                 </div>
               </div>
