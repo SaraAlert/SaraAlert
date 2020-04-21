@@ -38,11 +38,11 @@ class PublicHealthMonitoringHistoryVerifier < ApplicationSystemTestCase
   end
 
   def verify_add_report(user_name)
-    verify_historical_event(user_name, 'Report Created', ['User created a new subject report'])
+    verify_historical_event(user_name, 'Report Created', ['User created a new report'])
   end
 
   def verify_edit_report(user_name)
-    verify_historical_event(user_name, 'Report Updated', ['User updated an existing subject report'])
+    verify_historical_event(user_name, 'Report Updated', ['User updated an existing report'])
   end
 
   def verify_add_note_to_report(user_name, assessment_id, note)
