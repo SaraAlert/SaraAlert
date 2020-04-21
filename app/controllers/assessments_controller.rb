@@ -115,7 +115,7 @@ class AssessmentsController < ApplicationController
 
     history = History.new
     history.created_by = current_user.email
-    comment = 'User updated an existing subject report.'
+    comment = 'User updated an existing subject report (ID: ' + assessment.id.to_s + ').'
     history.comment = comment
     history.patient = patient
     history.history_type = 'Report Updated'

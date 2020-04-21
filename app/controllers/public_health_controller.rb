@@ -183,6 +183,9 @@ class PublicHealthController < ApplicationController
 
     sorted = data
     params[:order].each do |_num, val|
+      next if params[:columns].nil? || val.nil? || val['column'].blank? || params[:columns][val['column']].nil?
+      next if params[:columns][val['column']][:name].blank?
+
       direction = val['dir'] == 'asc' ? :asc : :desc
       if params[:columns][val['column']][:name] == 'name' # Name
         sorted = sorted.order(last_name: direction).order(first_name: direction)
@@ -195,6 +198,9 @@ class PublicHealthController < ApplicationController
       elsif params[:columns][val['column']][:name] == 'dob' # DOB
         sorted = sorted.order(date_of_birth: direction)
       elsif params[:columns][val['column']][:name] == 'end_of_monitoring' # End of Monitoring
+        sorted = sorted.order(last_date_of_exposure: direction)
+      elsif params[:columns][val['column']][:name] == 'expected_purge_date' # Expected Purge Date
+        # Same as end of monitoring
         sorted = sorted.order(last_date_of_exposure: direction)
       elsif params[:columns][val['column']][:name] == 'risk' # Risk
         sorted = sorted.order_by_risk(val['dir'] == 'asc')
