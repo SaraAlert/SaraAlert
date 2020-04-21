@@ -357,7 +357,7 @@ class Patient < ApplicationRecord
       closed_at: closed_at&.to_s || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || '',
-      expected_purge_date: (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes).strftime('%F') || ''
+      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes).strftime('%F') || '')
     }
   end
 
