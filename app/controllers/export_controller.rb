@@ -105,6 +105,7 @@ class ExportController < ApplicationController
 
   def full_history_all_monitorees
     patients = current_user.viewable_patients
+    patient_ids = patients.pluck(:id)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(:name => "Monitorees List") do |sheet|
         headers = ['Patient ID', 'First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
@@ -131,7 +132,7 @@ class ExportController < ApplicationController
         end
       end
       p.workbook.add_worksheet(:name => "Assessments") do |sheet|
-        symptom_label_and_names = Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: current_user.viewable_patients.pluck(:id)).pluck(:id)).pluck(:id)).pluck(:label, :name).uniq
+        symptom_label_and_names = Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: patient_ids).pluck(:id)).pluck(:id)).pluck(:label, :name).uniq
         symptom_labels = symptom_label_and_names.collect {|s| s[0]}
         symptom_names = symptom_label_and_names.collect {|s| s[1]}
         assessment_headers = ['patient_id', 'symptomatic', 'who_reported', 'created_at', 'updated_at']
@@ -142,6 +143,21 @@ class ExportController < ApplicationController
           patient_assessments.each do |assessment|
             sheet.add_row assessment
           end
+        end
+      end
+      p.workbook.add_worksheet(:name => "Edit Histories") do |sheet|
+        histories = History.where(patient_id: patient_ids)
+        history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At'] 
+        sheet.add_row history_headers
+        histories.each do |history|
+          patient_id = history.patient_id
+          comment = history&.comment || ''
+          created_by = history&.created_by || ''
+          history_type = history&.history_type || ''
+          history_created_at = history&.created_at || ''
+          history_updated_at = history&.updated_at || ''
+          history_row = [patient_id, comment, created_by, history_type, history_created_at, history_updated_at]
+          sheet.add_row history_row
         end
       end
       filename = "Sara-Alert-Full-History-All-Monitorees-#{DateTime.now}.xlsx"
