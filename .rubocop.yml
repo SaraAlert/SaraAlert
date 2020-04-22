@@ -4,7 +4,8 @@ AllCops:
     - 'db/**/*'
     - 'bin/**/*'
     - 'config/**/*'
-    - 'test/**/*'
+    - 'test/system/**/*'
+    - 'test/rake/**/*'
     - 'node_modules/**/*'
     - 'lib/tasks/**/*'
     - 'tmp/**/*'
@@ -25,3 +26,17 @@ Metrics/BlockLength:
   Enabled: false
 Style/ClassAndModuleChildren:
   Enabled: false
+# Good options that are not enabled by default yet and thus produce warnings
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
+# Very good options that are not enabled by default yet and thus produce warnings
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+Naming/VariableNumber:
+  EnforcedStyle: snake_case

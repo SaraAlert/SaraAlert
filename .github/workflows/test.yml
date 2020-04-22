@@ -60,6 +60,12 @@ jobs:
         run: bundle exec rake test
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov/SaraAlert.lcov
       - name: Run System Tests
         run: bundle exec rake test:system
         env:

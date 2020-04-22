@@ -59,6 +59,7 @@ gem 'sara-schema'
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'factory_bot_rails'
   gem 'gemsurance'
   gem 'rubocop'
 end
@@ -75,6 +76,7 @@ group :test do
   gem 'minitest-retry'
   gem 'selenium-webdriver'
   gem 'simplecov'
+  gem 'simplecov-lcov'
   gem 'webdrivers'
 end
 
