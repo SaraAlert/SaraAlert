@@ -18,7 +18,7 @@ class CloseSubjectsJob < ApplicationJob
     closeable = Patient.asymptomatic
 
     # Close subjects who are past the monitoring period (and are actually closable from above logic)
-    closeable.each do |subject|
+    closeable.find_each(batch_size: 5000) do |subject|
       if !subject.last_date_of_exposure.nil? && subject.last_date_of_exposure < ADMIN_OPTIONS['monitoring_period_days'].days.ago
         subject[:monitoring] = false
         subject.closed_at = DateTime.now

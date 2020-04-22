@@ -2,7 +2,7 @@
 
 set :output, "/tmp/cronlog.log"
 
-every 4.hours do
+every 24.hours do
   runner "CloseSubjectsJob.perform_now"
 end
 
@@ -10,10 +10,10 @@ every 24.hours do
   runner "PurgeJob.perform_now"
 end
 
-every 30.minutes do
-  rake "analytics:cache_current_analytics"
+every 1.hours do
+  runner "CacheAnalyticsJob.perform_now"
 end
 
 every 1.hours do
-  rake "mailers:send_assessments"
+  runner "SendAssessmentsJob.perform_now"
 end

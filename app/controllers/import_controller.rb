@@ -53,7 +53,7 @@ class ImportController < ApplicationController
           date_of_departure: row[36],
           contact_of_known_case: !row[41].blank?,
           was_in_health_care_facility_with_known_cases: !row[42].blank?,
-          appears_to_be_duplicate: current_user.viewable_patients.matches(row[11], row[10], sex, row[12]).count.positive?,
+          appears_to_be_duplicate: current_user.viewable_patients.matches(row[11], row[10], sex, row[12]).exists?,
           isolation: params.permit(:workflow)[:workflow] == 'isolation'
         }
       end
@@ -165,7 +165,7 @@ class ImportController < ApplicationController
           exposure_risk_assessment: row[81],
           monitoring_plan: row[82],
           exposure_notes: row[83],
-          appears_to_be_duplicate: current_user.viewable_patients.matches(row[0], row[2], row[4], row[3]).count.positive?,
+          appears_to_be_duplicate: current_user.viewable_patients.matches(row[0], row[2], row[4], row[3]).exists?,
           isolation: params.permit(:workflow)[:workflow] == 'isolation'
         }
       end
