@@ -7,25 +7,32 @@ class HistoryTest < ActiveSupport::TestCase
 
   def teardown; end
 
+  def history_types
+    ['Report Created',
+     'Report Updated',
+     'Comment',
+     'Enrollment',
+     'Monitoring Change',
+     'Reports Reviewed',
+     'Report Reviewed',
+     'Report Reminder',
+     'Report Note'].freeze
+  end
+
   test 'create history' do
-    assert create(:history, history_type: 'Report Created')
-    assert create(:history, history_type: 'Report Updated')
-    assert create(:history, history_type: 'Comment')
-    assert create(:history, history_type: 'Enrollment')
-    assert create(:history, history_type: 'Monitoring Change')
-    assert create(:history, history_type: 'Reports Reviewed')
-    assert create(:history, history_type: 'Report Reviewed')
-    assert create(:history, history_type: 'Report Reminder')
-    assert create(:history, history_type: 'Report Note')
-    assert create(:history, history_type: 'Comment', comment: 'v' * 2000)
-    assert create(:history, history_type: 'Comment', created_by: 'v' * 200)
+    history_types.each do |type|
+      assert create(:history, history_type: type)
+      assert create(:history, history_type: type, comment: 'v' * 2000, created_by: 'v' * 200)
+    end
 
     assert_raises(ActiveRecord::RecordInvalid) do
       create(:history, history_type: 'Invalid')
-      # Text column type
-      create(:history, history_type: 'Comment', comment: 'v' * 2001)
-      # String colomn type
-      create(:history, history_type: 'Comment', created_by: 'v' * 201)
+      history_types.each do |type|
+        # Text column type
+        create(:history, history_type: type, comment: 'v' * 2001)
+        # String colomn type
+        create(:history, history_type: type, created_by: 'v' * 201)
+      end
     end
   end
 
@@ -51,6 +58,26 @@ class HistoryTest < ActiveSupport::TestCase
 
     assert_difference("History.in_time_frame('Last 14 Days').size", 1) do
       create(:history, history_type: 'Comment')
+    end
+  end
+
+  test 'not monitoring' do
+    assert_difference('History.not_monitoring.size', 1) do
+      create(:history, history_type: 'Monitoring Change', comment: 'I am not monitoring this patient anymore')
+    end
+
+    assert_no_difference('History.not_monitoring.size') do
+      create(:history, history_type: 'Monitoring Change', comment: 'This patient will be monitored for an additional week')
+    end
+  end
+
+  test 'referral for medical evaluation' do
+    assert_difference('History.referral_for_medical_evaluation.size', 1) do
+      create(:history, history_type: 'Monitoring Change', comment: 'Recommended medical evaluation of symptoms')
+    end
+
+    assert_no_difference('History.referral_for_medical_evaluation.size') do
+      create(:history, history_type: 'Monitoring Change', comment: 'I do not recommend a medical evaluation of symptoms')
     end
   end
 end
