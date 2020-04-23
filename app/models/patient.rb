@@ -375,7 +375,7 @@ class Patient < ApplicationRecord
       end
       assessments_summary.push(entry)
     end
-    return assessments_summary
+    assessments_summary
   end
 
   # All information about this subject
