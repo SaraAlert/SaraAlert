@@ -105,6 +105,16 @@ class AssessmentsController < ApplicationController
 
     typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 
+    # Figure out the change
+    delta = []
+    typed_reported_symptoms.each do |symptom|
+      new_val = symptom.bool_value
+      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
+      unless new_val.nil? || old_val.nil?
+        delta << symptom.name + '=' + (new_val ? 'Yes' : 'No') if new_val != old_val
+      end
+    end
+
     assessment.reported_condition.symptoms = typed_reported_symptoms
     assessment.symptomatic = assessment.symptomatic?
     # Monitorees can't edit their own assessments, so the last person to touch this assessment was current_user
@@ -116,6 +126,9 @@ class AssessmentsController < ApplicationController
     history = History.new
     history.created_by = current_user.email
     comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
+    unless delta.empty?
+      comment += ' Symptom updates: ' + delta.join(', ') + '.'
+    end
     history.comment = comment
     history.patient = patient
     history.history_type = 'Report Updated'
