@@ -39,7 +39,7 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'update latest public health action' do
-    @@public_health_monitoring_helper.update_latest_public_health_action('state1_epi_enroller', 'patient_7', 'pui', 'Laboratory report results – positive', 'details')
+    @@public_health_monitoring_helper.update_latest_public_health_action('state1_epi_enroller', 'patient_7', 'pui', 'Recommended medical evaluation of symptoms', 'details')
   end
 
   test 'add additional public health action' do

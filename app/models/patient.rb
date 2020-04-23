@@ -36,17 +36,6 @@ class Patient < ApplicationRecord
                                                          'No Identified Risk',
                                                          nil, ''] }
 
-  validates :public_health_action, inclusion: { in: ['None',
-                                                     'Recommended medical evaluation of symptoms',
-                                                     'Document results of medical evaluation',
-                                                     'Laboratory specimen collected',
-                                                     'Recommended laboratory testing',
-                                                     'Laboratory received specimen – result pending',
-                                                     'Laboratory report results – positive',
-                                                     'Laboratory report results – negative',
-                                                     'Laboratory report results – indeterminate',
-                                                     nil, ''] }
-
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
   has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'

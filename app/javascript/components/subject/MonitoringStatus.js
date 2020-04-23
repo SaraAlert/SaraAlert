@@ -387,12 +387,7 @@ class MonitoringStatus extends React.Component {
                     <option>None</option>
                     <option>Recommended medical evaluation of symptoms</option>
                     <option>Document results of medical evaluation</option>
-                    <option>Laboratory specimen collected</option>
                     <option>Recommended laboratory testing</option>
-                    <option>Laboratory received specimen – result pending</option>
-                    <option>Laboratory report results – positive</option>
-                    <option>Laboratory report results – negative</option>
-                    <option>Laboratory report results – indeterminate</option>
                   </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col} md={2}>
