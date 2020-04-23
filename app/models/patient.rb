@@ -284,7 +284,7 @@ class Patient < ApplicationRecord
 
   # Is this patient symptomatic?
   def symptomatic?
-    assessments.where(symptomatic: true).count.positive?
+    assessments.where(symptomatic: true).exists?
   end
 
   # Is this patient symptomatic?
@@ -329,9 +329,9 @@ class Patient < ApplicationRecord
       return :asymptomatic if asymptomatic?
       return :non_reporting if non_reporting?
     end
-    return :isolation_requiring_review if Patient.isolation_requiring_review.where(id: id).count.positive?
-    return :isolation_non_reporting if Patient.isolation_non_reporting.where(id: id).count.positive?
-    return :isolation_reporting if Patient.isolation_reporting.where(id: id).count.positive?
+    return :isolation_requiring_review if Patient.isolation_requiring_review.where(id: id).exists?
+    return :isolation_non_reporting if Patient.isolation_non_reporting.where(id: id).exists?
+    return :isolation_reporting if Patient.isolation_reporting.where(id: id).exists?
     return :purged if purged?
     return :closed if closed?
 

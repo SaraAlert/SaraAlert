@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_09_193610) do
+ActiveRecord::Schema.define(version: 2020_04_22_142657) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -216,6 +216,8 @@ ActiveRecord::Schema.define(version: 2020_04_09_193610) do
     t.index ["responder_id"], name: "index_patients_on_responder_id"
     t.index ["sex"], name: "index_patients_on_sex"
     t.index ["submission_token"], name: "index_patients_on_submission_token"
+    t.index ["user_defined_id_cdc"], name: "index_patients_on_user_defined_id_cdc"
+    t.index ["user_defined_id_nndss"], name: "index_patients_on_user_defined_id_nndss"
     t.index ["user_defined_id_statelocal"], name: "index_patients_on_user_defined_id_statelocal"
   end
 

@@ -12,71 +12,93 @@ class PublicHealthController < ApplicationController
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    @all_count = current_user.viewable_patients.where(isolation: false).count
-    @i_all_count = current_user.viewable_patients.where(isolation: true).count
-    @symptomatic_count = current_user.viewable_patients.symptomatic.where(isolation: false).count
-    @pui_count = current_user.viewable_patients.under_investigation.where(isolation: false).count
-    @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).count
-    @non_reporting_count = current_user.viewable_patients.non_reporting.where(isolation: false).count
-    @asymptomatic_count = current_user.viewable_patients.asymptomatic.where(isolation: false).count
-    @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: false).count
-    @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: false).count
+    @all_count = current_user.viewable_patients.where(isolation: false).size
+    @i_all_count = current_user.viewable_patients.where(isolation: true).size
+    @symptomatic_count = current_user.viewable_patients.symptomatic.where(isolation: false).size
+    @pui_count = current_user.viewable_patients.under_investigation.where(isolation: false).size
+    @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size
+    @non_reporting_count = current_user.viewable_patients.non_reporting.where(isolation: false).size
+    @asymptomatic_count = current_user.viewable_patients.asymptomatic.where(isolation: false).size
+    @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: false).size
+    @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: false).size
   end
 
   def all_patients_exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.where(isolation: false))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .where(isolation: false)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def symptomatic_patients_exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.symptomatic.where(isolation: false))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .symptomatic
+                                                          .where(isolation: false)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def pui_patients_exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.under_investigation.where(isolation: false))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .under_investigation
+                                                          .where(isolation: false)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def closed_patients_exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .monitoring_closed_without_purged
+                                                          .where(isolation: false)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def non_reporting_patients_exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.non_reporting.where(isolation: false))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .non_reporting
+                                                          .where(isolation: false)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def asymptomatic_patients_exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.asymptomatic.where(isolation: false))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .asymptomatic
+                                                          .where(isolation: false)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def transferred_in_patients_exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_in_patients.where(isolation: false))
+    render json: filter_sort_paginate(params, current_user.jurisdiction
+                                                          .transferred_in_patients
+                                                          .where(isolation: false)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def transferred_out_patients_exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_out_patients.where(isolation: false))
+    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_out_patients
+                                                                       .where(isolation: false)
+                                                                       .includes(%i[latest_transfer latest_assessment]))
   end
 
   #############################################################################
@@ -87,63 +109,81 @@ class PublicHealthController < ApplicationController
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    @all_count = current_user.viewable_patients.where(isolation: true).count
-    @e_all_count = current_user.viewable_patients.where(isolation: false).count
-    @requiring_review_count = current_user.viewable_patients.isolation_requiring_review.where(isolation: true).count
-    @non_reporting_count = current_user.viewable_patients.isolation_non_reporting.where(isolation: true).count
-    @reporting_count = current_user.viewable_patients.isolation_reporting.where(isolation: true).count
-    @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).count
-    @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: true).count
-    @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: true).count
+    @all_count = current_user.viewable_patients.where(isolation: true).size
+    @e_all_count = current_user.viewable_patients.where(isolation: false).size
+    @requiring_review_count = current_user.viewable_patients.isolation_requiring_review.where(isolation: true).size
+    @non_reporting_count = current_user.viewable_patients.isolation_non_reporting.where(isolation: true).size
+    @reporting_count = current_user.viewable_patients.isolation_reporting.where(isolation: true).size
+    @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size
+    @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: true).size
+    @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: true).size
   end
 
   def all_patients_isolation
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.where(isolation: true))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .where(isolation: true)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def requiring_review_patients_isolation
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.isolation_requiring_review.where(isolation: true))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .isolation_requiring_review
+                                                          .where(isolation: true)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def closed_patients_isolation
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .monitoring_closed_without_purged
+                                                          .where(isolation: true)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def non_reporting_patients_isolation
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.isolation_non_reporting.where(isolation: true))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .isolation_non_reporting
+                                                          .where(isolation: true)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def reporting_patients_isolation
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients.isolation_reporting.where(isolation: true))
+    render json: filter_sort_paginate(params, current_user.viewable_patients
+                                                          .isolation_reporting
+                                                          .where(isolation: true)
+                                                          .includes(%i[latest_transfer latest_assessment]))
   end
 
   def transferred_in_patients_isolation
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_in_patients.where(isolation: true))
+    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_in_patients
+                                                                       .where(isolation: true)
+                                                                       .includes(%i[latest_transfer latest_assessment]))
   end
 
   def transferred_out_patients_isolation
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_out_patients.where(isolation: true))
+    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_out_patients
+                                                                       .where(isolation: true)
+                                                                       .includes(%i[latest_transfer latest_assessment]))
   end
 
   protected
@@ -223,6 +263,6 @@ class PublicHealthController < ApplicationController
     length = params[:length].to_i
     page = params[:start].to_i.zero? ? 1 : (params[:start].to_i / length) + 1
     draw = params[:draw].to_i
-    { data: data.paginate(per_page: length, page: page), draw: draw, recordsTotal: data.count, recordsFiltered: data.count }
+    { data: data.paginate(per_page: length, page: page), draw: draw, recordsTotal: data.size, recordsFiltered: data.size }
   end
 end

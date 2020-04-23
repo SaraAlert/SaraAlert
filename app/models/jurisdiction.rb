@@ -23,7 +23,7 @@ class Jurisdiction < ApplicationRecord
 
   # All patients are all those in this or descendent jurisdictions
   def all_patients
-    Patient.where(jurisdiction_id: subtree_ids)
+    Patient.includes([:jurisdiction]).where(jurisdiction_id: subtree_ids)
   end
 
   # Join this and parent jurisdictions names as a string

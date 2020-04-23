@@ -11,7 +11,7 @@ class AssessmentsController < ApplicationController
     # If monitoree, limit number of reports per time period
     if current_user.nil?
       if AssessmentReceipt.where(submission_token: @patient_submission_token)
-                          .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).count.positive?
+                          .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists?
         redirect_to(already_reported_report_url) && return if ADMIN_OPTIONS['report_mode']
 
         redirect_to(already_reported_url) && return
@@ -29,7 +29,7 @@ class AssessmentsController < ApplicationController
     if ADMIN_OPTIONS['report_mode']
       # Limit number of reports per time period
       unless AssessmentReceipt.where(submission_token: @patient_submission_token)
-                              .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).count.positive?
+                              .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists?
         assessment_placeholder = {}
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes] }).to_h)
