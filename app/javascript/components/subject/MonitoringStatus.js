@@ -1,7 +1,8 @@
 import React from 'react';
-import { Form, Row, Col, Button, Modal, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Form, Row, Col, Button, Modal, Tooltip } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
+import ContactAttempt from './ContactAttempt';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -242,19 +243,19 @@ class MonitoringStatus extends React.Component {
   }
 
   publicHealthActionRefresh() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/histories', {
-        patient_id: this.props.patient.id,
-        type: 'Monitoring Change',
-        comment: 'User added an additional public health action: "' + this.state.public_health_action + '".',
-      })
-      .then(() => {
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    // axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    // axios
+    //   .post(window.BASE_PATH + '/histories', {
+    //     patient_id: this.props.patient.id,
+    //     type: 'Monitoring Change',
+    //     comment: 'User added an additional public health action: "' + this.state.public_health_action + '".',
+    //   })
+    //   .then(() => {
+    //     location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+    //   })
+    //   .catch(error => {
+    //     console.error(error);
+    //   });
   }
 
   createModal(title, toggle, submit) {
@@ -369,14 +370,14 @@ class MonitoringStatus extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-3 align-items-end">
-                <Form.Group as={Col} md={8}>
+                <Form.Group as={Col}>
                   <Form.Label className="nav-input-label">CURRENT WORKFLOW</Form.Label>
                   <Form.Control as="select" className="form-control-lg" id="isolation_status" onChange={this.handleChange} value={this.state.isolation_status}>
                     <option>Exposure</option>
                     <option>Isolation</option>
                   </Form.Control>
                 </Form.Group>
-                <Form.Group as={Col} md={14}>
+                <Form.Group as={Col}>
                   <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
                   <Form.Control
                     as="select"
@@ -390,7 +391,10 @@ class MonitoringStatus extends React.Component {
                     <option>Recommended laboratory testing</option>
                   </Form.Control>
                 </Form.Group>
-                <Form.Group as={Col} md={2}>
+                <Form.Group as={Col}>
+                  <ContactAttempt patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
+                </Form.Group>
+                {/* <Form.Group as={Col} md={2}>
                   {this.state.public_health_action === 'None' && (
                     <OverlayTrigger placement="top" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
                       <span className="d-inline-block">
@@ -413,7 +417,7 @@ class MonitoringStatus extends React.Component {
                       </Button>
                     </OverlayTrigger>
                   )}
-                </Form.Group>
+                </Form.Group> */}
               </Form.Row>
               <Form.Row className="pt-3 align-items-end">
                 <Form.Group as={Col} md={14}>
