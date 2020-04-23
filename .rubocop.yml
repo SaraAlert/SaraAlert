@@ -6,11 +6,12 @@ AllCops:
     - 'config/**/*'
     - 'test/system/**/*'
     - 'test/rake/**/*'
+    - 'test/jobs/**/*'
     - 'node_modules/**/*'
     - 'lib/tasks/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
-Metrics/LineLength:
+Layout/LineLength:
   Max: 160
 Metrics/PerceivedComplexity:
   Enabled: false
