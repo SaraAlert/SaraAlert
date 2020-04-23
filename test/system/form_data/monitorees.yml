@@ -226,6 +226,7 @@ monitoree_6:
     exposure_risk_assessment: "High"
     monitoring_plan: "Daily active monitoring"
     exposure_notes: "oihadsgohoiawengolnlasdn,lk ashiowehghaie 1928unfvs al"
+    jurisdiction_id: "USA, State 2, County 4"
 monitoree_7:
   identification:
     first_name: "Zachery33"
@@ -377,3 +378,10 @@ monitoree_12:
     exposure_risk_assessment: "No Identified Risk"
     monitoring_plan: "Self-observation"
     exposure_notes: "notes..."
+monitoree_13:
+  potential_exposure_info:
+    jurisdiction_id: "USA, State 2, County 3"
+monitoree_14:
+  potential_exposure_info:
+    jurisdiction_id: "USA, State 2, County 4"
+    update_group_member_jurisdiction_id: true

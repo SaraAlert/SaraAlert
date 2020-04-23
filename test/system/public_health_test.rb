@@ -52,10 +52,9 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'update assigned jurisdiction' do
-    @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'USA, State 2, County 4', 'details')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('state2_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c3_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c4_epi')
+    @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'Fake Jurisdiction', 'details', false, true)
+    @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'USA, State 2, County 4', 'details', true, true)
+    @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_10', 'pui', 'USA, State 1', 'details', true, false)
   end
 
   test 'add report' do

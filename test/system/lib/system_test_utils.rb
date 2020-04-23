@@ -19,13 +19,13 @@ class SystemTestUtils < ApplicationSystemTestCase
   POP_UP_ALERT_ANIMATION_DELAY = 1 # wait for alert to pop up or dismiss
   MODAL_ANIMATION_DELAY = 0.5 # wait for modal to load
 
-  def login(user_name)
+  def login(user_label)
     visit '/'
     assert_equal(SIGN_IN_URL, page.current_path)
-    fill_in 'user_email', with: USERS[user_name]['email']
+    fill_in 'user_email', with: USERS[user_label]['email']
     fill_in 'user_password', with: USER_PASSWORD
     click_on 'login'
-    jurisdiction_id = verify_user_jurisdiction(user_name)
+    jurisdiction_id = verify_user_jurisdiction(user_label)
     jurisdiction_id
   end
 
@@ -33,8 +33,8 @@ class SystemTestUtils < ApplicationSystemTestCase
     click_on 'Logout'
   end
 
-  def return_to_dashboard(workflow, isEpi=true)
-    if !isEpi
+  def return_to_dashboard(workflow, is_epi=true)
+    if !is_epi
       click_on 'Return To Dashboard'
     elsif !workflow.nil?
       click_on "Return to #{workflow.capitalize} Dashboard"
@@ -81,13 +81,13 @@ class SystemTestUtils < ApplicationSystemTestCase
     sleep(inspection_time = DASHBOARD_LOAD_DELAY)
   end
 
-  def verify_user_jurisdiction(user_name)
-    jurisdiction = User.where(email: "#{user_name}@example.com").includes(:jurisdiction).first.jurisdiction
-    assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) if !user_name.include?('admin')
+  def verify_user_jurisdiction(user_label)
+    jurisdiction = User.where(email: "#{user_label}@example.com").includes(:jurisdiction).first.jurisdiction
+    assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) if !user_label.include?('admin')
     jurisdiction.id
   end
 
-  def get_dashboard_display_name(monitoree)
+  def get_displayed_name(monitoree)
     "#{monitoree['identification']['last_name']}, #{monitoree['identification']['first_name']}"
   end
 
@@ -123,16 +123,16 @@ class SystemTestUtils < ApplicationSystemTestCase
     USERS
   end
 
-  def get_assessment_name(patient_key, report_key)
-    "#{patient_key}_assessment_#{report_key.to_s}"
+  def get_assessment_name(patient_label, assessment_label)
+    "#{patient_label}_assessment_#{assessment_label.to_s}"
   end
 
-  def get_patient_display_name(patient_key)
-    "#{PATIENTS[patient_key]['last_name']}, #{PATIENTS[patient_key]['first_name']}"
+  def get_patient_display_name(patient_label)
+    "#{PATIENTS[patient_label]['last_name']}, #{PATIENTS[patient_label]['first_name']}"
   end
 
-  def get_monitoree_display_name(monitoree_key)
-    "#{MONITOREES[monitoree_key]['identification']['last_name']}, #{MONITOREES[monitoree_key]['identification']['first_name']}"
+  def get_monitoree_display_name(monitoree_label)
+    "#{MONITOREES[monitoree_label]['identification']['last_name']}, #{MONITOREES[monitoree_label]['identification']['first_name']}"
   end
 
   def format_date(value)

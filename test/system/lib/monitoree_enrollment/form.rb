@@ -18,9 +18,11 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
   def edit_monitoree_info(monitoree)
     click_on '(edit details)'
     @@monitoree_enrollment_steps.steps.each do |step, fields|
-      find('h5', text: step.to_s.split('_').map(&:capitalize).join(' ')).first(:xpath, './/..//..').click_on('Edit')
-      populate_enrollment_step(step, monitoree[step.to_s])
-      @@system_test_utils.wait_for_enrollment_page_transition
+      if monitoree[step.to_s]
+        find('h5', text: step.to_s.split('_').map(&:capitalize).join(' ')).first(:xpath, './/..//..').click_on('Edit')
+        populate_enrollment_step(step, monitoree[step.to_s])
+        @@system_test_utils.wait_for_enrollment_page_transition
+      end
     end
   end
 

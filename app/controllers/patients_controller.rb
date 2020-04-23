@@ -14,11 +14,11 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_patient?
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
-    @jurisdiction_path = @patient.jurisdiction_path
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
+    @jurisdiction_path = @patient.jurisdiction_path
     @group_members = @patient.dependents.where.not(id: @patient.id)
 
     # If we failed to find a subject given the id, redirect to index
@@ -163,7 +163,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if patient.nil?
 
     # Propogate desired fields to household except jurisdiction_id
-    propogated_fields = params.permit(*group_member_subset)
+    propogated_fields = params[:propogated_fields]
     unless propogated_fields.empty?
       propogated_content = content.select { |field| propogated_fields.include?(field) && field != 'jurisdiction_id' }
       patient.dependents.where.not(id: patient.id).update(propogated_content)
@@ -171,8 +171,8 @@ class PatientsController < ApplicationController
 
     # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user
     if content[:jurisdiction_id] && content[:jurisdiction_id] != patient.jurisdiction_id
-      assignable_jurisdictions = current_user.can_assign_any_jurisdiction? ? Jurisdiction.all : Jurisdiction.find(current_user.jurisdiction.subtree_ids)
-      if assignable_jurisdictions.exists?(content[:jurisdiction_id])
+      if current_user.can_assign_any_jurisdiction? && Jurisdiction.find(content[:jurisdiction_id]).any? ||
+         current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id])
         history = History.new
         history.created_by = current_user.email
         old_jurisdiction = patient.jurisdiction.jurisdiction_path_string

@@ -19,24 +19,24 @@ class MonitoreeEnrollmentHelper < ApplicationSystemTestCase
 
   MONITOREES = @@system_test_utils.get_monitorees
 
-  def enroll_monitoree(user_name, monitoree_key, isEpi=false)
-    monitoree = MONITOREES[monitoree_key]
-    @@system_test_utils.login(user_name)
+  def enroll_monitoree(user_label, monitoree_label, is_epi=false)
+    monitoree = MONITOREES[monitoree_label]
+    @@system_test_utils.login(user_label)
     click_on 'Enroll New Monitoree'
     @@monitoree_enrollment_form.populate_monitoree_info(monitoree)
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree, false)
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree, isEpi)
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree, is_epi)
     visit '/'
-    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(monitoree, isEpi)
+    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(monitoree, is_epi)
     @@system_test_utils.logout
   end
 
-  def enroll_group_member(user_name, existing_monitoree_key, new_monitoree_key, isEpi=false)
-    existing_monitoree = MONITOREES[existing_monitoree_key]
-    new_monitoree = MONITOREES[new_monitoree_key]
-    @@system_test_utils.login(user_name)
+  def enroll_group_member(user_label, existing_monitoree_label, new_monitoree_label, is_epi=false)
+    existing_monitoree = MONITOREES[existing_monitoree_label]
+    new_monitoree = MONITOREES[new_monitoree_label]
+    @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
     @@monitoree_enrollment_form.populate_monitoree_info(existing_monitoree)
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree, false)
@@ -47,15 +47,15 @@ class MonitoreeEnrollmentHelper < ApplicationSystemTestCase
     @@monitoree_enrollment_info_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, false)
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
-    @@monitoree_enrollment_info_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, isEpi)
+    @@monitoree_enrollment_info_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, is_epi)
     visit '/'
-    @@monitoree_enrollment_dashboard_verifier.verify_group_member_on_dashboard(existing_monitoree, new_monitoree, isEpi)
+    @@monitoree_enrollment_dashboard_verifier.verify_group_member_on_dashboard(existing_monitoree, new_monitoree, is_epi)
     @@system_test_utils.logout
   end
 
-  def enroll_monitoree_with_same_monitored_address(user_name, monitoree_key)
-    monitoree = MONITOREES[monitoree_key]
-    @@system_test_utils.login(user_name)
+  def enroll_monitoree_with_same_monitored_address(user_label, monitoree_label)
+    monitoree = MONITOREES[monitoree_label]
+    @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
     @@monitoree_enrollment_form.populate_enrollment_step(:identification, monitoree['identification'])
     @@monitoree_enrollment_form.populate_enrollment_step(:address, monitoree['address'], false)
@@ -64,10 +64,10 @@ class MonitoreeEnrollmentHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def enroll_monitoree_and_edit(user_name, existing_monitoree_key, new_monitoree_key)
-    existing_monitoree = MONITOREES[existing_monitoree_key]
-    new_monitoree = MONITOREES[new_monitoree_key]
-    @@system_test_utils.login(user_name)
+  def enroll_monitoree_and_edit(user_label, existing_monitoree_label, new_monitoree_label)
+    existing_monitoree = MONITOREES[existing_monitoree_label]
+    new_monitoree = MONITOREES[new_monitoree_label]
+    @@system_test_utils.login(user_label)
     click_on 'Enroll New Monitoree'
     @@monitoree_enrollment_form.populate_monitoree_info(existing_monitoree)
     @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree)
@@ -84,9 +84,9 @@ class MonitoreeEnrollmentHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def enroll_monitoree_and_cancel(user_name, monitoree_key, isEpi=false)
-    monitoree = MONITOREES[monitoree_key]
-    @@system_test_utils.login(user_name)
+  def enroll_monitoree_and_cancel(user_label, monitoree_label, is_epi=false)
+    monitoree = MONITOREES[monitoree_label]
+    @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
     @@monitoree_enrollment_form.populate_monitoree_info(monitoree)
     click_on 'Cancel'
@@ -97,24 +97,24 @@ class MonitoreeEnrollmentHelper < ApplicationSystemTestCase
     click_on 'Cancel'
     @@system_test_utils.wait_for_pop_up_alert
     page.driver.browser.switch_to.alert.accept
-    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_not_on_dashboard(monitoree, isEpi)
+    @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_not_on_dashboard(monitoree, is_epi)
     @@system_test_utils.logout
   end
 
-  def verify_form_data_after_navigation(user_name, monitoree_key)
-    @@system_test_utils.login(user_name)
-    @@monitoree_enrollment_form_verifier.verify_form_data_after_navigation(MONITOREES[monitoree_key])
+  def verify_form_data_after_navigation(user_label, monitoree_label)
+    @@system_test_utils.login(user_label)
+    @@monitoree_enrollment_form_verifier.verify_form_data_after_navigation(MONITOREES[monitoree_label])
     @@system_test_utils.logout
   end
 
-  def verify_input_validation(user_name, monitoree_key)
-    @@system_test_utils.login(user_name)
-    @@monitoree_enrollment_form_validator.verify_enrollment_input_validation(MONITOREES[monitoree_key])
+  def verify_input_validation(user_label, monitoree_label)
+    @@system_test_utils.login(user_label)
+    @@monitoree_enrollment_form_validator.verify_enrollment_input_validation(MONITOREES[monitoree_label])
     @@system_test_utils.logout
   end
 
-  def view_enrollment_analytics(user_name)
-    jurisdiction_id = @@system_test_utils.login(user_name)
+  def view_enrollment_analytics(user_label)
+    jurisdiction_id = @@system_test_utils.login(user_label)
     click_on 'Analytics'
     @@monitoree_enrollment_dashboard_verifier.verify_enrollment_analytics(jurisdiction_id)
     @@system_test_utils.logout

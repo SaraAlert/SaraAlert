@@ -9,45 +9,45 @@ class MonitoreeEnrollmentDashboardVerifier < ApplicationSystemTestCase
   @@monitoree_enrollment_info_page_verifier = MonitoreeEnrollmentInfoPageVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_monitoree_info_on_dashboard(monitoree, isEpi=false)
-    displayed_name = search_for_monitoree(monitoree, isEpi)
+  def verify_monitoree_info_on_dashboard(monitoree, is_epi=false, go_back=true)
+    displayed_name = search_for_monitoree(monitoree, is_epi)
     click_on displayed_name
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree, isEpi)
-    @@system_test_utils.return_to_dashboard('exposure', isEpi)
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(monitoree, is_epi)
+    @@system_test_utils.return_to_dashboard('exposure', is_epi) if go_back
   end
 
-  def verify_group_member_on_dashboard(existing_monitoree, new_monitoree, isEpi=false)
-    displayed_name = search_for_monitoree(new_monitoree, isEpi)
+  def verify_group_member_on_dashboard(existing_monitoree, new_monitoree, is_epi=false)
+    displayed_name = search_for_monitoree(new_monitoree, is_epi)
     click_on displayed_name
-    @@monitoree_enrollment_info_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, isEpi)
+    @@monitoree_enrollment_info_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, is_epi)
     click_on 'Click here to view that monitoree'
-    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree, isEpi)
-    @@system_test_utils.return_to_dashboard('exposure', isEpi)
+    @@monitoree_enrollment_info_page_verifier.verify_monitoree_info(existing_monitoree, is_epi)
+    @@system_test_utils.return_to_dashboard('exposure', is_epi)
   end
 
-  def verify_monitoree_info_not_on_dashboard(monitoree, isEpi=false)
-    displayed_name = @@system_test_utils.get_dashboard_display_name(monitoree)
+  def verify_monitoree_info_not_on_dashboard(monitoree, is_epi=false)
+    displayed_name = @@system_test_utils.get_displayed_name(monitoree)
     displayed_birthday = @@system_test_utils.format_date(monitoree['identification']['date_of_birth'])
-    search_and_verify_nonexistence("#{monitoree['identification']['first_name']} #{monitoree['identification']['last_name']} #{displayed_birthday}", isEpi)
+    search_and_verify_nonexistence("#{monitoree['identification']['first_name']} #{monitoree['identification']['last_name']} #{displayed_birthday}", is_epi)
   end
 
-  def search_for_monitoree(monitoree, isEpi)
-    displayed_name = @@system_test_utils.get_dashboard_display_name(monitoree)
+  def search_for_monitoree(monitoree, is_epi)
+    displayed_name = @@system_test_utils.get_displayed_name(monitoree)
     displayed_birthday = @@system_test_utils.format_date(monitoree['identification']['date_of_birth'])
-    search_and_verify_existence(monitoree['identification']['first_name'], displayed_name, displayed_birthday, isEpi)
-    search_and_verify_existence(monitoree['identification']['last_name'], displayed_name, displayed_birthday, isEpi)
+    search_and_verify_existence(monitoree['identification']['first_name'], displayed_name, displayed_birthday, is_epi)
+    search_and_verify_existence(monitoree['identification']['last_name'], displayed_name, displayed_birthday, is_epi)
     displayed_name
   end
 
-  def search_and_verify_existence(query, displayed_name, displayed_birthday, isEpi)
-    click_on 'Asymptomatic' if isEpi
+  def search_and_verify_existence(query, displayed_name, displayed_birthday, is_epi)
+    click_on 'Asymptomatic' if is_epi
     fill_in 'Search:', with: query
     assert page.has_content?(displayed_name), @@system_test_utils.get_err_msg('Dashboard', 'name', displayed_name)
     assert page.has_content?(displayed_birthday), @@system_test_utils.get_err_msg('Dashboard', 'birthday', displayed_birthday)
   end
 
-  def search_and_verify_nonexistence(query, isEpi)
-    click_on 'Asymptomatic' if isEpi
+  def search_and_verify_nonexistence(query, is_epi)
+    click_on 'Asymptomatic' if is_epi
     fill_in 'Search:', with: query
     assert page.has_content?('No matching records found'), @@system_test_utils.get_err_msg('Dashboard', 'monitoree', 'non-existent')
   end

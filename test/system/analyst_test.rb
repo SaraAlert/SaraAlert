@@ -22,24 +22,24 @@ class AnalystTest < ApplicationSystemTestCase
     trigger_export_buttons('state1_epi')
   end
 
-  def view_analytics(user_name)
-    jurisdiction_id = login_and_view_analytics(user_name)
+  def view_analytics(user_label)
+    jurisdiction_id = login_and_view_analytics(user_label)
     analytic_id = Analytic.where(jurisdiction_id: jurisdiction_id).order(created_at: :desc).first['id']
     @@analytics_monitoree_counts_verifier.verify_monitoree_counts(analytic_id)
     @@analytics_monitoree_snapshots_verifier.verify_monitoree_snapshots(analytic_id)
     @@system_test_utils.logout
   end
 
-  def trigger_export_buttons(user_name)
-    login_and_view_analytics(user_name)
+  def trigger_export_buttons(user_label)
+    login_and_view_analytics(user_label)
     click_on 'EXPORT ANALYSIS AS PNG'
     click_on 'Export Complete Country Data'
     @@system_test_utils.logout
   end
 
-  def login_and_view_analytics(user_name)
-    jurisdiction_id = @@system_test_utils.login(user_name)
-    click_on 'Analytics' if !user_name.include? 'analyst'
+  def login_and_view_analytics(user_label)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    click_on 'Analytics' if !user_label.include? 'analyst'
     jurisdiction_id
   end
 end

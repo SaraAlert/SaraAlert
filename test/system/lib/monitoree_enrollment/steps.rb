@@ -102,6 +102,7 @@ class MonitoreeEnrollmentSteps < ApplicationSystemTestCase
         { id: 'exposure_risk_assessment', type: 'select', required: false, info_page: false },
         { id: 'monitoring_plan', type: 'select', required: false, info_page: false },
         { id: 'jurisdiction_id', type: 'text', required: false, info_page: true },
+        { id: 'update_group_member_jurisdiction_id', type: 'checkbox', required: false, info_page: false, label: 'Apply this change to the entire household that this monitoree is responsible for' },
         { id: 'exposure_notes', type: 'text', required: false, info_page: false }
       ]
     }
