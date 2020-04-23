@@ -56,18 +56,23 @@ class HistoryTest < ActiveSupport::TestCase
       create(:history, history_type: 'Comment').update(created_at: 15.days.ago)
     end
 
-    assert_difference("History.in_time_frame('Last 14 Days').size", 1) do
+    # Specific case where we don't want the number to change throughout the day
+    assert_no_difference("History.in_time_frame('Last 14 Days').size") do
       create(:history, history_type: 'Comment')
+    end
+
+    assert_difference("History.in_time_frame('Last 14 Days').size", 1) do
+      create(:history, history_type: 'Comment').update(created_at: 1.day.ago)
     end
   end
 
   test 'not monitoring' do
     assert_difference('History.not_monitoring.size', 1) do
-      create(:history, history_type: 'Monitoring Change', comment: 'I am not monitoring this patient anymore')
+      create(:history, history_type: 'Monitoring Change', comment: 'Not Monitoring')
     end
 
     assert_no_difference('History.not_monitoring.size') do
-      create(:history, history_type: 'Monitoring Change', comment: 'This patient will be monitored for an additional week')
+      create(:history, history_type: 'Monitoring Change', comment: 'Monitoring')
     end
   end
 
@@ -77,7 +82,67 @@ class HistoryTest < ActiveSupport::TestCase
     end
 
     assert_no_difference('History.referral_for_medical_evaluation.size') do
-      create(:history, history_type: 'Monitoring Change', comment: 'I do not recommend a medical evaluation of symptoms')
+      create(:history, history_type: 'Monitoring Change', comment: 'Recommended evaluation of symptoms')
+    end
+  end
+
+  test 'document completed medical evaluation' do
+    assert_difference('History.document_completed_medical_evaluation.size', 1) do
+      create(:history, history_type: 'Monitoring Change', comment: 'Document results of medical evaluation')
+    end
+
+    assert_no_difference('History.document_completed_medical_evaluation.size') do
+      create(:history, history_type: 'Monitoring Change', comment: 'Document results of evaluation')
+    end
+  end
+
+  test 'document medical evaluation summary and plan' do
+    assert_difference('History.document_medical_evaluation_summary_and_plan.size', 1) do
+      create(:history, history_type: 'Monitoring Change', comment: 'Laboratory specimen collected')
+    end
+
+    assert_no_difference('History.document_medical_evaluation_summary_and_plan.size') do
+      create(:history, history_type: 'Monitoring Change', comment: 'Laboratory collected')
+    end
+  end
+
+  test 'referral for public health test' do
+    assert_difference('History.referral_for_public_health_test.size', 1) do
+      create(:history, history_type: 'Monitoring Change', comment: 'Recommended laboratory testing')
+    end
+
+    assert_no_difference('History.referral_for_public_health_test.size') do
+      create(:history, history_type: 'Monitoring Change', comment: 'Recommended laboratory')
+    end
+  end
+
+  test 'public health test specimen received by lab results pending' do
+    assert_difference('History.public_health_test_specimen_received_by_lab_results_pending.size', 1) do
+      create(:history, history_type: 'Monitoring Change', comment: 'Laboratory received specimen – result pending')
+    end
+
+    assert_no_difference('History.public_health_test_specimen_received_by_lab_results_pending.size') do
+      create(:history, history_type: 'Monitoring Change', comment: 'Laboratory received specimen')
+    end
+  end
+
+  test 'results of public health test positive' do
+    assert_difference('History.results_of_public_health_test_positive.size', 1) do
+      create(:history, history_type: 'Monitoring Change', comment: 'Laboratory report results – positive')
+    end
+
+    assert_no_difference('History.results_of_public_health_test_positive.size') do
+      create(:history, history_type: 'Monitoring Change', comment: 'Laboratory report results – negative')
+    end
+  end
+
+  test 'results of public health test negative' do
+    assert_difference('History.results_of_public_health_test_negative.size', 1) do
+      create(:history, history_type: 'Monitoring Change', comment: 'Laboratory report results – negative')
+    end
+
+    assert_no_difference('History.results_of_public_health_test_negative.size') do
+      create(:history, history_type: 'Monitoring Change', comment: 'Laboratory report results – positive')
     end
   end
 end
