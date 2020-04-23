@@ -4,7 +4,8 @@
 # symptoms that it specifies ***IN ADDITION TO*** the symptoms specified by all of it's parent jurisdictions.
 # A `symptom` will be identified by it's name, which is the key in the symptom object, a `value` and a `type`.
 # The `value` of a symptom defines the threshold of the symptom, this is the value that is considered as
-# symptomatic for the symptom which it is defining. For float and integer symptoms, a reported symptom greater
+# symptomatic for the symptom which it is defining, only symptoms marked as 'required' will be considered when
+# determining whether or not a patient is symptomatic. For float and integer symptoms, a reported symptom greater
 # than or equal to the specified `value` wil be considered as symptomatic. Available values for the `type`
 # field in a symptom are `FloatSymptom`, `IntegerSymptom`, or `BoolSymptom`. The `children` of a jurisdiction are
 # nested jurisdictions that may have their own `symptoms` and/or `children`.
@@ -55,13 +56,21 @@
             # The expected threshold value for bool_values should always be true
             value: true
             type: 'BoolSymptom'
+            required: true
         'Difficulty Breathing':
             value: true
             type: 'BoolSymptom'
+            required: true
         'Fever':
             value: true
             type: 'BoolSymptom'
             notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
+            required: true
+        'Used Fever A Reducer':
+            value: true
+            type: 'BoolSymptom'
+            notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
+            required: false
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
     # in the children: field
     children:

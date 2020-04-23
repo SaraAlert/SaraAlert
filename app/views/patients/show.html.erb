@@ -57,11 +57,18 @@
                 <% if assessment.get_reported_symptom_by_name(column) == nil %>
                 <td></td>
                 <% end %>
+                <%passes_threshold = assessment.symptom_passes_threshold(column)%>
+                <%symptom_value = assessment.get_reported_symptom_value(column)%>
                 <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
-                  <td><%passes_threshold = assessment.symptom_passes_threshold(column)%> <% if passes_threshold==true -%><span class="concern">Yes</span><% elsif passes_threshold==false -%>No <%else -%><% end -%></td>
+                  <% if symptom_value == true %>
+                    <% symptom_value = "Yes" %>
+                  <% elsif symptom_value == false %>
+                    <% symptom_value = "No"%>
+                  <%end%>
+                  <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
                 <% end %>
                 <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
-                  <td><%passes_threshold = assessment.symptom_passes_threshold(column)%> <% if passes_threshold==true -%><span class="concern"><%=assessment.get_reported_symptom_value(column)%></span><% elsif passes_threshold==false -%><%=assessment.get_reported_symptom_value(column)%><%else -%><% end -%></td>
+                  <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
                 <% end %>
               <% end -%>
               <td>

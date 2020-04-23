@@ -33,7 +33,7 @@ class Assessment < ApplicationRecord
     symptomatic
   end
 
-  # symptom_passes_threshold will return true if the symptom with the given name in the reported condition
+  # symptom_passes_threshold will return true if the REQUIRED symptom with the given name in the reported condition
   # meets the definition of symptomatic as defined in the assocated ThresholdCondition
   def symptom_passes_threshold(symptom_name)
     reported_symptom = reported_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first
@@ -42,6 +42,8 @@ class Assessment < ApplicationRecord
 
     threshold_condition = reported_condition&.threshold_condition
     threshold_symptom = threshold_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first
+    return false unless threshold_symptom&.required?
+
     return nil if threshold_symptom.nil? || threshold_symptom.value.nil?
 
     if reported_symptom.type == 'FloatSymptom' || reported_symptom.type == 'IntegerSymptom'
