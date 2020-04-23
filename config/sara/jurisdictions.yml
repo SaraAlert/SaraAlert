@@ -62,6 +62,10 @@
             value: true
             type: 'BoolSymptom'
             notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
+        'Used Fever A Reducer':
+            value: true
+            type: 'BoolSymptom'
+            notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
     # in the children: field
     children:
