@@ -160,8 +160,12 @@ class ExportController < ApplicationController
       p.workbook.add_worksheet(name: 'Assessments') do |sheet|
         assessment_ids = Assessment.where(patient_id: patient_ids).pluck(:id)
         condition_ids = ReportedCondition.where(assessment_id: assessment_ids).pluck(:id)
+        # Need to get ALL symptom names and labels (human readable and computer-queryable) since
+        # Symptoms may differ over time and bettween sub-jurisdictions but each monitoree columns still need to line up
         symptom_label_and_names = Symptom.where(condition_id: condition_ids).pluck(:label, :name).uniq
         symptom_labels = symptom_label_and_names.collect { |s| s[0] }
+        # The full list of symptom names will be used to build the assessment summary where a row can be constructed
+        # even for an assessment lacking all possible symptoms
         symptom_names = symptom_label_and_names.collect { |s| s[1] }
         assessment_headers = %w[patient_id symptomatic who_reported created_at updated_at]
         human_readable_headers = ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels

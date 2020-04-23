@@ -368,9 +368,11 @@ class Patient < ApplicationRecord
     assessments.each do |assessment|
       entry = []
       assessment_headers.each do |header|
+        # Whether or not the assessment has that particular attribute, the row still needs a value
         entry.push(assessment[header] || '')
       end
       symptoms_headers.each do |header|
+        # Whether or not the assessment has that particular symptom, the row still needs a value
         entry.push(assessment.get_reported_symptom_value(header) || '')
       end
       assessments_summary.push(entry)
