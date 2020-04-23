@@ -64,6 +64,10 @@ class HistoryTest < ActiveSupport::TestCase
     assert_difference("History.in_time_frame('Last 14 Days').size", 1) do
       create(:history, history_type: 'Comment').update(created_at: 1.day.ago)
     end
+
+    assert_difference("History.in_time_frame('Total').size", 1) do
+      create(:history, history_type: 'Comment').update(created_at: 15.days.ago)
+    end
   end
 
   test 'not monitoring' do
