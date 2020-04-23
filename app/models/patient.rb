@@ -365,6 +365,25 @@ class Patient < ApplicationRecord
     }
   end
 
+  # All of the monitorees assessments
+  def assessmenmts_summary_array(assessment_headers, symptoms_headers)
+    # A header will be included in this
+    assessments_summary = []
+    assessments.each do |assessment|
+      entry = []
+      assessment_headers.each do |header|
+        # Whether or not the assessment has that particular attribute, the row still needs a value
+        entry.push(assessment[header] || '')
+      end
+      symptoms_headers.each do |header|
+        # Whether or not the assessment has that particular symptom, the row still needs a value
+        entry.push(assessment.get_reported_symptom_value(header) || '')
+      end
+      assessments_summary.push(entry)
+    end
+    assessments_summary
+  end
+
   # All information about this subject
   def comprehensive_details
     {

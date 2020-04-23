@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 2020_04_22_142657) do
     t.integer "assessment_id"
     t.string "threshold_condition_hash"
     t.string "type"
+    t.index ["assessment_id"], name: "index_conditions_on_assessment_id"
   end
 
   create_table "histories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -251,6 +252,7 @@ ActiveRecord::Schema.define(version: 2020_04_22_142657) do
     t.string "type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["condition_id"], name: "index_symptoms_on_condition_id"
   end
 
   create_table "transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
