@@ -107,13 +107,13 @@ class ExportController < ApplicationController
   def full_history_all_monitorees
     patients = current_user.viewable_patients
     patient_ids = patients.pluck(:id)
-    send_data ExportController.build_excel_export_for_patients(patient_ids)
+    send_data build_excel_export_for_patients(patient_ids)
   end
 
   def full_history_purgeable_monitorees
     patients = current_user.viewable_patients.purgeable
     patient_ids = patients.pluck(:id)
-    send_data ExportController.build_excel_export_for_patients(patient_ids)
+    send_data build_excel_export_for_patients(patient_ids)
   end
 
   def full_history_single_monitoree
@@ -123,14 +123,14 @@ class ExportController < ApplicationController
     history.created_by = current_user.email
     comment = 'User downloaded monitoree\'s data in Excel Export'
     history.comment = comment
-    history.patient = Patient.find(params[:patient_id])
+    history.patient = current_user.viewable_patients.find(params[:patient_id])
     history.history_type = 'Monitoree Data Downloaded'
     history.save
-    send_data ExportController.build_excel_export_for_patients([params[:patient_id]])
+    send_data build_excel_export_for_patients([params[:patient_id]])
   end
 
-  def self.build_excel_export_for_patients(patient_ids)
-    patients = Patient.find(patient_ids)
+  def build_excel_export_for_patients(patient_ids)
+    patients = current_user.viewable_patients.find(patient_ids)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
         headers = ['Patient ID', 'First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
