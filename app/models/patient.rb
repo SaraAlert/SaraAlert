@@ -45,6 +45,7 @@ class Patient < ApplicationRecord
   has_many :histories
   has_many :transfers
   has_one :latest_transfer, -> { order(created_at: :desc) }, class_name: 'Transfer'
+  has_many :laboratories
 
   # All individuals currently being monitored
   scope :monitoring_open, lambda {

@@ -72,6 +72,17 @@ ActiveRecord::Schema.define(version: 2020_04_23_212253) do
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
+  create_table "laboratories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.string "lab_type"
+    t.date "specimen_collection"
+    t.date "report"
+    t.string "result"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_laboratories_on_patient_id"
+  end
+
   create_table "monitoree_counts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "analytic_id"
     t.boolean "active_monitoring"

@@ -88,6 +88,21 @@ class User < ApplicationRecord
     has_role?(:enroller) || has_role?(:public_health) || has_role?(:public_health_enroller)
   end
 
+  # Can this user view Patient lab results?
+  def can_view_patient_laboratories?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user edit Patient lab results?
+  def can_edit_patient_laboratories?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user create Patient lab results?
+  def can_create_patient_laboratories?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
   # Can this user view Patient assessments?
   def can_view_patient_assessments?
     has_role?(:public_health) || has_role?(:public_health_enroller)
