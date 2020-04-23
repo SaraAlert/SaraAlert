@@ -27,9 +27,15 @@ class HistoryTest < ActiveSupport::TestCase
 
     assert_raises(ActiveRecord::RecordInvalid) do
       create(:history, history_type: 'Invalid')
-      history_types.each do |type|
+    end
+
+    history_types.each do |type|
+      assert_raises(ActiveRecord::RecordInvalid) do
         # Text column type
         create(:history, history_type: type, comment: 'v' * 2001)
+      end
+
+      assert_raises(ActiveRecord::RecordInvalid) do
         # String colomn type
         create(:history, history_type: type, created_by: 'v' * 201)
       end
