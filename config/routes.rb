@@ -34,7 +34,9 @@ Rails.application.routes.draw do
 
   get '/export/:type/csv', to: 'export#csv'
   get '/export/:type/csv_comprehensive', to: 'export#csv_comprehensive'
-  get '/export/:type/full_history_all_monitorees', to: 'export#full_history_all_monitorees'
+  get '/export/full_history_all_monitorees', to: 'export#full_history_all_monitorees'
+  get '/export/full_history_purgeable_monitorees', to: 'export#full_history_purgeable_monitorees'
+  get '/export/:patient_id/full_history_single_monitoree', to: 'export#full_history_single_monitoree'
   get '/export/isolation/:type/csv', to: 'export#csv_isolation'
   get '/export/isolation/:type/csv_comprehensive', to: 'export#csv_comprehensive_isolation'
 
