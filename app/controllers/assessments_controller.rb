@@ -126,9 +126,7 @@ class AssessmentsController < ApplicationController
     history = History.new
     history.created_by = current_user.email
     comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
-    unless delta.empty?
-      comment += ' Symptom updates: ' + delta.join(', ') + '.'
-    end
+    comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
     history.comment = comment
     history.patient = patient
     history.history_type = 'Report Updated'
