@@ -19,6 +19,7 @@ class History < ApplicationRecord
                                              'Comment',
                                              'Enrollment',
                                              'Monitoring Change',
+                                             'Monitoree Data Downloaded',
                                              'Reports Reviewed',
                                              'Report Reviewed',
                                              'Report Reminder',
