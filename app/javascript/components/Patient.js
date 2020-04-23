@@ -35,6 +35,14 @@ class Patient extends React.Component {
             </Col>
           </Row>
         )}
+        {this.props.details.jurisdiction_label && (
+          <Row className="mx-1">
+            <Col className="text-truncate">
+              <span className="font-weight-normal">Assigned Jurisdiction:</span>{' '}
+              <span className="font-weight-light">{`${this.props.details.jurisdiction_label}`}</span>
+            </Col>
+          </Row>
+        )}
         <Row className="pt-4 mx-1 mb-4">
           <Col md="11">
             <Row>
@@ -98,14 +106,6 @@ class Patient extends React.Component {
                 <br />
               </Col>
             </Row>
-            {this.props.details.jurisdiction_path && (
-              <Row className="mt-4">
-                <Col>
-                  <span className="font-weight-normal">Monitoring Jurisdiction:</span>{' '}
-                  <span className="font-weight-light">{`${this.props.details.jurisdiction_path.join(', ')}`}</span>
-                </Col>
-              </Row>
-            )}
           </Col>
           <Col md="2"></Col>
           <Col md="11">

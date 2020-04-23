@@ -27,3 +27,6 @@ enable_voice: <%= ENV["SARA_ALERT_ENABLE_VOICE"] || true %>
 
 # Assessment Report Mode
 report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || false %>
+
+# Optional Sentry URL for application monitoring and error reporting
+sentry_url: <%= ENV["SENTRY_URL"] || '' %>

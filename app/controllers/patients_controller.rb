@@ -18,6 +18,7 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
+    @jurisdiction_path = @patient.jurisdiction_path
     @group_members = @patient.dependents.where.not(id: @patient.id)
 
     # If we failed to find a subject given the id, redirect to index
@@ -28,7 +29,7 @@ class PatientsController < ApplicationController
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
-    @patient = Patient.new
+    @patient = Patient.new(jurisdiction_id: current_user.jurisdiction_id)
   end
 
   # Similar to 'new', except used for creating a new group member
@@ -57,6 +58,9 @@ class PatientsController < ApplicationController
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
+
+    @group_members = @patient.dependents.where.not(id: @patient.id)
+    @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
   # This follows 'new', this will receive the subject details and save a new subject
@@ -98,8 +102,11 @@ class PatientsController < ApplicationController
     # Set the creator as the current user
     patient.creator = current_user
 
-    # Set the subject jurisdiction to the creator's jurisdiction
-    patient.jurisdiction = current_user.jurisdiction
+    # Set the subject jurisdiction to the creator's jurisdiction if jurisdiction is not assigned or not assignable by the current user
+
+    valid_jurisdiction = (current_user.can_assign_any_jurisdiction? && !Jurisdiction.find(patient.jurisdiction_id).nil?) ||
+                         current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id)
+    patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
@@ -155,6 +162,44 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if patient.nil?
 
+    # Propagate desired fields to household except jurisdiction_id
+    propagated_fields = params[:propagated_fields]
+    unless propagated_fields.empty?
+      propagated_content = content.select { |field| propagated_fields.include?(field) && field != 'jurisdiction_id' }
+      patient.dependents.where.not(id: patient.id).update(propagated_content)
+    end
+
+    # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user
+    if content[:jurisdiction_id] && content[:jurisdiction_id] != patient.jurisdiction_id
+      if current_user.can_assign_any_jurisdiction? && Jurisdiction.find(content[:jurisdiction_id]).any? ||
+         current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id])
+        history = History.new
+        history.created_by = current_user.email
+        old_jurisdiction = patient.jurisdiction.jurisdiction_path_string
+        new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id]).jurisdiction_path_string
+        history.comment = "User changed jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
+        history.patient = patient
+        history.history_type = 'Monitoring Change'
+        history.save
+        transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
+        transfer.save!
+        if propagated_fields.include?('jurisdiction_id')
+          group_members = patient.dependents.where.not(id: patient.id)
+          group_members.update(jurisdiction_id: content[:jurisdiction_id])
+          group_members.each do |group_member|
+            propagated_history = history.dup
+            propagated_transfer = transfer.dup
+            propagated_history.patient = group_member
+            propagated_transfer.patient = group_member
+            propagated_history.save
+            propagated_transfer.save
+          end
+        end
+      else
+        content[:jurisdiction_id] = patient.jurisdiction_id
+      end
+    end
+
     # Attempt to update, else return to index if failed
     redirect_to(root_url) && return unless patient.update!(content)
 
@@ -181,7 +226,7 @@ class PatientsController < ApplicationController
     end
     patient.save!
 
-    # Do we need to propogate to household?
+    # Do we need to propagate to household?
     if params.permit(:apply_to_group)[:apply_to_group]
       patient.dependents.where.not(id: patient.id).each do |member|
         member.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != member.monitoring && member.monitoring
@@ -368,6 +413,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort
       member_of_a_common_exposure_cohort_type
       isolation
+      jurisdiction_id
     ]
   end
 
@@ -440,6 +486,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort
       member_of_a_common_exposure_cohort_type
       isolation
+      jurisdiction_id
     ]
   end
 end

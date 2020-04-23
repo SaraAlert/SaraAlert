@@ -8,6 +8,7 @@
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "4.2.2",
+    "@sentry/browser": "^5.15.5",
     "authy-form-helpers": "^2.4.4",
     "axios": "^0.19.2",
     "babel-loader": "^8.1.0",

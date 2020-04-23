@@ -10,11 +10,11 @@ class AssessmentForm < ApplicationSystemTestCase
   PATIENTS = @@system_test_utils.get_patients
   ASSESSMENTS = @@system_test_utils.get_assessments
   
-  def complete_assessment(patient, assessment_key)
+  def complete_assessment(patient, assessment_label)
     visit "/patients/#{patient.submission_token}/assessments/new"
-    submit_assessment(ASSESSMENTS[assessment_key]['symptoms'])
+    submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
     assert page.has_content?('Thank You For Completing Your Self Report'), @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
-    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_key])
+    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label])
   end
   
   def submit_assessment(symptoms)

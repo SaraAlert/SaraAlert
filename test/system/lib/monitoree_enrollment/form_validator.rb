@@ -31,7 +31,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'date_of_birth', with: '02/31/1995'
     @@system_test_utils.go_to_next_page(false)
     verify_text_displayed('Please enter a date of birth')
-    @@monitoree_enrollment_form.populate_identification(identification, true)
+    @@monitoree_enrollment_form.populate_enrollment_step(:identification, identification)
     verify_text_not_displayed('Please enter a First Name')
     verify_text_not_displayed('Please enter a Last Name')
     verify_text_not_displayed('Please enter a date of birth')
@@ -53,7 +53,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
     verify_text_not_displayed('Please enter zip code of address')
     verify_text_displayed('Please enter country of address')
     click_on 'Home Address Within USA'
-    @@monitoree_enrollment_form.populate_address(address, true)
+    @@monitoree_enrollment_form.populate_enrollment_step(:address, address)
     verify_text_not_displayed('Please enter first line of address')
     verify_text_not_displayed('Please enter city of address')
     verify_text_not_displayed('Please enter state of address')
@@ -88,7 +88,7 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
     verify_text_displayed('Please confirm email')
     verify_text_not_displayed('Please provide a primary telephone number')
     verify_text_not_displayed('Please indicate the primary phone type')
-    @@monitoree_enrollment_form.populate_contact_info(contact_info, true)
+    @@monitoree_enrollment_form.populate_enrollment_step(:contact_info, contact_info)
     verify_text_not_displayed('Please provide an email')
     verify_text_not_displayed('Please confirm email')
     verify_text_not_displayed('Please provide a primary telephone number')
@@ -96,12 +96,12 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
   end
 
   def verify_input_validation_for_arrival_info(arrival_info)
-    @@monitoree_enrollment_form.populate_arrival_info(arrival_info, true)
+    @@monitoree_enrollment_form.populate_enrollment_step(:arrival_info, arrival_info)
     verify_text_not_displayed('Please enter a valid date of departure')
   end
 
   def verify_input_validation_for_additional_planned_travel(additional_planned_travel)
-    @@monitoree_enrollment_form.populate_additional_planned_travel(additional_planned_travel, true)
+    @@monitoree_enrollment_form.populate_enrollment_step(:additional_planned_travel, additional_planned_travel)
     verify_text_not_displayed('Please enter a valid start date')
     verify_text_not_displayed('Please enter a valid end date')
   end
@@ -115,7 +115,17 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'last_date_of_exposure', with: '10/01/5398'
     click_on 'Next'
     verify_text_displayed('Date can not be in the future')
-    @@monitoree_enrollment_form.populate_potential_exposure_info(potential_exposure_info, true)
+    fill_in 'last_date_of_exposure', with: '04/20/2020'
+    fill_in 'jurisdiction_id', with: ''
+    click_on 'Next'
+    verify_text_displayed('Please enter a valid jurisdiction')
+    fill_in 'jurisdiction_id', with: 'fake jurisdiction'
+    click_on 'Next'
+    verify_text_displayed('Please enter a valid jurisdiction')
+    fill_in 'jurisdiction_id', with: 'USA'
+    click_on 'Next'
+    verify_text_displayed('Please enter a valid jurisdiction')
+    @@monitoree_enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
     verify_text_not_displayed('Please enter a last date of exposure')
     verify_text_not_displayed('Date can not be in the future')
   end

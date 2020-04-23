@@ -41,6 +41,10 @@ body {
   border-radius: 0;
 }
 
+.authy-form input[type=text] {
+  width: inherit !important;
+}
+
 .breadcrumb {
   border-radius: 0 !important;
 }
