@@ -39,10 +39,11 @@ class Assessment < ApplicationRecord
     reported_symptom = reported_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first
     # This will be the case if a symptom is no longer being tracked and the assessments table is looking for its value
     return nil if reported_symptom.nil? || reported_symptom.value.nil?
-    return false unless reported_symptom&.required?
 
     threshold_condition = reported_condition&.threshold_condition
     threshold_symptom = threshold_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first
+    return false unless threshold_symptom&.required?
+
     return nil if threshold_symptom.nil? || threshold_symptom.value.nil?
 
     if reported_symptom.type == 'FloatSymptom' || reported_symptom.type == 'IntegerSymptom'
