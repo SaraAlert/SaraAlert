@@ -20,7 +20,7 @@ class SymptomTest < ActiveSupport::TestCase
     # No string length violations, should save without error
     assert test_symptom.save!
 
-    test_symptom = IntegerSymptom.new(name: str_too_long, label: str_too_long, float_value: 12)
+    test_symptom = IntegerSymptom.new(name: str_too_long, label: str_too_long, int_value: 12)
     # String length too long for name and label, should throw exception
     exception = assert_raises(Exception) { test_symptom.save! }
     assert_equal('Validation failed: Name is too long (maximum is 200 characters), Label is too long (maximum is 200 characters)', exception.message)
