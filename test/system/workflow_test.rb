@@ -104,7 +104,7 @@ class WorkflowTest < ApplicationSystemTestCase
     group_member_label = 'monitoree_8'
     @@monitoree_enrollment_helper.enroll_group_member(enroller_user_label, monitoree_label, group_member_label)
     
-    # edit parent jurisdiction but do not propogate to group member
+    # edit parent jurisdiction but do not propagate to group member
     edited_monitoree_without_propogation_label = 'monitoree_13'
     @@system_test_utils.login(enroller_user_label)
     @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[monitoree_label], false, false)
@@ -125,7 +125,7 @@ class WorkflowTest < ApplicationSystemTestCase
     assert page.has_no_content?(MONITOREES[group_member_label]['identification']['first_name'])
     @@system_test_utils.logout
 
-    # edit parent jurisdiction and propogate to group member
+    # edit parent jurisdiction and propagate to group member
     edited_monitoree_with_propogation_label = 'monitoree_14'
     @@system_test_utils.login(enroller_user_label)
     @@monitoree_enrollment_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[monitoree_label], false, false)

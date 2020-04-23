@@ -3,7 +3,7 @@
 <%= react_component("enrollment/Enrollment", { 
   current_user: current_user,
   patient: @patient,
-  propogated_fields: @propogated_fields,
+  propagated_fields: @propagated_fields,
   editMode: true,
   authenticity_token: form_authenticity_token,
   can_add_group: current_user.can_create_patient?,

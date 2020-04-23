@@ -60,7 +60,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if @patient.nil?
 
     @group_members = @patient.dependents.where.not(id: @patient.id)
-    @propogated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
+    @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
   # This follows 'new', this will receive the subject details and save a new subject
@@ -162,11 +162,11 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if patient.nil?
 
-    # Propogate desired fields to household except jurisdiction_id
-    propogated_fields = params[:propogated_fields]
-    unless propogated_fields.empty?
-      propogated_content = content.select { |field| propogated_fields.include?(field) && field != 'jurisdiction_id' }
-      patient.dependents.where.not(id: patient.id).update(propogated_content)
+    # Propagate desired fields to household except jurisdiction_id
+    propagated_fields = params[:propagated_fields]
+    unless propagated_fields.empty?
+      propagated_content = content.select { |field| propagated_fields.include?(field) && field != 'jurisdiction_id' }
+      patient.dependents.where.not(id: patient.id).update(propagated_content)
     end
 
     # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user
@@ -183,16 +183,16 @@ class PatientsController < ApplicationController
         history.save
         transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
         transfer.save!
-        if propogated_fields.include?('jurisdiction_id')
+        if propagated_fields.include?('jurisdiction_id')
           group_members = patient.dependents.where.not(id: patient.id)
           group_members.update(jurisdiction_id: content[:jurisdiction_id])
           group_members.each do |group_member|
-            propogated_history = history.dup
-            propogated_transfer = transfer.dup
-            propogated_history.patient = group_member
-            propogated_transfer.patient = group_member
-            propogated_history.save
-            propogated_transfer.save
+            propagated_history = history.dup
+            propagated_transfer = transfer.dup
+            propagated_history.patient = group_member
+            propagated_transfer.patient = group_member
+            propagated_history.save
+            propagated_transfer.save
           end
         end
       else
@@ -226,7 +226,7 @@ class PatientsController < ApplicationController
     end
     patient.save!
 
-    # Do we need to propogate to household?
+    # Do we need to propagate to household?
     if params.permit(:apply_to_group)[:apply_to_group]
       patient.dependents.where.not(id: patient.id).each do |member|
         member.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != member.monitoring && member.monitoring

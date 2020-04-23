@@ -11,16 +11,16 @@ class Exposure extends React.Component {
     this.state = {
       ...this.props,
       current: { ...this.props.currentState },
-      propogatedFields: { ...this.props.propogated_fields },
+      propagatedFields: { ...this.props.propagated_fields },
       jurisdiction_label: jur ? jur.label : '',
       original_jurisdiction_label: jur ? jur.label : '',
       original_jurisdiction_id: this.props.currentState.jurisdiction_id,
       errors: {},
       modified: {},
-      modifiedPropogatedFields: {},
+      modifiedPropagatedFields: {},
     };
     this.handleChange = this.handleChange.bind(this);
-    this.handlePropogatedFieldChange = this.handlePropogatedFieldChange.bind(this);
+    this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
     this.validate = this.validate.bind(this);
   }
 
@@ -39,16 +39,16 @@ class Exposure extends React.Component {
     });
   }
 
-  handlePropogatedFieldChange(event) {
-    let propogatedFields = this.propogatedFields;
-    let modifiedPropogatedFields = this.state.modifiedPropogatedFields;
+  handlePropagatedFieldChange(event) {
+    let propagatedFields = this.propagatedFields;
+    let modifiedPropagatedFields = this.state.modifiedPropagatedFields;
     this.setState(
       {
-        propogatedFields: { ...propogatedFields, [event.target.name]: event.target.checked },
-        modifiedPropogatedFields: { ...modifiedPropogatedFields, [event.target.name]: event.target.checked },
+        propagatedFields: { ...propagatedFields, [event.target.name]: event.target.checked },
+        modifiedPropagatedFields: { ...modifiedPropagatedFields, [event.target.name]: event.target.checked },
       },
       () => {
-        this.props.setPropogatedFields({ ...this.state.modifiedPropogatedFields });
+        this.props.setPropagatedFields({ ...this.state.modifiedPropagatedFields });
       }
     );
   }
@@ -376,8 +376,8 @@ class Exposure extends React.Component {
                               id="update_group_member_jurisdiction_id"
                               name="jurisdiction_id"
                               label="Apply this change to the entire household that this monitoree is responsible for"
-                              onChange={this.handlePropogatedFieldChange}
-                              checked={this.state.propogatedFields.jurisdiction_id === true || false}
+                              onChange={this.handlePropagatedFieldChange}
+                              checked={this.state.propagatedFields.jurisdiction_id === true || false}
                             />
                           </Form.Group>
                         )}
@@ -488,10 +488,10 @@ Exposure.propTypes = {
   currentState: PropTypes.object,
   previous: PropTypes.func,
   setEnrollmentState: PropTypes.func,
-  setPropogatedFields: PropTypes.func,
+  setPropagatedFields: PropTypes.func,
   next: PropTypes.func,
   submit: PropTypes.func,
-  propogated_fields: PropTypes.object,
+  propagated_fields: PropTypes.object,
   has_group_members: PropTypes.bool,
   jurisdiction_paths: PropTypes.array,
   jurisdiction_id: PropTypes.number,
