@@ -5,7 +5,7 @@ class PurgeJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    Patient.purgeable.find_each(batch_size: 5000) do |monitoree|
+    Patient.marked_for_purge.find_each(batch_size: 5000) do |monitoree|
       # Whitelist attributes to keep
       attributes = Patient.new.attributes.keys
       whitelist = %w[id created_at updated_at responder_id creator_id jurisdiction_id
