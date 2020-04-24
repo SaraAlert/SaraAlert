@@ -93,7 +93,7 @@ class AssessmentsController < ApplicationController
         history.save
       end
 
-      patient.refresh_symptom_onset(assessment.id)
+      patient.refresh_symptom_onset(@assessment.id)
 
       redirect_to(patient_assessments_url)
     end
