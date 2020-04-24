@@ -5,15 +5,12 @@ FactoryBot.define do
     type { Symptom.valid_types.select }
 
     after(:build) do |symptom|
-      case symptom.type
-      when 'IntegerSymptom'
-        symptom.int_value = symptom.int_value || Faker::Number.between(from: 1, to: 2_147_483_648)
-      when 'BoolSymptom'
-        if symptom.bool_value.nil?
-          symptom.bool_value = Faker::Boolean.boolean
-        end
-      when 'FloatSymptom'
-        symptom.float_value = symptom.float_value || Faker::Number.decimal
+      if symptom.type == 'IntegerSymptom' && symptom.int_value.nil?
+        symptom.int_value = Faker::Number.between(from: 0, to: 2_147_483_648)
+      elsif symptom.type == 'BoolSymptom' && symptom.bool_value.nil?
+        symptom.bool_value = Faker::Boolean.boolean
+      elsif symptom.type == 'FloatSymptom' && symptom.float_value.nil?
+        symptom.float_value = Faker::Number.decimal
       end
     end
   end
