@@ -3,6 +3,7 @@ import { Form, Row, Col, Button, Modal, Tooltip } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import ContactAttempt from './ContactAttempt';
+import CaseStatus from './CaseStatus';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -353,13 +354,13 @@ class MonitoringStatus extends React.Component {
               </Form.Row>
               <Form.Row className="pt-3 align-items-end">
                 <Form.Group as={Col} md="8">
-                  <Form.Label className="nav-input-label">CURRENT WORKFLOW</Form.Label>
-                  <Form.Control as="select" className="form-control-lg" id="isolation_status" onChange={this.handleChange} value={this.state.isolation_status}>
-                    <option>Exposure</option>
-                    <option>Isolation</option>
-                  </Form.Control>
+                  <CaseStatus
+                    patient={this.props.patient}
+                    authenticity_token={this.props.authenticity_token}
+                    has_group_members={this.props.has_group_members}
+                  />
                 </Form.Group>
-                <Form.Group as={Col} md="10">
+                <Form.Group as={Col} md="8">
                   <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
                   <Form.Control
                     as="select"
@@ -374,9 +375,10 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} md="5">
+                <Form.Group as={Col} md="6">
                   <ContactAttempt patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
                 </Form.Group>
+                <Form.Group as={Col} md="1"></Form.Group>
               </Form.Row>
               <Form.Row className="pt-3 align-items-end">
                 <Form.Group as={Col} md={14}>
