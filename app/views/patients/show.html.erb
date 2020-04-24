@@ -51,7 +51,6 @@
             <th class="DataTable-table-header">Needs Review</th>
             <th class="DataTable-table-header">Reporter</th>
             <th class="DataTable-table-header">Created</th>
-            <th class="DataTable-table-header">Last Updated</th>
             <% columns.each do |column| -%>
               <th class="DataTable-table-header"><%= column.titleize %></th>
             <% end -%>
@@ -65,7 +64,6 @@
               <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
               <td><%= assessment.who_reported %></td>
               <td><%= assessment.created_at %></td>
-              <td><%= assessment.updated_at %></td>
               <% columns.each do |column| -%>
                 <% if assessment.get_reported_symptom_by_name(column) == nil %>
                 <td></td>

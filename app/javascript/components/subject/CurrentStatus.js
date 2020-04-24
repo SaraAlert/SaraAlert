@@ -21,6 +21,10 @@ class CurrentStatus extends React.Component {
       return <span className="text-secondary">not currently being monitored</span>;
     } else if (status === 'isolation_requiring_review') {
       return <span className="text-danger">requires review</span>;
+    } else if (status === 'isolation_non_test_based') {
+      return <span className="text-danger">requires review (non test based)</span>;
+    } else if (status === 'isolation_test_based') {
+      return <span className="text-danger">requires review (test based)</span>;
     } else if (status === 'isolation_non_reporting') {
       return <span className="text-warning">non-reporting</span>;
     } else if (status === 'isolation_reporting') {

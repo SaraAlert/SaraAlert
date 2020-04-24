@@ -167,24 +167,33 @@ class Patient < ApplicationRecord
       .distinct
   }
 
-  scope :isolation_requiring_review, lambda {
+  # Individuals that meet the test based review requirement
+  scope :test_based, lambda {
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .where_assoc_exists(:assessments, &:seventy_two_hours_since_latest_fever_report)
-      .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
+      .where_assoc_not_exists(:assessments, &:twenty_four_hours_since_latest_fever_report)
       .distinct
-      .or(
-        where('monitoring = ?', true)
-        .where('purged = ?', false)
-        .where('isolation = ?', true)
-        .where_assoc_count(2, :<=, :histories, 'comment LIKE \'%Laboratory report results – negative%\'')
-        .where_assoc_exists(:assessments, &:twenty_four_hours_since_latest_fever_report)
-        .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-        .distinct
-      )
   }
 
+  # Individuals that meet the non test based review requirement
+  scope :non_test_based, lambda {
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('isolation = ?', true)
+      .where_assoc_not_exists(:assessments, &:seventy_two_hours_since_latest_fever_report)
+      .where('symptom_onset <= ?', 7.days.ago)
+      .distinct
+  }
+
+  # Individuals in the isolation workflow that require review
+  scope :isolation_requiring_review, lambda {
+    where(id: Patient.unscoped.test_based)
+      .where(id: Patient.unscoped.non_test_based)
+  }
+
+  # Individuals in the isolation workflow, not meeting review and are not reporting
   scope :isolation_non_reporting, lambda {
     where('monitoring = ?', true)
       .where('purged = ?', false)
@@ -193,6 +202,7 @@ class Patient < ApplicationRecord
       .distinct
   }
 
+  # Individuals in the isolation workflow, not meeting review but are reporting
   scope :isolation_reporting, lambda {
     where('monitoring = ?', true)
       .where('purged = ?', false)
@@ -323,7 +333,8 @@ class Patient < ApplicationRecord
       return :asymptomatic if asymptomatic?
       return :non_reporting if non_reporting?
     end
-    return :isolation_requiring_review if Patient.isolation_requiring_review.where(id: id).exists?
+    return :isolation_test_based if Patient.test_based.where(id: id).exists?
+    return :isolation_non_test_based if Patient.non_test_based.where(id: id).exists?
     return :isolation_non_reporting if Patient.isolation_non_reporting.where(id: id).exists?
     return :isolation_reporting if Patient.isolation_reporting.where(id: id).exists?
     return :purged if purged?
@@ -402,6 +413,25 @@ class Patient < ApplicationRecord
     update(last_assessment_reminder_sent: DateTime.now)
   end
 
+  # All of the monitorees assessments
+  def assessmenmts_summary_array(assessment_headers, symptoms_headers)
+    # A header will be included in this
+    assessments_summary = []
+    assessments.each do |assessment|
+      entry = []
+      assessment_headers.each do |header|
+        # Whether or not the assessment has that particular attribute, the row still needs a value
+        entry.push(assessment[header] || '')
+      end
+      symptoms_headers.each do |header|
+        # Whether or not the assessment has that particular symptom, the row still needs a value
+        entry.push(assessment.get_reported_symptom_value(header) || '')
+      end
+      assessments_summary.push(entry)
+    end
+    assessments_summary
+  end
+
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
@@ -423,25 +453,6 @@ class Patient < ApplicationRecord
       transferred_to: latest_transfer&.to_path || '',
       expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes).strftime('%F') || '')
     }
-  end
-
-  # All of the monitorees assessments
-  def assessmenmts_summary_array(assessment_headers, symptoms_headers)
-    # A header will be included in this
-    assessments_summary = []
-    assessments.each do |assessment|
-      entry = []
-      assessment_headers.each do |header|
-        # Whether or not the assessment has that particular attribute, the row still needs a value
-        entry.push(assessment[header] || '')
-      end
-      symptoms_headers.each do |header|
-        # Whether or not the assessment has that particular symptom, the row still needs a value
-        entry.push(assessment.get_reported_symptom_value(header) || '')
-      end
-      assessments_summary.push(entry)
-    end
-    assessments_summary
   end
 
   # All information about this subject

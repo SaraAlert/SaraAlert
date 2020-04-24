@@ -265,8 +265,8 @@ ActiveRecord::Schema.define(version: 2020_04_24_030959) do
     t.string "type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["condition_id"], name: "index_symptoms_on_condition_id"
     t.boolean "required", default: true
+    t.index ["condition_id"], name: "index_symptoms_on_condition_id"
   end
 
   create_table "transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
