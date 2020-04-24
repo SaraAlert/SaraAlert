@@ -159,8 +159,10 @@ namespace :demo do
               number_of_symptoms = rand(bool_symps.count) + 1
               bool_symps.each do |symp|  symp['bool_value'] = false end
               bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
-              assessment.update(reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
-              assessment.save
+              assessment.update(reported_condition: reported_condition, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
+              # Outside the context of the demo script, an assessment would already have a threshold condition saved to check the symptomatic status
+              # We'll compensate for that here by just re-updating
+              assessment.update(symptomatic: assessment.symptomatic?)
               patient.assessments << assessment
               patient.save
             else
