@@ -12,6 +12,7 @@ class Patient < ApplicationRecord
   end
 
   validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
+                                                  'Meets Case Definition',
                                                   'Lost to follow-up during monitoring period',
                                                   'Lost to follow-up (contact never established)',
                                                   'Transferred to another jurisdiction',
