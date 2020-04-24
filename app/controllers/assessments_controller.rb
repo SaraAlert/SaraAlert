@@ -68,6 +68,7 @@ class AssessmentsController < ApplicationController
 
       @assessment = Assessment.new(reported_condition: reported_condition)
       @assessment.symptomatic = @assessment.symptomatic?
+
       @assessment.patient = patient
 
       # Determine if a user created this assessment or a monitoree
@@ -91,6 +92,9 @@ class AssessmentsController < ApplicationController
         history.history_type = 'Report Created'
         history.save
       end
+
+      patient.refresh_symptom_onset(assessment.id)
+
       redirect_to(patient_assessments_url)
     end
   end
@@ -122,6 +126,8 @@ class AssessmentsController < ApplicationController
 
     # Attempt to save and continue; else if failed redirect to index
     return unless assessment.save!
+
+    patient.refresh_symptom_onset(assessment.id)
 
     history = History.new
     history.created_by = current_user.email

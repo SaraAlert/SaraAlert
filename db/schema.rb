@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_23_212253) do
+ActiveRecord::Schema.define(version: 2020_04_24_001049) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -215,6 +215,7 @@ ActiveRecord::Schema.define(version: 2020_04_23_212253) do
     t.datetime "closed_at"
     t.string "source_of_report_specify"
     t.boolean "pause_notifications", default: false
+    t.date "symptom_onset"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
     t.index ["first_name"], name: "index_patients_on_first_name"

@@ -153,17 +153,25 @@ namespace :demo do
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
           if rand < 0.9 # 70% reporting rate on any given day
             reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
+            assessment = Assessment.new
             if rand < 0.3 # 30% report some sort of symptoms
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               number_of_symptoms = rand(bool_symps.count) + 1
               bool_symps.each do |symp|  symp['bool_value'] = false end
               bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
-              patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
+              assessment.update(reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
+              assessment.save
+              patient.assessments << assessment
+              patient.save
             else
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               bool_symps.each do |symp|  symp['bool_value'] = false end
-              patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
+              assessment.update(reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
+              assessment.save
+              patient.assessments << assessment
+              patient.save
             end
+            patient.refresh_symptom_onset(assessment.id)
           end
         end
 

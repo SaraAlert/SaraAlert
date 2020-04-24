@@ -43,8 +43,6 @@ class MonitoringStatus extends React.Component {
     this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
     this.toggleIsolation = this.toggleIsolation.bind(this);
     this.toggleNotifications = this.toggleNotifications.bind(this);
-    this.publicHealthActionRefresh = this.publicHealthActionRefresh.bind(this);
-    this.renderPHARefreshTooltip = this.renderPHARefreshTooltip.bind(this);
   }
 
   handleChange(event) {
@@ -242,22 +240,6 @@ class MonitoringStatus extends React.Component {
       });
   }
 
-  publicHealthActionRefresh() {
-    // axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    // axios
-    //   .post(window.BASE_PATH + '/histories', {
-    //     patient_id: this.props.patient.id,
-    //     type: 'Monitoring Change',
-    //     comment: 'User added an additional public health action: "' + this.state.public_health_action + '".',
-    //   })
-    //   .then(() => {
-    //     location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-    //   })
-    //   .catch(error => {
-    //     console.error(error);
-    //   });
-  }
-
   createModal(title, toggle, submit) {
     return (
       <Modal size="lg" show centered>
@@ -370,14 +352,14 @@ class MonitoringStatus extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-3 align-items-end">
-                <Form.Group as={Col}>
+                <Form.Group as={Col} md="8">
                   <Form.Label className="nav-input-label">CURRENT WORKFLOW</Form.Label>
                   <Form.Control as="select" className="form-control-lg" id="isolation_status" onChange={this.handleChange} value={this.state.isolation_status}>
                     <option>Exposure</option>
                     <option>Isolation</option>
                   </Form.Control>
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} md="10">
                   <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
                   <Form.Control
                     as="select"
@@ -391,33 +373,10 @@ class MonitoringStatus extends React.Component {
                     <option>Recommended laboratory testing</option>
                   </Form.Control>
                 </Form.Group>
-                <Form.Group as={Col}>
+                <Form.Group as={Col} md="1"></Form.Group>
+                <Form.Group as={Col} md="5">
                   <ContactAttempt patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
                 </Form.Group>
-                {/* <Form.Group as={Col} md={2}>
-                  {this.state.public_health_action === 'None' && (
-                    <OverlayTrigger placement="top" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
-                      <span className="d-inline-block">
-                        <Button className="btn-lg btn-square" disabled style={{ pointerEvents: 'none' }}>
-                          <i className="fas fa-redo"></i>
-                        </Button>
-                      </span>
-                    </OverlayTrigger>
-                  )}
-                  {this.state.public_health_action != 'None' && (
-                    <OverlayTrigger placement="top" delay={{ show: 100, hide: 400 }} overlay={this.renderPHARefreshTooltip}>
-                      <Button
-                        className="btn-lg btn-square"
-                        onClick={() => {
-                          if (window.confirm("This will add an additional duplicate public health action to this monitoree's history. Are you sure?")) {
-                            this.publicHealthActionRefresh();
-                          }
-                        }}>
-                        <i className="fas fa-redo"></i>
-                      </Button>
-                    </OverlayTrigger>
-                  )}
-                </Form.Group> */}
               </Form.Row>
               <Form.Row className="pt-3 align-items-end">
                 <Form.Group as={Col} md={14}>
@@ -453,18 +412,6 @@ class MonitoringStatus extends React.Component {
                     </Button>
                   )}
                 </Form.Group>
-                {/* <Form.Group as={Col} md={6}>
-                  {!this.props.patient.pause_notifications && (
-                    <Button className="btn-lg btn-square float-right" id="pause_notifications" onClick={this.handleChange}>
-                      <i className="fas fa-pause"></i> Pause Notifications
-                    </Button>
-                  )}
-                  {this.props.patient.pause_notifications && (
-                    <Button className="btn-lg btn-square float-right" id="pause_notifications" onClick={this.handleChange}>
-                      <i className="fas fa-play"></i> Resume Notifications
-                    </Button>
-                  )}
-                </Form.Group> */}
               </Form.Row>
             </Col>
           </Row>

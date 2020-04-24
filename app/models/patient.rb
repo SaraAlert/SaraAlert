@@ -332,6 +332,76 @@ class Patient < ApplicationRecord
     :unknown
   end
 
+  # Updated symptom onset date IF updated assessment happens to be the oldest symptomatic
+  def refresh_symptom_onset(assessment_id)
+    assessment = assessments.where(symptomatic: true).order(:created_at).limit(1)&.first
+    return unless !assessment.nil? && !assessment_id.blank? && assessment.id == assessment_id
+
+    update(symptom_onset: assessment&.created_at&.to_date)
+    save
+  end
+
+  def send_assessment(force = false)
+    unless last_assessment_reminder_sent.nil?
+      return if last_assessment_reminder_sent > 5.hours.ago
+    end
+
+    # Do not allow messages to go to household members
+    return unless responder.id == id
+
+    # If force is set, the preferred contact time will be ignored
+    unless force
+      hour = Time.now.getlocal('-04:00').hour
+      if !address_state.blank? && address_state == 'Northern Mariana Islands'
+        # CNMI Local
+        hour = Time.now.getlocal('+10:00').hour
+      end
+      if !address_state.blank? && address_state == 'Arkansas'
+        # Arkansas Local
+        hour = Time.now.getlocal('-05:00').hour
+      end
+      # These are the hours that we consider to be morning, afternoon and evening
+      morning = (8..12)
+      afternoon = (12..16)
+      evening = (16..20)
+      if preferred_contact_time == 'Morning'
+        return unless morning.include? hour
+      elsif preferred_contact_time == 'Afternoon'
+        return unless afternoon.include? hour
+      elsif preferred_contact_time == 'Evening'
+        return unless evening.include? hour
+      end
+    end
+
+    if preferred_contact_method.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+      # SMS-based assessments assess the patient _and_ all of their dependents
+      # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
+      # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
+      # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
+      if !force
+        PatientMailer.assessment_sms(self).deliver_later
+      else
+        PatientMailer.assessment_sms_reminder(self).deliver_later
+      end
+    elsif preferred_contact_method.downcase == 'sms texted weblink' && responder.id == id
+      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+    elsif preferred_contact_method.downcase == 'telephone call' && responder.id == id
+      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
+    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id && !email.blank?
+      PatientMailer.assessment_email(self).deliver_later
+    end
+
+    history = History.new
+    history.created_by = 'System'
+    comment = 'Sara Alert sent a report reminder to this monitoree via ' + preferred_contact_method + '.'
+    history.comment = comment
+    history.patient = patient
+    history.history_type = 'Report Reminder'
+    history.save
+
+    update(last_assessment_reminder_sent: DateTime.now)
+  end
+
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
@@ -468,58 +538,5 @@ class Patient < ApplicationRecord
   # Override as_json to include linelist
   def as_json(options = {})
     super((options || {}).merge(methods: :linelist))
-  end
-
-  def send_assessment(force = false)
-    unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent > 20.hours.ago
-    end
-
-    # Do not allow messages to go to household members
-    return unless responder.id == id
-
-    # If force is set, the preferred contact time will be ignored
-    unless force
-      hour = Time.now.getlocal('-04:00').hour
-      if !address_state.blank? && address_state == 'Northern Mariana Islands'
-        # CNMI Local
-        hour = Time.now.getlocal('+10:00').hour
-      end
-      if !address_state.blank? && address_state == 'Arkansas'
-        # Arkansas Local
-        hour = Time.now.getlocal('-05:00').hour
-      end
-      # These are the hours that we consider to be morning, afternoon and evening
-      morning = (8..12)
-      afternoon = (12..16)
-      evening = (16..20)
-      if preferred_contact_time == 'Morning'
-        return unless morning.include? hour
-      elsif preferred_contact_time == 'Afternoon'
-        return unless afternoon.include? hour
-      elsif preferred_contact_time == 'Evening'
-        return unless evening.include? hour
-      end
-    end
-
-    if preferred_contact_method == 'SMS Text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-      # SMS-based assessments assess the patient _and_ all of their dependents
-      # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
-      # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
-      # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
-      if !force
-        PatientMailer.assessment_sms(self).deliver_later
-      else
-        PatientMailer.assessment_sms_reminder(self).deliver_later
-      end
-    elsif preferred_contact_method == 'SMS Texted Weblink' && responder.id == id
-      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-    elsif preferred_contact_method == 'Telephone call' && responder.id == id
-      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
-    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id && !email.blank?
-      PatientMailer.assessment_email(self).deliver_later
-    end
-
-    update(last_assessment_reminder_sent: DateTime.now)
   end
 end

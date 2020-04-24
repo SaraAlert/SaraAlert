@@ -30,6 +30,17 @@
     <h5 class="card-header"> Reports</h5>
     <div class="m-4">
       <%= react_component("subject/CurrentStatus", { status: @patient.status, isolation: @patient.isolation } ) %>
+      <div class="pb-3 pt-2">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New</button>
+          <% unless @patient.isolation %>
+            <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <% end %>
+          <% if @patient.monitoring %>
+            <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <% end %>
+        </div>
+      </div>
       <% columns = [] %>
       <% @patient.assessments.includes([:reported_condition]).each do |assessment| columns.concat(assessment.all_symptom_names) end %>
       <% columns = columns.uniq%>
@@ -39,7 +50,8 @@
             <th class="DataTable-table-header">ID</th>
             <th class="DataTable-table-header">Needs Review</th>
             <th class="DataTable-table-header">Reporter</th>
-            <th class="DataTable-table-header">Date and Time</th>
+            <th class="DataTable-table-header">Created</th>
+            <th class="DataTable-table-header">Last Updated</th>
             <% columns.each do |column| -%>
               <th class="DataTable-table-header"><%= column.titleize %></th>
             <% end -%>
@@ -53,6 +65,7 @@
               <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
               <td><%= assessment.who_reported %></td>
               <td><%= assessment.created_at %></td>
+              <td><%= assessment.updated_at %></td>
               <% columns.each do |column| -%>
                 <% if assessment.get_reported_symptom_by_name(column) == nil %>
                 <td></td>
@@ -83,15 +96,7 @@
         </tbody>
       </table>
       <div class="pb-1">
-        <div class="btn-group" role="group">
-          <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New</button>
-          <% unless @patient.isolation %>
-            <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
-          <% end %>
-          <% if @patient.monitoring %>
-            <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
-          <% end %>
-        </div>
+        <%= react_component("subject/SymptomOnset", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
       </div>
     </div>
   </div>

@@ -78,7 +78,7 @@ class ContactAttempt extends React.Component {
     return (
       <React.Fragment>
         <Button onClick={this.toggleContactAttemptModal} className="btn btn-lg" block>
-          Add Contact Attempt
+          <i className="fas fa-phone"></i> New Contact Attempt
         </Button>
         {this.state.showContactAttemptModal && this.createModal('Contact Attempt', this.toggleContactAttemptModal, this.submit)}
       </React.Fragment>
