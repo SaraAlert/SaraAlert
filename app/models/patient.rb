@@ -202,6 +202,7 @@ class Patient < ApplicationRecord
       .where('purged = ?', false)
       .where('isolation = ?', true)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .where.not(id: Patient.unscoped.isolation_requiring_review)
       .distinct
   }
 
@@ -366,11 +367,11 @@ class Patient < ApplicationRecord
     # If force is set, the preferred contact time will be ignored
     unless force
       hour = Time.now.getlocal('-04:00').hour
-      if !address_state.blank? && address_state == 'Northern Mariana Islands'
+      if !address_state.blank? && address_state.downcase == 'northern mariana islands'
         # CNMI Local
         hour = Time.now.getlocal('+10:00').hour
       end
-      if !address_state.blank? && address_state == 'Arkansas'
+      if !address_state.blank? && address_state.downcase == 'arkansas'
         # Arkansas Local
         hour = Time.now.getlocal('-05:00').hour
       end
