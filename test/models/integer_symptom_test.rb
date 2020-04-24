@@ -46,7 +46,7 @@ class IntegerSymptomTest < ActiveSupport::TestCase
     assert_equal 1, symptom.int_value
   end
 
-  test 'as json' do
+  test 'integer symptom as json' do
     symptom = create(:integer_symptom)
     assert_includes symptom.to_json, 'int_value'
     assert_includes symptom.to_json, symptom.int_value.to_s

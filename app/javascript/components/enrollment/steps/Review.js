@@ -63,7 +63,7 @@ class Review extends React.Component {
         <Card className="mx-2 card-square">
           <Card.Header as="h5">Monitoree Review</Card.Header>
           <Card.Body>
-            <Patient goto={this.props.goto} details={this.props.currentState || {}} />
+            <Patient goto={this.props.goto} details={{ ...this.props.currentState, jurisdiction_label: this.props.jurisdiction_label } || {}} />
             <div className="pb-4"></div>
             {this.props.previous && (
               <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
@@ -114,6 +114,7 @@ Review.propTypes = {
   submit: PropTypes.func,
   parent_id: PropTypes.string,
   canAddGroup: PropTypes.bool,
+  jurisdiction_label: PropTypes.string,
 };
 
 export default Review;

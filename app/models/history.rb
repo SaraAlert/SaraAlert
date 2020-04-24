@@ -19,10 +19,15 @@ class History < ApplicationRecord
                                              'Comment',
                                              'Enrollment',
                                              'Monitoring Change',
+                                             'Monitoree Data Downloaded',
                                              'Reports Reviewed',
                                              'Report Reviewed',
                                              'Report Reminder',
-                                             'Report Note'] }
+                                             'Report Note',
+                                             'Lab Result',
+                                             'Lab Result Edit',
+                                             'Contact Attempt',
+                                             'Report Reminder'] }
 
   belongs_to :patient
 

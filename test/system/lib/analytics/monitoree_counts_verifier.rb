@@ -56,7 +56,7 @@ class AnalyticsMonitoreeCountsVerifier < ApplicationSystemTestCase
       count = distribution.fetch("#{risk_level}_count".to_sym)
       expected_count = get_expected_count(analytic_id, active_monitoring, category_type, category, risk_level)
       if !expected_count.nil?
-        assert_equal expected_count['total'], count, @@system_test_utils.get_err_msg('Monitoree count', "#{category_type} #{category} #{risk_level}", expected_count['total'])
+        assert_equal(expected_count['total'], count, @@system_test_utils.get_err_msg('Monitoree count', "#{category_type} #{category} #{risk_level}", expected_count['total']))
       end
     }
   end
@@ -66,7 +66,7 @@ class AnalyticsMonitoreeCountsVerifier < ApplicationSystemTestCase
     RISK_LEVELS.each { |risk_level|
       sum_of_counts += distribution.fetch("#{risk_level}_count".to_sym)
     }
-    assert_equal sum_of_counts, distribution.fetch(:total_count), @@system_test_utils.get_err_msg('Monitoree count', 'sum of counts', sum_of_counts)
+    assert_equal(sum_of_counts, distribution.fetch(:total_count), @@system_test_utils.get_err_msg('Monitoree count', 'sum of counts', sum_of_counts))
   end
 
   def validate_percentages(distribution)

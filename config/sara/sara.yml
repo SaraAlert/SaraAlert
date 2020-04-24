@@ -1,5 +1,5 @@
 # Version
-version: v1.2.4
+version: v1.3.0
 
 # Base path (useful for WARP or similar environments)
 base_path: ''
@@ -27,3 +27,6 @@ enable_voice: <%= ENV["SARA_ALERT_ENABLE_VOICE"] || true %>
 
 # Assessment Report Mode
 report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || false %>
+
+# Optional Sentry URL for application monitoring and error reporting
+sentry_url: <%= ENV["SENTRY_URL"] || '' %>

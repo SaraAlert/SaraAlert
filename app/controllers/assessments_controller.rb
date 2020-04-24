@@ -32,7 +32,7 @@ class AssessmentsController < ApplicationController
                               .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists?
         assessment_placeholder = {}
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
-        assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes] }).to_h)
+        assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes required] }).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
         # The generic 'experiencing_symptoms' boolean is used in cases where a user does not specify _which_ symptoms they are experiencing,
         # a value of true will result in an asesssment being marked as symptomatic regardless of if symptoms are specified
@@ -60,7 +60,7 @@ class AssessmentsController < ApplicationController
 
       redirect_to(root_url) && return unless threshold_condition
 
-      reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes] }).to_h['symptoms']
+      reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
 
       typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 
@@ -68,6 +68,7 @@ class AssessmentsController < ApplicationController
 
       @assessment = Assessment.new(reported_condition: reported_condition)
       @assessment.symptomatic = @assessment.symptomatic?
+
       @assessment.patient = patient
 
       # Determine if a user created this assessment or a monitoree
@@ -91,6 +92,9 @@ class AssessmentsController < ApplicationController
         history.history_type = 'Report Created'
         history.save
       end
+
+      patient.refresh_symptom_onset(@assessment.id)
+
       redirect_to(patient_assessments_url)
     end
   end
@@ -101,9 +105,19 @@ class AssessmentsController < ApplicationController
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
     patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
-    reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes] }).to_h['symptoms']
+    reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
 
     typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
+
+    # Figure out the change
+    delta = []
+    typed_reported_symptoms.each do |symptom|
+      new_val = symptom.bool_value
+      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
+      unless new_val.nil? || old_val.nil?
+        delta << symptom.name + '=' + (new_val ? 'Yes' : 'No') if new_val != old_val
+      end
+    end
 
     assessment.reported_condition.symptoms = typed_reported_symptoms
     assessment.symptomatic = assessment.symptomatic?
@@ -113,9 +127,12 @@ class AssessmentsController < ApplicationController
     # Attempt to save and continue; else if failed redirect to index
     return unless assessment.save!
 
+    patient.refresh_symptom_onset(assessment.id)
+
     history = History.new
     history.created_by = current_user.email
     comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
+    comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
     history.comment = comment
     history.patient = patient
     history.history_type = 'Report Updated'

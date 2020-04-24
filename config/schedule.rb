@@ -6,7 +6,7 @@ every 24.hours do
   runner "CloseSubjectsJob.perform_now"
 end
 
-every 24.hours do
+every :sunday do
   runner "PurgeJob.perform_now"
 end
 

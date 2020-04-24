@@ -1,13 +1,13 @@
 en:
   devise:
-    submit_token: 'Check Token'
+    submit_token: 'Submit'
     submit_token_title: 'Please enter your Authy token:'
     authy_register_title: 'Enable Two factor authentication'
     enable_authy: 'Enable'
     cellphone: 'Enter your cellphone #'
     country: 'Enter your country'
-    request_sms: 'Request SMS'
-    request_phone_call: 'Request phone call'
+    request_sms: 'Request SMS Text'
+    request_phone_call: 'Request Phone Call'
     remember_device: 'Remember Device'
     request_to_login: 'Request to Login'
 

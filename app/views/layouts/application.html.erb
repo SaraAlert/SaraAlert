@@ -6,9 +6,12 @@
     <title>Sara Alert</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <script>
+      window.BASE_PATH = "<%= ADMIN_OPTIONS['base_path'] %>";
+      window.SENTRY_URL = "<%= ADMIN_OPTIONS['sentry_url'] %>";
+    </script>
     <%= stylesheet_pack_tag 'application', media: 'all' %>
     <%= javascript_pack_tag 'application' %>
-
   </head>
   <body id="sara-alert-body">
     <%= render 'layouts/header' %>
@@ -16,7 +19,4 @@
       <%= yield %>
     </div>
   </body>
-  <script>
-    window.BASE_PATH = "<%= ADMIN_OPTIONS['base_path'] %>";
-  </script>
 </html>

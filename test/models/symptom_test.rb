@@ -3,35 +3,56 @@
 require 'test_helper'
 
 class SymptomTest < ActiveSupport::TestCase
-  test 'Symptom validation does not allow string fields to exceed 200 characters' do
-    str_just_long_enough = '0' * 200
-    str_too_long = '0' * 201
+  def setup; end
 
-    test_symptom = FloatSymptom.new(name: str_just_long_enough, label: str_just_long_enough, float_value: 12.1)
-    # No string length violations, should save without error
-    assert test_symptom.save!
+  def teardown; end
 
-    test_symptom = FloatSymptom.new(name: str_too_long, label: str_too_long, float_value: 12.1)
-    # String length too long for name and label, should throw exception
-    exception = assert_raises(Exception) { test_symptom.save! }
-    assert_equal('Validation failed: Name is too long (maximum is 200 characters), Label is too long (maximum is 200 characters)', exception.message)
+  test 'create symptom' do
+    Symptom.valid_types.each do |type|
+      string = 'v' * 200
+      # No string fields
+      assert create(:symptom, type: type)
+      # Valid string fields
+      assert create(:symptom, type: type, name: string)
+      assert create(:symptom, type: type, label: string)
+      assert create(:symptom, type: type, notes: string)
 
-    test_symptom = IntegerSymptom.new(name: str_just_long_enough, label: str_just_long_enough, int_value: 12)
-    # No string length violations, should save without error
-    assert test_symptom.save!
+      string << 'v'
+      # Invalid string fields (length too long)
+      assert_raises(ActiveRecord::RecordInvalid) do
+        create(:symptom, type: type, name: string)
+      end
 
-    test_symptom = IntegerSymptom.new(name: str_too_long, label: str_too_long, int_value: 12)
-    # String length too long for name and label, should throw exception
-    exception = assert_raises(Exception) { test_symptom.save! }
-    assert_equal('Validation failed: Name is too long (maximum is 200 characters), Label is too long (maximum is 200 characters)', exception.message)
+      assert_raises(ActiveRecord::RecordInvalid) do
+        create(:symptom, type: type, label: string)
+      end
 
-    test_symptom = BoolSymptom.new(name: str_just_long_enough, label: str_just_long_enough, bool_value: true)
-    # No string length violations, should save without error
-    assert test_symptom.save!
+      assert_raises(ActiveRecord::RecordInvalid) do
+        create(:symptom, type: type, notes: string)
+      end
+    end
+    # Invalid type field
+    assert_raises(ActiveRecord::RecordInvalid) do
+      create(:symptom, type: 'Invalid')
+    end
+  end
 
-    test_symptom = BoolSymptom.new(name: str_too_long, label: str_too_long, bool_value: true)
-    # String length too long for name and label, should throw exception
-    exception = assert_raises(Exception) { test_symptom.save! }
-    assert_equal('Validation failed: Name is too long (maximum is 200 characters), Label is too long (maximum is 200 characters)', exception.message)
+  test 'fever' do
+    assert_difference('Symptom.fever.size', 1) do
+      create(:bool_symptom, bool_value: true, name: 'fever')
+    end
+
+    assert_no_difference('Symptom.fever.size') do
+      create(:bool_symptom, bool_value: false, name: 'fever')
+      create(:bool_symptom, bool_value: true, name: 'not fever')
+    end
+  end
+
+  test 'symptom as json' do
+    Symptom.valid_types.each do |type|
+      symptom = create(:symptom, type: type)
+      assert_includes symptom.to_json, 'type'
+      assert_includes symptom.to_json, symptom.type.to_s
+    end
   end
 end

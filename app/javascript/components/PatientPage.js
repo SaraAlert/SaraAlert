@@ -32,7 +32,11 @@ class PatientPage extends React.Component {
             </span>
           </Card.Header>
           <Card.Body>
-            <Patient details={this.props.patient || {}} groupMembers={this.props.group_members || []} hideBody={this.state.hideBody} />
+            <Patient
+              details={{ ...this.props.patient, jurisdiction_label: this.props.jurisdiction_path.join(', ') } || {}}
+              groupMembers={this.props.group_members || []}
+              hideBody={this.state.hideBody}
+            />
           </Card.Body>
         </Card>
       </React.Fragment>
@@ -50,6 +54,7 @@ PatientPage.propTypes = {
   patient_submission_token: PropTypes.string,
   canAddAssessments: PropTypes.bool,
   hideBody: PropTypes.bool,
+  jurisdiction_path: PropTypes.array,
 };
 
 export default PatientPage;

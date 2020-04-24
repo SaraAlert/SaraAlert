@@ -1,6 +1,7 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
 
-<%= react_component("PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: current_user.can_modify_subject_status? }) %>
+<%= react_component("subject/DownloadMonitoreeExcel", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+<%= react_component("PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: current_user.can_modify_subject_status?, jurisdiction_path: @jurisdiction_path }) %>
 
 <% if current_user.can_modify_subject_status? %>
   <div class="card mx-2 mt-4 mb-4 card-square">
@@ -29,6 +30,17 @@
     <h5 class="card-header"> Reports</h5>
     <div class="m-4">
       <%= react_component("subject/CurrentStatus", { status: @patient.status, isolation: @patient.isolation } ) %>
+      <div class="pb-4 pt-2">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New Report</button>
+          <% unless @patient.isolation %>
+            <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <% end %>
+          <% if @patient.monitoring %>
+            <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <% end %>
+        </div>
+      </div>
       <% columns = [] %>
       <% @patient.assessments.includes([:reported_condition]).each do |assessment| columns.concat(assessment.all_symptom_names) end %>
       <% columns = columns.uniq%>
@@ -38,7 +50,7 @@
             <th class="DataTable-table-header">ID</th>
             <th class="DataTable-table-header">Needs Review</th>
             <th class="DataTable-table-header">Reporter</th>
-            <th class="DataTable-table-header">Date and Time</th>
+            <th class="DataTable-table-header">Created</th>
             <% columns.each do |column| -%>
               <th class="DataTable-table-header"><%= column.titleize %></th>
             <% end -%>
@@ -56,11 +68,18 @@
                 <% if assessment.get_reported_symptom_by_name(column) == nil %>
                 <td></td>
                 <% end %>
+                <%passes_threshold = assessment.symptom_passes_threshold(column)%>
+                <%symptom_value = assessment.get_reported_symptom_value(column)%>
                 <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
-                  <td><%passes_threshold = assessment.symptom_passes_threshold(column)%> <% if passes_threshold==true -%><span class="concern">Yes</span><% elsif passes_threshold==false -%>No <%else -%><% end -%></td>
+                  <% if symptom_value == true %>
+                    <% symptom_value = "Yes" %>
+                  <% elsif symptom_value == false %>
+                    <% symptom_value = "No"%>
+                  <%end%>
+                  <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
                 <% end %>
                 <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
-                  <td><%passes_threshold = assessment.symptom_passes_threshold(column)%> <% if passes_threshold==true -%><span class="concern"><%=assessment.get_reported_symptom_value(column)%></span><% elsif passes_threshold==false -%><%=assessment.get_reported_symptom_value(column)%><%else -%><% end -%></td>
+                  <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
                 <% end %>
               <% end -%>
               <td>
@@ -75,15 +94,7 @@
         </tbody>
       </table>
       <div class="pb-1">
-        <div class="btn-group" role="group">
-          <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New</button>
-          <% unless @patient.isolation %>
-            <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
-          <% end %>
-          <% if @patient.monitoring %>
-            <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
-          <% end %>
-        </div>
+        <%= react_component("subject/SymptomOnset", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
       </div>
     </div>
   </div>
@@ -105,6 +116,47 @@
   <% end -%>
 <% end %>
 
+<% if current_user.can_view_patient_laboratories? %>
+  <div class="card mx-2 mt-3 mb-4 card-square">
+    <h5 class="card-header"> Lab Results</h5>
+    <div class="m-4">
+      <table class="lab_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
+        <thead>
+          <tr>
+            <th class="DataTable-table-header">ID</th>
+            <th class="DataTable-table-header">Type</th>
+            <th class="DataTable-table-header">Specimen Collected</th>
+            <th class="DataTable-table-header">Report</th>
+            <th class="DataTable-table-header">Result</th>
+            <th class="DataTable-table-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @patient.laboratories.order('created_at').each do |lab| -%>
+            <tr>
+              <td><%= lab.id %></th>
+              <td><%= lab.lab_type %></th>
+              <td><%= lab.specimen_collection %></th>
+              <td><%= lab.report %></th>
+              <td><%= lab.result %></th>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: lab } ) %>
+                </div>
+              </td>
+            </tr>
+          <% end -%>
+        </tbody>
+      </table>
+      <div class="pb-1">
+        <div class="btn-group" role="group">
+          <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new } ) %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <% if current_user.can_modify_subject_status? %>
   <div class="card mx-2 mt-3 mb-4 card-square">
     <h5 class="card-header">History</h5>
@@ -122,7 +174,23 @@
       "columnDefs": [
         { "orderable": false, "targets": -1 }
       ],
+      "oLanguage": {
+        "sSearch": "Search Reports:"
+      },
       "order": [[ 3, "desc" ]],
+      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
+    });
+    $('.lab_table').DataTable({
+      "search": false,
+      "info": false,
+      "lengthMenu": [10, 15, 25, 50],
+      "pageLength": 15,
+      "columnDefs": [
+        { "orderable": false, "targets": -1 }
+      ],
+      "oLanguage": {
+        "sSearch": "Search Lab Results:"
+      },
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
     });
   });

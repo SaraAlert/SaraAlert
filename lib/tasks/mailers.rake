@@ -24,7 +24,7 @@ namespace :mailers do
   end
 
   desc "Test making an assessment call"
-  task test_asessment_call: :environment do
+  task test_assessment_call: :environment do
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
       from = ENV['TWILLIO_SENDING_NUMBER']
@@ -39,7 +39,7 @@ namespace :mailers do
   end
 
   desc "Test making an assessment sms"
-  task test_asessment_sms: :environment do
+  task test_assessment_sms: :environment do
     # patient = Patient.first.dup
     # patient.first_name = "Test"
     # patient.last_name = "McTest"
@@ -50,7 +50,7 @@ namespace :mailers do
   end
 
   desc "Test making an assessment phone call"
-  task test_asessment_voice: :environment do
+  task test_assessment_voice: :environment do
     # patient = Patient.first.dup
     # patient.first_name = "Test"
     # patient.last_name = "McTest"

@@ -39,23 +39,13 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'update latest public health action' do
-    @@public_health_monitoring_helper.update_latest_public_health_action('state1_epi_enroller', 'patient_7', 'pui', 'Laboratory report results – positive', 'details')
-  end
-
-  test 'add additional public health action' do
-    @@public_health_monitoring_helper.add_additional_public_health_action('state1_epi', 'patient_2', 'non-reporting', 'details')
-    @@public_health_monitoring_helper.add_additional_public_health_action('state2_epi', 'patient_10', 'pui', 'details')
-  end
-
-  test 'update current workflow' do
-    @@public_health_monitoring_helper.update_current_workflow('state1_epi', 'patient_3', 'symptomatic', 'Isolation', 'details')
+    @@public_health_monitoring_helper.update_latest_public_health_action('state1_epi_enroller', 'patient_7', 'pui', 'Recommended medical evaluation of symptoms', 'details')
   end
 
   test 'update assigned jurisdiction' do
-    @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'USA, State 2, County 4', 'details')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('state2_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c3_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c4_epi')
+    @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'Fake Jurisdiction', 'details', false, true)
+    @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'USA, State 2, County 4', 'details', true, true)
+    @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_10', 'pui', 'USA, State 1', 'details', true, false)
   end
 
   test 'add report' do

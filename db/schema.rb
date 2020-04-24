@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_22_142657) do
+ActiveRecord::Schema.define(version: 2020_04_24_030959) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 2020_04_22_142657) do
     t.integer "assessment_id"
     t.string "threshold_condition_hash"
     t.string "type"
+    t.index ["assessment_id"], name: "index_conditions_on_assessment_id"
   end
 
   create_table "histories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -69,6 +70,17 @@ ActiveRecord::Schema.define(version: 2020_04_22_142657) do
     t.string "unique_identifier"
     t.string "ancestry"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
+  end
+
+  create_table "laboratories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.string "lab_type"
+    t.date "specimen_collection"
+    t.date "report"
+    t.string "result"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_laboratories_on_patient_id"
   end
 
   create_table "monitoree_counts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -203,6 +215,8 @@ ActiveRecord::Schema.define(version: 2020_04_22_142657) do
     t.datetime "closed_at"
     t.string "source_of_report_specify"
     t.boolean "pause_notifications", default: false
+    t.date "symptom_onset"
+    t.string "case_status"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
     t.index ["first_name"], name: "index_patients_on_first_name"
@@ -251,6 +265,8 @@ ActiveRecord::Schema.define(version: 2020_04_22_142657) do
     t.string "type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "required", default: true
+    t.index ["condition_id"], name: "index_symptoms_on_condition_id"
   end
 
   create_table "transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

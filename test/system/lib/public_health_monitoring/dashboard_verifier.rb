@@ -35,12 +35,12 @@ class PublicHealthMonitoringDashboardVerifier < ApplicationSystemTestCase
 
   def verify_workflow_count(workflow, expected_count)
     displayed_count = find('a', text: workflow).text.tr("#{workflow} ()", '').to_i
-    assert_equal expected_count, displayed_count, @@system_test_utils.get_err_msg('dashboard', "#{workflow} monitoring type count", expected_count)
+    assert_equal(expected_count, displayed_count, @@system_test_utils.get_err_msg('dashboard', "#{workflow} monitoring type count", expected_count))
   end
   
   def verify_patients_under_tab(tab, patients)
     @@system_test_utils.go_to_tab(tab)
-    assert_equal patients.count, patient_count_under_tab(tab), @@system_test_utils.get_err_msg('dashboard', "#{tab} tab count", patients.count)
+    assert_equal(patients.count, patient_count_under_tab(tab), @@system_test_utils.get_err_msg('dashboard', "#{tab} tab count", patients.count))
     patients.each do |patient|
       verify_patient_under_tab(tab, patient)
     end
@@ -58,14 +58,14 @@ class PublicHealthMonitoringDashboardVerifier < ApplicationSystemTestCase
     displayed_count = find("##{tab}-tab").first(:xpath, './/span').text.to_i
   end
 
-  def verify_monitoree_under_tab(tab, monitoree_key)
+  def verify_monitoree_under_tab(tab, monitoree_label)
     @@system_test_utils.go_to_tab(tab)
-    search_for_and_verify_monitoree(monitoree_key, true, tab == 'Transferred Out' ? 'td' : 'a')
+    search_for_and_verify_monitoree(monitoree_label, true, tab == 'Transferred Out' ? 'td' : 'a')
   end
 
-  def search_for_and_verify_monitoree(monitoree_key, should_exist, selector='a')
-    @@public_health_monitoring_dashboard.search_for_monitoree(monitoree_key)
-    monitoree_display_name = @@system_test_utils.get_monitoree_display_name(monitoree_key)
+  def search_for_and_verify_monitoree(monitoree_label, should_exist, selector='a')
+    @@public_health_monitoring_dashboard.search_for_monitoree(monitoree_label)
+    monitoree_display_name = @@system_test_utils.get_monitoree_display_name(monitoree_label)
     if should_exist
       assert page.has_content?(monitoree_display_name), @@system_test_utils.get_err_msg('Dashboard', 'monitoree name', monitoree_display_name)
     else

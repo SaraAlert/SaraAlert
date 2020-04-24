@@ -20,8 +20,14 @@ const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 class Enrollment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { index: this.props.editMode ? 6 : 0, direction: null, enrollmentState: pickBy(this.props.patient, identity) };
+    this.state = {
+      index: this.props.editMode ? 6 : 0,
+      direction: null,
+      enrollmentState: pickBy(this.props.patient, identity),
+      propagatedFields: pickBy(this.props.propagated_fields, identity),
+    };
     this.setEnrollmentState = debounce(this.setEnrollmentState.bind(this), 1000);
+    this.setPropagatedFields = debounce(this.setPropagatedFields.bind(this), 1000);
     this.submit = this.submit.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
@@ -39,10 +45,15 @@ class Enrollment extends React.Component {
     this.setState({ enrollmentState: { ...currentEnrollmentState, ...enrollmentState } });
   }
 
+  setPropagatedFields(propagatedFields) {
+    let currentpropagatedFields = this.state.propagatedFields;
+    this.setState({ propagatedFields: { ...currentpropagatedFields, ...propagatedFields } });
+  }
+
   submit(_event, groupMember, reenableSubmit) {
     window.onbeforeunload = null;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    let data = new Object({ patient: this.state.enrollmentState });
+    let data = new Object({ patient: this.state.enrollmentState, propagated_fields: this.state.propagatedFields });
     data.patient.primary_telephone = data.patient.primary_telephone
       ? phoneUtil.format(phoneUtil.parse(data.patient.primary_telephone, 'US'), PNF.E164)
       : data.patient.primary_telephone;
@@ -204,7 +215,12 @@ class Enrollment extends React.Component {
               next={this.next}
               previous={this.previous}
               setEnrollmentState={this.setEnrollmentState}
+              setPropagatedFields={this.setPropagatedFields}
               currentState={this.state.enrollmentState}
+              propagated_fields={this.state.propagatedFields}
+              has_group_members={this.props.has_group_members}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              jurisdiction_id={this.props.patient.jurisdiction_id}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -216,6 +232,7 @@ class Enrollment extends React.Component {
               currentState={this.state.enrollmentState}
               parentId={this.props.parent_id}
               canAddGroup={this.props.can_add_group}
+              jurisdiction_label={this.props.jurisdiction_paths.find(jur => jur.value === this.state.enrollmentState.jurisdiction_id)?.label}
             />
           </Carousel.Item>
         </Carousel>
@@ -228,11 +245,14 @@ class Enrollment extends React.Component {
 Enrollment.propTypes = {
   current_user: PropTypes.object,
   patient: PropTypes.object,
+  propagated_fields: PropTypes.object,
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.array,
   enrollmentState: PropTypes.object,
   editMode: PropTypes.bool,
   parent_id: PropTypes.number,
   can_add_group: PropTypes.bool,
+  has_group_members: PropTypes.bool,
 };
 
 export default Enrollment;

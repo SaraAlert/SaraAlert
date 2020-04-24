@@ -20,13 +20,13 @@ class PublicHealthMonitoringReportsVerifier < ApplicationSystemTestCase
     verify_symptoms(assessment['symptoms'])
   end
 
-  def verify_add_report(user_name, assessment)
-    assert page.has_content?(user_name), @@system_test_utils.get_err_msg('Reports', 'Reporter', user_name)
+  def verify_add_report(user_label, assessment)
+    assert page.has_content?(user_label), @@system_test_utils.get_err_msg('Reports', 'Reporter', user_label)
     verify_symptoms(assessment['symptoms'])
   end
 
-  def verify_edit_report(user_name, assessment_id, assessment)
-    assert page.has_content?(user_name), @@system_test_utils.get_err_msg('Reports', 'Reporter', user_name)
+  def verify_edit_report(user_label, assessment_id, assessment)
+    assert page.has_content?(user_label), @@system_test_utils.get_err_msg('Reports', 'Reporter', user_label)
     verify_symptoms(assessment['symptoms'])
   end
 

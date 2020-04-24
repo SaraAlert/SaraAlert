@@ -1,5 +1,15 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Register New Monitoree", href: nil} ] } %>
 
-<%= react_component("enrollment/Enrollment", { current_user: current_user, patient: @patient, parent_id: @parent_id, editMode: false, authenticity_token: form_authenticity_token, can_add_group: current_user.can_create_patient? }) %>
+<%= react_component("enrollment/Enrollment", { 
+  current_user: current_user,
+  patient: @patient,
+  parent_id: @parent_id,
+  propagated_fields: {},
+  editMode: false,
+  authenticity_token: form_authenticity_token,
+  can_add_group: current_user.can_create_patient?,
+  has_group_members: false,
+  jurisdiction_paths: current_user.can_assign_any_jurisdiction? ? Jurisdiction.all.collect{ |jur| { value: jur.id, label: jur.jurisdiction_path_string } } : Jurisdiction.find(current_user.jurisdiction.subtree_ids).collect{ |jur| { value: jur.id, label: jur.jurisdiction_path_string } }
+  }) %>
 
 <div class="pb-4"></div>

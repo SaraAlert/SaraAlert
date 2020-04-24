@@ -20,8 +20,13 @@ namespace :admin do
     Rake::Task["analytics:cache_current_analytics"].reenable
     Rake::Task["analytics:cache_current_analytics"].invoke
     puts "\e[41mNOTICE: Make sure that this rake task has been run the exact same number of times on the enrollment and assessment servers\e[0m"
-    puts "\e[41mThe output of ThresholdCondition.count on each of the servers should be EXACTLY EQUAL\e[0m"
-
+    puts "\e[41mThe following output on each of the servers should be EXACTLY EQUAL\e[0m"
+    Jurisdiction.all.each do |jur|
+      theshold_conditions_edit_count = 0
+      jur.path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
+      puts jur.jurisdiction_path_string.ljust(40)  + "Edit Count: " + theshold_conditions_edit_count.to_s.ljust(5) + "Threshold Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
+    end
+    
   end
 
   def parse_jurisdiction(parent, jur_name, jur_values)

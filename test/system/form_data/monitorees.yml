@@ -10,11 +10,12 @@ monitoree_1:
     address_state: "Wyoming"
     address_zip: "81210-6722"
   contact_info:
+    preferred_contact_method: "Telephone call"
     primary_telephone: "+15555550111"
     primary_telephone_type: "Plain Cell"
-    preferred_contact_method: "Telephone call"
   potential_exposure_info:
     last_date_of_exposure: "02/05/2020"
+    jurisdiction_id: "USA, State 2"
 monitoree_2:
   identification:
     first_name: "Chi10"
@@ -23,11 +24,14 @@ monitoree_2:
     date_of_birth: "03/09/1984"
     sex: "Male"
     white: true
+    black_or_african_american: true
+    american_indian_or_alaska_native: true
     asian: true
+    native_hawaiian_or_other_pacific_islander: true
     ethnicity: "Not Hispanic or Latino"
     primary_language: "English"
     secondary_language: "Spanish"
-    interpretation_required: false
+    interpretation_required: true
     nationality: "American"
     user_defined_id_statelocal: "123456"
     user_defined_id_cdc: "987532"
@@ -46,13 +50,14 @@ monitoree_2:
     monitored_address_zip: "12345"
     monitored_address_county: "White Plains"
   contact_info:
+    preferred_contact_method: "SMS Texted Weblink"
+    preferred_contact_time: "Morning"
     primary_telephone: "+15555550112"
     secondary_telephone: "+15555550113"
     primary_telephone_type: "Smartphone"
     secondary_telephone_type: "Landline"
     email: "carey@example.com"
     confirm_email: "carey@example.com"
-    preferred_contact_method: "E-mailed Web Link"
   arrival_info:
     port_of_origin: "Ushashire"
     date_of_departure: "02/15/2020"
@@ -76,6 +81,17 @@ monitoree_2:
     potential_exposure_country: "Guatemala"
     contact_of_known_case: true
     contact_of_known_case_id: "123"
+    travel_to_affected_country_or_area: true
+    was_in_health_care_facility_with_known_cases: true
+    was_in_health_care_facility_with_known_cases_facility_name: "Facility Name"
+    laboratory_personnel: true
+    laboratory_personnel_facility_name: "LP Facility Name"
+    healthcare_personnel: true
+    healthcare_personnel_facility_name: "HP Facility Name"
+    crew_on_passenger_or_cargo_flight: true
+    member_of_a_common_exposure_cohort: true
+    member_of_a_common_exposure_cohort_type: "Description"
+    contact_of_known_case: true
     exposure_risk_assessment: "Medium"
     monitoring_plan: "Self-monitoring with delegated supervision"
     exposure_notes: "notes..."
@@ -90,9 +106,9 @@ monitoree_3:
     address_state: "Tennessee"
     address_zip: "43058"
   contact_info:
+    preferred_contact_method: "E-mailed Web Link"
     email: "edda@example.com"
     confirm_email: "edda@example.com"
-    preferred_contact_method: "E-mailed Web Link"
   potential_exposure_info:
     last_date_of_exposure: "12/30/2019"
 monitoree_4:
@@ -115,9 +131,17 @@ monitoree_4:
     foreign_monitored_address_zip: "68039"
     foreign_monitored_address_county: "Lake Bryant"
   contact_info:
+    preferred_contact_method: "E-mailed Web Link"
     email: "edda@example.com"
     confirm_email: "edda@example.com"
-    preferred_contact_method: "E-mailed Web Link"
+  additional_planned_travel:
+    additional_planned_travel_type: "International"
+    additional_planned_travel_destination: "Kamalaton"
+    additional_planned_travel_destination_country: "Algeria"
+    additional_planned_travel_port_of_departure: "D'Amoremouth"
+    additional_planned_travel_start_date: "05/09/2020"
+    additional_planned_travel_end_date: "05/30/2020"
+    additional_planned_travel_related_notes: "asdogihlawkefjionak"
   potential_exposure_info:
     last_date_of_exposure: "12/30/2019"
 monitoree_5:
@@ -138,19 +162,15 @@ monitoree_5:
     address_state: "North Carolina"
     address_zip: "50099-6977"
   contact_info:
+    preferred_contact_method: "SMS Text-message"
     primary_telephone: "+15555550114"
     primary_telephone_type: "Smartphone"
-    preferred_contact_method: "SMS Text-message"
   potential_exposure_info:
     last_date_of_exposure: "01/30/2020"
     contact_of_known_case: true
     contact_of_known_case_id: "9BIHOS2819"
     travel_to_affected_country_or_area: true
-    was_in_health_care_facility_with_known_cases: true
-    laboratory_personnel: true
-    healthcare_personnel: true
-    crew_on_passenger_or_cargo_flight: true
-    member_of_a_common_exposure_cohort: true
+    jurisdiction_id: "USA, State 1, County 1"
 monitoree_6:
   identification:
     first_name: "Ken43"
@@ -181,14 +201,14 @@ monitoree_6:
     monitored_address_zip: "91829"
     monitored_address_county: "Sussex"
   contact_info:
+    preferred_contact_method: "Telephone call"
+    preferred_contact_time: "Evening"
     primary_telephone: "+15555550115"
     secondary_telephone: "+15555550116"
     primary_telephone_type: "Landline"
     secondary_telephone_type: "Plain Cell"
     email: "roberta@example.com"
     confirm_email: "roberta@example.com"
-    preferred_contact_method: "Telephone call"
-    preferred_contact_time: "Morning"
   arrival_info:
     port_of_origin: "Teresiaport"
     date_of_departure: "03/01/2020"
@@ -198,14 +218,6 @@ monitoree_6:
     port_of_entry_into_usa: "Teddyborough"
     date_of_arrival: "03/02/2020"
     travel_related_notes: "938nasd fok3hf8oisdkm sfkl93hnk"
-  additional_planned_travel:
-    additional_planned_travel_type: "International"
-    additional_planned_travel_destination: "Kamalaton"
-    additional_planned_travel_destination_country: "Algeria"
-    additional_planned_travel_port_of_departure: "D'Amoremouth"
-    additional_planned_travel_start_date: "05/09/2020"
-    additional_planned_travel_end_date: "05/30/2020"
-    additional_planned_travel_related_notes: "asdogihlawkefjionak"
   potential_exposure_info:
     last_date_of_exposure: "03/01/2020"
     potential_exposure_location: "Sporertown"
@@ -214,6 +226,7 @@ monitoree_6:
     exposure_risk_assessment: "High"
     monitoring_plan: "Daily active monitoring"
     exposure_notes: "oihadsgohoiawengolnlasdn,lk ashiowehghaie 1928unfvs al"
+    jurisdiction_id: "USA, State 2, County 4"
 monitoree_7:
   identification:
     first_name: "Zachery33"
@@ -252,10 +265,10 @@ monitoree_10:
     address_zip: "33194-7675"
     address_county: "Bergen"
   contact_info:
+    preferred_contact_method: "Telephone call"
+    preferred_contact_time: "Afternoon"
     primary_telephone: "+15555550117"
     primary_telephone_type: "Landline"
-    preferred_contact_method: "Telephone call"
-    preferred_contact_time: "Evening"
   potential_exposure_info:
     last_date_of_exposure: "01/31/2020"
 monitoree_11:
@@ -271,10 +284,10 @@ monitoree_11:
     address_zip: "33194-7675"
     address_county: "Bergen"
   contact_info:
-    primary_telephone: "+15555550118"
-    primary_telephone_type: "Landline"
     preferred_contact_method: "Telephone call"
     preferred_contact_time: "Evening"
+    primary_telephone: "+15555550118"
+    primary_telephone_type: "Landline"
   potential_exposure_info:
     last_date_of_exposure: "01/31/2020"
     exposure_risk_assessment: "Low"
@@ -326,13 +339,14 @@ monitoree_12:
     foreign_monitored_address_zip: "68039"
     foreign_monitored_address_county: "Lake Bryant"
   contact_info:
+    preferred_contact_method: "SMS Texted Weblink"
+    preferred_contact_time: "Afternoon"
     primary_telephone: "+15555550121"
     secondary_telephone: "+15555550122"
     primary_telephone_type: "Smartphone"
     secondary_telephone_type: "Landline"
     email: "carey@example.com"
     confirm_email: "carey@example.com"
-    preferred_contact_method: "E-mailed Web Link"
   arrival_info:
     port_of_origin: "Ushashire"
     date_of_departure: "02/15/2020"
@@ -364,3 +378,10 @@ monitoree_12:
     exposure_risk_assessment: "No Identified Risk"
     monitoring_plan: "Self-observation"
     exposure_notes: "notes..."
+monitoree_13:
+  potential_exposure_info:
+    jurisdiction_id: "USA, State 2, County 3"
+monitoree_14:
+  potential_exposure_info:
+    jurisdiction_id: "USA, State 2, County 4"
+    update_group_member_jurisdiction_id: true
