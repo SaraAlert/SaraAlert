@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'chronic'
+
 # Patient: patient model
 class Patient < ApplicationRecord
   columns.each do |column|
@@ -104,7 +106,12 @@ class Patient < ApplicationRecord
   scope :purge_eligible, lambda {
     where('monitoring = ?', false)
       .where('purged = ?', false)
-      .where('patients.updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.before(Chronic.parse('last ' + ADMIN_OPTIONS['weekly_purge_warning_date'], :now => Chronic.parse('this ' + ADMIN_OPTIONS['weekly_purge_date'], :now => Chronic.parse('yesterday')))))
+      .where('patients.updated_at < ?',
+             ADMIN_OPTIONS['purgeable_after'].minutes.before(
+               Chronic.parse('last ' + ADMIN_OPTIONS['weekly_purge_warning_date'], now:
+                 Chronic.parse('this ' + ADMIN_OPTIONS['weekly_purge_date'], now:
+                   Chronic.parse('yesterday')))
+             ))
   }
 
   # Purgeable records at the time of the last purge warning message
