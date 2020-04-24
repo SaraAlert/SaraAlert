@@ -28,7 +28,7 @@ class CaseStatus extends React.Component {
         if (event.target.value === 'End Monitoring') {
           this.setState({
             monitoring: false,
-            monitoring_reason: 'Case confirmed',
+            monitoring_reason: 'Meets Case Definition',
             message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
@@ -36,7 +36,7 @@ class CaseStatus extends React.Component {
           this.setState({
             monitoring: true,
             isolation: true,
-            monitoring_reason: 'Case confirmed',
+            monitoring_reason: 'Meets Case Definition',
             message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
