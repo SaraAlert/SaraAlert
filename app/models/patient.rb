@@ -174,7 +174,8 @@ class Patient < ApplicationRecord
       .where('purged = ?', false)
       .where('isolation = ?', true)
       .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
-      .where_assoc_not_exists(:assessments, &:twenty_four_hours_since_latest_fever_report)
+      .where_assoc_not_exists(:assessments, &:twenty_four_hours_with_latest_fever_report)
+      .where_assoc_exists(:assessments, &:twenty_four_hours_without_fever_medication)
       .distinct
   }
 
@@ -183,7 +184,8 @@ class Patient < ApplicationRecord
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .where_assoc_not_exists(:assessments, &:seventy_two_hours_since_latest_fever_report)
+      .where_assoc_not_exists(:assessments, &:seventy_two_hours_with_latest_fever_report)
+      .where_assoc_exists(:assessments, &:seventy_two_hours_without_fever_medication)
       .where('symptom_onset <= ?', 7.days.ago)
       .distinct
   }
