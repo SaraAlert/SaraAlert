@@ -18,7 +18,7 @@ class Assessment < ApplicationRecord
   }
 
   scope :twenty_four_hours_without_fever_medication, lambda {
-    where('created_at >= ?', 24.hours.ago).where_assoc_not_exists(:reported_condition, &:fever_medication)
+    where('created_at >= ?', 24.hours.ago).where_assoc_exists(:reported_condition, &:fever_medication)
   }
 
   scope :seventy_two_hours_with_latest_fever_report, lambda {
@@ -26,7 +26,7 @@ class Assessment < ApplicationRecord
   }
 
   scope :seventy_two_hours_without_fever_medication, lambda {
-    where('created_at >= ?', 72.hours.ago).where_assoc_not_exists(:reported_condition, &:fever_medication)
+    where('created_at >= ?', 72.hours.ago).where_assoc_exists(:reported_condition, &:fever_medication)
   }
 
   def symptomatic?
