@@ -12,6 +12,7 @@ class Patient < ApplicationRecord
   end
 
   validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
+                                                  'Meets Case Definition',
                                                   'Lost to follow-up during monitoring period',
                                                   'Lost to follow-up (contact never established)',
                                                   'Transferred to another jurisdiction',
@@ -98,6 +99,14 @@ class Patient < ApplicationRecord
       .where('updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.ago)
   }
 
+  # Purgeable eligible (records that could be purged in the next purge run if they aren't edited again)
+  # This assumes that the purge interval configured in schedule.rb is set to run weekly
+  scope :purge_eligible, lambda {
+    where('monitoring = ?', false)
+      .where('purged = ?', false)
+      .where('patients.updated_at < ?', ((ADMIN_OPTIONS['purgeable_after']).minutes + 1.week.minutes).ago)
+  }
+
   # Purged monitoree records
   scope :purged, lambda {
     where('purged = ?', true)
@@ -174,7 +183,8 @@ class Patient < ApplicationRecord
       .where('purged = ?', false)
       .where('isolation = ?', true)
       .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
-      .where_assoc_not_exists(:assessments, &:twenty_four_hours_since_latest_fever_report)
+      .where_assoc_not_exists(:assessments, &:twenty_four_hours_with_latest_fever_report)
+      .where_assoc_exists(:assessments, &:twenty_four_hours_without_fever_medication)
       .distinct
   }
 
@@ -183,7 +193,8 @@ class Patient < ApplicationRecord
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .where_assoc_not_exists(:assessments, &:seventy_two_hours_since_latest_fever_report)
+      .where_assoc_not_exists(:assessments, &:seventy_two_hours_with_latest_fever_report)
+      .where_assoc_exists(:assessments, &:seventy_two_hours_without_fever_medication)
       .where('symptom_onset <= ?', 7.days.ago)
       .distinct
   }

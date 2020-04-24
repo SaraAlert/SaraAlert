@@ -124,6 +124,7 @@ class MonitoringStatus extends React.Component {
           event.target.value === 'Not Monitoring'
             ? [
                 'Completed Monitoring',
+                'Meets Case Definition',
                 'Lost to follow-up during monitoring period',
                 'Lost to follow-up (contact never established)',
                 'Transferred to another jurisdiction',

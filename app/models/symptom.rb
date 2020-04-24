@@ -11,6 +11,12 @@ class Symptom < ApplicationRecord
     end
   end
 
+  def self.valid_types
+    %w[FloatSymptom BoolSymptom IntegerSymptom]
+  end
+
+  validates :type, inclusion: valid_types, presence: true
+
   scope :fever, lambda {
     where(['name = ? and bool_value = ?', 'fever', true])
   }
