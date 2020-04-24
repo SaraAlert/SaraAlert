@@ -36,30 +36,30 @@ class PatientTest < ActiveSupport::TestCase
     # These tests reset the weekly_purge_warning_date and weekly_purge_date, and set the times to 1 minute from Time.now to avoid timing issues
     # caused by the duration of time it takes to run the test
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + (2.5).days.minutes + 1.minute).strftime('%A %l:%M%p')
+    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + (2.5).days + 1.minute).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after']).minutes.ago)
     assert Patient.purge_eligible.count == 1
     # However, if the test email was going out in 1 minute from now and the patient was last updated purgeable_after - 2 minutes ago, no purge
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + (2.5).days.minutes + 1.minute).strftime('%A %l:%M%p')
+    ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + (2.5).days + 1.minute).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] - 2).minutes.ago)
     assert Patient.purge_eligible.count == 0
     # Now test the boundry conditions that exist between the purge_warning and the purging
     # ADMIN_OPTIONS['weekly_purge_warning_date'] is 2.5 days before ADMIN_OPTIONS['weekly_purge_date']
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - (2.5).days.minutes).strftime('%A %l:%M%p')
+    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - (2.5).days).strftime('%A %l:%M%p')
     # If the email is going out in 1 minute, and the patient was modified purgeable_after minutes ago, they should not be purgeable
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after']).minutes.ago)
     assert Patient.purge_eligible.count == 0
     # However, if the email is going out in 1 minute and the patient was modified right before the warning (2.5 days ago), they should be purgable
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - (2.5).days.minutes).strftime('%A %l:%M%p')
-    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5).days.minutes).minutes.ago)
+    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - (2.5).days).strftime('%A %l:%M%p')
+    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + ((2.5).days/1.minute)).minutes.ago)
     assert Patient.purge_eligible.count == 1
     # Anything less than the 2.5 days ago means the patient was modified between the warning and the purging and should not be purged
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - (2.5).days.minutes).strftime('%A %l:%M%p')
-    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 72.minutes).minutes.ago)
+    ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - (2.5).days).strftime('%A %l:%M%p')
+    patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + ((2.5).days/1.minute) - 2).minutes.ago)
     assert Patient.purge_eligible.count == 0
   end
 
