@@ -47,6 +47,27 @@ class Patient < ApplicationRecord
   has_one :latest_transfer, -> { order(created_at: :desc) }, class_name: 'Transfer'
   has_many :laboratories
 
+  # Patients who are eligible for reminders
+  scope :reminder_eligible, lambda {
+    where(pause_notifications: false)
+      .where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where.not(id: Patient.unscoped.isolation_requiring_review)
+      .where.not(id: Patient.unscoped.under_investigation)
+      .left_outer_joins(:assessments)
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
+      .or(
+        where(pause_notifications: false)
+          .where('monitoring = ?', true)
+          .where('purged = ?', false)
+          .where.not(id: Patient.unscoped.isolation_requiring_review)
+          .where.not(id: Patient.unscoped.under_investigation)
+          .left_outer_joins(:assessments)
+          .where(assessments: { patient_id: nil })
+      )
+      .distinct
+  }
+
   # All individuals currently being monitored
   scope :monitoring_open, lambda {
     where('monitoring = ?', true)
@@ -127,26 +148,6 @@ class Patient < ApplicationRecord
       .distinct
   }
 
-  # Patients who are eligible for reminders
-  scope :reminder_eligible, lambda {
-    where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where(pause_notifications: false)
-      .where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
-      .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.zone.now.beginning_of_day])
-      .or(
-        where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-        .where(pause_notifications: false)
-        .where('monitoring = ?', true)
-        .where('purged = ?', false)
-        .left_outer_joins(:assessments)
-        .where(assessments: { patient_id: nil })
-      )
-      .distinct
-  }
-
   # Individuals who have reported recently and are not symptomatic
   scope :asymptomatic, lambda {
     where('monitoring = ?', true)
@@ -190,7 +191,9 @@ class Patient < ApplicationRecord
   # Individuals in the isolation workflow that require review
   scope :isolation_requiring_review, lambda {
     where(id: Patient.unscoped.test_based)
-      .where(id: Patient.unscoped.non_test_based)
+      .or(
+        where(id: Patient.unscoped.non_test_based)
+      )
   }
 
   # Individuals in the isolation workflow, not meeting review and are not reporting
