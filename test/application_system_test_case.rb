@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require 'system_test_case'
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
-  require 'minitest/retry'
-  Minitest::Retry.use!
-
   if ENV['APP_IN_CI']
     Capybara.register_driver(:gitlab_chrome_headless) do |app|
       options = ::Selenium::WebDriver::Chrome::Options.new
@@ -20,6 +17,4 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   else
     driven_by :selenium, using: :chrome, screen_size: [1400, 1400]
   end
-  # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-  fixtures :all
 end

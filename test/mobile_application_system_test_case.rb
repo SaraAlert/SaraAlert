@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require 'system_test_case'
 
 class MobileApplicationSystemTestCase < ActionDispatch::SystemTestCase
   if ENV['APP_IN_CI']
@@ -13,7 +13,7 @@ class MobileApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
       Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
     end
-    driven_by :gitlab_chrome_headless, screen_size: [1400, 1400]
+    driven_by :gitlab_chrome_headless, screen_size: [375, 667]
   else
     driven_by :selenium, using: :chrome, screen_size: [375, 667]
   end
