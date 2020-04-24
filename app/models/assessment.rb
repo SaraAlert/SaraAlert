@@ -13,12 +13,20 @@ class Assessment < ApplicationRecord
   has_one :reported_condition, class_name: 'ReportedCondition'
   belongs_to :patient
 
-  scope :twenty_four_hours_since_latest_fever_report, lambda {
+  scope :twenty_four_hours_with_latest_fever_report, lambda {
     where('created_at >= ?', 24.hours.ago).where_assoc_exists(:reported_condition, &:fever)
   }
 
-  scope :seventy_two_hours_since_latest_fever_report, lambda {
+  scope :twenty_four_hours_without_fever_medication, lambda {
+    where('created_at >= ?', 24.hours.ago).where_assoc_not_exists(:reported_condition, &:fever_medication)
+  }
+
+  scope :seventy_two_hours_with_latest_fever_report, lambda {
     where('created_at >= ?', 72.hours.ago).where_assoc_exists(:reported_condition, &:fever)
+  }
+
+  scope :seventy_two_hours_without_fever_medication, lambda {
+    where('created_at >= ?', 72.hours.ago).where_assoc_not_exists(:reported_condition, &:fever_medication)
   }
 
   def symptomatic?
