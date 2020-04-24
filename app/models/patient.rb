@@ -110,7 +110,7 @@ class Patient < ApplicationRecord
   scope :marked_for_purge, lambda {
     where('monitoring = ?', false)
       .where('purged = ?', false)
-      .where('updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.before(Chronic.parse('last ' + ADMIN_OPTIONS['weekly_purge_warning_date'], :now => Chronic.parse(ADMIN_OPTIONS['weekly_purge_date']))))
+      .where('updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.before(Chronic.parse('last ' + ADMIN_OPTIONS['weekly_purge_warning_date'])))
   }
 
   # Purged monitoree records
