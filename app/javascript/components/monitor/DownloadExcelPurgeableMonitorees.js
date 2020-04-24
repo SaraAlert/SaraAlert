@@ -22,6 +22,7 @@ class DownloadExcelPurgeableMonitorees extends React.Component {
   toggleDownloadExcelModal() {
     let current = this.state.showDownloadExcelModal;
     this.setState({
+      loading: false,
       showDownloadExcelModal: !current,
     });
   }
@@ -34,7 +35,7 @@ class DownloadExcelPurgeableMonitorees extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .get(window.BASE_PATH + '/export/full_history_purgeable_monitorees', {})
+        .get(window.BASE_PATH + '/export/full_history_purge_eligible_monitorees', {})
         .then(response => {
           var fileDate = moment().format();
           FileDownload(base64StringToBlob(response.data, 'application/xlsx'), 'Sara-Alert-Full-History-Purgable-Monitorees-' + fileDate + '.xlsx');
@@ -53,9 +54,9 @@ class DownloadExcelPurgeableMonitorees extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          After clicking &apos;Download&apos;, Sara Alert will gather your jurisdiction&apos;s monitoree data, assessments, and edit history for monitrees whose
-          data is eligible for purging. It will then save that data into an Excel file, and may prompt you to download it in your browser. This process may take
-          several minutes to complete, based on the amount of data present.
+          After clicking &apos;Download&apos;, Sara Alert will gather your jurisdiction&apos;s monitoree data, assessments, lab results, and edit history for
+          monitrees whose data is eligible for purging. It will then save that data into an Excel file, and may prompt you to download it in your browser. This
+          process may take several minutes to complete, based on the amount of data present.
           <br></br>
           <br></br>
           {this.state.loading && (
@@ -70,7 +71,7 @@ class DownloadExcelPurgeableMonitorees extends React.Component {
           <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
             Download
           </Button>
-          <Button variant="secondary btn-square" onClick={toggle} disabled={this.state.loading}>
+          <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
         </Modal.Footer>
@@ -82,7 +83,7 @@ class DownloadExcelPurgeableMonitorees extends React.Component {
     return (
       <React.Fragment>
         <Button className="dropdown-item" onClick={this.toggleDownloadExcelModal}>
-          Excel Export For Purgeable Monitorees
+          Excel Export For Purge-Eligible Monitorees
         </Button>
         {this.state.showDownloadExcelModal &&
           this.createModal('Download Database Excel For Purgeable Monitorees', this.toggleDownloadExcelModal, this.downloadExcel)}
