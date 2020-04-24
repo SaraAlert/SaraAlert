@@ -4,6 +4,7 @@ import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import confirmDialog from '../util/ConfirmDialog';
 
 class Import extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class Import extends React.Component {
     this.importAll = this.importAll.bind(this);
     this.importSub = this.importSub.bind(this);
     this.rejectSub = this.rejectSub.bind(this);
+    this.handleConfirm = this.handleConfirm.bind(this);
     this.submit = this.submit.bind(this);
   }
 
@@ -57,6 +59,12 @@ class Import extends React.Component {
       });
   }
 
+  handleConfirm = async confirmText => {
+    if (await confirmDialog(confirmText)) {
+      this.importAll();
+    }
+  };
+
   render() {
     if (this.state.patients.length === this.state.accepted.length + this.state.rejected.length) {
       location.href = '/';
@@ -68,15 +76,11 @@ class Import extends React.Component {
           <Button
             variant="primary"
             className="btn-lg my-2"
-            onClick={() => {
-              if (
-                window.confirm(
-                  'Are you sure you want to import all monitorees? Note: This will not import already rejected or re-import already accepted monitorees listed below, but will import any potential duplicates.'
-                )
-              ) {
-                this.importAll();
-              }
-            }}>
+            onClick={() =>
+              this.handleConfirm(
+                'Are you sure you want to import all monitorees? Note: This will not import already rejected or re-import already accepted monitorees listed below, but will import any potential duplicates.'
+              )
+            }>
             Accept All
           </Button>
           {this.state.patients.map((patient, index) => {

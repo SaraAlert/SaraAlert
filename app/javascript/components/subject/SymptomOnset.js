@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
+import confirmDialog from '../util/ConfirmDialog';
 
 class SymptomOnset extends React.Component {
   constructor(props) {
@@ -9,6 +10,7 @@ class SymptomOnset extends React.Component {
     this.state = {
       symptom_onset: this.props.patient.symptom_onset,
     };
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -16,6 +18,12 @@ class SymptomOnset extends React.Component {
   handleChange(event) {
     this.setState({ [event.target.id]: event.target.value });
   }
+
+  handleSubmit = async confirmText => {
+    if (await confirmDialog(confirmText)) {
+      this.submit();
+    }
+  };
 
   submit() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -40,13 +48,7 @@ class SymptomOnset extends React.Component {
             <Form.Control size="lg" id="symptom_onset" type="date" className="form-square" value={this.state.symptom_onset} onChange={this.handleChange} />
           </Form.Group>
           <Form.Group as={Col} md="18" className="align-self-end pl-0">
-            <Button
-              className="btn-lg"
-              onClick={() => {
-                if (window.confirm('Are you sure you want to modify the symptom onset date?')) {
-                  this.submit();
-                }
-              }}>
+            <Button className="btn-lg" onClick={() => this.handleSubmit('Are you sure you want to modify the symptom onset date?')}>
               <i className="fas fa-temperature-high"></i> Update
             </Button>
           </Form.Group>

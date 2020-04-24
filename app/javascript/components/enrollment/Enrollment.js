@@ -9,6 +9,7 @@ import Contact from './steps/Contact';
 import Arrival from './steps/Arrival';
 import Exposure from './steps/Exposure';
 import Review from './steps/Review';
+import confirmDialog from '../util/ConfirmDialog';
 import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,6 +32,7 @@ class Enrollment extends React.Component {
     this.submit = this.submit.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
+    this.handleConfirmDuplicate = this.handleConfirmDuplicate.bind(this);
     this.goto = this.goto.bind(this);
   }
 
@@ -49,6 +51,39 @@ class Enrollment extends React.Component {
     let currentpropagatedFields = this.state.propagatedFields;
     this.setState({ propagatedFields: { ...currentpropagatedFields, ...propagatedFields } });
   }
+
+  handleConfirmDuplicate = async (data, groupMember, message, reenableSubmit, confirmText) => {
+    if (await confirmDialog(confirmText)) {
+      data['bypass_duplicate'] = true;
+      axios({
+        method: this.props.editMode ? 'patch' : 'post',
+        url: window.BASE_PATH + (this.props.editMode ? '/patients/' + this.props.patient.id : '/patients'),
+        data: data,
+      })
+        .then(response => {
+          toast.success(message, {
+            onClose: () =>
+              (location.href = window.BASE_PATH + (groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id'])),
+          });
+        })
+        .catch(() => {
+          toast.error(
+            <div>
+              <div> Failed to communicate with the Sara Alert System Server. </div>
+              <div> If the error continues, please contact a System Administrator. </div>
+            </div>,
+            {
+              autoClose: 10000,
+            }
+          );
+        });
+    } else {
+      window.onbeforeunload = function() {
+        return 'All progress will be lost. Are you sure?';
+      };
+      reenableSubmit();
+    }
+  };
 
   submit(_event, groupMember, reenableSubmit) {
     window.onbeforeunload = null;
@@ -73,37 +108,13 @@ class Enrollment extends React.Component {
       .then(response => {
         if (response['data']['duplicate']) {
           // Duplicate, ask if want to continue with create
-          if (window.confirm('This monitoree appears to be a duplicate of an existing record in the system. Are you sure you want to enroll this monitoree?')) {
-            data['bypass_duplicate'] = true;
-            axios({
-              method: this.props.editMode ? 'patch' : 'post',
-              url: window.BASE_PATH + (this.props.editMode ? '/patients/' + this.props.patient.id : '/patients'),
-              data: data,
-            })
-              .then(response => {
-                toast.success(message, {
-                  onClose: () =>
-                    (location.href =
-                      window.BASE_PATH + (groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id'])),
-                });
-              })
-              .catch(() => {
-                toast.error(
-                  <div>
-                    <div> Failed to communicate with the Sara Alert System Server. </div>
-                    <div> If the error continues, please contact a System Administrator. </div>
-                  </div>,
-                  {
-                    autoClose: 10000,
-                  }
-                );
-              });
-          } else {
-            window.onbeforeunload = function() {
-              return 'All progress will be lost. Are you sure?';
-            };
-            reenableSubmit();
-          }
+          this.handleConfirmDuplicate(
+            data,
+            groupMember,
+            message,
+            reenableSubmit,
+            'This monitoree appears to be a duplicate of an existing record in the system. Are you sure you want to enroll this monitoree?'
+          );
         } else {
           // Success, inform user and redirect to home
           toast.success(message, {

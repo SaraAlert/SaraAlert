@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { Carousel } from 'react-bootstrap';
 import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
+import confirmDialog from '../util/ConfirmDialog';
 
 class Assessment extends React.Component {
   constructor(props) {
@@ -113,19 +114,19 @@ class Assessment extends React.Component {
     }
   }
 
-  handleSubmit() {
+  handleSubmit = async () => {
     if (this.fieldIsEmptyOrNew(this.props.assessment)) {
       this.submit();
     } else {
       if (this.hasChanges()) {
-        if (confirm("Are you sure you'd like to modify this report?")) {
+        if (await confirmDialog("Are you sure you'd like to modify this report?")) {
           this.submit();
         }
       } else {
         this.submit();
       }
     }
-  }
+  };
 
   render() {
     return (
