@@ -18,7 +18,7 @@ class UserMailer < ApplicationMailer
 
     receipients.each do |user|
       @user = user
-      @num_purgeable_records = user.viewable_patients.purgeable.length
+      @num_purgeable_records = user.viewable_patients.purge_eligible.length
 
       mail(to: user.email, subject: 'Sara Alert User Records Expiring Soon')
     end
