@@ -16,7 +16,7 @@ end
 
 weekly_purge_warning_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_warning_date'])
 every weekly_purge_warning_date.strftime("%A"), at: weekly_purge_warning_date.strftime("%I:%M %p") do
-  rake "mailers:send_purge_warning  RAILS_ENV=development"
+  rake "mailers:send_purge_warning"
 end
 
 every 1.hours do
