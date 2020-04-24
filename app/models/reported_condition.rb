@@ -11,7 +11,6 @@ class ReportedCondition < Condition
   }
 
   scope :fever, lambda {
-    where_assoc_not_exists(:symptoms, &:fever_medication)
-      .where_assoc_exists(:symptoms, &:fever)
+    where_assoc_exists(:symptoms, &:fever)
   }
 end
