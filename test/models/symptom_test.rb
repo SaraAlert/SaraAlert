@@ -8,7 +8,6 @@ class SymptomTest < ActiveSupport::TestCase
   def teardown; end
 
   test 'create symptom' do
-
     Symptom.valid_types.each do |type|
       string = 'v' * 200
       # No string fields
