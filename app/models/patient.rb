@@ -98,6 +98,14 @@ class Patient < ApplicationRecord
       .where('updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.ago)
   }
 
+  # Purgeable eligible (records that could be purged in the next purge run if they aren't edited again)
+  # This assumes that the purge interval configured in schedule.rb is set to run weekly
+  scope :purge_eligible, lambda {
+    where('monitoring = ?', false)
+      .where('purged = ?', false)
+      .where('patients.updated_at < ?', ((ADMIN_OPTIONS['purgeable_after']).minutes + 1.week.minutes).ago)
+  }
+
   # Purged monitoree records
   scope :purged, lambda {
     where('purged = ?', true)

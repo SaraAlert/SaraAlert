@@ -110,8 +110,8 @@ class ExportController < ApplicationController
     send_data build_excel_export_for_patients(patient_ids)
   end
 
-  def full_history_purgeable_monitorees
-    patients = current_user.viewable_patients.purgeable
+  def full_history_purge_eligible_monitorees
+    patients = current_user.viewable_patients.purge_eligible
     patient_ids = patients.pluck(:id)
     send_data build_excel_export_for_patients(patient_ids)
   end
