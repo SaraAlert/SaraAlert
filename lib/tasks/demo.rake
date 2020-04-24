@@ -222,7 +222,7 @@ namespace :demo do
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
             isolation: isol
-            case_status: isol? 'Confirmed' : ''
+            case_status: isol ? 'Confirmed' : ''
           )
 
           patient.submission_token = SecureRandom.hex(20)
