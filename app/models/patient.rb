@@ -93,13 +93,6 @@ class Patient < ApplicationRecord
       .where('purged = ?', true)
   }
 
-  # Purgeable records right now
-  scope :purgeable, lambda {
-    where('monitoring = ?', false)
-      .where('purged = ?', false)
-      .where('updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.ago)
-  }
-
   # Purgeable eligible (records that could be purged in the next purge run if they aren't edited again)
   # By using chronic to determine the date of the next purge, the last warning date can be determined from that context
   # The use of `yesterday` in the context of the next purge date ensures that it includes the same day when using `this` keyword
