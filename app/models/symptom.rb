@@ -15,6 +15,10 @@ class Symptom < ApplicationRecord
     where(['name = ? and bool_value = ?', 'fever', true])
   }
 
+  scope :fever_medication, lambda {
+    where(['name = ? and bool_value = ?', 'used-a-fever-reducer', true])
+  }
+
   def as_json(options = {})
     super(options).merge({
                            type: type

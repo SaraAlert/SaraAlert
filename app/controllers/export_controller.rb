@@ -121,7 +121,7 @@ class ExportController < ApplicationController
 
     history = History.new
     history.created_by = current_user.email
-    comment = 'User downloaded monitoree\'s data in Excel Export'
+    comment = 'User downloaded monitoree\'s data in Excel Export.'
     history.comment = comment
     history.patient = current_user.viewable_patients.find(params[:patient_id])
     history.history_type = 'Monitoree Data Downloaded'
@@ -175,6 +175,22 @@ class ExportController < ApplicationController
           patient_assessments.each do |assessment|
             sheet.add_row assessment
           end
+        end
+      end
+      p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
+        labs = Laboratory.where(patient_id: patient_ids)
+        lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
+        sheet.add_row lab_headers
+        labs.each do |lab|
+          patient_id = lab.patient_id
+          lab_type = lab.lab_type
+          lab_specimen_collection = lab.specimen_collection
+          lab_report = lab.report
+          lab_result = lab.result
+          lab_created_at = lab&.created_at || ''
+          lab_updated_at = lab&.updated_at || ''
+          lab_row = [patient_id, lab_type, lab_specimen_collection, lab_report, lab_result, lab_created_at, lab_updated_at]
+          sheet.add_row lab_row
         end
       end
       p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|

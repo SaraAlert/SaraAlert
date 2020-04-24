@@ -117,7 +117,7 @@ namespace :demo do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
     days = (ENV['DAYS'] || 14).to_i
-    count = (ENV['COUNT'] || 50).to_i
+    count = (ENV['COUNT'] || 25).to_i
     perform_daily_analytics_update = (ENV['SKIP_ANALYTICS'] != 'true')
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
@@ -153,17 +153,25 @@ namespace :demo do
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
           if rand < 0.9 # 70% reporting rate on any given day
             reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
+            assessment = Assessment.new
             if rand < 0.3 # 30% report some sort of symptoms
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               number_of_symptoms = rand(bool_symps.count) + 1
               bool_symps.each do |symp|  symp['bool_value'] = false end
               bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
-              patient.assessments.create({ reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
+              assessment.update(reported_condition: reported_condition, symptomatic: true, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
+              assessment.save
+              patient.assessments << assessment
+              patient.save
             else
               bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
               bool_symps.each do |symp|  symp['bool_value'] = false end
-              patient.assessments.create({ reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day) })
+              assessment.update(reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
+              assessment.save
+              patient.assessments << assessment
+              patient.save
             end
+            patient.refresh_symptom_onset(assessment.id)
           end
         end
 
@@ -172,6 +180,7 @@ namespace :demo do
           sex = Faker::Gender.binary_type
           birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
           risk_factors = rand < 0.9
+          isol = rand < 0.30
           patient = Patient.new(
             first_name: "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}",
             middle_name: "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}",
@@ -181,26 +190,11 @@ namespace :demo do
             age: ((Date.today - birthday) / 365.25).round,
             ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
             primary_language: 'English',
-            # interpretation_required
             address_line_1: Faker::Address.street_address,
             address_city: Faker::Address.city,
             address_state: Faker::Address.state,
             address_line_2: rand < 0.3 ? Faker::Address.secondary_address : nil,
             address_zip: Faker::Address.zip_code,
-            # address_county
-            # foreign_address_line_1
-            # foreign_address_city
-            # foreign_address_country
-            # foreign_address_line_2
-            # foreign_address_zip
-            # foreign_address_line_3
-            # foreign_address_state
-            # foreign_monitored_address_line_1
-            # foreign_monitored_address_city
-            # foreign_monitored_address_state
-            # foreign_monitored_address_line_2
-            # foreign_monitored_address_zip
-            # foreign_monitored_address_county
             primary_telephone: '(333) 333-3333',
             primary_telephone_type: rand < 0.7 ? 'Smartphone' : 'Plain Cell',
             secondary_telephone: '(333) 333-3333',
@@ -214,7 +208,6 @@ namespace :demo do
             flight_or_vessel_carrier: "#{Faker::Name.first_name} Airlines",
             port_of_entry_into_usa: Faker::Address.city,
             date_of_arrival: today,
-            # travel_related_notes
             last_date_of_exposure: today - rand(5).days,
             potential_exposure_location: rand < 0.7 ? Faker::Address.city : nil,
             potential_exposure_country: rand < 0.8 ? Faker::Address.country: nil,
@@ -228,7 +221,8 @@ namespace :demo do
             creator: enrollers.sample,
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
-            isolation: rand < 0.30
+            isolation: isol
+            case_status: isol? 'Confirmed' : ''
           )
 
           patient.submission_token = SecureRandom.hex(20)
@@ -262,7 +256,6 @@ namespace :demo do
             patient.additional_planned_travel_port_of_departure = Faker::Address.city
             patient.additional_planned_travel_start_date = today + rand(6).days
             patient.additional_planned_travel_end_date = patient.additional_planned_travel_start_date + rand(10).days
-            # patient.additional_planned_travel_related_notes
           end
 
           if rand < 0.1
@@ -284,8 +277,8 @@ namespace :demo do
           patient.save
 
           history = History.new
-          history.created_by = 'demo@example.com'
-          history.comment = 'This fake monitoree was randomly generated.'
+          history.created_by = 'Sara Alert System'
+          history.comment = 'This synthetic monitoree was randomly generated.'
           history.patient = patient
           history.history_type = 'Enrollment'
           history.save

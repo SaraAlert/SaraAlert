@@ -36,17 +36,6 @@ class Patient < ApplicationRecord
                                                          'No Identified Risk',
                                                          nil, ''] }
 
-  validates :public_health_action, inclusion: { in: ['None',
-                                                     'Recommended medical evaluation of symptoms',
-                                                     'Document results of medical evaluation',
-                                                     'Laboratory specimen collected',
-                                                     'Recommended laboratory testing',
-                                                     'Laboratory received specimen – result pending',
-                                                     'Laboratory report results – positive',
-                                                     'Laboratory report results – negative',
-                                                     'Laboratory report results – indeterminate',
-                                                     nil, ''] }
-
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
   has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
@@ -56,6 +45,28 @@ class Patient < ApplicationRecord
   has_many :histories
   has_many :transfers
   has_one :latest_transfer, -> { order(created_at: :desc) }, class_name: 'Transfer'
+  has_many :laboratories
+
+  # Patients who are eligible for reminders
+  scope :reminder_eligible, lambda {
+    where(pause_notifications: false)
+      .where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where.not(id: Patient.unscoped.isolation_requiring_review)
+      .where.not(id: Patient.unscoped.under_investigation)
+      .left_outer_joins(:assessments)
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
+      .or(
+        where(pause_notifications: false)
+          .where('monitoring = ?', true)
+          .where('purged = ?', false)
+          .where.not(id: Patient.unscoped.isolation_requiring_review)
+          .where.not(id: Patient.unscoped.under_investigation)
+          .left_outer_joins(:assessments)
+          .where(assessments: { patient_id: nil })
+      )
+      .distinct
+  }
 
   # All individuals currently being monitored
   scope :monitoring_open, lambda {
@@ -137,26 +148,6 @@ class Patient < ApplicationRecord
       .distinct
   }
 
-  # Patients who are eligible for reminders
-  scope :reminder_eligible, lambda {
-    where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where(pause_notifications: false)
-      .where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
-      .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.zone.now.beginning_of_day])
-      .or(
-        where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-        .where(pause_notifications: false)
-        .where('monitoring = ?', true)
-        .where('purged = ?', false)
-        .left_outer_joins(:assessments)
-        .where(assessments: { patient_id: nil })
-      )
-      .distinct
-  }
-
   # Individuals who have reported recently and are not symptomatic
   scope :asymptomatic, lambda {
     where('monitoring = ?', true)
@@ -177,24 +168,35 @@ class Patient < ApplicationRecord
       .distinct
   }
 
-  scope :isolation_requiring_review, lambda {
+  # Individuals that meet the test based review requirement
+  scope :test_based, lambda {
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .where_assoc_exists(:assessments, &:seventy_two_hours_since_latest_fever_report)
-      .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+      .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
+      .where_assoc_not_exists(:assessments, &:twenty_four_hours_since_latest_fever_report)
       .distinct
+  }
+
+  # Individuals that meet the non test based review requirement
+  scope :non_test_based, lambda {
+    where('monitoring = ?', true)
+      .where('purged = ?', false)
+      .where('isolation = ?', true)
+      .where_assoc_not_exists(:assessments, &:seventy_two_hours_since_latest_fever_report)
+      .where('symptom_onset <= ?', 7.days.ago)
+      .distinct
+  }
+
+  # Individuals in the isolation workflow that require review
+  scope :isolation_requiring_review, lambda {
+    where(id: Patient.unscoped.test_based)
       .or(
-        where('monitoring = ?', true)
-        .where('purged = ?', false)
-        .where('isolation = ?', true)
-        .where_assoc_count(2, :<=, :histories, 'comment LIKE \'%Laboratory report results – negative%\'')
-        .where_assoc_exists(:assessments, &:twenty_four_hours_since_latest_fever_report)
-        .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-        .distinct
+        where(id: Patient.unscoped.non_test_based)
       )
   }
 
+  # Individuals in the isolation workflow, not meeting review and are not reporting
   scope :isolation_non_reporting, lambda {
     where('monitoring = ?', true)
       .where('purged = ?', false)
@@ -203,6 +205,7 @@ class Patient < ApplicationRecord
       .distinct
   }
 
+  # Individuals in the isolation workflow, not meeting review but are reporting
   scope :isolation_reporting, lambda {
     where('monitoring = ?', true)
       .where('purged = ?', false)
@@ -333,13 +336,103 @@ class Patient < ApplicationRecord
       return :asymptomatic if asymptomatic?
       return :non_reporting if non_reporting?
     end
-    return :isolation_requiring_review if Patient.isolation_requiring_review.where(id: id).exists?
+    return :isolation_test_based if Patient.test_based.where(id: id).exists?
+    return :isolation_non_test_based if Patient.non_test_based.where(id: id).exists?
     return :isolation_non_reporting if Patient.isolation_non_reporting.where(id: id).exists?
     return :isolation_reporting if Patient.isolation_reporting.where(id: id).exists?
     return :purged if purged?
     return :closed if closed?
 
     :unknown
+  end
+
+  # Updated symptom onset date IF updated assessment happens to be the oldest symptomatic
+  def refresh_symptom_onset(assessment_id)
+    assessment = assessments.where(symptomatic: true).order(:created_at).limit(1)&.first
+    return unless !assessment.nil? && !assessment_id.blank? && assessment.id == assessment_id
+
+    update(symptom_onset: assessment&.created_at&.to_date)
+    save
+  end
+
+  def send_assessment(force = false)
+    unless last_assessment_reminder_sent.nil?
+      return if last_assessment_reminder_sent > 5.hours.ago
+    end
+
+    # Do not allow messages to go to household members
+    return unless responder.id == id
+
+    # If force is set, the preferred contact time will be ignored
+    unless force
+      hour = Time.now.getlocal('-04:00').hour
+      if !address_state.blank? && address_state == 'Northern Mariana Islands'
+        # CNMI Local
+        hour = Time.now.getlocal('+10:00').hour
+      end
+      if !address_state.blank? && address_state == 'Arkansas'
+        # Arkansas Local
+        hour = Time.now.getlocal('-05:00').hour
+      end
+      # These are the hours that we consider to be morning, afternoon and evening
+      morning = (8..12)
+      afternoon = (12..16)
+      evening = (16..20)
+      if preferred_contact_time == 'Morning'
+        return unless morning.include? hour
+      elsif preferred_contact_time == 'Afternoon'
+        return unless afternoon.include? hour
+      elsif preferred_contact_time == 'Evening'
+        return unless evening.include? hour
+      end
+    end
+
+    if preferred_contact_method.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+      # SMS-based assessments assess the patient _and_ all of their dependents
+      # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
+      # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
+      # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
+      if !force
+        PatientMailer.assessment_sms(self).deliver_later
+      else
+        PatientMailer.assessment_sms_reminder(self).deliver_later
+      end
+    elsif preferred_contact_method.downcase == 'sms texted weblink' && responder.id == id
+      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+    elsif preferred_contact_method.downcase == 'telephone call' && responder.id == id
+      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
+    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id && !email.blank?
+      PatientMailer.assessment_email(self).deliver_later
+    end
+
+    history = History.new
+    history.created_by = 'Sara Alert System'
+    comment = 'Sara Alert sent a report reminder to this monitoree via ' + preferred_contact_method + '.'
+    history.comment = comment
+    history.patient = self
+    history.history_type = 'Report Reminder'
+    history.save
+
+    update(last_assessment_reminder_sent: DateTime.now)
+  end
+
+  # All of the monitorees assessments
+  def assessmenmts_summary_array(assessment_headers, symptoms_headers)
+    # A header will be included in this
+    assessments_summary = []
+    assessments.each do |assessment|
+      entry = []
+      assessment_headers.each do |header|
+        # Whether or not the assessment has that particular attribute, the row still needs a value
+        entry.push(assessment[header] || '')
+      end
+      symptoms_headers.each do |header|
+        # Whether or not the assessment has that particular symptom, the row still needs a value
+        entry.push(assessment.get_reported_symptom_value(header) || '')
+      end
+      assessments_summary.push(entry)
+    end
+    assessments_summary
   end
 
   # Information about this subject (that is useful in a linelist)
@@ -363,25 +456,6 @@ class Patient < ApplicationRecord
       transferred_to: latest_transfer&.to_path || '',
       expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes).strftime('%F') || '')
     }
-  end
-
-  # All of the monitorees assessments
-  def assessmenmts_summary_array(assessment_headers, symptoms_headers)
-    # A header will be included in this
-    assessments_summary = []
-    assessments.each do |assessment|
-      entry = []
-      assessment_headers.each do |header|
-        # Whether or not the assessment has that particular attribute, the row still needs a value
-        entry.push(assessment[header] || '')
-      end
-      symptoms_headers.each do |header|
-        # Whether or not the assessment has that particular symptom, the row still needs a value
-        entry.push(assessment.get_reported_symptom_value(header) || '')
-      end
-      assessments_summary.push(entry)
-    end
-    assessments_summary
   end
 
   # All information about this subject
@@ -478,58 +552,5 @@ class Patient < ApplicationRecord
   # Override as_json to include linelist
   def as_json(options = {})
     super((options || {}).merge(methods: :linelist))
-  end
-
-  def send_assessment(force = false)
-    unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent > 20.hours.ago
-    end
-
-    # Do not allow messages to go to household members
-    return unless responder.id == id
-
-    # If force is set, the preferred contact time will be ignored
-    unless force
-      hour = Time.now.getlocal('-04:00').hour
-      if !address_state.blank? && address_state == 'Northern Mariana Islands'
-        # CNMI Local
-        hour = Time.now.getlocal('+10:00').hour
-      end
-      if !address_state.blank? && address_state == 'Arkansas'
-        # Arkansas Local
-        hour = Time.now.getlocal('-05:00').hour
-      end
-      # These are the hours that we consider to be morning, afternoon and evening
-      morning = (8..12)
-      afternoon = (12..16)
-      evening = (16..20)
-      if preferred_contact_time == 'Morning'
-        return unless morning.include? hour
-      elsif preferred_contact_time == 'Afternoon'
-        return unless afternoon.include? hour
-      elsif preferred_contact_time == 'Evening'
-        return unless evening.include? hour
-      end
-    end
-
-    if preferred_contact_method == 'SMS Text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-      # SMS-based assessments assess the patient _and_ all of their dependents
-      # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
-      # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
-      # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
-      if !force
-        PatientMailer.assessment_sms(self).deliver_later
-      else
-        PatientMailer.assessment_sms_reminder(self).deliver_later
-      end
-    elsif preferred_contact_method == 'SMS Texted Weblink' && responder.id == id
-      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-    elsif preferred_contact_method == 'Telephone call' && responder.id == id
-      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
-    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id && !email.blank?
-      PatientMailer.assessment_email(self).deliver_later
-    end
-
-    update(last_assessment_reminder_sent: DateTime.now)
   end
 end

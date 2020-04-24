@@ -278,11 +278,11 @@ class AnalyticsJobTest < ActiveSupport::TestCase
 
   test 'monitoree snapshots' do
     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(@@monitorees, 1)
-    verify_snapshot(snapshots, 0, 'Last 24 Hours', 5, 0, 1, 0, 2, 2, 1, 1, 1, 1, 1)
-    verify_snapshot(snapshots, 2, 'Total', 30, 0, 3, 0, 3, 3, 2, 2, 2, 2, 2)
+    verify_snapshot(snapshots, 0, 'Last 24 Hours', 5, 0, 1, 0)
+    verify_snapshot(snapshots, 2, 'Total', 30, 0, 3, 0)
     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(Patient.where(jurisdiction_id: 2), 2)
-    verify_snapshot(snapshots, 0, 'Last 24 Hours', 2, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0)
-    verify_snapshot(snapshots, 2, 'Total', 12, 2, 1, 2, 0, 0, 0, 0, 0, 1, 1)
+    verify_snapshot(snapshots, 0, 'Last 24 Hours', 2, 1, 0, 1)
+    verify_snapshot(snapshots, 2, 'Total', 12, 2, 1, 2)
   end
 
   def verify_monitoree_count(monitoree_counts, index, active_monitoring, category_type, category, risk_level, count)
@@ -293,22 +293,12 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(count, monitoree_counts[index].total, monitoree_count_err_msg(index, active_monitoring, category_type))
   end
 
-  def verify_snapshot(snapshots, index, time_frame, new_enrollments, transferred_in, closed, transferred_out,
-                      referral_for_medical_evaluation, document_completed_medical_evaluation, document_medical_evaluation_summary_and_plan,
-                      referral_for_public_health_test, public_health_test_specimen_received_by_lab_results_pending,
-                      results_of_public_health_test_positive, results_of_public_health_test_negative)
+  def verify_snapshot(snapshots, index, time_frame, new_enrollments, transferred_in, closed, transferred_out)
     assert_equal(time_frame, snapshots[index].time_frame, 'Time frame')
     assert_equal(new_enrollments, snapshots[index].new_enrollments, 'New enrollments')
     assert_equal(transferred_in, snapshots[index].transferred_in, 'Incoming transfers')
     assert_equal(closed, snapshots[index].closed, 'Closed patients')
     assert_equal(transferred_out, snapshots[index].transferred_out, 'Outgoing transfers')
-    assert_equal(referral_for_medical_evaluation, snapshots[index].referral_for_medical_evaluation, 'Recommended medical evaluation of symptoms')
-    assert_equal(document_completed_medical_evaluation, snapshots[index].document_completed_medical_evaluation, 'Document results of medical evaluation')
-    assert_equal(document_medical_evaluation_summary_and_plan, snapshots[index].document_medical_evaluation_summary_and_plan, 'Laboratory specimen collected')
-    assert_equal(referral_for_public_health_test, snapshots[index].referral_for_public_health_test, 'Recommended laboratory testing')
-    assert_equal(public_health_test_specimen_received_by_lab_results_pending, snapshots[index].public_health_test_specimen_received_by_lab_results_pending, 'Laboratory received specimen – result pending')
-    assert_equal(results_of_public_health_test_positive, snapshots[index].results_of_public_health_test_positive, 'Laboratory report results – positive')
-    assert_equal(results_of_public_health_test_negative, snapshots[index].results_of_public_health_test_negative, 'Laboratory report results – negative')
   end
 
   def get_absolute_date(relative_date)

@@ -182,7 +182,7 @@ patient_6:
   source_of_report: "CDC"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 22.days.ago %>"
-  public_health_action: 'Laboratory report results – negative'
+  public_health_action: 'Recommended medical evaluation of symptoms'
 patient_7:
   id: 7
   created_at: "<%= 45.days.ago %>"
@@ -206,7 +206,7 @@ patient_7:
   source_of_report: "CDC"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 83.days.ago %>"
-  public_health_action: 'Laboratory report results – negative'
+  public_health_action: 'Recommended medical evaluation of symptoms'
 patient_8:
   id: 8
   created_at: "<%= 17.days.ago %>"
@@ -230,7 +230,7 @@ patient_8:
   source_of_report: "CDC"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 41.days.ago %>"
-  public_health_action: 'Laboratory report results – positive'
+  public_health_action: 'Recommended medical evaluation of symptoms'
   pause_notifications: true
 patient_9:
   id: 9
@@ -255,7 +255,7 @@ patient_9:
   source_of_report: "CDC"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 41.days.ago %>"
-  public_health_action: 'Laboratory report results – positive'
+  public_health_action: 'Recommended medical evaluation of symptoms'
   pause_notifications: true
 patient_10:
   id: 10
@@ -279,7 +279,7 @@ patient_10:
   source_of_report: "CDC"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 22.days.ago %>"
-  public_health_action: 'Laboratory received specimen – result pending'
+  public_health_action: 'Recommended medical evaluation of symptoms'
 patient_11:
   id: 11
   created_at: "<%= 8.days.ago %>"
@@ -302,7 +302,7 @@ patient_11:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   last_date_of_exposure: "<%= 27.days.ago %>"
-  public_health_action: 'Laboratory received specimen – result pending'
+  public_health_action: 'Recommended medical evaluation of symptoms'
 patient_12:
   id: 12
   created_at: "<%= 6.days.ago %>"
@@ -365,7 +365,7 @@ patient_14:
   member_of_a_common_exposure_cohort: false
   crew_on_passenger_or_cargo_flight: false
   laboratory_personnel: false
-  public_health_action: 'Laboratory specimen collected'
+  public_health_action: 'Recommended medical evaluation of symptoms'
 patient_15:
   id: 15
   created_at: "<%= 3.days.ago %>"
@@ -386,7 +386,7 @@ patient_15:
   member_of_a_common_exposure_cohort: true
   crew_on_passenger_or_cargo_flight: true
   laboratory_personnel: false
-  public_health_action: 'Laboratory specimen collected'
+  public_health_action: 'Recommended medical evaluation of symptoms'
   pause_notifications: true
 patient_16:
   id: 16

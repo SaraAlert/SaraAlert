@@ -25,7 +25,7 @@ close_patient_18:
 public_health_action_patient_6:
   id: 2006
   patient_id: 6
-  comment: 'User changed latest public health action to "Laboratory report results – negative". Reason: Lost to follow-up during monitoring period, details'
+  comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: '<%= 19.hours.ago %>'
@@ -33,7 +33,7 @@ public_health_action_patient_6:
 public_health_action_patient_7:
   id: 2007
   patient_id: 7
-  comment: 'User changed latest public health action to "Laboratory report results – negative". Reason: Lost to follow-up during monitoring period, details'
+  comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: '<%= 4.days.ago %>'
@@ -41,7 +41,7 @@ public_health_action_patient_7:
 public_health_action_patient_8:
   id: 2008
   patient_id: 8
-  comment: 'User changed latest public health action to "Laboratory report results – positive". Reason: Lost to follow-up during monitoring period, details'
+  comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: '<%= 15.hours.ago %>'
@@ -49,7 +49,7 @@ public_health_action_patient_8:
 public_health_action_patient_9:
   id: 2009
   patient_id: 9
-  comment: 'User changed latest public health action to "Laboratory report results – positive". Reason: Lost to follow-up during monitoring period, details'
+  comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: '<%= 7.days.ago %>'
@@ -57,7 +57,7 @@ public_health_action_patient_9:
 public_health_action_patient_10:
   id: 2010
   patient_id: 10
-  comment: 'User changed latest public health action to "Laboratory received specimen – result pending". Reason: Lost to follow-up during monitoring period, details'
+  comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: '<%= 3.hours.ago %>'
@@ -65,7 +65,7 @@ public_health_action_patient_10:
 public_health_action_patient_11:
   id: 2011
   patient_id: 11
-  comment: 'User changed latest public health action to "Laboratory received specimen – result pending". Reason: Lost to follow-up during monitoring period, details'
+  comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: '<%= 2.days.ago %>'
@@ -89,7 +89,7 @@ public_health_action_patient_13:
 public_health_action_patient_14:
   id: 2014
   patient_id: 14
-  comment: 'User changed latest public health action to "Laboratory specimen collected". Reason: Lost to follow-up during monitoring period, details'
+  comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: '<%= 12.hours.ago %>'
@@ -97,7 +97,7 @@ public_health_action_patient_14:
 public_health_action_patient_15:
   id: 2015
   patient_id: 15
-  comment: 'User changed latest public health action to "Laboratory specimen collected". Reason: Lost to follow-up during monitoring period, details'
+  comment: 'User changed latest public health action to "Recommended medical evaluation of symptoms". Reason: Lost to follow-up during monitoring period, details'
   created_by: 'state1_epi_enroller@example.com'
   history_type: 'Monitoring Change'
   created_at: '<%= 12.days.ago %>'

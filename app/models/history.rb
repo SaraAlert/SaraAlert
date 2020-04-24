@@ -23,7 +23,11 @@ class History < ApplicationRecord
                                              'Reports Reviewed',
                                              'Report Reviewed',
                                              'Report Reminder',
-                                             'Report Note'] }
+                                             'Report Note',
+                                             'Lab Result',
+                                             'Lab Result Edit',
+                                             'Contact Attempt',
+                                             'Report Reminder'] }
 
   belongs_to :patient
 

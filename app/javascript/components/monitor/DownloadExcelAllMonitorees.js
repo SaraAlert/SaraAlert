@@ -53,9 +53,9 @@ class DownloadExcelAllMonitorees extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          After clicking &apos;Download&apos;, Sara Alert will gather all of your jurisdiction&apos;s monitoree data, assessments, and edit history. It will
-          then save that data into an Excel file, and may prompt you to download it in your browser. This process may take several minutes to complete, based on
-          the amount of data present.
+          After clicking &apos;Download&apos;, Sara Alert will gather all of your jurisdiction&apos;s monitoree data, assessments, lab results, and edit
+          history. It will then save that data into an Excel file, and may prompt you to download it in your browser. This process may take several minutes to
+          complete, based on the amount of data present.
           <br></br>
           <br></br>
           {this.state.loading && (

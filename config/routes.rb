@@ -30,6 +30,9 @@ Rails.application.routes.draw do
 
   resources :histories, only: [:create]
 
+  post '/laboratories', to: 'laboratories#create'
+  post '/laboratories/:id', to: 'laboratories#update'
+
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   get '/export/:type/csv', to: 'export#csv'
