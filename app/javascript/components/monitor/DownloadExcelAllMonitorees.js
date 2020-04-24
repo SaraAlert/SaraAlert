@@ -22,6 +22,7 @@ class DownloadExcelAllMonitorees extends React.Component {
   toggleDownloadExcelModal() {
     let current = this.state.showDownloadExcelModal;
     this.setState({
+      loading: false,
       showDownloadExcelModal: !current,
     });
   }
@@ -70,7 +71,7 @@ class DownloadExcelAllMonitorees extends React.Component {
           <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
             Download
           </Button>
-          <Button variant="secondary btn-square" onClick={toggle} disabled={this.state.loading}>
+          <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
         </Modal.Footer>
