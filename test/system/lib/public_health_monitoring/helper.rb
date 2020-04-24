@@ -61,21 +61,6 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def add_additional_public_health_action(user_label, patient_label, tab, reasoning)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_monitoring_actions.add_additional_public_health_action(user_label, reasoning, false)
-    @@public_health_monitoring_actions.add_additional_public_health_action(user_label, reasoning)
-    @@system_test_utils.logout
-  end
-
-  def update_current_workflow(user_label, patient_label, tab, current_workflow, reasoning)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_monitoring_actions.update_current_workflow(user_label, current_workflow, reasoning)
-    @@system_test_utils.logout
-  end
-
   def update_assigned_jurisdiction(user_label, patient_label, tab, jurisdiction, reasoning, valid_jurisdiction=true, under_hierarchy=true)
     @@system_test_utils.login(user_label)
     @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_label)

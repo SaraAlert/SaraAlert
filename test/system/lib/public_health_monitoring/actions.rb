@@ -50,34 +50,6 @@ class PublicHealthMonitoringActions < ApplicationSystemTestCase
     end
   end
 
-  def add_additional_public_health_action(user_label, reasoning, submit=true)
-    button = find('#public_health_action').first(:xpath, './/..//..').find(:css, 'button.btn-lg.btn-square.btn.btn-primary')
-    if find('#public_health_action')['value'] == 'None'
-      button.hover
-      assert page.has_content?('You can\'t add an additional "None" public health action'), @@system_test_utils.get_err_msg('Monitoring actions', 'hover error message', 'existent')
-    else
-      button.hover
-      assert page.has_content?('Add an additional'), @@system_test_utils.get_err_msg('Monitoring actions', 'hover message', 'existent')
-      button.click
-      if submit
-        page.driver.browser.switch_to.alert.accept
-        @@public_health_monitoring_history_verifier.verify_additional_public_health_action(user_label)
-      else
-        page.driver.browser.switch_to.alert.dismiss
-      end
-    end
-  end
-
-  def update_current_workflow(user_label, current_workflow, reasoning)
-    if current_workflow != find('#isolation_status')['value']
-      select current_workflow, from: 'isolation_status'
-      fill_in 'reasoning', with: reasoning
-      click_on 'Submit'
-      @@system_test_utils.wait_for_modal_animation
-      @@public_health_monitoring_history_verifier.verify_current_workflow(user_label, current_workflow, reasoning)
-    end
-  end
-
   def update_assigned_jurisdiction(user_label, jurisdiction, reasoning, valid_jurisdiction=true, under_hierarchy=true)
     assert page.has_button?('Change Jurisdiction', disabled: true)
     fill_in 'jurisdictionList', with: jurisdiction

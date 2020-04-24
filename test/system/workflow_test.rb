@@ -66,17 +66,6 @@ class WorkflowTest < ApplicationSystemTestCase
     @@system_test_utils.logout
     @@system_test_utils.login('state2_epi')
     @@public_health_monitoring_dashboard.search_for_and_view_monitoree('transferred-in', monitoree_label)
-
-    # update workflow to isolation
-    @@public_health_monitoring_actions.update_current_workflow(enroller_user_label, 'Isolation', 'reason')
-    @@system_test_utils.return_to_dashboard('isolation')
-    @@public_health_monitoring_dashboard.search_for_and_view_monitoree('all', monitoree_label)
-
-    # update workflow to exposure
-    @@public_health_monitoring_actions.update_current_workflow(enroller_user_label, 'Exposure', 'reason')
-    @@system_test_utils.return_to_dashboard('exposure')
-    @@public_health_monitoring_dashboard_verifier.verify_monitoree_under_tab('transferred-in', monitoree_label)
-    @@system_test_utils.logout
   end
 
   test 'enroller enroll monitoree, epi complete assessment' do
@@ -84,9 +73,9 @@ class WorkflowTest < ApplicationSystemTestCase
     enroller_user_label = 'state1_enroller'
     monitoree_label = 'monitoree_2'
     @@monitoree_enrollment_helper.enroll_monitoree(enroller_user_label, monitoree_label)
-    
+
     # complete assessment
-    epi_user_label = 'state1_epi'    
+    epi_user_label = 'state1_epi'
     @@system_test_utils.login(epi_user_label)
     @@public_health_monitoring_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
     @@public_health_monitoring_reports_verifier.verify_current_status('asymptomatic')
@@ -103,7 +92,7 @@ class WorkflowTest < ApplicationSystemTestCase
     monitoree_label = 'monitoree_3'
     group_member_label = 'monitoree_8'
     @@monitoree_enrollment_helper.enroll_group_member(enroller_user_label, monitoree_label, group_member_label)
-    
+
     # edit parent jurisdiction but do not propagate to group member
     edited_monitoree_without_propogation_label = 'monitoree_13'
     @@system_test_utils.login(enroller_user_label)
@@ -114,7 +103,7 @@ class WorkflowTest < ApplicationSystemTestCase
     new_jurisdiction = MONITOREES[edited_monitoree_without_propogation_label]['potential_exposure_info']['jurisdiction_id']
     assert page.has_content?(new_jurisdiction)
     @@system_test_utils.logout
-    
+
     # parent should have been transferred but not child, verify transfers and history
     new_jurisdiction_epi_user_label = 'locals2c3_epi'
     @@system_test_utils.login(new_jurisdiction_epi_user_label)
