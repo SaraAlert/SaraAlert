@@ -221,7 +221,7 @@ namespace :demo do
             creator: enrollers.sample,
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
-            isolation: isol
+            isolation: isol,
             case_status: isol ? 'Confirmed' : ''
           )
 

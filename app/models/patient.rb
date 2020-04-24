@@ -173,7 +173,7 @@ class Patient < ApplicationRecord
     where('monitoring = ?', true)
       .where('purged = ?', false)
       .where('isolation = ?', true)
-      .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
+      .where_assoc_count(2, :<=, :laboratories) { |lab| lab.result == 'negative' }
       .where_assoc_not_exists(:assessments, &:twenty_four_hours_since_latest_fever_report)
       .distinct
   }
