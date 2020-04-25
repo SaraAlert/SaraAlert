@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require 'test_case'
 
 class PatientTest < ActiveSupport::TestCase
   def setup; end
