@@ -98,7 +98,9 @@ class PatientsController < ApplicationController
                         else
                           patient
                         end
-    patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
+    if params.permit(:responder_id)[:responder_id]
+      patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
+    end
 
     # Set the creator as the current user
     patient.creator = current_user
