@@ -98,12 +98,12 @@ class PatientsController < ApplicationController
                         else
                           patient
                         end
+    patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
 
     # Set the creator as the current user
     patient.creator = current_user
 
     # Set the subject jurisdiction to the creator's jurisdiction if jurisdiction is not assigned or not assignable by the current user
-
     valid_jurisdiction = (current_user.can_assign_any_jurisdiction? && !Jurisdiction.find(patient.jurisdiction_id).nil?) ||
                          current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id)
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction

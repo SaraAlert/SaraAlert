@@ -55,6 +55,7 @@ class Patient < ApplicationRecord
       .where('purged = ?', false)
       .where.not(id: Patient.unscoped.isolation_requiring_review)
       .where.not(id: Patient.unscoped.under_investigation)
+      .where('last_assessment_reminder_sent < ?', Time.now.getlocal('-04:00').beginning_of_day)
       .left_outer_joins(:assessments)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
       .or(
