@@ -400,7 +400,7 @@ class Patient < ApplicationRecord
       end
     end
 
-    if preferred_contact_method.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+    if preferred_contact_method&.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
       # SMS-based assessments assess the patient _and_ all of their dependents
       # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
       # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
@@ -410,9 +410,9 @@ class Patient < ApplicationRecord
       else
         PatientMailer.assessment_sms_reminder(self).deliver_later
       end
-    elsif preferred_contact_method.downcase == 'sms texted weblink' && responder.id == id
+    elsif preferred_contact_method&.downcase == 'sms texted weblink' && responder.id == id
       PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-    elsif preferred_contact_method.downcase == 'telephone call' && responder.id == id
+    elsif preferred_contact_method&.downcase == 'telephone call' && responder.id == id
       PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
     elsif ADMIN_OPTIONS['enable_email'] && responder.id == id && !email.blank?
       PatientMailer.assessment_email(self).deliver_later
