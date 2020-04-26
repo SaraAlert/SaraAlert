@@ -418,13 +418,15 @@ class Patient < ApplicationRecord
       PatientMailer.assessment_email(self).deliver_later
     end
 
-    history = History.new
-    history.created_by = 'Sara Alert System'
-    comment = 'Sara Alert sent a report reminder to this monitoree via ' + preferred_contact_method + '.'
-    history.comment = comment
-    history.patient = self
-    history.history_type = 'Report Reminder'
-    history.save
+    unless preferred_contact_method.nil?
+      history = History.new
+      history.created_by = 'Sara Alert System'
+      comment = 'Sara Alert sent a report reminder to this monitoree via ' + preferred_contact_method + '.'
+      history.comment = comment
+      history.patient = self
+      history.history_type = 'Report Reminder'
+      history.save
+    end
 
     update(last_assessment_reminder_sent: DateTime.now)
   end
