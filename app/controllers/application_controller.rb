@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
     return unless current_user&.force_password_change || (current_user && current_user&.authy_enabled && current_user&.authy_id.nil?)
 
     # First login (and first password change) must occur within three days
-    current_user.lock_access! if current_user.password_changed_at < 3.days.ago
+    current_user.lock_access! if current_user.password_changed_at < 3.days.ago && current_user&.force_password_change
 
     if request.url == edit_user_registration_url || request.url == user_registration_url ||
        request.url == destroy_user_session_url || request.url == user_enable_authy_url || request.url == user_verify_authy_url
