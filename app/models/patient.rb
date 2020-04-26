@@ -369,7 +369,7 @@ class Patient < ApplicationRecord
 
   def send_assessment(force = false)
     unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent > 5.hours.ago
+      return if last_assessment_reminder_sent > 12.hours.ago
     end
 
     # Do not allow messages to go to household members
