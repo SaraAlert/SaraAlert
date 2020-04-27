@@ -1,5 +1,5 @@
 {
-  "description": "A New Flow",
+  "description": "SaraAlertDevFlow",
   "states": [
     {
       "name": "Trigger",
@@ -9,26 +9,26 @@
           "x": 0,
           "y": -30
         },
-        "flow_url": "https://webhooks.twilio.com/v1/Accounts/AC5da744a87f534182ecedbc19c472a06b/Flows/FW6e9479580a8040dbdfed3b057d244534"
+        "flow_url": "https://webhooks.twilio.com/v1/Accounts/AC5da744a87f534182ecedbc19c472a06b/Flows/FW808f8fe8b3dffc7a413f632dc7088063"
       },
       "transitions": [
         {
           "event": "incomingMessage",
           "conditions": [],
           "next": null,
-          "uuid": "0ea61391-a49e-4ded-ac44-c81259c39005"
+          "uuid": "b097ac74-7d13-4ca3-bd1e-3cbf0e181bff"
         },
         {
           "event": "incomingCall",
           "conditions": [],
           "next": null,
-          "uuid": "5b31defa-cb1e-4a6d-8b75-0e8444bd4f70"
+          "uuid": "08d55e3f-6fc9-42e5-b562-c0b8f0696151"
         },
         {
           "event": "incomingRequest",
           "conditions": [],
           "next": "FFf7aec2bf1eefc48abdfccd68596ac826",
-          "uuid": "eab9dc55-72d2-4c5d-a8e8-596cf841bc01"
+          "uuid": "6432a62e-a4e7-4f75-97a2-ae50cbcc73a6"
         }
       ],
       "sid": "FF16008cb7b1ddffb2d27e5b6dde48c30a"
@@ -38,12 +38,12 @@
       "type": "MessagePrompt",
       "properties": {
         "offset": {
-          "x": 270,
-          "y": 570
+          "x": 120,
+          "y": 550
         },
         "body": "{{flow.data.prompt}}",
         "from": "{{flow.channel.address}}",
-        "timeout": 3600,
+        "timeout": 64800,
         "save_response_as": null,
         "media_url": null,
         "service": "{{trigger.message.InstanceSid}}",
@@ -55,19 +55,19 @@
           "event": "incomingMessage",
           "conditions": [],
           "next": "FF380c2112d24ace950e2ef35a5cd381ae",
-          "uuid": "1fdf2274-30b4-4546-8a42-42d42eb4adc5"
+          "uuid": "0c66cc6a-4d30-403a-a127-4150d1bde950"
         },
         {
           "event": "timeout",
           "conditions": [],
-          "next": null,
-          "uuid": "6933b809-d1ba-4ad7-b1c2-3e6b82c431df"
+          "next": "FF618298ce7adfcc8f9833c3a196dadea6",
+          "uuid": "61927fd7-b3c1-4618-8f53-5e244ef0d648"
         },
         {
           "event": "deliveryFailure",
           "conditions": [],
-          "next": null,
-          "uuid": "98c80c9b-9971-46d8-adab-9a498ade2844"
+          "next": "FF24b04845268fc0f1d6a4dcb9e63d99eb",
+          "uuid": "44508609-6602-450d-90ec-ef56fd3b48f9"
         }
       ],
       "sid": "FF2c4b25df6abe968be2f86418ae6e0874"
@@ -81,8 +81,8 @@
           "y": 1560
         },
         "method": "POST",
-        "url": "https://webhook.site/af48a339-f818-4e72-8086-571b1bef0701",
-        "body": "{\"experiencing_symptoms\":\"{{widgets.sms_assessment_prompt.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\",\n\"post_url\": \"{{flow.data.post_url}}\"}",
+        "url": "https://webhook.site/32c9580f-2071-4941-9f81-41c64d89d72c",
+        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"{{widgets.sms_assessment_prompt.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "timeout": null,
         "parameters": null,
         "save_response_as": null,
@@ -93,13 +93,13 @@
           "event": "success",
           "conditions": [],
           "next": "FFf365befdecfd11e0ccf788e27946d979",
-          "uuid": "c6cf984b-f487-4385-873d-a2575b7f6da5"
+          "uuid": "83204955-9bec-4278-8691-e749f9e427aa"
         },
         {
           "event": "failed",
           "conditions": [],
           "next": null,
-          "uuid": "219f9a9e-01d0-424e-b7f5-53c4637e9bf2"
+          "uuid": "b796f15e-835c-4bc1-9ce7-10114fbdc342"
         }
       ],
       "sid": "FF9fb760e515a78d87351093be14314ad4"
@@ -109,8 +109,8 @@
       "type": "Branch",
       "properties": {
         "offset": {
-          "x": 280,
-          "y": 890
+          "x": 130,
+          "y": 850
         },
         "input": "{{widgets.sms_assessment_prompt.inbound.Body}}"
       },
@@ -119,7 +119,7 @@
           "event": "noMatch",
           "conditions": [],
           "next": "FFbbb0e9c92951108c6d1f1171204f4067",
-          "uuid": "040aa154-2437-49af-bcbb-a23d7f811c8c"
+          "uuid": "341295be-4bd9-42c7-b0dd-858f4cd37e6a"
         },
         {
           "event": "match",
@@ -134,7 +134,7 @@
             }
           ],
           "next": "FF9fb760e515a78d87351093be14314ad4",
-          "uuid": "6a6b7c22-e4f9-43c7-b205-70cdf92abb01"
+          "uuid": "fb1eb18a-3d4a-458e-993c-c52712bf64e6"
         }
       ],
       "sid": "FF380c2112d24ace950e2ef35a5cd381ae"
@@ -144,7 +144,7 @@
       "type": "MessagePrompt",
       "properties": {
         "offset": {
-          "x": -290,
+          "x": -670,
           "y": 1100
         },
         "body": "We did not understand your response, please respond with Yes or No.",
@@ -161,19 +161,19 @@
           "event": "incomingMessage",
           "conditions": [],
           "next": "FFe439ce712c0212597be23e1803ac2738",
-          "uuid": "ac5f6a8a-eaf5-4d5e-88c1-57cb53a100ab"
+          "uuid": "731228fa-c1a1-48ec-a54e-8ea20c1e0f7a"
         },
         {
           "event": "timeout",
           "conditions": [],
-          "next": null,
-          "uuid": "773d0af3-9b9b-496e-a36f-6adb564996b9"
+          "next": "FF618298ce7adfcc8f9833c3a196dadea6",
+          "uuid": "3dbb2f50-115d-4956-9be4-a01e2fb1c134"
         },
         {
           "event": "deliveryFailure",
           "conditions": [],
-          "next": null,
-          "uuid": "dd285f5a-3030-4837-aeff-3af8422bc1cd"
+          "next": "FF24b04845268fc0f1d6a4dcb9e63d99eb",
+          "uuid": "a2f33aa6-e7de-4db4-ba13-8d352d10855d"
         }
       ],
       "sid": "FFbbb0e9c92951108c6d1f1171204f4067"
@@ -183,8 +183,8 @@
       "type": "Message",
       "properties": {
         "offset": {
-          "x": 250,
-          "y": 1880
+          "x": 100,
+          "y": 2000
         },
         "body": "Thank you for completing your daily report!",
         "from": "{{flow.channel.address}}",
@@ -199,19 +199,19 @@
           "event": "sent",
           "conditions": [],
           "next": null,
-          "uuid": "9addef9d-bf58-4135-89e6-3910e188c472"
+          "uuid": "a7fcc59f-000f-4dd0-87ba-2d6edaa18c89"
         },
         {
           "event": "failed",
           "conditions": [],
           "next": null,
-          "uuid": "4396d0e2-d10c-471a-b71b-bd44eba4bfb3"
+          "uuid": "c22f40e5-b70f-4ee6-bd03-733ee80be003"
         }
       ],
       "sid": "FFf365befdecfd11e0ccf788e27946d979"
     },
     {
-      "name": "Copy_of_check_yes_no",
+      "name": "check_yes_no_again",
       "type": "Branch",
       "properties": {
         "offset": {
@@ -225,7 +225,7 @@
           "event": "noMatch",
           "conditions": [],
           "next": "FFbbb0e9c92951108c6d1f1171204f4067",
-          "uuid": "06f08498-6c4a-4a47-8552-f9e3d1d4b754"
+          "uuid": "00c020c6-b34b-4c3a-b526-42d8501d8f10"
         },
         {
           "event": "match",
@@ -240,13 +240,13 @@
             }
           ],
           "next": "FF80363aa634a8a8793c85961ca963edf4",
-          "uuid": "43f80e73-47ae-4849-b70d-14b3dce35cfd"
+          "uuid": "46f2d92c-dc5a-41ed-a7fd-82beb77774f8"
         }
       ],
       "sid": "FFe439ce712c0212597be23e1803ac2738"
     },
     {
-      "name": "Copy_of_send_assessment_data",
+      "name": "send_assessment_data_from_sms_retry",
       "type": "Webhook",
       "properties": {
         "offset": {
@@ -254,8 +254,8 @@
           "y": 1560
         },
         "method": "POST",
-        "url": "https://webhook.site/af48a339-f818-4e72-8086-571b1bef0701",
-        "body": "{\"experiencing_symptoms\":\"{{widgets.bad_response.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\",\n\"post_url\": \"{{flow.data.post_url}}\"}",
+        "url": "https://webhook.site/32c9580f-2071-4941-9f81-41c64d89d72c",
+        "body": "{\"response_status\": \"success_sms\", \n\"experiencing_symptoms\":\"{{widgets.bad_response.inbound.Body}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "timeout": null,
         "parameters": null,
         "save_response_as": null,
@@ -266,13 +266,13 @@
           "event": "success",
           "conditions": [],
           "next": "FFf365befdecfd11e0ccf788e27946d979",
-          "uuid": "08513207-36b0-4cab-8837-86cc2797a05d"
+          "uuid": "a1194561-b500-40f3-8e73-5c72c9264147"
         },
         {
           "event": "failed",
           "conditions": [],
           "next": null,
-          "uuid": "20482554-dd47-4592-81e9-95c6610aa4a7"
+          "uuid": "1b793066-705e-4b68-95b7-8c8c68199b00"
         }
       ],
       "sid": "FF80363aa634a8a8793c85961ca963edf4"
@@ -292,7 +292,7 @@
           "event": "noMatch",
           "conditions": [],
           "next": null,
-          "uuid": "7f82ec02-72cd-492d-ab31-e0ddc2bc58d3"
+          "uuid": "f582baeb-c08c-4519-b25b-acc724d76724"
         },
         {
           "event": "match",
@@ -307,7 +307,7 @@
             }
           ],
           "next": "FF2c4b25df6abe968be2f86418ae6e0874",
-          "uuid": "58d6f67a-0292-49bc-861f-87d9202caf45"
+          "uuid": "2d2df2e5-ccb9-44f9-8fde-6ba71fb3d654"
         },
         {
           "event": "match",
@@ -322,7 +322,7 @@
             }
           ],
           "next": "FFb013f8c9016772d3c0e326414515b61c",
-          "uuid": "0cff506e-edbb-402f-82f3-6f25464bb459"
+          "uuid": "bf13be6d-3e38-48dc-923c-914f88796e9e"
         }
       ],
       "sid": "FFf7aec2bf1eefc48abdfccd68596ac826"
@@ -341,7 +341,7 @@
         "recording_channels": "mono",
         "recording_status_callback": null,
         "trim": "do-not-trim",
-        "detect_answering_machine": false,
+        "detect_answering_machine": true,
         "machine_detection": "Enable",
         "machine_detection_timeout": "30",
         "machine_detection_speech_threshold": "2400",
@@ -356,26 +356,26 @@
         {
           "event": "answered",
           "conditions": [],
-          "next": "FF6e1ecf24e7c79c0285a590186072fe81",
-          "uuid": "8f893a30-1136-4930-98bc-eea12c9c7b7f"
+          "next": "FF4709dfaa8038e994b978fbaf1a2c59f9",
+          "uuid": "323d7e76-2803-454d-a70a-2b9bde18c95d"
         },
         {
           "event": "busy",
           "conditions": [],
-          "next": null,
-          "uuid": "092a715a-276f-407a-9f3c-e8ad2780e1bb"
+          "next": "FFf9e8c1cbab27261e39431f7443bba4b6",
+          "uuid": "d0f1b8f9-82a7-43b4-b4d3-b07ebd72459f"
         },
         {
           "event": "noAnswer",
           "conditions": [],
-          "next": null,
-          "uuid": "fed2f3de-dce3-43df-91da-0364b66e863b"
+          "next": "FFf9e8c1cbab27261e39431f7443bba4b6",
+          "uuid": "3d4bd694-4aa2-48f2-8310-db886ad14fe6"
         },
         {
           "event": "failed",
           "conditions": [],
-          "next": null,
-          "uuid": "6d3a699f-b1b1-42d9-bfad-42ccbb948c6e"
+          "next": "FFc9ef9fc327f055e4a8aa2c262e3da0af",
+          "uuid": "debab7cd-e549-4581-8172-51b3173d961a"
         }
       ],
       "sid": "FFb013f8c9016772d3c0e326414515b61c"
@@ -385,8 +385,8 @@
       "type": "SayPlay",
       "properties": {
         "offset": {
-          "x": 1070,
-          "y": 920
+          "x": 1050,
+          "y": 1120
         },
         "say": "Hello, this is Sara, the automated public health assistant calling for your daily report.",
         "play": null,
@@ -400,7 +400,7 @@
           "event": "audioComplete",
           "conditions": [],
           "next": "FF331f493715ccd46c7feb4ea3b0f3043c",
-          "uuid": "5f2aae79-d8b3-4b5d-808d-6506cd051ee0"
+          "uuid": "27bac15a-f794-412d-9d8c-493cf75677cf"
         }
       ],
       "sid": "FF6e1ecf24e7c79c0285a590186072fe81"
@@ -434,19 +434,19 @@
           "event": "keypress",
           "conditions": [],
           "next": null,
-          "uuid": "ee46616a-4a7a-4f65-8a15-ce57311ce64a"
+          "uuid": "49a92b19-3887-4c9d-809f-e5e7c019931d"
         },
         {
           "event": "speech",
           "conditions": [],
           "next": "FF3f713f5d60779d9473915e11e56130fa",
-          "uuid": "bb8d41e6-11b2-4db4-8fdd-9710ced4f921"
+          "uuid": "c2b18e53-d16e-4315-809d-9fa0ceee9e26"
         },
         {
           "event": "timeout",
           "conditions": [],
           "next": "FF6d7351c7d1280f35e6c9664648cbaa22",
-          "uuid": "d9f7b14e-d000-4ee0-b9a2-a12232cb6b07"
+          "uuid": "75ae29e7-d9a3-4864-8f38-55f266275afd"
         }
       ],
       "sid": "FF331f493715ccd46c7feb4ea3b0f3043c"
@@ -456,8 +456,8 @@
       "type": "Branch",
       "properties": {
         "offset": {
-          "x": 1230,
-          "y": 1670
+          "x": 1220,
+          "y": 1640
         },
         "input": "{{widgets.voice_reply_to_prompt.SpeechResult}}"
       },
@@ -466,7 +466,7 @@
           "event": "noMatch",
           "conditions": [],
           "next": "FF6d7351c7d1280f35e6c9664648cbaa22",
-          "uuid": "76bb6852-b3fb-4baa-82ae-b40f3938ac7a"
+          "uuid": "d3b4361f-cbab-45f8-bfca-155663f5f996"
         },
         {
           "event": "match",
@@ -481,7 +481,7 @@
             }
           ],
           "next": "FF4232968feb3ce800048625da08d70e1a",
-          "uuid": "9c619665-2552-4ad0-9cfa-8cd7ad552502"
+          "uuid": "608e2cba-8089-4f23-afad-2502a0c86b9d"
         }
       ],
       "sid": "FF3f713f5d60779d9473915e11e56130fa"
@@ -491,12 +491,12 @@
       "type": "Webhook",
       "properties": {
         "offset": {
-          "x": 1440,
-          "y": 1990
+          "x": 1430,
+          "y": 2000
         },
         "method": "POST",
-        "url": "https://webhook.site/af48a339-f818-4e72-8086-571b1bef0701",
-        "body": "{\"experiencing_symptoms\":\"{{widgets.voice_reply_to_prompt.SpeechResult}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\",\n\"post_url\": \"{{flow.data.post_url}}\"}",
+        "url": "https://webhook.site/32c9580f-2071-4941-9f81-41c64d89d72c",
+        "body": "{\"response_status\":\"success_voice\", \n\"experiencing_symptoms\":\"{{widgets.voice_reply_to_prompt.SpeechResult}}\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
         "timeout": null,
         "parameters": null,
         "save_response_as": null,
@@ -507,13 +507,13 @@
           "event": "success",
           "conditions": [],
           "next": "FF8fd0c59db3de52d1054c033575298bc0",
-          "uuid": "f0af2eca-9318-447b-a95a-f22d845ab185"
+          "uuid": "622d3025-e054-4450-955c-175ebd743019"
         },
         {
           "event": "failed",
           "conditions": [],
           "next": null,
-          "uuid": "fc95e288-6365-4c7a-ad50-5170ab564dbc"
+          "uuid": "026eac20-b271-4fee-ad46-8af1b69d3a10"
         }
       ],
       "sid": "FF4232968feb3ce800048625da08d70e1a"
@@ -523,10 +523,10 @@
       "type": "SayPlay",
       "properties": {
         "offset": {
-          "x": 1450,
-          "y": 2290
+          "x": 1440,
+          "y": 2380
         },
-        "say": "Thank you for completing your daily report!",
+        "say": "Thank you for completing your daily report! Goodbye.",
         "play": null,
         "voice": "Polly.Joanna",
         "language": "en-US",
@@ -538,7 +538,7 @@
           "event": "audioComplete",
           "conditions": [],
           "next": null,
-          "uuid": "25c1c9b5-b221-440d-9989-51aad2c408c5"
+          "uuid": "8ee614cf-9746-4922-bb8e-7087bf1acaf3"
         }
       ],
       "sid": "FF8fd0c59db3de52d1054c033575298bc0"
@@ -548,8 +548,8 @@
       "type": "SayPlay",
       "properties": {
         "offset": {
-          "x": 1800,
-          "y": 1280
+          "x": 1690,
+          "y": 1340
         },
         "say": "I'm sorry, I didn't quite get that. Let's try again.",
         "play": null,
@@ -563,10 +563,173 @@
           "event": "audioComplete",
           "conditions": [],
           "next": "FF331f493715ccd46c7feb4ea3b0f3043c",
-          "uuid": "a9443933-aac8-48b8-89af-e7855c623796"
+          "uuid": "083d1a50-e004-4e17-8286-be1dfef65ee8"
         }
       ],
       "sid": "FF6d7351c7d1280f35e6c9664648cbaa22"
+    },
+    {
+      "name": "voice_send_no_answer",
+      "type": "Webhook",
+      "properties": {
+        "offset": {
+          "x": 1550,
+          "y": 910
+        },
+        "method": "POST",
+        "url": "https://webhook.site/32c9580f-2071-4941-9f81-41c64d89d72c",
+        "body": "{\"response_status\":\"no_answer_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "timeout": null,
+        "parameters": null,
+        "save_response_as": null,
+        "content_type": "application/json;charset=utf-8"
+      },
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": null,
+          "uuid": "acbed993-69a2-4bd6-aece-05181308768c"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "60cd6b1f-c462-4191-ba2f-3ee8046e7000"
+        }
+      ],
+      "sid": "FFf9e8c1cbab27261e39431f7443bba4b6"
+    },
+    {
+      "name": "split_1",
+      "type": "Branch",
+      "properties": {
+        "offset": {
+          "x": 870,
+          "y": 850
+        },
+        "input": "{{widgets.call_user.AnsweredBy}}"
+      },
+      "transitions": [
+        {
+          "event": "noMatch",
+          "conditions": [],
+          "next": "FFf9e8c1cbab27261e39431f7443bba4b6",
+          "uuid": "a1d94d2e-82d3-4165-a49e-7824534cb907"
+        },
+        {
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to human",
+              "type": "equal_to",
+              "arguments": [
+                "{{widgets.call_user.AnsweredBy}}"
+              ],
+              "value": "human"
+            }
+          ],
+          "next": "FF6e1ecf24e7c79c0285a590186072fe81",
+          "uuid": "1e42afb6-071f-412f-8456-4e9247795acf"
+        }
+      ],
+      "sid": "FF4709dfaa8038e994b978fbaf1a2c59f9"
+    },
+    {
+      "name": "send_assessment_sms_no_response",
+      "type": "Webhook",
+      "properties": {
+        "offset": {
+          "x": -380,
+          "y": 780
+        },
+        "method": "POST",
+        "url": "https://webhook.site/32c9580f-2071-4941-9f81-41c64d89d72c",
+        "body": "{\"response_status\":\"no_answer_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "timeout": null,
+        "parameters": null,
+        "save_response_as": null,
+        "content_type": "application/json;charset=utf-8"
+      },
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": null,
+          "uuid": "6e923eed-31c7-4e69-b280-2ebb2979381e"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "5167b681-de3a-42b9-990e-83cd69901049"
+        }
+      ],
+      "sid": "FF618298ce7adfcc8f9833c3a196dadea6"
+    },
+    {
+      "name": "send_assessment_sms_error",
+      "type": "Webhook",
+      "properties": {
+        "offset": {
+          "x": -1270,
+          "y": 1320
+        },
+        "method": "POST",
+        "url": "https://webhook.site/32c9580f-2071-4941-9f81-41c64d89d72c",
+        "body": "{\"response_status\":\"error_sms\", \n\"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "timeout": null,
+        "parameters": null,
+        "save_response_as": null,
+        "content_type": "application/json;charset=utf-8"
+      },
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": null,
+          "uuid": "1b34a015-729d-4c48-83e9-bedc1ca21fea"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "c7f1e509-0500-4555-98ce-2e9674bf2b9b"
+        }
+      ],
+      "sid": "FF24b04845268fc0f1d6a4dcb9e63d99eb"
+    },
+    {
+      "name": "voice_send_error",
+      "type": "Webhook",
+      "properties": {
+        "offset": {
+          "x": 1910,
+          "y": 910
+        },
+        "method": "POST",
+        "url": "https://webhook.site/32c9580f-2071-4941-9f81-41c64d89d72c",
+        "body": "{\"response_status\":\"error_voice\", \"patient_submission_token\": \"{{flow.data.patient_submission_token}}\",\n\"threshold_hash\": \"{{flow.data.threshold_hash}}\"}",
+        "timeout": null,
+        "parameters": null,
+        "save_response_as": null,
+        "content_type": "application/json;charset=utf-8"
+      },
+      "transitions": [
+        {
+          "event": "success",
+          "conditions": [],
+          "next": null,
+          "uuid": "a2b88c4b-28f6-4980-a12e-7de15e60c6f1"
+        },
+        {
+          "event": "failed",
+          "conditions": [],
+          "next": null,
+          "uuid": "4ad1b312-1411-498f-98f6-c5a02a419b7d"
+        }
+      ],
+      "sid": "FFc9ef9fc327f055e4a8aa2c262e3da0af"
     }
   ]
 }
