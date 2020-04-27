@@ -3,6 +3,7 @@ import { Card, Button, Form, Col } from 'react-bootstrap';
 import { countryOptions } from '../../data';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
+import confirmDialog from '../../util/ConfirmDialog';
 
 class Exposure extends React.Component {
   constructor(props) {
@@ -59,11 +60,11 @@ class Exposure extends React.Component {
       .validate(this.state.current, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
-        self.setState({ errors: {} }, () => {
+        self.setState({ errors: {} }, async () => {
           if (self.state.current.jurisdiction_id !== self.state.original_jurisdiction_id) {
             const original_jurisdiction_label = self.props.jurisdiction_paths.find(jur => jur.value === self.state.original_jurisdiction_id)?.label;
             const message = `You are about to change the assigned jurisdiction from ${original_jurisdiction_label} to ${self.state.jurisdiction_label}. Are you sure you want to do this?`;
-            if (confirm(message)) {
+            if (await confirmDialog(message)) {
               callback();
             }
           } else {
