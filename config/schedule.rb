@@ -16,15 +16,11 @@ end
 
 weekly_purge_warning_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_warning_date'])
 every weekly_purge_warning_date.strftime("%A"), at: weekly_purge_warning_date.strftime("%I:%M %p") do
-  rake "mailers:send_purge_warning"
+  runner "UserMailer.purge_notification().deliver_now"
 end
 
 every 1.hours do
   runner "CacheAnalyticsJob.perform_now"
-end
-
-every 30.minutes do
-  rake "analytics:cache_current_analytics"
 end
 
 every 1.hours do
