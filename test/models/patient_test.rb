@@ -19,6 +19,7 @@ class PatientTest < ActiveSupport::TestCase
       jurisdiction: jur,
       force_password_change: true # Require user to change password on first login
     )
+    Patient.destroy_all
     patient = Patient.new(creator: user, jurisdiction: jur)
     patient.responder = patient
     patient.save
