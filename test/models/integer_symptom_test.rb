@@ -17,11 +17,11 @@ class IntegerSymptomTest < ActiveSupport::TestCase
     end
 
     assert_raises(ActiveRecord::RecordInvalid) do
-      create(:integer_symptom, notes: string << 'v')
+      create(:integer_symptom, notes: string)
     end
 
     assert_raises(ActiveRecord::RecordInvalid) do
-      create(:integer_symptom, label: string << 'v')
+      create(:integer_symptom, label: string)
     end
 
     assert_raises(ActiveRecord::RecordInvalid) do
