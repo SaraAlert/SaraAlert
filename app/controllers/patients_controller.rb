@@ -107,7 +107,7 @@ class PatientsController < ApplicationController
 
     # Set the subject jurisdiction to the creator's jurisdiction if jurisdiction is not assigned or not assignable by the current user
     valid_jurisdiction = (current_user.can_assign_any_jurisdiction? && !Jurisdiction.find(patient.jurisdiction_id).nil?) ||
-                         current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id)
+                         current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id) unless patient.jurisdiction_id.nil?
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
