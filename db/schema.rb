@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_28_164505) do
+ActiveRecord::Schema.define(version: 2020_05_05_164505) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -317,7 +317,7 @@ ActiveRecord::Schema.define(version: 2020_04_28_164505) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "authy_id"
     t.datetime "last_sign_in_with_authy"
-    t.boolean "authy_enabled", default: true
+    t.boolean "authy_enabled", default: false
     t.index ["authy_id"], name: "index_users_on_authy_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"
