@@ -13,12 +13,12 @@ class UserMailer < ApplicationMailer
   end
 
   def purge_notification
-    receipients = User.with_any_role(:public_health, :public_health_enroller)
+    recipients = User.with_any_role(:public_health, :public_health_enroller)
     @expiration_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_date']).strftime('%A %B %d, at %l:%M %p %Z')
 
-    receipients.each do |user|
+    recipients.each do |user|
       @user = user
-      @num_purgeable_records = user.viewable_patients.purge_eligible.length
+      @num_purgeable_records = user.viewable_patients.purge_eligible.size
 
       mail(to: user.email, subject: 'Sara Alert User Records Expiring Soon')
     end

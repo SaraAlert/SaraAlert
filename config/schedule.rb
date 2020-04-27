@@ -16,7 +16,7 @@ end
 
 weekly_purge_warning_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_warning_date'])
 every weekly_purge_warning_date.strftime("%A"), at: weekly_purge_warning_date.strftime("%I:%M %p") do
-  runner "UserMailer.purge_notification().deliver_now"
+  runner "UserMailer.purge_notification.deliver_now"
 end
 
 every 1.hours do
