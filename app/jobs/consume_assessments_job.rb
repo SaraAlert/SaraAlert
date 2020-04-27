@@ -11,7 +11,8 @@ class ConsumeAssessmentsJob < ApplicationJob
     connection.subscribe 'reports' do |on|
       on.message do |_channel, msg|
         # message = SaraSchema::Validator.validate(:assessment, JSON.parse(msg))
-        message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array', 'patient_submission_token', 'experiencing_symptoms')
+        message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
+                                         'patient_submission_token', 'experiencing_symptoms', 'response_status')
         next if message.nil?
 
         patient = Patient.find_by(submission_token: message['patient_submission_token'])
@@ -21,6 +22,51 @@ class ConsumeAssessmentsJob < ApplicationJob
         unless patient.latest_assessment.nil? # Only check for latest assessment if there is one
           next if patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago
         end
+
+        if message['response_status'] == 'no_answer_voice'
+          # If nobody answered, nil out the last_reminder_sent field so the system will try calling again
+          patient.update(last_assessment_reminder_sent: nil)
+          history = History.new
+          history.created_by = 'Sara Alert System'
+          comment = "Sara Alert called this monitoree's primary telephone number #{patient.primary_telephone} and nobody answered the phone."
+          history.comment = comment
+          history.patient = patient
+          history.history_type = 'Contact Attempt'
+          history.save
+          next
+        elsif message['response_status'] == 'no_answer_sms'
+          history = History.new
+          history.created_by = 'Sara Alert System'
+          comment = "Sara Alert texted this monitoree's primary telephone number #{patient.primary_telephone} and did not receive a response."
+          history.comment = comment
+          history.patient = patient
+          history.history_type = 'Contact Attempt'
+          history.save
+          next
+        elsif message['response_status'] == 'error_voice'
+          # If there was an error in completeing the call, nil out the last_reminder_sent field so the system will try calling again
+          patient.update(last_assessment_reminder_sent: nil)
+          history = History.new
+          history.created_by = 'Sara Alert System'
+          comment = "Sara Alert was unable to complete a call to this monitoree's primary telephone number #{patient.primary_telephone}."
+          history.comment = comment
+          history.patient = patient
+          history.history_type = 'Contact Attempt'
+          history.save
+          next
+        elsif message['response_status'] == 'error_voice'
+          # If there was an error sending an SMS, nil out the last_reminder_sent field so the system will try calling again
+          patient.update(last_assessment_reminder_sent: nil)
+          history = History.new
+          history.created_by = 'Sara Alert System'
+          comment = "Sara Alert was unable to send an SMS to this monitoree's primary telephone number #{patient.primary_telephone}."
+          history.comment = comment
+          history.patient = patient
+          history.history_type = 'Contact Attempt'
+          history.save
+          next
+        end
+
         threshold_condition = ThresholdCondition.where(threshold_condition_hash: message['threshold_condition_hash']).first
         next unless threshold_condition
 
