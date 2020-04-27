@@ -11,16 +11,14 @@ class ApplicationController < ActionController::Base
     # First login (and first password change) must occur within three days
     current_user.lock_access! if current_user.password_changed_at < 3.days.ago && current_user&.force_password_change
 
-    if request.url == edit_user_registration_url || request.url == user_registration_url || request.url == destroy_user_session_url
-      return
-    end
+    return if request.url == edit_user_registration_url || request.url == user_registration_url || request.url == destroy_user_session_url
 
     if current_user&.force_password_change
       redirect_to edit_user_registration_url
       return
     end
 
-    if !current_user&.devise_modules.include?(:authy_authenticatable) || request.url == user_enable_authy_url || request.url == user_verify_authy_url ||
+    if !current_user&.devise_modules&.include?(:authy_authenticatable) || request.url == user_enable_authy_url || request.url == user_verify_authy_url ||
        request.url == user_verify_authy_installation_url || request.url == user_request_sms_url || request.url == user_request_phone_call_url
       return
     end
