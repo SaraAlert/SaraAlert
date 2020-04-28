@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 # BoolSymptom: a symptom that contains a bool
+# ActiveRecord will automatically typecast most types to Boolean.
+# Methods that create BoolSymptoms should keep the above in mind.
 class BoolSymptom < Symptom
+  validates :bool_value, inclusion: { in: [true, false, nil] }
+
   def value
     bool_value
   end
