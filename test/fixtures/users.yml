@@ -1,7 +1,7 @@
 state1_enroller:
   id: 1
   email: "state1_enroller@example.com"
-  encrypted_password: "$2a$11$hcY1AcX7WWtqsXADa1g7O.KxNj2nsy9ISzYEFzxN7J7552c25ZGhe"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 28
   failed_attempts: 0
   force_password_change: false
@@ -13,7 +13,7 @@ state1_enroller:
 locals1c1_enroller:
   id: 2
   email: "locals1c1_enroller@example.com"
-  encrypted_password: "$2a$11$3m2JVBfZ1LdG0QZBSAmkDu3u.qtKNutSrG5XVVZZB0fBe5q8LdRii"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 17
   failed_attempts: 0
   force_password_change: false
@@ -25,7 +25,7 @@ locals1c1_enroller:
 locals1c2_enroller:
   id: 3
   email: "locals1c2_enroller@example.com"
-  encrypted_password: "$2a$11$3m2JVBfZ1LdG0QZBSAmkDu3u.qtKNutSrG5XVVZZB0fBe5q8LdRii"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 21
   failed_attempts: 0
   force_password_change: false
@@ -37,7 +37,7 @@ locals1c2_enroller:
 state2_enroller:
   id: 4
   email: "state2_enroller@example.com"
-  encrypted_password: "$2a$11$nRGu7TrsKF6lTHHr.xFNqOlGkyYYU2xEugmP0TmV0RSTez0GZoASu"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 52
   failed_attempts: 2
   force_password_change: false
@@ -49,7 +49,7 @@ state2_enroller:
 locals2c3_enroller:
   id: 5
   email: "locals2c3_enroller@example.com"
-  encrypted_password: "$2a$11$hs2C7OtjQNf73kqBZHM1teFJmOSNFcqy.GHkcg0no7Q/s5ItprOxi"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 5
   failed_attempts: 0
   force_password_change: false
@@ -61,7 +61,7 @@ locals2c3_enroller:
 locals2c4_enroller:
   id: 6
   email: "locals2c4_enroller@example.com"
-  encrypted_password: "$2a$11$4cgUiRemC8qmzmyNE7cVf.bgvnNjFy5DHaPTMUCQCpQGyuvEr7AiC"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 8
   failed_attempts: 0
   force_password_change: false
@@ -73,7 +73,7 @@ locals2c4_enroller:
 state1_epi:
   id: 7
   email: "state1_epi@example.com"
-  encrypted_password: "$2a$11$/rBs4ZTjPikABXvTt3n2tO6cbG.QYPzX0Bi4RtzL3ylo3YNzO0sVS"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 11
   failed_attempts: 0
   force_password_change: false
@@ -85,7 +85,7 @@ state1_epi:
 locals1c1_epi:
   id: 8
   email: "locals1c1_epi@example.com"
-  encrypted_password: "$2a$11$m8ZyVR86ZfEbbAAblA4F2eW/ch7IiXU7V1RSgEcRENBbndgyMLUA2"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 15
   failed_attempts: 0
   force_password_change: false
@@ -97,7 +97,7 @@ locals1c1_epi:
 locals1c2_epi:
   id: 9
   email: "locals1c2_epi@example.com"
-  encrypted_password: "$2a$11$6FZAYugLqNOx2FZnwwSF3.5YyXSgv9vI767.8THksYhBcw/1rBNCO"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 2
   failed_attempts: 0
   force_password_change: false
@@ -109,7 +109,7 @@ locals1c2_epi:
 state2_epi:
   id: 10
   email: "state2_epi@example.com"
-  encrypted_password: "$2a$11$ChlP3JouzC5zhuM62eAvr.Vye.XICXCD0O54tDddXJ3fOoKlaqGX6"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 18
   failed_attempts: 0
   force_password_change: false
@@ -121,7 +121,7 @@ state2_epi:
 locals2c3_epi:
   id: 11
   email: "locals2c3_epi@example.com"
-  encrypted_password: "$2a$11$rR.9nxjg8gEFrVquUCoLE.zgDvMYMgtjeyznrf7g6ASpXv5lEdE1O"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 5
   failed_attempts: 0
   force_password_change: false
@@ -133,7 +133,7 @@ locals2c3_epi:
 locals2c4_epi:
   id: 12
   email: "locals2c4_epi@example.com"
-  encrypted_password: "$2a$11$RbzotFM.IXCBolnoFzv0q.90CvZk9F3XiG11LnriMPiUaJHgK69NK"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 7
   failed_attempts: 2
   force_password_change: false
@@ -145,7 +145,7 @@ locals2c4_epi:
 state1_epi_enroller:
   id: 13
   email: "state1_epi_enroller@example.com"
-  encrypted_password: "$2a$11$6tNB90WBiMfeehwdcTQ1x.H379Wmv3cTlWYW3nvURxd/PH6F/Inva"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 89
   failed_attempts: 0
   force_password_change: false
@@ -157,7 +157,7 @@ state1_epi_enroller:
 admin1:
   id: 14
   email: "admin1@example.com"
-  encrypted_password: "$2a$11$JHw3xUNX1Tnxyk2xJjP35ul7uWeWBsFkw3.Mt6UTTqastPAeBHz2W"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 192
   failed_attempts: 1
   force_password_change: false
@@ -169,7 +169,7 @@ admin1:
 analyst_all:
   id: 15
   email: "analyst_all@example.com"
-  encrypted_password: "$2a$11$swhNoM7Tq7DNwoa0qVbGLueMBbL6K7HlKN10vPafiwo9.tXH14sIS"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 52
   failed_attempts: 2
   force_password_change: false
@@ -181,7 +181,7 @@ analyst_all:
 usa_epi:
   id: 16
   email: "usa_epi@example.com"
-  encrypted_password: "$2a$11$/rBs4ZTjPikABXvTt3n2tO6cbG.QYPzX0Bi4RtzL3ylo3YNzO0sVS"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 21
   failed_attempts: 1
   force_password_change: false
@@ -193,7 +193,7 @@ usa_epi:
 forced_password_change_user:
   id: 17
   email: "forced_password_change_user@example.com"
-  encrypted_password: "$2a$11$A3J2466/wxtfSbp8sn83/.fBEHhCpJNyvLbinwG4oNhqwT5uPhj5u"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 5
   failed_attempts: 5
   force_password_change: true
@@ -205,7 +205,7 @@ forced_password_change_user:
 locked_user:
   id: 18
   email: "locked_user@example.com"
-  encrypted_password: "$2a$11$oq8Wz/7T5vici/Y2LltPRud.4kUTL3M/C616zuMtKJ3T8Qc6Eec92"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 2
   failed_attempts: 6
   locked_at: "<%= 1.day.ago %>"
@@ -214,4 +214,3 @@ locked_user:
   created_at: "<%= 50.days.ago %>"
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
-  
