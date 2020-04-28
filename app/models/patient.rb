@@ -450,6 +450,18 @@ class Patient < ApplicationRecord
     assessments_summary
   end
 
+  def calc_current_age
+    dob = date_of_birth
+    today = Date.today
+    age = today.year - dob.year
+    age -= 1 if
+        (dob.month > today.month) ||
+        ((dob.month >= today.month) && (dob.day > today.day))
+
+    update(age: age) if self.age != age
+    age
+  end
+
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
