@@ -20,7 +20,7 @@ class UserMailer < ApplicationMailer
       @user = user
       @num_purgeable_records = user.viewable_patients.purge_eligible.size
 
-      @subject = @num_purgeable_records.zero? ? 'Sara Alert Notification' : 'Sara Alert User Records Expirng Soon'
+      @subject = @num_purgeable_records.zero? ? 'Sara Alert Notification' : 'Sara Alert User Records Expiring Soon'
 
       mail(to: user.email, subject: @subject)
     end
