@@ -95,7 +95,7 @@ class PatientMailer < ApplicationMailer
     post_url = root_url + "report/patients/#{patient.submission_token}/assessments"
     # The medium parameter will either be SMS or VOICE
     params = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash, post_url: post_url, medium: 'SMS' }
-    client.studio.v1.flows('FW6e9479580a8040dbdfed3b057d244534').executions.create(
+    client.studio.v1.flows('FW808f8fe8b3dffc7a413f632dc7088063').executions.create(
       from: from,
       to: patient.primary_telephone,
       parameters: params
@@ -127,7 +127,7 @@ class PatientMailer < ApplicationMailer
     post_url = root_url + "report/patients/#{patient.submission_token}/assessments"
     # The medium parameter will either be SMS or VOICE
     params = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash, post_url: post_url, medium: 'VOICE' }
-    client.studio.v1.flows('FW6e9479580a8040dbdfed3b057d244534').executions.create(
+    client.studio.v1.flows('FW808f8fe8b3dffc7a413f632dc7088063').executions.create(
       from: from,
       to: patient.primary_telephone,
       parameters: params
