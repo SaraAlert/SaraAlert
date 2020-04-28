@@ -42,6 +42,9 @@ gem 'faker'
 # Gem for scheduling ActiveJobs to run
 gem 'whenever', require: false
 
+# Time parser for managing scheduled jobs
+gem 'chronic'
+
 # Store sessions in DB
 gem 'activerecord-session_store'
 

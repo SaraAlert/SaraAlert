@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Sara Alert Records Expiring Soon</title>
+    <title><%= @subject %></title>
     <style>
 @media only screen and (max-width: 620px) {
   table[class=body] h1 {
@@ -98,7 +98,13 @@ table[class=body] .article {
 </style>
   </head>
   <body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
-    <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">Please log into Sara Alert and export the data your wish to save.</span>
+    <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">
+      <% if @num_purgeable_records.zero? %>
+        No action is required at this time.
+      <% else %>
+        Please log into Sara Alert and export the data your wish to save.
+      <% end %>
+    </span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #f6f6f6; width: 100%;" width="100%" bgcolor="#f6f6f6">
       <tr>
         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">&nbsp;</td>
@@ -125,11 +131,21 @@ table[class=body] .article {
                     <tr>
                       <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Dear <%= @user.email[/[^@]+/] %>,</p>
-                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Several user records within your juristdiction will be expiring soon. Please be sure to export the data before it is deleted as these records are unrecoverable.</p>
-                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">
-                        <b>Number of Patient Records:</b> <%= @num_purgeable_records %><br>
-                        <b>Expiration Date:</b> <%= @expiration_date %>
-                        </p>
+
+                        <% if @num_purgeable_records.zero? %>
+                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">There are no user records within your jurisdiction that are expiring this week. No action is required at this time, however you will receive this message every week for your records. Please be on the lookout for future Sara Alert notifications.</p>
+                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">
+                          <b>No Records Expiring</b><br>
+                          <b>Expiration Date:</b> <%= @expiration_date %>
+                          </p>
+                        <% else %>
+                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Several user records within your jurisdiction will be expiring soon. Please be sure to export the data before it is deleted as these records are unrecoverable.</p>
+                          <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">
+                          <b>Number of Patient Records:</b> <%= @num_purgeable_records %><br>
+                          <b>Expiration Date:</b> <%= @expiration_date %>
+                          </p>
+                        <% end %>
+
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; box-sizing: border-box; width: 100%;" width="100%">
                           <tbody>
                             <tr>

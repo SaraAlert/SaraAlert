@@ -337,6 +337,7 @@ DEPENDENCIES
   byebug
   capybara (>= 2.15)
   caxlsx
+  chronic
   devise
   devise-authy
   devise-security
