@@ -23,7 +23,10 @@ class User < ApplicationRecord
 
   # Random password for temp password changes
   def self.rand_gen
-    SecureRandom.base58(10) + ['!', '#', '~', '='].sample + ('a'..'z').to_a.sample + ('A'..'Z').to_a.sample
+    SecureRandom.base58(10) +
+      (33 + SecureRandom.random_number(14)).chr(Encoding::ASCII) +
+      (97 + SecureRandom.random_number(26)).chr(Encoding::ASCII) +
+      (65 + SecureRandom.random_number(26)).chr(Encoding::ASCII)
   end
 
   # Patients this user can view through their jurisdiction access
