@@ -32,12 +32,10 @@ class FloatSymptomTest < ActiveSupport::TestCase
       create(:float_symptom, float_value: 'v')
     end
 
-    assert_raises(ActiveRecord::RecordInvalid) do
-      # Build and update to work around after(:build) in symptom factory
-      float_symptom = build(:float_symptom)
-      float_symptom.float_value = nil
-      float_symptom.save!
-    end
+    # Build and update to work around after(:build) in symptom factory
+    float_symptom = build(:float_symptom)
+    float_symptom.float_value = nil
+    assert float_symptom.save!
 
     assert_raises(ActiveRecord::RecordInvalid) do
       create(:float_symptom, float_value: true)
