@@ -163,6 +163,7 @@ The following environment variables need to be set on the enrollment instances, 
 * `TWILLIO_API_ACCOUNT: <Account number for Twilio Account>`
 * `TWILLIO_API_KEY: <API key for Twilio Account>`
 * `TWILLIO_SENDING_NUMBER: <Phone number registered to Twilio Account for SMS/Voice>`
+* `TWILLIO_STUDIO_FLOW: <Twilio Studio Flow ID for handling SMS/Voice Assessments>`
 * `AUTHY_API_KEY: <API key for Authy project>`
 
 **Container Dependencies**
