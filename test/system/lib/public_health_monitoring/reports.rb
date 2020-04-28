@@ -26,12 +26,12 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
     click_on 'Edit'
     @@assessment_form.submit_assessment(assessment['symptoms'])
     if submit
-      page.driver.browser.switch_to.alert.accept
+      click_on 'OK'
       search_for_report(assessment_id)
       @@public_health_monitoring_reports_verifier.verify_edit_report(user_label, assessment_id, assessment)
       @@public_health_monitoring_history_verifier.verify_edit_report(user_label)
     else
-      page.driver.browser.switch_to.alert.dismiss
+      click_on 'Cancel'
       assert page.has_content?('Daily Self-Report'), @@system_test_utils.get_err_msg('Edit report', 'title', 'existent')
       find('button', class: 'close').click
     end
@@ -65,11 +65,11 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
     pause_notifications = find('#pause_notifications').text == 'Resume Notifications'
     find('#pause_notifications').click
     if submit
-      page.driver.browser.switch_to.alert.accept
+      click_on 'OK'
       @@public_health_monitoring_reports_verifier.verify_pause_notifications(!pause_notifications)
       @@public_health_monitoring_history_verifier.verify_pause_notifications(user_label, !pause_notifications)
     else
-      page.driver.browser.switch_to.alert.dismiss
+      click_on 'Cancel'
       @@public_health_monitoring_reports_verifier.verify_pause_notifications(pause_notifications)
     end
   end

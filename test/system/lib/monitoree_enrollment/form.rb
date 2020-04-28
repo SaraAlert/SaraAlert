@@ -44,6 +44,6 @@ class MonitoreeEnrollmentForm < ApplicationSystemTestCase
       }
     end
     @@system_test_utils.go_to_next_page if continue
-    page.driver.browser.switch_to.alert.accept if jurisdiction_change
+    click_on 'OK' if jurisdiction_change
   end
 end

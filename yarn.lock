@@ -9975,6 +9975,11 @@ react-bootstrap@1.0.0-beta.17:
     uncontrollable "^7.0.0"
     warning "^4.0.3"
 
+react-confirm@^0.1.20:
+  version "0.1.20"
+  resolved "https://registry.yarnpkg.com/react-confirm/-/react-confirm-0.1.20.tgz#fad38ae75bf02d612566eeba3f6a4f9aa1042d7a"
+  integrity sha512-DNd3TixaLq9r/wm3tL9rcGnAafVtlWxWGqLPI5ipXzrSDk3d7pjlvZl4WwGr4gmVGT1h8q2xwtXE+9LIo0YlzQ==
+
 react-csv@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/react-csv/-/react-csv-1.1.2.tgz#6cb47e625f51878d24bb68a120efb45a30ad243a"
