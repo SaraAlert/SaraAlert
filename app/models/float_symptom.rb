@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 # FloatSymptom: a symptom that contains a float
+# ActiveRecord will automatically typecast Integers and 'false' to Float.
+# Methods that create FloatSymptoms should keep the above in mind.
 class FloatSymptom < Symptom
+  validates :float_value, numericality: { allow_nil: true }
+
   def value
     float_value
   end
