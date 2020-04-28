@@ -31,6 +31,10 @@ class IntegerSymptomTest < ActiveSupport::TestCase
     assert_raises(ActiveRecord::RecordInvalid) do
       create(:integer_symptom, int_value: ActiveModel::Type::Integer.new.send(:max_value) + 1)
     end
+
+    symptom = build(:integer_symptom)
+    symptom.int_value = nil
+    assert symptom.save!
   end
 
   test 'get value' do

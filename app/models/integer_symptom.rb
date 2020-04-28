@@ -3,8 +3,8 @@
 # IntegerSymptom: a symptom that contains an integer
 class IntegerSymptom < Symptom
   validates :int_value, numericality: { only_integer: true,
-                                        less_than_or_equal_to: ActiveModel::Type::Integer.new.send(:max_value) },
-                        presence: true
+                                        less_than_or_equal_to: ActiveModel::Type::Integer.new.send(:max_value),
+                                        allow_nil: true }
 
   def value
     int_value
