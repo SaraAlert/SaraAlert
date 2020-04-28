@@ -74,7 +74,7 @@ class PatientMailer < ApplicationMailer
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
       "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.age || '0'}"
     end
-    contents = 'This is the SaraAlert daily report for: ' + patient_names.to_sentence
+    contents = 'This is the Sara Alert daily report for: ' + patient_names.to_sentence
 
     # Prepare text asking about anyone in the group
     contents += if ([patient] + patient.dependents).uniq.count > 1
@@ -86,7 +86,7 @@ class PatientMailer < ApplicationMailer
     # This assumes that all of the dependents will be in the same jurisdiction and therefore have the same symptom questions
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
     contents += 'experiencing any of the following symptoms ' + patient.jurisdiction.hierarchical_condition_bool_symptoms_string + '?'
-    contents += ' Please reply with Yes or No'
+    contents += ' Please reply with "Yes" or "No"'
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
@@ -118,7 +118,7 @@ class PatientMailer < ApplicationMailer
     # This assumes that all of the dependents will be in the same jurisdiction and therefore have the same symptom questions
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
     contents += 'experiencing any of the following symptoms, ' + patient.jurisdiction.hierarchical_condition_bool_symptoms_string + '?'
-    contents += ' Please reply with Yes or No'
+    contents += ' Please reply with "Yes" or "No"'
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
