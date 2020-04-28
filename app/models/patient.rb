@@ -457,8 +457,6 @@ class Patient < ApplicationRecord
     age -= 1 if
         (dob.month > today.month) ||
         ((dob.month >= today.month) && (dob.day > today.day))
-
-    update(age: age) if self.age != age
     age
   end
 
