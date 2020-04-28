@@ -12,7 +12,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   USERS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/users.yml"))
 
   SIGN_IN_URL = '/users/sign_in'
-  USER_PASSWORD = '123456ab'
+  USER_PASSWORD = '1234567ab!'
 
   ENROLLMENT_SUBMISSION_DELAY = 5 # wait for submission alert animation to finish
   ENROLLMENT_PAGE_TRANSITION_DELAY = 1 # wait for carousel animation to finish
