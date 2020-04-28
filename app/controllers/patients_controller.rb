@@ -172,10 +172,10 @@ class PatientsController < ApplicationController
 
     # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user
     if content[:jurisdiction_id] && content[:jurisdiction_id] != patient.jurisdiction_id
-      if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id])
+      if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id].to_i)
         history = History.new
         history.created_by = current_user.email
-        old_jurisdiction = patient.jurisdiction.jurisdiction_path_string
+        old_jurisdiction = patient.jurisdiction.path
         new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id]).jurisdiction_path_string
         history.comment = "User changed jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
         history.patient = patient

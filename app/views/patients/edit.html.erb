@@ -1,12 +1,12 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Return to Monitoree Details", href: '/'}, {value: "Edit Monitoree", href: nil} ], isolation: @patient&.isolation || false } %>
 
-<%= react_component("enrollment/Enrollment", { 
+<%= react_component("enrollment/Enrollment", {
   current_user: current_user,
   patient: @patient,
   propagated_fields: @propagated_fields,
   editMode: true,
   authenticity_token: form_authenticity_token,
   can_add_group: current_user.can_create_patient?,
-  has_group_members: @group_members.count.positive?, 
-  jurisdiction_paths: Jurisdiction.find(current_user.jurisdiction.subtree_ids).collect{ |jur| { value: jur.id, label: jur.jurisdiction_path_string } }
+  has_group_members: @group_members.count.positive?,
+  jurisdictionPaths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map {|id, path| [id, path]}]
   }) %>

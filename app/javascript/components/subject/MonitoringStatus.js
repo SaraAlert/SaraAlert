@@ -8,7 +8,6 @@ import CaseStatus from './CaseStatus';
 class MonitoringStatus extends React.Component {
   constructor(props) {
     super(props);
-    const jur = this.props.jurisdiction_paths.find(jur => jur.value === props.jurisdiction_id);
     this.state = {
       patient: props.patient,
       showExposureRiskAssessmentModal: false,
@@ -23,9 +22,9 @@ class MonitoringStatus extends React.Component {
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
       monitoring_plan: props.patient.monitoring_plan ? props.patient.monitoring_plan : '',
       exposure_risk_assessment: props.patient.exposure_risk_assessment ? props.patient.exposure_risk_assessment : '',
-      jurisdiction: jur ? jur.label : '',
-      current_jurisdiction: jur ? jur.label : '', // Used to remember jur on page load in case user cancels change modal
-      valid_jurisdiction: true,
+      jurisdictionPath: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
+      originalJurisdictionId: this.props.patient.jurisdiction_id,
+      validJurisdiction: true,
       monitoring_status_options: null,
       monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
@@ -47,14 +46,14 @@ class MonitoringStatus extends React.Component {
   }
 
   handleChange(event) {
-    if (event?.target?.name && event.target.name === 'jurisdictionList') {
+    if (event?.target?.name && event.target.name === 'jurisdictionId') {
       // Jurisdiction is a weird case; the datalist and input work differently together
       this.setState({
-        message: 'jurisdiction from "' + this.state.current_jurisdiction + '" to "' + event.target.value + '".',
+        message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.originalJurisdictionId] + '" to "' + event.target.value + '".',
         message_warning: '',
-        jurisdiction: event?.target?.value ? event.target.value : '',
+        jurisdictionPath: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
-        valid_jurisdiction: this.props.jurisdiction_paths.map(jur => jur.label).includes(event.target.value),
+        validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
       });
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
@@ -143,7 +142,7 @@ class MonitoringStatus extends React.Component {
   }
 
   handleKeyPress() {
-    if (event?.target?.name && event.target.name === 'jurisdictionList') {
+    if (event?.target?.name && event.target.name === 'jurisdictionId') {
       if (event.which === 13) {
         event.preventDefault();
         this.toggleJurisdictionModal();
@@ -190,9 +189,9 @@ class MonitoringStatus extends React.Component {
   toggleJurisdictionModal() {
     let current = this.state.showJurisdictionModal;
     this.setState({
-      message: 'jurisdiction from "' + this.state.current_jurisdiction + '" to "' + this.state.jurisdiction + '".',
+      message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.originalJurisdictionId] + '" to "' + this.state.jurisdictionPath + '".',
       showJurisdictionModal: !current,
-      jurisdiction: current ? this.state.current_jurisdiction : this.state.jurisdiction, // Reset select jurisdiction if cancel
+      jurisdiction: current ? this.state.jurisdictionPath : this.props.jurisdictionPaths[this.state.originalJurisdictionId], // Reset select jurisdiction if cancel
       apply_to_group: false,
     });
   }
@@ -218,7 +217,6 @@ class MonitoringStatus extends React.Component {
 
   submit() {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    const jur = this.props.jurisdiction_paths.find(jur => jur.label === this.state.jurisdiction);
     axios
       .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
         comment: true,
@@ -229,7 +227,7 @@ class MonitoringStatus extends React.Component {
         message: this.state.message,
         reasoning: (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
         monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
-        jurisdiction: jur ? jur.value : null,
+        jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdictionPath),
         apply_to_group: this.state.apply_to_group,
         isolation: this.state.isolation,
         pause_notifications: this.state.pause_notifications,
@@ -386,26 +384,26 @@ class MonitoringStatus extends React.Component {
                   <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
                   <Form.Control
                     as="input"
-                    list="jurisdiction"
-                    name="jurisdictionList"
+                    name="jurisdictionId"
+                    list="jurisdictionPaths"
                     autoComplete="off"
-                    value={this.state.jurisdiction}
                     className="form-control-lg"
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}
+                    value={this.state.jurisdictionPath}
                   />
-                  <datalist id="jurisdiction">
-                    {this.props.jurisdiction_paths.map(jur => {
+                  <datalist id="jurisdictionPaths">
+                    {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
                       return (
-                        <option value={jur.label} key={`jur-${jur.value}`}>
-                          {jur.label}
+                        <option value={path} key={id}>
+                          {path}
                         </option>
                       );
                     })}
                   </datalist>
                 </Form.Group>
                 <Form.Group as={Col} md={8}>
-                  {!this.state.valid_jurisdiction || this.state.current_jurisdiction === this.state.jurisdiction ? (
+                  {!this.state.validJurisdiction || this.state.jurisdictionPath === this.props.jurisdictionPaths[this.state.originalJurisdictionId] ? (
                     <Button disabled className="btn-lg btn-square">
                       <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
                     </Button>
@@ -434,8 +432,7 @@ class MonitoringStatus extends React.Component {
 MonitoringStatus.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  jurisdiction_paths: PropTypes.array,
-  jurisdiction_id: PropTypes.number,
+  jurisdictionPaths: PropTypes.object,
   has_group_members: PropTypes.bool,
 };
 
