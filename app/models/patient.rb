@@ -451,7 +451,7 @@ class Patient < ApplicationRecord
   end
 
   def calc_current_age
-    dob = date_of_birth
+    dob = date_of_birth || Date.today
     today = Date.today
     age = today.year - dob.year
     age -= 1 if
