@@ -21,6 +21,11 @@ class User < ApplicationRecord
 
   belongs_to :jurisdiction
 
+  # Random password for temp password changes
+  def self.rand_gen
+    SecureRandom.base58(10) + ['!', '#', '~', '='].sample + ('a'..'z').to_a.sample + ('A'..'Z').to_a.sample
+  end
+
   # Patients this user can view through their jurisdiction access
   def viewable_patients
     jurisdiction.all_patients
