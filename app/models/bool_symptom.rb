@@ -4,8 +4,7 @@
 # ActiveRecord will automatically typecast most types to Boolean.
 # Methods that create BoolSymptoms should keep the above in mind.
 class BoolSymptom < Symptom
-  validates :bool_value, inclusion: { in: [true, false] }
-  validates :bool_value, exclusion: { in: [nil] }
+  validates :bool_value, inclusion: { in: [true, false, nil] }
 
   def value
     bool_value

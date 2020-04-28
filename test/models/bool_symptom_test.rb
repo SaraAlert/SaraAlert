@@ -25,12 +25,9 @@ class BoolSymptomTest < ActiveSupport::TestCase
       create(:bool_symptom, label: string)
     end
 
-    assert_raises(ActiveRecord::RecordInvalid) do
-      # Build and update to work around after(:build) in symptom factory
-      symptom = build(:bool_symptom)
-      symptom.bool_value = nil
-      symptom.save!
-    end
+    symptom = build(:bool_symptom)
+    symptom.bool_value = nil
+    assert symptom.save!
   end
 
   test 'get value' do
