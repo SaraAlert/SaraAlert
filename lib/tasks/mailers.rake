@@ -64,4 +64,9 @@ namespace :mailers do
   task send_assessments: :environment do
     SendAssessmentsJob.perform_now
   end
+
+  desc "Sends data purge warning to users"
+  task send_purge_warning: :environment do
+    UserMailer.purge_notification().deliver_now
+  end
 end

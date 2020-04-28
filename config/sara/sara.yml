@@ -13,6 +13,12 @@ reporting_period_minutes: <%= ENV["SARA_ALERT_REPORTING_PERIOD_MINUTES"] || 1440
 # How many minutes after a closed record last_update it can be purged
 purgeable_after: <%= ENV["SARA_ALERT_PURGEABLE_AFTER_MINUTES"] || 20160 %>
 
+# The day and time of week to run the purge user records job
+weekly_purge_date: <%= ENV["SARA_ALERT_WEEKLY_PURGE_DATE"] || 'sunday 12:00am' %>
+
+# The day and time of week to warn users of records that will soon be purged
+weekly_purge_warning_date: <%= ENV["SARA_ALERT_WEEKLY_PURGE_WARNING_DATE"] || 'thursday 12:00pm' %>
+
 # How many minutes after a report was received the monitoree can re-report
 reporting_limit: <%= ENV["SARA_ALERT_REPORTING_LIMIT_MINUTES"] || 15 %>
 

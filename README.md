@@ -91,6 +91,8 @@ bundle exec whenever --update-crontab
     - Active job that closes cases that meet duration/symptomatic conditions
   * `PurgeJob`
       - Active job that redacts PII of cases that have been closed for N many days
+  * `rake mailers:send_purge_warning`
+      - Send warning to users of upcoming PurgeJob containing N many records
   * `rake analytics:cache_current_analytics`
       - Caches analytics information for faster retrieval 
   * `rake mailers:send_assessments`

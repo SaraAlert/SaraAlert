@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'chronic'
+
 # Patient: patient model
 class Patient < ApplicationRecord
   columns.each do |column|
@@ -92,19 +94,18 @@ class Patient < ApplicationRecord
       .where('purged = ?', true)
   }
 
-  # Purgeable records
-  scope :purgeable, lambda {
-    where('monitoring = ?', false)
-      .where('purged = ?', false)
-      .where('updated_at < ?', ADMIN_OPTIONS['purgeable_after'].minutes.ago)
-  }
-
   # Purgeable eligible (records that could be purged in the next purge run if they aren't edited again)
-  # This assumes that the purge interval configured in schedule.rb is set to run weekly
+  # By using chronic to determine the date of the next purge, the last warning date can be determined from that context
+  # The use of `yesterday` in the context of the next purge date ensures that it includes the same day when using `this` keyword
   scope :purge_eligible, lambda {
     where('monitoring = ?', false)
       .where('purged = ?', false)
-      .where('patients.updated_at < ?', ((ADMIN_OPTIONS['purgeable_after']).minutes + 1.week.minutes).ago)
+      .where('patients.updated_at < ?',
+             ADMIN_OPTIONS['purgeable_after'].minutes.before(
+               Chronic.parse('last ' + ADMIN_OPTIONS['weekly_purge_warning_date'], now:
+                 Chronic.parse('this ' + ADMIN_OPTIONS['weekly_purge_date'], now:
+                   Chronic.parse('yesterday')))
+             ))
   }
 
   # Purged monitoree records
