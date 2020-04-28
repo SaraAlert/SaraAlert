@@ -9,6 +9,7 @@ class ProduceAssessmentJob < ApplicationJob
   def perform(assessment)
     connection = Redis.new
     report = {
+      response_status: assessment['response_status'],
       threshold_condition_hash: assessment['threshold_hash'],
       reported_symptoms_array: assessment['symptoms'],
       experiencing_symptoms: assessment['experiencing_symptoms'],

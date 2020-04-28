@@ -31,6 +31,7 @@ class AssessmentsController < ApplicationController
       unless AssessmentReceipt.where(submission_token: @patient_submission_token)
                               .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists?
         assessment_placeholder = {}
+        assessment_placeholder = assessment_placeholder.merge(params.permit(:response_status).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes required] }).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
