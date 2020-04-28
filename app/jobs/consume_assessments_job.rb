@@ -35,6 +35,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           history.save
           next
         elsif message['response_status'] == 'no_answer_sms'
+          # No need to wipe out last_assessment_reminder_sent so that another sms will be sent because the sms studio flow is kept open for 18hrs
           history = History.new
           history.created_by = 'Sara Alert System'
           comment = "Sara Alert texted this monitoree's primary telephone number #{patient.primary_telephone} and did not receive a response."
@@ -54,7 +55,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           history.history_type = 'Contact Attempt'
           history.save
           next
-        elsif message['response_status'] == 'error_voice'
+        elsif message['response_status'] == 'error_sms'
           # If there was an error sending an SMS, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
           history = History.new
