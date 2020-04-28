@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_24_203547) do
+ActiveRecord::Schema.define(version: 2020_04_28_164505) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(version: 2020_04_24_203547) do
     t.string "name"
     t.string "unique_identifier"
     t.string "ancestry"
+    t.string "path"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
