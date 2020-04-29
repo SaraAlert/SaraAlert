@@ -273,7 +273,7 @@ class Admin extends React.Component {
   sendResetButton = (cell, row, enumObject, rowIndex) => {
     return (
       <Button variant="primary" size="md" className="btn-block btn-square btn-info" onClick={() => this.onClickSendResetButton(row)}>
-        Reset
+        Reset Password
       </Button>
     );
   };
@@ -282,7 +282,7 @@ class Admin extends React.Component {
   reset2FAButton = (cell, row, enumObject, rowIndex) => {
     return (
       <Button variant="primary" size="md" className="btn-block btn-square btn-secondary" onClick={() => this.onClickReset2FAButton(row)}>
-        Reset
+        Reset 2FA
       </Button>
     );
   };
