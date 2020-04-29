@@ -3,7 +3,8 @@
 FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
-    password { Faker::Internet.password(min_length: 8, max_length: 128, mix_case: true) }
+    # Guarantee an upper, lower, and symbol
+    password { Faker::Internet.password(min_length: 10, max_length: 125, mix_case: true, special_characters: true) + 'aB!' }
     jurisdiction { create(:jurisdiction) }
 
     transient do

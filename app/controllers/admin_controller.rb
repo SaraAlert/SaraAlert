@@ -14,7 +14,7 @@ class AdminController < ApplicationController
     email = permitted_params[:email]
     raise 'EMAIL must be provided' unless email
 
-    password = SecureRandom.base58(10) # About 58 bits of entropy
+    password = User.rand_gen
     role = permitted_params[:role_title]
     raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
 
@@ -107,7 +107,7 @@ class AdminController < ApplicationController
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
 
     user.unlock_access!
-    password = SecureRandom.base58(10)
+    password = User.rand_gen
     user.password = password
     user.force_password_change = true
     user.save!

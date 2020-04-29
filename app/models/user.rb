@@ -3,9 +3,8 @@
 # User: user model
 class User < ApplicationRecord
   rolify
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable
+
+  devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable
 
   # Validate password complexity
   validate :password_complexity
@@ -14,12 +13,20 @@ class User < ApplicationRecord
 
     # Passwords must have characters from at least two groups, identified by these regexes (last one is punctuation)
     matches = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^\w\s]/].select { |rx| rx.match(password) }.size
-    errors.add :password, 'must include characters from at least two groups (lower case, upper case, numbers, special characters)' unless matches >= 2
+    errors.add :password, 'must include characters from at least three groups (lower case, upper case, numbers, special characters)' unless matches >= 3
   end
 
   has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
 
   belongs_to :jurisdiction
+
+  # Random password for temp password changes
+  def self.rand_gen
+    SecureRandom.base58(10) +
+      (33 + SecureRandom.random_number(14)).chr(Encoding::ASCII) +
+      (97 + SecureRandom.random_number(26)).chr(Encoding::ASCII) +
+      (65 + SecureRandom.random_number(26)).chr(Encoding::ASCII)
+  end
 
   # Patients this user can view through their jurisdiction access
   def viewable_patients

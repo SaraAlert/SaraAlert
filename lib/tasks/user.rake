@@ -13,7 +13,7 @@ namespace :user do
     password = ENV['PASSWORD']
     unless password
       puts 'Generating random password'
-      password = SecureRandom.base58(10) # About 58 bits of entropy
+      password = User.rand_gen
     end
     role = ENV['ROLE']
     raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
