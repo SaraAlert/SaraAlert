@@ -15,7 +15,7 @@ class PatientTest < ActiveSupport::TestCase
     jur = Jurisdiction.create
     user = User.create!(
       email: 'foobar@example.com',
-      password: '123456ab',
+      password: '1234567ab!',
       jurisdiction: jur,
       force_password_change: true # Require user to change password on first login
     )
