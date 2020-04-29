@@ -147,4 +147,9 @@ class User < ApplicationRecord
   def can_create_subject_history?
     has_role?(:public_health) || has_role?(:public_health_enroller)
   end
+
+  # Can this user send system email messages?
+  def can_send_admin_emails?
+    has_role?(:admin) && jurisdiction&.name == 'USA'
+  end
 end

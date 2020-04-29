@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   post 'admin/unlock_user', to: 'admin#unlock_user'
   post 'admin/reset_password', to: 'admin#reset_password'
   post 'admin/reset_2fa', to: 'admin#reset_2fa'
+  post 'admin/email', to: 'admin#send_email'
 
   resources :histories, only: [:create]
 

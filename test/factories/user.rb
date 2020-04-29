@@ -18,6 +18,20 @@ FactoryBot.define do
       end
     end
 
+    factory :usa_admin_user do
+      jurisdiction { create(:usa_jurisdiction) }
+      after(:create) do |user|
+        user.add_role(:admin)
+      end
+    end
+
+    factory :non_usa_admin_user do
+      jurisdiction { create(:non_usa_jurisdiction) }
+      after(:create) do |user|
+        user.add_role(:admin)
+      end
+    end
+
     factory :enroller_user do
       after(:create) do |user|
         user.add_role(:enroller)

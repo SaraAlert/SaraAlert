@@ -9,4 +9,9 @@ class UserMailer < ApplicationMailer
     @password = password
     mail(to: user.email, subject: 'Welcome to the Sara Alert system')
   end
+
+  def admin_message_email(user, comment)
+    @comment = comment
+    mail(to: user.email, subject: 'Message from the Sara Alert system')
+  end
 end
