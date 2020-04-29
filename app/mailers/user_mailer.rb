@@ -22,7 +22,9 @@ class UserMailer < ApplicationMailer
 
       @subject = @num_purgeable_records.zero? ? 'Sara Alert Notification' : 'Sara Alert User Records Expiring Soon'
 
-      mail(to: user.email, subject: @subject)
+      mail(to: user.email, subject: @subject) do |format|
+        format.html { render layout: 'main_mailer' }
+      end
     end
   end
 end
