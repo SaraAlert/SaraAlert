@@ -91,6 +91,8 @@ bundle exec whenever --update-crontab
     - Active job that closes cases that meet duration/symptomatic conditions
   * `PurgeJob`
       - Active job that redacts PII of cases that have been closed for N many days
+  * `rake mailers:send_purge_warning`
+      - Send warning to users of upcoming PurgeJob containing N many records
   * `rake analytics:cache_current_analytics`
       - Caches analytics information for faster retrieval 
   * `rake mailers:send_assessments`
@@ -161,6 +163,7 @@ The following environment variables need to be set on the enrollment instances, 
 * `TWILLIO_API_ACCOUNT: <Account number for Twilio Account>`
 * `TWILLIO_API_KEY: <API key for Twilio Account>`
 * `TWILLIO_SENDING_NUMBER: <Phone number registered to Twilio Account for SMS/Voice>`
+* `TWILLIO_STUDIO_FLOW: <Twilio Studio Flow ID for handling SMS/Voice Assessments>`
 * `AUTHY_API_KEY: <API key for Authy project>`
 
 **Container Dependencies**

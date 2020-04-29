@@ -144,3 +144,11 @@ select.form-control {
 .modal-content {
   border-radius: 0 !important;
 }
+
+.static-modal-container {
+  // This is styling for the confirm-dialog box
+  // The aggressive z-index ensures that this modal
+  // will be drawn in front of any other modals
+  background-color: rgba(20, 20, 20, 0.60);
+  z-index: 2000;
+}

@@ -23,21 +23,6 @@ namespace :mailers do
     PatientMailer.enrollment_email(test_patient).deliver_now
   end
 
-  desc "Test making an assessment call"
-  task test_assessment_call: :environment do
-      account_sid = ENV['TWILLIO_API_ACCOUNT']
-      auth_token = ENV['TWILLIO_API_KEY']
-      from = ENV['TWILLIO_SENDING_NUMBER']
-      twillio_client = Twilio::REST::Client.new(account_sid, auth_token)
-      call = twillio_client.calls.create(
-                             url: 'https://handler.twilio.com/twiml/EHf78be4930d246755333d60dc1cac708e',
-                             to: '',
-                             from: from
-                           )
-
-      puts call
-  end
-
   desc "Test making an assessment sms"
   task test_assessment_sms: :environment do
     # patient = Patient.first.dup
@@ -63,5 +48,10 @@ namespace :mailers do
   desc "Send Assessments and Assessment Reminders To Non-Reporting Individuals"
   task send_assessments: :environment do
     SendAssessmentsJob.perform_now
+  end
+
+  desc "Sends data purge warning to users"
+  task send_purge_warning: :environment do
+    UserMailer.purge_notification().deliver_now
   end
 end
