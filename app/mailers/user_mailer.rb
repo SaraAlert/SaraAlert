@@ -16,7 +16,7 @@ class UserMailer < ApplicationMailer
     @comment = comment
     mail(to: user.email, subject: 'Message from the Sara Alert system')
   end
-    
+
   def purge_notification
     recipients = User.with_any_role(:public_health, :public_health_enroller)
     @expiration_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_date']).strftime('%A %B %d, at %l:%M %p %Z')
