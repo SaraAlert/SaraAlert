@@ -9,7 +9,10 @@ class UserMailer < ApplicationMailer
   def welcome_email(user, password)
     @user = user
     @password = password
-    mail(to: user.email, subject: 'Welcome to the Sara Alert system')
+    @subject = 'Welcome to the Sara Alert system'
+    mail(to: user.email, subject: @subject) do |format|
+      format.html { render layout: 'main_mailer' }
+    end
   end
 
   def purge_notification
