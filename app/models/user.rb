@@ -14,7 +14,6 @@ class User < ApplicationRecord
     # Passwords must have characters from at least two groups, identified by these regexes (last one is punctuation)
     matches = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^\w\s]/].select { |rx| rx.match(password) }.size
     errors.add :password, 'must include characters from at least three groups (lower case, upper case, numbers, special characters)' unless matches >= 3
-    errors.add :password, 'must be ten characters or more in length' unless password.length >= 10
   end
 
   has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
