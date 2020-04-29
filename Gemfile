@@ -60,6 +60,9 @@ gem 'roo'
 # Excel Export
 gem 'caxlsx'
 
+# Used for inline css before mailer
+gem 'premailer-rails'
+
 gem 'sara-schema'
 
 group :development, :test do
