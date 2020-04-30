@@ -45,6 +45,7 @@ system-test:
     MYSQL_USER: root
     APP_IN_CI: 'true'
     REDIS_URL: redis://redis:6379
+    SARA_ALERT_TWO_FACTOR_AUTH_ENABLED: 'false'
   before_script:
     - cp config/gitlab-ci/gitlab-database.yml config/database.yml
     - ruby -v
