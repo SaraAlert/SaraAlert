@@ -26,7 +26,7 @@ class AdminTaskTest < ActiveSupport::TestCase
 
     # Assert Jurisdictions have all been loaded and hierarchy is correct
     assert_equal(Jurisdiction.all.pluck(:name), ["USA", "State 1", "County 1", "County 2", "State 2", "County 3", "County 4"])
-    assert_equal(Jurisdiction.where(name: 'County 4').first.jurisdiction_path_string, "USA, State 2, County 4")
+    assert_equal(Jurisdiction.where(name: 'County 4').first[:path], "USA, State 2, County 4")
     # Assert ThresholdConditions have been saved for each jurisdiction
     assert_equal(Jurisdiction.count, ThresholdCondition.count)
   
@@ -93,7 +93,7 @@ class AdminTaskTest < ActiveSupport::TestCase
     parse_jurisdiction(nil, 'USA', updated_jurisdictions['USA'])
     # Assert Jurisdictions have all been loaded and hierarchy is correct
     assert_equal(Jurisdiction.all.pluck(:name), ["USA", "State 1", "County 1", "County 2", "State 2", "County 3", "County 4"])
-    assert_equal(Jurisdiction.where(name: 'County 4').first.jurisdiction_path_string, "USA, State 2, County 4")
+    assert_equal(Jurisdiction.where(name: 'County 4').first[:path], "USA, State 2, County 4")
     # Assert that no new jurisdictions have been added
     assert_equal(Jurisdiction.count, 7)
   

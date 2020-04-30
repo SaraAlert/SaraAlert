@@ -34,7 +34,7 @@ namespace :admin do
     matching_jurisdictions = Jurisdiction.where(name: jur_name)
     matching_jurisdictions.each do |matching_jurisdiction|
       # Also works for the case where parent is nil ie: top-level jurisdiction
-      if matching_jurisdiction.parent&.name == parent&.name
+      if matching_jurisdiction.parent&.path == parent&.path
         jurisdiction = matching_jurisdiction
         break
       end

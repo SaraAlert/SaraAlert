@@ -8,11 +8,11 @@ class Transfer < ApplicationRecord
   belongs_to :patient
 
   def from_path
-    from_jurisdiction&.jurisdiction_path_string
+    from_jurisdiction[:path]
   end
 
   def to_path
-    to_jurisdiction&.jurisdiction_path_string
+    to_jurisdiction[:path]
   end
 
   # All incoming transfers with the given jurisdiction id
