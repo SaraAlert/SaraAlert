@@ -45,7 +45,7 @@ class User < ApplicationRecord
     elsif has_role?(:public_health)
       viewable_patients.find_by_id(id)
     elsif has_role?(:public_health_enroller)
-      enrolled_patients.find_by_id(id) || viewable_patients.find_by_id(id)
+      viewable_patients.find_by_id(id)
     elsif has_role?(:admin)
       Patient.find_by_id(id)
     end
@@ -82,11 +82,6 @@ class User < ApplicationRecord
 
   # Can this user import?
   def can_import?
-    has_role?(:public_health) || has_role?(:public_health_enroller)
-  end
-
-  # Can this user assign a Patient to any jurisdiction?
-  def can_assign_any_jurisdiction?
     has_role?(:public_health) || has_role?(:public_health_enroller)
   end
 

@@ -36,32 +36,31 @@ class WorkflowTest < ApplicationSystemTestCase
 
   test 'epi enroll monitoree, complete assessment, update monitoring actions, jurisdiction, workflow' do
     # enroll monitoree, should be asymptomatic
-    enroller_user_label = 'state1_epi_enroller'
+    epi_enroller_user_label = 'state1_epi_enroller'
     monitoree_label = 'monitoree_3'
-    @@monitoree_enrollment_helper.enroll_monitoree(enroller_user_label, monitoree_label, true)
-    @@system_test_utils.login(enroller_user_label)
+    @@monitoree_enrollment_helper.enroll_monitoree(epi_enroller_user_label, monitoree_label, true)
+    @@system_test_utils.login(epi_enroller_user_label)
     @@public_health_monitoring_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
     @@public_health_monitoring_reports_verifier.verify_current_status('asymptomatic')
 
     # add symptomatic report, should be symptomatic
-    @@public_health_monitoring_reports.add_report(enroller_user_label, ASSESSMENTS['assessment_1'])
+    @@public_health_monitoring_reports.add_report(epi_enroller_user_label, ASSESSMENTS['assessment_1'])
     @@public_health_monitoring_reports_verifier.verify_current_status('symptomatic')
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_monitoring_dashboard.search_for_and_view_monitoree('symptomatic', monitoree_label)
 
     # mark all reports as reviewed, should be symptomatic again
-    @@public_health_monitoring_reports.mark_all_as_reviewed(enroller_user_label, 'reason', true)
+    @@public_health_monitoring_reports.mark_all_as_reviewed(epi_enroller_user_label, 'reason', true)
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_monitoring_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
 
     # add PUI, should be listed under PUI tab
-    @@public_health_monitoring_actions.update_latest_public_health_action(enroller_user_label, 'Recommended medical evaluation of symptoms', 'reason')
+    @@public_health_monitoring_actions.update_latest_public_health_action(epi_enroller_user_label, 'Recommended medical evaluation of symptoms', 'reason')
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_monitoring_dashboard.search_for_and_view_monitoree('pui', monitoree_label)
 
     # update assigned jurisdiction, should be transferred out of old jurisdiction and transferred into new one
-    @@public_health_monitoring_actions.update_assigned_jurisdiction(enroller_user_label, 'USA, State 2', 'reason')
-    @@system_test_utils.return_to_dashboard('exposure')
+    @@public_health_monitoring_actions.update_assigned_jurisdiction(epi_enroller_user_label, 'USA, State 2', 'reason', true, false)
     @@public_health_monitoring_dashboard_verifier.verify_monitoree_under_tab('transferred-out', monitoree_label)
     @@system_test_utils.logout
     @@system_test_utils.login('state2_epi')

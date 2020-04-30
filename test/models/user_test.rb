@@ -180,20 +180,6 @@ class UserTest < ActiveSupport::TestCase
     assert_not analyst.can_import?
   end
 
-  test 'can assign any jurisdiction' do
-    admin = create(:admin_user)
-    enroller = create(:enroller_user)
-    public_health_enroller = create(:public_health_enroller_user)
-    public_health = create(:public_health_user)
-    analyst = create(:analyst_user)
-
-    assert_not admin.can_assign_any_jurisdiction?
-    assert public_health.can_assign_any_jurisdiction?
-    assert_not enroller.can_assign_any_jurisdiction?
-    assert public_health_enroller.can_assign_any_jurisdiction?
-    assert_not analyst.can_assign_any_jurisdiction?
-  end
-
   test 'can edit patient' do
     admin = create(:admin_user)
     enroller = create(:enroller_user)
