@@ -63,4 +63,23 @@ class PatientTest < ActiveSupport::TestCase
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute) - 2).minutes.ago)
     assert Patient.purge_eligible.count.zero?
   end
+
+  test 'get timezone offset' do
+    jur = Jurisdiction.create
+    user = User.create!(
+      email: 'foobar@example.com',
+      password: '1234567ab!',
+      jurisdiction: jur,
+      force_password_change: true # Require user to change password on first login
+    )
+    Patient.destroy_all
+    patient = Patient.new(creator: user, jurisdiction: jur)
+    patient.responder = patient
+    patient.save
+    assert patient.address_timezone_offset == '-04:00'
+    patient.update(address_state: 'California')
+    assert patient.address_timezone_offset == '-07:00'
+    patient.update(monitored_address_state: 'Northern Mariana Islands')
+    assert patient.address_timezone_offset == '+10:00'
+  end
 end
