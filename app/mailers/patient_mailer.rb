@@ -9,7 +9,9 @@ class PatientMailer < ApplicationMailer
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
-    mail(to: patient.email, subject: 'Sara Alert Enrollment')
+    mail(to: patient.email, subject: 'Sara Alert Enrollment') do |format|
+      format.html { render layout: 'main_mailer' }
+    end
   end
 
   def enrollment_sms_weblink(patient)
@@ -137,11 +139,15 @@ class PatientMailer < ApplicationMailer
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
-    mail(to: patient.email, subject: 'Sara Alert Report Reminder')
+    mail(to: patient.email, subject: 'Sara Alert Report Reminder') do |format|
+      format.html { render layout: 'main_mailer' }
+    end
   end
 
   def closed_email(patient)
     @patient = patient
-    mail(to: patient.email, subject: 'Sara Alert Reporting Complete')
+    mail(to: patient.email, subject: 'Sara Alert Reporting Complete') do |format|
+      format.html { render layout: 'main_mailer' }
+    end
   end
 end

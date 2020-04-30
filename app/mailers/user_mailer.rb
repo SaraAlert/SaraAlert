@@ -9,8 +9,7 @@ class UserMailer < ApplicationMailer
   def welcome_email(user, password)
     @user = user
     @password = password
-    @subject = 'Welcome to the Sara Alert system'
-    mail(to: user.email, subject: @subject) do |format|
+    mail(to: user.email, subject: 'Welcome to the Sara Alert system') do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
@@ -23,9 +22,9 @@ class UserMailer < ApplicationMailer
       @user = user
       @num_purgeable_records = user.viewable_patients.purge_eligible.size
 
-      @subject = @num_purgeable_records.zero? ? 'Sara Alert Notification' : 'Sara Alert User Records Expiring Soon'
+      subject = @num_purgeable_records.zero? ? 'Sara Alert Notification' : 'Sara Alert User Records Expiring Soon'
 
-      mail(to: user.email, subject: @subject) do |format|
+      mail(to: user.email, subject: subject) do |format|
         format.html { render layout: 'main_mailer' }
       end
     end
