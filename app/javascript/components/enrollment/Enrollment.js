@@ -45,7 +45,12 @@ class Enrollment extends React.Component {
 
   setEnrollmentState(enrollmentState) {
     let currentEnrollmentState = this.state.enrollmentState;
-    this.setState({ enrollmentState: { ...currentEnrollmentState, ...enrollmentState } });
+    this.setState({
+      enrollmentState: {
+        patient: { ...currentEnrollmentState.patient, ...enrollmentState.patient },
+        propagatedFields: { ...currentEnrollmentState.propagatedFields, ...enrollmentState.propagatedFields },
+      },
+    });
   }
 
   handleConfirmDuplicate = async (data, groupMember, message, reenableSubmit, confirmText) => {

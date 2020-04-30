@@ -24,7 +24,7 @@ class Address extends React.Component {
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
-        modified: { ...modified, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -40,12 +40,12 @@ class Address extends React.Component {
           ...current,
           patient: {
             ...current.patient,
-            monitored_address_line_1: current.address_line_1,
-            monitored_address_city: current.address_city,
-            monitored_address_state: current.address_state,
-            monitored_address_line_2: current.address_line_2,
-            monitored_address_zip: current.address_zip,
-            monitored_address_county: current.address_county,
+            monitored_address_line_1: current.patient.address_line_1,
+            monitored_address_city: current.patient.address_city,
+            monitored_address_state: current.patient.address_state,
+            monitored_address_line_2: current.patient.address_line_2,
+            monitored_address_zip: current.patient.address_zip,
+            monitored_address_county: current.patient.address_county,
           },
         },
       },

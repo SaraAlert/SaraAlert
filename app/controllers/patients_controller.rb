@@ -175,7 +175,7 @@ class PatientsController < ApplicationController
       if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id].to_i)
         history = History.new
         history.created_by = current_user.email
-        old_jurisdiction = patient.jurisdiction.path
+        old_jurisdiction = patient.jurisdiction.jurisdiction_path_string
         new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id]).jurisdiction_path_string
         history.comment = "User changed jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
         history.patient = patient

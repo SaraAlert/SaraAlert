@@ -34,7 +34,7 @@ class Exposure extends React.Component {
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
-        modified: { ...modified, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
