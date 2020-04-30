@@ -123,7 +123,7 @@ class AdminController < ApplicationController
     return if comment.blank?
 
     User.all.find_each(batch_size: 5) do |user|
-      UserMailer.admin_message_email(user, comment).deliver_now
+      UserMailer.admin_message_email(user, comment).deliver_later
     end
   end
 end
