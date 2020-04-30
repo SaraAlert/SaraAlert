@@ -81,6 +81,5 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.address_timezone_offset == '-07:00'
     patient.update(monitored_address_state: 'Northern Mariana Islands')
     assert patient.address_timezone_offset == '+10:00'
-    patient.assessmenmts_summary_array(nil,nil)
   end
 end
