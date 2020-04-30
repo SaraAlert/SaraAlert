@@ -4,6 +4,8 @@ require 'chronic'
 
 # Patient: patient model
 class Patient < ApplicationRecord
+  include PatientHelper
+
   columns.each do |column|
     case column.type
     when :text
@@ -378,15 +380,7 @@ class Patient < ApplicationRecord
 
     # If force is set, the preferred contact time will be ignored
     unless force
-      hour = Time.now.getlocal('-04:00').hour
-      if !address_state.blank? && address_state.downcase == 'northern mariana islands'
-        # CNMI Local
-        hour = Time.now.getlocal('+10:00').hour
-      end
-      if !address_state.blank? && address_state.downcase == 'arkansas'
-        # Arkansas Local
-        hour = Time.now.getlocal('-05:00').hour
-      end
+      hour = Time.now.getlocal(address_timezone_offset).hour
       # These are the hours that we consider to be morning, afternoon and evening
       morning = (8..12)
       afternoon = (12..16)
@@ -577,5 +571,13 @@ class Patient < ApplicationRecord
   # Override as_json to include linelist
   def as_json(options = {})
     super((options || {}).merge(methods: :linelist))
+  end
+
+  def address_timezone_offset
+    if !monitored_address_state.nil?
+      timezone_for_state(monitored_address_state)
+    else
+      timezone_for_state(address_state)
+    end
   end
 end
