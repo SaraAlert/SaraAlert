@@ -35,7 +35,7 @@ class AdminDashboard < ApplicationSystemTestCase
 
   def reset_user_password(email)
     search_for_user(email)
-    click_on 'Reset Password and Send Email'
+    click_on 'Reset Password'
     sleep(1) # Added sleep to prevent reoccurring race condition when saving user
     @@admin_dashboard_verifier.verify_reset_user_password(email)
   end

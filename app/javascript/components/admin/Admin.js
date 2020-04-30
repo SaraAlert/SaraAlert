@@ -4,6 +4,9 @@ import axios from 'axios';
 import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn, InsertModalHeader, InsertModalFooter } from 'react-bootstrap-table';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ReleaseUpdate from './ReleaseUpdate';
 
 class Admin extends React.Component {
   constructor(props) {
@@ -131,9 +134,17 @@ class Admin extends React.Component {
       data: submit_data,
     })
       .then(() => {
+        toast.success('User account unlocked: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
         return true;
       })
       .catch(() => {
+        toast.error('Failed to unlock account: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
         return false;
       });
     send_result.then(success => {
@@ -155,9 +166,17 @@ class Admin extends React.Component {
       data: submit_data,
     })
       .then(() => {
+        toast.success('User account locked: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
         return true;
       })
       .catch(() => {
+        toast.error('Failed to lock account: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
         return false;
       });
     send_result.then(success => {
@@ -179,9 +198,17 @@ class Admin extends React.Component {
       data: submit_data,
     })
       .then(() => {
+        toast.success('User password reset for: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
         return true;
       })
       .catch(() => {
+        toast.error('Failed to reset password for: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
         return false;
       });
     send_result.then(success => {
@@ -202,9 +229,17 @@ class Admin extends React.Component {
       data: submit_data,
     })
       .then(() => {
+        toast.success('User 2FA reset: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
         return true;
       })
       .catch(() => {
+        toast.error('Failed to reset 2FA for: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
         return false;
       });
     send_result.then(success => {
@@ -238,7 +273,7 @@ class Admin extends React.Component {
   sendResetButton = (cell, row, enumObject, rowIndex) => {
     return (
       <Button variant="primary" size="md" className="btn-block btn-square btn-info" onClick={() => this.onClickSendResetButton(row)}>
-        Reset Password and Send Email
+        Reset Password
       </Button>
     );
   };
@@ -247,7 +282,7 @@ class Admin extends React.Component {
   reset2FAButton = (cell, row, enumObject, rowIndex) => {
     return (
       <Button variant="primary" size="md" className="btn-block btn-square btn-secondary" onClick={() => this.onClickReset2FAButton(row)}>
-        Reset 2FA Pairing
+        Reset 2FA
       </Button>
     );
   };
@@ -270,6 +305,8 @@ class Admin extends React.Component {
     };
     return (
       <div>
+        <ToastContainer />
+        <ReleaseUpdate is_usa_admin={this.props.is_usa_admin} user_count={this.props.data.length} authenticity_token={this.props.authenticity_token} />
         <h4>Note: To edit a user, click the cell you would like to edit, select a new value and then click anywhere outside of the table.</h4>
         <BootstrapTable
           data={this.props.data}
@@ -292,10 +329,10 @@ class Admin extends React.Component {
             Role
           </TableHeaderColumn>
           <TableHeaderColumn dataField="configured_2fa" searchable={false} editable={false} hiddenOnInsert={true} dataSort={true}>
-            Configured 2-Factor Auth
+            2FA Enabled
           </TableHeaderColumn>
           <TableHeaderColumn dataField="failed_attempts" searchable={false} editable={false} hiddenOnInsert={true} dataSort={true}>
-            Failed Login Attempts
+            Failed Logins
           </TableHeaderColumn>
           <TableHeaderColumn dataField="locked" editable={false} hiddenOnInsert={true} dataSort={true}>
             Status
@@ -304,12 +341,21 @@ class Admin extends React.Component {
             Lock/Unlock
           </TableHeaderColumn>
           <TableHeaderColumn dataField="button" dataFormat={this.sendResetButton.bind(this)} searchable={false} editable={false} hiddenOnInsert={true}>
-            Send Password Reset E-mail
+            Reset Password
           </TableHeaderColumn>
           <TableHeaderColumn dataField="button" dataFormat={this.reset2FAButton.bind(this)} searchable={false} editable={false} hiddenOnInsert={true}>
-            Reset 2-Factor Auth Pairing
+            Reset 2FA
           </TableHeaderColumn>
         </BootstrapTable>
+        {this.props.is_usa_admin && (
+          <div className="my-4">
+            <u>Stats</u>
+            <br />
+            Users: {this.props.data?.length || 0}
+            <br />
+            Jurisdictions: {Object.keys(this.props.jurisdiction_paths)?.length || 0}
+          </div>
+        )}
       </div>
     );
   }
@@ -320,6 +366,7 @@ Admin.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,
   role_types: PropTypes.array,
+  is_usa_admin: PropTypes.bool,
 };
 
 export default Admin;

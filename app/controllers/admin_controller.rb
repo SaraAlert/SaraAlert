@@ -113,4 +113,17 @@ class AdminController < ApplicationController
     user.save!
     UserMailer.welcome_email(user, password).deliver_later
   end
+
+  def send_email
+    redirect_to(root_url) && return unless current_user.can_send_admin_emails?
+
+    permitted_params = params.permit(:comment)
+    comment = permitted_params[:comment]
+
+    return if comment.blank?
+
+    User.all.find_each(batch_size: 5) do |user|
+      UserMailer.admin_message_email(user, comment).deliver_later
+    end
+  end
 end

@@ -361,4 +361,20 @@ class UserTest < ActiveSupport::TestCase
     assert public_health_enroller.can_create_subject_history?
     assert_not analyst.can_create_subject_history?
   end
+
+  test 'can send admin emails' do
+    admin = create(:usa_admin_user)
+    sub_admin = create(:non_usa_admin_user)
+    enroller = create(:enroller_user)
+    public_health_enroller = create(:public_health_enroller_user)
+    public_health = create(:public_health_user)
+    analyst = create(:analyst_user)
+
+    assert admin.can_send_admin_emails?
+    assert_not sub_admin.can_send_admin_emails?
+    assert_not public_health.can_send_admin_emails?
+    assert_not enroller.can_send_admin_emails?
+    assert_not public_health_enroller.can_send_admin_emails?
+    assert_not analyst.can_send_admin_emails?
+  end
 end
