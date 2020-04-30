@@ -8,6 +8,8 @@ on:
 
 jobs:
   test:
+    env:
+      SARA_ALERT_TWO_FACTOR_AUTH_ENABLED: false
     runs-on: ubuntu-latest
     services:
       mysql:
