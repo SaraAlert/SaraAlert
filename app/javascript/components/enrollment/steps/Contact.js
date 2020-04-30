@@ -158,7 +158,6 @@ class Contact extends React.Component {
                       <option>Evening</option>
                     </Form.Control>
                     <Form.Row className="pt-2">
-                      `{' '}
                       <Form.Group as={Col} md="auto">
                         Morning:
                         <br />
@@ -173,7 +172,6 @@ class Contact extends React.Component {
                         <br />
                         <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
                       </Form.Group>
-                      `
                     </Form.Row>
                     <Form.Control.Feedback className="d-block" type="invalid">
                       {this.state.errors['preferred_contact_time']}
