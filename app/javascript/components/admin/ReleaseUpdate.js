@@ -39,12 +39,12 @@ class ReleaseUpdate extends React.Component {
             comment: this.state.comment,
           })
           .then(() => {
-            toast.success('Sent email to users.', {
+            toast.success('Sent email to all users.', {
               position: toast.POSITION.TOP_CENTER,
             });
           })
           .catch(error => {
-            toast.error('Failed to send email to users.', {
+            toast.error('Failed to send email to all users.', {
               position: toast.POSITION.TOP_CENTER,
             });
             console.error(error);
@@ -70,7 +70,7 @@ class ReleaseUpdate extends React.Component {
             variant="primary btn-square"
             disabled={!this.state.comment.length}
             onClick={() => {
-              if (window.confirm('You are about to send this message to ' + this.props.user_count + ' users. Are you sure?')) {
+              if (window.confirm('You are about to send this message to all users (' + this.props.user_count + ' accounts). Are you sure?')) {
                 this.submit();
               }
             }}>
@@ -88,11 +88,11 @@ class ReleaseUpdate extends React.Component {
     return (
       <React.Fragment>
         {this.props.is_usa_admin && (
-          <Button onClick={this.toggleReleaseUpdateModal} className="btn btn-lg mb-3 mt-2" block>
-            <i className="fas fa-envelope"></i> Send Email To Users
+          <Button variant="secondary" onClick={this.toggleReleaseUpdateModal} className="btn btn-lg mb-3 mt-2" block>
+            <i className="fas fa-envelope"></i> Send Email to All Users
           </Button>
         )}
-        {this.state.showReleaseUpdateModal && this.props.is_usa_admin && this.createModal('Send Email To Users', this.toggleReleaseUpdateModal)}
+        {this.state.showReleaseUpdateModal && this.props.is_usa_admin && this.createModal('Send Email to All Users', this.toggleReleaseUpdateModal)}
       </React.Fragment>
     );
   }
