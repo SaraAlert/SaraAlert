@@ -8,7 +8,7 @@
   authenticity_token: form_authenticity_token, 
   can_add_group: current_user.can_create_patient?, 
   has_group_members: false,
-  jurisdiction_paths: current_user.can_assign_any_jurisdiction? ? Jurisdiction.all.collect{ |jur| { value: jur.id, label: jur.jurisdiction_path_string } } : Jurisdiction.find(current_user.jurisdiction.subtree_ids).collect{ |jur| { value: jur.id, label: jur.jurisdiction_path_string } }
+  jurisdiction_paths: Jurisdiction.find(current_user.jurisdiction.subtree_ids).collect{ |jur| { value: jur.id, label: jur.jurisdiction_path_string } }
   }) %>
 
 <div class="pb-4"></div>
