@@ -157,6 +157,24 @@ class Contact extends React.Component {
                       <option>Afternoon</option>
                       <option>Evening</option>
                     </Form.Control>
+                    <Form.Row className="pt-2">
+                      `{' '}
+                      <Form.Group as={Col} md="auto">
+                        Morning:
+                        <br />
+                        Afternoon:
+                        <br />
+                        Evening:
+                      </Form.Group>
+                      <Form.Group as={Col} md="auto">
+                        <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
+                        <br />
+                        <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
+                        <br />
+                        <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
+                      </Form.Group>
+                      `
+                    </Form.Row>
                     <Form.Control.Feedback className="d-block" type="invalid">
                       {this.state.errors['preferred_contact_time']}
                     </Form.Control.Feedback>
@@ -237,11 +255,11 @@ class Contact extends React.Component {
               </Form.Row>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="auto">
-                  Smartphone
+                  Smartphone:
                   <br />
-                  Plain Cell
+                  Plain Cell:
                   <br />
-                  Landline
+                  Landline:
                 </Form.Group>
                 <Form.Group as={Col} md="auto">
                   <span className="font-weight-light">Phone capable of accessing web-based reporting tool</span>
