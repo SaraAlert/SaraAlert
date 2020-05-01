@@ -29,7 +29,7 @@ class SymptomsAssessment extends React.Component {
     symp.value = symp.value === true;
     return (
       <Form.Check
-        type="switch"
+        type="checkbox"
         id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         checked={symp.value === true || false}
@@ -38,7 +38,7 @@ class SymptomsAssessment extends React.Component {
             <b>{symp.label}</b> {symp.notes ? ' ' + symp.notes : ''}
           </div>
         }
-        className="pb-4"
+        className="pb-2"
         onChange={this.handleChange}></Form.Check>
     );
   };
@@ -50,7 +50,7 @@ class SymptomsAssessment extends React.Component {
           <Card.Header as="h4">Daily Self-Report</Card.Header>
           <Card.Body>
             <Form.Row>
-              <Form.Label className="nav-input-label pb-3">Please select all symptoms which you are experiencing.</Form.Label> <br />
+              <Form.Label className="nav-input-label pb-3">Please select all symptoms which you are experiencing.</Form.Label>
             </Form.Row>
             <Form.Row>
               <Form.Group className="pt-1">
