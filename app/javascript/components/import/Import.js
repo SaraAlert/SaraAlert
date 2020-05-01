@@ -91,7 +91,7 @@ class Import extends React.Component {
                 className="card-square mt-3"
                 bg="light"
                 border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
-                <React.Fragment fluid>
+                <React.Fragment>
                   {patient.appears_to_be_duplicate && <Alert variant="danger">Warning: This monitoree already appears to exist in the system!</Alert>}
                   <Row>
                     <Col>
