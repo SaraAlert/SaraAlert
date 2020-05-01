@@ -49,7 +49,7 @@ gem 'chronic'
 # Store sessions in DB
 gem 'activerecord-session_store'
 
-# Useful association queries
+# Useful db query helpers
 gem 'activerecord_where_assoc'
 
 # Pagination

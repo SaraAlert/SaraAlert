@@ -20,10 +20,12 @@ class UserMailer < ApplicationMailer
   end
 
   def purge_notification
-    recipients = User.with_any_role(:public_health, :public_health_enroller)
+    recipients = User.with_any_role(:admin)
     @expiration_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_date']).strftime('%A %B %d, at %l:%M %p %Z')
 
     recipients.each do |user|
+      next if user.jurisdiction&.name == 'USA'
+
       @user = user
       @num_purgeable_records = user.viewable_patients.purge_eligible.size
 
