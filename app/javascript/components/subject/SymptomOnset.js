@@ -45,7 +45,14 @@ class SymptomOnset extends React.Component {
         <Row>
           <Form.Group as={Col} md="6">
             <Form.Label className="nav-input-label">SYMPTOM ONSET</Form.Label>
-            <Form.Control size="lg" id="symptom_onset" type="date" className="form-square" value={this.state.symptom_onset} onChange={this.handleChange} />
+            <Form.Control
+              size="lg"
+              id="symptom_onset"
+              type="date"
+              className="form-square"
+              value={this.state.symptom_onset || ''}
+              onChange={this.handleChange}
+            />
           </Form.Group>
           <Form.Group as={Col} md="18" className="align-self-end pl-0">
             <Button className="btn-lg" onClick={() => this.handleSubmit('Are you sure you want to modify the symptom onset date?')}>
