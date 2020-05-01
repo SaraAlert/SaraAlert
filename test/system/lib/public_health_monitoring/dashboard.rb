@@ -28,22 +28,42 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     fill_in 'Search:', with: MONITOREES[monitoree_label]['identification']['last_name']
   end
 
-  def export_linelist_data_to_csv
+  def export_line_list_csv
     click_on 'Export'
     click_on 'Line list CSV'
   end
 
-  def export_comprehensive_data_to_csv
+  def export_sara_alert_format_csv
     click_on 'Export'
     click_on 'Sara Alert Format CSV'
   end
 
-  def import_epi_x_data
+  def export_excel_purge_eligible_monitorees(download=true)
+    click_on 'Export'
+    click_on 'Excel Export For Purge-Eligible Monitorees'
+    if download
+      click_on 'Download'
+    else
+      click_on 'Cancel'
+    end
+  end
+
+  def export_excel_all_monitorees(download=true)
+    click_on 'Export'
+    click_on 'Excel Export For All Monitorees'
+    if download
+      click_on 'Download'
+    else
+      click_on 'Cancel'
+    end
+  end
+
+  def import_epi_x
     click_on 'Import'
     find('a', text: 'Epi-X').click
   end
 
-  def import_sara_alert_format_data
+  def import_sara_alert_format
     click_on 'Import'
     find('a', text: 'Sara Alert Format').click
   end

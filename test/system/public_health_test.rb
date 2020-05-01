@@ -73,19 +73,29 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.add_comment('locals2c3_epi', 'patient_11', 'pui', 'comment')
   end
 
-  test 'export linelist data to csv' do
-    @@public_health_monitoring_helper.export_linelist_data_to_csv('locals2c4_epi')
+  test 'export line list csv' do
+    @@public_health_monitoring_helper.export_line_list_csv('locals2c3_epi')
   end
 
-  test 'export comprehensive data to csv' do
-    @@public_health_monitoring_helper.export_comprehensive_data_to_csv('locals2c4_epi')
+  test 'export sara alert format csv' do
+    @@public_health_monitoring_helper.export_sara_alert_format_csv('locals2c4_epi')
   end
 
-  test 'import epi-x data' do
-    @@public_health_monitoring_helper.import_epi_x_data('locals1c1_epi')
+  test 'export excel purge-eligible monitorees' do
+    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', false)
+    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', true)
   end
 
-  test 'import sara alert format data' do
-    @@public_health_monitoring_helper.import_sara_alert_format_data('locals1c2_epi')
+  test 'export excel all monitorees' do
+    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', false)
+    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', true)
+  end
+
+  test 'import epi-x' do
+    @@public_health_monitoring_helper.import_epi_x('state1_epi_enroller')
+  end
+
+  test 'import sara alert format' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi')
   end
 end
