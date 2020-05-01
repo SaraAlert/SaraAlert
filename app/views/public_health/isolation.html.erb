@@ -88,14 +88,14 @@
       window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
       if ($('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').length === 0) {
         // Load default tab
-        $('#patients_table_symptomatic_patients').DataTable().draw();
-        localStorage.setItem('dashboardCurrentTab', 'symptomatic_patients');
+        $('#patients_table_requiring_review_patients').DataTable().draw();
+        localStorage.setItem('dashboardCurrentTab', 'requiring_review_patients');
         window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
       }
     } else {
       // Load default tab
-      $('#patients_table_symptomatic_patients').DataTable().draw();
-      localStorage.setItem('dashboardCurrentTab', 'symptomatic_patients');
+      $('#patients_table_requiring_review_patients').DataTable().draw();
+      localStorage.setItem('dashboardCurrentTab', 'requiring_review_patients');
       window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
     }
     $('a[data-toggle="tab"]').on('click', function(e) {
