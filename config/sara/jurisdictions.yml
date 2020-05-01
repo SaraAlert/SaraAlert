@@ -71,6 +71,30 @@
             type: 'BoolSymptom'
             notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
             required: false
+        'Chills':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+        'Repeated Shaking with Chills':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+        'Muscle Pain':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+        'Headache':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+        'Sore Throat':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+        'New Loss of Taste or Smell':
+            value: true
+            type: 'BoolSymptom'
+            required: true
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
     # in the children: field
     children:
