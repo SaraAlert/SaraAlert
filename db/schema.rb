@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_24_030960) do
+ActiveRecord::Schema.define(version: 2020_04_24_203547) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -40,7 +40,9 @@ ActiveRecord::Schema.define(version: 2020_04_24_030960) do
     t.bigint "patient_id"
     t.boolean "symptomatic"
     t.string "who_reported", default: "Monitoree"
-    t.index ["patient_id"], name: "index_assessments_on_patient_id"
+    t.index ["created_at"], name: "assessments_index_chain_1"
+    t.index ["patient_id", "created_at"], name: "assessments_index_chain_3"
+    t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"
   end
 
   create_table "conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -51,6 +53,7 @@ ActiveRecord::Schema.define(version: 2020_04_24_030960) do
     t.string "threshold_condition_hash"
     t.string "type"
     t.index ["assessment_id"], name: "index_conditions_on_assessment_id"
+    t.index ["type", "assessment_id"], name: "conditions_index_chain_1"
   end
 
   create_table "histories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -81,6 +84,7 @@ ActiveRecord::Schema.define(version: 2020_04_24_030960) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["patient_id"], name: "index_laboratories_on_patient_id"
+    t.index ["result", "patient_id"], name: "laboratories_index_chain_1"
   end
 
   create_table "monitoree_counts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -228,10 +232,14 @@ ActiveRecord::Schema.define(version: 2020_04_24_030960) do
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
     t.index ["first_name"], name: "index_patients_on_first_name"
+    t.index ["id", "monitoring", "purged", "isolation", "symptom_onset"], name: "patients_index_chain_4"
+    t.index ["isolation", "jurisdiction_id"], name: "patients_index_chain_6"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
     t.index ["last_date_of_exposure"], name: "index_patients_on_last_date_of_exposure"
-    t.index ["last_name"], name: "index_patients_on_last_name"
-    t.index ["monitoring"], name: "index_patients_on_monitoring"
+    t.index ["last_name", "first_name"], name: "patients_index_chain_3"
+    t.index ["monitoring", "purged", "isolation", "id", "public_health_action"], name: "patients_index_chain_5"
+    t.index ["monitoring", "purged", "isolation", "jurisdiction_id"], name: "patients_index_chain_2"
+    t.index ["monitoring", "purged", "public_health_action", "isolation", "jurisdiction_id"], name: "patients_index_chain_1"
     t.index ["potential_exposure_country"], name: "index_patients_on_potential_exposure_country"
     t.index ["public_health_action"], name: "index_patients_on_public_health_action"
     t.index ["purged"], name: "index_patients_on_purged"
@@ -275,6 +283,7 @@ ActiveRecord::Schema.define(version: 2020_04_24_030960) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "required", default: true
     t.index ["condition_id"], name: "index_symptoms_on_condition_id"
+    t.index ["name", "bool_value", "condition_id"], name: "symptoms_index_chain_1"
   end
 
   create_table "transfers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

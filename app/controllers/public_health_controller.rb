@@ -202,12 +202,12 @@ class PublicHealthController < ApplicationController
   def filter(params, data)
     search = params[:search][:value] unless params[:search].nil?
     if search.present?
-      data.where('lower(first_name) like ?', "%#{search.downcase}%").or(
-        data.where('lower(last_name) like ?', "%#{search.downcase}%").or(
-          data.where('lower(user_defined_id_statelocal) like ?', "%#{search.downcase}%").or(
-            data.where('lower(user_defined_id_cdc) like ?', "%#{search.downcase}%").or(
-              data.where('lower(user_defined_id_nndss) like ?', "%#{search.downcase}%").or(
-                data.where('date_of_birth like ?', "%#{search}%")
+      data.where('first_name like ?', "#{search}%").or(
+        data.where('last_name like ?', "#{search}%").or(
+          data.where('user_defined_id_statelocal like ?', "#{search}%").or(
+            data.where('user_defined_id_cdc like ?', "#{search}%").or(
+              data.where('user_defined_id_nndss like ?', "#{search}%").or(
+                data.where('date_of_birth like ?', "#{search}%")
               )
             )
           )

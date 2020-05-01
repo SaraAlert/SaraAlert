@@ -33,6 +33,7 @@
     $.fn.dataTable.ext.errMode = 'throw';
     $('#patients_table_<%= type %>').DataTable({
       "serverSide": true,
+      "deferLoading": 0, // Conditionally load tables (when tab is pressed)
       <% if isolation %>"ajax": "isolation/<%= type %>",<% else %>"ajax": "public_health/<%= type %>",<% end %>
       "lengthMenu": [10, 15, 25, 50, 100],
       "pageLength": 15,

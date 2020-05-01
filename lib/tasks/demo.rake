@@ -143,12 +143,17 @@ namespace :demo do
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
       # Create the patients for this day
-      print "Creating synthetic monitorees for day #{day + 1} (#{today})..."
+      printf("Simulating day #{day + 1} (#{today}):\n")
 
+      printf("Generating assessments...")
       # Transaction speeds things up a bit
       Patient.transaction do
         # Any existing patients may or may not report
+        acount = 1
+        pcount = Patient.count
         Patient.find_each do |patient|
+          printf("\rGenerating assessment #{acount+1} of #{pcount}...")
+          acount += 1
           next unless patient.created_at <= today
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
           if rand < 0.9 # 70% reporting rate on any given day
@@ -176,9 +181,12 @@ namespace :demo do
             patient.refresh_symptom_onset(assessment.id)
           end
         end
+        printf(" done.\n")
 
         # Create count patients
         count.times do |i|
+          printf("\rGenerating monitoree #{i+1} of #{count}...")
+
           sex = Faker::Gender.binary_type
           birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
           risk_factors = rand < 0.9
@@ -284,14 +292,14 @@ namespace :demo do
           history.patient = patient
           history.history_type = 'Enrollment'
           history.save
-
-          print '.' if (i % 100).zero?
         end
+        printf(" done.\n")
 
         # Cases increase 10-20% every day
         count += (count * (0.1 + (rand / 10))).round
+
         # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
-        if (perform_daily_analytics_update || (day+1) == days)
+        if perform_daily_analytics_update || (day + 1) == days
           before_analytics_count = Analytic.count
           Rake::Task["analytics:cache_current_analytics"].reenable
           Rake::Task["analytics:cache_current_analytics"].invoke
@@ -305,8 +313,7 @@ namespace :demo do
         end
 
       end
-
-      puts ' done!'
+      printf("\n")
     end
   end
 end

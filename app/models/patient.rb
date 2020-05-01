@@ -55,16 +55,16 @@ class Patient < ApplicationRecord
   # Patients who are eligible for reminders
   scope :reminder_eligible, lambda {
     where(pause_notifications: false)
-      .where('monitoring = ?', true)
-      .where('purged = ?', false)
+      .where(monitoring: true)
+      .where(purged: false)
       .where.not(id: Patient.unscoped.isolation_requiring_review)
       .where.not(id: Patient.unscoped.under_investigation)
       .left_outer_joins(:assessments)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
       .or(
         where(pause_notifications: false)
-          .where('monitoring = ?', true)
-          .where('purged = ?', false)
+          .where(monitoring: true)
+          .where(purged: false)
           .where.not(id: Patient.unscoped.isolation_requiring_review)
           .where.not(id: Patient.unscoped.under_investigation)
           .left_outer_joins(:assessments)
@@ -75,33 +75,33 @@ class Patient < ApplicationRecord
 
   # All individuals currently being monitored
   scope :monitoring_open, lambda {
-    where('monitoring = ?', true)
-      .where('purged = ?', false)
+    where(monitoring: true)
+      .where(purged: false)
   }
 
   # All individuals currently not being monitored
   scope :monitoring_closed, lambda {
-    where('monitoring = ?', false)
+    where(monitoring: false)
   }
 
   # All individuals that have been closed (not including purged)
   scope :monitoring_closed_without_purged, lambda {
-    where('monitoring = ?', false)
-      .where('purged = ?', false)
+    where(monitoring: false)
+      .where(purged: false)
   }
 
   # All individuals that have been closed (including purged)
   scope :monitoring_closed_with_purged, lambda {
-    where('monitoring = ?', false)
-      .where('purged = ?', true)
+    where(monitoring: false)
+      .where(purged: true)
   }
 
   # Purgeable eligible (records that could be purged in the next purge run if they aren't edited again)
   # By using chronic to determine the date of the next purge, the last warning date can be determined from that context
   # The use of `yesterday` in the context of the next purge date ensures that it includes the same day when using `this` keyword
   scope :purge_eligible, lambda {
-    where('monitoring = ?', false)
-      .where('purged = ?', false)
+    where(monitoring: false)
+      .where(purged: false)
       .where('patients.updated_at < ?',
              ADMIN_OPTIONS['purgeable_after'].minutes.before(
                Chronic.parse('last ' + ADMIN_OPTIONS['weekly_purge_warning_date'], now:
@@ -112,68 +112,67 @@ class Patient < ApplicationRecord
 
   # Purged monitoree records
   scope :purged, lambda {
-    where('purged = ?', true)
+    where(purged: true)
   }
 
   # All individuals who are confirmed cases
   scope :confirmed_case, lambda {
-    where('monitoring_reason = ?', 'Case confirmed')
+    where(monitoring_reason: 'Case confirmed')
   }
 
   # Any individual who is currently under investigation
   scope :under_investigation, lambda {
-    where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .where.not('public_health_action = ?', 'None')
+    where(monitoring: true)
+      .where(purged: false)
+      .where.not(public_health_action: 'None')
       .where(isolation: false)
   }
 
   # Any individual who has any assessments still considered symptomatic
   scope :symptomatic, lambda {
-    where('monitoring = ?', true)
-      .where('purged = ?', false)
+    where(monitoring: true)
+      .where(purged: false)
+      .where(public_health_action: 'None')
       .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
       .where('assessments.symptomatic = ?', true)
-      .where('public_health_action = ?', 'None')
       .distinct
   }
 
   # Non reporting asymptomatic individuals
   scope :non_reporting, lambda {
     where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .where('public_health_action = ?', 'None')
+      .where(monitoring: true)
+      .where(purged: false)
+      .where(public_health_action: 'None')
       .left_outer_joins(:assessments)
       .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
       .or(
         where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-        .where('monitoring = ?', true)
-        .where('purged = ?', false)
-        .where('public_health_action = ?', 'None')
-        .left_outer_joins(:assessments)
-        .where(assessments: { patient_id: nil })
+          .where(monitoring: true)
+          .where(purged: false)
+          .where(public_health_action: 'None')
+          .left_outer_joins(:assessments)
+          .where(assessments: { patient_id: nil })
       )
       .distinct
   }
 
   # Individuals who have reported recently and are not symptomatic
   scope :asymptomatic, lambda {
-    where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .where('public_health_action = ?', 'None')
+    where(monitoring: true)
+      .where(purged: false)
+      .where(public_health_action: 'None')
       .left_outer_joins(:assessments)
       .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
       .or(
         where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-        .where('monitoring = ?', true)
-        .where('purged = ?', false)
-        .where('public_health_action = ?', 'None')
+        .where(monitoring: true)
+        .where(purged: false)
+        .where(public_health_action: 'None')
         .left_outer_joins(:assessments)
         .where(assessments: { patient_id: nil })
       )
@@ -182,9 +181,9 @@ class Patient < ApplicationRecord
 
   # Individuals that meet the test based review requirement
   scope :test_based, lambda {
-    where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .where('isolation = ?', true)
+    where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
       .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
       .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever)
       .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_medication)
@@ -193,9 +192,9 @@ class Patient < ApplicationRecord
 
   # Individuals that meet the non test based review requirement
   scope :non_test_based, lambda {
-    where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .where('isolation = ?', true)
+    where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever)
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_medication)
       .where('symptom_onset <= ?', 7.days.ago)
@@ -212,21 +211,21 @@ class Patient < ApplicationRecord
 
   # Individuals in the isolation workflow, not meeting review and are not reporting
   scope :isolation_non_reporting, lambda {
-    where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .where('isolation = ?', true)
-      .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-      .where.not(id: Patient.unscoped.isolation_requiring_review)
-      .distinct
+    where.not(id: Patient.unscoped.isolation_requiring_review)
+         .where(monitoring: true)
+         .where(purged: false)
+         .where(isolation: true)
+         .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+         .distinct
   }
 
   # Individuals in the isolation workflow, not meeting review but are reporting
   scope :isolation_reporting, lambda {
-    where('monitoring = ?', true)
-      .where('purged = ?', false)
-      .where('isolation = ?', true)
-      .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
-      .where.not(id: Patient.unscoped.isolation_requiring_review)
+    where.not(id: Patient.unscoped.isolation_requiring_review)
+         .where(monitoring: true)
+         .where(purged: false)
+         .where(isolation: true)
+         .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
   }
 
   # All individuals currently being monitored if true, all individuals otherwise
@@ -282,9 +281,9 @@ class Patient < ApplicationRecord
 
   # Check for potential matches based on first and last name, sex, and date of birth
   def self.matches(first_name, last_name, sex, date_of_birth)
-    where('lower(first_name) = ?', first_name&.downcase)
-      .where('lower(last_name) = ?', last_name&.downcase)
-      .where('lower(sex) = ?', sex&.downcase)
+    where('first_name = ?', first_name)
+      .where('last_name = ?', last_name)
+      .where('sex = ?', sex)
       .where('date_of_birth = ?', date_of_birth)
   end
 
@@ -351,10 +350,10 @@ class Patient < ApplicationRecord
       return :asymptomatic if asymptomatic?
       return :non_reporting if non_reporting?
     end
-    return :isolation_test_based if Patient.test_based.where(id: id).exists?
-    return :isolation_non_test_based if Patient.non_test_based.where(id: id).exists?
-    return :isolation_non_reporting if Patient.isolation_non_reporting.where(id: id).exists?
-    return :isolation_reporting if Patient.isolation_reporting.where(id: id).exists?
+    return :isolation_test_based if Patient.where(id: id).test_based.exists?
+    return :isolation_non_test_based if Patient.where(id: id).non_test_based.exists?
+    return :isolation_non_reporting if Patient.where(id: id).isolation_non_reporting.exists?
+    return :isolation_reporting if Patient.where(id: id).isolation_reporting.exists?
     return :purged if purged?
     return :closed if closed?
 

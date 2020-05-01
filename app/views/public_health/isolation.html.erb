@@ -83,12 +83,34 @@
   $(document).ready(function() {
     if (localStorage.getItem('dashboardCurrentTab') !== null) {
       $(localStorage.getItem('dashboardCurrentTab') + '-tab').find('span').trigger('click')
+      // Load remembered tab
+      $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
+      window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
+      if ($('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').length === 0) {
+        // Load default tab
+        $('#patients_table_symptomatic_patients').DataTable().draw();
+        localStorage.setItem('dashboardCurrentTab', 'symptomatic_patients');
+        window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
+      }
+    } else {
+      // Load default tab
+      $('#patients_table_symptomatic_patients').DataTable().draw();
+      localStorage.setItem('dashboardCurrentTab', 'symptomatic_patients');
+      window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
     }
     $('a[data-toggle="tab"]').on('click', function(e) {
       if ($(e.target).attr('href') === undefined) {
         localStorage.setItem('dashboardCurrentTab', $(e.target).parent().attr('href'))
+        if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
+          $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
+          window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
+        }
       } else {
         localStorage.setItem('dashboardCurrentTab', $(e.target).attr('href'))
+        if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
+          $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
+          window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
+        }
       }
     });
     window.WORKFLOW = 'isolation';
