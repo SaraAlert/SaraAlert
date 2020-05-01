@@ -9,16 +9,16 @@
 <% content_for :body do %>
   <p>Dear <%= @user.email[/[^@]+/] %>,</p>
   <% if @num_purgeable_records.zero? %>
-    <p>There are no user records within your jurisdiction that are expiring this week. No action is required at this time, however you will receive this message every week for your records. Please be on the lookout for future Sara Alert notifications.</p>
+    <p>There are no user records within your jurisdiction that are purge eligible this week. No action is required at this time, however you will receive this message every week for your records. Please be on the lookout for future Sara Alert notifications.</p>
     <p>
-    <b>No Records Expiring</b><br/>
-    <b>Expiration Date:</b> <%= @expiration_date %>
+    <b>No Records Purge Eligible</b><br/>
+    <b>Purge Date:</b> <%= @expiration_date %>
     </p>
   <% else %>
-    <p>Several user records within your jurisdiction will be expiring soon. Please be sure to export the data before it is deleted as these records are unrecoverable.</p>
+    <p>Several user records within your jurisdiction will be purged soon. Please be sure to export the data before it is purged as this data are unrecoverable.</p>
     <p>
     <b>Number of Patient Records:</b> <%= @num_purgeable_records %><br/>
-    <b>Expiration Date:</b> <%= @expiration_date %>
+    <b>Purge Date:</b> <%= @expiration_date %>
     </p>
   <% end %>
 
