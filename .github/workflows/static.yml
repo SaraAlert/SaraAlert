@@ -51,8 +51,6 @@ jobs:
         run: bundle exec brakeman -qAzw1
       - name: Run Rubocop
         run: bundle exec rubocop
-      - name: Run Yarn Audit
-        run: yarn audit
       - name: Run ESLint
         run: ./node_modules/.bin/eslint app/javascript/components
 
