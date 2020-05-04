@@ -2,9 +2,8 @@ import React from 'react';
 import { Button, Card, Row, Col, Alert } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import confirmDialog from '../util/ConfirmDialog';
+import reportError from '../util/ReportError';
 
 class Import extends React.Component {
   constructor(props) {
@@ -46,16 +45,8 @@ class Import extends React.Component {
         let next = [...this.state.accepted, num];
         this.setState({ accepted: next });
       })
-      .catch(() => {
-        toast.error(
-          <div>
-            <div> Failed to communicate with the Sara Alert System Server. </div>
-            <div> If the error continues, please contact a System Administrator. </div>
-          </div>,
-          {
-            autoClose: 10000,
-          }
-        );
+      .catch(err => {
+        reportError(err);
       });
   }
 
@@ -167,7 +158,6 @@ class Import extends React.Component {
             );
           })}
         </div>
-        <ToastContainer position="top-center" autoClose={3000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
       </React.Fragment>
     );
   }

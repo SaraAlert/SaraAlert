@@ -3,6 +3,7 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import reportError from '../util/ReportError';
 
 class ReleaseUpdate extends React.Component {
   constructor(props) {
@@ -44,9 +45,7 @@ class ReleaseUpdate extends React.Component {
             });
           })
           .catch(error => {
-            toast.error('Failed to send email to all users.', {
-              position: toast.POSITION.TOP_CENTER,
-            });
+            reportError('Failed to send email to all users.');
             console.error(error);
           });
       }

@@ -3,6 +3,7 @@ import { Form, Row, Col, Button } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import confirmDialog from '../util/ConfirmDialog';
+import reportError from '../util/ReportError';
 
 class SymptomOnset extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ class SymptomOnset extends React.Component {
         location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
-        console.error(error);
+        reportError(error);
       });
   }
 

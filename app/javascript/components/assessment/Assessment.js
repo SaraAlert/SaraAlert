@@ -6,6 +6,7 @@ import { Carousel } from 'react-bootstrap';
 import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
 import confirmDialog from '../util/ConfirmDialog';
+import reportError from '../util/ReportError';
 
 class Assessment extends React.Component {
   constructor(props) {
@@ -105,7 +106,8 @@ class Assessment extends React.Component {
           location.href = window.BASE_PATH + '/patients/' + self.props.patient_id;
         }
       })
-      .catch(function(error) {
+      .catch(error => {
+        reportError(error);
         console.error(error);
       });
     if (!this.props.reload) {

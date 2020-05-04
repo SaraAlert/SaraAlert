@@ -14,6 +14,7 @@ import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import libphonenumber from 'google-libphonenumber';
+import reportError from '../util/ReportError';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -67,16 +68,8 @@ class Enrollment extends React.Component {
               (location.href = window.BASE_PATH + (groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id'])),
           });
         })
-        .catch(() => {
-          toast.error(
-            <div>
-              <div> Failed to communicate with the Sara Alert System Server. </div>
-              <div> If the error continues, please contact a System Administrator. </div>
-            </div>,
-            {
-              autoClose: 10000,
-            }
-          );
+        .catch(err => {
+          reportError(err);
         });
     } else {
       window.onbeforeunload = function() {
@@ -127,16 +120,8 @@ class Enrollment extends React.Component {
           });
         }
       })
-      .catch(() => {
-        toast.error(
-          <div>
-            <div> Failed to communicate with the Sara Alert System Server. </div>
-            <div> If the error continues, please contact a System Administrator. </div>
-          </div>,
-          {
-            autoClose: 10000,
-          }
-        );
+      .catch(err => {
+        reportError(err);
       });
   }
 
