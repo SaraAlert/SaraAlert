@@ -82,6 +82,7 @@ class AdminController < ApplicationController
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
 
     user.authy_id = nil
+    user.authy_enabled = false
     user.save!
   end
 
