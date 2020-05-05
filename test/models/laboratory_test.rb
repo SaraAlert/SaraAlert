@@ -3,7 +3,15 @@
 require 'test_case'
 
 class LaboratoryTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  def setup; end
+
+  def teardown; end
+
+  test 'create laboratory' do
+    create(:laboratory)
+
+    assert_raises(ActiveRecord::RecordInvalid) do
+      create(:laboratory, patient: nil)
+    end
+  end
 end
