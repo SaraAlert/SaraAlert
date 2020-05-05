@@ -2,7 +2,7 @@
 
 require 'system_test_case'
 
-class ApplicationSystemTestCase < ActionDispatch::SystemTestCase  
+class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   download_path = Rails.root.join('tmp/downloads').to_s
   FileUtils.rm_rf(download_path) if File.exist?(download_path)
 

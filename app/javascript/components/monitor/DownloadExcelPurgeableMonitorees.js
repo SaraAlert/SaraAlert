@@ -38,7 +38,7 @@ class DownloadExcelPurgeableMonitorees extends React.Component {
         .get(window.BASE_PATH + '/export/full_history_purge_eligible_monitorees', {})
         .then(response => {
           var fileDate = moment().format();
-          FileDownload(base64StringToBlob(response.data, 'application/xlsx'), 'Sara-Alert-Full-History-Purgable-Monitorees-' + fileDate + '.xlsx');
+          FileDownload(base64StringToBlob(response.data, 'application/xlsx'), 'Sara-Alert-Full-History-Purgeable-Monitorees-' + fileDate + '.xlsx');
           this.setState({ loading: false, showDownloadExcelModal: false });
         })
         .catch(error => {

@@ -15,7 +15,8 @@ class ExportController < ApplicationController
 
     headers = ['Monitoree', 'Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth',
                'End of Monitoring', 'Risk Level', 'Monitoring Plan', 'Latest Report', 'Transferred At',
-               'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At']
+               'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
+               'Transferred From', 'Transferred To', 'Expected Purge Date']
 
     # Grab patients to export based on type
     if params[:type] == 'symptomatic'
@@ -45,7 +46,7 @@ class ExportController < ApplicationController
       end
     end
 
-    send_data csv_result, filename: "Sara-Alert-#{params[:type]}-#{DateTime.now}.csv"
+    send_data csv_result, filename: "Sara-Alert-Line-List-#{params[:type]}-#{DateTime.now}.csv"
   end
 
   def csv_comprehensive_isolation
@@ -101,7 +102,7 @@ class ExportController < ApplicationController
       end
     end
 
-    send_data csv_result, filename: "Sara-Alert-#{params[:type]}-#{DateTime.now}.csv"
+    send_data csv_result, filename: "Sara-Alert-Format-#{params[:type]}-#{DateTime.now}.csv"
   end
 
   def full_history_all_monitorees

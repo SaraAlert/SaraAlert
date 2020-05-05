@@ -111,27 +111,27 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_line_list_csv(user_label)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_line_list_csv
+  def export_line_list_csv(user_label, isolation, tab)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_line_list_csv(jurisdiction_id, isolation, tab)
     @@system_test_utils.logout
   end
 
-  def export_sara_alert_format_csv(user_label)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_sara_alert_format_csv
+  def export_sara_alert_format_csv(user_label, isolation, tab)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_sara_alert_format_csv(jurisdiction_id, isolation, tab)
     @@system_test_utils.logout
   end
 
   def export_excel_purge_eligible_monitorees(user_label, download=true)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_excel_purge_eligible_monitorees(download)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_excel_purge_eligible_monitorees(jurisdiction_id, download)
     @@system_test_utils.logout
   end
 
   def export_excel_all_monitorees(user_label, download=true)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_excel_all_monitorees(download)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_excel_all_monitorees(jurisdiction_id, download)
     @@system_test_utils.logout
   end
 

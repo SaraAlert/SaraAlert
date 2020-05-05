@@ -13,6 +13,7 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   SIGN_IN_URL = '/users/sign_in'
   USER_PASSWORD = '1234567ab!'
+  DOWNLOAD_PATH = Rails.root.join('tmp/downloads').to_s
 
   ENROLLMENT_SUBMISSION_DELAY = 5 # wait for submission alert animation to finish
   ENROLLMENT_PAGE_TRANSITION_DELAY = 1 # wait for carousel animation to finish
@@ -121,6 +122,10 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   def get_users
     USERS
+  end
+
+  def get_download_path
+    DOWNLOAD_PATH
   end
 
   def get_assessment_name(patient_label, assessment_label)

@@ -2,10 +2,12 @@
 
 require 'application_system_test_case'
 
+require_relative 'downloads_verifier'
 require_relative 'reports'
 require_relative '../system_test_utils'
 
 class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
+  @@public_health_downloads_verifier = PublicHealthMonitoringDownloadsVerifier.new(nil)
   @@public_health_monitoring_reports = PublicHealthMonitoringReports.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
   
@@ -28,31 +30,39 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     fill_in 'Search:', with: MONITOREES[monitoree_label]['identification']['last_name']
   end
 
-  def export_line_list_csv
+  def export_line_list_csv(jurisdiction_id, isolation, tab)
+    click_on 'Isolation Monitoring' if isolation
+    click_on "#{tab}-tab"
     click_on 'Export'
     click_on 'Line list CSV'
+    @@public_health_downloads_verifier.verify_line_list_csv(jurisdiction_id, isolation, tab)
   end
 
-  def export_sara_alert_format_csv
+  def export_sara_alert_format_csv(jurisdiction_id, isolation, tab)
+    click_on 'Isolation Monitoring' if isolation
+    click_on "#{tab}-tab"
     click_on 'Export'
     click_on 'Sara Alert Format CSV'
+    @@public_health_downloads_verifier.verify_sara_alert_format_csv(jurisdiction_id, isolation, tab)
   end
 
-  def export_excel_purge_eligible_monitorees(download=true)
+  def export_excel_purge_eligible_monitorees(jurisdiction_id, download=true)
     click_on 'Export'
     click_on 'Excel Export For Purge-Eligible Monitorees'
     if download
       click_on 'Download'
+      @@public_health_downloads_verifier.verify_excel_purge_eligible_monitorees(jurisdiction_id)
     else
       click_on 'Cancel'
     end
   end
 
-  def export_excel_all_monitorees(download=true)
+  def export_excel_all_monitorees(jurisdiction_id, download=true)
     click_on 'Export'
     click_on 'Excel Export For All Monitorees'
     if download
       click_on 'Download'
+      @@public_health_downloads_verifier.verify_excel_all_monitorees(jurisdiction_id)
     else
       click_on 'Cancel'
     end
