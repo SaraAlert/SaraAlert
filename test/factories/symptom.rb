@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :symptom do
-    type { Symptom.valid_types.select }
+    type { Symptom.valid_types.sample }
 
     after(:build) do |symptom|
       if symptom.type == 'IntegerSymptom' && symptom.int_value.nil?
