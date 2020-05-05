@@ -34,7 +34,7 @@ namespace :admin do
     matching_jurisdictions = Jurisdiction.where(name: jur_name)
     matching_jurisdictions.each do |matching_jurisdiction|
       # Also works for the case where parent is nil ie: top-level jurisdiction
-      if matching_jurisdiction.parent&.name == parent&.name
+      if matching_jurisdiction.parent&.path == parent&.path
         jurisdiction = matching_jurisdiction
         break
       end
@@ -43,7 +43,7 @@ namespace :admin do
     if jurisdiction == nil
       jurisdiction = Jurisdiction.create(name: jur_name , parent: parent)
       unique_identifier = Digest::SHA256.hexdigest(jurisdiction.jurisdiction_path_string)
-      jurisdiction.update(unique_identifier: unique_identifier)
+      jurisdiction.update(unique_identifier: unique_identifier, path: jurisdiction.jurisdiction_path_string)
     end
 
     # Parse and add symptoms list to jurisdiction if included

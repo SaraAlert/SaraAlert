@@ -19,29 +19,41 @@ class Identification extends React.Component {
     let self = this;
     event.persist();
     value = event.target.type === 'date' && value === '' ? undefined : value;
-    this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
-      let current = this.state.current;
-      let modified = this.state.modified;
-      if (event.target.id === 'date_of_birth') {
-        let age;
-        // if value is undefined, age will stay undefined (which nulls out the age field)
-        if (typeof value !== 'undefined') {
-          age = 0 - moment(self.state.current.date_of_birth).diff(moment.now(), 'years');
-          age = age < 200 && age > 0 ? age : current.age;
-        }
-        self.setState({ current: { ...current, age }, modified: { ...modified, age } }, () => {
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        let current = this.state.current;
+        let modified = this.state.modified;
+        if (event.target.id === 'date_of_birth') {
+          let age;
+          // if value is undefined, age will stay undefined (which nulls out the age field)
+          if (typeof value !== 'undefined') {
+            age = 0 - moment(self.state.current.patient.date_of_birth).diff(moment.now(), 'years');
+            age = age < 200 && age > 0 ? age : current.patient.age;
+          }
+          self.setState(
+            {
+              current: { ...current, patient: { ...current.patient, age } },
+              modified: { ...modified, patient: { ...modified.patient, age } },
+            },
+            () => {
+              self.props.setEnrollmentState({ ...self.state.modified });
+            }
+          );
+        } else {
           self.props.setEnrollmentState({ ...self.state.modified });
-        });
-      } else {
-        self.props.setEnrollmentState({ ...self.state.modified });
+        }
       }
-    });
+    );
   }
 
   validate(callback) {
     let self = this;
     schema
-      .validate(this.state.current, { abortEarly: false })
+      .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, () => {
@@ -74,7 +86,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['first_name']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.first_name || ''}
+                    value={this.state.current.patient.first_name || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -87,7 +99,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['middle_name']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.middle_name || ''}
+                    value={this.state.current.patient.middle_name || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -100,7 +112,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['last_name']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.last_name || ''}
+                    value={this.state.current.patient.last_name || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -116,7 +128,7 @@ class Identification extends React.Component {
                     size="lg"
                     type="date"
                     className="form-square"
-                    value={this.state.current.date_of_birth || ''}
+                    value={this.state.current.patient.date_of_birth || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -131,7 +143,7 @@ class Identification extends React.Component {
                     placeholder=""
                     size="lg"
                     className="form-square"
-                    value={this.state.current.age || ''}
+                    value={this.state.current.patient.age || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -146,7 +158,7 @@ class Identification extends React.Component {
                     as="select"
                     size="lg"
                     className="form-square"
-                    value={this.state.current.sex || ''}
+                    value={this.state.current.patient.sex || ''}
                     onChange={this.handleChange}>
                     <option></option>
                     <option>Female</option>
@@ -161,13 +173,19 @@ class Identification extends React.Component {
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
-                  <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.white === true || false} onChange={this.handleChange} />
+                  <Form.Check
+                    type="switch"
+                    id="white"
+                    label="WHITE"
+                    checked={this.state.current.patient.white === true || false}
+                    onChange={this.handleChange}
+                  />
                   <Form.Check
                     className="pt-2"
                     type="switch"
                     id="black_or_african_american"
                     label="BLACK OR AFRICAN AMERICAN"
-                    checked={this.state.current.black_or_african_american === true || false}
+                    checked={this.state.current.patient.black_or_african_american === true || false}
                     onChange={this.handleChange}
                   />
                   <Form.Check
@@ -175,7 +193,7 @@ class Identification extends React.Component {
                     type="switch"
                     id="american_indian_or_alaska_native"
                     label="AMERICAN INDIAN OR ALASKA NATIVE"
-                    checked={this.state.current.american_indian_or_alaska_native === true || false}
+                    checked={this.state.current.patient.american_indian_or_alaska_native === true || false}
                     onChange={this.handleChange}
                   />
                   <Form.Check
@@ -183,7 +201,7 @@ class Identification extends React.Component {
                     type="switch"
                     id="asian"
                     label="ASIAN"
-                    checked={this.state.current.asian === true || false}
+                    checked={this.state.current.patient.asian === true || false}
                     onChange={this.handleChange}
                   />
                   <Form.Check
@@ -191,14 +209,14 @@ class Identification extends React.Component {
                     type="switch"
                     id="native_hawaiian_or_other_pacific_islander"
                     label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER"
-                    checked={this.state.current.native_hawaiian_or_other_pacific_islander === true || false}
+                    checked={this.state.current.patient.native_hawaiian_or_other_pacific_islander === true || false}
                     onChange={this.handleChange}
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} md="8" controlId="ethnicity">
                   <Form.Label className="nav-input-label">ETHNICITY{schema?.fields?.ethnicity?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control as="select" size="lg" className="form-square" value={this.state.current.ethnicity || ''} onChange={this.handleChange}>
+                  <Form.Control as="select" size="lg" className="form-square" value={this.state.current.patient.ethnicity || ''} onChange={this.handleChange}>
                     <option></option>
                     <option>Not Hispanic or Latino</option>
                     <option>Hispanic or Latino</option>
@@ -212,7 +230,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['primary_language']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.primary_language || ''}
+                    value={this.state.current.patient.primary_language || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -226,7 +244,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['secondary_language']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.secondary_language || ''}
+                    value={this.state.current.patient.secondary_language || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -240,7 +258,7 @@ class Identification extends React.Component {
                     type="switch"
                     id="interpretation_required"
                     label="INTERPRETATION REQUIRED"
-                    checked={this.state.current.interpretation_required || false}
+                    checked={this.state.current.patient.interpretation_required || false}
                     onChange={this.handleChange}
                   />
                 </Form.Group>
@@ -252,7 +270,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['nationality']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.nationality || ''}
+                    value={this.state.current.patient.nationality || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -267,7 +285,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['user_defined_id_statelocal']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.user_defined_id_statelocal || ''}
+                    value={this.state.current.patient.user_defined_id_statelocal || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -280,7 +298,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['user_defined_id_cdc']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.user_defined_id_cdc || ''}
+                    value={this.state.current.patient.user_defined_id_cdc || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -295,7 +313,7 @@ class Identification extends React.Component {
                     isInvalid={this.state.errors['user_defined_id_nndss']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.user_defined_id_nndss || ''}
+                    value={this.state.current.patient.user_defined_id_nndss || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">

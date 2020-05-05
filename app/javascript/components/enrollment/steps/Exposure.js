@@ -8,17 +8,13 @@ import confirmDialog from '../../util/ConfirmDialog';
 class Exposure extends React.Component {
   constructor(props) {
     super(props);
-    const jur = this.props.jurisdiction_paths.find(jur => jur.value === props.jurisdiction_id);
     this.state = {
       ...this.props,
       current: { ...this.props.currentState },
-      propagatedFields: { ...this.props.propagated_fields },
-      jurisdiction_label: jur ? jur.label : '',
-      original_jurisdiction_label: jur ? jur.label : '',
-      original_jurisdiction_id: this.props.currentState.jurisdiction_id,
       errors: {},
       modified: {},
-      modifiedPropagatedFields: {},
+      jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
+      originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
@@ -30,26 +26,32 @@ class Exposure extends React.Component {
     let current = this.state.current;
     let modified = this.state.modified;
     value = event.target.type === 'date' && value === '' ? undefined : value;
-    if (event?.target?.name && event.target.name === 'jurisdictionList') {
-      this.setState({ jurisdiction_label: event.target.value });
-      let jurisdiction = this.props.jurisdiction_paths.find(jur => jur.label === event.target.value);
-      value = jurisdiction?.value ? jurisdiction.value : -1;
+    if (event?.target?.name && event.target.name === 'jurisdictionId') {
+      this.setState({ jurisdictionPath: event.target.value });
+      let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
+      value = jurisdiction_id ? jurisdiction_id : -1;
     }
-    this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
-      this.props.setEnrollmentState({ ...this.state.modified });
-    });
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
   }
 
   handlePropagatedFieldChange(event) {
-    let propagatedFields = this.propagatedFields;
-    let modifiedPropagatedFields = this.state.modifiedPropagatedFields;
+    let current = this.state.current;
+    let modified = this.state.modified;
     this.setState(
       {
-        propagatedFields: { ...propagatedFields, [event.target.name]: event.target.checked },
-        modifiedPropagatedFields: { ...modifiedPropagatedFields, [event.target.name]: event.target.checked },
+        current: { ...current, propagatedFields: { ...current.propagatedFields, [event.target.name]: event.target.checked } },
+        modified: { ...modified, propagatedFields: { ...current.propagatedFields, [event.target.name]: event.target.checked } },
       },
       () => {
-        this.props.setPropagatedFields({ ...this.state.modifiedPropagatedFields });
+        this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
   }
@@ -57,13 +59,13 @@ class Exposure extends React.Component {
   validate(callback) {
     let self = this;
     schema
-      .validate(this.state.current, { abortEarly: false })
+      .validate({ ...this.state.current.patient }, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, async () => {
-          if (self.state.current.jurisdiction_id !== self.state.original_jurisdiction_id) {
-            const original_jurisdiction_label = self.props.jurisdiction_paths.find(jur => jur.value === self.state.original_jurisdiction_id)?.label;
-            const message = `You are about to change the assigned jurisdiction from ${original_jurisdiction_label} to ${self.state.jurisdiction_label}. Are you sure you want to do this?`;
+          if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
+            const originalJurisdictionPath = self.props.jurisdictionPaths[self.state.originalJurisdictionId];
+            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdictionPath}. Are you sure you want to do this?`;
             if (await confirmDialog(message)) {
               callback();
             }
@@ -101,7 +103,7 @@ class Exposure extends React.Component {
                     size="lg"
                     type="date"
                     className="form-square"
-                    value={this.state.current.last_date_of_exposure || ''}
+                    value={this.state.current.patient.last_date_of_exposure || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -116,7 +118,7 @@ class Exposure extends React.Component {
                     isInvalid={this.state.errors['potential_exposure_location']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.potential_exposure_location || ''}
+                    value={this.state.current.patient.potential_exposure_location || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -132,7 +134,7 @@ class Exposure extends React.Component {
                     as="select"
                     size="lg"
                     className="form-square"
-                    value={this.state.current.potential_exposure_country || ''}
+                    value={this.state.current.patient.potential_exposure_country || ''}
                     onChange={this.handleChange}>
                     <option></option>
                     {countryOptions.map((country, index) => (
@@ -153,7 +155,7 @@ class Exposure extends React.Component {
                         type="switch"
                         id="contact_of_known_case"
                         label="CLOSE CONTACT WITH A KNOWN CASE"
-                        checked={this.state.current.contact_of_known_case === true || false}
+                        checked={this.state.current.patient.contact_of_known_case === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -163,7 +165,7 @@ class Exposure extends React.Component {
                         className="form-square"
                         id="contact_of_known_case_id"
                         placeholder="enter case ID"
-                        value={this.state.current.contact_of_known_case_id || ''}
+                        value={this.state.current.patient.contact_of_known_case_id || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -178,7 +180,7 @@ class Exposure extends React.Component {
                         type="switch"
                         id="travel_to_affected_country_or_area"
                         label="TRAVEL FROM AFFECTED COUNTRY OR AREA"
-                        checked={this.state.current.travel_to_affected_country_or_area === true || false}
+                        checked={this.state.current.patient.travel_to_affected_country_or_area === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -190,7 +192,7 @@ class Exposure extends React.Component {
                         type="switch"
                         id="was_in_health_care_facility_with_known_cases"
                         label="WAS IN HEALTH CARE FACILITY WITH KNOWN CASES"
-                        checked={this.state.current.was_in_health_care_facility_with_known_cases === true || false}
+                        checked={this.state.current.patient.was_in_health_care_facility_with_known_cases === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -200,7 +202,7 @@ class Exposure extends React.Component {
                         className="form-square"
                         id="was_in_health_care_facility_with_known_cases_facility_name"
                         placeholder="enter facility name"
-                        value={this.state.current.was_in_health_care_facility_with_known_cases_facility_name || ''}
+                        value={this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -215,7 +217,7 @@ class Exposure extends React.Component {
                         type="switch"
                         id="laboratory_personnel"
                         label="LABORATORY PERSONNEL"
-                        checked={this.state.current.laboratory_personnel === true || false}
+                        checked={this.state.current.patient.laboratory_personnel === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -225,7 +227,7 @@ class Exposure extends React.Component {
                         className="form-square"
                         id="laboratory_personnel_facility_name"
                         placeholder="enter facility name"
-                        value={this.state.current.laboratory_personnel_facility_name || ''}
+                        value={this.state.current.patient.laboratory_personnel_facility_name || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -240,7 +242,7 @@ class Exposure extends React.Component {
                         type="switch"
                         id="healthcare_personnel"
                         label="HEALTHCARE PERSONNEL"
-                        checked={this.state.current.healthcare_personnel === true || false}
+                        checked={this.state.current.patient.healthcare_personnel === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -250,7 +252,7 @@ class Exposure extends React.Component {
                         className="form-square"
                         id="healthcare_personnel_facility_name"
                         placeholder="enter facility name"
-                        value={this.state.current.healthcare_personnel_facility_name || ''}
+                        value={this.state.current.patient.healthcare_personnel_facility_name || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -265,7 +267,7 @@ class Exposure extends React.Component {
                         type="switch"
                         id="crew_on_passenger_or_cargo_flight"
                         label="CREW ON PASSENGER OR CARGO FLIGHT"
-                        checked={this.state.current.crew_on_passenger_or_cargo_flight === true || false}
+                        checked={this.state.current.patient.crew_on_passenger_or_cargo_flight === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -276,7 +278,7 @@ class Exposure extends React.Component {
                         type="switch"
                         id="member_of_a_common_exposure_cohort"
                         label="MEMBER OF A COMMON EXPOSURE COHORT"
-                        checked={this.state.current.member_of_a_common_exposure_cohort === true || false}
+                        checked={this.state.current.patient.member_of_a_common_exposure_cohort === true || false}
                         onChange={this.handleChange}
                       />
                     </Form.Group>
@@ -286,7 +288,7 @@ class Exposure extends React.Component {
                         className="form-square"
                         id="member_of_a_common_exposure_cohort_type"
                         placeholder="enter description"
-                        value={this.state.current.member_of_a_common_exposure_cohort_type || ''}
+                        value={this.state.current.patient.member_of_a_common_exposure_cohort_type || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -311,7 +313,7 @@ class Exposure extends React.Component {
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
-                        value={this.state.current.exposure_risk_assessment || ''}>
+                        value={this.state.current.patient.exposure_risk_assessment || ''}>
                         <option></option>
                         <option>High</option>
                         <option>Medium</option>
@@ -330,7 +332,7 @@ class Exposure extends React.Component {
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
-                        value={this.state.current.monitoring_plan || ''}>
+                        value={this.state.current.patient.monitoring_plan || ''}>
                         <option>None</option>
                         <option>Daily active monitoring</option>
                         <option>Self-monitoring with public health supervision</option>
@@ -344,23 +346,25 @@ class Exposure extends React.Component {
                   </Form.Row>
                   <Form.Row className="pt-3 align-items-end">
                     <Form.Group as={Col} md="14" controlId="jurisdiction_id">
-                      <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="nav-input-label">
+                        ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_label?._exclusive?.required && ' *'}
+                      </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
-                        list="jurisdiction"
-                        name="jurisdictionList"
+                        name="jurisdictionId"
+                        list="jurisdictionPaths"
                         autoComplete="off"
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
-                        value={this.state.jurisdiction_label}
+                        value={this.state.jurisdictionPath}
                       />
-                      <datalist id="jurisdiction">
-                        {this.props.jurisdiction_paths.map(jur => {
+                      <datalist id="jurisdictionPaths">
+                        {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
                           return (
-                            <option value={jur.label} key={`jur-${jur.value}`}>
-                              {jur.label}
+                            <option value={path} key={id}>
+                              {path}
                             </option>
                           );
                         })}
@@ -369,8 +373,8 @@ class Exposure extends React.Component {
                         {this.state.errors['jurisdiction_id']}
                       </Form.Control.Feedback>
                       {this.props.has_group_members &&
-                        this.state.jurisdiction_label !== this.state.original_jurisdiction_label &&
-                        this.state.current.jurisdiction_id >= 0 && (
+                        this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
+                        Object.keys(this.props.jurisdictionPaths).includes(this.state.current.patient.jurisdiction_id) && (
                           <Form.Group className="mt-2">
                             <Form.Check
                               type="switch"
@@ -378,7 +382,7 @@ class Exposure extends React.Component {
                               name="jurisdiction_id"
                               label="Apply this change to the entire household that this monitoree is responsible for"
                               onChange={this.handlePropagatedFieldChange}
-                              checked={this.state.propagatedFields.jurisdiction_id === true || false}
+                              checked={this.state.current.propagatedFields.jurisdiction_id === true || false}
                             />
                           </Form.Group>
                         )}
@@ -394,7 +398,7 @@ class Exposure extends React.Component {
                         size="lg"
                         className="form-square"
                         placeholder="enter additional information about monitoree’s potential exposure"
-                        value={this.state.current.exposure_notes || ''}
+                        value={this.state.current.patient.exposure_notes || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -489,13 +493,10 @@ Exposure.propTypes = {
   currentState: PropTypes.object,
   previous: PropTypes.func,
   setEnrollmentState: PropTypes.func,
-  setPropagatedFields: PropTypes.func,
   next: PropTypes.func,
   submit: PropTypes.func,
-  propagated_fields: PropTypes.object,
   has_group_members: PropTypes.bool,
-  jurisdiction_paths: PropTypes.array,
-  jurisdiction_id: PropTypes.number,
+  jurisdictionPaths: PropTypes.object,
 };
 
 export default Exposure;

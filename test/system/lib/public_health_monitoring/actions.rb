@@ -52,7 +52,7 @@ class PublicHealthMonitoringActions < ApplicationSystemTestCase
 
   def update_assigned_jurisdiction(user_label, jurisdiction, reasoning, valid_jurisdiction=true, under_hierarchy=true)
     assert page.has_button?('Change Jurisdiction', disabled: true)
-    fill_in 'jurisdictionList', with: jurisdiction
+    fill_in 'jurisdictionId', with: jurisdiction
     if valid_jurisdiction
       assert page.has_button?('Change Jurisdiction', disabled: false)
       click_on 'Change Jurisdiction'

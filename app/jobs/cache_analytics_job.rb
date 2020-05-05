@@ -10,7 +10,7 @@ class CacheAnalyticsJob < ApplicationJob
     leaf_nodes = Jurisdiction.leaf_nodes
     leaf_nodes.each do |leaf_jurisdiction|
       leaf_analytic = self.class.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
-      jurisdiction_analytic_map[leaf_jurisdiction.jurisdiction_path_string] = leaf_analytic
+      jurisdiction_analytic_map[leaf_jurisdiction[:path]] = leaf_analytic
       # Start recursive bubble up of analytic data
       self.class.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, jurisdiction_analytic_map)
     end
@@ -22,7 +22,7 @@ class CacheAnalyticsJob < ApplicationJob
       monitored_by_state = root_jurisdiction.all_patients.symptomatic.uniq.pluck(:monitored_address_state).each_with_object(Hash.new(0)) do |state, counts|
         counts[state] += 1
       end
-      root_node_path = root_jurisdiction.jurisdiction_path_string
+      root_node_path = root_jurisdiction[:path]
       # These maps can be retrieved back into a hash by running the following
       # JSON.parse <analytic>.monitoree_state_map.to_s.gsub('=>', ':')
       jurisdiction_analytic_map[root_node_path].symptomatic_state_map = symp_by_state.to_s
@@ -69,7 +69,7 @@ class CacheAnalyticsJob < ApplicationJob
     return if parent.nil?
 
     # Create analytic for patients local to parent if it does not exist
-    parent_path_string = parent.jurisdiction_path_string
+    parent_path_string = parent[:path]
     parent_analytic = jurisdiction_analytic_map[parent_path_string]
     if parent_analytic.nil?
       parent_analytic = calculate_analytic_local_to_jurisdiction(parent)

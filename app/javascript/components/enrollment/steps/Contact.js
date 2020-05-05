@@ -20,9 +20,15 @@ class Contact extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
-      this.props.setEnrollmentState({ ...this.state.modified });
-    });
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
     this.updatePrimaryContactMethodValidations(event);
   }
 
@@ -92,7 +98,7 @@ class Contact extends React.Component {
   validate(callback) {
     let self = this;
     schema
-      .validate(this.state.current, { abortEarly: false })
+      .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, () => {
@@ -128,7 +134,7 @@ class Contact extends React.Component {
                     as="select"
                     size="lg"
                     className="form-square"
-                    value={this.state.current.preferred_contact_method || ''}
+                    value={this.state.current.patient.preferred_contact_method || ''}
                     onChange={this.handleChange}>
                     <option></option>
                     <option>E-mailed Web Link</option>
@@ -140,7 +146,7 @@ class Contact extends React.Component {
                     {this.state.errors['preferred_contact_method']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                {this.state.current.preferred_contact_method !== 'E-mailed Web Link' && (
+                {this.state.current.patient.preferred_contact_method !== 'E-mailed Web Link' && (
                   <Form.Group as={Col} md="8" controlId="preferred_contact_time">
                     <Form.Label className="nav-input-label">
                       PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
@@ -150,7 +156,7 @@ class Contact extends React.Component {
                       as="select"
                       size="lg"
                       className="form-square"
-                      value={this.state.current.preferred_contact_time || ''}
+                      value={this.state.current.patient.preferred_contact_time || ''}
                       onChange={this.handleChange}>
                       <option></option>
                       <option>Morning</option>
@@ -186,7 +192,7 @@ class Contact extends React.Component {
                     isInvalid={this.state.errors['primary_telephone']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.primary_telephone || ''}
+                    value={this.state.current.patient.primary_telephone || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -202,7 +208,7 @@ class Contact extends React.Component {
                     isInvalid={this.state.errors['secondary_telephone']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.secondary_telephone || ''}
+                    value={this.state.current.patient.secondary_telephone || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -218,7 +224,7 @@ class Contact extends React.Component {
                     as="select"
                     size="lg"
                     className="form-square"
-                    value={this.state.current.primary_telephone_type || ''}
+                    value={this.state.current.patient.primary_telephone_type || ''}
                     onChange={this.handleChange}>
                     <option></option>
                     <option>Smartphone</option>
@@ -239,7 +245,7 @@ class Contact extends React.Component {
                     as="select"
                     size="lg"
                     className="form-square"
-                    value={this.state.current.secondary_telephone_type || ''}
+                    value={this.state.current.patient.secondary_telephone_type || ''}
                     onChange={this.handleChange}>
                     <option></option>
                     <option>Smartphone</option>
@@ -274,7 +280,7 @@ class Contact extends React.Component {
                     isInvalid={this.state.errors['email']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.email || ''}
+                    value={this.state.current.patient.email || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
@@ -287,7 +293,7 @@ class Contact extends React.Component {
                     isInvalid={this.state.errors['confirm_email']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.confirm_email || ''}
+                    value={this.state.current.patient.confirm_email || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">

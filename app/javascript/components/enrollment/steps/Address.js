@@ -10,7 +10,7 @@ class Address extends React.Component {
     this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, selectedTab: 'domestic' };
     if (typeof this.props.currentState.monitored_address_state !== 'undefined') {
       // When viewing existing patients, the `monitored_address_state` needs to be reverse mapped back to the abbreviation
-      this.state.current.monitored_address_state = stateOptions.find(state => state.name === this.props.currentState.monitored_address_state)?.abbrv;
+      this.state.current.patient.monitored_address_state = stateOptions.find(state => state.name === this.props.currentState.monitored_address_state)?.abbrv;
     }
     this.handleChange = this.handleChange.bind(this);
     this.whereMonitoredSameAsHome = this.whereMonitoredSameAsHome.bind(this);
@@ -21,23 +21,32 @@ class Address extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    this.setState({ current: { ...current, [event.target.id]: value }, modified: { ...modified, [event.target.id]: value } }, () => {
-      this.props.setEnrollmentState({ ...this.state.modified });
-    });
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
   }
 
   whereMonitoredSameAsHome() {
-    let currentState = this.state.current;
+    let current = this.state.current;
     this.setState(
       {
         current: {
-          ...currentState,
-          monitored_address_line_1: currentState.address_line_1,
-          monitored_address_city: currentState.address_city,
-          monitored_address_state: currentState.address_state,
-          monitored_address_line_2: currentState.address_line_2,
-          monitored_address_zip: currentState.address_zip,
-          monitored_address_county: currentState.address_county,
+          ...current,
+          patient: {
+            ...current.patient,
+            monitored_address_line_1: current.patient.address_line_1,
+            monitored_address_city: current.patient.address_city,
+            monitored_address_state: current.patient.address_state,
+            monitored_address_line_2: current.patient.address_line_2,
+            monitored_address_zip: current.patient.address_zip,
+            monitored_address_county: current.patient.address_county,
+          },
         },
       },
       () => {
@@ -50,7 +59,7 @@ class Address extends React.Component {
     let self = this;
     if (this.state.selectedTab === 'domestic') {
       schemaDomestic
-        .validate(this.state.current, { abortEarly: false })
+        .validate(this.state.current.patient, { abortEarly: false })
         .then(function() {
           // No validation issues? Invoke callback (move to next step)
           self.setState({ errors: {} }, () => {
@@ -69,7 +78,7 @@ class Address extends React.Component {
         });
     } else if (this.state.selectedTab === 'foreign') {
       schemaForeign
-        .validate(this.state.current, { abortEarly: false })
+        .validate(this.state.current.patient, { abortEarly: false })
         .then(function() {
           // No validation issues? Invoke callback (move to next step)
           self.setState({ errors: {} }, () => {
@@ -114,7 +123,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['address_line_1']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.address_line_1 || ''}
+                        value={this.state.current.patient.address_line_1 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -127,7 +136,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['address_city']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.address_city || ''}
+                        value={this.state.current.patient.address_city || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -141,7 +150,7 @@ class Address extends React.Component {
                         as="select"
                         size="lg"
                         className="form-square"
-                        value={this.state.current.address_state || ''}
+                        value={this.state.current.patient.address_state || ''}
                         onChange={this.handleChange}>
                         <option></option>
                         {stateOptions.map((state, index) => (
@@ -162,7 +171,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['address_line_2']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.address_line_2 || ''}
+                        value={this.state.current.patient.address_line_2 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -175,7 +184,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['address_zip']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.address_zip || ''}
+                        value={this.state.current.patient.address_zip || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -192,7 +201,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['address_county']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.address_county || ''}
+                        value={this.state.current.patient.address_county || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -229,7 +238,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['monitored_address_line_1']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.monitored_address_line_1 || ''}
+                        value={this.state.current.patient.monitored_address_line_1 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -244,7 +253,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['monitored_address_city']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.monitored_address_city || ''}
+                        value={this.state.current.patient.monitored_address_city || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -258,7 +267,7 @@ class Address extends React.Component {
                         as="select"
                         size="lg"
                         className="form-square"
-                        value={this.state.current.monitored_address_state || ''}
+                        value={this.state.current.patient.monitored_address_state || ''}
                         onChange={this.handleChange}>
                         <option></option>
                         {stateOptions.map((state, index) => (
@@ -281,7 +290,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['monitored_address_line_2']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.monitored_address_line_2 || ''}
+                        value={this.state.current.patient.monitored_address_line_2 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -294,7 +303,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['monitored_address_zip']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.monitored_address_zip || ''}
+                        value={this.state.current.patient.monitored_address_zip || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -311,7 +320,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['monitored_address_county']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.monitored_address_county || ''}
+                        value={this.state.current.patient.monitored_address_county || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -335,7 +344,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_address_line_1']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_address_line_1 || ''}
+                        value={this.state.current.patient.foreign_address_line_1 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -348,7 +357,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_address_city']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_address_city || ''}
+                        value={this.state.current.patient.foreign_address_city || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -362,7 +371,7 @@ class Address extends React.Component {
                         as="select"
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_address_country || ''}
+                        value={this.state.current.patient.foreign_address_country || ''}
                         onChange={this.handleChange}>
                         <option></option>
                         {countryOptions.map((country, index) => (
@@ -383,7 +392,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_address_line_2']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_address_line_2 || ''}
+                        value={this.state.current.patient.foreign_address_line_2 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -396,7 +405,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_address_zip']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_address_zip || ''}
+                        value={this.state.current.patient.foreign_address_zip || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -413,7 +422,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_address_line_3']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_address_line_3 || ''}
+                        value={this.state.current.patient.foreign_address_line_3 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -428,7 +437,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_address_state']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_address_state || ''}
+                        value={this.state.current.patient.foreign_address_state || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -460,7 +469,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_monitored_address_line_1']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_monitored_address_line_1 || ''}
+                        value={this.state.current.patient.foreign_monitored_address_line_1 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -475,7 +484,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_monitored_address_city']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_monitored_address_city || ''}
+                        value={this.state.current.patient.foreign_monitored_address_city || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -491,7 +500,7 @@ class Address extends React.Component {
                         as="select"
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_monitored_address_state || ''}
+                        value={this.state.current.patient.foreign_monitored_address_state || ''}
                         onChange={this.handleChange}>
                         <option></option>
                         {stateOptions.map((state, index) => (
@@ -514,7 +523,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_monitored_address_line_2']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_monitored_address_line_2 || ''}
+                        value={this.state.current.patient.foreign_monitored_address_line_2 || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -529,7 +538,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_monitored_address_zip']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_monitored_address_zip || ''}
+                        value={this.state.current.patient.foreign_monitored_address_zip || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">
@@ -546,7 +555,7 @@ class Address extends React.Component {
                         isInvalid={this.state.errors['foreign_monitored_address_county']}
                         size="lg"
                         className="form-square"
-                        value={this.state.current.foreign_monitored_address_county || ''}
+                        value={this.state.current.patient.foreign_monitored_address_county || ''}
                         onChange={this.handleChange}
                       />
                       <Form.Control.Feedback className="d-block" type="invalid">

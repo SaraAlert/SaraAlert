@@ -4,12 +4,18 @@
   <%= react_component("subject/DownloadMonitoreeExcel", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
 <% end %>
 
-<%= react_component("PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: current_user.can_modify_subject_status?, jurisdiction_path: @jurisdiction_path }) %>
+<%= react_component("PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: current_user.can_modify_subject_status?, jurisdictionPath: @patient.jurisdiction[:path] }) %>
 
 <% if current_user.can_modify_subject_status? %>
   <div class="card mx-2 mt-4 mb-4 card-square">
     <h5 class="card-header">Monitoring Actions</h5>
-    <%= react_component("subject/MonitoringStatus", { current_user: current_user, authenticity_token: form_authenticity_token, has_group_members: @group_members.exists?, jurisdiction_id: @patient.jurisdiction_id, patient: @patient, jurisdiction_paths: Jurisdiction.all.collect{ |jur| { value: jur.id, label: jur.jurisdiction_path_string } } } ) %>
+    <%= react_component("subject/MonitoringStatus", {
+      current_user: current_user,
+      authenticity_token: form_authenticity_token,
+      has_group_members: @group_members.exists?,
+      patient: @patient,
+      jurisdictionPaths: Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
+      }) %>
   </div>
 <% end %>
 
