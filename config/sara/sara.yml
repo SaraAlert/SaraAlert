@@ -38,4 +38,4 @@ report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || false %>
 sentry_url: <%= ENV["SENTRY_URL"] || '' %>
 
 # Globally Enable or Disable the use of two factor authentication
-two_factor_auth_enabled: <%= ENV["SARA_ALERT_TWO_FACTOR_AUTH_ENABLED"] || true %>
+two_factor_auth_enabled: <%= ENV["AUTHY_API_KEY"] || false %>
