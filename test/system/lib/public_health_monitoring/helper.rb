@@ -111,15 +111,15 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_line_list_csv(user_label, isolation, tab)
+  def export_line_list_csv(user_label, isolation)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_line_list_csv(jurisdiction_id, isolation, tab)
+    @@public_health_monitoring_dashboard.export_line_list_csv(jurisdiction_id, isolation)
     @@system_test_utils.logout
   end
 
-  def export_sara_alert_format_csv(user_label, isolation, tab)
+  def export_sara_alert_format_csv(user_label, isolation)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_sara_alert_format_csv(jurisdiction_id, isolation, tab)
+    @@public_health_monitoring_dashboard.export_sara_alert_format_csv(jurisdiction_id, isolation)
     @@system_test_utils.logout
   end
 
@@ -133,6 +133,13 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_monitoring_dashboard.export_excel_all_monitorees(jurisdiction_id, download)
     @@system_test_utils.logout
+  end
+
+  def export_excel_single_monitoree(user_label, patient_label)
+    @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_excel_single_monitoree(patient_label)
+    @@system_test_utils.logout
+
   end
 
   def import_epi_x(user_label)

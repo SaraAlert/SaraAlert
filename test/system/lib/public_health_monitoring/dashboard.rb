@@ -30,20 +30,18 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     fill_in 'Search:', with: MONITOREES[monitoree_label]['identification']['last_name']
   end
 
-  def export_line_list_csv(jurisdiction_id, isolation, tab)
+  def export_line_list_csv(jurisdiction_id, isolation)
     click_on 'Isolation Monitoring' if isolation
-    click_on "#{tab}-tab"
     click_on 'Export'
     click_on 'Line list CSV'
-    @@public_health_downloads_verifier.verify_line_list_csv(jurisdiction_id, isolation, tab)
+    @@public_health_downloads_verifier.verify_line_list_csv(jurisdiction_id, isolation)
   end
 
-  def export_sara_alert_format_csv(jurisdiction_id, isolation, tab)
+  def export_sara_alert_format_csv(jurisdiction_id, isolation)
     click_on 'Isolation Monitoring' if isolation
-    click_on "#{tab}-tab"
     click_on 'Export'
     click_on 'Sara Alert Format CSV'
-    @@public_health_downloads_verifier.verify_sara_alert_format_csv(jurisdiction_id, isolation, tab)
+    @@public_health_downloads_verifier.verify_sara_alert_format_csv(jurisdiction_id, isolation)
   end
 
   def export_excel_purge_eligible_monitorees(jurisdiction_id, download=true)
@@ -66,6 +64,12 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     else
       click_on 'Cancel'
     end
+  end
+
+  def export_excel_single_monitoree(patient_label)
+    search_for_and_view_patient('all', patient_label)
+    click_on 'Download Excel Export'
+    @@public_health_downloads_verifier.verify_excel_single_monitoree(patient_label.split('_')[1].to_i)
   end
 
   def import_epi_x

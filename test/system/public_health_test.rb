@@ -74,21 +74,27 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'export line list csv' do
-    @@public_health_monitoring_helper.export_line_list_csv('locals2c3_epi', false, 'all')
+    @@public_health_monitoring_helper.export_line_list_csv('locals2c3_epi', false)
+    @@public_health_monitoring_helper.export_line_list_csv('locals2c4_epi', true)
   end
 
   test 'export sara alert format csv' do
-    @@public_health_monitoring_helper.export_sara_alert_format_csv('locals2c4_epi', false, 'all')
+    @@public_health_monitoring_helper.export_sara_alert_format_csv('locals2c3_epi', true)
+    @@public_health_monitoring_helper.export_sara_alert_format_csv('locals2c4_epi', false)
   end
 
   test 'export excel purge-eligible monitorees' do
     @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', false)
-    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', true)
+    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('state1_epi', true)
   end
 
   test 'export excel all monitorees' do
     @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', false)
-    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', true)
+    @@public_health_monitoring_helper.export_excel_all_monitorees('state1_epi', true)
+  end
+
+  test 'export excel single monitoree' do
+    @@public_health_monitoring_helper.export_excel_single_monitoree('locals2c4_epi', 'patient_10')
   end
 
   test 'import epi-x' do

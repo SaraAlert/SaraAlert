@@ -3,10 +3,10 @@
 require 'system_test_case'
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
-  download_path = Rails.root.join('tmp/downloads').to_s
-  FileUtils.rm_rf(download_path) if File.exist?(download_path)
-
   driver = ENV['APP_IN_CI'] ? :gitlab_chrome_headless : :chrome
+
+  download_path = 'tmp/downloads'
+  FileUtils.rm_rf(download_path) if File.exist?(download_path)
 
   Capybara.register_driver(driver) do |app|
     options = ::Selenium::WebDriver::Chrome::Options.new
