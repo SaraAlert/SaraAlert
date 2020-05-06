@@ -63,6 +63,7 @@ export default function reportError(error, reportToSentry = true) {
   }
 
   if (httpStatus !== null) {
+    httpStatus = Number(httpStatus);
     if (httpStatus >= 400 && httpStatus < 500) {
       if (httpStatus === 400) {
         errorExplanationString = 'Request contains incorrect syntax.';
