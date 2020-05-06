@@ -108,7 +108,6 @@ class Assessment extends React.Component {
       })
       .catch(error => {
         reportError(error);
-        console.error(error);
       });
     if (!this.props.reload) {
       // No need to say thanks for reporting if we want to reload the page

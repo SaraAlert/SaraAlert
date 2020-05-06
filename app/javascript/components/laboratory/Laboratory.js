@@ -45,7 +45,6 @@ class Laboratory extends React.Component {
       })
       .catch(error => {
         reportError(error);
-        console.error(error);
       });
   }
 
