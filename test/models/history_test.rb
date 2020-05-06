@@ -42,7 +42,7 @@ class HistoryTest < ActiveSupport::TestCase
     end
   end
 
-  test 'in time frame' do
+  test 'history in time frame' do
     assert_no_difference("History.in_time_frame('Invalid').size") do
       create(:history, history_type: 'Comment')
     end
