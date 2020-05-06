@@ -65,6 +65,9 @@ gem 'premailer-rails'
 
 gem 'sara-schema'
 
+# Send errors to Sentry
+gem 'sentry-raven'
+
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
