@@ -21,7 +21,10 @@ if (!Element.prototype.closest) {
 // Sentry
 import * as Sentry from '@sentry/browser';
 if (!!window.SENTRY_URL) {
-  Sentry.init({ dsn: window.SENTRY_URL });
+  Sentry.init({
+    dsn: window.SENTRY_URL,
+    release: window.SARA_VERSION
+  });
 }
 
 // Rails
