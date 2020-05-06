@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'io/console'
 
 namespace :admin do
 
@@ -27,6 +28,54 @@ namespace :admin do
       puts jur.jurisdiction_path_string.ljust(40)  + "Edit Count: " + theshold_conditions_edit_count.to_s.ljust(5) + "Threshold Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
     end
     
+  end
+
+  # This is useful in case the base/sample jurisdiction.yml is run on prod and the jurisdictions with generic names need to be removed
+  # Example Usage: rake admin:delete_jurisdiction_with_name NAME='County 3'
+  desc "Delete Jurisdiction"
+  task delete_jurisdiction_with_name: :environment do
+    jur_name = ENV['NAME']
+    if Jurisdiction.where(name: jur_name).count.zero?
+      puts "Error: Jurisdiction with name #{jur_name} not found"
+      exit
+    elsif Jurisdiction.where(name: jur_name).count != 1
+      puts "Error: Multiple jurisdiction with name #{jur_name} found"
+      exit
+    end
+    jur_id = Jurisdiction.where(name: jur_name).first.id
+    jur = Jurisdiction.find(jur_id)
+    if !jur.children.count.zero?
+      puts "Error: Will not delete jurisdiction that has child jurisdictions. Delete #{jur.children.pluck(:name).to_s} first"
+      exit
+    end
+    patient_count = Patient.where(jurisdiction_id: jur_id).count
+    if !patient_count.zero?
+      puts "Error: Will not delete jurisdiction that has patients in it. #{jur_name} has #{patient_count} patients in it"
+      exit
+    end
+    user_count = User.where(jurisdiction_id: jur_id).count
+    if !user_count.zero?
+      puts "Error: Will not delete jurisdiction that has users in it. #{jur_name} has #{user_count} users in it"
+      exit
+    end
+    threshold_conditions_count = ThresholdCondition.where(jurisdiction_id: jur_id).count
+    analytic_count = Analytic.where(jurisdiction_id: jur_id).count
+    transfers_count = Transfer.where(to_jurisdiction_id: jur_id).count + Transfer.where(from_jurisdiction_id: jur_id).count
+    puts "In addition to deleting jurisdiction #{jur_name} the following associated records will be deleted"
+    puts "#{patient_count} Patients will be deleted"
+    puts "#{user_count} Users will be deleted"
+    puts "#{threshold_conditions_count} ThresholdCondition will be deleted"
+    puts "#{analytic_count} Analytic will be deleted"
+    puts "#{transfers_count} Transfer objects will be deleted"
+    puts "Are you sure you want to proceed? [Y/y] to continue"
+    res = STDIN.getc
+    exit unless res.downcase == 'y'
+    puts "Failed to Delete ThresholdConditions" unless ThresholdCondition.where(jurisdiction_id: jur_id).delete_all
+    puts "Failed to Delete Analytics" unless Analytic.where(jurisdiction_id: jur_id).delete_all
+    puts "Failed to Delete Transfers" unless Transfer.where(to_jurisdiction_id: jur_id).delete_all
+    puts "Failed to Delete Transfers" unless Transfer.where(from_jurisdiction_id: jur_id).delete_all
+    puts "Failed to Delete Jurisdiction" unless jur.delete
+    puts "Complete"
   end
 
   def parse_jurisdiction(parent, jur_name, jur_values)
