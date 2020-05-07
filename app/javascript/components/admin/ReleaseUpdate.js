@@ -44,9 +44,11 @@ class ReleaseUpdate extends React.Component {
               position: toast.POSITION.TOP_CENTER,
             });
           })
-          .catch(error => {
-            reportError('Failed to send email to all users.');
-            console.error(error);
+          .catch(() => {
+            toast.error('Failed to send email to all users.', {
+              autoClose: 2000,
+              position: toast.POSITION.TOP_CENTER,
+            });
           });
       }
     );
