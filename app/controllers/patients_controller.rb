@@ -92,9 +92,13 @@ class PatientsController < ApplicationController
     end
     helpers.normalize_state_names(patient)
 
-    # Set the responder for this patient
+    # Set the responder for this patient, this will link patients that have duplicate primary contact info
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
+                        elsif patient[:preferred_contact_method] == 'Telephone call' || patient[:preferred_contact_method] == 'SMS Text-message' || patient[:preferred_contact_method] == 'SMS Texted Weblink'
+                          current_user.viewable_patients.responder_for_number.first unless current_user.viewable_patients.responder_for_number.count.zero?
+                        elsif patient[:preferred_contact_method] == 'E-mailed Web Link'
+                          current_user.viewable_patients.responder_for_number.first unless current_user.viewable_patients.responder_for_email.count.zero?
                         else
                           patient
                         end
