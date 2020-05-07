@@ -111,25 +111,44 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_linelist_data_to_csv(user_label)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_linelist_data_to_csv
+  def export_line_list_csv(user_label, isolation)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_line_list_csv(jurisdiction_id, isolation)
     @@system_test_utils.logout
   end
 
-  def export_comprehensive_data_to_csv(user_label)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_comprehensive_data_to_csv
+  def export_sara_alert_format_csv(user_label, isolation)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_sara_alert_format_csv(jurisdiction_id, isolation)
     @@system_test_utils.logout
   end
 
-  def import_epi_x_data(user_label)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.import_epi_x_data
+  def export_excel_purge_eligible_monitorees(user_label, download=true)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_excel_purge_eligible_monitorees(jurisdiction_id, download)
+    @@system_test_utils.logout
   end
 
-  def import_sara_alert_format_data(user_label)
+  def export_excel_all_monitorees(user_label, download=true)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.export_excel_all_monitorees(jurisdiction_id, download)
+    @@system_test_utils.logout
+  end
+
+  def export_excel_single_monitoree(user_label, patient_label)
     @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.import_sara_alert_format_data
+    @@public_health_monitoring_dashboard.export_excel_single_monitoree(patient_label)
+    @@system_test_utils.logout
+
+  end
+
+  def import_epi_x(user_label)
+    @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.import_epi_x
+  end
+
+  def import_sara_alert_format(user_label)
+    @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.import_sara_alert_format
   end
 end

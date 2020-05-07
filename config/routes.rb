@@ -36,13 +36,9 @@ Rails.application.routes.draw do
 
   get '/patients/:id/group', to: 'patients#new_group_member'
 
-  get '/export/:type/csv', to: 'export#csv'
-  get '/export/:type/csv_comprehensive', to: 'export#csv_comprehensive'
-  get '/export/full_history_all_monitorees', to: 'export#full_history_all_monitorees'
-  get '/export/full_history_purge_eligible_monitorees', to: 'export#full_history_purge_eligible_monitorees'
-  get '/export/:patient_id/full_history_single_monitoree', to: 'export#full_history_single_monitoree'
-  get '/export/isolation/:type/csv', to: 'export#csv_isolation'
-  get '/export/isolation/:type/csv_comprehensive', to: 'export#csv_comprehensive_isolation'
+  get '/export/csv/:workflow/:type', to: 'export#csv'
+  get '/export/excel/full_history/patients/:scope', to: 'export#excel_full_history_patients'
+  get '/export/excel/full_history/patient/:patient_id', to: 'export#excel_full_history_patient'
 
   post '/import/:workflow/epix', to: 'import#epix'
   post '/import/:workflow/comprehensive_monitorees', to: 'import#comprehensive_monitorees'

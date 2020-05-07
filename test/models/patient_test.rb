@@ -52,7 +52,7 @@ class PatientTest < ActiveSupport::TestCase
     # If the email is going out in 1 minute, and the patient was modified purgeable_after minutes ago, they should not be purgeable
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after']).minutes.ago)
     assert Patient.purge_eligible.count.zero?
-    # However, if the email is going out in 1 minute and the patient was modified right before the warning (2.5 days ago), they should be purgable
+    # However, if the email is going out in 1 minute and the patient was modified right before the warning (2.5 days ago), they should be purgeable
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute)).minutes.ago)

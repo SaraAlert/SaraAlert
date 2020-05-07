@@ -84,4 +84,16 @@ class History < ApplicationRecord
   scope :results_of_public_health_test_negative, lambda {
     where('comment LIKE \'%Laboratory report results – negative%\'')
   }
+
+  # Information about this history
+  def details
+    {
+      patient_id: patient_id || '',
+      comment: comment || '',
+      created_by: created_by || '',
+      history_type: history_type || '',
+      history_created_at: created_at || '',
+      history_updated_at: updated_at || ''
+    }
+  end
 end
