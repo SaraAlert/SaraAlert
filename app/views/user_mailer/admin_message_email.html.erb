@@ -1,16 +1,9 @@
-<html>
+<% content_for :body do %>
+  <% @comment.each_line do |line| %>
+    <p><%= line %></p>
+  <% end %>
+<% end %>
 
-  <head>
-    <meta content = 'text/html; charset = UTF-8' http-equiv = 'Content-Type' />
-  </head>
-
-  <body>
-    <h1>Message from the Sara Alert System:</h1>
-    <p style="white-space: pre-line;">
-      <% @comment.each_line do |line| %>
-        <p><%= line %></p>
-      <% end %>
-    </p>
-  </body>
-
-</html>
+<% content_for :footer do %>
+  <p>This notification was sent by the Sara Alert system. If you wish to stop receiving these notifications or believe that it was a mistake, please contact the help desk.</p>
+<% end %>

@@ -16,7 +16,9 @@ class UserMailer < ApplicationMailer
 
   def admin_message_email(user, comment)
     @comment = comment
-    mail(to: user.email, subject: 'Message from the Sara Alert system')
+    mail(to: user.email, subject: 'Message from the Sara Alert system') do |format|
+      format.html { render layout: 'main_mailer' }
+    end
   end
 
   def purge_notification
