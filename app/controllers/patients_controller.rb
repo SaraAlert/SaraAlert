@@ -60,6 +60,11 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if @patient.nil?
 
     @group_members = @patient.dependents.where.not(id: @patient.id)
+    # TODO: The following 3 lines should only be needed while there are multiple responders with duplicate
+    # contact info in the prod database. Can be removed once all data errors have been phased out or fixed
+    @group_members += current_user.viewable_patients.responder_for_number(@patient.primary_telephone)
+    @group_members += current_user.viewable_patients.responder_for_email(@patient.email)
+    @group_members = @group_members.uniq
     @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
@@ -208,6 +213,22 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless patient.update!(content)
 
     render json: patient
+  end
+
+  def update_hoh
+    new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]
+    current_patient_id = params.permit(:id)[:id]
+    household_ids = params[:household_ids]
+    redirect_to(root_url) && return unless new_hoh_id
+    patients_to_update = household_ids + [current_patient_id]
+    # Make sure all household ids are within jurisdiction
+    patients_to_update.each do |patient_id|
+      redirect_to(root_url) && return unless current_user.viewable_patients.exists?(patient_id)
+    end
+    # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
+    patients_to_update.each do |patient_id|
+      current_user.viewable_patients.find(patient_id).update(responder_id: new_hoh_id)
+    end
   end
 
   # Updates to workflow/tracking status for a subject
