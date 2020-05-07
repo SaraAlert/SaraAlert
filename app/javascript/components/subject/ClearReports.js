@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
+import reportError from '../util/ReportError';
 
 class ClearReports extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ class ClearReports extends React.Component {
         location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
-        console.error(error);
+        reportError(error);
       });
   }
 

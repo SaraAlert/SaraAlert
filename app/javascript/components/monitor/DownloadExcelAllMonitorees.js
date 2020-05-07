@@ -6,6 +6,7 @@ import DownloadingSpinner from './DownloadingSpinner';
 import FileDownload from 'js-file-download';
 import base64StringToBlob from 'base64toblob';
 import moment from 'moment';
+import reportError from '../util/ReportError';
 
 class DownloadExcelAllMonitorees extends React.Component {
   constructor(props) {
@@ -42,7 +43,7 @@ class DownloadExcelAllMonitorees extends React.Component {
           this.setState({ loading: false, showDownloadExcelModal: false });
         })
         .catch(error => {
-          console.error(error);
+          reportError(error);
         });
     });
   }

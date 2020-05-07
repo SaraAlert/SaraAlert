@@ -5,6 +5,7 @@ import axios from 'axios';
 import FileDownload from 'js-file-download';
 import base64StringToBlob from 'base64toblob';
 import moment from 'moment';
+import reportError from '../util/ReportError';
 
 class DownloadMonitoreeExcel extends React.Component {
   constructor(props) {
@@ -37,7 +38,7 @@ class DownloadMonitoreeExcel extends React.Component {
         location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
-        console.error(error);
+        reportError(error);
       });
   }
 

@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import confirmDialog from '../util/ConfirmDialog';
+import reportError from '../util/ReportError';
 
 class PauseNotifications extends React.Component {
   constructor(props) {
@@ -29,11 +30,11 @@ class PauseNotifications extends React.Component {
             location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
           })
           .catch(error => {
-            console.error(error);
+            reportError(error);
           });
       })
       .catch(error => {
-        console.error(error);
+        reportError(error);
       });
   }
 

@@ -4,6 +4,7 @@ import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import ContactAttempt from './ContactAttempt';
 import CaseStatus from './CaseStatus';
+import reportError from '../util/ReportError';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -236,7 +237,7 @@ class MonitoringStatus extends React.Component {
         location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
-        console.error(error);
+        reportError(error);
       });
   }
 
