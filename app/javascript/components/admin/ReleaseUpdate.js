@@ -3,7 +3,6 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import reportError from '../util/ReportError';
 
 class ReleaseUpdate extends React.Component {
   constructor(props) {
