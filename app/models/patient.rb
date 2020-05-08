@@ -287,6 +287,24 @@ class Patient < ApplicationRecord
       .where('date_of_birth = ?', date_of_birth)
   end
 
+  # Get the patient who is responsible for responding on this phone number
+  # This should only be true for one patient per phone number
+  def self.responder_for_number(tel_number)
+    return nil if tel_number.nil?
+
+    where('primary_telephone = ?', tel_number)
+      .where('responder_id = id')
+  end
+
+  # Get the patient who is responsible for responding at this email address
+  # This should only be true for one patient per email
+  def self.responder_for_email(email)
+    return nil if email.nil?
+
+    where('email = ?', email)
+      .where('responder_id = id')
+  end
+
   # True if this person is responsible for reporting
   def self_reporter_or_proxy?
     responder_id == id

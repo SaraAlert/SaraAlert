@@ -1,6 +1,7 @@
 import React from 'react';
 import { Col, Row, Button, Collapse, Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import ChangeHOH from './subject/ChangeHOH';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -32,6 +33,9 @@ class Patient extends React.Component {
                   </Row>
                 );
               })}
+              <Row>
+                <ChangeHOH patient={this.props?.details} groupMembers={this.props?.groupMembers} authenticity_token={this.props.authenticity_token} />
+              </Row>
             </Col>
           </Row>
         )}
@@ -377,6 +381,7 @@ Patient.propTypes = {
   jurisdictionPath: PropTypes.string,
   goto: PropTypes.func,
   hideBody: PropTypes.bool,
+  authenticity_token: PropTypes.string,
 };
 
 export default Patient;

@@ -254,8 +254,10 @@ class MonitoringStatus extends React.Component {
           {this.state.monitoring_status_options && (
             <Form.Group>
               <Form.Label>Please select reason for status change:</Form.Label>
-              <Form.Control as="select" size="lg" className="form-square" id="monitoring_status_option" onChange={this.handleChange}>
-                <option disabled selected value></option>
+              <Form.Control as="select" size="lg" className="form-square" id="monitoring_status_option" onChange={this.handleChange} defaultValue={-1}>
+                <option value={-1} disabled>
+                  --
+                </option>
                 {this.state.monitoring_status_options.map((option, index) => (
                   <option key={`option-${index}`} value={option}>
                     {option}

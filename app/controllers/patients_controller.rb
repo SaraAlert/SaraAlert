@@ -91,13 +91,22 @@ class PatientsController < ApplicationController
       patient.monitored_address_zip = patient.address_zip
     end
     helpers.normalize_state_names(patient)
-
-    # Set the responder for this patient
+    # Set the responder for this patient, this will link patients that have duplicate primary contact info
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
-                        else
-                          patient
+                        elsif ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method]
+                          if current_user.viewable_patients.responder_for_number(patient[:primary_telephone])&.exists?
+                            current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).first
+                          end
+                        elsif patient[:preferred_contact_method] == 'E-mailed Web Link'
+                          if current_user.viewable_patients.responder_for_email(patient[:email])&.exists?
+                            current_user.viewable_patients.responder_for_email(patient[:email]).first
+                          end
                         end
+
+    # Default responder to self if no responder condition met
+    patient.responder = patient if patient.responder.nil?
+
     if params.permit(:responder_id)[:responder_id]
       patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
     end
@@ -204,6 +213,22 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless patient.update!(content)
 
     render json: patient
+  end
+
+  def update_hoh
+    new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]
+    current_patient_id = params.permit(:id)[:id]
+    household_ids = params[:household_ids]
+    redirect_to(root_url) && return unless new_hoh_id
+
+    patients_to_update = household_ids + [current_patient_id]
+    # Make sure all household ids are within jurisdiction
+    redirect_to(root_url) && return if patients_to_update.any? do |patient_id|
+      !current_user.viewable_patients.exists?(patient_id)
+    end
+
+    # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
+    current_user.viewable_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
   end
 
   # Updates to workflow/tracking status for a subject
