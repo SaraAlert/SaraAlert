@@ -7,6 +7,7 @@ class ChangeHOH extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      updateDisabled: true,
       showModal: false,
     };
     this.toggleModal = this.toggleModal.bind(this);
@@ -17,12 +18,13 @@ class ChangeHOH extends React.Component {
   toggleModal() {
     let current = this.state.showModal;
     this.setState({
+      updateDisabled: true,
       showModal: !current,
     });
   }
 
   handleChange(event) {
-    this.setState({ [event.target.id]: event.target.value });
+    this.setState({ [event.target.id]: event.target.value, updateDisabled: false });
   }
 
   submit() {
@@ -35,6 +37,7 @@ class ChangeHOH extends React.Component {
         }),
       })
       .then(() => {
+        this.setState({ updateDisabled: false });
         location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
       })
       .catch(error => {
@@ -56,8 +59,10 @@ class ChangeHOH extends React.Component {
                 <Form.Label size="sm" className="nav-input-label">
                   Note: The selected monitoree will become the responder for the current monitoree and all others within the list
                 </Form.Label>
-                <Form.Control as="select" className="form-control-lg" id="hoh_selection" onChange={this.handleChange} value={undefined}>
-                  <option value={undefined}>--</option>
+                <Form.Control as="select" className="form-control-lg" id="hoh_selection" onChange={this.handleChange} defaultValue={-1}>
+                  <option value={-1} disabled>
+                    --
+                  </option>
                   {this.props?.groupMembers?.map((member, index) => {
                     return (
                       <option key={`option-${index}`} value={member.id}>
@@ -71,7 +76,7 @@ class ChangeHOH extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.updateDisabled}>
             Update
           </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
