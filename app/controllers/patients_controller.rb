@@ -97,8 +97,6 @@ class PatientsController < ApplicationController
     end
     helpers.normalize_state_names(patient)
 
-    # Default responder to self
-    patient.responder = patient
     # Set the responder for this patient, this will link patients that have duplicate primary contact info
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
@@ -111,6 +109,10 @@ class PatientsController < ApplicationController
                             current_user.viewable_patients.responder_for_number(patient[:email]).first
                           end
                         end
+
+    # Default responder to self if no responder condition met
+    patient.responder = patient if patient.responder.nil?
+
     if params.permit(:responder_id)[:responder_id]
       patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
     end
@@ -125,6 +127,7 @@ class PatientsController < ApplicationController
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
     patient.submission_token = SecureRandom.hex(20) # 160 bits
+
     # Attempt to save and continue; else if failed redirect to index
     if patient.save
       send_enrollment_notification(patient)
