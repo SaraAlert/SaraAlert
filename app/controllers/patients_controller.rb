@@ -121,7 +121,6 @@ class PatientsController < ApplicationController
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
     patient.submission_token = SecureRandom.hex(20) # 160 bits
-
     # Attempt to save and continue; else if failed redirect to index
     if patient.save
       send_enrollment_notification(patient)
