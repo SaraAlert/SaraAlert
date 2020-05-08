@@ -62,9 +62,9 @@ class PatientsController < ApplicationController
     @group_members = @patient.dependents.where.not(id: @patient.id)
     # TODO: The following 3 lines should only be needed while there are multiple responders with duplicate
     # contact info in the prod database. Can be removed once all data errors have been phased out or fixed
-    @group_members += current_user.viewable_patients.responder_for_number(@patient.primary_telephone)
-    @group_members += current_user.viewable_patients.responder_for_email(@patient.email)
-    @group_members = @group_members.uniq
+    duplicate_group_members = current_user.viewable_patients.responder_for_number(@patient.primary_telephone)
+    duplicate_group_members += current_user.viewable_patients.responder_for_email(@patient.email)
+    @group_members += duplicate_group_members.uniq
     @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
@@ -101,9 +101,13 @@ class PatientsController < ApplicationController
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
                         elsif ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method]
-                          current_user.viewable_patients.responder_for_number.first unless current_user.viewable_patients.responder_for_number.count.zero?
+                          unless current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).count.zero?
+                            current_user.viewable_patients.responder_for_number.first
+                          end
                         elsif patient[:preferred_contact_method] == 'E-mailed Web Link'
-                          current_user.viewable_patients.responder_for_number.first unless current_user.viewable_patients.responder_for_email.count.zero?
+                          unless current_user.viewable_patients.responder_for_email(patient[:email]).count.zero?
+                            current_user.viewable_patients.responder_for_number.first
+                          end
                         else
                           patient
                         end
