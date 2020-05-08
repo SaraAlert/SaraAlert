@@ -95,11 +95,11 @@ class PatientsController < ApplicationController
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
                         elsif ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method]
-                          if current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).exists?
+                          if current_user.viewable_patients.responder_for_number(patient[:primary_telephone])&.exists?
                             current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).first
                           end
                         elsif patient[:preferred_contact_method] == 'E-mailed Web Link'
-                          if current_user.viewable_patients.responder_for_email(patient[:email]).exists?
+                          if current_user.viewable_patients.responder_for_email(patient[:email])&.exists?
                             current_user.viewable_patients.responder_for_email(patient[:email]).first
                           end
                         end
