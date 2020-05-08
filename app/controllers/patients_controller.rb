@@ -91,16 +91,15 @@ class PatientsController < ApplicationController
       patient.monitored_address_zip = patient.address_zip
     end
     helpers.normalize_state_names(patient)
-
     # Set the responder for this patient, this will link patients that have duplicate primary contact info
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
                         elsif ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method]
-                          unless current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).count.zero?
+                          if current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).exists?
                             current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).first
                           end
                         elsif patient[:preferred_contact_method] == 'E-mailed Web Link'
-                          unless current_user.viewable_patients.responder_for_email(patient[:email]).count.zero?
+                          if current_user.viewable_patients.responder_for_email(patient[:email]).exists?
                             current_user.viewable_patients.responder_for_email(patient[:email]).first
                           end
                         end
@@ -229,9 +228,7 @@ class PatientsController < ApplicationController
     end
 
     # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
-    patients_to_update.each do |patient_id|
-      current_user.viewable_patients.find(patient_id).update(responder_id: new_hoh_id)
-    end
+    current_user.viewable_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
   end
 
   # Updates to workflow/tracking status for a subject
