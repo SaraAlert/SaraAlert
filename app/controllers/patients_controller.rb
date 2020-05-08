@@ -101,7 +101,7 @@ class PatientsController < ApplicationController
                           end
                         elsif patient[:preferred_contact_method] == 'E-mailed Web Link'
                           unless current_user.viewable_patients.responder_for_email(patient[:email]).count.zero?
-                            current_user.viewable_patients.responder_for_number(patient[:email]).first
+                            current_user.viewable_patients.responder_for_email(patient[:email]).first
                           end
                         end
 
