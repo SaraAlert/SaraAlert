@@ -223,7 +223,7 @@ class PatientsController < ApplicationController
 
     patients_to_update = household_ids + [current_patient_id]
     # Make sure all household ids are within jurisdiction
-    redirect_to(root_url) && return unless patients_to_update.any? do |patient_id|
+    redirect_to(root_url) && return if patients_to_update.any? do |patient_id|
       !current_user.viewable_patients.exists?(patient_id)
     end
 
