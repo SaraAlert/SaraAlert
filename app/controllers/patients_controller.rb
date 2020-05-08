@@ -60,11 +60,6 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if @patient.nil?
 
     @group_members = @patient.dependents.where.not(id: @patient.id)
-    # TODO: The following 3 lines should only be needed while there are multiple responders with duplicate
-    # contact info in the prod database. Can be removed once all data errors have been phased out or fixed
-    duplicate_group_members = current_user.viewable_patients.responder_for_number(@patient.primary_telephone)
-    duplicate_group_members += current_user.viewable_patients.responder_for_email(@patient.email)
-    @group_members += duplicate_group_members.uniq
     @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
