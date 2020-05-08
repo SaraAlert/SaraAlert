@@ -100,7 +100,7 @@ class PatientsController < ApplicationController
     # Set the responder for this patient, this will link patients that have duplicate primary contact info
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
-                        elsif patient[:preferred_contact_method] == 'Telephone call' || patient[:preferred_contact_method] == 'SMS Text-message' || patient[:preferred_contact_method] == 'SMS Texted Weblink'
+                        elsif ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method]
                           current_user.viewable_patients.responder_for_number.first unless current_user.viewable_patients.responder_for_number.count.zero?
                         elsif patient[:preferred_contact_method] == 'E-mailed Web Link'
                           current_user.viewable_patients.responder_for_number.first unless current_user.viewable_patients.responder_for_email.count.zero?
@@ -220,11 +220,13 @@ class PatientsController < ApplicationController
     current_patient_id = params.permit(:id)[:id]
     household_ids = params[:household_ids]
     redirect_to(root_url) && return unless new_hoh_id
+
     patients_to_update = household_ids + [current_patient_id]
     # Make sure all household ids are within jurisdiction
-    patients_to_update.each do |patient_id|
-      redirect_to(root_url) && return unless current_user.viewable_patients.exists?(patient_id)
+    redirect_to(root_url) && return unless patients_to_update.any? do |patient_id|
+      !current_user.viewable_patients.exists?(patient_id)
     end
+
     # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
     patients_to_update.each do |patient_id|
       current_user.viewable_patients.find(patient_id).update(responder_id: new_hoh_id)

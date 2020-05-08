@@ -292,7 +292,7 @@ class Patient < ApplicationRecord
   # TODO: We should flag the cases where this returns more than one result
   def self.responder_for_number(tel_number)
     where('primary_telephone = ?', tel_number)
-    .where('responder_id = id')
+      .where('responder_id = id')
   end
 
   # Get the patient who is responsible for responding at this email address
@@ -300,7 +300,7 @@ class Patient < ApplicationRecord
   # TODO: We should flag the cases where this returns more than one result
   def self.responder_for_email(email)
     where('email = ?', email)
-    .where('responder_id = id')
+      .where('responder_id = id')
   end
 
   # True if this person is responsible for reporting
