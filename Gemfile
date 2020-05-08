@@ -57,16 +57,21 @@ gem 'will_paginate'
 
 # Excel Import
 gem 'roo'
+
 # Excel Export
 gem 'caxlsx'
 
 # Used for inline css before mailer
 gem 'premailer-rails'
 
+# Split arch schema
 gem 'sara-schema'
 
 # Send errors to Sentry
 gem 'sentry-raven'
+
+# Better phone number handling
+gem 'phonelib'
 
 group :development, :test do
   gem 'brakeman'

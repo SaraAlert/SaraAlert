@@ -24,7 +24,7 @@ class PatientMailer < ApplicationMailer
     client = Twilio::REST::Client.new(account_sid, auth_token)
     client.messages.create(
       from: from,
-      to: patient.primary_telephone,
+      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: contents
     )
   end
@@ -38,7 +38,7 @@ class PatientMailer < ApplicationMailer
     client = Twilio::REST::Client.new(account_sid, auth_token)
     client.messages.create(
       from: from,
-      to: patient.primary_telephone,
+      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: contents
     )
   end
@@ -54,7 +54,7 @@ class PatientMailer < ApplicationMailer
     client = Twilio::REST::Client.new(account_sid, auth_token)
     client.messages.create(
       from: from,
-      to: patient.primary_telephone,
+      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: contents
     )
   end
@@ -67,7 +67,7 @@ class PatientMailer < ApplicationMailer
     client = Twilio::REST::Client.new(account_sid, auth_token)
     client.messages.create(
       from: from,
-      to: patient.primary_telephone,
+      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: contents
     )
   end
@@ -98,7 +98,7 @@ class PatientMailer < ApplicationMailer
     params = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash, medium: 'SMS' }
     client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
       from: from,
-      to: patient.primary_telephone,
+      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
     )
   end
@@ -129,7 +129,7 @@ class PatientMailer < ApplicationMailer
     params = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash, medium: 'VOICE' }
     client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
       from: from,
-      to: patient.primary_telephone,
+      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
     )
   end
