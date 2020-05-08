@@ -98,10 +98,13 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'import epi-x' do
-    @@public_health_monitoring_helper.import_epi_x('state1_epi_enroller')
+    @@public_health_monitoring_helper.import_epi_x('state1_epi_enroller', 'Epi-X-Format.xlsx', true)
+    @@public_health_monitoring_helper.import_epi_x('locals2c4_epi', 'Invalid-File.xlsx', false)
   end
 
   test 'import sara alert format' do
-    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi')
+    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', 'Sara-Alert-Format-Exposure.xlsx', true)
+    @@public_health_monitoring_helper.import_sara_alert_format('locals1c1_epi', 'Sara-Alert-Format-Isolation.xlsx', true)
+    @@public_health_monitoring_helper.import_sara_alert_format('locals2c3_epi', 'Invalid-File.xlsx', false)
   end
 end

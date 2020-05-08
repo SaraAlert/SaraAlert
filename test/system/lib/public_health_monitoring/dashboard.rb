@@ -2,12 +2,14 @@
 
 require 'application_system_test_case'
 
-require_relative 'downloads_verifier'
+require_relative 'export_verifier'
+require_relative 'import_verifier'
 require_relative 'reports'
 require_relative '../system_test_utils'
 
 class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
-  @@public_health_downloads_verifier = PublicHealthMonitoringDownloadsVerifier.new(nil)
+  @@public_health_export_verifier = PublicHealthMonitoringExportVerifier.new(nil)
+  @@public_health_import_verifier = PublicHealthMonitoringImportVerifier.new(nil)
   @@public_health_monitoring_reports = PublicHealthMonitoringReports.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
   
@@ -34,14 +36,14 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     click_on 'Isolation Monitoring' if isolation
     click_on 'Export'
     click_on 'Line list CSV'
-    @@public_health_downloads_verifier.verify_line_list_csv(jurisdiction_id, isolation)
+    @@public_health_export_verifier.verify_line_list_csv(jurisdiction_id, isolation)
   end
 
   def export_sara_alert_format(jurisdiction_id, isolation)
     click_on 'Isolation Monitoring' if isolation
     click_on 'Export'
     click_on 'Sara Alert Format'
-    @@public_health_downloads_verifier.verify_sara_alert_format(jurisdiction_id, isolation)
+    @@public_health_export_verifier.verify_sara_alert_format(jurisdiction_id, isolation)
   end
 
   def export_excel_purge_eligible_monitorees(jurisdiction_id, download=true)
@@ -49,7 +51,7 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     click_on 'Excel Export For Purge-Eligible Monitorees'
     if download
       click_on 'Download'
-      @@public_health_downloads_verifier.verify_excel_purge_eligible_monitorees(jurisdiction_id)
+      @@public_health_export_verifier.verify_excel_purge_eligible_monitorees(jurisdiction_id)
     else
       click_on 'Cancel'
     end
@@ -60,7 +62,7 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     click_on 'Excel Export For All Monitorees'
     if download
       click_on 'Download'
-      @@public_health_downloads_verifier.verify_excel_all_monitorees(jurisdiction_id)
+      @@public_health_export_verifier.verify_excel_all_monitorees(jurisdiction_id)
     else
       click_on 'Cancel'
     end
@@ -69,16 +71,36 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
   def export_excel_single_monitoree(patient_label)
     search_for_and_view_patient('all', patient_label)
     click_on 'Download Excel Export'
-    @@public_health_downloads_verifier.verify_excel_single_monitoree(patient_label.split('_')[1].to_i)
+    @@public_health_export_verifier.verify_excel_single_monitoree(patient_label.split('_')[1].to_i)
   end
 
-  def import_epi_x
+  def import_epi_x(jurisdiction_id, file_name, valid)
     click_on 'Import'
     find('a', text: 'Epi-X').click
+    attach_file('epix', file_fixture(file_name))
+    click_on 'Upload'
+    if valid
+      click_on 'Accept All'
+      click_on 'OK'
+      @@public_health_import_verifier.verify_import_epi_x(jurisdiction_id, file_name)
+      sleep(inspection_time=2)
+    else
+      assert_content('Monitoree import file appears to be invalid.')
+    end
   end
 
-  def import_sara_alert_format
+  def import_sara_alert_format(jurisdiction_id, file_name, valid)
     click_on 'Import'
     find('a', text: 'Sara Alert Format').click
+    attach_file('comprehensive_monitorees', file_fixture(file_name))
+    click_on 'Upload'
+    if valid
+      click_on 'Accept All'
+      click_on 'OK'
+      @@public_health_import_verifier.verify_import_sara_alert_format(jurisdiction_id, file_name)
+      sleep(inspection_time=2)
+    else
+      assert_content('Monitoree import file appears to be invalid.')
+    end
   end
 end

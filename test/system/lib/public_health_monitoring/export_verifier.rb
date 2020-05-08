@@ -5,7 +5,7 @@ require 'roo'
 
 require_relative '../system_test_utils'
 
-class PublicHealthMonitoringDownloadsVerifier < ApplicationSystemTestCase
+class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
     
   DOWNLOAD_TIMEOUT = 10

@@ -141,13 +141,15 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def import_epi_x(user_label)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.import_epi_x
+  def import_epi_x(user_label, file_name, valid=true)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.import_epi_x(jurisdiction_id, file_name, valid)
+    @@system_test_utils.logout
   end
 
-  def import_sara_alert_format(user_label)
-    @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.import_sara_alert_format
+  def import_sara_alert_format(user_label, file_name, valid=true)
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.import_sara_alert_format(jurisdiction_id, file_name, valid)
+    @@system_test_utils.logout
   end
 end
