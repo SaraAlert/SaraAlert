@@ -1,5 +1,6 @@
 require 'securerandom'
 require 'io/console'
+require 'digest'
 
 namespace :admin do
 
@@ -20,14 +21,19 @@ namespace :admin do
     # Seed newly created jurisdictions with (empty) analytic cache entries
     Rake::Task["analytics:cache_current_analytics"].reenable
     Rake::Task["analytics:cache_current_analytics"].invoke
-    puts "\e[41mNOTICE: Make sure that this rake task has been run the exact same number of times on the enrollment and assessment servers\e[0m"
+    puts "\e[41mNOTICE: Make sure that this rake task has been run the exact same number of times with identical jurisdiction.yml files on the enrollment and assessment servers\e[0m"
     puts "\e[41mThe following output on each of the servers should be EXACTLY EQUAL\e[0m"
+    combined_hash = ""
     Jurisdiction.all.each do |jur|
       theshold_conditions_edit_count = 0
       jur.path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
       puts jur.jurisdiction_path_string.ljust(80)  + "Edits: " + theshold_conditions_edit_count.to_s.ljust(5) + "Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
+      combined_hash += jur.jurisdiction_path_threshold_hash
     end
-    
+
+    final_hash = Digest::SHA256.hexdigest(combined_hash)
+    puts "\e[41mCompare the folliwng hash as output by this task when run on the enrollment and assessment servers and make sure that the hashes are EXACTLY EQUAL\e[0m"
+    puts "\e[41m>>>>>>>>>>#{final_hash}<<<<<<<<<<\e[0m"
   end
 
   # This is useful in case the base/sample jurisdiction.yml is run on prod and the jurisdictions with generic names need to be removed
