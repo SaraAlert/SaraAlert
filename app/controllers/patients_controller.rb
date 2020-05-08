@@ -104,11 +104,11 @@ class PatientsController < ApplicationController
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
                         elsif ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method]
                           unless current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).count.zero?
-                            current_user.viewable_patients.responder_for_number.first
+                            current_user.viewable_patients.responder_for_number(patient[:primary_telephone]).first
                           end
                         elsif patient[:preferred_contact_method] == 'E-mailed Web Link'
                           unless current_user.viewable_patients.responder_for_email(patient[:email]).count.zero?
-                            current_user.viewable_patients.responder_for_number.first
+                            current_user.viewable_patients.responder_for_number(patient[:email]).first
                           end
                         end
     if params.permit(:responder_id)[:responder_id]
@@ -125,7 +125,6 @@ class PatientsController < ApplicationController
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
     patient.submission_token = SecureRandom.hex(20) # 160 bits
-
     # Attempt to save and continue; else if failed redirect to index
     if patient.save
       send_enrollment_notification(patient)
