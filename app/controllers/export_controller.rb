@@ -57,6 +57,28 @@ class ExportController < ApplicationController
     send_data csv_result, filename: "Sara-Alert-#{params[:workflow].capitalize}-#{params[:type].capitalize}-#{DateTime.now}.csv"
   end
 
+  def excel_comprehensive_patients
+    redirect_to(root_url) && return unless current_user.can_export?
+
+    # Grab patients to export
+    patients = current_user.viewable_patients.where(isolation: params[:workflow] == 'isolation')
+
+    # Do nothing if issue with request/permissions
+    redirect_to(root_url) && return if patients.nil?
+
+    # Build Excel
+    Axlsx::Package.new do |p|
+      p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
+        headers = COMPREHENSIVE_HEADERS
+        sheet.add_row headers
+        patients.each do |patient|
+          sheet.add_row patient.comprehensive_details.values, { types: Array.new(headers.length, :string) }
+        end
+      end
+      send_data p.to_stream.read, filename: "Sara-Alert-Format-#{params[:workflow].capitalize}-#{DateTime.now}.xlsx"
+    end
+  end
+
   def excel_full_history_patients
     redirect_to(root_url) && return unless current_user.can_export?
 

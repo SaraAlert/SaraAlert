@@ -79,8 +79,8 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'export sara alert format csv' do
-    @@public_health_monitoring_helper.export_sara_alert_format_csv('locals2c3_epi', true)
-    @@public_health_monitoring_helper.export_sara_alert_format_csv('locals2c4_epi', false)
+    @@public_health_monitoring_helper.export_sara_alert_format('locals2c3_epi', true)
+    @@public_health_monitoring_helper.export_sara_alert_format('locals2c4_epi', false)
   end
 
   test 'export excel purge-eligible monitorees' do

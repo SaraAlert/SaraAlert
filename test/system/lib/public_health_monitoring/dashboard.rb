@@ -37,11 +37,11 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     @@public_health_downloads_verifier.verify_line_list_csv(jurisdiction_id, isolation)
   end
 
-  def export_sara_alert_format_csv(jurisdiction_id, isolation)
+  def export_sara_alert_format(jurisdiction_id, isolation)
     click_on 'Isolation Monitoring' if isolation
     click_on 'Export'
-    click_on 'Sara Alert Format CSV'
-    @@public_health_downloads_verifier.verify_sara_alert_format_csv(jurisdiction_id, isolation)
+    click_on 'Sara Alert Format'
+    @@public_health_downloads_verifier.verify_sara_alert_format(jurisdiction_id, isolation)
   end
 
   def export_excel_purge_eligible_monitorees(jurisdiction_id, download=true)

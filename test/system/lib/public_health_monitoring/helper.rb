@@ -117,9 +117,9 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_sara_alert_format_csv(user_label, isolation)
+  def export_sara_alert_format(user_label, isolation)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_sara_alert_format_csv(jurisdiction_id, isolation)
+    @@public_health_monitoring_dashboard.export_sara_alert_format(jurisdiction_id, isolation)
     @@system_test_utils.logout
   end
 
@@ -139,7 +139,6 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.login(user_label)
     @@public_health_monitoring_dashboard.export_excel_single_monitoree(patient_label)
     @@system_test_utils.logout
-
   end
 
   def import_epi_x(user_label)
