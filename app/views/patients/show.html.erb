@@ -167,10 +167,7 @@
 <% end %>
 
 <% if current_user.can_modify_subject_status? %>
-  <div class="card mx-2 mt-3 mb-4 card-square">
-    <h5 class="card-header">History</h5>
-    <%= render partial: "histories", locals: { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC') } %>
-  </div>
+  <%= react_component("history/HistoryComponent", { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token } ) %>
 <% end %>
 
 <script>
