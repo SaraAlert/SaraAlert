@@ -62,7 +62,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <%= link_to 'Download formatting guidance', 'sara_alert_comprehensive_monitoree.xlsx', download: 'public/sara_alert_comprehensive_monitoree.xlsx' %>
+            <%= link_to 'Download formatting guidance', 'https://github.com/SaraAlert/SaraAlert/blob/master/public/sara_alert_comprehensive_monitoree.xlsx?raw=true' %>
             <div class="mb-3"></div>
             <%= form_tag(ADMIN_OPTIONS['base_path'] + '/import/exposure/comprehensive_monitorees', method: :post, multipart: true) do |f| %>
               <%= file_field_tag 'comprehensive_monitorees' %>
