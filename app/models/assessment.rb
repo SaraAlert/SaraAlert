@@ -29,6 +29,10 @@ class Assessment < ApplicationRecord
     where('created_at >= ?', 72.hours.ago).where_assoc_exists(:reported_condition, &:fever_medication)
   }
 
+  scope :ten_days_symptomatic, lambda {
+    where('created_at >= ?', 10.days.ago).where(symptomatic: true)
+  }
+
   def symptomatic?
     symptomatic = false
     reported_condition.symptoms.each do |reported_symptom|

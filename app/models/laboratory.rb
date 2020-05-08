@@ -4,6 +4,20 @@
 class Laboratory < ApplicationRecord
   belongs_to :patient
 
+  validates :result, inclusion: { in: ['positive', 'negative', 'indeterminate', 'other', nil, ''] }
+
+  scope :last_ten_days_positive, lambda {
+    where('created_at > ?', 10.days.ago).where(result: 'positive')
+  }
+
+  scope :before_ten_days_positive, lambda {
+    where('created_at <= ?', 10.days.ago).where(result: 'positive')
+  }
+
+  scope :last_ten_days_negative, lambda {
+    where('created_at > ?', 10.days.ago).where(result: 'negative')
+  }
+
   # Information about this laboratory
   def details
     {
