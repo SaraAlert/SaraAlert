@@ -20,7 +20,7 @@ class Import extends React.Component {
     let willCreate = [];
     for (let i = 0; i < this.state.patients.length; i++) {
       if (!(this.state.accepted.includes(i) || this.state.rejected.includes(i))) {
-        willCreate.push(this.state.patients[i]);
+        willCreate.push(this.state.patients[parseInt(i)]);
       }
     }
     this.setState({ phased: willCreate }, () => {
