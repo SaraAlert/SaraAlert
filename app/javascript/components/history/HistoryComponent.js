@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Pagination } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import History from './History';
 import Select from 'react-select';
@@ -10,6 +10,8 @@ class HistoryComponent extends React.Component {
     this.state = {
       selectedFilters: [],
       filteredHistories: this.props.histories,
+      selectedPage: 1,
+      countPerPage: 2,
     };
   }
 
@@ -40,8 +42,22 @@ class HistoryComponent extends React.Component {
     );
   };
 
+  handlePageSelected = pageNumber => {
+    if (pageNumber !== this.state.selectedPage) {
+      this.setState({
+        selectedPage: pageNumber,
+      });
+    }
+  };
+
   render() {
-    const historyArray = this.state.filteredHistories.map(history => <History key={history.id} history={history} />);
+    // Pagination
+    const indexOfLastItem = this.state.selectedPage * this.state.countPerPage;
+    const indexOfFirstItem = indexOfLastItem - this.state.countPerPage;
+    const paginatedHistories = this.state.filteredHistories.slice(indexOfFirstItem, indexOfLastItem);
+
+    // History Array Creation
+    const historiesArray = paginatedHistories.map(history => <History key={history.id} history={history} />);
 
     const filterOptions = [
       {
@@ -64,6 +80,20 @@ class HistoryComponent extends React.Component {
       },
     ];
 
+    let pageNumbers = [];
+    for (let number = 1; number <= Math.ceil(this.state.filteredHistories.length / this.state.countPerPage); number++) {
+      pageNumbers.push(
+        <Pagination.Item
+          key={number}
+          onClick={() => {
+            this.handlePageSelected(number);
+          }}
+          active={number === this.state.selectedPage}>
+          {number}
+        </Pagination.Item>
+      );
+    }
+
     return (
       <React.Fragment>
         <Card className="mx-2 mt-3 mb-4 card-square">
@@ -79,9 +109,10 @@ class HistoryComponent extends React.Component {
               placeholder="Filters"
               onChange={this.handleFilterChange}
             />
+            <Pagination className="float-right">{pageNumbers}</Pagination>
           </Card.Header>
           <Card.Body>
-            {historyArray}
+            {historiesArray}
             <Card className="mb-4 mt-4 mx-3 card-square shadow-sm">
               <Card.Header>Add Comment</Card.Header>
               <Card.Body>
