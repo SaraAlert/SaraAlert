@@ -97,6 +97,8 @@ class PatientsController < ApplicationController
     end
     helpers.normalize_state_names(patient)
 
+    # Default responder to self
+    patient.responder = patient
     # Set the responder for this patient, this will link patients that have duplicate primary contact info
     patient.responder = if params.permit(:responder_id)[:responder_id]
                           current_user.get_patient(params.permit(:responder_id)[:responder_id])
@@ -108,8 +110,6 @@ class PatientsController < ApplicationController
                           unless current_user.viewable_patients.responder_for_email(patient[:email]).count.zero?
                             current_user.viewable_patients.responder_for_number.first
                           end
-                        else
-                          patient
                         end
     if params.permit(:responder_id)[:responder_id]
       patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
