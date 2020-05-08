@@ -22,7 +22,9 @@ class CurrentStatus extends React.Component {
     } else if (status === 'isolation_requiring_review') {
       return <span className="text-danger">requires review</span>;
     } else if (status === 'isolation_non_test_based') {
-      return <span className="text-danger">requires review (non test based)</span>;
+      return <span className="text-danger">requires review (symptomatic non test based)</span>;
+    } else if (status === 'isolation_asymp_non_test_based') {
+      return <span className="text-danger">requires review (asymptomatic non test based)</span>;
     } else if (status === 'isolation_test_based') {
       return <span className="text-danger">requires review (test based)</span>;
     } else if (status === 'isolation_non_reporting') {

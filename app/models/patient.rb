@@ -190,14 +190,14 @@ class Patient < ApplicationRecord
       .distinct
   }
 
-  # Individuals that meet the non test based review requirement
+  # Individuals that meet the non test based review requirement (symptomatic)
   scope :non_test_based, lambda {
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever)
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_medication)
-      .where('symptom_onset <= ?', 7.days.ago)
+      .where('symptom_onset <= ?', 10.days.ago)
       .distinct
   }
 
