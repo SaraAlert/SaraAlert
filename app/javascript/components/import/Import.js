@@ -8,7 +8,7 @@ import reportError from '../util/ReportError';
 class Import extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { patients: props.patients, accepted: [], rejected: [], phased: [] };
+    this.state = { patients: props.patients, accepted: [], rejected: [], phased: [], progress: 0 };
     this.importAll = this.importAll.bind(this);
     this.importSub = this.importSub.bind(this);
     this.rejectSub = this.rejectSub.bind(this);
@@ -20,11 +20,12 @@ class Import extends React.Component {
     let willCreate = [];
     for (let i = 0; i < this.state.patients.length; i++) {
       if (!(this.state.accepted.includes(i) || this.state.rejected.includes(i))) {
-        willCreate.push(i);
+        willCreate.push(this.state.patients[i]);
       }
     }
-    this.setState({ phased: willCreate });
-    this.submit(this.state.phased[0], 0, true);
+    this.setState({ phased: willCreate }, () => {
+      this.submit(this.state.phased[0], 0, true);
+    });
   }
 
   importSub(num, bypass) {
@@ -46,9 +47,9 @@ class Import extends React.Component {
     })
       .then(() => {
         let next = [...this.state.accepted, num];
-        this.setState({ accepted: next }, () => {
-          if (this.state.phased.length > next + 1) {
-            this.submit(this.state.phased[next + 1], next + 1, bypass);
+        this.setState({ accepted: next, progress: num }, () => {
+          if (this.state.phased.length > num + 1) {
+            this.submit(this.state.phased[num + 1], num + 1, bypass);
           }
         });
       })
@@ -70,7 +71,17 @@ class Import extends React.Component {
     return (
       <React.Fragment>
         <div className="m-4">
-          {this.state.phased.length > 0 && <h5>Saving...</h5>}
+          {this.state.phased.length > 0 && (
+            <div className="progress mb-3">
+              <div
+                className="progress-bar progress-bar-striped progress-bar-animated"
+                role="progressbar"
+                aria-valuenow={this.state.progress}
+                style={{ width: Math.round((this.state.progress / this.state.phased.length) * 100) + '%' }}
+                aria-valuemin="0"
+                aria-valuemax={this.state.phased.length}></div>
+            </div>
+          )}
           <h5>Please review the monitorees that are about to be imported below. You can individually accept each monitoree, or accept all at once.</h5>
           <Button
             variant="primary"
