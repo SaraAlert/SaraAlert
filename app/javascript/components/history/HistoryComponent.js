@@ -1,18 +1,26 @@
 import React from 'react';
-import { Card, Pagination } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import History from './History';
 import Select from 'react-select';
+import Pagination from 'jw-react-pagination';
 
 class HistoryComponent extends React.Component {
   constructor(props) {
     super(props);
+
+    // bind the onChangePage method to this React component
+    this.onChangePage = this.onChangePage.bind(this);
+
     this.state = {
       selectedFilters: [],
       filteredHistories: this.props.histories,
-      selectedPage: 1,
-      countPerPage: 2,
+      pageOfHistories: [],
     };
+  }
+
+  onChangePage(pageOfHistories) {
+    this.setState({ pageOfHistories });
   }
 
   filterHistories = () => {
@@ -42,22 +50,8 @@ class HistoryComponent extends React.Component {
     );
   };
 
-  handlePageSelected = pageNumber => {
-    if (pageNumber !== this.state.selectedPage) {
-      this.setState({
-        selectedPage: pageNumber,
-      });
-    }
-  };
-
   render() {
-    // Pagination
-    const indexOfLastItem = this.state.selectedPage * this.state.countPerPage;
-    const indexOfFirstItem = indexOfLastItem - this.state.countPerPage;
-    const paginatedHistories = this.state.filteredHistories.slice(indexOfFirstItem, indexOfLastItem);
-
-    // History Array Creation
-    const historiesArray = paginatedHistories.map(history => <History key={history.id} history={history} />);
+    const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
 
     const filterOptions = [
       {
@@ -80,36 +74,24 @@ class HistoryComponent extends React.Component {
       },
     ];
 
-    let pageNumbers = [];
-    for (let number = 1; number <= Math.ceil(this.state.filteredHistories.length / this.state.countPerPage); number++) {
-      pageNumbers.push(
-        <Pagination.Item
-          key={number}
-          onClick={() => {
-            this.handlePageSelected(number);
-          }}
-          active={number === this.state.selectedPage}>
-          {number}
-        </Pagination.Item>
-      );
-    }
-
     return (
       <React.Fragment>
         <Card className="mx-2 mt-3 mb-4 card-square">
           <Card.Header>
-            <h5 className="float-left">History</h5>
-            <Select
-              closeMenuOnSelect={false}
-              isMulti
-              name="Filters"
-              options={filterOptions}
-              className="w-25 basic-multi-select float-right"
-              classNamePrefix="select"
-              placeholder="Filters"
-              onChange={this.handleFilterChange}
-            />
-            <Pagination className="float-right">{pageNumbers}</Pagination>
+            <div className="d-flex flex-row align-items-center">
+              <h5 className="float-left flex-grow-1 mb-0">History</h5>
+              <Select
+                closeMenuOnSelect={false}
+                isMulti
+                name="Filters"
+                options={filterOptions}
+                className="basic-multi-select w-25 mr-3"
+                classNamePrefix="select"
+                placeholder="Filters"
+                onChange={this.handleFilterChange}
+              />
+              <Pagination pageSize={2} maxPages={5} items={this.state.filteredHistories} onChangePage={this.onChangePage} />
+            </div>
           </Card.Header>
           <Card.Body>
             {historiesArray}
