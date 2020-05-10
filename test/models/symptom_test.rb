@@ -37,7 +37,7 @@ class SymptomTest < ActiveSupport::TestCase
     end
   end
 
-  test 'fever' do
+  test 'symptom fever' do
     assert_difference('Symptom.fever.size', 1) do
       create(:bool_symptom, bool_value: true, name: 'fever')
     end

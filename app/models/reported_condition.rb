@@ -3,7 +3,11 @@
 # ReportedCondition
 class ReportedCondition < Condition
   def threshold_condition
-    ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
+    # Because threshold_condition_hash is calculated based on jurisdiction_path and edit_count
+    # there should never be multiple threshold_condition_hash with the same non-nil value.
+    # If there is a collision the threshold condition was created for the same jurisdiction at the
+    # same time at the edit history
+    ThresholdCondition.find_by(threshold_condition_hash: threshold_condition_hash)
   end
 
   scope :fever_medication, lambda {
