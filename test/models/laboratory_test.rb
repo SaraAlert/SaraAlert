@@ -8,7 +8,7 @@ class LaboratoryTest < ActiveSupport::TestCase
   def teardown; end
 
   test 'create laboratory' do
-    create(:laboratory)
+    assert create(:laboratory)
 
     assert_raises(ActiveRecord::RecordInvalid) do
       create(:laboratory, patient: nil)
