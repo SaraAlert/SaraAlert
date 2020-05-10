@@ -38,15 +38,15 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
   MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS.freeze
   
-  def verify_line_list_csv(jurisdiction_id, isolation)
-    csv = get_csv("Sara-Alert-#{isolation ? 'Isolation' : 'Exposure'}-Linelist-????-??-??T??_??_?????_??.csv")
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: isolation)
+  def verify_line_list_csv(jurisdiction_id, workflow)
+    csv = get_csv("Sara-Alert-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-Linelist-????-??-??T??_??_?????_??.csv")
+    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation)
     verify_csv_export(csv, :line_list, LINELIST_HEADERS, patients)
   end
   
-  def verify_sara_alert_format(jurisdiction_id, isolation)
-    xlsx = get_xlsx("Sara-Alert-Format-#{isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??.xlsx")
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: isolation)
+  def verify_sara_alert_format(jurisdiction_id, workflow)
+    xlsx = get_xlsx("Sara-Alert-Format-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??.xlsx")
+    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation)
     verify_sara_alert_format_export(xlsx, patients)
   end
 
@@ -66,6 +66,10 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     xlsx = get_xlsx("Sara-Alert-Full-History-Monitoree-#{patient_id}-????-??-??T??_??_?????_??.xlsx")
     patients = Patient.where(id: patient_id)
     verify_excel_export(xlsx, patients)
+  end
+
+  def verify_sara_alert_format_guidance
+    xlsx = get_xlsx("sara_alert_comprehensive_monitoree.xlsx")
   end
 
   def verify_csv_export(csv, type, headers, patients)

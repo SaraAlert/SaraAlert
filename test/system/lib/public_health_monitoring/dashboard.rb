@@ -32,24 +32,24 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     fill_in 'Search:', with: MONITOREES[monitoree_label]['identification']['last_name']
   end
 
-  def export_line_list_csv(jurisdiction_id, isolation)
-    click_on 'Isolation Monitoring' if isolation
+  def export_line_list_csv(jurisdiction_id, workflow)
+    click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Export'
     click_on 'Line list CSV'
-    @@public_health_export_verifier.verify_line_list_csv(jurisdiction_id, isolation)
+    @@public_health_export_verifier.verify_line_list_csv(jurisdiction_id, workflow)
   end
 
-  def export_sara_alert_format(jurisdiction_id, isolation)
-    click_on 'Isolation Monitoring' if isolation
+  def export_sara_alert_format(jurisdiction_id, workflow)
+    click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Export'
     click_on 'Sara Alert Format'
-    @@public_health_export_verifier.verify_sara_alert_format(jurisdiction_id, isolation)
+    @@public_health_export_verifier.verify_sara_alert_format(jurisdiction_id, workflow)
   end
 
-  def export_excel_purge_eligible_monitorees(jurisdiction_id, download=true)
+  def export_excel_purge_eligible_monitorees(jurisdiction_id, action)
     click_on 'Export'
     click_on 'Excel Export For Purge-Eligible Monitorees'
-    if download
+    if action == :download
       click_on 'Download'
       @@public_health_export_verifier.verify_excel_purge_eligible_monitorees(jurisdiction_id)
     else
@@ -57,10 +57,10 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     end
   end
 
-  def export_excel_all_monitorees(jurisdiction_id, download=true)
+  def export_excel_all_monitorees(jurisdiction_id, action)
     click_on 'Export'
     click_on 'Excel Export For All Monitorees'
-    if download
+    if action == :download
       click_on 'Download'
       @@public_health_export_verifier.verify_excel_all_monitorees(jurisdiction_id)
     else
@@ -74,33 +74,44 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     @@public_health_export_verifier.verify_excel_single_monitoree(patient_label.split('_')[1].to_i)
   end
 
-  def import_epi_x(jurisdiction_id, file_name, valid)
+  def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects)
+    click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
     find('a', text: 'Epi-X').click
     attach_file('epix', file_fixture(file_name))
     click_on 'Upload'
-    if valid
+    if validity == :valid
       click_on 'Accept All'
       click_on 'OK'
-      @@public_health_import_verifier.verify_import_epi_x(jurisdiction_id, file_name)
-      sleep(inspection_time=2)
+      @@public_health_import_verifier.verify_import_epi_x(jurisdiction_id, workflow, file_name, rejects)
     else
       assert_content('Monitoree import file appears to be invalid.')
     end
   end
 
-  def import_sara_alert_format(jurisdiction_id, file_name, valid)
+  def import_sara_alert_format(jurisdiction_id, workflow, file_name, validity, rejects)
+    click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
     find('a', text: 'Sara Alert Format').click
     attach_file('comprehensive_monitorees', file_fixture(file_name))
     click_on 'Upload'
-    if valid
+    if validity == :valid
       click_on 'Accept All'
       click_on 'OK'
-      @@public_health_import_verifier.verify_import_sara_alert_format(jurisdiction_id, file_name)
-      sleep(inspection_time=2)
+      @@public_health_import_verifier.verify_import_sara_alert_format(jurisdiction_id, workflow, file_name, rejects)
     else
       assert_content('Monitoree import file appears to be invalid.')
     end
+  end
+
+  def download_sara_alert_format_guidance(workflow)
+    click_on 'Isolation Monitoring' if workflow == :isolation
+    click_on 'Import'
+    find('a', text: 'Sara Alert Format').click
+    click_on 'Download formatting guidance'
+    @@public_health_export_verifier.verify_sara_alert_format_guidance
+    @@system_test_utils.wait_for_modal_animation
+    click_on(class: 'close')
+    @@system_test_utils.wait_for_modal_animation
   end
 end

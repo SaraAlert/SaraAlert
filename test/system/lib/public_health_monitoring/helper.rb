@@ -111,27 +111,27 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def export_line_list_csv(user_label, isolation)
+  def export_line_list_csv(user_label, workflow)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_line_list_csv(jurisdiction_id, isolation)
+    @@public_health_monitoring_dashboard.export_line_list_csv(jurisdiction_id, workflow)
     @@system_test_utils.logout
   end
 
-  def export_sara_alert_format(user_label, isolation)
+  def export_sara_alert_format(user_label, workflow)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_sara_alert_format(jurisdiction_id, isolation)
+    @@public_health_monitoring_dashboard.export_sara_alert_format(jurisdiction_id, workflow)
     @@system_test_utils.logout
   end
 
-  def export_excel_purge_eligible_monitorees(user_label, download=true)
+  def export_excel_purge_eligible_monitorees(user_label, action)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_excel_purge_eligible_monitorees(jurisdiction_id, download)
+    @@public_health_monitoring_dashboard.export_excel_purge_eligible_monitorees(jurisdiction_id, action)
     @@system_test_utils.logout
   end
 
-  def export_excel_all_monitorees(user_label, download=true)
+  def export_excel_all_monitorees(user_label, action)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.export_excel_all_monitorees(jurisdiction_id, download)
+    @@public_health_monitoring_dashboard.export_excel_all_monitorees(jurisdiction_id, action)
     @@system_test_utils.logout
   end
 
@@ -141,15 +141,21 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def import_epi_x(user_label, file_name, valid=true)
+  def import_epi_x(user_label, workflow, file_name, validity, rejects)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.import_epi_x(jurisdiction_id, file_name, valid)
+    @@public_health_monitoring_dashboard.import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects)
     @@system_test_utils.logout
   end
 
-  def import_sara_alert_format(user_label, file_name, valid=true)
+  def import_sara_alert_format(user_label, workflow, file_name, validity, rejects)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard.import_sara_alert_format(jurisdiction_id, file_name, valid)
+    @@public_health_monitoring_dashboard.import_sara_alert_format(jurisdiction_id, workflow, file_name, validity, rejects)
+    @@system_test_utils.logout
+  end
+
+  def download_sara_alert_format_guidance(user_label, workflow)
+    @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.download_sara_alert_format_guidance(workflow)
     @@system_test_utils.logout
   end
 end
