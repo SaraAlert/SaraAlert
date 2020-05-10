@@ -19,6 +19,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   ENROLLMENT_PAGE_TRANSITION_DELAY = 1 # wait for carousel animation to finish
   POP_UP_ALERT_ANIMATION_DELAY = 1 # wait for alert to pop up or dismiss
   MODAL_ANIMATION_DELAY = 0.5 # wait for modal to load
+  ACCEPT_REJECT_DELAY = 0.01 # wait for UI to update after accepting or rejecting monitoree on import
 
   def login(user_label)
     visit '/'
@@ -80,6 +81,10 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   def wait_for_dashboard_load
     sleep(inspection_time = DASHBOARD_LOAD_DELAY)
+  end
+
+  def wait_for_accept_reject
+    sleep(inspection_time = ACCEPT_REJECT_DELAY)
   end
 
   def verify_user_jurisdiction(user_label)

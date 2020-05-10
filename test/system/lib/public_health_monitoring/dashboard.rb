@@ -81,9 +81,9 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     attach_file('epix', file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
-      click_on 'Accept All'
-      click_on 'OK'
-      @@public_health_import_verifier.verify_import_epi_x(jurisdiction_id, workflow, file_name, rejects)
+      @@public_health_import_verifier.verify_epi_x_selection(jurisdiction_id, workflow, file_name, rejects)
+      select_monitorees_to_import(rejects)
+      @@public_health_import_verifier.verify_epi_x_import(jurisdiction_id, workflow, file_name, rejects)
     else
       assert_content('Monitoree import file appears to be invalid.')
     end
@@ -96,9 +96,9 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     attach_file('comprehensive_monitorees', file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
-      click_on 'Accept All'
-      click_on 'OK'
-      @@public_health_import_verifier.verify_import_sara_alert_format(jurisdiction_id, workflow, file_name, rejects)
+      @@public_health_import_verifier.verify_sara_alert_format_selection(jurisdiction_id, workflow, file_name, rejects)
+      select_monitorees_to_import(rejects)
+      @@public_health_import_verifier.verify_sara_alert_format_import(jurisdiction_id, workflow, file_name, rejects)
     else
       assert_content('Monitoree import file appears to be invalid.')
     end
@@ -113,5 +113,21 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     @@system_test_utils.wait_for_modal_animation
     click_on(class: 'close')
     @@system_test_utils.wait_for_modal_animation
+  end
+
+  def select_monitorees_to_import(rejects)
+    if rejects.nil?
+      click_on 'Accept All'
+      click_on 'OK'
+    else
+      page.all('div.card-body').each_with_index do |card, index|
+        if rejects.include?(index)
+          card.find('button', text: 'Reject').click
+        else
+          card.find('button', text: 'Accept').click
+        end
+        @@system_test_utils.wait_for_accept_reject
+      end
+    end
   end
 end

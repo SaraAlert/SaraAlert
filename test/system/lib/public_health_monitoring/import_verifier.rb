@@ -8,11 +8,15 @@ require_relative '../system_test_utils'
 class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
     
-  def verify_import_epi_x(jurisdiction_id, workflow, file_name, rejects)
-    sleep(inspection_time=1)
+  def verify_epi_x_selection(jurisdiction_id, workflow, file_name, rejects)
   end
 
-  def verify_import_sara_alert_format(jurisdiction_id, workflow, file_name, rejects)
-    sleep(inspection_time=1)
+  def verify_sara_alert_format_selection(jurisdiction_id, workflow, file_name, rejects)
+  end
+
+  def verify_epi_x_import(jurisdiction_id, workflow, file_name, rejects)
+  end
+
+  def verify_sara_alert_format_import(jurisdiction_id, workflow, file_name, rejects)
   end
 end
