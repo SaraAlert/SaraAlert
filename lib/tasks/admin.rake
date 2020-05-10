@@ -32,7 +32,7 @@ namespace :admin do
     end
 
     final_hash = Digest::SHA256.hexdigest(combined_hash)
-    puts "\e[41mCompare the folliwng hash as output by this task when run on the enrollment and assessment servers and make sure that the hashes are EXACTLY EQUAL\e[0m"
+    puts "\e[41mCompare the following hash as output by this task when run on the enrollment and assessment servers and make sure that the hashes are EXACTLY EQUAL\e[0m"
     puts "\e[41m>>>>>>>>>>#{final_hash}<<<<<<<<<<\e[0m"
   end
 
