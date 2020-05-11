@@ -6,11 +6,7 @@ class User < ApplicationRecord
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  if ADMIN_OPTIONS['two_factor_auth_enabled']
-    devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable
-  else
-    devise :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable
-  end
+  devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable
 
   # Validate password complexity
   validate :password_complexity

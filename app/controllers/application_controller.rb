@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery prepend: true
 
   def user_must_change_password
-    return unless current_user&.force_password_change || (current_user && !current_user&.authy_enabled)
+    return unless current_user&.force_password_change || (current_user && !current_user&.authy_enabled && current_user&.authy_enforced)
 
     # First login (and first password change) must occur within three days
     current_user.lock_access! if current_user.password_changed_at < 3.days.ago && current_user&.force_password_change
@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
       return
     end
 
-    if !current_user&.devise_modules&.include?(:authy_authenticatable) || request.url == user_enable_authy_url || request.url == user_verify_authy_url ||
+    if !current_user&.authy_enforced || request.url == user_enable_authy_url || request.url == user_verify_authy_url ||
        request.url == user_verify_authy_installation_url || request.url == user_request_sms_url || request.url == user_request_phone_call_url
       return
     end
