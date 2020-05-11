@@ -90,7 +90,7 @@ class HistoryComponent extends React.Component {
                 placeholder="Filters"
                 onChange={this.handleFilterChange}
               />
-              <Pagination pageSize={2} maxPages={5} items={this.state.filteredHistories} onChangePage={this.onChangePage} />
+              <Pagination pageSize={5} maxPages={5} items={this.state.filteredHistories} onChangePage={this.onChangePage} />
             </div>
           </Card.Header>
           <Card.Body>
