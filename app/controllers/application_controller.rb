@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery prepend: true
 
   def user_must_change_password
+    # Allows us to disable authy for a given account via rails console
+    return if (current_user && !current_user&.authy_enabled && current_user&.authy_id == "-1")
     return unless current_user&.force_password_change || (current_user && !current_user&.authy_enabled)
 
     # First login (and first password change) must occur within three days
