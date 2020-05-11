@@ -9,6 +9,7 @@ class ClearSingleReport extends React.Component {
     super(props);
     this.state = {
       showClearReportModal: false,
+      loading: false,
     };
     this.toggleClearReportModal = this.toggleClearReportModal.bind(this);
     this.clearReport = this.clearReport.bind(this);
@@ -27,17 +28,19 @@ class ClearSingleReport extends React.Component {
   }
 
   clearReport() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status/clear/' + this.props.assessment_id, {
-        reasoning: this.state.reasoning,
-      })
-      .then(() => {
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status/clear/' + this.props.assessment_id, {
+          reasoning: this.state.reasoning,
+        })
+        .then(() => {
+          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   createModal(title, toggle, submit) {
@@ -66,7 +69,12 @@ class ClearSingleReport extends React.Component {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             Submit
           </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
@@ -80,8 +88,8 @@ class ClearSingleReport extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button variant="link" onClick={this.toggleClearReportModal} className="btn-sm py-0">
-          <i className="fas fa-check"></i> Review
+        <Button variant="link" onClick={this.toggleClearReportModal} className="dropdown-item">
+          <i className="fas fa-check fa-fw"></i> Review
         </Button>
         {this.state.showClearReportModal && this.createModal('Mark As Reviewed', this.toggleClearReportModal, this.clearReport)}
       </React.Fragment>

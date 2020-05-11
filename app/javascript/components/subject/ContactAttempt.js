@@ -11,6 +11,7 @@ class ContactAttempt extends React.Component {
       showContactAttemptModal: false,
       comment: '',
       attempt: 'Successful',
+      loading: false,
     };
     this.toggleContactAttemptModal = this.toggleContactAttemptModal.bind(this);
     this.submit = this.submit.bind(this);
@@ -29,19 +30,21 @@ class ContactAttempt extends React.Component {
   }
 
   submit() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/histories', {
-        patient_id: this.props.patient.id,
-        comment: this.state.attempt + ' contact attempt.' + (this.state.comment ? ' Note: ' + this.state.comment : ''),
-        type: 'Contact Attempt',
-      })
-      .then(() => {
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/histories', {
+          patient_id: this.props.patient.id,
+          comment: this.state.attempt + ' contact attempt.' + (this.state.comment ? ' Note: ' + this.state.comment : ''),
+          type: 'Contact Attempt',
+        })
+        .then(() => {
+          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   createModal(title, toggle, submit) {
@@ -64,7 +67,12 @@ class ContactAttempt extends React.Component {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             Submit
           </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
@@ -78,8 +86,8 @@ class ContactAttempt extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button onClick={this.toggleContactAttemptModal} className="btn btn-lg" block>
-          <i className="fas fa-phone"></i> New Contact Attempt
+        <Button onClick={this.toggleContactAttemptModal}>
+          <i className="fas fa-phone"></i> Log Manual Contact Attempt
         </Button>
         {this.state.showContactAttemptModal && this.createModal('Contact Attempt', this.toggleContactAttemptModal, this.submit)}
       </React.Fragment>

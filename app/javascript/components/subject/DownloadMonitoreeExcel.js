@@ -11,42 +11,40 @@ class DownloadMonitoreeExcel extends React.Component {
   constructor(props) {
     super(props);
     this.downloadExcel = this.downloadExcel.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  toggleDownloadExcelModal() {
-    let current = this.state.showDownloadExcelModal;
-    this.setState({
-      showDownloadExcelModal: !current,
-    });
-  }
-
-  handleChange(event) {
-    this.setState({ [event.target.id]: event.target.value });
+    this.state = {
+      loading: false,
+    };
   }
 
   downloadExcel() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .get(window.BASE_PATH + '/export/excel/patients/full_history/patient/' + this.props.patient.id, {})
-      .then(response => {
-        var fileDate = moment().format();
-        FileDownload(
-          base64StringToBlob(response.data, 'application/xlsx'),
-          'Sara-Alert-Full-History-Monitoree-' + this.props.patient.id + '-' + fileDate + '.xlsx'
-        );
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .get(window.BASE_PATH + '/export/excel/patients/full_history/patient/' + this.props.patient.id, {})
+        .then(response => {
+          var fileDate = moment().format();
+          FileDownload(
+            base64StringToBlob(response.data, 'application/xlsx'),
+            'Sara-Alert-Full-History-Monitoree-' + this.props.patient.id + '-' + fileDate + '.xlsx'
+          );
+          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   render() {
     return (
       <React.Fragment>
-        <Button className="mx-2 mt-1 mb-3" onClick={this.downloadExcel}>
+        <Button className="mx-2 mt-1 mb-4" onClick={this.downloadExcel} disabled={this.state.loading}>
           <i className="fas fa-download"></i> Download Excel Export
+          {this.state.loading && (
+            <React.Fragment>
+              &nbsp;<span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </React.Fragment>
+          )}
         </Button>
       </React.Fragment>
     );

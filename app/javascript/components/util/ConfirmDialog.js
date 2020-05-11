@@ -20,9 +20,16 @@ class Confirmation extends React.Component {
   render() {
     const { okLabbel = 'OK', cancelLabel = 'Cancel', title, confirmation, show, proceed, enableEscape = true, extraOption = undefined } = this.props;
     return (
-      <Modal className="static-modal-container" show={show} onHide={() => proceed(false)} backdrop={enableEscape ? true : 'static'} keyboard={enableEscape}>
+      <Modal
+        className="static-modal-container"
+        size="lg"
+        show={show}
+        centered
+        onHide={() => proceed(false)}
+        backdrop={enableEscape ? true : 'static'}
+        keyboard={enableEscape}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>{title || 'Confirm'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>{confirmation}</Modal.Body>
         {extraOption && <Form.Check type="checkbox" label={extraOption} className="mx-3" onChange={this.handleChange}></Form.Check>}

@@ -18,6 +18,7 @@ class CaseStatus extends React.Component {
       monitoring_reason: this.props.patient.monitoring_reason,
       public_health_action: this.props.patient.public_health_action,
       apply_to_group: false,
+      loading: false,
     };
     this.toggleCaseStatusModal = this.toggleCaseStatusModal.bind(this);
     this.submit = this.submit.bind(this);
@@ -58,27 +59,29 @@ class CaseStatus extends React.Component {
   }
 
   submit() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
-        comment: true,
-        message: this.state.message,
-        case_status: this.state.case_status,
-        isolation: this.state.isolation,
-        monitoring: this.state.monitoring,
-        monitoring_reason: this.state.monitoring_reason,
-        apply_to_group: this.state.apply_to_group,
-        public_health_action:
-          this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status == 'Not a Case'
-            ? 'None'
-            : this.state.public_health_action,
-      })
-      .then(() => {
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
+          comment: true,
+          message: this.state.message,
+          case_status: this.state.case_status,
+          isolation: this.state.isolation,
+          monitoring: this.state.monitoring,
+          monitoring_reason: this.state.monitoring_reason,
+          apply_to_group: this.state.apply_to_group,
+          public_health_action:
+            this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status == 'Not a Case'
+              ? 'None'
+              : this.state.public_health_action,
+        })
+        .then(() => {
+          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   createModal(title, toggle, submit) {
@@ -114,7 +117,12 @@ class CaseStatus extends React.Component {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.confirmed === ''}>
+            <Button variant="primary btn-square" onClick={submit} disabled={this.state.confirmed === '' || this.state.loading}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
               Submit
             </Button>
             <Button variant="secondary btn-square" onClick={toggle}>
@@ -149,7 +157,12 @@ class CaseStatus extends React.Component {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary btn-square" onClick={submit}>
+            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
               Submit
             </Button>
             <Button variant="secondary btn-square" onClick={toggle}>

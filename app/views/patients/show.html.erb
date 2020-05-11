@@ -48,20 +48,21 @@
           <% if @patient.monitoring %>
             <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
           <% end %>
+          <%= react_component("subject/ContactAttempt", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
         </div>
       </div>
       <% columns = [] %>
       <% @patient.assessments.includes([:reported_condition]).each do |assessment| columns.concat(assessment.all_symptom_names) end %>
-      <% columns = columns.uniq%>
+      <% columns = columns.uniq %>
       <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
         <thead>
           <tr>
             <th class="DataTable-table-header">ID</th>
-            <th class="DataTable-table-header">Needs Review</th>
+            <th class="DataTable-table-header dt-a-w-50">Needs Review</th>
             <th class="DataTable-table-header">Reporter</th>
-            <th class="DataTable-table-header">Created</th>
+            <th class="DataTable-table-header">Created (UTC)</th>
             <% columns.each do |column| -%>
-              <th class="DataTable-table-header"><%= column&.titleize %></th>
+              <th class="DataTable-table-header dt-a-w-75"><%= column&.titleize %></th>
             <% end -%>
             <th class="DataTable-table-header">Actions</th>
           </tr>
@@ -69,10 +70,10 @@
         <tbody>
           <% @patient.assessments.order('created_at').each do |assessment| -%>
             <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
-              <td><%= assessment.id %></th>
+              <td><%= assessment.id %></td>
               <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
               <td><%= assessment.who_reported %></td>
-              <td><%= assessment.created_at %></td>
+              <td><%= assessment.created_at&.strftime('%F %H:%M') %></td>
               <% columns.each do |column| -%>
                 <% if assessment.get_reported_symptom_by_name(column) == nil %>
                 <td></td>
@@ -92,10 +93,15 @@
                 <% end %>
               <% end -%>
               <td>
-                <div class="btn-group btn-group-sm" role="group">
-                  <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="btn btn-link py-0"><i class="fas fa-edit"></i> Edit</button>
-                  <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
-                  <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-primary dropdown-toggle btn-block" type="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-cogs fw"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton">
+                    <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
+                    <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                    <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -191,9 +197,6 @@
       "info": false,
       "lengthMenu": [10, 15, 25, 50],
       "pageLength": 15,
-      "columnDefs": [
-        { "orderable": false, "targets": -1 }
-      ],
       "oLanguage": {
         "sSearch": "Search Lab Results:"
       },

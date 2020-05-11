@@ -10,32 +10,37 @@ class PauseNotifications extends React.Component {
     super(props);
     this.submit = this.submit.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.state = {
+      loading: false,
+    };
   }
 
   submit() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
-        comment: false,
-        pause_notifications: !this.props.patient.pause_notifications,
-      })
-      .then(() => {
-        axios
-          .post(window.BASE_PATH + '/histories', {
-            patient_id: this.props.patient.id,
-            type: 'Monitoring Change',
-            comment: 'User ' + (this.props.patient.pause_notifications ? 'resumed' : 'paused') + ' notifications for this monitoree.',
-          })
-          .then(() => {
-            location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-          })
-          .catch(error => {
-            reportError(error);
-          });
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
+          comment: false,
+          pause_notifications: !this.props.patient.pause_notifications,
+        })
+        .then(() => {
+          axios
+            .post(window.BASE_PATH + '/histories', {
+              patient_id: this.props.patient.id,
+              type: 'Monitoring Change',
+              comment: 'User ' + (this.props.patient.pause_notifications ? 'resumed' : 'paused') + ' notifications for this monitoree.',
+            })
+            .then(() => {
+              location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+            })
+            .catch(error => {
+              reportError(error);
+            });
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   handleSubmit = async confirmText => {
@@ -50,23 +55,37 @@ class PauseNotifications extends React.Component {
         {!this.props.patient.pause_notifications && (
           <Button
             id="pause_notifications"
+            className="mr-2"
+            disabled={this.state.loading}
             onClick={() =>
               this.handleSubmit(
                 "You are about to change this monitoree's notification status to paused. This means that the system will stop sending the monitoree symptom report requests until notifications are resumed by a user."
               )
             }>
             <i className="fas fa-pause"></i> Pause Notifications
+            {this.state.loading && (
+              <React.Fragment>
+                &nbsp;<span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              </React.Fragment>
+            )}
           </Button>
         )}
         {this.props.patient.pause_notifications && (
           <Button
             id="pause_notifications"
+            className="mr-2"
+            disabled={this.state.loading}
             onClick={() =>
               this.handleSubmit(
                 "You are about to change this monitoree's notification status to resumed. This means that the system will start sending the monitoree symptom report requests unless notifications are paused by a user or the record is closed."
               )
             }>
             <i className="fas fa-play"></i> Resume Notifications
+            {this.state.loading && (
+              <React.Fragment>
+                &nbsp;<span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              </React.Fragment>
+            )}
           </Button>
         )}
       </React.Fragment>

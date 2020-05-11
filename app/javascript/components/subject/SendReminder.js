@@ -9,6 +9,7 @@ class SendReminder extends React.Component {
     super(props);
     this.state = {
       showReportReminderModal: false,
+      loading: false,
     };
     this.toggleReportReminderModal = this.toggleReportReminderModal.bind(this);
     this.sendReminder = this.sendReminder.bind(this);
@@ -22,16 +23,18 @@ class SendReminder extends React.Component {
   }
 
   sendReminder() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/reminder', {})
-      .then(() => {
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        reportError(error);
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/reminder', {})
+        .then(() => {
+          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        })
+        .catch(error => {
+          reportError(error);
+          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        });
+    });
   }
 
   createModal(title, toggle, submit) {
@@ -47,7 +50,12 @@ class SendReminder extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             Send
           </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
