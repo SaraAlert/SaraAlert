@@ -60,7 +60,7 @@ namespace :demo do
 
     print 'Creating public health users...'
 
-    ph1 = User.new(email: 'state1_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph1 = User.new(email: 'state1_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
     ph1.add_role :public_health
     ph1.save
 
@@ -90,7 +90,7 @@ namespace :demo do
 
     print 'Creating public health enroller users...'
 
-    phe1 = User.new(email: 'state1_epi_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    phe1 = User.new(email: 'state1_epi_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
     phe1.add_role :public_health_enroller
     phe1.save
 
@@ -113,6 +113,14 @@ namespace :demo do
     analyst1 = User.new(email: 'analyst_all@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
     analyst1.add_role :analyst
     analyst1.save
+
+    puts ' done!'
+
+    #####################################
+
+    print 'Creating demo Doorkeeper OAuth application...'
+
+    Doorkeeper::Application.create(name: 'demo', redirect_uri: 'http://localhost:3000/redirect', scopes: 'user/*.read user/*.write user/*.*', uid: 'demo-oauth-app-uid', secret: 'demo-oauth-app-secret')
 
     puts ' done!'
 

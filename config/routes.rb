@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  use_doorkeeper
+
   if ADMIN_OPTIONS['report_mode']
     root to: 'assessments#landing'
   else
@@ -17,6 +19,21 @@ Rails.application.routes.draw do
     get 'users/password_expired', to: 'users/registrations#password_expired', as: :user_password_expired
   end
 
+  namespace :fhir, defaults: { format: :json } do
+    namespace :r4 do
+      get '/metadata', to: 'api#capability_statement'
+      get '/.well-known/smart-configuration', to: 'api#well_known'
+      get '/:resource_type/:id', to: 'api#show'
+      put '/:resource_type/:id', to: 'api#update'
+      post '/:resource_type', to: 'api#create'
+      get '/:resource_type', to: 'api#search'
+      post '/:resource_type/_search', to: 'api#search'
+      get '/Patient/:id/$everything', to: 'api#all'
+    end
+  end
+  get '/.well-known/smart-configuration', to: 'fhir/r4/api#well_known'
+  get '/redirect', to: redirect { |params, request| "/oauth/authorize/native?#{request.params.to_query}" }
+
   resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]
 
   resources :admin, only: [:index, :create_user]
@@ -28,6 +45,8 @@ Rails.application.routes.draw do
   post 'admin/reset_password', to: 'admin#reset_password'
   post 'admin/reset_2fa', to: 'admin#reset_2fa'
   post 'admin/email', to: 'admin#send_email'
+  post 'admin/enable_api', to: 'admin#enable_api'
+  post 'admin/disable_api', to: 'admin#disable_api'
 
   resources :histories, only: [:create]
 

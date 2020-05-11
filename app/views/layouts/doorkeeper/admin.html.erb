@@ -4,6 +4,11 @@
   <body id="sara-alert-body">
     <%= render 'layouts/header' %>
     <div class="container-fluid">
+      <%- if flash[:notice].present? %>
+        <div class="alert alert-info">
+          <%= flash[:notice] %>
+        </div>
+      <% end -%>
       <%= yield %>
     </div>
     <div id="toast-mount-point">

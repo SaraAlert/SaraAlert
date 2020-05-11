@@ -89,6 +89,7 @@ state1_epi:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: true
 locals1c1_epi:
   id: 8
   email: "locals1c1_epi@example.com"
@@ -167,6 +168,7 @@ state1_epi_enroller:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: true
 admin1:
   id: 14
   email: "admin1@example.com"

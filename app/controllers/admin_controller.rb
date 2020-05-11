@@ -127,4 +127,28 @@ class AdminController < ApplicationController
       UserMailer.admin_message_email(user, comment).deliver_later
     end
   end
+
+  def enable_api
+    redirect_to(root_url) && return unless current_user.has_role? :admin
+
+    permitted_params = params[:admin].permit(:email)
+    email = permitted_params[:email]
+    user = User.find_by(email: email)
+    cur_jur = current_user.jurisdiction
+    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
+
+    user.update!(api_enabled: true)
+  end
+
+  def disable_api
+    redirect_to(root_url) && return unless current_user.has_role? :admin
+
+    permitted_params = params[:admin].permit(:email)
+    email = permitted_params[:email]
+    user = User.find_by(email: email)
+    cur_jur = current_user.jurisdiction
+    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
+
+    user.update!(api_enabled: false)
+  end
 end

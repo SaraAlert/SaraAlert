@@ -18,6 +18,19 @@ class Laboratory < ApplicationRecord
     where('report > ?', 10.days.ago).where(result: 'negative')
   }
 
+  # Returns a representative FHIR::Observation for an instance of a Sara Alert Laboratory.
+  # https://www.hl7.org/fhir/observation.html
+  def as_fhir
+    FHIR::Observation.new(
+      meta: FHIR::Meta.new(lastUpdated: updated_at.strftime('%FT%T%:z')),
+      id: id,
+      subject: FHIR::Reference.new(reference: "Patient/#{patient_id}"),
+      status: 'final',
+      effectiveDateTime: report.strftime('%FT%T%:z'),
+      valueString: result
+    )
+  end
+
   # Information about this laboratory
   def details
     {
