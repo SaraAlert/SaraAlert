@@ -26,8 +26,7 @@ class History < ApplicationRecord
                                              'Report Note',
                                              'Lab Result',
                                              'Lab Result Edit',
-                                             'Contact Attempt',
-                                             'Report Reminder'] }
+                                             'Contact Attempt'] }
 
   belongs_to :patient
 

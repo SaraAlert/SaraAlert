@@ -5050,6 +5050,18 @@ jsx-ast-utils@^2.2.3:
     array-includes "^3.0.3"
     object.assign "^4.1.0"
 
+jw-paginate@^1.0.2:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/jw-paginate/-/jw-paginate-1.0.4.tgz#c6e7dbb4a6e9d62e501c7f9562a3a2a33d77c9b9"
+  integrity sha512-W0bv782exgCoynUL/egbRpaYwf/r6T6e02H870H5u3hfSgEYrxgz5POwmFF5aApS6iPi6yhZ0VF8IbafNFsntA==
+
+jw-react-pagination@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/jw-react-pagination/-/jw-react-pagination-1.1.0.tgz#4e493d58086f61405e75a4e70f2b4e406a148b98"
+  integrity sha512-EBt4PD4PF+Ao3dM2IsRTeH8lZCY7Ky8pRdnJPi7O5jAq552YfBk+JHbDCqpyB51ODIBu5/1p6OcY9XeNtMr5pg==
+  dependencies:
+    jw-paginate "^1.0.2"
+
 killable@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/killable/-/killable-1.0.1.tgz#4c8ce441187a061c7474fb87ca08e2a638194892"
@@ -7457,7 +7469,7 @@ react-s-alert@^1.3.2:
   dependencies:
     babel-runtime "^6.23.0"
 
-react-select@^3.0.4:
+react-select@^3.0.4, react-select@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/react-select/-/react-select-3.1.0.tgz#ab098720b2e9fe275047c993f0d0caf5ded17c27"
   integrity sha512-wBFVblBH1iuCBprtpyGtd1dGMadsG36W5/t2Aj8OE6WbByDg5jIFyT7X5gT+l0qmT5TqWhxX+VsKJvCEl2uL9g==
