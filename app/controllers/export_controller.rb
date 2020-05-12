@@ -34,15 +34,16 @@ class ExportController < ApplicationController
   MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS.freeze
 
   def csv
+    # Verify permissions
     redirect_to(root_url) && return unless current_user.can_export?
+
+    # Verify params
+    redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
     headers = params[:type] == 'linelist' ? LINELIST_HEADERS : COMPREHENSIVE_HEADERS
 
     # Grab patients to export based on monitoring type
     patients = current_user.viewable_patients.where(isolation: params[:workflow] == 'isolation')
-
-    # Do nothing if issue with request/permissions
-    redirect_to(root_url) && return if patients.nil?
 
     # Build CSV
     csv_result = CSV.generate(headers: true) do |csv|
@@ -58,13 +59,14 @@ class ExportController < ApplicationController
   end
 
   def excel_comprehensive_patients
+    # Verify permissions
     redirect_to(root_url) && return unless current_user.can_export?
+
+    # Verify params
+    redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
     # Grab patients to export
     patients = current_user.viewable_patients.where(isolation: params[:workflow] == 'isolation')
-
-    # Do nothing if issue with request/permissions
-    redirect_to(root_url) && return if patients.nil?
 
     # Build Excel
     Axlsx::Package.new do |p|
