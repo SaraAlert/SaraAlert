@@ -81,9 +81,9 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     attach_file('epix', file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
-      @@public_health_import_verifier.verify_epi_x_selection(jurisdiction_id, workflow, file_name, rejects)
+      @@public_health_import_verifier.verify_epi_x_import_page(file_name)
       select_monitorees_to_import(rejects)
-      @@public_health_import_verifier.verify_epi_x_import(jurisdiction_id, workflow, file_name, rejects)
+      @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects)
     else
       assert_content('Monitoree import file appears to be invalid.')
     end
@@ -96,9 +96,9 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     attach_file('comprehensive_monitorees', file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
-      @@public_health_import_verifier.verify_sara_alert_format_selection(jurisdiction_id, workflow, file_name, rejects)
+      @@public_health_import_verifier.verify_sara_alert_format_import_page(file_name)
       select_monitorees_to_import(rejects)
-      @@public_health_import_verifier.verify_sara_alert_format_import(jurisdiction_id, workflow, file_name, rejects)
+      @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects)
     else
       assert_content('Monitoree import file appears to be invalid.')
     end

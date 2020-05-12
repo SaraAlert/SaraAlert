@@ -73,24 +73,36 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.add_comment('locals2c3_epi', 'patient_11', 'pui', 'comment')
   end
 
-  test 'export line list csv' do
+  test 'export line list csv from exposure workflow' do
     @@public_health_monitoring_helper.export_line_list_csv('locals2c3_epi', :exposure)
+  end
+
+  test 'export line list csv from isolation workflow' do
     @@public_health_monitoring_helper.export_line_list_csv('locals2c4_epi', :isolation)
   end
 
-  test 'export sara alert format csv' do
-    @@public_health_monitoring_helper.export_sara_alert_format('locals2c3_epi', :isolation)
+  test 'export sara alert format csv from exposure workflow' do
     @@public_health_monitoring_helper.export_sara_alert_format('locals2c4_epi', :exposure)
   end
 
+  test 'export sara alert format csv from isolation workflow' do
+    @@public_health_monitoring_helper.export_sara_alert_format('locals2c3_epi', :isolation)
+  end
+
   test 'export excel purge-eligible monitorees' do
-    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', :cancel)
     @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('state1_epi', :download)
   end
 
+  test 'export excel purge-eligible monitorees and cancel' do
+    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', :cancel)
+  end
+
   test 'export excel all monitorees' do
-    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', :cancel)
     @@public_health_monitoring_helper.export_excel_all_monitorees('state1_epi', :download)
+  end
+
+  test 'export excel all monitorees and cancel' do
+    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', :cancel)
   end
 
   test 'export excel single monitoree' do
@@ -145,8 +157,11 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :isolation, 'Invalid-File.xlsx', :invalid, nil)
   end
 
-  test 'download sara alert format guidance from exposure and isolation workflows' do
+  test 'download sara alert format guidance from exposure workflow' do
     @@public_health_monitoring_helper.download_sara_alert_format_guidance('state1_epi', :exposure)
+  end
+
+  test 'download sara alert format guidance from isolation workflow' do
     @@public_health_monitoring_helper.download_sara_alert_format_guidance('locals2c3_epi', :isolation)
   end
 end
