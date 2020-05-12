@@ -2,27 +2,21 @@
 
 # ThresholdCondition
 class ThresholdCondition < Condition
+  # When someone answers that they are 'experiencing symptoms' and does not
+  # fill out a complete report, we use this function to generate a list of
+  # symptoms with nil values to build a ReportedCondition with nil values
+  # flagging the monitoree for manual follow-up.
   def clone_symptoms_remove_values
-    new_symptoms = []
-    symptoms.each do |symptom|
-      new_symptom = symptom.dup
-      new_symptom.value = nil
-      new_symptoms.push(new_symptom)
-    end
-    new_symptoms
+    new_symptoms = symptoms.deep_dup
+    new_symptoms.each { |s| s.value = nil }
   end
 
+  # When someone answers that they are 'not experiencing symptoms' and does not
+  # fill out a complete report, we use this function to generated list of
+  # symptoms with false boolean values so that the monitoree is not flagged for
+  # manual follow-up.
   def clone_symptoms_negate_bool_values
-    new_symptoms = []
-    symptoms.each do |symptom|
-      new_symptom = symptom.dup
-      new_symptom.value = if symptom.type == 'BoolSymptom'
-                            !symptom.value
-                          else
-                            0
-                          end
-      new_symptoms.push(new_symptom)
-    end
-    new_symptoms
+    new_symptoms = symptoms.deep_dup
+    new_symptoms.each { |s| s.value = 0 }
   end
 end
