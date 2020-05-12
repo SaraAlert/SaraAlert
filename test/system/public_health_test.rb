@@ -97,25 +97,55 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.export_excel_single_monitoree('locals2c4_epi', 'patient_10')
   end
   
-  test 'import epi-x' do
+  test 'import epi-x to exposure and accept all' do
     @@public_health_monitoring_helper.import_epi_x('state1_epi_enroller', :exposure, 'Epi-X-Format.xlsx', :valid, nil)
+  end
+
+  test 'import epi-x to exposure and accept some' do
     @@public_health_monitoring_helper.import_epi_x('locals2c3_epi', :exposure, 'Epi-X-Format.xlsx', :valid, [2, 5, 7, 8])
+  end
+
+  test 'import epi-x to exposure and validate' do
     @@public_health_monitoring_helper.import_epi_x('locals2c4_epi', :exposure, 'Invalid-File.xlsx', :invalid, nil)
+  end
+
+  test 'import epi-x to isolation and accept all individually' do
     @@public_health_monitoring_helper.import_epi_x('state2_epi', :isolation, 'Epi-X-Format.xlsx', :valid, [])
+  end
+
+  test 'import epi-x to isolation and accept all' do
     @@public_health_monitoring_helper.import_epi_x('locals1c1_epi', :isolation, 'Epi-X-Format.xlsx', :valid, nil)
+  end
+
+  test 'import epi-x to isolation and validate' do
     @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :isolation, 'Invalid-File.xlsx', :invalid, nil)
   end
 
-  test 'import sara alert format' do
+  test 'import sara alert format to exposure and accept some' do
     @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, [1, 4, 5, 9])
+  end
+
+  test 'import sara alert format to exposure and accept all' do
     @@public_health_monitoring_helper.import_sara_alert_format('locals1c1_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, nil)
+  end
+
+  test 'import sara alert format to exposure and validate' do
     @@public_health_monitoring_helper.import_sara_alert_format('locals1c2_epi', :exposure, 'Invalid-File.xlsx', :invalid, nil)
+  end
+
+  test 'import sara alert format to isolation and accept all' do
     @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, nil)
+  end
+
+  test 'import sara alert format to isolation and reject all' do
     @@public_health_monitoring_helper.import_sara_alert_format('locals2c3_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, (0..9).to_a)
+  end
+
+  test 'import sara alert format to isolation and validate' do
     @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :isolation, 'Invalid-File.xlsx', :invalid, nil)
   end
 
-  test 'download sara alert format guidance' do
+  test 'download sara alert format guidance from exposure and isolation workflows' do
     @@public_health_monitoring_helper.download_sara_alert_format_guidance('state1_epi', :exposure)
     @@public_health_monitoring_helper.download_sara_alert_format_guidance('locals2c3_epi', :isolation)
   end
