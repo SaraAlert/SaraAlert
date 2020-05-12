@@ -517,6 +517,7 @@ class Patient < ApplicationRecord
 
   # All information about this subject
   def comprehensive_details
+    labs = Laboratory.where(patient_id: id).order(report: :desc)
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
@@ -602,7 +603,17 @@ class Patient < ApplicationRecord
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       exposure_notes: exposure_notes || '',
-      status: status&.to_s&.humanize&.downcase || ''
+      status: status&.to_s&.humanize&.downcase || '',
+      symptom_onset: symptom_onset&.strftime('%F') || '',
+      case_status: case_status || '',
+      lab_1_type: labs[0] ? (labs[0].lab_type || '') : '',
+      lab_1_specimen_collection: labs[0] ? (labs[0].specimen_collection&.strftime('%F') || '') : '',
+      lab_1_report: labs[0] ? (labs[0].report&.strftime('%F') || '') : '',
+      lab_1_result: labs[0] ? (labs[0].result || '') : '',
+      lab_2_type: labs[1] ? (labs[1].lab_type || '') : '',
+      lab_2_specimen_collection: labs[1] ? (labs[1].specimen_collection&.strftime('%F') || '') : '',
+      lab_2_report: labs[1] ? (labs[1].report&.strftime('%F') || '') : '',
+      lab_2_result: labs[1] ? (labs[1].result || '') : ''
     }
   end
 

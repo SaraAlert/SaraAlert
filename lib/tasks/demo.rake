@@ -145,41 +145,58 @@ namespace :demo do
       # Create the patients for this day
       printf("Simulating day #{day + 1} (#{today}):\n")
 
-      printf("Generating assessments...")
       # Transaction speeds things up a bit
       Patient.transaction do
-        # Any existing patients may or may not report
-        acount = 1
-        pcount = Patient.count
-        Patient.find_each do |patient|
-          printf("\rGenerating assessment #{acount+1} of #{pcount}...")
-          acount += 1
-          next unless patient.created_at <= today
+      
+        # Create assessments for 80-90% of patients on any given day
+        printf("Generating assessments...")
+        patients = Patient.where('created_at <= ?', today)
+        patient_ids_assessment = patients.pluck(:id).sample(patients.count * rand(80..90) / 100)
+        pcount_assessment = patient_ids_assessment.length
+        Patient.find(patient_ids_assessment).each_with_index do |patient, index|
           next if patient.assessments.any? { |a| a.created_at.to_date == today }
-          if rand < 0.9 # 70% reporting rate on any given day
-            reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
-            assessment = Assessment.new
-            if rand < 0.3 # 30% report some sort of symptoms
-              bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
-              number_of_symptoms = rand(bool_symps.count) + 1
-              bool_symps.each do |symp|  symp['bool_value'] = false end
-              bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
-              assessment.update(reported_condition: reported_condition, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
-              # Outside the context of the demo script, an assessment would already have a threshold condition saved to check the symptomatic status
-              # We'll compensate for that here by just re-updating
-              assessment.update(symptomatic: assessment.symptomatic?)
-              patient.assessments << assessment
-              patient.save
-            else
-              bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
-              bool_symps.each do |symp|  symp['bool_value'] = false end
-              assessment.update(reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
-              assessment.save
-              patient.assessments << assessment
-              patient.save
-            end
-            patient.refresh_symptom_onset(assessment.id)
+          printf("\rGenerating assessment #{index+1} of #{pcount_assessment}...")
+          reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
+          assessment = Assessment.new
+          if rand < 0.3 # 30% report some sort of symptoms
+            bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
+            number_of_symptoms = rand(bool_symps.count) + 1
+            bool_symps.each do |symp|  symp['bool_value'] = false end
+            bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
+            assessment.update(reported_condition: reported_condition, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
+            # Outside the context of the demo script, an assessment would already have a threshold condition saved to check the symptomatic status
+            # We'll compensate for that here by just re-updating
+            assessment.update(symptomatic: assessment.symptomatic?)
+            patient.assessments << assessment
+            patient.save
+          else
+            bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
+            bool_symps.each do |symp|  symp['bool_value'] = false end
+            assessment.update(reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
+            assessment.save
+            patient.assessments << assessment
+            patient.save
           end
+          patient.refresh_symptom_onset(assessment.id)
+        end
+        printf(" done.\n")
+
+        # Create laboratories for 10-20% of isolation patients on any given day
+        printf("Generating laboratories...")
+        isol_patients = Patient.where(isolation: true).where('created_at <= ?', today)
+        patient_ids_lab = isol_patients.pluck(:id).sample(isol_patients.count * rand(10..20) / 100)
+        pcount_lab = patient_ids_lab.length
+        Patient.find(patient_ids_lab).each_with_index do |patient, index|
+          printf("\rGenerating laboratory #{index+1} of #{pcount_lab}...")
+          report_date = Faker::Time.between_dates(from: 1.week.ago, to: today, period: :day)
+          lab = Laboratory.new(
+            lab_type: ['PCR', 'Antigen', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody'].sample,
+            specimen_collection: Faker::Time.between_dates(from: 2.weeks.ago, to: report_date, period: :day),
+            report: report_date,
+            result: ['positive', 'negative', 'indeterminate', 'other'].sample
+          )
+          patient.laboratories << lab
+          patient.save
         end
         printf(" done.\n")
 
@@ -191,6 +208,7 @@ namespace :demo do
           birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
           risk_factors = rand < 0.9
           isol = rand < 0.30
+          monitoring = rand < 0.9
           patient = Patient.new(
             first_name: "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}",
             middle_name: "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}",
@@ -232,7 +250,9 @@ namespace :demo do
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
             isolation: isol,
-            case_status: isol ? 'Confirmed' : ''
+            case_status: isol ? 'Confirmed' : '',
+            monitoring: monitoring,
+            closed_at: monitoring ? nil : today
           )
 
           patient.submission_token = SecureRandom.hex(20)
@@ -282,6 +302,14 @@ namespace :demo do
             patient.monitoring_plan = 'Self-observation'
           end
 
+          if !isol && rand < 0.15
+            patient.public_health_action = [
+              'Recommended medical evaluation of symptoms',
+              'Document results of medical evaluation',
+              'Recommended laboratory testing'
+            ].sample
+          end
+
           patient.jurisdiction = jurisdictions.sample
           patient.responder = patient
           patient.save
@@ -300,6 +328,7 @@ namespace :demo do
 
         # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
         if perform_daily_analytics_update || (day + 1) == days
+          printf("Caching analytics...")
           before_analytics_count = Analytic.count
           Rake::Task["analytics:cache_current_analytics"].reenable
           Rake::Task["analytics:cache_current_analytics"].invoke
@@ -310,6 +339,7 @@ namespace :demo do
           Analytic.all.order(:id)[before_analytics_count..after_analytics_count].each do |analytic|
             analytic.update!(created_at: date_time_update, updated_at: date_time_update)
           end
+          printf(" done.\n")
         end
 
       end
