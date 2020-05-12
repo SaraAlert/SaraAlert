@@ -35,13 +35,16 @@ Run the following commands from the root directory to pull in both frontend and 
 
 #### Database
 
-Run the following command from the root directory to intialize the database (note: make sure you have a MySQL database running):
+Run the following commands from the root directory to initialize the database (note: make sure you have a MySQL database running):
 
+* (optional for local development only, not for docker containers)
+  ```
+  mysql -u root -e "CREATE USER 'disease_trakker'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'disease_trakker'@'localhost'; create database disease_trakker_test; create database disease_trakker_development;"
+  ```
 * `bundle exec rake db:drop db:create db:migrate db:setup`
 * `bundle exec rake admin:import_or_update_jurisdictions`
 * `bundle exec rake admin:create_roles`
 * (optional) `bundle exec rake demo:setup demo:populate`
-
 #### ActiveJob + Sidkiq + Redis + Whenever
 
 ActiveJob will work with Sidekiq, Redis, and Whenever to manage the queueing and running of jobs (used to send emails, SMS, and other methods of notification).
@@ -101,6 +104,9 @@ bundle exec whenever --update-crontab
 #### Running
 
 To run Sara Alert, execute: `bundle exec rails s`.
+
+In a development environment, login with username/password credentials created with the [`demo:setup`](https://github.com/SaraAlert/SaraAlert/blob/master/lib/tasks/demo.rake) rake task
+or create user accounts with the [`user:`](https://github.com/SaraAlert/SaraAlert/blob/master/lib/tasks/user.rake) rake tasks (some environment variables required).
 
 ### Installation (Docker)
 
