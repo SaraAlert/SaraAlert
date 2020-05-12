@@ -61,6 +61,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Date of Departure', row[36])
       verify_existence(card, 'Close Contact w/ Known Case', !row[41].blank?.to_s)
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', !row[42].blank?.to_s)
+      if Patient.where(first_name: row[11], last_name: row[10]).length > 1
+        assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
+      end
     end
   end
 
@@ -90,6 +93,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Date of Departure', row[51])
       verify_existence(card, 'Close Contact w/ Known Case', row[69])
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[72])
+      if Patient.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
+        assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
+      end
     end
   end
 
@@ -99,27 +105,27 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_index|
       row = sheet.row(row_index)
-      patient = Patient.where(first_name: row[11], last_name: row[10])[0]
+      patient = Patient.where(first_name: row[11], last_name: row[10]).where('created_at > ?', 1.minute.ago)[0]
       if rejects.include?(row_index - 2)
-        assert_nil(patient, "Patient should not be found in db: #{row[11]} #{row[10]}")
+        assert_nil(patient, "Patient should not be found in db: #{row[11]} #{row[10]} in row #{row_index}")
       else
-        assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]}")
+        assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]} in row #{row_index}")
         EPI_X_FIELDS.each_with_index do |field, index|
           if index == 28 || index == 29
-            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch")
+            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           elsif index == 13
-            assert_equal(row[index] == 'M' ? 'Male' : 'Female', patient[field].to_s, "#{field} mismatch")
+            assert_equal(row[index] == 'M' ? 'Male' : 'Female', patient[field].to_s, "#{field} mismatch in row #{row_index}")
           elsif [20, 21, 22, 23].include?(index) && row[index].nil?
-            assert_equal(row[index - 4].to_s, patient[field].to_s, "#{field} mismatch")
+            assert_equal(row[index - 4].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           elsif index == 34
-            assert_equal(row[35].to_s, patient[field].to_s, "#{field} mismatch")
+            assert_equal(row[35].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           elsif index == 41 || index == 42
-            assert_equal(!row[index].blank?, patient[field], "#{field} mismatch")
+            assert_equal(!row[index].blank?, patient[field], "#{field} mismatch in row #{row_index}")
           elsif !field.nil?
-            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch")
+            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           end
         end
-        assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow")
+        assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_index}")
       end
     end
   end
@@ -130,19 +136,19 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_index|
       row = sheet.row(row_index)
-      patient = Patient.where(first_name: row[0], middle_name: row[1], last_name: row[2])[0]
+      patient = Patient.where(first_name: row[0], middle_name: row[1], last_name: row[2]).where('created_at > ?', 1.minute.ago)[0]
       if rejects.include?(row_index - 2)
-        assert_nil(patient, "Patient should not be found in db: #{row[0]} #{row[1]} #{row[2]}")
+        assert_nil(patient, "Patient should not be found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
       else
-        assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]}")
+        assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
         COMPREHENSIVE_FIELDS.each_with_index do |field, index|
           if index == 44 || index == 46
-            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch")
+            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           else
-            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch")
+            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           end
         end
-        assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow")
+        assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_index}")
       end
     end
   end

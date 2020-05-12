@@ -57,9 +57,17 @@ jurisdiction_8:
   id: 8
   created_at: "<%= 54.weeks.ago %>"
   updated_at: "<%= 54.weeks.ago %>"
-  name: "County 5"
+  name: "State 3"
+  ancestry: "1"
 jurisdiction_9:
   id: 9
   created_at: "<%= 54.weeks.ago %>"
   updated_at: "<%= 54.weeks.ago %>"
-  name: "County 6"
+  name: "State 4"
+  ancestry: "1"
+jurisdiction_10:
+  id: 10
+  created_at: "<%= 54.weeks.ago %>"
+  updated_at: "<%= 54.weeks.ago %>"
+  name: "State 5"
+  ancestry: "1"
