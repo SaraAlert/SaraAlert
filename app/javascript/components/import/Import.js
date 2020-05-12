@@ -8,10 +8,11 @@ import reportError from '../util/ReportError';
 class Import extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { patients: props.patients, accepted: [], rejected: [], phased: [], progress: 0 };
+    this.state = { patients: props.patients, accepted: [], rejected: [], phased: [], progress: 0, importDuplicates: false };
     this.importAll = this.importAll.bind(this);
     this.importSub = this.importSub.bind(this);
     this.rejectSub = this.rejectSub.bind(this);
+    this.handleExtraOptionToggle = this.handleExtraOptionToggle.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
     this.submit = this.submit.bind(this);
   }
@@ -20,12 +21,20 @@ class Import extends React.Component {
     let willCreate = [];
     for (let i = 0; i < this.state.patients.length; i++) {
       if (!(this.state.accepted.includes(i) || this.state.rejected.includes(i))) {
-        willCreate.push(this.state.patients[parseInt(i)]);
+        let patient = this.state.patients[parseInt(i)];
+        if (!patient.appears_to_be_duplicate || this.state.importDuplicates) {
+          willCreate.push(patient);
+        }
       }
     }
-    this.setState({ phased: willCreate }, () => {
-      this.submit(this.state.phased[0], 0, true);
-    });
+    if (willCreate.length > 0) {
+      this.setState({ phased: willCreate }, () => {
+        this.submit(this.state.phased[0], 0, true);
+      });
+    } else {
+      // if there are no monitorees to import, go back to root after pressing the import button
+      location.href = '/';
+    }
   }
 
   importSub(num, bypass) {
@@ -50,6 +59,9 @@ class Import extends React.Component {
         this.setState({ accepted: next, progress: num }, () => {
           if (this.state.phased.length > num + 1) {
             this.submit(this.state.phased[num + 1], num + 1, bypass);
+          } else if (this.state.phased.length != 0) {
+            // if there are no monitorees to import, and import wasn't done one at a time go back to root after pressing the import button
+            location.href = '/';
           }
         });
       })
@@ -58,8 +70,14 @@ class Import extends React.Component {
       });
   }
 
+  handleExtraOptionToggle(value) {
+    this.setState({ importDuplicates: value });
+  }
+
   handleConfirm = async confirmText => {
-    if (await confirmDialog(confirmText)) {
+    let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
+    let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} detected duplicate monitorees` : undefined;
+    if (await confirmDialog(confirmText, { title: 'Import all monitorees', extraOption: duplicatePrompt, extraOptionChange: this.handleExtraOptionToggle })) {
       this.importAll();
     }
   };
@@ -77,7 +95,7 @@ class Import extends React.Component {
                 className="progress-bar progress-bar-striped progress-bar-animated"
                 role="progressbar"
                 aria-valuenow={this.state.progress}
-                style={{ width: Math.round((this.state.progress / this.state.phased.length) * 100) + '%' }}
+                style={{ width: Math.round((this.state.progress + 1 / this.state.phased.length) * 100) + '%' }}
                 aria-valuemin="0"
                 aria-valuemax={this.state.phased.length}></div>
             </div>
@@ -88,7 +106,7 @@ class Import extends React.Component {
             className="btn-lg my-2"
             onClick={() =>
               this.handleConfirm(
-                'Are you sure you want to import all monitorees? Note: This will not import already rejected or re-import already accepted monitorees listed below, but will import any potential duplicates.'
+                'This will not import already rejected or re-import already accepted monitorees listed below. If duplicates are detected, you will be presented with an option to include them.'
               )
             }>
             Accept All
