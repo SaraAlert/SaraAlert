@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Row } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import History from './History';
 import Select from 'react-select';
@@ -80,21 +80,29 @@ class HistoryComponent extends React.Component {
           <Card.Header>
             <div className="d-flex flex-row align-items-center">
               <h5 className="float-left flex-grow-1 mb-0">History</h5>
+            </div>
+          </Card.Header>
+          <Card.Body className="py-0 px-1">
+            <Row className="mx-3 mt-3 justify-content-end">
               <Select
                 closeMenuOnSelect={false}
                 isMulti
                 name="Filters"
                 options={filterOptions}
-                className="basic-multi-select w-25 mr-3"
+                className="basic-multi-select w-25"
                 classNamePrefix="select"
                 placeholder="Filters"
+                theme={theme => ({
+                  ...theme,
+                  borderRadius: 0,
+                })}
                 onChange={this.handleFilterChange}
               />
-              <Pagination pageSize={5} maxPages={5} items={this.state.filteredHistories} onChangePage={this.onChangePage} />
-            </div>
-          </Card.Header>
-          <Card.Body>
+            </Row>
             {historiesArray}
+            <Row className="mx-3 mt-3 justify-content-end">
+              <Pagination pageSize={5} maxPages={5} items={this.state.filteredHistories} onChangePage={this.onChangePage} />
+            </Row>
             <Card className="mb-4 mt-4 mx-3 card-square shadow-sm">
               <Card.Header>Add Comment</Card.Header>
               <Card.Body>
