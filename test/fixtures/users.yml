@@ -232,3 +232,15 @@ locked_user:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+jurisdiction_10_epi:
+  id: 19
+  email: "jurisdiction_10_epi@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 5
+  failed_attempts: 1
+  jurisdiction_id: 10
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false

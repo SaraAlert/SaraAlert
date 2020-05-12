@@ -36,7 +36,7 @@ class DownloadExcelAllMonitorees extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .get(window.BASE_PATH + '/export/excel/full_history/patients/all', {})
+        .get(window.BASE_PATH + '/export/excel/patients/full_history/all', {})
         .then(response => {
           var fileDate = moment().format();
           FileDownload(base64StringToBlob(response.data, 'application/xlsx'), 'Sara-Alert-Full-History-All-Monitorees-' + fileDate + '.xlsx');

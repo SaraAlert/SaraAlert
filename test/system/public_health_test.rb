@@ -73,35 +73,111 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.add_comment('locals2c3_epi', 'patient_11', 'pui', 'comment')
   end
 
-  test 'export line list csv' do
-    @@public_health_monitoring_helper.export_line_list_csv('locals2c3_epi', false)
-    @@public_health_monitoring_helper.export_line_list_csv('locals2c4_epi', true)
+  test 'export line list csv from exposure workflow' do
+    @@public_health_monitoring_helper.export_line_list_csv('locals2c3_epi', :exposure)
   end
 
-  test 'export sara alert format csv' do
-    @@public_health_monitoring_helper.export_sara_alert_format_csv('locals2c3_epi', true)
-    @@public_health_monitoring_helper.export_sara_alert_format_csv('locals2c4_epi', false)
+  test 'export line list csv from isolation workflow' do
+    @@public_health_monitoring_helper.export_line_list_csv('locals2c4_epi', :isolation)
+  end
+
+  test 'export sara alert format csv from exposure workflow' do
+    @@public_health_monitoring_helper.export_sara_alert_format('locals2c4_epi', :exposure)
+  end
+
+  test 'export sara alert format csv from isolation workflow' do
+    @@public_health_monitoring_helper.export_sara_alert_format('locals2c3_epi', :isolation)
   end
 
   test 'export excel purge-eligible monitorees' do
-    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', false)
-    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('state1_epi', true)
+    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('state1_epi', :download)
+  end
+
+  test 'export excel purge-eligible monitorees and cancel' do
+    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', :cancel)
   end
 
   test 'export excel all monitorees' do
-    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', false)
-    @@public_health_monitoring_helper.export_excel_all_monitorees('state1_epi', true)
+    @@public_health_monitoring_helper.export_excel_all_monitorees('state1_epi', :download)
+  end
+
+  test 'export excel all monitorees and cancel' do
+    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', :cancel)
   end
 
   test 'export excel single monitoree' do
     @@public_health_monitoring_helper.export_excel_single_monitoree('locals2c4_epi', 'patient_10')
   end
-
-  test 'import epi-x' do
-    @@public_health_monitoring_helper.import_epi_x('state1_epi_enroller')
+  
+  test 'import epi-x to exposure and accept all' do
+    @@public_health_monitoring_helper.import_epi_x('state1_epi_enroller', :exposure, 'Epi-X-Format.xlsx', :valid, nil)
   end
 
-  test 'import sara alert format' do
-    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi')
+  test 'import epi-x to exposure and accept some' do
+    @@public_health_monitoring_helper.import_epi_x('locals2c3_epi', :exposure, 'Epi-X-Format.xlsx', :valid, [2, 5, 7, 8])
+  end
+
+  test 'import epi-x to exposure and validate' do
+    @@public_health_monitoring_helper.import_epi_x('locals2c4_epi', :exposure, 'Invalid-File.xlsx', :invalid, nil)
+  end
+
+  test 'import epi-x to isolation and accept all individually' do
+    @@public_health_monitoring_helper.import_epi_x('state2_epi', :isolation, 'Epi-X-Format.xlsx', :valid, [])
+  end
+
+  test 'import epi-x to isolation and accept all' do
+    @@public_health_monitoring_helper.import_epi_x('locals1c1_epi', :isolation, 'Epi-X-Format.xlsx', :valid, nil)
+  end
+
+  test 'import epi-x to isolation and reject all' do
+    @@public_health_monitoring_helper.import_epi_x('locals1c1_epi', :isolation, 'Epi-X-Format.xlsx', :valid, (0..10).to_a)
+  end
+
+  test 'import epi-x to isolation and validate' do
+    @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :isolation, 'Invalid-File.xlsx', :invalid, nil)
+  end
+
+  test 'import epi-x to exposure with duplicate patient' do
+    @@public_health_monitoring_helper.import_epi_x('jurisdiction_10_epi', :exposure, 'Epi-X-Format.xlsx', :valid, nil)
+  end
+
+  test 'import sara alert format to exposure and accept some' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, [1, 4, 5, 9])
+  end
+
+  test 'import sara alert format to exposure and accept all' do
+    @@public_health_monitoring_helper.import_sara_alert_format('locals1c1_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, nil)
+  end
+
+  test 'import sara alert format to exposure and validate' do
+    @@public_health_monitoring_helper.import_sara_alert_format('locals1c2_epi', :exposure, 'Invalid-File.xlsx', :invalid, nil)
+  end
+
+  test 'import sara alert format to isolation and accept all' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, nil)
+  end
+
+  test 'import sara alert format to isolation and accept all individually' do
+    @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, [])
+  end
+
+  test 'import sara alert format to isolation and reject all' do
+    @@public_health_monitoring_helper.import_sara_alert_format('locals2c3_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, (0..10).to_a)
+  end
+
+  test 'import sara alert format to isolation with duplicate patient' do
+    @@public_health_monitoring_helper.import_sara_alert_format('jurisdiction_10_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, nil)
+  end
+
+  test 'import sara alert format to isolation and validate' do
+    @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :isolation, 'Invalid-File.xlsx', :invalid, nil)
+  end
+
+  test 'download sara alert format guidance from exposure workflow' do
+    @@public_health_monitoring_helper.download_sara_alert_format_guidance('state1_epi', :exposure)
+  end
+
+  test 'download sara alert format guidance from isolation workflow' do
+    @@public_health_monitoring_helper.download_sara_alert_format_guidance('locals2c3_epi', :isolation)
   end
 end

@@ -5,7 +5,7 @@ require 'roo'
 
 require_relative '../system_test_utils'
 
-class PublicHealthMonitoringDownloadsVerifier < ApplicationSystemTestCase
+class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
     
   DOWNLOAD_TIMEOUT = 10
@@ -38,16 +38,16 @@ class PublicHealthMonitoringDownloadsVerifier < ApplicationSystemTestCase
 
   MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS.freeze
   
-  def verify_line_list_csv(jurisdiction_id, isolation)
-    csv = get_csv("Sara-Alert-#{isolation ? 'Isolation' : 'Exposure'}-Linelist-????-??-??T??_??_?????_??.csv")
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: isolation)
+  def verify_line_list_csv(jurisdiction_id, workflow)
+    csv = get_csv("Sara-Alert-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-Linelist-????-??-??T??_??_?????_??.csv")
+    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation)
     verify_csv_export(csv, :line_list, LINELIST_HEADERS, patients)
   end
   
-  def verify_sara_alert_format_csv(jurisdiction_id, isolation)
-    csv = get_csv("Sara-Alert-#{isolation ? 'Isolation' : 'Exposure'}-Comprehensive-????-??-??T??_??_?????_??.csv")
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: isolation)
-    verify_csv_export(csv, :sara_alert_format, COMPREHENSIVE_HEADERS, patients)
+  def verify_sara_alert_format(jurisdiction_id, workflow)
+    xlsx = get_xlsx("Sara-Alert-Format-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??.xlsx")
+    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation)
+    verify_sara_alert_format_export(xlsx, patients)
   end
 
   def verify_excel_purge_eligible_monitorees(jurisdiction_id)
@@ -68,6 +68,10 @@ class PublicHealthMonitoringDownloadsVerifier < ApplicationSystemTestCase
     verify_excel_export(xlsx, patients)
   end
 
+  def verify_sara_alert_format_guidance
+    xlsx = get_xlsx("sara_alert_comprehensive_monitoree.xlsx")
+  end
+
   def verify_csv_export(csv, type, headers, patients)
     assert_equal(patients.size, csv.length(), "Number of patients")
     headers.each_with_index do |header, col|
@@ -83,6 +87,21 @@ class PublicHealthMonitoringDownloadsVerifier < ApplicationSystemTestCase
         else
           assert_equal(details[field], csv[row][col], "For field: #{field}")
         end
+      end
+    end
+  end
+
+  def verify_sara_alert_format_export(xlsx, patients)
+    monitorees = xlsx.sheet('Monitorees')
+    assert_equal(patients.size, monitorees.last_row - 1, "Number of patients")
+    COMPREHENSIVE_HEADERS.each_with_index do |header, col|
+      assert_equal(header, monitorees.cell(1, col + 1), "For header: #{header}")
+    end
+    patients.each_with_index do |patient, row|
+      details = patient.comprehensive_details
+      details.keys.each_with_index do |field, col|
+        cell_value = monitorees.cell(row + 2, col + 1)
+        assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field}")
       end
     end
   end

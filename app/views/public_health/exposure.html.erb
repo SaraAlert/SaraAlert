@@ -16,8 +16,8 @@
         <i class="fas fa-download"></i> Export
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="/export/csv/exposure/linelist">Line list CSV</a>
-        <a class="dropdown-item" href="/export/csv/exposure/comprehensive">Sara Alert Format CSV</a>
+        <a class="dropdown-item" href="/export/csv/patients/linelist/exposure">Line list CSV</a>
+        <a class="dropdown-item" href="/export/excel/patients/comprehensive/exposure">Sara Alert Format</a>
         <%= react_component("monitor/DownloadExcelPurgeableMonitorees", { authenticity_token: form_authenticity_token } ) %>
         <%= react_component("monitor/DownloadExcelAllMonitorees", { authenticity_token: form_authenticity_token } ) %>
       </div>

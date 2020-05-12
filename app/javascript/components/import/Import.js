@@ -147,9 +147,9 @@ class Import extends React.Component {
                       <br />
                       <b>Date of Departure:</b> {patient.date_of_departure}
                       <br />
-                      <b>Close Contact w/ Known Case:</b> {patient.contact_of_known_case}
+                      <b>Close Contact w/ Known Case:</b> {patient.contact_of_known_case?.toString()}
                       <br />
-                      <b>Was in HC Fac. w/ Known Cases:</b> {patient.was_in_health_care_facility_with_known_cases}
+                      <b>Was in HC Fac. w/ Known Cases:</b> {patient.was_in_health_care_facility_with_known_cases?.toString()}
                     </Col>
                   </Row>
                 </React.Fragment>

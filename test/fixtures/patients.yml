@@ -835,3 +835,27 @@ patient_50:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   last_date_of_exposure: "<%= 12.days.ago %>"
+patient_51:
+  id: 51
+  created_at: "<%= 8.hours.ago %>"
+  updated_at: "<%= 8.hours.ago %>"
+  responder_id: 51
+  creator_id: 19
+  jurisdiction_id: 10
+  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  monitoring: true
+  isolation: true
+  first_name: "Piper83"
+  middle_name: "Reynolds24"
+  last_name: "Altenwerth99"
+  sex: "Female"
+  date_of_birth: "2005-08-18"
+  address_line_1: "7197 Johnson Dale"
+  address_city: "Irmaborough"
+  address_state: "South Dakota"
+  address_zip: "86846-7192"
+  primary_telephone: "(555) 555-0189"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 12.days.ago %>"
