@@ -382,9 +382,29 @@ class Patient < ApplicationRecord
   def refresh_symptom_onset(assessment_id)
     assessment = assessments.where(symptomatic: true).order(:created_at).limit(1)&.first
     return unless !assessment.nil? && !assessment_id.blank? && assessment.id == assessment_id
-
+    return if !symptom_onset.nil? && symptom_onset < assessment.created_at
     update(symptom_onset: assessment&.created_at&.to_date)
     save
+  end
+
+  # Send initial enrollment notification via patient's preferred contact method
+  def send_enrollment_notification
+    if email.present? && preferred_contact_method == 'E-mailed Web Link'
+      # deliver_later forces the use of ActiveJob
+      # sidekiq and redis should be running for this to work
+      # If these are not running, all jobs will be completed when services start
+      PatientMailer.enrollment_email(self).deliver_later if ADMIN_OPTIONS['enable_email'] && !Rails.env.test?
+    elsif primary_telephone.present? && preferred_contact_method == 'SMS Texted Weblink'
+      # deliver_later forces the use of ActiveJob
+      # sidekiq and redis should be running for this to work
+      # If these are not running, all jobs will be completed when services start
+      PatientMailer.enrollment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+    elsif primary_telephone.present? && preferred_contact_method == 'SMS Text-message'
+      # deliver_later forces the use of ActiveJob
+      # sidekiq and redis should be running for this to work
+      # If these are not running, all jobs will be completed when services start
+      PatientMailer.enrollment_sms_text_based(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
+    end
   end
 
   def send_assessment(force = false)
