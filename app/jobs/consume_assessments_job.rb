@@ -102,7 +102,6 @@ class ConsumeAssessmentsJob < ApplicationJob
                                         'Proxy'
                                       end
             assessment.save!
-            pat.refresh_symptom_onset(assessment.id)
           end
         end
       rescue JSON::ParserError
