@@ -113,7 +113,7 @@ services:
       - sara-alert-assessment
       - mysql-assessment
   nginx:
-    image: nginx:latest
+    image: ${NGINX_IMAGE}:latest
     volumes:
       - '~/tls/nginx.conf:/etc/nginx/nginx.conf:ro'
       - '~/tls/puma.key:/etc/nginx/puma.key:ro'
