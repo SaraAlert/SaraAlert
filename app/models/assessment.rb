@@ -71,7 +71,7 @@ class Assessment < ApplicationRecord
   end
 
   def all_symptom_names
-    reported_condition&.symptoms&.collect { |x| x.name } || []
+    reported_condition&.threshold_condition&.symptoms&.collect { |x| x.name } || []
   end
 
   def get_reported_symptom_by_name(symptom_name)
