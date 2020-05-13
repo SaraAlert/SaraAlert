@@ -15,6 +15,7 @@ class CaseStatus extends React.Component {
       isolation: this.props.patient.isolation,
       monitoring: this.props.patient.monitoring,
       monitoring_reason: this.props.patient.monitoring_reason,
+      public_health_action: this.props.patient.public_health_action,
       apply_to_group: false,
     };
     this.toggleCaseStatusModal = this.toggleCaseStatusModal.bind(this);
@@ -66,6 +67,10 @@ class CaseStatus extends React.Component {
         monitoring: this.state.monitoring,
         monitoring_reason: this.state.monitoring_reason,
         apply_to_group: this.state.apply_to_group,
+        public_health_action:
+          this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status == 'Not a Case'
+            ? 'None'
+            : this.state.public_health_action,
       })
       .then(() => {
         location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
