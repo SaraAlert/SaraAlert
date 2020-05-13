@@ -119,6 +119,7 @@ This application includes several Dockerfiles and Docker Compose configurations.
 * `Dockerfile`: This Dockerfile is essentially the same as the `DevelopmentTest.Dockerfile` but provides support for developers that want to get a development and test environment up and running with a simple `docker build .`
 * `DevelopmentTest.Dockerfile`: This Dockerfile is used in the project's Continuous Integration (CI) and allows developers to get started with the full split stack architecture as its the default used in the compose files. It contains the dependencies for running tests.
 * `Production.Dockerfile`: This Dockerfile is built for production or staging deployments.
+* `Nginx.Dockerfile`: This Dockerfile is built from `DevelopmentTest.Dockerfile` or `Production.Dockerfile` which contains all static assets (i.e. the `public/` folder).
 * `docker-compose.yml`: This docker compose file sets up the numerous containers, networks, and volumes required for the split architecture.
 * `docker-compose.prod.yml`: The only difference between this file and the normal one is the overwriting of the `DevelopmentTest` image tag with the `latest` tag.
 
@@ -131,13 +132,14 @@ If you are building the image behined a corporate proxy:
 * Place your company `.crt` file in it
 * `export CERT_PATH=/path/to/crt_from_above.crt`
 
-Building for staging requires the use of the `Production.Dockerfile`.
+Building for staging requires the use of the `Production.Dockerfile` and `Nginx.Dockerfile`.
 
 * `docker build -f Production.Dockerfile --tag sara-alert:latest --build-arg cert="$(cat $CERT_PATH)" .`
+* `docker build -f Nginx.Dockerfile --tag sara-alert-nginx:latest --build-arg sara_alert_image=sara-alert:latest .`
 
 ##### Deploying Staging
 
-Deploying a staging server is done with `docker-compose.yml`, `docker-compose.prod.yml`, and the image created in the previous section. Make sure the image is on the staging server or it can be pulled from a Docker registry to the staging server.
+Deploying a staging server is done with `docker-compose.yml`, `docker-compose.prod.yml`, and the two images created in the previous section. Make sure the images are on the staging server or they can be pulled from a Docker registry to the staging server.
 
 **Docker Networking**
 
@@ -182,7 +184,7 @@ The Nginx configuration is also statged within the same directory. You will need
 
 **Deployment**
 
-Before any of the following commands, export the image you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert`
+Before any of the following commands, export the images you're working with. For the staging environment, the tag is assumed to be `latest`. Example for a locally built image (you will likely need to update this to point to your registry!): `export SARA_ALERT_IMAGE=sara-alert` and `export NGINX_IMAGE=sara-alert-nginx`.
 
 * `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml pull`
 * `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphan`
