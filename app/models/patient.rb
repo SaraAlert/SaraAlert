@@ -382,9 +382,9 @@ class Patient < ApplicationRecord
   def refresh_symptom_onset(assessment_id)
     assessment = assessments.where(symptomatic: true).order(:created_at).limit(1)&.first
     return unless !assessment.nil? && !assessment_id.blank? && assessment.id == assessment_id
-    return if !symptom_onset.nil? && symptom_onset < assessment.created_at
+    return if !symptom_onset.nil? && !assessment.nil? && symptom_onset < assessment.created_at
 
-    update(symptom_onset: assessment&.created_at&.to_date)
+    update(symptom_onset: assessment&.created_at&.to_date) unless assessment.nil?
     save
   end
 

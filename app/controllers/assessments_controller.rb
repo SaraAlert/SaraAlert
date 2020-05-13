@@ -94,7 +94,7 @@ class AssessmentsController < ApplicationController
         history.save
       end
 
-      patient.refresh_symptom_onset(@assessment.id)
+      patient.refresh_symptom_onset(@assessment&.id)
 
       redirect_to(patient_assessments_url)
     end
@@ -126,7 +126,7 @@ class AssessmentsController < ApplicationController
     assessment.who_reported = current_user.email
 
     # Attempt to save and continue; else if failed redirect to index
-    return unless assessment.save!
+    return unless assessment.save
 
     patient.refresh_symptom_onset(assessment.id)
 
