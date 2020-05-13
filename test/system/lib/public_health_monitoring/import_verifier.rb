@@ -36,7 +36,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
                           :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes, nil, :symptom_onset,
                           :case_status].freeze
   
-  def verify_epi_x_import_page(file_name)
+  def verify_epi_x_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
     page.all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
@@ -62,13 +62,13 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Date of Departure', row[36])
       verify_existence(card, 'Close Contact w/ Known Case', !row[41].blank?.to_s)
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', !row[42].blank?.to_s)
-      if Patient.where(first_name: row[11], last_name: row[10]).length > 1
+      if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10]).length > 1
         assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
       end
     end
   end
 
-  def verify_sara_alert_format_import_page(file_name)
+  def verify_sara_alert_format_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
     page.all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
@@ -94,20 +94,22 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Date of Departure', row[51])
       verify_existence(card, 'Close Contact w/ Known Case', row[69])
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[72])
-      if Patient.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
+      if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
         assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
       end
     end
   end
 
-  def verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects)
+  def verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
     sleep(DB_WRITE_DELAY)
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_index|
       row = sheet.row(row_index)
-      patient = Patient.where(first_name: row[11], last_name: row[10]).where('created_at > ?', 1.minute.ago)[0]
-      if rejects.include?(row_index - 2)
+      patients = Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10], date_of_birth: row[12])
+      patient = patients.where('created_at > ?', 1.minute.ago)[0]
+      duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
+      if rejects.include?(row_index - 2) || (duplicate && !accept_duplicates)
         assert_nil(patient, "Patient should not be found in db: #{row[11]} #{row[10]} in row #{row_index}")
       else
         assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]} in row #{row_index}")
@@ -131,14 +133,16 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects)
+  def verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
     sleep(DB_WRITE_DELAY)
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_index|
       row = sheet.row(row_index)
-      patient = Patient.where(first_name: row[0], middle_name: row[1], last_name: row[2]).where('created_at > ?', 1.minute.ago)[0]
-      if rejects.include?(row_index - 2)
+      patients = Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2], date_of_birth: row[3])
+      patient = patients.where('created_at > ?', 1.minute.ago)[0]
+      duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
+      if rejects.include?(row_index - 2) || (duplicate && !accept_duplicates)
         assert_nil(patient, "Patient should not be found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
       else
         assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
