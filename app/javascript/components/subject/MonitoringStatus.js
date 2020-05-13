@@ -5,6 +5,7 @@ import axios from 'axios';
 import ContactAttempt from './ContactAttempt';
 import CaseStatus from './CaseStatus';
 import reportError from '../util/ReportError';
+import InfoTooltip from '../util/InfoTooltip';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -44,6 +45,33 @@ class MonitoringStatus extends React.Component {
     this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
     this.toggleIsolation = this.toggleIsolation.bind(this);
     this.toggleNotifications = this.toggleNotifications.bind(this);
+  }
+
+  monitoringStatusTooltip() {
+    return (
+      <div>
+        If set to{' '}
+        <i>
+          <b>Actively Monitoring</b>
+        </i>
+        , the system will move the record to the appropriate monitoring line list based on reporting history and latest public health actions. The system will
+        send daily report reminders if the record is not on the <i>PUI</i> (exposure workflow) or <i>Records Requiring Review</i> (isolation workflow) line
+        lists. If set to{' '}
+        <i>
+          <b>Not Monitoring</b>
+        </i>
+        , the records will be moved to the <i>Closed</i> line list and the system will stop sending daily report reminders.
+      </div>
+    );
+  }
+
+  caseStatusTooltip() {
+    return (
+      <div>
+        Used to move records from the symptomatic line list to the Person Under Investigation (PUI) line list in the exposure workflow. To move a record off of
+        the PUI line list in the exposure workflow, update <i>Case Status</i> based on the findings of the investigation.
+      </div>
+    );
   }
 
   handleChange(event) {
@@ -317,7 +345,10 @@ class MonitoringStatus extends React.Component {
             <Col>
               <Form.Row>
                 <Form.Group as={Col}>
-                  <Form.Label className="nav-input-label">MONITORING STATUS</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    MONITORING STATUS
+                    <InfoTooltip tooltipText={this.monitoringStatusTooltip()} location="right"></InfoTooltip>
+                  </Form.Label>
                   <Form.Control
                     as="select"
                     className="form-control-lg"
@@ -363,7 +394,10 @@ class MonitoringStatus extends React.Component {
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="8">
-                  <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    LATEST PUBLIC HEALTH ACTION
+                    <InfoTooltip tooltipText={this.caseStatusTooltip()} location="right"></InfoTooltip>
+                  </Form.Label>
                   <Form.Control
                     as="select"
                     className="form-control-lg"

@@ -3,6 +3,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import reportError from '../util/ReportError';
+import InfoTooltip from '../util/InfoTooltip';
 
 class CaseStatus extends React.Component {
   constructor(props) {
@@ -21,6 +22,16 @@ class CaseStatus extends React.Component {
     this.toggleCaseStatusModal = this.toggleCaseStatusModal.bind(this);
     this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  caseStatusTooltip() {
+    return (
+      <div>
+        Used to move records into the appropriate workflow after investigating a report of symptoms. If an individual meets the <i>confirmed</i> or{' '}
+        <i>probable</i> case definition, a user can choose to move the record to the isolation workflow or to end monitoring in Sara Alert. If the individual
+        meets another case definition, the record will be returned to the appropriate exposure monitoring line list.
+      </div>
+    );
   }
 
   handleChange(event) {
@@ -164,7 +175,10 @@ class CaseStatus extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label className="nav-input-label">CASE STATUS</Form.Label>
+          <Form.Label className="nav-input-label">
+            CASE STATUS
+            <InfoTooltip tooltipText={this.caseStatusTooltip()} location="right"></InfoTooltip>
+          </Form.Label>
           <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
             <option></option>
             <option>Confirmed</option>
