@@ -80,6 +80,8 @@ class ImportController < ApplicationController
       xlxs.sheet(0).each_with_index do |row, index|
         next if index.zero? # Skip headers
 
+        isolation = params.permit(:workflow)[:workflow] == 'isolation'
+
         @patients << {
           first_name: row[0],
           middle_name: row[1],
@@ -165,8 +167,10 @@ class ImportController < ApplicationController
           exposure_risk_assessment: row[81],
           monitoring_plan: row[82],
           exposure_notes: row[83],
+          symptom_onset: isolation ? row[85] : nil,
+          case_status: isolation ? row[86] : nil,
           appears_to_be_duplicate: current_user.viewable_patients.matches(row[0], row[2], row[4], row[3]).exists?,
-          isolation: params.permit(:workflow)[:workflow] == 'isolation'
+          isolation: isolation
         }
       end
     rescue StandardError

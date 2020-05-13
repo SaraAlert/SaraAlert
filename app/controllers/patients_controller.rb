@@ -418,6 +418,8 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
+      symptom_onset
+      case_status
     ]
   end
 

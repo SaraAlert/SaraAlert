@@ -33,7 +33,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
                           :contact_of_known_case, :contact_of_known_case_id, :travel_to_affected_country_or_area, :was_in_health_care_facility_with_known_cases,
                           :was_in_health_care_facility_with_known_cases_facility_name, :laboratory_personnel, :laboratory_personnel_facility_name,
                           :healthcare_personnel, :healthcare_personnel_facility_name, :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort,
-                          :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes].freeze
+                          :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes, nil, :symptom_onset,
+                          :case_status].freeze
   
   def verify_epi_x_import_page(file_name)
     sheet = get_xslx(file_name).sheet(0)
@@ -144,7 +145,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         COMPREHENSIVE_FIELDS.each_with_index do |field, index|
           if index == 44 || index == 46
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_index}")
-          else
+          elsif index == 85 || index == 86
+            assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_index}")
+          elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           end
         end
