@@ -159,7 +159,6 @@ class PatientMailer < ApplicationMailer
 
   def closed_email(patient)
     return if patient&.email&.blank?
-    add_success_history(patient)
     @patient = patient
     mail(to: patient.email, subject: 'Sara Alert Reporting Complete') do |format|
       format.html { render layout: 'main_mailer' }
