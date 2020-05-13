@@ -74,31 +74,31 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     @@public_health_export_verifier.verify_excel_single_monitoree(patient_label.split('_')[1].to_i)
   end
 
-  def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects)
+  def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
     find('a', text: 'Epi-X').click
     attach_file('epix', file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
-      @@public_health_import_verifier.verify_epi_x_import_page(file_name)
-      select_monitorees_to_import(rejects)
-      @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects)
+      @@public_health_import_verifier.verify_epi_x_import_page(jurisdiction_id, file_name)
+      select_monitorees_to_import(rejects, accept_duplicates)
+      @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     else
       assert_content('Monitoree import file appears to be invalid.')
     end
   end
 
-  def import_sara_alert_format(jurisdiction_id, workflow, file_name, validity, rejects)
+  def import_sara_alert_format(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
     find('a', text: 'Sara Alert Format').click
     attach_file('comprehensive_monitorees', file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
-      @@public_health_import_verifier.verify_sara_alert_format_import_page(file_name)
-      select_monitorees_to_import(rejects)
-      @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects)
+      @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction_id, file_name)
+      select_monitorees_to_import(rejects, accept_duplicates)
+      @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     else
       assert_content('Monitoree import file appears to be invalid.')
     end
@@ -115,9 +115,10 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     @@system_test_utils.wait_for_modal_animation
   end
 
-  def select_monitorees_to_import(rejects)
+  def select_monitorees_to_import(rejects, accept_duplicates)
     if rejects.nil?
       click_on 'Accept All'
+      find(:css, '.form-check-input').set(true) if accept_duplicates
       click_on 'OK'
     else
       page.all('div.card-body').each_with_index do |card, index|

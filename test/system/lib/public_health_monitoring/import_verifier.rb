@@ -33,9 +33,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
                           :contact_of_known_case, :contact_of_known_case_id, :travel_to_affected_country_or_area, :was_in_health_care_facility_with_known_cases,
                           :was_in_health_care_facility_with_known_cases_facility_name, :laboratory_personnel, :laboratory_personnel_facility_name,
                           :healthcare_personnel, :healthcare_personnel_facility_name, :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort,
-                          :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes].freeze
+                          :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes, nil, :symptom_onset,
+                          :case_status].freeze
   
-  def verify_epi_x_import_page(file_name)
+  def verify_epi_x_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
     page.all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
@@ -61,13 +62,13 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Date of Departure', row[36])
       verify_existence(card, 'Close Contact w/ Known Case', !row[41].blank?.to_s)
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', !row[42].blank?.to_s)
-      if Patient.where(first_name: row[11], last_name: row[10]).length > 1
+      if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10]).length > 1
         assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
       end
     end
   end
 
-  def verify_sara_alert_format_import_page(file_name)
+  def verify_sara_alert_format_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
     page.all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
@@ -93,20 +94,22 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Date of Departure', row[51])
       verify_existence(card, 'Close Contact w/ Known Case', row[69])
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[72])
-      if Patient.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
+      if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
         assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
       end
     end
   end
 
-  def verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects)
+  def verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
     sleep(DB_WRITE_DELAY)
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_index|
       row = sheet.row(row_index)
-      patient = Patient.where(first_name: row[11], last_name: row[10]).where('created_at > ?', 1.minute.ago)[0]
-      if rejects.include?(row_index - 2)
+      patients = Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10], date_of_birth: row[12])
+      patient = patients.where('created_at > ?', 1.minute.ago)[0]
+      duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
+      if rejects.include?(row_index - 2) || (duplicate && !accept_duplicates)
         assert_nil(patient, "Patient should not be found in db: #{row[11]} #{row[10]} in row #{row_index}")
       else
         assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]} in row #{row_index}")
@@ -130,26 +133,45 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects)
+  def verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
     sleep(DB_WRITE_DELAY)
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_index|
       row = sheet.row(row_index)
-      patient = Patient.where(first_name: row[0], middle_name: row[1], last_name: row[2]).where('created_at > ?', 1.minute.ago)[0]
-      if rejects.include?(row_index - 2)
+      patients = Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2], date_of_birth: row[3])
+      patient = patients.where('created_at > ?', 1.minute.ago)[0]
+      duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
+      if rejects.include?(row_index - 2) || (duplicate && !accept_duplicates)
         assert_nil(patient, "Patient should not be found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
       else
         assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
         COMPREHENSIVE_FIELDS.each_with_index do |field, index|
           if index == 44 || index == 46
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_index}")
-          else
+          elsif index == 85 || index == 86
+            assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_index}")
+          elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           end
         end
+        verify_laboratory(patient, row[87..90])
+        verify_laboratory(patient, row[91..94])
         assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_index}")
       end
+    end
+  end
+
+  def verify_laboratory(patient, data)
+    if !data[0].blank? || !data[1].blank? || !data[2].blank? || !data[3].blank?
+      count = Laboratory.where(
+        patient_id: patient.id,
+        lab_type: data[0].to_s,
+        specimen_collection: data[1],
+        report: data[2],
+        result: data[3].to_s
+      ).count
+      assert_equal(1, count, "Lab result for patient: #{patient.first_name} #{patient.last_name} not found")
     end
   end
 

@@ -133,6 +133,19 @@ class PatientsController < ApplicationController
       history.history_type = 'Enrollment'
       history.save
 
+      # Create laboratories for patient if included in import
+      unless params.dig(:patient, :laboratories).nil?
+        params[:patient][:laboratories].each do |lab|
+          laboratory = Laboratory.new
+          laboratory.lab_type = lab[:lab_type]
+          laboratory.specimen_collection = lab[:specimen_collection]
+          laboratory.report = lab[:report]
+          laboratory.result = lab[:result]
+          laboratory.patient = patient
+          laboratory.save
+        end
+      end
+
       render(json: patient) && return
     else
       render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
@@ -418,6 +431,8 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
+      symptom_onset
+      case_status
     ]
   end
 
