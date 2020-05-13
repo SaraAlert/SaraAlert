@@ -1,11 +1,10 @@
 ---
 stages:
-  - create-image
-  - test
-  - deploy
+  - create-image-1
+  - create-image-2
 
 build-push-development-test-image:
-  stage: create-image
+  stage: create-image-1
   only:
     refs:
       - master
@@ -19,7 +18,7 @@ build-push-development-test-image:
   allow_failure: true
 
 build-push-staging-image:
-  stage: create-image
+  stage: create-image-1
   tags:
     - shell-exec-required
   only:
@@ -30,7 +29,21 @@ build-push-staging-image:
   script:
     - docker build -f Production.Dockerfile --tag $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest --build-arg cert="$(cat $MITRE_CERT_PATH)" .
     - docker push $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest
-  allow_failure: true
+  allow_failure: false
+
+build-push-staging-nginx-image:
+  stage: create-image-2
+  tags:
+    - shell-exec-required
+  only:
+    refs:
+      - master
+  except:
+    - schedules
+  script:
+    - docker build -f Nginx.Dockerfile --tag $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_3:latest --build-arg sara_alert_image="$ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_2:latest" .
+    - docker push $ARTIFACTORY_HOST/$ARTIFACTORY_NAMESPACE_1/$ARTIFACTORY_NAMESPACE_3:latest
+  allow_failure: false
 
 # system-test:
 #   stage: test
