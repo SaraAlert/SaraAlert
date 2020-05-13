@@ -6,7 +6,6 @@ class PatientMailer < ApplicationMailer
 
   def enrollment_email(patient)
     return if patient&.email&.blank?
-    add_success_history(patient)
     # Gather patients and jurisdictions
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
@@ -18,7 +17,6 @@ class PatientMailer < ApplicationMailer
 
   def enrollment_sms_weblink(patient)
     return if patient&.primary_telephone&.blank?
-    add_success_history(patient)
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
     contents = "This is the Sara Alert system please complete the report for #{patient_name} at "
     contents += new_patient_assessment_jurisdiction_report_url(patient.submission_token, patient.jurisdiction.unique_identifier).to_s
@@ -35,7 +33,6 @@ class PatientMailer < ApplicationMailer
 
   def enrollment_sms_text_based(patient)
     return if patient&.primary_telephone&.blank?
-    add_success_history(patient)
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
     contents = "Welcome to the Sara Alert system, we will be sending your daily reports for #{patient_name} to this phone number."
     account_sid = ENV['TWILLIO_API_ACCOUNT']
