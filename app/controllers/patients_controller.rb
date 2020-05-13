@@ -134,7 +134,7 @@ class PatientsController < ApplicationController
       history.save
 
       # Create laboratories for patient if included in import
-      if params[:patient][:laboratories]
+      unless params.dig(:patient, :laboratories).nil?
         params[:patient][:laboratories].each do |lab|
           laboratory = Laboratory.new
           laboratory.lab_type = lab[:lab_type]
