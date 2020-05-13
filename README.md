@@ -88,18 +88,18 @@ You must update your chrontab for these jobs to run periodically (defined in `co
 bundle exec whenever --update-crontab
 ```
 
-##### Periodic Tasks
-  These tasks are configured to run periodically. Their run timing parameters are specified in `config/schedule.rb`
-  * `CloseSubjectsJob` 
-    - Active job that closes cases that meet duration/symptomatic conditions
+##### Periodic Jobs
+  These jobs are configured to run periodically. Their run timing parameters are specified in `config/schedule.rb`.
+  * `CloseSubjectsJob`
+      - Closes (stops active monitoring of) monitorees that meet duration/symptomatic conditions
   * `PurgeJob`
-      - Active job that redacts PII of cases that have been closed for N many days
-  * `rake mailers:send_purge_warning`
-      - Send warning to users of upcoming PurgeJob containing N many records
-  * `rake analytics:cache_current_analytics`
-      - Caches analytics information for faster retrieval 
-  * `rake mailers:send_assessments`
-      - Send assessment reminders to non-reporting individuals
+      - Purges eligible records
+  * `SendPurgeWarningsJob`
+      - Send warnings to users of upcoming PurgeJob
+  * `CacheAnalyticsJob`
+      - Caches analytics information for faster retrieval
+  * `SendAssessmentsJob`
+      - Send assessment reminders to monitorees
 
 #### Running
 
@@ -122,10 +122,12 @@ This application includes several Dockerfiles and Docker Compose configurations.
 * `docker-compose.yml`: This docker compose file sets up the numerous containers, networks, and volumes required for the split architecture.
 * `docker-compose.prod.yml`: The only difference between this file and the normal one is the overwriting of the `DevelopmentTest` image tag with the `latest` tag.
 
-##### Building for Staging
+##### Building
+
+* Create a `certs/` directory in the root of the project
 
 If you are building the image behined a corporate proxy:
-* Create a `certs/` directory in the root of the project
+
 * Place your company `.crt` file in it
 * `export CERT_PATH=/path/to/crt_from_above.crt`
 

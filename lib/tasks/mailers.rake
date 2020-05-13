@@ -52,6 +52,6 @@ namespace :mailers do
 
   desc "Sends data purge warning to users"
   task send_purge_warning: :environment do
-    UserMailer.purge_notification.deliver_later
+    SendPurgeWarningsJob.perform_now
   end
 end
