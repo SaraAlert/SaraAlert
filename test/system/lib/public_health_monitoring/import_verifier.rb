@@ -151,14 +151,14 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
           end
         end
-        verify_laboratory(patient, workflow, row[87..90])
-        verify_laboratory(patient, workflow, row[91..94])
+        verify_laboratory(patient, row[87..90])
+        verify_laboratory(patient, row[91..94])
         assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_index}")
       end
     end
   end
 
-  def verify_laboratory(patient, workflow, data)
+  def verify_laboratory(patient, data)
     if !data[0].blank? || !data[1].blank? || !data[2].blank? || !data[3].blank?
       count = Laboratory.where(
         patient_id: patient.id,
@@ -167,8 +167,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         report: data[2],
         result: data[3].to_s
       ).count
-      assert_equal(1, count, "Lab result for patient: #{patient.first_name} #{patient.last_name} should be found in isolation") if workflow == :isolation
-      assert_equal(0, count, "Lab result for patient: #{patient.first_name} #{patient.last_name} should not be found in exposure") if workflow == :exposure
+      assert_equal(1, count, "Lab result for patient: #{patient.first_name} #{patient.last_name} not found")
     end
   end
 

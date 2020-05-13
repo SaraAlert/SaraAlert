@@ -170,24 +170,21 @@ class ImportController < ApplicationController
           symptom_onset: isolation ? row[85] : nil,
           case_status: isolation ? row[86] : nil,
           appears_to_be_duplicate: current_user.viewable_patients.matches(row[0], row[2], row[4], row[3]).exists?,
-          isolation: isolation,
+          isolation: isolation
         }
-        
-        if isolation
-          lab_results = []
-          lab_results.push(lab_result(row[87..90])) if !row[87].blank? || !row[88].blank? || !row[89].blank? || !row[90].blank?
-          lab_results.push(lab_result(row[91..94])) if !row[91].blank? || !row[92].blank? || !row[93].blank? || !row[94].blank?
-          patient[:laboratories] = lab_results unless lab_results.length == 0
-        end
+
+        lab_results = []
+        lab_results.push(lab_result(row[87..90])) if !row[87].blank? || !row[88].blank? || !row[89].blank? || !row[90].blank?
+        lab_results.push(lab_result(row[91..94])) if !row[91].blank? || !row[92].blank? || !row[93].blank? || !row[94].blank?
+        patient[:laboratories] = lab_results unless lab_results.empty?
 
         @patients << patient
-
       end
     rescue StandardError
       redirect_to(controller: 'import', action: 'error') && (return)
     end
   end
-  
+
   def lab_result(data)
     {
       lab_type: data[0],
