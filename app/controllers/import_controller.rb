@@ -70,7 +70,7 @@ class ImportController < ApplicationController
     )
   end
 
-  def comprehensive_monitorees
+  def comprehensive_monitorees # rubocop:todo Metrics/MethodLength
     redirect_to(root_url) && return unless current_user.can_import?
 
     # Load and parse patient import excel
