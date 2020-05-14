@@ -4,7 +4,7 @@ require 'roo'
 
 # ImportController: for importing subjects from other formats
 class ImportController < ApplicationController
-  include ImportHelper
+  include ImportExportHelper
 
   before_action :authenticate_user!
 
@@ -79,8 +79,9 @@ class ImportController < ApplicationController
     @patients = []
     # Load and parse patient import excel
     begin
-      xlxs = Roo::Excelx.new(params[:comprehensive_monitorees].tempfile.path, file_warning: :ignore)
-      xlxs.sheet(0).each_with_index do |row, index|
+      xlsx = Roo::Excelx.new(params[:comprehensive_monitorees].tempfile.path, file_warning: :ignore)
+      validate_headers(:sara_alert_format, xlsx.sheet(0).row(1))
+      xlsx.sheet(0).each_with_index do |row, index|
         next if index.zero? # Skip headers
 
         isolation = params.permit(:workflow)[:workflow] == 'isolation'
@@ -210,6 +211,14 @@ class ImportController < ApplicationController
 
   private
 
+  def validate_headers(format, row)
+    if format == :sara_alert_format
+      COMPREHENSIVE_HEADERS.each_with_index do |field, index|
+        raise ValidationError.new("Incorrect header for field #{field}", 1) if field != row[index]
+      end
+    end
+  end
+
   def validate_required_field(value, field, row_number)
     raise ValidationError.new("Required field '#{field}' is missing", row_number) if value.blank?
 
@@ -225,8 +234,10 @@ class ImportController < ApplicationController
   def validate_and_normalize_state_field(value, field, row_number)
     return value if value.blank?
 
-    state = validate_and_normalize_state(value)
-    return state if state
+    return value if VALID_STATES.include?(value)
+    
+    return STATE_ABBREVIATIONS[value] if STATE_ABBREVIATIONS[value]
+
     raise ValidationError.new("#{value} is not a valid state for field '#{field}'", row_number) if state.nil?
   end
 end
