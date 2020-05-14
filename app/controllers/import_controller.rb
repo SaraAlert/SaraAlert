@@ -84,11 +84,11 @@ class ImportController < ApplicationController
         isolation = params.permit(:workflow)[:workflow] == 'isolation'
 
         patient = {
-          first_name: validate_required_field(row[0], "First Name", index),
+          first_name: validate_required_field(row[0], 'First Name', index),
           middle_name: row[1],
-          last_name: validate_required_field(row[2], "Last Name", index),
-          date_of_birth: validate_required_field(row[3], "Date of Birth", index),
-          sex: validate_enum_field(row[4], 'Sex', index, ['Male', 'Female', 'Unknown']),
+          last_name: validate_required_field(row[2], 'Last Name', index),
+          date_of_birth: validate_required_field(row[3], 'Date of Birth', index),
+          sex: validate_enum_field(row[4], 'Sex', index, %w[Male Female Unknown]),
           white: row[5],
           black_or_african_american: row[6],
           american_indian_or_alaska_native: row[7],
@@ -102,11 +102,11 @@ class ImportController < ApplicationController
           user_defined_id_statelocal: row[15],
           user_defined_id_cdc: row[16],
           user_defined_id_nndss: row[17],
-          address_line_1: validate_required_field(row[18], "Address Line 1", index),
-          address_city: validate_required_field(row[19], "Address City", index),
-          address_state: validate_required_field(row[20], "Address State", index),
+          address_line_1: validate_required_field(row[18], 'Address Line 1', index),
+          address_city: validate_required_field(row[19], 'Address City', index),
+          address_state: validate_required_field(row[20], 'Address State', index),
           address_line_2: row[21],
-          address_zip: validate_required_field(row[22], "Address Zip", index),
+          address_zip: validate_required_field(row[22], 'Address Zip', index),
           address_county: row[23],
           foreign_address_line_1: row[24],
           foreign_address_city: row[25],
@@ -132,7 +132,7 @@ class ImportController < ApplicationController
           primary_telephone_type: validate_enum_field(row[45], 'Primary Telephone Type', index, ['Smartphone', 'Plain Cell', 'Landline']),
           secondary_telephone: Phonelib.parse(row[46], 'US').full_e164,
           secondary_telephone_type: validate_enum_field(row[47], 'Secondary Telephone Type', index, ['Smartphone', 'Plain Cell', 'Landline']),
-          preferred_contact_time: validate_enum_field(row[48], 'Preferred Contact Time', index, ['Morning', 'Afternoon', 'Evening']),
+          preferred_contact_time: validate_enum_field(row[48], 'Preferred Contact Time', index, %w[Morning Afternoon Evening]),
           email: row[49],
           port_of_origin: row[50],
           date_of_departure: row[51],
@@ -142,7 +142,7 @@ class ImportController < ApplicationController
           port_of_entry_into_usa: row[55],
           date_of_arrival: row[56],
           travel_related_notes: row[57],
-          additional_planned_travel_type: validate_enum_field(row[58], 'Additional Planned Travel Type', index, ['Domestic', 'International']),
+          additional_planned_travel_type: validate_enum_field(row[58], 'Additional Planned Travel Type', index, %w[Domestic International]),
           additional_planned_travel_destination: row[59],
           additional_planned_travel_destination_state: row[60],
           additional_planned_travel_destination_country: row[61],
@@ -150,7 +150,7 @@ class ImportController < ApplicationController
           additional_planned_travel_start_date: row[63],
           additional_planned_travel_end_date: row[64],
           additional_planned_travel_related_notes: row[65],
-          last_date_of_exposure: validate_required_field(row[66], "Last Date of Exposure", index),
+          last_date_of_exposure: validate_required_field(row[66], 'Last Date of Exposure', index),
           potential_exposure_location: row[67],
           potential_exposure_country: row[68],
           contact_of_known_case: row[69],
@@ -181,10 +181,9 @@ class ImportController < ApplicationController
 
         @patients << patient
       rescue StandardError => e
-        @errors << e&.message || "Unknown error on row #{index.to_s}"
+        @errors << e&.message || "Unknown error on row #{index}"
       end
     end
-
   end
 
   def lab_result(data)
@@ -197,23 +196,23 @@ class ImportController < ApplicationController
   end
 
   private
+
   def validate_required_field(value, field, row_number)
-    if value.blank?
-      raise ValidationError.new("Required field '#{field}' is missing", row_number)
-    end
-    return value
+    raise ValidationError.new("Required field '#{field}' is missing", row_number) if value.blank?
+
+    value
   end
 
-  private
   def validate_enum_field(value, field, row_number, values)
-    if !value.blank? && !values.include?(value)
-      raise ValidationError.new("#{value} is not one of the accepted values for field '#{field}', acceptable values are: #{values.join(', ')}", row_number)
-    end
+    return value if value.blank? || values.include?(value)
+
+    raise ValidationError.new("#{value} is not one of the accepted values for field '#{field}', acceptable values are: #{values.join(', ')}", row_number)
   end
 end
 
+# Exception used for reporting validation errors
 class ValidationError < StandardError
   def initialize(message, row)
-    super("Validation Error: " + message + " on row "+ row.to_s)
+    super('Validation Error: ' + message + ' on row ' + row.to_s)
   end
 end
