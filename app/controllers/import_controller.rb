@@ -11,7 +11,7 @@ class ImportController < ApplicationController
   end
 
   def error
-    @error_msg = 'Monitoree import file appears to be invalid.'
+    @error_msg = params[:error_details]
   end
 
   def epix
@@ -83,9 +83,9 @@ class ImportController < ApplicationController
         isolation = params.permit(:workflow)[:workflow] == 'isolation'
 
         patient = {
-          first_name: row[0],
+          first_name: validate_required_field(row[0], "First Name", index),
           middle_name: row[1],
-          last_name: row[2],
+          last_name: validate_required_field(row[2], "Last Name", index),
           date_of_birth: row[3],
           sex: row[4],
           white: row[5],
@@ -180,8 +180,8 @@ class ImportController < ApplicationController
 
         @patients << patient
       end
-    rescue StandardError
-      redirect_to(controller: 'import', action: 'error') && (return)
+    rescue StandardError => e
+      redirect_to(controller: 'import', action: 'error', error_details: e&.message || "Unknown error on row #{index.to_s}") && (return)
     end
   end
 
@@ -192,5 +192,20 @@ class ImportController < ApplicationController
       report: data[2],
       result: data[3]
     }
+  end
+
+  private
+  def validate_required_field(value, field, row_number)
+    if value.blank?
+      raise ValidationError.new("Required field '#{field}' is missing", row_number)
+    end
+    return value
+  end
+
+end
+
+class ValidationError < StandardError
+  def initialize(message, row)
+    super("Validation Error: " + message + " On row "+ row.to_s)
   end
 end
