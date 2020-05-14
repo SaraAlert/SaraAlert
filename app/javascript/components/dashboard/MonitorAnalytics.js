@@ -43,8 +43,8 @@ class MonitorAnalytics extends React.Component {
   exportAsPNG() {
     // The two datatables in the cdc-maps cause the export to fail
     // remove them before the export then reload the page so that they come back
-    document.getElementsByClassName('data-table')[0].remove();
-    document.getElementsByClassName('data-table')[0].remove();
+    document.getElementsByClassName('data-table')[0].outerHTML = '';
+    document.getElementsByClassName('data-table')[0].outerHTML = '';
     var node = document.getElementById('sara-alert-body');
     domtoimage
       .toPng(node)
