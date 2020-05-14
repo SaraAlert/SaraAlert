@@ -91,15 +91,15 @@ class ImportController < ApplicationController
           last_name: validate_required_field(row[2], 'Last Name', index),
           date_of_birth: validate_required_field(row[3], 'Date of Birth', index),
           sex: validate_enum_field(row[4], 'Sex', index, %w[Male Female Unknown]),
-          white: row[5],
-          black_or_african_american: row[6],
-          american_indian_or_alaska_native: row[7],
-          asian: row[8],
-          native_hawaiian_or_other_pacific_islander: row[9],
+          white: validate_bool_field(row[5], 'White', index),
+          black_or_african_american: validate_bool_field(row[6], 'Black or African American', index),
+          american_indian_or_alaska_native: validate_bool_field(row[7], 'American Indian or Alaska Native', index),
+          asian: validate_bool_field(row[8], 'Asian', index),
+          native_hawaiian_or_other_pacific_islander: validate_bool_field(row[9], 'Native Hawaiian or Other Pacific Islander', index),
           ethnicity: validate_enum_field(row[10], 'Ethnicity', index, ['Not Hispanic or Latino', 'Hispanic or Latino']),
           primary_language: row[11],
           secondary_language: row[12],
-          interpretation_required: row[13],
+          interpretation_required: validate_bool_field(row[13], 'Interpretation Required?', index),
           nationality: row[14],
           user_defined_id_statelocal: row[15],
           user_defined_id_cdc: row[16],
@@ -155,17 +155,17 @@ class ImportController < ApplicationController
           last_date_of_exposure: validate_required_field(row[66], 'Last Date of Exposure', index),
           potential_exposure_location: row[67],
           potential_exposure_country: row[68],
-          contact_of_known_case: row[69],
+          contact_of_known_case: validate_bool_field(row[69], 'Contact of Known Case?', index),
           contact_of_known_case_id: row[70],
-          travel_to_affected_country_or_area: row[71],
-          was_in_health_care_facility_with_known_cases: row[72],
+          travel_to_affected_country_or_area: validate_bool_field(row[71], 'Travel to Affected Country or Area?', index),
+          was_in_health_care_facility_with_known_cases: validate_bool_field(row[72], 'Was in Health Care Facility With Known Cases?', index),
           was_in_health_care_facility_with_known_cases_facility_name: row[73],
-          laboratory_personnel: row[74],
+          laboratory_personnel: validate_bool_field(row[74], 'Laboratory Personnel?', index),
           laboratory_personnel_facility_name: row[75],
-          healthcare_personnel: row[76],
+          healthcare_personnel: validate_bool_field(row[76], 'Healthcare Personnel?', index),
           healthcare_personnel_facility_name: row[77],
-          crew_on_passenger_or_cargo_flight: row[78],
-          member_of_a_common_exposure_cohort: row[79],
+          crew_on_passenger_or_cargo_flight: validate_bool_field(row[78], 'Crew on Passenger or Cargo Flight?', index),
+          member_of_a_common_exposure_cohort: validate_bool_field(row[79], 'Member of a Common Exposure Cohort?', index),
           member_of_a_common_exposure_cohort_type: row[80],
           exposure_risk_assessment: validate_enum_field(row[81], 'Exposure Risk Assessment', index, ['High', 'Medium', 'Low', 'No Identified Risk']),
           monitoring_plan: validate_enum_field(row[82], 'Monitoring Plan', index, ['None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision', 'Self-observation']),
@@ -219,7 +219,14 @@ class ImportController < ApplicationController
   def validate_enum_field(value, field, row_number, values)
     return value if value.blank? || values.include?(value)
 
-    raise ValidationError.new("#{value} is not one of the accepted values for field '#{field}', acceptable values are: #{values.join(', ')}", row_number)
+    raise ValidationError.new("#{value} is not one of the accepted values for field '#{field}', acceptable values are: 'True' and 'False'", row_number)
+  end
+
+  def validate_bool_field(value, field, row_number)
+    return value if value.blank?
+    return (value.to_s.downcase == 'true') if %w[true false].include? value.to_s.downcase
+
+    raise ValidationError.new("#{value} is not one of the accepted values for field '#{field}', acceptable values are: #{values.to_sentence}", row_number)
   end
 
   def validate_and_normalize_state_field(value, field, row_number)
