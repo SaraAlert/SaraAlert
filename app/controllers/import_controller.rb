@@ -75,11 +75,11 @@ class ImportController < ApplicationController
   def comprehensive_monitorees # rubocop:todo Metrics/MethodLength
     redirect_to(root_url) && return unless current_user.can_import?
 
+    @errors = []
+    @patients = []
     # Load and parse patient import excel
     begin
       xlxs = Roo::Excelx.new(params[:comprehensive_monitorees].tempfile.path, file_warning: :ignore)
-      @patients = []
-      @errors = []
       xlxs.sheet(0).each_with_index do |row, index|
         next if index.zero? # Skip headers
 
@@ -182,9 +182,13 @@ class ImportController < ApplicationController
         patient[:laboratories] = lab_results unless lab_results.empty?
 
         @patients << patient
-      rescue StandardError => e
+      rescue ValidationError => e
         @errors << e&.message || "Unknown error on row #{index}"
+      rescue StandardError => e
+        @errors << e&.message || 'Unexpected error'
       end
+    rescue StandardError => e
+      @errors << "Unexpected Error: '#{e&.message}' please make sure your .xlsx import file is formatted correctly."
     end
   end
 
