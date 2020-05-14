@@ -2,7 +2,6 @@ import React from 'react';
 import { Form, Row, Col, Button, Modal, Tooltip } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
-import ContactAttempt from './ContactAttempt';
 import CaseStatus from './CaseStatus';
 import reportError from '../util/ReportError';
 import InfoTooltip from '../util/InfoTooltip';
@@ -34,6 +33,7 @@ class MonitoringStatus extends React.Component {
       isolation: props.patient.isolation,
       isolation_status: props.patient.isolation ? 'Isolation' : 'Exposure',
       pause_notifications: props.patient.pause_notifications,
+      loading: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -218,28 +218,31 @@ class MonitoringStatus extends React.Component {
   }
 
   submit() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
-        comment: true,
-        monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
-        exposure_risk_assessment: this.state.exposure_risk_assessment,
-        monitoring_plan: this.state.monitoring_plan,
-        public_health_action: this.state.public_health_action,
-        message: this.state.message,
-        reasoning: (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
-        monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
-        jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdictionPath),
-        apply_to_group: this.state.apply_to_group,
-        isolation: this.state.isolation,
-        pause_notifications: this.state.pause_notifications,
-      })
-      .then(() => {
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
+          comment: true,
+          monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
+          exposure_risk_assessment: this.state.exposure_risk_assessment,
+          monitoring_plan: this.state.monitoring_plan,
+          public_health_action: this.state.public_health_action,
+          message: this.state.message,
+          reasoning:
+            (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
+          monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
+          jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdictionPath),
+          apply_to_group: this.state.apply_to_group,
+          isolation: this.state.isolation,
+          pause_notifications: this.state.pause_notifications,
+        })
+        .then(() => {
+          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   createModal(title, toggle, submit) {
@@ -289,7 +292,12 @@ class MonitoringStatus extends React.Component {
               Submit
             </Button>
           ) : (
-            <Button variant="primary btn-square" onClick={submit}>
+            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
               Submit
             </Button>
           )}
@@ -382,10 +390,6 @@ class MonitoringStatus extends React.Component {
                     <option>Document results of medical evaluation</option>
                     <option>Recommended laboratory testing</option>
                   </Form.Control>
-                </Form.Group>
-                <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} md="6">
-                  <ContactAttempt patient={this.props.patient} authenticity_token={this.props.authenticity_token} />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
               </Form.Row>

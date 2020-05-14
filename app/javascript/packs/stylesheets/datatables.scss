@@ -29,3 +29,15 @@
   border-top-width: 0px !important;
   border-bottom-width: 0px !important;
 }
+
+table.dataTable tbody td {
+  vertical-align: middle !important;
+}
+
+.dt-a-w-75 {
+  max-width: 75px !important;
+}
+
+.dt-a-w-50 {
+  max-width: 60px !important;
+}

@@ -9,6 +9,7 @@ class ClearReports extends React.Component {
     super(props);
     this.state = {
       showClearReportsModal: false,
+      loading: false,
     };
     this.toggleClearReportsModal = this.toggleClearReportsModal.bind(this);
     this.clearReports = this.clearReports.bind(this);
@@ -27,17 +28,19 @@ class ClearReports extends React.Component {
   }
 
   clearReports() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status/clear', {
-        reasoning: this.state.reasoning,
-      })
-      .then(() => {
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status/clear', {
+          reasoning: this.state.reasoning,
+        })
+        .then(() => {
+          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   createModal(title, toggle, submit) {
@@ -66,7 +69,12 @@ class ClearReports extends React.Component {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
             Submit
           </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
