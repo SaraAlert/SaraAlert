@@ -77,6 +77,7 @@ class ImportController < ApplicationController
     begin
       xlxs = Roo::Excelx.new(params[:comprehensive_monitorees].tempfile.path, file_warning: :ignore)
       @patients = []
+      @errors = []
       xlxs.sheet(0).each_with_index do |row, index|
         next if index.zero? # Skip headers
 
@@ -86,7 +87,7 @@ class ImportController < ApplicationController
           first_name: validate_required_field(row[0], "First Name", index),
           middle_name: row[1],
           last_name: validate_required_field(row[2], "Last Name", index),
-          date_of_birth: row[3],
+          date_of_birth: validate_required_field(row[3], "Date of Birth", index),
           sex: row[4],
           white: row[5],
           black_or_african_american: row[6],
@@ -101,11 +102,11 @@ class ImportController < ApplicationController
           user_defined_id_statelocal: row[15],
           user_defined_id_cdc: row[16],
           user_defined_id_nndss: row[17],
-          address_line_1: row[18],
-          address_city: row[19],
-          address_state: row[20],
+          address_line_1: validate_required_field(row[18], "Address Line 1", index),
+          address_city: validate_required_field(row[19], "Address City", index),
+          address_state: validate_required_field(row[20], "Address State", index),
           address_line_2: row[21],
-          address_zip: row[22],
+          address_zip: validate_required_field(row[22], "Address Zip", index),
           address_county: row[23],
           foreign_address_line_1: row[24],
           foreign_address_city: row[25],
@@ -149,7 +150,7 @@ class ImportController < ApplicationController
           additional_planned_travel_start_date: row[63],
           additional_planned_travel_end_date: row[64],
           additional_planned_travel_related_notes: row[65],
-          last_date_of_exposure: row[66],
+          last_date_of_exposure: validate_required_field(row[66], "Last Date of Exposure", index),
           potential_exposure_location: row[67],
           potential_exposure_country: row[68],
           contact_of_known_case: row[69],
@@ -179,10 +180,11 @@ class ImportController < ApplicationController
         patient[:laboratories] = lab_results unless lab_results.empty?
 
         @patients << patient
+      rescue StandardError => e
+        @errors << e&.message || "Unknown error on row #{index.to_s}"
       end
-    rescue StandardError => e
-      redirect_to(controller: 'import', action: 'error', error_details: e&.message || "Unknown error on row #{index.to_s}") && (return)
     end
+
   end
 
   def lab_result(data)
@@ -206,6 +208,6 @@ end
 
 class ValidationError < StandardError
   def initialize(message, row)
-    super("Validation Error: " + message + " On row "+ row.to_s)
+    super("Validation Error: " + message + " on row "+ row.to_s)
   end
 end
