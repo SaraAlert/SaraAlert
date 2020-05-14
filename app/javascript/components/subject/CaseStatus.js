@@ -24,16 +24,6 @@ class CaseStatus extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  caseStatusTooltip() {
-    return (
-      <div>
-        Used to move records into the appropriate workflow after investigating a report of symptoms. If <i>confirmed</i> or <i>probable</i> is selected, the
-        user is prompted to choose between moving the record to the isolation workflow or to end monitoring. If the user selects another case status, the record
-        will be returned to the appropriate exposure monitoring line list.
-      </div>
-    );
-  }
-
   handleChange(event) {
     event.persist();
     this.setState({ [event.target.id]: event.target.type === 'checkbox' ? event.target.checked : event.target.value, showCaseStatusModal: true }, () => {
@@ -177,7 +167,7 @@ class CaseStatus extends React.Component {
         <div className="disabled">
           <Form.Label className="nav-input-label">
             CASE STATUS
-            <InfoTooltip tooltipText={this.caseStatusTooltip()} location="right"></InfoTooltip>
+            <InfoTooltip tooltipTextKey="caseStatus" location="right"></InfoTooltip>
           </Form.Label>
           <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
             <option></option>

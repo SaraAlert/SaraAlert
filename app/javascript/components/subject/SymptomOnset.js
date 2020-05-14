@@ -15,9 +15,6 @@ class SymptomOnset extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.symptomOnsetTooltip = `Used by the system to determine if the non-test based recovery definition
-    in the isolation monitoring workflow has been met. This field is auto-populated with the date
-    of the earliest symptomatic report in the system unless a user enters an earlier date.`;
   }
 
   handleChange(event) {
@@ -51,7 +48,7 @@ class SymptomOnset extends React.Component {
           <Form.Group as={Col} md="6">
             <Form.Label className="nav-input-label">
               SYMPTOM ONSET
-              <InfoTooltip tooltipText={this.symptomOnsetTooltip} location="right"></InfoTooltip>
+              <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
             </Form.Label>
             <Form.Control
               size="lg"

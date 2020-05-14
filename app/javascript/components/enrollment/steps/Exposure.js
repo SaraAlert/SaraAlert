@@ -17,7 +17,6 @@ class Exposure extends React.Component {
       jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
     };
-    this.lastDOETooltip = 'Used by the system to automatically calculate the monitoring period.';
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
     this.validate = this.validate.bind(this);
@@ -99,7 +98,7 @@ class Exposure extends React.Component {
                 <Form.Group as={Col} md="7" controlId="last_date_of_exposure">
                   <Form.Label className="nav-input-label">
                     LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
-                    <InfoTooltip tooltipText={this.lastDOETooltip} location="right"></InfoTooltip>
+                    <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
                   </Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['last_date_of_exposure']}
