@@ -27,9 +27,9 @@ class CaseStatus extends React.Component {
   caseStatusTooltip() {
     return (
       <div>
-        Used to move records into the appropriate workflow after investigating a report of symptoms. If an individual meets the <i>confirmed</i> or{' '}
-        <i>probable</i> case definition, a user can choose to move the record to the isolation workflow or to end monitoring in Sara Alert. If the individual
-        meets another case definition, the record will be returned to the appropriate exposure monitoring line list.
+        Used to move records into the appropriate workflow after investigating a report of symptoms. If <i>confirmed</i> or <i>probable</i> is selected, the
+        user is prompted to choose between moving the record to the isolation workflow or to end monitoring. If the user selects another case status, the record
+        will be returned to the appropriate exposure monitoring line list.
       </div>
     );
   }

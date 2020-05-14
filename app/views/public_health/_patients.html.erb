@@ -8,7 +8,17 @@
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
           <th class="DataTable-table-header">Date of Birth</th>
-          <% if type == 'closed_patients' %><th class="DataTable-table-header">Expected Purge Date</th><% end %>
+          <% if type == 'closed_patients' %>
+            <th class="DataTable-table-header">
+              Expected Purge Date
+              <%= react_component("util/InfoTooltip", { tooltipText: 'In order to minimize the amount of identifiable information stored
+              on the production servers, Sara Alert will purge identifiers in records for which there have been no updates for a defined
+              time period, provided that monitoree is no longer being actively monitored. An update includes any action on the record,
+              including adding comments or updating any fields. Local administrators are sent weekly email reminders about records that
+              meet this definition.See User Guide for list of fields that are not purged for use in the analytics summary.',
+              location: 'right' }, {style: "display:inline"}) %>
+            </th>
+          <% end %>
           <th class="DataTable-table-header"><% if type == 'closed_patients' %>Reason for Closure<% elsif type == 'pui_patients' %>Latest Public Health Action<% else %>Monitoring Plan<% end %></th>
           <th class="DataTable-table-header"><% if type.include? 'transferred' %>Transferred At<% elsif type == 'closed_patients' %>Closed At<% else %>Latest Report<% end %></th>
           <% if type == 'all_patients' %><th class="DataTable-table-header">Status</th><% end %>
