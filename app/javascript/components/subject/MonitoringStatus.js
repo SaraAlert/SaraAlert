@@ -5,6 +5,7 @@ import axios from 'axios';
 import ContactAttempt from './ContactAttempt';
 import CaseStatus from './CaseStatus';
 import reportError from '../util/ReportError';
+import InfoTooltip from '../util/InfoTooltip';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -317,7 +318,10 @@ class MonitoringStatus extends React.Component {
             <Col>
               <Form.Row>
                 <Form.Group as={Col}>
-                  <Form.Label className="nav-input-label">MONITORING STATUS</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    MONITORING STATUS
+                    <InfoTooltip tooltipTextKey="monitoringStatus" location="right"></InfoTooltip>
+                  </Form.Label>
                   <Form.Control
                     as="select"
                     className="form-control-lg"
@@ -363,7 +367,10 @@ class MonitoringStatus extends React.Component {
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="8">
-                  <Form.Label className="nav-input-label">LATEST PUBLIC HEALTH ACTION</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    LATEST PUBLIC HEALTH ACTION
+                    <InfoTooltip tooltipTextKey="latestPublicHealthAction" location="right"></InfoTooltip>
+                  </Form.Label>
                   <Form.Control
                     as="select"
                     className="form-control-lg"

@@ -4,6 +4,7 @@ import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
+import InfoTooltip from '../util/InfoTooltip';
 
 class SymptomOnset extends React.Component {
   constructor(props) {
@@ -45,7 +46,10 @@ class SymptomOnset extends React.Component {
       <React.Fragment>
         <Row>
           <Form.Group as={Col} md="6">
-            <Form.Label className="nav-input-label">SYMPTOM ONSET</Form.Label>
+            <Form.Label className="nav-input-label">
+              SYMPTOM ONSET
+              <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
+            </Form.Label>
             <Form.Control
               size="lg"
               id="symptom_onset"

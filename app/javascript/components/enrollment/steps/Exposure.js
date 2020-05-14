@@ -4,6 +4,7 @@ import { countryOptions } from '../../data';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
 import confirmDialog from '../../util/ConfirmDialog';
+import InfoTooltip from '../../util/InfoTooltip';
 
 class Exposure extends React.Component {
   constructor(props) {
@@ -97,6 +98,7 @@ class Exposure extends React.Component {
                 <Form.Group as={Col} md="7" controlId="last_date_of_exposure">
                   <Form.Label className="nav-input-label">
                     LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
+                    <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
                   </Form.Label>
                   <Form.Control
                     isInvalid={this.state.errors['last_date_of_exposure']}

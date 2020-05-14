@@ -3,6 +3,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import reportError from '../util/ReportError';
+import InfoTooltip from '../util/InfoTooltip';
 
 class CaseStatus extends React.Component {
   constructor(props) {
@@ -164,7 +165,10 @@ class CaseStatus extends React.Component {
     return (
       <React.Fragment>
         <div className="disabled">
-          <Form.Label className="nav-input-label">CASE STATUS</Form.Label>
+          <Form.Label className="nav-input-label">
+            CASE STATUS
+            <InfoTooltip tooltipTextKey="caseStatus" location="right"></InfoTooltip>
+          </Form.Label>
           <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
             <option></option>
             <option>Confirmed</option>
