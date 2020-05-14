@@ -11,7 +11,6 @@
           <% if type == 'closed_patients' %>
             <th class="DataTable-table-header">
               Expected Purge Date
-              <%= react_component("util/InfoTooltip", { tooltipTextKey: 'purgeDate', location: 'right' }, { style: 'display:inline' }) %>
             </th>
           <% end %>
           <th class="DataTable-table-header"><% if type == 'closed_patients' %>Reason for Closure<% elsif type == 'pui_patients' %>Latest Public Health Action<% else %>Monitoring Plan<% end %></th>
