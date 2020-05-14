@@ -4,6 +4,8 @@ require 'roo'
 
 # ImportController: for importing subjects from other formats
 class ImportController < ApplicationController
+  include ImportHelper
+
   before_action :authenticate_user!
 
   def index
@@ -104,7 +106,7 @@ class ImportController < ApplicationController
           user_defined_id_nndss: row[17],
           address_line_1: validate_required_field(row[18], 'Address Line 1', index),
           address_city: validate_required_field(row[19], 'Address City', index),
-          address_state: validate_required_field(row[20], 'Address State', index),
+          address_state: validate_and_normalize_state_field(validate_required_field(row[20], 'Address State', index), 'Address State', index),
           address_line_2: row[21],
           address_zip: validate_required_field(row[22], 'Address Zip', index),
           address_county: row[23],
@@ -117,13 +119,13 @@ class ImportController < ApplicationController
           foreign_address_state: row[30],
           monitored_address_line_1: row[31],
           monitored_address_city: row[32],
-          monitored_address_state: row[33],
+          monitored_address_state: validate_and_normalize_state_field(row[33], 'Monitored Address State', index),
           monitored_address_line_2: row[34],
           monitored_address_zip: row[35],
           monitored_address_county: row[36],
           foreign_monitored_address_line_1: row[37],
           foreign_monitored_address_city: row[38],
-          foreign_monitored_address_state: row[39],
+          foreign_monitored_address_state: validate_and_normalize_state_field(row[39], 'Monitored Address State', index),
           foreign_monitored_address_line_2: row[40],
           foreign_monitored_address_zip: row[41],
           foreign_monitored_address_county: row[42],
@@ -144,7 +146,7 @@ class ImportController < ApplicationController
           travel_related_notes: row[57],
           additional_planned_travel_type: validate_enum_field(row[58], 'Additional Planned Travel Type', index, %w[Domestic International]),
           additional_planned_travel_destination: row[59],
-          additional_planned_travel_destination_state: row[60],
+          additional_planned_travel_destination_state: validate_and_normalize_state_field(row[60], 'Additional Planned Travel Destination State', index),
           additional_planned_travel_destination_country: row[61],
           additional_planned_travel_port_of_departure: row[62],
           additional_planned_travel_start_date: row[63],
@@ -207,6 +209,14 @@ class ImportController < ApplicationController
     return value if value.blank? || values.include?(value)
 
     raise ValidationError.new("#{value} is not one of the accepted values for field '#{field}', acceptable values are: #{values.join(', ')}", row_number)
+  end
+
+  def validate_and_normalize_state_field(value, field, row_number)
+    return value if value.blank?
+
+    state = validate_and_normalize_state(value)
+    return state if state
+    raise ValidationError.new("#{value} is not a valid state for field '#{field}'", row_number) if state.nil?
   end
 end
 
