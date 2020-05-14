@@ -88,13 +88,13 @@ class ImportController < ApplicationController
           middle_name: row[1],
           last_name: validate_required_field(row[2], "Last Name", index),
           date_of_birth: validate_required_field(row[3], "Date of Birth", index),
-          sex: row[4],
+          sex: validate_enum_field(row[4], 'Sex', index, ['Male', 'Female', 'Unknown']),
           white: row[5],
           black_or_african_american: row[6],
           american_indian_or_alaska_native: row[7],
           asian: row[8],
           native_hawaiian_or_other_pacific_islander: row[9],
-          ethnicity: row[10],
+          ethnicity: validate_enum_field(row[10], 'Ethnicity', index, ['Not Hispanic or Latino', 'Hispanic or Latino']),
           primary_language: row[11],
           secondary_language: row[12],
           interpretation_required: row[13],
@@ -127,12 +127,12 @@ class ImportController < ApplicationController
           foreign_monitored_address_line_2: row[40],
           foreign_monitored_address_zip: row[41],
           foreign_monitored_address_county: row[42],
-          preferred_contact_method: row[43],
+          preferred_contact_method: validate_enum_field(validate_required_field(row[43], 'Preferred Contact Method', index), 'Preferred Contact Method', index, ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message']),
           primary_telephone: Phonelib.parse(row[44], 'US').full_e164,
-          primary_telephone_type: row[45],
+          primary_telephone_type: validate_enum_field(row[45], 'Primary Telephone Type', index, ['Smartphone', 'Plain Cell', 'Landline']),
           secondary_telephone: Phonelib.parse(row[46], 'US').full_e164,
-          secondary_telephone_type: row[47],
-          preferred_contact_time: row[48],
+          secondary_telephone_type: validate_enum_field(row[47], 'Secondary Telephone Type', index, ['Smartphone', 'Plain Cell', 'Landline']),
+          preferred_contact_time: validate_enum_field(row[48], 'Preferred Contact Time', index, ['Morning', 'Afternoon', 'Evening']),
           email: row[49],
           port_of_origin: row[50],
           date_of_departure: row[51],
@@ -142,7 +142,7 @@ class ImportController < ApplicationController
           port_of_entry_into_usa: row[55],
           date_of_arrival: row[56],
           travel_related_notes: row[57],
-          additional_planned_travel_type: row[58],
+          additional_planned_travel_type: validate_enum_field(row[58], 'Additional Planned Travel Type', index, ['Domestic', 'International']),
           additional_planned_travel_destination: row[59],
           additional_planned_travel_destination_state: row[60],
           additional_planned_travel_destination_country: row[61],
@@ -165,8 +165,8 @@ class ImportController < ApplicationController
           crew_on_passenger_or_cargo_flight: row[78],
           member_of_a_common_exposure_cohort: row[79],
           member_of_a_common_exposure_cohort_type: row[80],
-          exposure_risk_assessment: row[81],
-          monitoring_plan: row[82],
+          exposure_risk_assessment: validate_enum_field(row[81], 'Exposure Risk Assessment', index, ['High', 'Medium', 'Low', 'No Identified Risk']),
+          monitoring_plan: validate_enum_field(row[82], 'Monitoring Plan', index, ['None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision', 'Self-observation']),
           exposure_notes: row[83],
           symptom_onset: isolation ? row[85] : nil,
           case_status: isolation ? row[86] : nil,
@@ -204,6 +204,12 @@ class ImportController < ApplicationController
     return value
   end
 
+  private
+  def validate_enum_field(value, field, row_number, values)
+    if !value.blank? && !values.include?(value)
+      raise ValidationError.new("#{value} is not one of the accepted values for field '#{field}', acceptable values are: #{values.join(', ')}", row_number)
+    end
+  end
 end
 
 class ValidationError < StandardError
