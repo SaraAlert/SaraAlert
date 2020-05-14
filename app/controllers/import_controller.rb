@@ -187,8 +187,15 @@ class ImportController < ApplicationController
       rescue StandardError => e
         @errors << e&.message || 'Unexpected error'
       end
+    rescue Zip::Error
+      # Roo throws this if the file is not an excel file
+      @errors << 'File Error: Please make sure that your import file is a .xlsx file.'
+    rescue ArgumentError
+      # Roo throws this error when the columns are not what we expect
+      @errors << 'Format Error: Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.'
     rescue StandardError => e
-      @errors << "Unexpected Error: '#{e&.message}' please make sure your .xlsx import file is formatted correctly."
+      # This is a catch all for any other unexpected error
+      @errors << "Unexpected Error: '#{e&.message}' Please make sure that .xlsx import file is formatted in accordance with the formatting guidance."
     end
   end
 
