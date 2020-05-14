@@ -61,7 +61,7 @@
             <th class="DataTable-table-header">Reporter</th>
             <th class="DataTable-table-header">Created</th>
             <% columns.each do |column| -%>
-              <th class="DataTable-table-header"><%= column.titleize %></th>
+              <th class="DataTable-table-header"><%= column&.titleize %></th>
             <% end -%>
             <th class="DataTable-table-header">Actions</th>
           </tr>
