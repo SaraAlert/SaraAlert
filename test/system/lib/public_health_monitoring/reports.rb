@@ -23,6 +23,7 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
 
   def edit_report(user_label, patient_label, assessment_id, assessment, submit=true)
     search_for_report(assessment_id)
+    find('button', class: 'a-dropdown').click
     click_on 'Edit'
     @@assessment_form.submit_assessment(assessment['symptoms'])
     if submit
@@ -39,6 +40,7 @@ class PublicHealthMonitoringReports < ApplicationSystemTestCase
 
   def add_note_to_report(user_label, patient_label, assessment_id, note, submit=true)
     search_for_report(assessment_id)
+    find('button', class: 'a-dropdown').click
     click_on 'Add Note'
     fill_in 'comment', with: note
     if submit
