@@ -3,7 +3,7 @@
 require 'chronic'
 
 # Patient: patient model
-class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
+class Patient < ApplicationRecord
   include PatientHelper
 
   columns.each do |column|
