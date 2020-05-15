@@ -44,9 +44,8 @@ class SymptomsAssessment extends React.Component {
   };
 
   floatSymptom = symp => {
-    symp.value = symp.value === true;
     return (
-      <Form.Row className="pt-3">
+      <Form.Row className="pt-3" key={`label_key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}>
         <Form.Label className="nav-input-label" key={`label_key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}>
           <b>{symp.label}</b> {symp.notes ? ' ' + symp.notes : ''}
         </Form.Label>
@@ -55,7 +54,8 @@ class SymptomsAssessment extends React.Component {
           id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
           key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
           className="form-square"
-          value={this.state.current.temperature || ''}
+          value={symp.value || ''}
+          type="number"
           onChange={this.handleChange}
         />
       </Form.Row>
