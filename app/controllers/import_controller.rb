@@ -135,6 +135,7 @@ class ImportController < ApplicationController
     value = validate_phone_field(field, value, row_num) if VALIDATION[field][:checks].include?(:phone)
     value = validate_state_field(field, value, row_num) if VALIDATION[field][:checks].include?(:state)
     value = validate_sex_field(field, value, row_num) if VALIDATION[field][:checks].include?(:sex)
+    value = validate_email_field(field, value, row_num) if VALIDATION[field][:checks].include?(:email)
     value
   end
 
@@ -147,6 +148,15 @@ class ImportController < ApplicationController
     end
 
     raise ValidationError.new("Field 'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_num)
+  end
+
+  def validate_email_field(field, value, row_num)
+    return value if value.blank?
+    unless ValidEmail2::Address.new(value).valid?
+      raise ValidationError.new("#{value} is not a valid Email Address for field '#{VALIDATION[field][:label]}'", row_num)
+    end
+
+    value
   end
 
   def validate_required_field(field, value, row_num)
