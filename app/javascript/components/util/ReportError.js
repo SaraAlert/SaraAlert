@@ -20,7 +20,7 @@ export default function reportError(error, reportToSentry = true) {
 
   if (reportToSentry) {
     Sentry.captureException(error);
-    if (error.hasOwnProperty('toJSON')) {
+    if (Object.prototype.hasOwnProperty.call(error, 'toJSON')) {
       Sentry.captureMessage(error.toJSON());
     }
   }
