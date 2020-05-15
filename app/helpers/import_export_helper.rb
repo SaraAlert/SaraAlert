@@ -133,7 +133,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     'TX' => 'Texas',
     'UT' => 'Utah',
     'VT' => 'Vermont',
-    'VI' => 'Virgin Island',
+    'VI' => 'Virgin Islands',
     'VA' => 'Virginia',
     'WA' => 'Washington',
     'WV' => 'West Virginia',

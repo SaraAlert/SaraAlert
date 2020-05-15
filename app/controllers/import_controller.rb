@@ -5,6 +5,7 @@ require 'roo'
 # ImportController: for importing subjects from other formats
 class ImportController < ApplicationController
   include ImportExportHelper
+  include PatientHelper
 
   before_action :authenticate_user!
 
@@ -183,7 +184,7 @@ class ImportController < ApplicationController
 
   def validate_state_field(field, value, row_num)
     return nil if value.blank?
-    return value if VALID_STATES.include?(value)
+    return normalize_and_get_state_name(value) if VALID_STATES.include?(normalize_and_get_state_name(value))
 
     normalized_state = STATE_ABBREVIATIONS[value.upcase]
     return normalized_state if normalized_state

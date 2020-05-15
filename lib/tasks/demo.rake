@@ -136,7 +136,7 @@ namespace :demo do
       'Northern Mariana Islands',
       'Palau',
       'Puerto Rico',
-      'Virgin Island']
+      'Virgin Islands']
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
