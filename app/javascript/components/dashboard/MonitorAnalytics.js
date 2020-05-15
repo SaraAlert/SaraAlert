@@ -43,28 +43,31 @@ class MonitorAnalytics extends React.Component {
   exportAsPNG() {
     // The two datatables in the cdc-maps cause the export to fail
     // remove them before the export then reload the page so that they come back
-    document.getElementsByClassName('data-table')[0].remove();
-    document.getElementsByClassName('data-table')[0].remove();
-    var node = document.getElementById('sara-alert-body');
-    domtoimage
-      .toPng(node)
-      .then(dataUrl => {
-        var img = new Image();
-        img.src = dataUrl;
-        let link = document.createElement('a');
-        let email = this.props.current_user.email;
-        let currentDate = moment().format('YYYY_MM_DD');
-        let imageName = `SaraAlert_Analytics_${email}_${currentDate}.png`;
-        link.download = imageName;
-        link.href = dataUrl;
-        link.click();
-        location.reload();
-      })
-      .catch(error => {
-        alert('An error occured.');
-        console.error(error);
-        location.reload();
-      });
+    if (window.document.documentMode) {
+      alert('Analytics export is not availale using the Internet Explorer web browser. Please use an alternative browser or a local image capture application instead.');
+    } else {
+      document.getElementsByClassName('data-table')[0].remove();
+      document.getElementsByClassName('data-table')[0].remove();
+      var node = document.getElementById('sara-alert-body');
+      domtoimage
+        .toPng(node)
+        .then(dataUrl => {
+          var img = new Image();
+          img.src = dataUrl;
+          let link = document.createElement('a');
+          let email = this.props.current_user.email;
+          let currentDate = moment().format('YYYY_MM_DD');
+          let imageName = `SaraAlert_Analytics_${email}_${currentDate}.png`;
+          link.download = imageName;
+          link.href = dataUrl;
+          link.click();
+          location.reload();
+        })
+        .catch(error => {
+          alert('An error occured. Please refresh the page.');
+          console.error(error);
+        });
+    }
   }
 
   toggleBetweenActiveAndTotal = viewTotal => this.setState({ viewTotal });
