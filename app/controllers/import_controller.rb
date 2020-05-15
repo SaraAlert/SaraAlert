@@ -51,7 +51,7 @@ class ImportController < ApplicationController
           next if field.nil?
 
           begin
-            if format == :comprehensive_monitorees && ![85, 86].include?(col_num) && workflow != :isolation
+            if format == :comprehensive_monitorees && ![85, 86].include?(col_num) || workflow != :isolation
               patient[field] = validate_field(field, row[col_num], row_num)
             end
 
@@ -158,7 +158,7 @@ class ImportController < ApplicationController
   def validate_enum_field(field, value, row_num)
     return value if value.blank? || VALID_ENUMS[field].include?(value)
 
-    err_msg = "#{value} is not an acceptable value for field '#{VALIDATION[field][:label]}', acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+    err_msg = "#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}', acceptable values are: #{VALID_ENUMS[field].to_sentence}"
     raise ValidationError.new(err_msg, row_num)
   end
 
