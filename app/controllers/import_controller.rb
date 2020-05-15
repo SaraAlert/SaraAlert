@@ -94,6 +94,8 @@ class ImportController < ApplicationController
 
         @patients << patient
       end
+    rescue ValidationError => e
+      @errors << e&.message || "Unknown error on row #{row_num}"
     rescue Zip::Error
       # Roo throws this if the file is not an excel file
       @errors << 'File Error: Please make sure that your import file is a .xlsx file.'
@@ -121,7 +123,8 @@ class ImportController < ApplicationController
     expected_headers = COMPREHENSIVE_HEADERS if format == :comprehensive_monitorees
     expected_headers = EPI_X_HEADERS if format == :epix
     expected_headers.each_with_index do |field, col_num|
-      raise ValidationError.new("Incorrect header for field #{field}", 1) if field != row[col_num]
+      err_msg = "Incorrect headers, please make sure you are using the latest format specified by the guidance doc. Field: #{field}"
+      raise ValidationError.new(err_msg, 1) if field != row[col_num]
     end
   end
 
@@ -140,7 +143,8 @@ class ImportController < ApplicationController
   end
 
   def validate_required_field(field, value, row_num)
-    raise ValidationError.new("Required field '#{VALIDATION[field][:label]}' is missing", row_num) if value.blank?
+    # TODO: Un-comment when required fields are to be checked upon import
+    # raise ValidationError.new("Required field '#{VALIDATION[field][:label]}' is missing", row_num) if value.blank?
 
     value
   end
@@ -185,17 +189,18 @@ class ImportController < ApplicationController
     return nil if value.blank?
     return value if VALID_STATES.include?(value)
 
-    normalized_state = STATE_ABBREVIATIONS[value.upcase]
+    normalized_state = STATE_ABBREVIATIONS[value.upcase.to_sym]
     return normalized_state if normalized_state
 
-    raise ValidationError.new("#{value} is not a valid state for field '#{VALIDATION[field][:label]}'", row_num)
+    err_msg = "#{value} is not a valid state for field '#{VALIDATION[field][:label]}', please use the full state name or two letter abbreviation"
+    raise ValidationError.new(err_msg, row_num)
   end
 
   def validate_sex_field(field, value, row_num)
     return nil if value.blank?
     return value if %w[Male Female Unknown].include?(value.capitalize)
 
-    normalized_sex = SEX_ABBREVIATIONS[value.upcase]
+    normalized_sex = SEX_ABBREVIATIONS[value.upcase.to_sym]
     return normalized_sex if normalized_sex
 
     raise ValidationError.new("#{value} is not a valid sex for field '#{VALIDATION[field][:label]}'", row_num)

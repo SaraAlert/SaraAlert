@@ -197,6 +197,14 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :isolation, 'Sara-Alert-Format-Invalid.xlsx', :invalid_fields, nil)
   end
 
+  test 'import sara alert format to exposure and validate old headers' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-Old.xlsx', :invalid_headers, nil)
+  end
+
+  test 'import sara alert format to isolation and validate old headers' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :isolation, 'Sara-Alert-Format-Old.xlsx', :invalid_headers, nil)
+  end
+
   test 'download sara alert format guidance from exposure workflow' do
     # TODO: Re-enable when migrating away from GitHub LFS
     #@@public_health_monitoring_helper.download_sara_alert_format_guidance('state1_epi', :exposure)

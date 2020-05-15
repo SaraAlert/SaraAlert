@@ -170,9 +170,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   def verify_validation(workflow, field, value)
     return if workflow != :isolation && %i[symptom_onset case_status].include?(field)
     if VALIDATION[field]
-      if VALIDATION[field][:checks].include?(:required) && (!value || value.blank?)
-        assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
-      end
+      # TODO: Un-comment when required fields are to be checked upon import
+      # if VALIDATION[field][:checks].include?(:required) && (!value || value.blank?)
+      #   assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
+      # end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !VALID_ENUMS[field].include?(value)
         assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
       end
@@ -189,7 +190,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       if value && !value.blank? && VALIDATION[field][:checks].include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
         assert page.has_content?("#{value} is not a valid phone number for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
       end
-      if value && !value.blank? && VALIDATION[field][:checks].include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.upcase].nil?
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.upcase.to_sym].nil?
         assert page.has_content?("#{value} is not a valid state for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:sex) && !%[Male Female Unknown M F].include?(value.capitalize)
@@ -219,7 +220,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   end
 
   def normalize_state_field(value)
-    value ? VALID_STATES.include?(value) ? value : STATE_ABBREVIATIONS[value.upcase] : nil
+    value ? VALID_STATES.include?(value) ? value : STATE_ABBREVIATIONS[value.upcase.to_sym] : nil
   end
 
   def normalize_bool_field(value)
