@@ -106,7 +106,7 @@ class ImportController < ApplicationController
     lab_results = []
     lab_results.push(lab_result(row[87..90], row_num)) if !row[87].blank? || !row[88].blank? || !row[89].blank? || !row[90].blank?
     lab_results.push(lab_result(row[91..94], row_num)) if !row[91].blank? || !row[92].blank? || !row[93].blank? || !row[94].blank?
-    {
+    parsed_row = {
       first_name: validate_field(:first_name, row[0], row_num),
       middle_name: row[1],
       last_name: validate_field(:last_name, row[2], row_num),
@@ -197,6 +197,8 @@ class ImportController < ApplicationController
       isolation: workflow == :isolation,
       laboratories: lab_results.empty? ? nil : lab_results
     }
+    validate_required_primary_contact(parsed_row, row_num)
+    parsed_row
   end
 
   def lab_result(data, row_num)
@@ -228,6 +230,15 @@ class ImportController < ApplicationController
     value = validate_phone_field(field, value, row_num) if VALIDATION[field][:checks].include?(:phone)
     value = validate_state_field(field, value, row_num) if VALIDATION[field][:checks].include?(:state)
     value
+  end
+
+  def validate_required_primary_contact(row, row_num)
+    if row[:email].blank? && row[:preferred_contact_method] == 'E-mailed Web Link'
+      raise ValidationError.new("Field 'Email' is required when Primary Contact Method is 'E-mailed Web Link'", row_num)
+    end
+    return unless row[:primary_telephone].blank? && (['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? row[:preferred_contact_method])
+
+    raise ValidationError.new("Field 'Primary Telephone' is required when Primary Contact Method is '#{row[:preferred_contact_method]}'", row_num)
   end
 
   def validate_required_field(field, value, row_num)
