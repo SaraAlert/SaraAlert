@@ -1,37 +1,53 @@
 # frozen_string_literal: true
 
 # Helper methods for the import controller
-module ImportExportHelper
-  
+module ImportExportHelper # rubocop:todo Metrics/ModuleLength
   LINELIST_HEADERS = ['Monitoree', 'Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level', 'Monitoring Plan',
-  'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At', 'Transferred From',
-  'Transferred To', 'Expected Purge Date'].freeze
+                      'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At', 'Transferred From',
+                      'Transferred To', 'Expected Purge Date'].freeze
 
   COMPREHENSIVE_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
-       'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
-       'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',
-       'Identifier (NNDSS)', 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County',
-       'Foreign Address Line 1', 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip',
-       'Foreign Address Line 3', 'Foreign Address State', 'Monitored Address Line 1', 'Monitored Address City', 'Monitored Address State',
-       'Monitored Address Line 2', 'Monitored Address Zip', 'Monitored Address County', 'Foreign Monitored Address Line 1',
-       'Foreign Monitored Address City', 'Foreign Monitored Address State', 'Foreign Monitored Address Line 2',
-       'Foreign Monitored Address Zip', 'Foreign Monitored Address County', 'Preferred Contact Method', 'Primary Telephone',
-       'Primary Telephone Type', 'Secondary Telephone', 'Secondary Telephone Type', 'Preferred Contact Time', 'Email', 'Port of Origin',
-       'Date of Departure', 'Source of Report', 'Flight or Vessel Number', 'Flight or Vessel Carrier', 'Port of Entry Into USA',
-       'Date of Arrival', 'Travel Related Notes', 'Additional Planned Travel Type', 'Additional Planned Travel Destination',
-       'Additional Planned Travel Destination State', 'Additional Planned Travel Destination Country',
-       'Additional Planned Travel Port of Departure', 'Additional Planned Travel Start Date', 'Additional Planned Travel End Date',
-       'Additional Planned Travel Related Notes', 'Last Date of Exposure', 'Potential Exposure Location', 'Potential Exposure Country',
-       'Contact of Known Case?', 'Contact of Known Case ID', 'Travel from Affected Country or Area?',
-       'Was in Health Care Facility With Known Cases?', 'Health Care Facility with Known Cases Name', 'Laboratory Personnel?',
-       'Laboratory Personnel Facility Name', 'Health Care Personnel?', 'Health Care Personnel Facility Name',
-       'Crew on Passenger or Cargo Flight?', 'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name',
-       'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type',
-       'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date',
-       'Lab 2 Report Date', 'Lab 2 Result'].freeze
+                           'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
+                           'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',
+                           'Identifier (NNDSS)', 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County',
+                           'Foreign Address Line 1', 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip',
+                           'Foreign Address Line 3', 'Foreign Address State', 'Monitored Address Line 1', 'Monitored Address City', 'Monitored Address State',
+                           'Monitored Address Line 2', 'Monitored Address Zip', 'Monitored Address County', 'Foreign Monitored Address Line 1',
+                           'Foreign Monitored Address City', 'Foreign Monitored Address State', 'Foreign Monitored Address Line 2',
+                           'Foreign Monitored Address Zip', 'Foreign Monitored Address County', 'Preferred Contact Method', 'Primary Telephone',
+                           'Primary Telephone Type', 'Secondary Telephone', 'Secondary Telephone Type', 'Preferred Contact Time', 'Email', 'Port of Origin',
+                           'Date of Departure', 'Source of Report', 'Flight or Vessel Number', 'Flight or Vessel Carrier', 'Port of Entry Into USA',
+                           'Date of Arrival', 'Travel Related Notes', 'Additional Planned Travel Type', 'Additional Planned Travel Destination',
+                           'Additional Planned Travel Destination State', 'Additional Planned Travel Destination Country',
+                           'Additional Planned Travel Port of Departure', 'Additional Planned Travel Start Date', 'Additional Planned Travel End Date',
+                           'Additional Planned Travel Related Notes', 'Last Date of Exposure', 'Potential Exposure Location', 'Potential Exposure Country',
+                           'Contact of Known Case?', 'Contact of Known Case ID', 'Travel from Affected Country or Area?',
+                           'Was in Health Care Facility With Known Cases?', 'Health Care Facility with Known Cases Name', 'Laboratory Personnel?',
+                           'Laboratory Personnel Facility Name', 'Health Care Personnel?', 'Health Care Personnel Facility Name',
+                           'Crew on Passenger or Cargo Flight?', 'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name',
+                           'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type',
+                           'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date',
+                           'Lab 2 Report Date', 'Lab 2 Result'].freeze
 
   MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS.freeze
-  
+
+  EPI_X_HEADERS = ['Local-ID', 'Flight No', 'Date of notice', 'MDH Assignee', 'DGMQ ID', 'CARE ID', 'CARE Cell Number', 'Language', 'Arrival Date and Time',
+                   'Arrival City', 'Last Name', 'First Name', 'Date of Birth', 'Gender', 'Passport Country', 'Passport Number', 'Permanent Street Address',
+                   'Permanent City', 'Permanent State or Country', 'Postal Code', 'Temporary Street Address 1', 'Temporary City 1', 'Temporary State 1',
+                   'Temporary Postal Code 1', 'Temporary Street Address 2', 'Temporary City 2', 'Temporary State 2', 'Temporary Postal Code 2',
+                   'Phone Number 1', 'Phone Number 2', 'Email 1', 'Email 2', 'Emergency Contact Name', 'Emergency Contact Telephone Number',
+                   'Emergency Contact Email', 'Countries Visited with Widespread Transmission in Past 14 Days', 'Departure Date',
+                   'DHS Observed Vomiting, Diarrhea or Bleeding', 'Temperature taken by DHS', 'Fever/Chills in the past 48 hours',
+                   'Vomiting/Diarrhea in the past 48 hours', 'Lived in Same Household or Had Other Contact with a Person Sick with disease in Past 14 Days',
+                   'Worked in Health Care Facility or Laboratory in Country with Widespread Transmission in Past 14 Days',
+                   'Touched Body of Someone who Died in Country with Widespread Transmission in Past 14 Days',
+                   'DHS Traveler Health Declaration Outcome: Released', 'DHS Traveler Health Declaration Outcome: Referred to Tertiary for Add\'l Assessment',
+                   'Disposition of Travelers Referred for CDC Assessment: Released to Continue Travel',
+                   'Disposition of Travelers Referred for CDC Assessment: Coordinated Disposition with State Health Dept.',
+                   'Disposition of Travelers Referred for CDC Assessment: Referred for Additional Medical Evaluation',
+                   'Disposition of Travelers Referred for CDC Assessment: Other', 'Final Disposition of Traveler\'s Medical Evaluation (If applicable)',
+                   'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
+
   STATE_ABBREVIATIONS = {
     'AL' => 'Alabama',
     'AK' => 'Alaska',
@@ -95,4 +111,63 @@ module ImportExportHelper
   }.freeze
 
   VALID_STATES = STATE_ABBREVIATIONS.values
+
+  VALID_ENUMS = {
+    sex: %w[Male Female Unknown],
+    ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino'],
+    preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'],
+    primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
+    secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
+    preferred_contact_time: %w[Morning Afternoon Evening],
+    additional_planned_travel_type: %w[Domestic International],
+    exposure_risk_assessment: ['High', 'Medium', 'Low', 'No Identified Risk'],
+    monitoring_plan: ['None',
+                      'Daily active monitoring',
+                      'Self-monitoring with public health supervision',
+                      'Self-monitoring with delegated supervision',
+                      'Self-observation']
+  }.freeze
+
+  VALIDATION = {
+    first_name: { label: 'First Name', checks: [:required] },
+    last_name: { label: 'Last Name', checks: [:required] },
+    date_of_birth: { label: 'Date of Birth', checks: %i[required date] },
+    sex: { label: 'Sex', checks: [:enum] },
+    white: { label: 'White', checks: [:bool] },
+    black_or_african_american: { label: 'Black or African American', checks: [:bool] },
+    american_indian_or_alaska_native: { label: 'American Indian or Alaska Native', checks: [:bool] },
+    asian: { label: 'Asian', checks: [:bool] },
+    native_hawaiian_or_other_pacific_islander: { label: 'Native Hawaiian or Other Pacific Islander', checks: [:bool] },
+    ethnicity: { label: 'Ethnicity', checks: [:enum] },
+    interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
+    address_line_1: { label: 'Address Line 1', checks: [:required] },
+    address_city: { label: 'Address City', checks: [:required] },
+    address_state: { label: 'Address State', checks: %i[required state] },
+    address_zip: { label: 'Address Zip', checks: [:required] },
+    monitored_address_state: { label: 'Monitored Address State', checks: [:state] },
+    foreign_monitored_address_state: { label: 'Foreign Monitored Address State', checks: [:state] },
+    preferred_contact_method: { label: 'Preferred Contact Method', checks: [:enum] },
+    primary_telephone: { label: 'Primary Telephone', checks: [:phone] },
+    primary_telephone_type: { label: 'Primary Telephone Type', checks: [:enum] },
+    secondary_telephone: { label: 'Secondary Telephone', checks: [:phone] },
+    secondary_telephone_type: { label: 'Secondary Telephone Type', checks: [:enum] },
+    preferred_contact_time: { label: 'Preferred Contact Time', checks: [:enum] },
+    date_of_departure: { label: 'Date of Departure', checks: [:date] },
+    date_of_arrival: { label: 'Date of Arrival', checks: [:date] },
+    additional_planned_travel_start_date: { label: 'Additional Planned Travel Start Date', checks: [:date] },
+    additional_planned_travel_end_date: { label: 'Additional Planned Travel End Date', checks: [:date] },
+    additional_planned_travel_destination_state: { label: 'Additional Planned Travel Destination State', checks: [:state] },
+    last_date_of_exposure: { label: 'Last Date of Exposure', checks: %i[required date] },
+    contact_of_known_case: { label: 'Contact of Known Case?', checks: [:bool] },
+    travel_to_affected_country_or_area: { label: 'Contact of Known Case?', checks: [:bool] },
+    was_in_health_care_facility_with_known_cases: { label: 'Contact of Known Case?', checks: [:bool] },
+    laboratory_personnel: { label: 'Laboratory Personnel?', checks: [:bool] },
+    healthcare_personnel: { label: 'Healthcare Personnel?', checks: [:bool] },
+    crew_on_passenger_or_cargo_flight: { label: 'Crew on Passenger or Cargo Flight?', checks: [:bool] },
+    member_of_a_common_exposure_cohort: { label: 'Member of a Common Exposure Cohort?', checks: [:bool] },
+    exposure_risk_assessment: { label: 'Exposure Risk Assessment', checks: [:enum] },
+    monitoring_plan: { label: 'Monitoring Plan', checks: [:enum] },
+    specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
+    report: { label: 'Lab Report Date', checks: [:date] }
+  }.freeze
 end
