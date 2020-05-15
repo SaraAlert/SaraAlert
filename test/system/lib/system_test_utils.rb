@@ -20,7 +20,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   POP_UP_ALERT_ANIMATION_DELAY = 1 # wait for alert to pop up or dismiss
   MODAL_ANIMATION_DELAY = 0.5 # wait for modal to load
   ACCEPT_REJECT_DELAY = 0.01 # wait for UI to update after accepting or rejecting monitoree on import
-  DB_WRITE_DELAY = 1 # wait for DB write to finish
+  DB_WRITE_DELAY = 1.5 # wait for DB write to finish
 
   def login(user_label)
     visit '/'

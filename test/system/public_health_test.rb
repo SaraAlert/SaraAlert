@@ -113,6 +113,10 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.import_epi_x('state1_epi_enroller', :exposure, 'Epi-X-Format.xlsx', :valid, nil)
   end
 
+  test 'import epi-x to isolation and accept all' do
+    @@public_health_monitoring_helper.import_epi_x('state1_epi_enroller', :isolation, 'Epi-X-Format.xlsx', :valid, nil)
+  end
+
   test 'import epi-x to isolation and accept all individually' do
     @@public_health_monitoring_helper.import_epi_x('state2_epi', :isolation, 'Epi-X-Format.xlsx', :valid, [])
   end
@@ -142,9 +146,17 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'import epi-x to exposure and validate fields' do
+    @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :exposure, 'Epi-X-Format-Invalid.xlsx', :invalid_fields, nil)
+  end
+
+  test 'import epi-x to isolation and validate fields' do
     @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :isolation, 'Epi-X-Format-Invalid.xlsx', :invalid_fields, nil)
   end
 
+  test 'import sara alert format to exposure and accept all' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, nil)
+  end
+  
   test 'import sara alert format to isolation and accept all' do
     @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, nil)
   end
@@ -179,6 +191,10 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   test 'import sara alert format to exposure and validate fields' do
     @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :exposure, 'Sara-Alert-Format-Invalid.xlsx', :invalid_fields, nil)
+  end
+
+  test 'import sara alert format to isolation and validate fields' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :isolation, 'Sara-Alert-Format-Invalid.xlsx', :invalid_fields, nil)
   end
 
   test 'download sara alert format guidance from exposure workflow' do

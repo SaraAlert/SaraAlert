@@ -9,17 +9,23 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   include ImportExportHelper
   @@system_test_utils = SystemTestUtils.new(nil)
     
-  def verify_epi_x_field_validation(file_name)
+  def verify_epi_x_field_validation(workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
-    (2..sheet.last_row).each do |row_index|
-      # check validation
+    (2..sheet.last_row).each do |row_num|
+      row = sheet.row(row_num)
+      row.each_with_index do |value, index|
+        verify_validation(workflow, EPI_X_FIELDS[index], [41, 42].include?(index) ? !value.blank? : value)
+      end
     end
   end
   
-  def verify_sara_alert_format_field_validation(file_name)
+  def verify_sara_alert_format_field_validation(workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
-    (2..sheet.last_row).each do |row_index|
-      # check validation
+    (2..sheet.last_row).each do |row_num|
+      row = sheet.row(row_num)
+      row.each_with_index do |value, index|
+        verify_validation(workflow, COMPREHENSIVE_FIELDS[index], value)
+      end
     end
   end
   
@@ -91,35 +97,35 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     sheet = get_xslx(file_name).sheet(0)
     @@system_test_utils.wait_for_db_write_delay
     rejects = [] if rejects.nil?
-    (2..sheet.last_row).each do |row_index|
-      row = sheet.row(row_index)
+    (2..sheet.last_row).each do |row_num|
+      row = sheet.row(row_num)
       patients = Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10], date_of_birth: row[12])
       patient = patients.where('created_at > ?', 1.minute.ago)[0]
       duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
-      if rejects.include?(row_index - 2) || (duplicate && !accept_duplicates)
-        assert_nil(patient, "Patient should not be found in db: #{row[11]} #{row[10]} in row #{row_index}")
+      if rejects.include?(row_num - 2) || (duplicate && !accept_duplicates)
+        assert_nil(patient, "Patient should not be found in db: #{row[11]} #{row[10]} in row #{row_num}")
       else
-        assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]} in row #{row_index}")
+        assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]} in row #{row_num}")
         EPI_X_FIELDS.each_with_index do |field, index|
           if index == 28 || index == 29 # phone number fields
-            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 13 # sex
-            assert_equal(row[index] == 'M' ? 'Male' : 'Female', patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(row[index] == 'M' ? 'Male' : 'Female', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 18 || (index == 22 && !row[22].nil?) # state fields
-            assert_equal(normalize_state_field(row[index].to_s), patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(normalize_state_field(row[index].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 22 && row[22].nil? # copy over monitored address state if state is nil
-            assert_equal(normalize_state_field(row[index - 4].to_s), patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(normalize_state_field(row[index - 4].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif [20, 21, 23].include?(index) && row[index].nil? # copy over address fields if address is nil
-            assert_equal(row[index - 4].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(row[index - 4].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 34 # copy over potential exposure country to location
-            assert_equal(row[35].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(row[35].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 41 || index == 42 # contact of known case and was in healthcare facilities
-            assert_equal(!row[index].blank?, patient[field], "#{field} mismatch in row #{row_index}")
+            assert_equal(!row[index].blank?, patient[field], "#{field} mismatch in row #{row_num}")
           elsif !field.nil?
-            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
         end
-        assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_index}")
+        assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
       end
     end
   end
@@ -128,35 +134,69 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     sheet = get_xslx(file_name).sheet(0)
     @@system_test_utils.wait_for_db_write_delay
     rejects = [] if rejects.nil?
-    (2..sheet.last_row).each do |row_index|
-      row = sheet.row(row_index)
+    (2..sheet.last_row).each do |row_num|
+      row = sheet.row(row_num)
       patients = Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2], date_of_birth: row[3])
       patient = patients.where('created_at > ?', 1.minute.ago)[0]
       duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
-      if rejects.include?(row_index - 2) || (duplicate && !accept_duplicates)
-        assert_nil(patient, "Patient should not be found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
+      if rejects.include?(row_num - 2) || (duplicate && !accept_duplicates)
+        assert_nil(patient, "Patient should not be found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_num}")
       else
-        assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
+        assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_num}")
         COMPREHENSIVE_FIELDS.each_with_index do |field, index|
           if index == 44 || index == 46 # phone number fields
-            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif [5, 6, 7, 8, 9, 13, 69, 71, 72, 74, 76, 78, 79].include?(index) # bool fields
-            assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif [20, 39, 60].include?(index) || (index == 33 && !row[33].nil?) # state fields
-            assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 33 && row[33].nil? # copy over monitored address state if state is nil
-            assert_equal(normalize_state_field(row[index - 13].to_s), patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(normalize_state_field(row[index - 13].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif [31, 32, 33, 34, 35].include?(index) & row[index].nil? # copy over address fields if address is nil
-            assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 85 || index == 86 # isolation workflow specific fields
-            assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif !field.nil?
-            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+            assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
         end
         verify_laboratory(patient, row[87..90])
         verify_laboratory(patient, row[91..94])
-        assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_index}")
+        assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
+      end
+    end
+  end
+
+  def verify_validation(workflow, field, value)
+    return if workflow != :isolation && %i[symptom_onset case_status].include?(field)
+    if VALIDATION[field]
+      if VALIDATION[field][:checks].include?(:required) && (!value || value.blank?)
+        assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
+      end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !VALID_ENUMS[field].include?(value)
+        assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+      end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:bool) && !%w[true false].include?(value.to_s.downcase)
+        assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+      end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date)
+        begin
+          Date.parse(value)
+        rescue ArgumentError
+          assert page.has_content?("#{value} is not a valid date for field '#{VALIDATION[field][:label]}"), "Error message for #{field}"
+        end
+      end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
+        assert page.has_content?("#{value} is not a valid phone number for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+      end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.upcase].nil?
+        assert page.has_content?("#{value} is not a valid state for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+      end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:sex) && !%[Male Female Unknown M F].include?(value.capitalize)
+        assert page.has_content?("#{value} is not a valid sex for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+      end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:email) && !ValidEmail2::Address.new(value).valid?
+        assert page.has_content?("#{value} is not a valid Email Address for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
       end
     end
   end

@@ -51,14 +51,14 @@ class ImportController < ApplicationController
           next if field.nil?
 
           begin
-            if format == :comprehensive_monitorees && ![85, 86].include?(col_num) || workflow != :isolation
-              patient[field] = validate_field(field, row[col_num], row_num)
+            if format == :comprehensive_monitorees
+              patient[field] = validate_field(field, row[col_num], row_num) unless [85, 86].include?(col_num) && workflow != :isolation
             end
 
             if format == :epix
-              patient[field] = if col_num == 34
+              patient[field] = if col_num == 34 # copy over potential exposure country to location
                                  validate_field(field, row[35], row_num)
-                               elsif [41, 42].include?(col_num)
+                               elsif [41, 42].include?(col_num) # contact of known case and was in healthcare facilities
                                  validate_field(field, !row[col_num].blank?, row_num)
                                else
                                  validate_field(field, row[col_num], row_num)
@@ -139,26 +139,6 @@ class ImportController < ApplicationController
     value
   end
 
-  def validate_required_primary_contact(patient, row_num)
-    if patient[:email].blank? && patient[:preferred_contact_method] == 'E-mailed Web Link'
-      raise ValidationError.new("Field 'Email' is required when Primary Contact Method is 'E-mailed Web Link'", row_num)
-    end
-    unless patient[:primary_telephone].blank? && (['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method])
-      return
-    end
-
-    raise ValidationError.new("Field 'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_num)
-  end
-
-  def validate_email_field(field, value, row_num)
-    return value if value.blank?
-    unless ValidEmail2::Address.new(value).valid?
-      raise ValidationError.new("#{value} is not a valid Email Address for field '#{VALIDATION[field][:label]}'", row_num)
-    end
-
-    value
-  end
-
   def validate_required_field(field, value, row_num)
     raise ValidationError.new("Required field '#{VALIDATION[field][:label]}' is missing", row_num) if value.blank?
 
@@ -166,7 +146,8 @@ class ImportController < ApplicationController
   end
 
   def validate_enum_field(field, value, row_num)
-    return value if value.blank? || VALID_ENUMS[field].include?(value)
+    return nil if value.blank?
+    return value if VALID_ENUMS[field].include?(value)
 
     err_msg = "#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}', acceptable values are: #{VALID_ENUMS[field].to_sentence}"
     raise ValidationError.new(err_msg, row_num)
@@ -174,15 +155,15 @@ class ImportController < ApplicationController
 
   def validate_bool_field(field, value, row_num)
     return value if value.blank?
-    return (value.to_s.downcase == 'true') if %w[true false].include? value.to_s.downcase
+    return (value.to_s.downcase == 'true') if %w[true false].include?(value.to_s.downcase)
 
     err_msg = "#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}', acceptable values are: 'True' and 'False'"
     raise ValidationError.new(err_msg, row_num)
   end
 
   def validate_date_field(field, value, row_num)
-    return value if value.blank?
-    return value if value.instance_of? Date
+    return nil if value.blank?
+    return value if value.instance_of?(Date)
 
     begin
       Date.parse(value)
@@ -192,7 +173,7 @@ class ImportController < ApplicationController
   end
 
   def validate_phone_field(field, value, row_num)
-    return value if value.blank?
+    return nil if value.blank?
 
     normalized_phone = Phonelib.parse(value, 'US').full_e164
     return normalized_phone if normalized_phone
@@ -201,7 +182,8 @@ class ImportController < ApplicationController
   end
 
   def validate_state_field(field, value, row_num)
-    return value if value.blank? || VALID_STATES.include?(value)
+    return nil if value.blank?
+    return value if VALID_STATES.include?(value)
 
     normalized_state = STATE_ABBREVIATIONS[value.upcase]
     return normalized_state if normalized_state
@@ -210,7 +192,8 @@ class ImportController < ApplicationController
   end
 
   def validate_sex_field(field, value, row_num)
-    return value if value.blank? || %w[Male Female Unknown].include?(value.capitalize)
+    return nil if value.blank?
+    return value if %w[Male Female Unknown].include?(value.capitalize)
 
     normalized_sex = SEX_ABBREVIATIONS[value.upcase]
     return normalized_sex if normalized_sex
@@ -218,11 +201,31 @@ class ImportController < ApplicationController
     raise ValidationError.new("#{value} is not a valid sex for field '#{VALIDATION[field][:label]}'", row_num)
   end
 
+  def validate_email_field(field, value, row_num)
+    return nil if value.blank?
+    unless ValidEmail2::Address.new(value).valid?
+      raise ValidationError.new("#{value} is not a valid Email Address for field '#{VALIDATION[field][:label]}'", row_num)
+    end
+
+    value
+  end
+
   def validate_address(patient, row_num)
     return if (patient[:address_line_1] && patient[:address_city] && patient[:address_state] && patient[:address_zip]) ||
               (patient[:foreign_address_city] && patient[:foreign_address_country])
 
     raise ValidationError.new('Either an address (line 1, city, state, zip) or foreign address (city, country) must be provided', row_num)
+  end
+
+  def validate_required_primary_contact(patient, row_num)
+    if patient[:email].blank? && patient[:preferred_contact_method] == 'E-mailed Web Link'
+      raise ValidationError.new("Field 'Email' is required when Primary Contact Method is 'E-mailed Web Link'", row_num)
+    end
+    unless patient[:primary_telephone].blank? && (['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method])
+      return
+    end
+
+    raise ValidationError.new("Field 'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_num)
   end
 end
 
