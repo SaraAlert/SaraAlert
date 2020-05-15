@@ -212,7 +212,7 @@ class ImportController < ApplicationController
     return if (patient[:address_line_1] && patient[:address_city] && patient[:address_state] && patient[:address_zip]) ||
               (patient[:foreign_address_city] && patient[:foreign_address_country])
 
-    raise ValidationError, "Either an address (line 1, city, state, zip) or foreign address (city, country) must be provided in row #{row_num}"
+    raise ValidationError.new('Either an address (line 1, city, state, zip) or foreign address (city, country) must be provided', row_num)
   end
 end
 
