@@ -44,7 +44,7 @@ class MonitorAnalytics extends React.Component {
     // The two datatables in the cdc-maps cause the export to fail
     // remove them before the export then reload the page so that they come back
     if (window.document.documentMode) {
-      alert('Capturing a screenshot is not supported by Internet Explorer. Please use a local image capture software instead.');
+      alert('Analytics export is not availale using the Internet Explorer web browser. Please use an alternative browser or a local image capture application instead.');
     } else {
       document.getElementsByClassName('data-table')[0].remove();
       document.getElementsByClassName('data-table')[0].remove();
