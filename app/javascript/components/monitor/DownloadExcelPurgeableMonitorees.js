@@ -38,7 +38,10 @@ class DownloadExcelPurgeableMonitorees extends React.Component {
         .get(window.BASE_PATH + '/export/excel/patients/full_history/purgeable', {})
         .then(response => {
           var fileDate = moment().format();
-          FileDownload(base64StringToBlob(response.data, 'application/xlsx'), 'Sara-Alert-Full-History-Purgeable-Monitorees-' + fileDate + '.xlsx');
+          FileDownload(
+            base64StringToBlob(response.data.replace(/(\r\n|\n|\r)/gm, ''), 'application/xlsx'),
+            'Sara-Alert-Full-History-Purgeable-Monitorees-' + fileDate + '.xlsx'
+          );
           this.setState({ loading: false, showDownloadExcelModal: false });
         })
         .catch(error => {
