@@ -74,6 +74,11 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
                   :primary_telephone, :secondary_telephone, :email, nil, nil, nil, :potential_exposure_location, :potential_exposure_country,
                   :date_of_departure, nil, nil, nil, nil, :contact_of_known_case, :was_in_health_care_facility_with_known_cases].freeze
 
+  SEX_ABBREVIATIONS = {
+    'M' => 'Male',
+    'F' => 'Female'
+  }.freeze
+
   STATE_ABBREVIATIONS = {
     'AL' => 'Alabama',
     'AK' => 'Alaska',
@@ -139,7 +144,6 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
   VALID_STATES = STATE_ABBREVIATIONS.values
 
   VALID_ENUMS = {
-    sex: %w[Male Female Unknown],
     ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino'],
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
@@ -159,7 +163,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     first_name: { label: 'First Name', checks: [:required] },
     last_name: { label: 'Last Name', checks: [:required] },
     date_of_birth: { label: 'Date of Birth', checks: %i[required date] },
-    sex: { label: 'Sex', checks: [:enum] },
+    sex: { label: 'Sex', checks: [:sex] },
     white: { label: 'White', checks: [:bool] },
     black_or_african_american: { label: 'Black or African American', checks: [:bool] },
     american_indian_or_alaska_native: { label: 'American Indian or Alaska Native', checks: [:bool] },
