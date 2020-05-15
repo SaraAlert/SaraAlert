@@ -2,7 +2,10 @@
 
 <div class="card mx-2 mt-3 mb-4 card-square">
   <h5 class="card-header">Import Error</h5>
-  <div class="alert alert-danger mt-3 mx-3" role="alert">
+  <div class="alert alert-dismissible fade show alert-danger mt-3 mx-3" role="alert">
     <%= @error_msg %>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 </div>

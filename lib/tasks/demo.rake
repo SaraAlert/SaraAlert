@@ -128,7 +128,6 @@ namespace :demo do
     jurisdictions = Jurisdiction.all
     Analytic.delete_all
 
-    # foobar added to list to test "unknown" locations
     territory_names = ['American Samoa',
       'District of Columbia',
       'Federated States of Micronesia',
@@ -137,8 +136,7 @@ namespace :demo do
       'Northern Mariana Islands',
       'Palau',
       'Puerto Rico',
-      'Virgin Island',
-      'foobar']
+      'Virgin Islands']
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
@@ -213,7 +211,7 @@ namespace :demo do
             first_name: "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}",
             middle_name: "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}",
             last_name: "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}",
-            sex: sex,
+            sex: rand > 0.9 ? sex : 'Unknown',
             date_of_birth: birthday,
             age: ((Date.today - birthday) / 365.25).round,
             ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
@@ -224,11 +222,12 @@ namespace :demo do
             address_line_2: rand < 0.3 ? Faker::Address.secondary_address : nil,
             address_zip: Faker::Address.zip_code,
             primary_telephone: '(333) 333-3333',
-            primary_telephone_type: rand < 0.7 ? 'Smartphone' : 'Plain Cell',
+            primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'].sample,
             secondary_telephone: '(333) 333-3333',
-            secondary_telephone_type: 'Landline',
+            secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'].sample,
             email: "#{rand(1000000000..9999999999)}fake@example.com",
-            preferred_contact_method: "E-mailed Web Link",
+            preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].sample,
+            preferred_contact_time: ['Morning', 'Afternoon', 'Evening', nil].sample,
             port_of_origin: Faker::Address.city,
             date_of_departure: today - (rand < 0.3 ? 1.day : 0.days),
             source_of_report: rand < 0.4 ? 'Self-Identified' : 'CDC',
@@ -266,23 +265,22 @@ namespace :demo do
             patient.monitored_address_line_2 = patient.address_line_2
             patient.monitored_address_zip = patient.address_zip
           else
-            if rand > 0.5
-              state = Faker::Address.state
-            else
-              state = territory_names[rand(territory_names.count)]
-            end
             patient.monitored_address_line_1 = Faker::Address.street_address
             patient.monitored_address_city = Faker::Address.city
-            patient.monitored_address_state = state
+            patient.monitored_address_state = rand > 0.5 ? Faker::Address.state : territory_names[rand(territory_names.count)]
             patient.monitored_address_line_2 = rand < 0.3 ? Faker::Address.secondary_address : nil
             patient.monitored_address_zip = Faker::Address.zip_code
           end
 
           if rand < 0.3
-            patient.additional_planned_travel_type = rand < 0.7 ? 'Domestic' : 'International'
+            if rand < 0.7
+              patient.additional_planned_travel_type = 'Domestic'
+              patient.additional_planned_travel_destination_state = rand > 0.5 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+            else
+              patient.additional_planned_travel_type = 'International'
+              patient.additional_planned_travel_destination_country = Faker::Address.country
+            end
             patient.additional_planned_travel_destination = Faker::Address.city
-            patient.additional_planned_travel_destination_state = Faker::Address.city if patient.additional_planned_travel_type == 'Domestic'
-            patient.additional_planned_travel_destination_country = Faker::Address.country if patient.additional_planned_travel_type == 'International'
             patient.additional_planned_travel_port_of_departure = Faker::Address.city
             patient.additional_planned_travel_start_date = today + rand(6).days
             patient.additional_planned_travel_end_date = patient.additional_planned_travel_start_date + rand(10).days
@@ -300,6 +298,8 @@ namespace :demo do
           elsif rand < 0.7
             patient.exposure_risk_assessment = 'No Identified Risk'
             patient.monitoring_plan = 'Self-observation'
+          elsif rand < 0.9
+            patient.monitoring_plan = 'None'
           end
 
           if !isol && rand < 0.15

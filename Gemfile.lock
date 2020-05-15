@@ -309,6 +309,9 @@ GEM
     unicode-display_width (1.7.0)
     uniform_notifier (1.13.0)
     uri_template (0.7.0)
+    valid_email2 (3.2.2)
+      activemodel (>= 3.2)
+      mail (~> 2.5)
     warden (1.2.8)
       rack (>= 2.0.6)
     web-console (4.0.2)
@@ -378,6 +381,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   twilio-ruby
   tzinfo-data
+  valid_email2
   web-console (>= 3.3.0)
   webdrivers
   webpacker (~> 4.0)

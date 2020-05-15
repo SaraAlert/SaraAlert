@@ -3,6 +3,19 @@
 # Helper methods for the patient model
 module PatientHelper # rubocop:todo Metrics/ModuleLength
   def normalize_state_names(pat)
+    pat.monitored_address_state = normalize_and_get_state_name(pat.monitored_address_state) || pat.monitored_address_state
+    pat.address_state = normalize_and_get_state_name(pat.address_state) || pat.address_state
+    adpt = pat.additional_planned_travel_destination_state
+    pat.additional_planned_travel_destination_state = normalize_and_get_state_name(adpt) || adpt
+  end
+
+  def normalize_name(name)
+    return nil if name.nil?
+
+    name.delete(" \t\r\n").downcase
+  end
+
+  def normalize_and_get_state_name(name)
     # This list contains all of the same states listed in app/javascript/components/data.js
     state_names = {
       'alabama' => 'Alabama',
@@ -14,7 +27,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       'colorado' => 'Colorado',
       'connecticut' => 'Connecticut',
       'delaware' => 'Delaware',
-      'districtofcolombia' => 'District of Columbia',
+      'districtofcolumbia' => 'District of Columbia',
       'federatedstatesofmicronesia' => 'Federated States of Micronesia',
       'florida' => 'Florida',
       'georgia' => 'Georgia',
@@ -65,16 +78,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       'wisconsin' => 'Wisconsin',
       'wyoming' => 'Wyoming'
     }
-    pat.monitored_address_state = state_names[normalize_name(pat.monitored_address_state)] || pat.monitored_address_state
-    pat.address_state = state_names[normalize_name(pat.address_state)] || pat.address_state
-    adpt = pat.additional_planned_travel_destination_state
-    pat.additional_planned_travel_destination_state = state_names[normalize_name(adpt)] || adpt
-  end
-
-  def normalize_name(name)
-    return nil if name.nil?
-
-    name.delete(" \t\r\n").downcase
+    state_names[normalize_name(name)] || nil
   end
 
   def timezone_for_state(name)
@@ -88,7 +92,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       'colorado' => '-06:00',
       'connecticut' => '-04:00',
       'delaware' => '-04:00',
-      'districtofcolombia' => '-04:00',
+      'districtofcolumbia' => '-04:00',
       'federatedstatesofmicronesia' => '+11:00',
       'florida' => '-04:00',
       'georgia' => '-04:00',

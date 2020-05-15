@@ -41,8 +41,7 @@ Rails.application.routes.draw do
   get '/export/excel/patients/full_history/:scope', to: 'export#excel_full_history_patients'
   get '/export/excel/patients/full_history/patient/:patient_id', to: 'export#excel_full_history_patient'
 
-  post '/import/:workflow/epix', to: 'import#epix'
-  post '/import/:workflow/comprehensive_monitorees', to: 'import#comprehensive_monitorees'
+  post '/import/:workflow/:format', to: 'import#import'
   get '/import/download_guidance', to: 'import#download_guidance'
   get '/import/error', to: 'import#error'
 
