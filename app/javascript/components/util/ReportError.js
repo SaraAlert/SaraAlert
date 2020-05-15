@@ -16,12 +16,13 @@ export default function reportError(error, reportToSentry = true) {
     httpStatus = error.response.status;
   } else if (error?.httpStatus) {
     httpStatus = error.httpStatus;
-  } else if (!error?.response) {
-    httpStatus = 500;
   }
 
   if (reportToSentry) {
     Sentry.captureException(error);
+    if (error.hasOwnProperty('toJSON')) {
+      Sentry.captureMessage(error.toJSON());
+    }
   }
 
   if (httpStatus) {
@@ -41,6 +42,9 @@ export default function reportError(error, reportToSentry = true) {
         break;
       case 500:
         errorExplanationString += 'An error occurred on the Sara Alert Server.';
+        break;
+      default:
+        errorExplanationString += 'An unspecified error occurred.';
         break;
     }
   }
