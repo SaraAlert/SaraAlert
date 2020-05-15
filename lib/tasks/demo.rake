@@ -145,7 +145,7 @@ namespace :demo do
 
       # Transaction speeds things up a bit
       Patient.transaction do
-      
+
         # Create assessments for 80-90% of patients on any given day
         printf("Generating assessments...")
         patients = Patient.where('created_at <= ?', today)
@@ -188,7 +188,7 @@ namespace :demo do
           printf("\rGenerating laboratory #{index+1} of #{pcount_lab}...")
           report_date = Faker::Time.between_dates(from: 1.week.ago, to: today, period: :day)
           lab = Laboratory.new(
-            lab_type: ['PCR', 'Antigen', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody'].sample,
+            lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
             specimen_collection: Faker::Time.between_dates(from: 2.weeks.ago, to: report_date, period: :day),
             report: report_date,
             result: ['positive', 'negative', 'indeterminate', 'other'].sample

@@ -63,9 +63,11 @@ class Laboratory extends React.Component {
                   <option disabled></option>
                   <option>PCR</option>
                   <option>Antigen</option>
+                  <option>Total Antibody</option>
                   <option>IgG Antibody</option>
                   <option>IgM Antibody</option>
                   <option>IgA Antibody</option>
+                  <option>Other</option>
                 </Form.Control>
               </Form.Group>
             </Row>

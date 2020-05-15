@@ -43,6 +43,25 @@ class SymptomsAssessment extends React.Component {
     );
   };
 
+  floatSymptom = symp => {
+    return (
+      <Form.Row className="pt-3" key={`label_key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}>
+        <Form.Label className="nav-input-label" key={`label_key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}>
+          <b>{symp.label}</b> {symp.notes ? ' ' + symp.notes : ''}
+        </Form.Label>
+        <Form.Control
+          size="lg"
+          id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
+          key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
+          className="form-square"
+          value={symp.value || ''}
+          type="number"
+          onChange={this.handleChange}
+        />
+      </Form.Row>
+    );
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -59,6 +78,11 @@ class SymptomsAssessment extends React.Component {
                     return x.type === 'BoolSymptom';
                   })
                   .map(symp => this.boolSymptom(symp))}
+                {this.state.current.symptoms
+                  .filter(x => {
+                    return x.type === 'FloatSymptom';
+                  })
+                  .map(symp => this.floatSymptom(symp))}
               </Form.Group>
             </Form.Row>
             <Form.Row className="pt-4">
