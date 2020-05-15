@@ -131,7 +131,8 @@ class ImportController < ApplicationController
   def validate_field(field, value, row_num)
     return value unless VALIDATION[field]
 
-    value = validate_required_field(field, value, row_num) if VALIDATION[field][:checks].include?(:required)
+    # TODO: Un-comment when required fields are to be checked upon import
+    # value = validate_required_field(field, value, row_num) if VALIDATION[field][:checks].include?(:required)
     value = validate_enum_field(field, value, row_num) if VALIDATION[field][:checks].include?(:enum)
     value = validate_bool_field(field, value, row_num) if VALIDATION[field][:checks].include?(:bool)
     value = validate_date_field(field, value, row_num) if VALIDATION[field][:checks].include?(:date)
@@ -143,8 +144,7 @@ class ImportController < ApplicationController
   end
 
   def validate_required_field(field, value, row_num)
-    # TODO: Un-comment when required fields are to be checked upon import
-    # raise ValidationError.new("Required field '#{VALIDATION[field][:label]}' is missing", row_num) if value.blank?
+    raise ValidationError.new("Required field '#{VALIDATION[field][:label]}' is missing", row_num) if value.blank?
 
     value
   end
