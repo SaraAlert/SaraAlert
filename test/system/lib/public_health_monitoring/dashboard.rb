@@ -109,6 +109,8 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
       assert_content('Please make sure that your import file is a .xlsx file.')
     elsif validity == :invalid_format
       assert_content('Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.')
+    elsif validity == :invalid_headers
+      assert_content('Incorrect headers, please make sure you are using the latest format specified by the guidance doc.')
     end
   end
 
