@@ -78,14 +78,16 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
     find('a', text: 'Epi-X').click
-    attach_file('epix', file_fixture(file_name))
+    attach_file('file', file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
       @@public_health_import_verifier.verify_epi_x_import_page(jurisdiction_id, file_name)
       select_monitorees_to_import(rejects, accept_duplicates)
       @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
-    else
-      assert_content('Monitoree import file appears to be invalid.')
+    elsif validity == :invalid_file
+      assert_content('Please make sure that your import file is a .xlsx file.')
+    elsif validity == :invalid_format
+      assert_content('Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.')
     end
   end
 
@@ -93,14 +95,16 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
     find('a', text: 'Sara Alert Format').click
-    attach_file('comprehensive_monitorees', file_fixture(file_name))
+    attach_file('file', file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
       @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction_id, file_name)
       select_monitorees_to_import(rejects, accept_duplicates)
       @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
-    else
-      assert_content('Monitoree import file appears to be invalid.')
+    elsif validity == :invalid_file
+      assert_content('Please make sure that your import file is a .xlsx file.')
+    elsif validity == :invalid_format
+      assert_content('Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.')
     end
   end
 

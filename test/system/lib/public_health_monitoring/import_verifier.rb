@@ -6,62 +6,35 @@ require 'roo'
 require_relative '../system_test_utils'
 
 class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
+  include ImportExportHelper
   @@system_test_utils = SystemTestUtils.new(nil)
     
-  DB_WRITE_DELAY = 1
-  
-  EPI_X_FIELDS = [:user_defined_id_statelocal, :flight_or_vessel_number, nil, nil, :user_defined_id_cdc, nil, nil, :primary_language, :date_of_arrival,
-                  :port_of_entry_into_usa, :last_name, :first_name, :date_of_birth, :sex, nil, nil, :address_line_1, :address_city, :address_state,
-                  :address_zip, :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :monitored_address_zip, nil, nil, nil, nil,
-                  :primary_telephone, :secondary_telephone, :email, nil, nil, nil, :potential_exposure_location, :potential_exposure_country,
-                  :date_of_departure, nil, nil, nil, nil, :contact_of_known_case, :was_in_health_care_facility_with_known_cases].freeze
-
-  COMPREHENSIVE_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american, :american_indian_or_alaska_native,
-                          :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language, :secondary_language, :interpretation_required,
-                          :nationality, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss, :address_line_1, :address_city,
-                          :address_state, :address_line_2, :address_zip, :address_county, :foreign_address_line_1, :foreign_address_city,
-                          :foreign_address_country, :foreign_address_line_2, :foreign_address_zip, :foreign_address_line_3, :foreign_address_state,
-                          :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :monitored_address_line_2, :monitored_address_zip,
-                          :monitored_address_county, :foreign_monitored_address_line_1, :foreign_monitored_address_city, :foreign_monitored_address_state,
-                          :foreign_monitored_address_line_2, :foreign_monitored_address_zip, :foreign_monitored_address_county, :preferred_contact_method,
-                          :primary_telephone, :primary_telephone_type, :secondary_telephone, :secondary_telephone_type, :preferred_contact_time, :email,
-                          :port_of_origin, :date_of_departure, :source_of_report, :flight_or_vessel_number, :flight_or_vessel_carrier, :port_of_entry_into_usa,
-                          :date_of_arrival, :travel_related_notes, :additional_planned_travel_type, :additional_planned_travel_destination,
-                          :additional_planned_travel_destination_state, :additional_planned_travel_destination_country,
-                          :additional_planned_travel_port_of_departure, :additional_planned_travel_start_date, :additional_planned_travel_end_date,
-                          :additional_planned_travel_related_notes, :last_date_of_exposure, :potential_exposure_location, :potential_exposure_country,
-                          :contact_of_known_case, :contact_of_known_case_id, :travel_to_affected_country_or_area, :was_in_health_care_facility_with_known_cases,
-                          :was_in_health_care_facility_with_known_cases_facility_name, :laboratory_personnel, :laboratory_personnel_facility_name,
-                          :healthcare_personnel, :healthcare_personnel_facility_name, :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort,
-                          :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes, nil, :symptom_onset,
-                          :case_status].freeze
-  
   def verify_epi_x_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
     page.all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
-      verify_existence(card, 'State/Local ID', row[0])
-      verify_existence(card, 'CDC ID', row[4])
-      verify_existence(card, 'First Name', row[11])
-      verify_existence(card, 'Last Name', row[10])
-      verify_existence(card, 'DOB', row[12])
-      verify_existence(card, 'Language', row[7])
-      verify_existence(card, 'Flight or Vessel Number', row[1])
-      verify_existence(card, 'Home Address Line 1', row[16])
-      verify_existence(card, 'Home Town/City', row[17])
-      verify_existence(card, 'Home State', row[18])
-      verify_existence(card, 'Home Zip', row[19])
-      verify_existence(card, 'Monitored Address Line 1', row[20])
-      verify_existence(card, 'Monitored Town/City', row[21])
-      verify_existence(card, 'Monitored State', row[22])
-      verify_existence(card, 'Monitored Zip', row[23])
-      verify_existence(card, 'Phone Number 1', row[28] ? Phonelib.parse(row[28], 'US').full_e164 : nil)
-      verify_existence(card, 'Phone Number 2', row[29] ? Phonelib.parse(row[29], 'US').full_e164 : nil)
-      verify_existence(card, 'Email', row[30])
-      verify_existence(card, 'Exposure Location', row[35])
-      verify_existence(card, 'Date of Departure', row[36])
-      verify_existence(card, 'Close Contact w/ Known Case', !row[41].blank?.to_s)
-      verify_existence(card, 'Was in HC Fac. w/ Known Cases', !row[42].blank?.to_s)
+      verify_existence(card, 'State/Local ID', row[0], index)
+      verify_existence(card, 'CDC ID', row[4], index)
+      verify_existence(card, 'First Name', row[11], index)
+      verify_existence(card, 'Last Name', row[10], index)
+      verify_existence(card, 'DOB', row[12], index)
+      verify_existence(card, 'Language', row[7], index)
+      verify_existence(card, 'Flight or Vessel Number', row[1], index)
+      verify_existence(card, 'Home Address Line 1', row[16], index)
+      verify_existence(card, 'Home Town/City', row[17], index)
+      verify_existence(card, 'Home State', normalize_state_field(row[18]), index)
+      verify_existence(card, 'Home Zip', row[19], index)
+      verify_existence(card, 'Monitored Address Line 1', row[20], index)
+      verify_existence(card, 'Monitored Town/City', row[21], index)
+      verify_existence(card, 'Monitored State', normalize_state_field(row[22]), index)
+      verify_existence(card, 'Monitored Zip', row[23], index)
+      verify_existence(card, 'Phone Number 1', row[28] ? Phonelib.parse(row[28], 'US').full_e164 : nil, index)
+      verify_existence(card, 'Phone Number 2', row[29] ? Phonelib.parse(row[29], 'US').full_e164 : nil, index)
+      verify_existence(card, 'Email', row[30], index)
+      verify_existence(card, 'Exposure Location', row[35], index)
+      verify_existence(card, 'Date of Departure', row[36], index)
+      verify_existence(card, 'Close Contact w/ Known Case', !row[41].blank?.to_s, index)
+      verify_existence(card, 'Was in HC Fac. w/ Known Cases', !row[42].blank?.to_s, index)
       if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10]).length > 1
         assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
       end
@@ -72,28 +45,28 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     sheet = get_xslx(file_name).sheet(0)
     page.all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
-      verify_existence(card, 'State/Local ID', row[15])
-      verify_existence(card, 'CDC ID', row[16])
-      verify_existence(card, 'First Name', row[0])
-      verify_existence(card, 'Last Name', row[2])
-      verify_existence(card, 'DOB', row[3])
-      verify_existence(card, 'Language', row[11])
-      verify_existence(card, 'Flight or Vessel Number', row[53])
-      verify_existence(card, 'Home Address Line 1', row[18])
-      verify_existence(card, 'Home Town/City', row[19])
-      verify_existence(card, 'Home State', row[20])
-      verify_existence(card, 'Home Zip', row[22])
-      verify_existence(card, 'Monitored Address Line 1', row[31])
-      verify_existence(card, 'Monitored Town/City', row[32])
-      verify_existence(card, 'Monitored State', row[33])
-      verify_existence(card, 'Monitored Zip', row[35])
-      verify_existence(card, 'Phone Number 1', row[28] ? Phonelib.parse(row[44], 'US').full_e164 : nil)
-      verify_existence(card, 'Phone Number 2', row[29] ? Phonelib.parse(row[46], 'US').full_e164 : nil)
-      verify_existence(card, 'Email', row[49])
-      verify_existence(card, 'Exposure Location', row[67])
-      verify_existence(card, 'Date of Departure', row[51])
-      verify_existence(card, 'Close Contact w/ Known Case', row[69])
-      verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[72])
+      verify_existence(card, 'State/Local ID', row[15], index)
+      verify_existence(card, 'CDC ID', row[16], index)
+      verify_existence(card, 'First Name', row[0], index)
+      verify_existence(card, 'Last Name', row[2], index)
+      verify_existence(card, 'DOB', row[3], index)
+      verify_existence(card, 'Language', row[11], index)
+      verify_existence(card, 'Flight or Vessel Number', row[53], index)
+      verify_existence(card, 'Home Address Line 1', row[18], index)
+      verify_existence(card, 'Home Town/City', row[19], index)
+      verify_existence(card, 'Home State', normalize_state_field(row[20]), index)
+      verify_existence(card, 'Home Zip', row[22], index)
+      verify_existence(card, 'Monitored Address Line 1', row[31], index)
+      verify_existence(card, 'Monitored Town/City', row[32], index)
+      verify_existence(card, 'Monitored State', normalize_state_field(row[33]), index)
+      verify_existence(card, 'Monitored Zip', row[35], index)
+      verify_existence(card, 'Phone Number 1', row[28] ? Phonelib.parse(row[44], 'US').full_e164 : nil, index)
+      verify_existence(card, 'Phone Number 2', row[29] ? Phonelib.parse(row[46], 'US').full_e164 : nil, index)
+      verify_existence(card, 'Email', row[49], index)
+      verify_existence(card, 'Exposure Location', row[67], index)
+      verify_existence(card, 'Date of Departure', row[51], index)
+      verify_existence(card, 'Close Contact w/ Known Case', row[69] ? row[69].to_s.downcase : nil, index)
+      verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[72] ? row[72].to_s.downcase : nil, index)
       if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
         assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
       end
@@ -102,7 +75,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
-    sleep(DB_WRITE_DELAY)
+    @@system_test_utils.wait_for_db_write_delay
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_index|
       row = sheet.row(row_index)
@@ -114,15 +87,19 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       else
         assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]} in row #{row_index}")
         EPI_X_FIELDS.each_with_index do |field, index|
-          if index == 28 || index == 29
+          if index == 28 || index == 29 # phone number fields
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_index}")
-          elsif index == 13
+          elsif index == 13 # sex
             assert_equal(row[index] == 'M' ? 'Male' : 'Female', patient[field].to_s, "#{field} mismatch in row #{row_index}")
-          elsif [20, 21, 22, 23].include?(index) && row[index].nil?
+          elsif index == 18 || (index == 22 && !row[22].nil?) # state fields
+            assert_equal(normalize_state_field(row[index].to_s), patient[field].to_s, "#{field} mismatch in row #{row_index}")
+          elsif index == 22 && row[22].nil? # copy over monitored address state if state is nil
+            assert_equal(normalize_state_field(row[index - 4].to_s), patient[field].to_s, "#{field} mismatch in row #{row_index}")
+          elsif [20, 21, 23].include?(index) && row[index].nil? # copy over address fields if address is nil
             assert_equal(row[index - 4].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
-          elsif index == 34
+          elsif index == 34 # copy over potential exposure country to location
             assert_equal(row[35].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
-          elsif index == 41 || index == 42
+          elsif index == 41 || index == 42 # contact of known case and was in healthcare facilities
             assert_equal(!row[index].blank?, patient[field], "#{field} mismatch in row #{row_index}")
           elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
@@ -135,7 +112,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
-    sleep(DB_WRITE_DELAY)
+    @@system_test_utils.wait_for_db_write_delay
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_index|
       row = sheet.row(row_index)
@@ -147,9 +124,17 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       else
         assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_index}")
         COMPREHENSIVE_FIELDS.each_with_index do |field, index|
-          if index == 44 || index == 46
+          if index == 44 || index == 46 # phone number fields
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_index}")
-          elsif index == 85 || index == 86
+          elsif [5, 6, 7, 8, 9, 13, 69, 71, 72, 74, 76, 78, 79].include?(index) # bool fields
+            assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+          elsif [20, 39, 60].include?(index) || (index == 33 && !row[33].nil?) # state fields
+            assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+          elsif index == 33 && row[33].nil? # copy over monitored address state if state is nil
+            assert_equal(normalize_state_field(row[index - 13].to_s), patient[field].to_s, "#{field} mismatch in row #{row_index}")
+          elsif [31, 32, 33, 34, 35].include?(index) & row[index].nil? # copy over address fields if address is nil
+            assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
+          elsif index == 85 || index == 86 # isolation workflow specific fields
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_index}")
           elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_index}")
@@ -175,11 +160,19 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def get_xslx(file_name)
-    Roo::Spreadsheet.open(file_fixture(file_name).to_s)
+  def verify_existence(element, label, value, index)
+    assert element.has_content?("#{label}:#{value && value != '' ? ' ' + value.to_s : ''}"), "#{label} should be #{value} in row #{index + 2}"
   end
 
-  def verify_existence(element, label, value)
-    assert element.has_content?("#{label}:#{value && value != '' ? ' ' + value.to_s : ''}")
+  def normalize_state_field(value)
+    value ? VALID_STATES.include?(value) ? value : STATE_ABBREVIATIONS[value.upcase] : nil
+  end
+
+  def normalize_bool_field(value)
+    %w[true false].include?(value.to_s.downcase) ? (value.to_s.downcase == 'true') : nil
+  end
+
+  def get_xslx(file_name)
+    Roo::Spreadsheet.open(file_fixture(file_name).to_s)
   end
 end

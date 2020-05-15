@@ -211,7 +211,7 @@ namespace :demo do
             first_name: "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}",
             middle_name: "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}",
             last_name: "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}",
-            sex: sex,
+            sex: rand > 0.9 ? sex : 'Unknown',
             date_of_birth: birthday,
             age: ((Date.today - birthday) / 365.25).round,
             ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
@@ -222,11 +222,12 @@ namespace :demo do
             address_line_2: rand < 0.3 ? Faker::Address.secondary_address : nil,
             address_zip: Faker::Address.zip_code,
             primary_telephone: '(333) 333-3333',
-            primary_telephone_type: rand < 0.7 ? 'Smartphone' : 'Plain Cell',
+            primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'].sample,
             secondary_telephone: '(333) 333-3333',
-            secondary_telephone_type: 'Landline',
+            secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'].sample,
             email: "#{rand(1000000000..9999999999)}fake@example.com",
-            preferred_contact_method: "E-mailed Web Link",
+            preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].sample,
+            preferred_contact_time: ['Morning', 'Afternoon', 'Evening', nil].sample,
             port_of_origin: Faker::Address.city,
             date_of_departure: today - (rand < 0.3 ? 1.day : 0.days),
             source_of_report: rand < 0.4 ? 'Self-Identified' : 'CDC',
@@ -297,6 +298,8 @@ namespace :demo do
           elsif rand < 0.7
             patient.exposure_risk_assessment = 'No Identified Risk'
             patient.monitoring_plan = 'Self-observation'
+          elsif rand < 0.9
+            patient.monitoring_plan = 'None'
           end
 
           if !isol && rand < 0.15

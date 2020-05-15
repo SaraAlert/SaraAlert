@@ -58,7 +58,7 @@ class ImportController < ApplicationController
     rescue Zip::Error
       # Roo throws this if the file is not an excel file
       @errors << 'File Error: Please make sure that your import file is a .xlsx file.'
-    rescue ArgumentError
+    rescue ArgumentError, NoMethodError
       # Roo throws this error when the columns are not what we expect
       @errors << 'Format Error: Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.'
     rescue StandardError => e
@@ -170,8 +170,8 @@ class ImportController < ApplicationController
       additional_planned_travel_destination_state: validate_field(:additional_planned_travel_destination_state, row[60], row_num),
       additional_planned_travel_destination_country: row[61],
       additional_planned_travel_port_of_departure: row[62],
-      additional_planned_travel_start_date: row[63],
-      additional_planned_travel_end_date: row[64],
+      additional_planned_travel_start_date: validate_field(:additional_planned_travel_start_date, row[63], row_num),
+      additional_planned_travel_end_date: validate_field(:additional_planned_travel_end_date, row[64], row_num),
       additional_planned_travel_related_notes: row[65],
       last_date_of_exposure: validate_field(:last_date_of_exposure, row[66], row_num),
       potential_exposure_location: row[67],
@@ -231,7 +231,7 @@ class ImportController < ApplicationController
   end
 
   def validate_required_field(field, value, row_num)
-    raise ValidationError.new("Required field '#{VALIDATION[field][:label]}' is missing", row_num, col_num) if value.blank?
+    raise ValidationError.new("Required field '#{VALIDATION[field][:label]}' is missing", row_num) if value.blank?
 
     value
   end
