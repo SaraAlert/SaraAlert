@@ -50,28 +50,36 @@ class ImportController < ApplicationController
         fields.each_with_index do |field, col_num|
           next if field.nil?
 
-          if format == :comprehensive_monitorees
-            patient[field] = validate_field(field, row[col_num], row_num) unless [85, 86].include?(col_num) && workflow != :isolation
-          end
+          begin
+            if format == :comprehensive_monitorees && ![85, 86].include?(col_num) && workflow != :isolation
+              patient[field] = validate_field(field, row[col_num], row_num)
+            end
 
-          if format == :epix
-            patient[field] = if col_num == 34
-                               validate_field(field, row[35], row_num)
-                             elsif [41, 42].include?(col_num)
-                               validate_field(field, !row[col_num].blank?, row_num)
-                             else
-                               validate_field(field, row[col_num], row_num)
-                             end
+            if format == :epix
+              patient[field] = if col_num == 34
+                                 validate_field(field, row[35], row_num)
+                               elsif [41, 42].include?(col_num)
+                                 validate_field(field, !row[col_num].blank?, row_num)
+                               else
+                                 validate_field(field, row[col_num], row_num)
+                               end
+            end
+          rescue ValidationError => e
+            @errors << e&.message || "Unknown error on row #{row_num}"
+          rescue StandardError => e
+            @errors << e&.message || 'Unexpected error'
           end
+        end
 
+        # Run validations on fields that have restrictions conditional on other fields
+        begin
+          validate_address(patient, row_num)
+          validate_required_primary_contact(patient, row_num)
         rescue ValidationError => e
           @errors << e&.message || "Unknown error on row #{row_num}"
         rescue StandardError => e
           @errors << e&.message || 'Unexpected error'
         end
-
-        validate_address(patient, row_num)
-
         patient[:appears_to_be_duplicate] = current_user.viewable_patients.matches(patient[:first_name],
                                                                                    patient[:last_name],
                                                                                    patient[:sex],
@@ -130,13 +138,15 @@ class ImportController < ApplicationController
     value
   end
 
-  def validate_required_primary_contact(row, row_num)
-    if row[:email].blank? && row[:preferred_contact_method] == 'E-mailed Web Link'
+  def validate_required_primary_contact(patient, row_num)
+    if patient[:email].blank? && patient[:preferred_contact_method] == 'E-mailed Web Link'
       raise ValidationError.new("Field 'Email' is required when Primary Contact Method is 'E-mailed Web Link'", row_num)
     end
-    return unless row[:primary_telephone].blank? && (['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? row[:preferred_contact_method])
+    unless patient[:primary_telephone].blank? && (['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method])
+      return
+    end
 
-    raise ValidationError.new("Field 'Primary Telephone' is required when Primary Contact Method is '#{row[:preferred_contact_method]}'", row_num)
+    raise ValidationError.new("Field 'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_num)
   end
 
   def validate_required_field(field, value, row_num)
@@ -202,7 +212,7 @@ class ImportController < ApplicationController
     return if (patient[:address_line_1] && patient[:address_city] && patient[:address_state] && patient[:address_zip]) ||
               (patient[:foreign_address_city] && patient[:foreign_address_country])
 
-    raise ValidationError.new("Either an address (line 1, city, state, zip) or foreign address (city, country) must be provided in row #{row_num}")
+    raise ValidationError, "Either an address (line 1, city, state, zip) or foreign address (city, country) must be provided in row #{row_num}"
   end
 end
 
