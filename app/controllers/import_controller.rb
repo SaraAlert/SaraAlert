@@ -70,6 +70,8 @@ class ImportController < ApplicationController
           @errors << e&.message || 'Unexpected error'
         end
 
+        validate_address(patient, row_num)
+
         patient[:appears_to_be_duplicate] = current_user.viewable_patients.matches(patient[:first_name],
                                                                                    patient[:last_name],
                                                                                    patient[:sex],
@@ -194,6 +196,13 @@ class ImportController < ApplicationController
     return normalized_sex if normalized_sex
 
     raise ValidationError.new("#{value} is not a valid sex for field '#{VALIDATION[field][:label]}'", row_num)
+  end
+
+  def validate_address(patient, row_num)
+    return if (patient[:address_line_1] && patient[:address_city] && patient[:address_state] && patient[:address_zip]) ||
+              (patient[:foreign_address_city] && patient[:foreign_address_country])
+
+    raise ValidationError.new("Either an address (line 1, city, state, zip) or foreign address (city, country) must be provided in row #{row_num}")
   end
 end
 
