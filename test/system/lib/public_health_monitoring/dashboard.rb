@@ -84,6 +84,8 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
       @@public_health_import_verifier.verify_epi_x_import_page(jurisdiction_id, file_name)
       select_monitorees_to_import(rejects, accept_duplicates)
       @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
+    elsif validity == :invalid_fields
+      @@public_health_import_verifier.verify_epi_x_field_validation(file_name)
     elsif validity == :invalid_file
       assert_content('Please make sure that your import file is a .xlsx file.')
     elsif validity == :invalid_format
@@ -101,6 +103,8 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
       @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction_id, file_name)
       select_monitorees_to_import(rejects, accept_duplicates)
       @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
+    elsif validity == :invalid_fields
+      @@public_health_import_verifier.verify_sara_alert_format_field_validation(file_name)
     elsif validity == :invalid_file
       assert_content('Please make sure that your import file is a .xlsx file.')
     elsif validity == :invalid_format

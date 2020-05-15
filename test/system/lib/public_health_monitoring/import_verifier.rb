@@ -9,6 +9,20 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   include ImportExportHelper
   @@system_test_utils = SystemTestUtils.new(nil)
     
+  def verify_epi_x_field_validation(file_name)
+    sheet = get_xslx(file_name).sheet(0)
+    (2..sheet.last_row).each do |row_index|
+      # check validation
+    end
+  end
+  
+  def verify_sara_alert_format_field_validation(file_name)
+    sheet = get_xslx(file_name).sheet(0)
+    (2..sheet.last_row).each do |row_index|
+      # check validation
+    end
+  end
+  
   def verify_epi_x_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
     page.all('div.card-body').each_with_index do |card, index|

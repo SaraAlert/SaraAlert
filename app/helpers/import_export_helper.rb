@@ -151,7 +151,8 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
                       'Daily active monitoring',
                       'Self-monitoring with public health supervision',
                       'Self-monitoring with delegated supervision',
-                      'Self-observation']
+                      'Self-observation'],
+    case_status: ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case']
   }.freeze
 
   VALIDATION = {
@@ -194,6 +195,8 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     member_of_a_common_exposure_cohort: { label: 'Member of a Common Exposure Cohort?', checks: [:bool] },
     exposure_risk_assessment: { label: 'Exposure Risk Assessment', checks: [:enum] },
     monitoring_plan: { label: 'Monitoring Plan', checks: [:enum] },
+    symptom_onset: { label: 'Symptom Onset', checks: [:date] },
+    case_status: { label: 'Case Status', checks: [:enum] },
     specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
     report: { label: 'Lab Report Date', checks: [:date] }
   }.freeze
