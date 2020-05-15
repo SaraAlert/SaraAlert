@@ -23,7 +23,7 @@
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
           <th class="DataTable-table-header">Date of Birth</th>
-          <th class="DataTable-table-header"><% if type == 'closed_patients' %>Expected Purge Date<% else %>End of Monitoring<% end %></th>
+          <th class="DataTable-table-header"><% if type == 'closed_patients' %>Expected Purge Date<%= react_component("util/InfoTooltip", { tooltipTextKey: 'purgeDate', location: 'right' }, { style: 'display:inline' }) %><% else %>End of Monitoring<% end %></th>
           <% unless type == 'closed_patients' %><th class="DataTable-table-header">Risk Level</th><% end %>
           <th class="DataTable-table-header"><% if type == 'closed_patients' %>Reason for Closure<% elsif type == 'pui_patients' %>Latest Public Health Action<% else %>Monitoring Plan<% end %></th>
           <th class="DataTable-table-header"><% if type.include? 'transferred' %>Transferred At<% elsif type == 'closed_patients' %>Closed At<% else %>Latest Report<% end %></th>
