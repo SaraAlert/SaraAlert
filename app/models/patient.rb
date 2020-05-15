@@ -280,11 +280,14 @@ class Patient < ApplicationRecord
   end
 
   # Check for potential matches based on first and last name, sex, and date of birth
-  def self.matches(first_name, last_name, sex, date_of_birth)
+  def self.matches(first_name, last_name, sex, date_of_birth, user_defined_id_statelocal)
     where('first_name = ?', first_name)
       .where('last_name = ?', last_name)
       .where('sex = ?', sex)
       .where('date_of_birth = ?', date_of_birth)
+      .or(
+        where('user_defined_id_statelocal = ?', user_defined_id_statelocal)
+      )
   end
 
   # Get the patient who is responsible for responding on this phone number

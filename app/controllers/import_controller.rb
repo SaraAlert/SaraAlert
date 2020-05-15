@@ -84,7 +84,8 @@ class ImportController < ApplicationController
         patient[:appears_to_be_duplicate] = current_user.viewable_patients.matches(patient[:first_name],
                                                                                    patient[:last_name],
                                                                                    patient[:sex],
-                                                                                   patient[:date_of_birth]).exists?
+                                                                                   patient[:date_of_birth],
+                                                                                   patient[:user_defined_id_statelocal]).exists?
 
         if format == :comprehensive_monitorees
           lab_results = []
