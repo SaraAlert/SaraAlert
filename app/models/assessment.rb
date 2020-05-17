@@ -2,6 +2,8 @@
 
 # Assessment: assessment model
 class Assessment < ApplicationRecord
+  has_one :reported_condition
+  
   columns.each do |column|
     case column.type
     when :text

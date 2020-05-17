@@ -110,6 +110,8 @@ namespace :demo do
     puts ' done!'
 
     #####################################
+
+    printf("\n")
   end
 
   desc 'Add lots of data to the database to provide some idea of basic scaling issues'
@@ -168,51 +170,100 @@ namespace :demo do
       
         # Create assessments
         printf("Generating assessments...")
-
-        # Get symptoms for each jurisdiction
-        unpopulated_conditions = {}
-        jurisdictions.each do |jurisdiction|
-          unpopulated_conditions[jurisdiction[:id]] = jurisdiction.hierarchical_condition_unpopulated_symptoms
-        end
-        
-        # Generate unpopulated assessments
+        assessments = []
         patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(60..70) / 100)
         patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
           printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
-          reported_condition = unpopulated_conditions[jur_id].dup
-          symptoms = []
-          unpopulated_conditions[jur_id].symptoms.each do |symptom|
-            symptoms.push(symptom.dup)
-          end
-          reported_condition.symptoms = symptoms
-          bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
-          bool_symps.each do |symp| symp['bool_value'] = false end
-          assessment = Assessment.new(
+          assessments << Assessment.new(
             patient_id: patient_id,
-            reported_condition: reported_condition,
             symptomatic: false,
             created_at: timestamp,
             updated_at: timestamp
           )
-          assessment.save
-          if rand < 0.3 # 30% report some sort of symptoms
-            number_of_symptoms = rand(bool_symps.count) + 1
-            bool_symps.shuffle[0, number_of_symptoms].each do |symp| symp['bool_value'] = true end
-            # Outside the context of the demo script, an assessment would already have a threshold condition saved to check the symptomatic status
-            # We'll compensate for that here by just re-updating
-            assessment.update(symptomatic: assessment.symptomatic?)
-            Patient.find(patient_id).refresh_symptom_onset(assessment[:id])
-          end
           histories << History.new(
+            patient_id: patient_id,
             created_by: 'Sara Alert System',
             comment: "User created a new report.",
-            patient_id: patient_id,
             history_type: 'Report Created',
             created_at: timestamp,
             updated_at: timestamp
           )
         end
+
+        Assessment.import! assessments
+        printf(" done.\n")
+
+        # Get symptoms for each jurisdiction
+        threshold_conditions = {}
+        jurisdictions.each do |jurisdiction|
+          threshold_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
+          threshold_conditions[jurisdiction[:id]] = {
+            hash: threshold_condition[:threshold_condition_hash],
+            symptoms: threshold_condition.symptoms
+          }
+        end
+
+        printf("Generating condition for assessments...")
+        reported_conditions = []
+        new_assessments = Assessment.where('assessments.created_at >= ?', today).joins(:patient)
+        new_assessments.each_with_index do |assessment, index|
+          printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...")
+          reported_conditions << ReportedCondition.new(
+            assessment_id: assessment[:id],
+            threshold_condition_hash: threshold_conditions[assessment.patient.jurisdiction_id][:hash],
+            created_at: assessment[:created_at],
+            updated_at: assessment[:updated_at]
+          )          
+        end
+        ReportedCondition.import! reported_conditions
+        printf(" done.\n")
+
+        # 25-35% of assessments are symptomatic
+        symptomatic_assessments = new_assessments.sample(new_assessments.count * rand(25..35) / 100)
+
+        printf("Generating symptoms for assessments...")
+        symptoms = []
+        new_reported_conditions = ReportedCondition.where('conditions.created_at >= ?', today).joins(assessment: :reported_condition)
+        new_reported_conditions.each_with_index do |reported_condition, index|
+          printf("\rGenerating symptoms for assessment #{index+1} of #{new_reported_conditions.length}...")
+          threshold_symptoms = threshold_conditions[reported_condition.assessment.patient.jurisdiction_id][:symptoms]
+          symptomatic_assessment = symptomatic_assessments.include?(reported_condition.assessment)
+          symptomatic_symptoms = symptomatic_assessment ? threshold_symptoms.to_a.shuffle[0..rand(threshold_symptoms.length)] : []
+          threshold_symptoms.each do |threshold_symptom|
+            symptomatic_symptom = symptomatic_symptoms.include?(threshold_symptom)
+            symptoms << Symptom.new(
+              condition_id: reported_condition[:id],
+              name: threshold_symptom[:name],
+              label: threshold_symptom[:label],
+              notes: threshold_symptom[:notes],
+              type: threshold_symptom[:type],
+              bool_value: threshold_symptom[:type] == 'BoolSymptom' ? symptomatic_symptom : nil,
+              float_value: threshold_symptom[:type] == 'FloatSymptom' ? (threshold_symptom[:float_value] + rand(10.0) * (symptomatic_symptom ? -1 : 1)) : nil,
+              int_value: threshold_symptom[:type] == 'IntSymptom' ? (threshold_symptom[:int_value] + rand(10) * (symptomatic_symptom ? -1 : 1)) : nil,
+              created_at: reported_condition[:created_at],
+              updated_at: reported_condition[:created_at]
+            )
+          end
+        end
+        Symptom.import! symptoms
+        printf(" done.\n")
+
+        printf("Updating symptomatic statuses...")
+        assessment_symptomatic_statuses = {}
+        patient_symptom_onset_date_updates = {}
+        symptomatic_patients_without_symptom_onset_ids = Patient.where(id: symptomatic_assessments.pluck(:patient_id), symptom_onset: nil).ids
+        symptomatic_assessments.each_with_index do |assessment, index|
+          printf("\rUpdating symptomatic status #{index+1} of #{symptomatic_assessments.length}...")
+          if assessment.symptomatic?
+            assessment_symptomatic_statuses[assessment[:id]] = { symptomatic: true }
+            if symptomatic_patients_without_symptom_onset_ids.include?(assessment[:patient_id])
+              patient_symptom_onset_date_updates[assessment[:patient_id]] = { symptom_onset: assessment[:created_at] }
+            end
+          end
+        end
+        Assessment.update(assessment_symptomatic_statuses.keys, assessment_symptomatic_statuses.values)
+        Patient.update(patient_symptom_onset_date_updates.keys, patient_symptom_onset_date_updates.values)
         printf(" done.\n")
 
         # Create laboratories for 10-20% of isolation patients on any given day
@@ -234,9 +285,9 @@ namespace :demo do
             updated_at: timestamp
           )
           histories << History.new(
+            patient_id: patient_id,
             created_by: 'Sara Alert System',
             comment: "User added a new lab result.",
-            patient_id: patient_id,
             history_type: 'Lab Result',
             created_at: timestamp,
             updated_at: timestamp
@@ -264,9 +315,9 @@ namespace :demo do
             updated_at: timestamp
           )
           histories << History.new(
+            patient_id: patient_id,
             created_by: 'Sara Alert System',
             comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
-            patient_id: patient_id,
             history_type: 'Monitoring Change',
             created_at: timestamp,
             updated_at: timestamp
@@ -327,7 +378,7 @@ namespace :demo do
             crew_on_passenger_or_cargo_flight: risk_factors && rand < 0.25,
             member_of_a_common_exposure_cohort: risk_factors && rand < 0.1,
             creator_id: enrollers.sample[:id],
-            jurisdiction_id: jurisdictions.sample.id,
+            jurisdiction_id: jurisdictions.sample[:id],
             responder_id: 1, # temporarily set responder_id to 1 to pass schema validation
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             isolation: isol,
@@ -402,18 +453,18 @@ namespace :demo do
         new_patients.each do |patient|
           # enrollment
           histories << History.new(
+            patient_id: patient[:id],
             created_by: 'Sara Alert System',
             comment: 'User enrolled monitoree.',
-            patient_id: patient[:id],
             history_type: 'Enrollment',
             created_at: patient[:created_at],
             updated_at: patient[:created_at],
           )
           # monitoring status
           histories << History.new(
+            patient_id: patient[:id],
             created_by: 'Sara Alert System',
             comment: "User changed monitoring status to \"Not Monitoring\". Reason: #{patient[:monitoring_reason]}",
-            patient_id: patient[:id],
             history_type: 'Monitoring Change',
             created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
@@ -429,27 +480,27 @@ namespace :demo do
           ) unless patient[:exposure_risk_assessment].nil?
           # case status
           histories << History.new(
+            patient_id: patient[:id],
             created_by: 'Sara Alert System',
             comment: "User changed case status to \"#{patient[:case_status]}\", and chose to \"Continue Monitoring in Isolation Workflow\".",
-            patient_id: patient[:id],
             history_type: 'Monitoring Change',
             created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
           ) unless patient[:case_status].nil?
           # public health action
           histories << History.new(
+            patient_id: patient[:id],
             created_by: 'Sara Alert System',
             comment: "User changed latest public health action to \"#{patient[:public_health_action]}\".",
-            patient_id: patient[:id],
             history_type: 'Monitoring Change',
             created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
           ) unless patient[:public_health_action] == 'None'
           # pause notifications
           histories << History.new(
+            patient_id: patient[:id],
             created_by: 'Sara Alert System',
             comment: "User paused notifications for this monitoree.",
-            patient_id: patient[:id],
             history_type: 'Monitoring Change',
             created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
@@ -457,7 +508,7 @@ namespace :demo do
         end
         printf(" done.\n")
 
-        # Create history events
+        # Create histories
         printf("Writing histories...")
         History.import! histories
         printf(" done.\n")
