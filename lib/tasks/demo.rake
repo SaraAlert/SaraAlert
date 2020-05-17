@@ -172,11 +172,11 @@ namespace :demo do
         # Get symptoms for each jurisdiction
         unpopulated_conditions = {}
         jurisdictions.each do |jurisdiction|
-          unpopulated_conditions[jurisdiction.id] = jurisdiction.hierarchical_condition_unpopulated_symptoms
+          unpopulated_conditions[jurisdiction[:id]] = jurisdiction.hierarchical_condition_unpopulated_symptoms
         end
         
         # Generate unpopulated assessments
-        patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(70..75) / 100)
+        patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(60..70) / 100)
         patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
           printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
@@ -202,7 +202,7 @@ namespace :demo do
             # Outside the context of the demo script, an assessment would already have a threshold condition saved to check the symptomatic status
             # We'll compensate for that here by just re-updating
             assessment.update(symptomatic: assessment.symptomatic?)
-            Patient.find(patient_id).refresh_symptom_onset(assessment.id)
+            Patient.find(patient_id).refresh_symptom_onset(assessment[:id])
           end
           histories << History.new(
             created_by: 'Sara Alert System',
@@ -219,7 +219,7 @@ namespace :demo do
         printf("Generating laboratories...")
         laboratories = []
         isolation_patients = existing_patients.where(isolation: true)
-        patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(15..25) / 100)
+        patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(20..25) / 100)
         patient_ids_lab.each_with_index do |patient_id, index|
           printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
@@ -259,7 +259,7 @@ namespace :demo do
             patient_id: patient_id,
             to_jurisdiction_id: to_jurisdiction,
             from_jurisdiction_id: jur_id,
-            who_id: epis.sample.id,
+            who_id: epis.sample[:id],
             created_at: timestamp,
             updated_at: timestamp
           )
@@ -281,7 +281,8 @@ namespace :demo do
         patients = []
         count.times do |i|
           printf("\rGenerating monitoree #{i+1} of #{count}...")
-          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+          created_at = Faker::Time.between_dates(from: today, to: today, period: :day)
+          updated_at = Faker::Time.between_dates(from: created_at, to: today, period: :day)
           sex = Faker::Gender.binary_type
           birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
           risk_factors = rand < 0.9
@@ -325,19 +326,19 @@ namespace :demo do
             healthcare_personnel: risk_factors && rand < 0.2,
             crew_on_passenger_or_cargo_flight: risk_factors && rand < 0.25,
             member_of_a_common_exposure_cohort: risk_factors && rand < 0.1,
-            creator_id: enrollers.sample.id,
+            creator_id: enrollers.sample[:id],
             jurisdiction_id: jurisdictions.sample.id,
             responder_id: 1, # temporarily set responder_id to 1 to pass schema validation
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             isolation: isol,
             case_status: isol ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil,
             monitoring: monitoring,
-            closed_at: monitoring ? nil : today,
+            closed_at: monitoring ? nil : updated_at,
             monitoring_reason: monitoring ? nil : monitoring_reasons.sample,
             pause_notifications: rand < 0.1,
             submission_token: SecureRandom.hex(20),
-            created_at: timestamp,
-            updated_at: Faker::Time.between_dates(from: timestamp, to: today, period: :day)
+            created_at: created_at,
+            updated_at: updated_at
           )
 
           patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
@@ -374,7 +375,7 @@ namespace :demo do
           patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
                                        'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
           
-          if !isol && rand < 0.075
+          if !isol && rand < 0.1
             patient[:public_health_action] = [
               'Recommended medical evaluation of symptoms',
               'Document results of medical evaluation',
@@ -386,9 +387,18 @@ namespace :demo do
         end
         
         Patient.import! patients
-
         new_patients = Patient.where('created_at >= ?', today)
         new_patients.update_all('responder_id = id')
+
+        # 10-20% of patients are managed by a household member
+        new_children = new_patients.sample(new_patients.count * rand(10..20) / 100)
+        new_parents = new_patients - new_children
+        new_children_updates =  new_children.map { |new_child|
+          parent = new_parents.sample
+          { responder_id: parent[:id], jurisdiction_id: parent[:jurisdiction_id] }
+        }
+        Patient.update(new_children.map { |p| p[:id] }, new_children_updates)
+
         new_patients.each do |patient|
           # enrollment
           histories << History.new(
