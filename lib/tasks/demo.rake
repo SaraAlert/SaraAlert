@@ -237,7 +237,7 @@ namespace :demo do
         printf("Generating transfers...")
         transfers = []
         patient_updates = {}
-        patient_and_jur_ids_transfer = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(0..10) / 100)
+        patient_and_jur_ids_transfer = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(5..15) / 100)
         patient_and_jur_ids_transfer.each_with_index do |(patient_id, jur_id), index|
           printf("\rGenerating transfer #{index+1} of #{patient_and_jur_ids_transfer.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)

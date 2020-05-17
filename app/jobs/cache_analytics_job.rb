@@ -7,7 +7,7 @@ class CacheAnalyticsJob < ApplicationJob
   def perform(*_args)
     jurisdiction_analytic_map = {}
 
-    leaf_nodes = Jurisdiction.leaf_nodes
+    leaf_nodes = Jurisdiction.all.select { |jur| jur.has_children? == false }
     leaf_nodes.each do |leaf_jurisdiction|
       leaf_analytic = self.class.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
       jurisdiction_analytic_map[leaf_jurisdiction[:path]] = leaf_analytic

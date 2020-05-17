@@ -6,6 +6,50 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   @@monitorees_by_exposure_week = Patient.where(jurisdiction_id: 8)
   @@monitorees_by_exposure_month = Patient.where(jurisdiction_id: 9)
 
+  test 'cache analytics job' do
+    Analytic.delete_all
+    MonitoreeCount.delete_all
+    MonitoreeSnapshot.delete_all
+    CacheAnalyticsJob.perform_now()
+    assert_equal(8, Analytic.all.size)
+    assert_equal(593, MonitoreeCount.all.size)
+    assert_equal(24, MonitoreeSnapshot.all.size)
+  end
+  
+  test 'calculate analytic local to jurisdiction' do
+    jurisdiction = Jurisdiction.find(2)
+    analytic = CacheAnalyticsJob.calculate_analytic_local_to_jurisdiction(jurisdiction)
+    assert_equal(12, analytic.monitorees_count)
+    assert_equal(2, analytic.symptomatic_monitorees_count)
+    assert_equal(1, analytic.asymptomatic_monitorees_count)
+    assert_equal(0, analytic.confirmed_cases_count)
+    assert_equal(0, analytic.closed_cases_count)
+    assert_equal(11, analytic.open_cases_count)
+    assert_equal(6, analytic.non_reporting_monitorees_count)
+  end
+  
+  test 'add analytic to parent' do
+    leaf_jurisdiction = Jurisdiction.find(4)
+    leaf_analytic = CacheAnalyticsJob.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
+    jurisdiction_analytic_map = {}
+    jurisdiction_analytic_map[leaf_jurisdiction[:path]] = leaf_analytic
+    CacheAnalyticsJob.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, jurisdiction_analytic_map)
+    root_analytic = jurisdiction_analytic_map[Jurisdiction.find(1)[:path]]
+    assert_equal(3, jurisdiction_analytic_map.length)
+    assert_equal(23, root_analytic.monitorees_count)
+    assert_equal(2, root_analytic.symptomatic_monitorees_count)
+    assert_equal(2, root_analytic.asymptomatic_monitorees_count)
+    assert_equal(0, root_analytic.confirmed_cases_count)
+    assert_equal(0, root_analytic.closed_cases_count)
+    assert_equal(20, root_analytic.open_cases_count)
+    assert_equal(7, root_analytic.non_reporting_monitorees_count)
+  end
+  
+  test 'all monitoree counts' do
+    counts = CacheAnalyticsJob.all_monitoree_counts(1, @@monitorees)
+    assert_equal(244, counts.length)
+  end
+  
   test 'monitoree counts by total' do
     active_counts = CacheAnalyticsJob.monitoree_counts_by_total(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Overall Total', 'Total', 'Missing', 14)
