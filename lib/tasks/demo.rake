@@ -166,7 +166,7 @@ namespace :demo do
         # Histories to be created today
         histories = []
       
-        # Create assessments for 80-90% of patients on any given day
+        # Create assessments
         printf("Generating assessments...")
 
         # Get symptoms for each jurisdiction
@@ -176,7 +176,7 @@ namespace :demo do
         end
         
         # Generate unpopulated assessments
-        patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(80..90) / 100)
+        patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(70..75) / 100)
         patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
           printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
@@ -249,7 +249,7 @@ namespace :demo do
         printf("Generating transfers...")
         transfers = []
         patient_updates = {}
-        patient_and_jur_ids_transfer = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(5..15) / 100)
+        patient_and_jur_ids_transfer = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(5..10) / 100)
         patient_and_jur_ids_transfer.each_with_index do |(patient_id, jur_id), index|
           printf("\rGenerating transfer #{index+1} of #{patient_and_jur_ids_transfer.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
@@ -337,7 +337,7 @@ namespace :demo do
             pause_notifications: rand < 0.1,
             submission_token: SecureRandom.hex(20),
             created_at: timestamp,
-            updated_at: timestamp
+            updated_at: Faker::Time.between_dates(from: timestamp, to: today, period: :day)
           )
 
           patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
@@ -374,7 +374,7 @@ namespace :demo do
           patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
                                        'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
           
-          if !isol && rand < 0.1
+          if !isol && rand < 0.075
             patient[:public_health_action] = [
               'Recommended medical evaluation of symptoms',
               'Document results of medical evaluation',
@@ -397,7 +397,7 @@ namespace :demo do
             patient_id: patient[:id],
             history_type: 'Enrollment',
             created_at: patient[:created_at],
-            updated_at: patient[:updated_at],
+            updated_at: patient[:created_at],
           )
           # monitoring status
           histories << History.new(
@@ -405,7 +405,7 @@ namespace :demo do
             comment: "User changed monitoring status to \"Not Monitoring\". Reason: #{patient[:monitoring_reason]}",
             patient_id: patient[:id],
             history_type: 'Monitoring Change',
-            created_at: patient[:created_at],
+            created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
           ) unless patient[:monitoring]
           # exposure risk assessment
@@ -414,7 +414,7 @@ namespace :demo do
             comment: "User changed exposure risk assessment to \"#{patient[:exposure_risk_assessment]}\".",
             patient_id: patient[:id],
             history_type: 'Monitoring Change',
-            created_at: patient[:created_at],
+            created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
           ) unless patient[:exposure_risk_assessment].nil?
           # case status
@@ -423,7 +423,7 @@ namespace :demo do
             comment: "User changed case status to \"#{patient[:case_status]}\", and chose to \"Continue Monitoring in Isolation Workflow\".",
             patient_id: patient[:id],
             history_type: 'Monitoring Change',
-            created_at: patient[:created_at],
+            created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
           ) unless patient[:case_status].nil?
           # public health action
@@ -432,7 +432,7 @@ namespace :demo do
             comment: "User changed latest public health action to \"#{patient[:public_health_action]}\".",
             patient_id: patient[:id],
             history_type: 'Monitoring Change',
-            created_at: patient[:created_at],
+            created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
           ) unless patient[:public_health_action] == 'None'
           # pause notifications
@@ -441,7 +441,7 @@ namespace :demo do
             comment: "User paused notifications for this monitoree.",
             patient_id: patient[:id],
             history_type: 'Monitoring Change',
-            created_at: patient[:created_at],
+            created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
           ) unless patient[:public_health_action] == 'None'
         end
