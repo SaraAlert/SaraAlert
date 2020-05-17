@@ -2,8 +2,8 @@
 
 # ReportedCondition
 class ReportedCondition < Condition
-  belongs_to :assessment
-  
+  belongs_to :assessment, optional: true
+
   def threshold_condition
     # Because threshold_condition_hash is calculated based on jurisdiction_path and edit_count
     # there should never be multiple threshold_condition_hash with the same non-nil value.
