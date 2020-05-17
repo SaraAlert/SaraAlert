@@ -144,6 +144,7 @@ patient_5:
   jurisdiction_id: 2
   submission_token: "746fb25b5d6b2eb7b3cc8c1eae2862900e39759f"
   monitoring: false
+  closed_at: "<%= 1.hour.ago %>"
   first_name: "Nicolas00"
   last_name: "McClure72"
   date_of_birth: "<%= 14.years.ago %>"
@@ -351,6 +352,7 @@ patient_14:
   updated_at: "<%= 4.days.ago %>"
   jurisdiction_id: 1
   monitoring: false
+  closed_at: "<%= 5.hours.ago %>"
   first_name: "Sarah"
   last_name: "Chung"
   sex: "Female"
@@ -436,6 +438,7 @@ patient_18:
   updated_at: "<%= 23.hours.ago %>"
   jurisdiction_id: 1
   monitoring: false
+  closed_at: "<%= 5.days.ago %>"
   first_name: "Theon"
   last_name: "Greyjoy"
   sex: "Unknown"
@@ -510,12 +513,14 @@ patient_23:
   id: 23
   jurisdiction_id: 8
   monitoring: false
+  closed_at: "<%= 9.hours.ago %>"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 3.weeks.ago %>"
 patient_24:
   id: 24
   jurisdiction_id: 8
   monitoring: false
+  closed_at: "<%= 1.week.ago %>"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 11.weeks.ago %>"
 patient_25:
@@ -528,6 +533,7 @@ patient_26:
   id: 26
   jurisdiction_id: 8
   monitoring: false
+  closed_at: "<%= 1.day.ago %>"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 21.weeks.ago %>"
 patient_27:
@@ -568,6 +574,7 @@ patient_33:
   id: 33
   jurisdiction_id: 9
   monitoring: false
+  closed_at: "<%= 3.weeks.ago %>"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: '<%= 2.months.ago %>'
 patient_34:
@@ -598,6 +605,7 @@ patient_38:
   id: 38
   jurisdiction_id: 9
   monitoring: false
+  closed_at: "<%= 5.days.ago %>"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: '<%= 11.months.ago %>'
 patient_39:

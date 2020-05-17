@@ -304,7 +304,7 @@ class CacheAnalyticsJob < ApplicationJob
         time_frame: time_frame,
         new_enrollments: monitorees.enrolled_in_time_frame(time_frame).size,
         transferred_in: Transfer.with_incoming_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
-        closed: monitorees.monitoring_closed.joins(:histories).merge(History.not_monitoring.in_time_frame(time_frame)).size,
+        closed: monitorees.monitoring_closed.closed_in_time_frame(time_frame).size,
         transferred_out: Transfer.with_outgoing_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
         referral_for_medical_evaluation: monitorees.joins(:histories).merge(History.referral_for_medical_evaluation.in_time_frame(time_frame)).size,
         document_completed_medical_evaluation: monitorees.joins(:histories).merge(History.document_completed_medical_evaluation.in_time_frame(time_frame)).size,

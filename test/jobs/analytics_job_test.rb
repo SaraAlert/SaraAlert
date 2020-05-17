@@ -7,14 +7,14 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   @@monitorees_by_exposure_month = Patient.where(jurisdiction_id: 9)
 
   test 'monitoree counts by total' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_total(@@monitorees, true)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_total(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Overall Total', 'Total', 'Missing', 14)
     verify_monitoree_count(active_counts, 1, true, 'Overall Total', 'Total', 'High', 3)
     verify_monitoree_count(active_counts, 2, true, 'Overall Total', 'Total', 'Low', 2)
     verify_monitoree_count(active_counts, 3, true, 'Overall Total', 'Total', 'Medium', 4)
     verify_monitoree_count(active_counts, 4, true, 'Overall Total', 'Total', 'No Identified Risk', 4)
     assert_equal(5, active_counts.length)
-    overall_counts = CacheAnalyticsJob.monitoree_counts_by_total(@@monitorees, false)
+    overall_counts = CacheAnalyticsJob.monitoree_counts_by_total(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Overall Total', 'Total', 'Missing', 14)
     verify_monitoree_count(overall_counts, 1, false, 'Overall Total', 'Total', 'High', 3)
     verify_monitoree_count(overall_counts, 2, false, 'Overall Total', 'Total', 'Low', 4)
@@ -24,7 +24,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree counts by monitoring status' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_monitoring_status(@@monitorees)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_monitoring_status(1, @@monitorees)
     verify_monitoree_count(active_counts, 0, true, 'Monitoring Status', 'Symptomatic', 'Missing', 2)
     verify_monitoree_count(active_counts, 1, true, 'Monitoring Status', 'Non-Reporting', 'Missing', 10)
     verify_monitoree_count(active_counts, 2, true, 'Monitoring Status', 'Asymptomatic', 'Missing', 2)
@@ -32,7 +32,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree counts by age group' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_age_group(@@monitorees, true)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_age_group(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Age Group', '0-19', 'Missing', 3)
     verify_monitoree_count(active_counts, 1, true, 'Age Group', '0-19', 'High', 1)
     verify_monitoree_count(active_counts, 2, true, 'Age Group', '0-19', 'Low', 1)
@@ -52,7 +52,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 16, true, 'Age Group', '70-79', 'Missing', 1)
     verify_monitoree_count(active_counts, 17, true, 'Age Group', '>=80', 'No Identified Risk', 1)
     assert_equal(18, active_counts.length)
-    overall_counts = CacheAnalyticsJob.monitoree_counts_by_age_group(@@monitorees, false)
+    overall_counts = CacheAnalyticsJob.monitoree_counts_by_age_group(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Age Group', '0-19', 'Missing', 3)
     verify_monitoree_count(overall_counts, 1, false, 'Age Group', '0-19', 'High', 1)
     verify_monitoree_count(overall_counts, 2, false, 'Age Group', '0-19', 'Low', 1)
@@ -77,7 +77,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree counts by sex' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_sex(@@monitorees, true)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_sex(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Sex', 'Missing', 'Medium', 1)
     verify_monitoree_count(active_counts, 1, true, 'Sex', 'Missing', 'No Identified Risk', 1)
     verify_monitoree_count(active_counts, 2, true, 'Sex', 'Female', 'Missing', 5)
@@ -95,7 +95,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 14, true, 'Sex', 'Unknown', 'Medium', 1)
     verify_monitoree_count(active_counts, 15, true, 'Sex', 'Unknown', 'No Identified Risk', 1)
     assert_equal(16, active_counts.length)
-    overall_counts = CacheAnalyticsJob.monitoree_counts_by_sex(@@monitorees, false)
+    overall_counts = CacheAnalyticsJob.monitoree_counts_by_sex(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Sex', 'Missing', 'Medium', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Sex', 'Missing', 'No Identified Risk', 1)
     verify_monitoree_count(overall_counts, 2, false, 'Sex', 'Female', 'Missing', 5)
@@ -117,7 +117,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree counts by risk factor' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_risk_factor(@@monitorees, true)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_risk_factor(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Risk Factor', 'Close Contact with Known Case', 'High', 1)
     verify_monitoree_count(active_counts, 1, true, 'Risk Factor', 'Close Contact with Known Case', 'Medium', 1)
     verify_monitoree_count(active_counts, 2, true, 'Risk Factor', 'Travel from Affected Country or Area', 'Missing', 1)
@@ -139,7 +139,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 18, true, 'Risk Factor', 'Total', 'Medium', 2)
     verify_monitoree_count(active_counts, 19, true, 'Risk Factor', 'Total', 'No Identified Risk', 2)
     assert_equal(20, active_counts.length)
-    overall_counts = CacheAnalyticsJob.monitoree_counts_by_risk_factor(@@monitorees, false)
+    overall_counts = CacheAnalyticsJob.monitoree_counts_by_risk_factor(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Risk Factor', 'Close Contact with Known Case', 'High', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Risk Factor', 'Close Contact with Known Case', 'Low', 1)
     verify_monitoree_count(overall_counts, 2, false, 'Risk Factor', 'Close Contact with Known Case', 'Medium', 1)
@@ -171,7 +171,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree counts by exposure country' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_exposure_country(@@monitorees, true)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_exposure_country(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Exposure Country', 'China', 'No Identified Risk', 1)
     verify_monitoree_count(active_counts, 1, true, 'Exposure Country', 'Faroe Islands', 'High', 1)
     verify_monitoree_count(active_counts, 2, true, 'Exposure Country', 'Faroe Islands', 'No Identified Risk', 1)
@@ -185,7 +185,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 10, true, 'Exposure Country', 'Total', 'Medium', 2)
     verify_monitoree_count(active_counts, 11, true, 'Exposure Country', 'Total', 'No Identified Risk', 2)
     assert_equal(12, active_counts.length)
-    overall_counts = CacheAnalyticsJob.monitoree_counts_by_exposure_country(@@monitorees, false)
+    overall_counts = CacheAnalyticsJob.monitoree_counts_by_exposure_country(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Exposure Country', 'Brazil', 'Low', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Exposure Country', 'China', 'No Identified Risk', 1)
     verify_monitoree_count(overall_counts, 2, false, 'Exposure Country', 'Faroe Islands', 'High', 1)
@@ -204,7 +204,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree counts by last exposure date' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_date(@@monitorees, true)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_date(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Last Exposure Date', days_ago(27), 'Missing', 1)
     verify_monitoree_count(active_counts, 1, true, 'Last Exposure Date', days_ago(27), 'Medium', 1)
     verify_monitoree_count(active_counts, 2, true, 'Last Exposure Date', days_ago(26), 'High', 1)
@@ -218,7 +218,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 10, true, 'Last Exposure Date', days_ago(3), 'Missing', 1)
     verify_monitoree_count(active_counts, 11, true, 'Last Exposure Date', days_ago(1), 'High', 1)
     assert_equal(12, active_counts.length)
-    overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_date(@@monitorees, false)
+    overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_date(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Date', days_ago(27), 'Missing', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Date', days_ago(27), 'Medium', 1)
     verify_monitoree_count(overall_counts, 2, false, 'Last Exposure Date', days_ago(26), 'High', 1)
@@ -235,14 +235,14 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree counts by last exposure week' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_week(@@monitorees_by_exposure_week, true)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_week(1, @@monitorees_by_exposure_week, true)
     verify_monitoree_count(active_counts, 0, true, 'Last Exposure Week', weeks_ago(52), 'Missing', 1)
     verify_monitoree_count(active_counts, 1, true, 'Last Exposure Week', weeks_ago(25), 'Low', 2)
     verify_monitoree_count(active_counts, 2, true, 'Last Exposure Week', weeks_ago(19), 'Medium', 1)
     verify_monitoree_count(active_counts, 3, true, 'Last Exposure Week', weeks_ago(3), 'High', 1)
     verify_monitoree_count(active_counts, 4, true, 'Last Exposure Week', weeks_ago(1), 'High', 1)
     assert_equal(5, active_counts.length)
-    overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_week(@@monitorees_by_exposure_week, false)
+    overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_week(1, @@monitorees_by_exposure_week, false)
     verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Week', weeks_ago(52), 'Missing', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Week', weeks_ago(25), 'Low', 2)
     verify_monitoree_count(overall_counts, 2, false, 'Last Exposure Week', weeks_ago(21), 'No Identified Risk', 1)
@@ -255,7 +255,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree counts by last exposure month' do
-    active_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_month(@@monitorees_by_exposure_month, true)
+    active_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_month(1, @@monitorees_by_exposure_month, true)
     verify_monitoree_count(active_counts, 0, true, 'Last Exposure Month', months_ago(13), 'Low', 1)
     verify_monitoree_count(active_counts, 1, true, 'Last Exposure Month', months_ago(11), 'No Identified Risk', 1)
     verify_monitoree_count(active_counts, 2, true, 'Last Exposure Month', months_ago(5), 'Low', 1)
@@ -264,7 +264,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 5, true, 'Last Exposure Month', months_ago(1), 'High', 1)
     verify_monitoree_count(active_counts, 6, true, 'Last Exposure Month', months_ago(1), 'Low', 1)
     assert_equal(7, active_counts.length)
-    overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_month(@@monitorees_by_exposure_month, false)
+    overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_month(1, @@monitorees_by_exposure_month, false)
     verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Month', months_ago(13), 'Low', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Month', months_ago(11), 'Medium', 1)
     verify_monitoree_count(overall_counts, 2, false, 'Last Exposure Month', months_ago(11), 'No Identified Risk', 1)
@@ -277,23 +277,25 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
 
   test 'monitoree snapshots' do
-    snapshots = CacheAnalyticsJob.all_monitoree_snapshots(@@monitorees, 1)
-    verify_snapshot(snapshots, 0, 'Last 24 Hours', 5, 0, 1, 0)
+    snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, @@monitorees, 1)
+    verify_snapshot(snapshots, 0, 'Last 24 Hours', 5, 0, 2, 0)
     verify_snapshot(snapshots, 2, 'Total', 30, 0, 3, 0)
-    snapshots = CacheAnalyticsJob.all_monitoree_snapshots(Patient.where(jurisdiction_id: 2), 2)
-    verify_snapshot(snapshots, 0, 'Last 24 Hours', 2, 1, 0, 1)
+    snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, Patient.where(jurisdiction_id: 2), 2)
+    verify_snapshot(snapshots, 0, 'Last 24 Hours', 2, 1, 1, 1)
     verify_snapshot(snapshots, 2, 'Total', 12, 2, 1, 2)
   end
 
-  def verify_monitoree_count(monitoree_counts, index, active_monitoring, category_type, category, risk_level, count)
-    assert_equal(active_monitoring, monitoree_counts[index].active_monitoring, monitoree_count_err_msg(index, active_monitoring, category_type))
-    assert_equal(category_type, monitoree_counts[index].category_type, monitoree_count_err_msg(index, active_monitoring, category_type))
-    assert_equal(category, monitoree_counts[index].category, monitoree_count_err_msg(index, active_monitoring, category_type))
-    assert_equal(risk_level, monitoree_counts[index].risk_level, monitoree_count_err_msg(index, active_monitoring, category_type))
-    assert_equal(count, monitoree_counts[index].total, monitoree_count_err_msg(index, active_monitoring, category_type))
+  def verify_monitoree_count(counts, index, active_monitoring, category_type, category, risk_level, count)
+    assert_equal(1, counts[index].analytic_id, monitoree_count_err_msg(index, active_monitoring, category_type))
+    assert_equal(active_monitoring, counts[index].active_monitoring, monitoree_count_err_msg(index, active_monitoring, category_type))
+    assert_equal(category_type, counts[index].category_type, monitoree_count_err_msg(index, active_monitoring, category_type))
+    assert_equal(category, counts[index].category, monitoree_count_err_msg(index, active_monitoring, category_type))
+    assert_equal(risk_level, counts[index].risk_level, monitoree_count_err_msg(index, active_monitoring, category_type))
+    assert_equal(count, counts[index].total, monitoree_count_err_msg(index, active_monitoring, category_type))
   end
 
   def verify_snapshot(snapshots, index, time_frame, new_enrollments, transferred_in, closed, transferred_out)
+    assert_equal(1, snapshots[index].analytic_id, 'Analytic ID')
     assert_equal(time_frame, snapshots[index].time_frame, 'Time frame')
     assert_equal(new_enrollments, snapshots[index].new_enrollments, 'New enrollments')
     assert_equal(transferred_in, snapshots[index].transferred_in, 'Incoming transfers')

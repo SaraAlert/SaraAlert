@@ -76,6 +76,9 @@ gem 'phonelib'
 # Email address validation
 gem 'valid_email2'
 
+# Bulk db inserts
+gem 'activerecord-import'
+
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
@@ -90,7 +93,6 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'web-console', '>= 3.3.0'
-  gem 'activerecord-import'
 end
 
 group :test do

@@ -121,11 +121,13 @@ namespace :demo do
     perform_daily_analytics_update = (ENV['SKIP_ANALYTICS'] != 'true')
 
     enrollers = User.all.select { |u| u.has_role?('enroller') }
+    epis = User.all.select { |u| u.has_role?('public_health') }
 
     assessment_columns = Assessment.column_names - %w[id created_at updated_at patient_id symptomatic who_reported]
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
 
     jurisdictions = Jurisdiction.all
+    jurisdiction_paths = jurisdictions.pluck(:id, :path)
     Analytic.delete_all
 
     territory_names = ['American Samoa',
@@ -143,8 +145,16 @@ namespace :demo do
       # Create the patients for this day
       printf("Simulating day #{day + 1} (#{today}):\n")
 
-      # Create assessments for 80-90% of patients on any given day (transactions speeds things up a bit)
-      Assessment.transaction do
+      # Transactions speeds things up a bit
+      ActiveRecord::Base.transaction do
+      
+        # Patients created before today
+        existing_patients = Patient.where('created_at < ?', today)
+
+        # Histories to be created today
+        histories = []
+      
+        # Create assessments for 80-90% of patients on any given day
         printf("Generating assessments...")
 
         # Get symptoms for each jurisdiction
@@ -154,10 +164,10 @@ namespace :demo do
         end
         
         # Generate unpopulated assessments
-        patients = Patient.where('created_at <= ?', today)
-        patient_and_jur_ids_assessment = patients.pluck(:id, :jurisdiction_id).sample(patients.count * rand(80..90) / 100)
+        patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(80..90) / 100)
         patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
           printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
+          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
           reported_condition = unpopulated_conditions[jur_id].dup
           symptoms = []
           unpopulated_conditions[jur_id].symptoms.each do |symptom|
@@ -169,8 +179,9 @@ namespace :demo do
           assessment = Assessment.new(
             patient_id: patient_id,
             reported_condition: reported_condition,
-            created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
-            symptomatic: false
+            symptomatic: false,
+            created_at: timestamp,
+            updated_at: timestamp
           )
           assessment.save
           if rand < 0.3 # 30% report some sort of symptoms
@@ -181,38 +192,84 @@ namespace :demo do
             assessment.update(symptomatic: assessment.symptomatic?)
             Patient.find(patient_id).refresh_symptom_onset(assessment.id)
           end
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: "User created a new report.",
+            patient_id: patient_id,
+            history_type: 'Report Created',
+            created_at: timestamp,
+            updated_at: timestamp
+          )
         end
         printf(" done.\n")
-      end
 
-      # Create laboratories for 10-20% of isolation patients on any given day
-      Laboratory.transaction do
+        # Create laboratories for 10-20% of isolation patients on any given day
         printf("Generating laboratories...")
         laboratories = []
-        isol_patients = Patient.where(isolation: true).where('created_at <= ?', today)
-        patient_ids_lab = isol_patients.pluck(:id).sample(isol_patients.count * rand(15..25) / 100)
+        isolation_patients = existing_patients.where(isolation: true)
+        patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(15..25) / 100)
         patient_ids_lab.each_with_index do |patient_id, index|
           printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
+          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
           report_date = Faker::Time.between_dates(from: 1.week.ago, to: today, period: :day)
           laboratories << Laboratory.new(
             patient_id: patient_id,
             lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
             specimen_collection: Faker::Time.between_dates(from: 2.weeks.ago, to: report_date, period: :day),
             report: report_date,
-            result: ['positive', 'negative', 'indeterminate', 'other'].sample
+            result: ['positive', 'negative', 'indeterminate', 'other'].sample,
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: "User added a new lab result.",
+            patient_id: patient_id,
+            history_type: 'Lab Result',
+            created_at: timestamp,
+            updated_at: timestamp
           )
         end
         Laboratory.import! laboratories
         printf(" done.\n")
-      end
 
-      # Create count patients
-      Patient.transaction do
+        # Create transfers
+        printf("Generating transfers...")
+        transfers = []
+        patient_updates = {}
+        patient_and_jur_ids_transfer = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(0..10) / 100)
+        patient_and_jur_ids_transfer.each_with_index do |(patient_id, jur_id), index|
+          printf("\rGenerating transfer #{index+1} of #{patient_and_jur_ids_transfer.length}...")
+          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+          to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
+          patient_updates[patient_id] = { jurisdiction_id: to_jurisdiction }
+          transfers << Transfer.new(
+            patient_id: patient_id,
+            to_jurisdiction_id: to_jurisdiction,
+            from_jurisdiction_id: jur_id,
+            who_id: epis.sample.id,
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
+            patient_id: patient_id,
+            history_type: 'Monitoring Change',
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+        end
+        Patient.update(patient_updates.keys, patient_updates.values)
+        Transfer.import! transfers
+        printf(" done.\n")
+
+        # Create count patients
         printf("Generating monitorees...")
         patients = []
         count.times do |i|
           printf("\rGenerating monitoree #{i+1} of #{count}...")
-
+          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
           sex = Faker::Gender.binary_type
           birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
           risk_factors = rand < 0.9
@@ -260,12 +317,13 @@ namespace :demo do
             jurisdiction_id: jurisdictions.sample.id,
             responder_id: 1, # temporarily set responder_id to 1 to pass schema validation
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
-            created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
             isolation: isol,
             case_status: isol ? 'Confirmed' : '',
             monitoring: monitoring,
             closed_at: monitoring ? nil : today,
-            submission_token: SecureRandom.hex(20)
+            submission_token: SecureRandom.hex(20),
+            created_at: timestamp,
+            updated_at: timestamp
           )
 
           patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
@@ -312,47 +370,43 @@ namespace :demo do
 
           patients << patient
         end
-        res = Patient.import! patients
-        printf(" done.\n")
-
-        # set the responder_id properly
-        Patient.where('created_at >= ?', today).update_all('responder_id = id')
-
-        # add enrollments to history
-        histories = []
-        new_patient_ids = Patient.where('created_at >= ?', today).ids
-        new_patient_ids.each do |patient_id|
+        
+        Patient.import! patients
+        new_patients = Patient.where('created_at >= ?', today)
+        new_patients.update_all('responder_id = id')
+        new_patients.pluck(:id, :created_at).each do |(patient_id, timestamp)|
           histories << History.new(
             created_by: 'Sara Alert System',
-            comment: 'This synthetic monitoree was randomly generated.',
+            comment: 'User enrolled monitoree.',
             patient_id: patient_id,
             history_type: 'Enrollment',
+            created_at: timestamp,
+            updated_at: timestamp
           )
         end
-        History.import! histories
-      end
+        printf(" done.\n")
 
-      # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
-      Patient.transaction do
+        # Create history events
+        printf("Writing histories...")
+        History.import! histories
+        printf(" done.\n")
+
+        # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
+        printf("Caching analytics...")
         if perform_daily_analytics_update || (day + 1) == days
-          printf("Caching analytics...")
-          before_analytics_count = Analytic.count
           Rake::Task["analytics:cache_current_analytics"].reenable
           Rake::Task["analytics:cache_current_analytics"].invoke
-          after_analytics_count = Analytic.count
           # Add time onto update time for more realistic reports
           t = Time.now
           date_time_update = DateTime.new(today.year, today.month, today.day, t.hour, t.min, t.sec, t.zone)
-          Analytic.all.order(:id)[before_analytics_count..after_analytics_count].each do |analytic|
-            analytic.update!(created_at: date_time_update, updated_at: date_time_update)
-          end
-          printf(" done.\n")
+          Analytic.where('created_at > ?', 1.hour.ago).update_all(created_at: date_time_update, updated_at: date_time_update)
         end
+        printf(" done.\n")
       end
-      printf("\n")
 
       # Cases increase 10-20% every day
       count += (count * (0.1 + (rand / 10))).round
+      printf("\n")
     end
   end
 end

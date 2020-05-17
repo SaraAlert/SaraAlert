@@ -44,11 +44,6 @@ class History < ApplicationRecord
     end
   }
 
-  # All histories that are monitoring changes in which a patient is no longer monitored
-  scope :not_monitoring, lambda {
-    where('comment LIKE \'%Not Monitoring%\'')
-  }
-
   # All histories that are public health actions for medical evaluation referrals
   scope :referral_for_medical_evaluation, lambda {
     where('comment LIKE \'%Recommended medical evaluation of symptoms%\'')

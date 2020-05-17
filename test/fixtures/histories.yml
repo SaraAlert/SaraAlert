@@ -1,27 +1,3 @@
-close_patient_5:
-  id: 1005
-  patient_id: 5
-  comment: 'User changed monitoring status to "Not Monitoring". Reason: Lost to follow-up during monitoring period, notes'
-  created_by: 'state1_epi_enroller@example.com'
-  history_type: 'Monitoring Change'
-  created_at: '<%= 20.days.ago %>'
-  updated_at: '<%= 20.days.ago %>'
-close_patient_14:
-  id: 1014
-  patient_id: 14
-  comment: 'User changed monitoring status to "Not Monitoring". Reason: Lost to follow-up during monitoring period, notes'
-  created_by: 'state1_epi_enroller@example.com'
-  history_type: 'Monitoring Change'
-  created_at: '<%= 3.days.ago %>'
-  updated_at: '<%= 3.days.ago %>'
-close_patient_18:
-  id: 1018
-  patient_id: 18
-  comment: 'User changed monitoring status to "Not Monitoring". Reason: Lost to follow-up during monitoring period, notes'
-  created_by: 'state1_epi_enroller@example.com'
-  history_type: 'Monitoring Change'
-  created_at: '<%= 5.hours.ago %>'
-  updated_at: '<%= 5.hours.ago %>'
 public_health_action_patient_6:
   id: 2006
   patient_id: 6
