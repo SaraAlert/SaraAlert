@@ -29,16 +29,12 @@ class CacheAnalyticsJob < ApplicationJob
         jurisdiction_analytic_map[root_node_path].symptomatic_state_map = symp_by_state.to_s
         jurisdiction_analytic_map[root_node_path].monitoree_state_map = monitored_by_state.to_s
       end
-      monitoree_counts = []
-      monitoree_snapshots = []
       jurisdiction_analytic_map.each do |_jur_path, analytic|
         analytic.save!
         patients = Jurisdiction.find(analytic.jurisdiction_id).all_patients
-        monitoree_counts.concat(self.class.all_monitoree_counts(analytic.id, patients))
-        monitoree_snapshots.concat(self.class.all_monitoree_snapshots(analytic.id, patients, analytic.jurisdiction_id))
+        MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
+        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, analytic.jurisdiction_id)
       end
-      MonitoreeCount.import! monitoree_counts
-      MonitoreeSnapshot.import! monitoree_snapshots
     end
   end
 
