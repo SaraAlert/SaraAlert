@@ -284,7 +284,7 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   # New monitoree count with given fields
-  def self.monitoree_count(analytic_id, active_monitoring, category_type, category, risk_level, total)
+  def self.monitoree_count(analytic_id, active_monitoring, category_type, category, risk_level, total) # rubocop:todo Metrics/ParameterLists
     MonitoreeCount.new(
       analytic_id: analytic_id,
       active_monitoring: active_monitoring,
