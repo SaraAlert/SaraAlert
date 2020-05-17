@@ -142,18 +142,6 @@ namespace :demo do
       'Puerto Rico',
       'Virgin Islands']
 
-    monitoring_reasons = ['Completed Monitoring',
-                          'Meets Case Definition',
-                          'Lost to follow-up during monitoring period',
-                          'Lost to follow-up (contact never established)',
-                          'Transferred to another jurisdiction',
-                          'Person Under Investigation (PUI)',
-                          'Case confirmed',
-                          'Past monitoring period',
-                          'Meets criteria to discontinue isolation',
-                          'Deceased',
-                          'Other']
-
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
       # Create the patients for this day
@@ -332,82 +320,93 @@ namespace :demo do
         patients = []
         count.times do |i|
           printf("\rGenerating monitoree #{i+1} of #{count}...")
-          created_at = Faker::Time.between_dates(from: today, to: today, period: :day)
-          updated_at = Faker::Time.between_dates(from: created_at, to: today, period: :day)
+          patient = Patient.new()
+
+          # Identification
           sex = Faker::Gender.binary_type
-          birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
-          risk_factors = rand < 0.9
-          isol = rand < 0.30
-          monitoring = rand < 0.95
-          patient = Patient.new(
-            first_name: "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}",
-            middle_name: "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}",
-            last_name: "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}",
-            sex: rand < 0.9 ? sex : 'Unknown',
-            date_of_birth: birthday,
-            age: ((Date.today - birthday) / 365.25).round,
-            ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
-            primary_language: 'English',
-            address_line_1: Faker::Address.street_address,
-            address_city: Faker::Address.city,
-            address_state: Faker::Address.state,
-            address_line_2: rand < 0.3 ? Faker::Address.secondary_address : nil,
-            address_zip: Faker::Address.zip_code,
-            primary_telephone: '(333) 333-3333',
-            primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'].sample,
-            secondary_telephone: '(333) 333-3333',
-            secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'].sample,
-            email: "#{rand(1000000000..9999999999)}fake@example.com",
-            preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].sample,
-            preferred_contact_time: ['Morning', 'Afternoon', 'Evening', nil].sample,
-            port_of_origin: Faker::Address.city,
-            date_of_departure: today - (rand < 0.3 ? 1.day : 0.days),
-            source_of_report: rand < 0.4 ? 'Self-Identified' : 'CDC',
-            flight_or_vessel_number: "#{('A'..'Z').to_a.sample}#{rand(10)}#{rand(10)}#{rand(10)}",
-            flight_or_vessel_carrier: "#{Faker::Name.first_name} Airlines",
-            port_of_entry_into_usa: Faker::Address.city,
-            date_of_arrival: today,
-            last_date_of_exposure: today - rand(5).days,
-            potential_exposure_location: rand < 0.7 ? Faker::Address.city : nil,
-            potential_exposure_country: rand < 0.8 ? Faker::Address.country: nil,
-            contact_of_known_case: risk_factors && rand < 0.3,
-            travel_to_affected_country_or_area: risk_factors && rand < 0.1,
-            was_in_health_care_facility_with_known_cases: risk_factors && rand < 0.15,
-            laboratory_personnel: risk_factors && rand < 0.05,
-            healthcare_personnel: risk_factors && rand < 0.2,
-            crew_on_passenger_or_cargo_flight: risk_factors && rand < 0.25,
-            member_of_a_common_exposure_cohort: risk_factors && rand < 0.1,
-            creator_id: enrollers.sample[:id],
-            jurisdiction_id: jurisdictions.sample[:id],
-            responder_id: 1, # temporarily set responder_id to 1 to pass schema validation
-            user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
-            isolation: isol,
-            case_status: isol ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil,
-            monitoring: monitoring,
-            closed_at: monitoring ? nil : updated_at,
-            monitoring_reason: monitoring ? nil : monitoring_reasons.sample,
-            pause_notifications: rand < 0.1,
-            submission_token: SecureRandom.hex(20),
-            created_at: created_at,
-            updated_at: updated_at
-          )
-
+          patient[:sex] = rand < 0.9 ? sex : 'Unknown'
+          patient[:first_name] = "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
+          patient[:middle_name] = "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}" if rand < 0.7
+          patient[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+          patient[:date_of_birth] = Faker::Date.birthday(min_age: 1, max_age: 85)
+          patient[:age] = ((Date.today - patient[:date_of_birth]) / 365.25).round
           patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
+          patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
+          patient[:primary_language] = rand < 0.7 ? 'English' : Faker::Nation.language
+          patient[:secondary_language] = Faker::Nation.language if rand < 0.4
+          patient[:interpretation_required] = rand < 0.15
+          patient[:nationality] = Faker::Nation.nationality if rand < 0.6
+          patient[:user_defined_id_statelocal] = "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}" if rand < 0.7
+          patient[:user_defined_id_cdc] = Faker::Code.npi if rand < 0.2
+          patient[:user_defined_id_nndss] = Faker::Code.rut if rand < 0.2
 
-          if rand < 0.7
-            patient[:monitored_address_line_1] = patient[:address_line_1]
-            patient[:monitored_address_city] = patient[:address_city]
-            patient[:monitored_address_state] = patient[:address_state]
-            patient[:monitored_address_line_2] = patient[:address_line_2]
-            patient[:monitored_address_zip] = patient[:address_zip]
+          # Contact Information
+          patient[:preferred_contact_method] = ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].sample
+          patient[:preferred_contact_time] = ['Morning', 'Afternoon', 'Evening', nil].sample if patient[:preferred_contact_method] != 'E-mailed Web Link'
+          patient[:primary_telephone] = "(555) 555-01#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
+          patient[:primary_telephone_type] = ['Smartphone', 'Plain Cell', 'Landline'].sample if patient[:primary_telephone]
+          patient[:secondary_telephone] = "(555) 555-01#{rand(9)}#{rand(9)}" if patient[:primary_telephone] && rand < 0.5
+          patient[:secondary_telephone_type] = ['Smartphone', 'Plain Cell', 'Landline'].sample if patient[:secondary_telephone]
+          patient[:email] = "#{rand(1000000000..9999999999)}fake@example.com" if patient[:preferred_contact_method] == 'E-mailed Web Link' || rand < 0.5
+
+          # Address
+          if rand < 0.8
+            patient[:address_line_1] = Faker::Address.street_address
+            patient[:address_city] = Faker::Address.city
+            patient[:address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+            patient[:address_line_2] = Faker::Address.secondary_address if rand < 0.4
+            patient[:address_zip] = Faker::Address.zip_code
+            if rand < 0.7
+              patient[:monitored_address_line_1] = patient[:address_line_1]
+              patient[:monitored_address_city] = patient[:address_city]
+              patient[:monitored_address_state] = patient[:address_state]
+              patient[:monitored_address_line_2] = patient[:address_line_2]
+              patient[:monitored_address_zip] = patient[:address_zip]
+            else
+              patient[:monitored_address_line_1] = Faker::Address.street_address
+              patient[:monitored_address_city] = Faker::Address.city
+              patient[:monitored_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+              patient[:monitored_address_line_2] = Faker::Address.secondary_address if rand < 0.4
+              patient[:monitored_address_zip] = Faker::Address.zip_code
+            end
           else
-            patient[:monitored_address_line_1] = Faker::Address.street_address
-            patient[:monitored_address_city] = Faker::Address.city
-            patient[:monitored_address_state] = rand > 0.5 ? Faker::Address.state : territory_names[rand(territory_names.count)]
-            patient[:monitored_address_line_2] = rand < 0.3 ? Faker::Address.secondary_address : nil
-            patient[:monitored_address_zip] = Faker::Address.zip_code
+            patient[:foreign_address_line_1] = Faker::Address.street_address
+            patient[:foreign_address_city] = Faker::Nation.capital_city
+            patient[:foreign_address_country] = Faker::Address.country
+            patient[:foreign_address_line_2] = Faker::Address.secondary_address if rand < 0.4
+            patient[:foreign_address_zip] = Faker::Address.zip_code
+            patient[:foreign_address_line_3] = Faker::Address.secondary_address if patient[:foreign_address_line2] && rand < 0.3
+            patient[:foreign_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+            if rand < 0.6
+              patient[:foreign_monitored_address_line_1] = patient[:foreign_address_line_1]
+              patient[:foreign_monitored_address_city] = patient[:foreign_address_city]
+              patient[:foreign_monitored_address_state] = patient[:foreign_address_state]
+              patient[:foreign_monitored_address_line_2] = patient[:foreign_address_line_2]
+              patient[:foreign_monitored_address_zip] = patient[:foreign_address_zip]
+              patient[:foreign_monitored_address_county] = Faker::Nation.capital_city if rand < 0.5
+            else
+              patient[:foreign_monitored_address_line_1] = Faker::Address.street_address
+              patient[:foreign_monitored_address_city] = Faker::Address.city
+              patient[:foreign_monitored_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+              patient[:foreign_monitored_address_line_2] = Faker::Address.secondary_address if rand < 0.4
+              patient[:foreign_monitored_address_zip] = Faker::Address.zip_code
+              patient[:foreign_monitored_address_county] = Faker::Nation.capital_city if rand < 0.5
+            end
           end
 
+          # Arrival information
+          if rand < 0.7
+            patient[:port_of_origin] = Faker::Address.city
+            patient[:date_of_departure] = today - (rand < 0.3 ? 1.day : 0.days)
+            patient[:source_of_report] = ['Health Screening', 'Surveillance Screening', 'Self-Identified', 'Contact Tracing', 'CDC', 'Other', nil].sample
+            patient[:flight_or_vessel_number] = "#{('A'..'Z').to_a.sample}#{rand(10)}#{rand(10)}#{rand(10)}"
+            patient[:flight_or_vessel_carrier] = "#{Faker::Name.first_name} Airlines"
+            patient[:port_of_entry_into_usa] = Faker::Address.city
+            patient[:date_of_arrival] = today
+            patient[:travel_related_notes] = Faker::GreekPhilosophers.quote if rand < 0.3
+          end
+
+          # Additional planned travel
           if rand < 0.3
             if rand < 0.7
               patient[:additional_planned_travel_type] = 'Domestic'
@@ -420,19 +419,51 @@ namespace :demo do
             patient[:additional_planned_travel_port_of_departure] = Faker::Address.city
             patient[:additional_planned_travel_start_date] = today + rand(6).days
             patient[:additional_planned_travel_end_date] = patient[:additional_planned_travel_start_date] + rand(10).days
+            patient[:additional_planned_travel_related_notes] = Faker::ChuckNorris.fact if rand < 0.4
           end
 
+          # Potential Exposure Info
+          patient[:last_date_of_exposure] = today - rand(5).days
+          patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
+          patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
+          if rand < 0.85
+            patient[:contact_of_known_case] = rand < 0.3
+            patient[:contact_of_known_case_id] = Faker::Code.ean if patient[:contact_of_known_case] && rand < 0.5
+            patient[:member_of_a_common_exposure_cohort] = rand < 0.35
+            patient[:member_of_a_common_exposure_cohort_type] = Faker::Superhero.name if patient[:member_of_a_common_exposure_cohort] && rand < 0.5
+            patient[:travel_to_affected_country_or_area] = rand < 0.1
+            patient[:laboratory_personnel] = rand < 0.25
+            patient[:laboratory_personnel_facility_name] = Faker::Company.name if patient[:laboratory_personnel] && rand < 0.5
+            patient[:healthcare_personnel] = rand < 0.2
+            patient[:healthcare_personnel_facility_name] = Faker::FunnyName.name if patient[:healthcare_personnel] && rand < 0.5
+            patient[:crew_on_passenger_or_cargo_flight] = rand < 0.25
+            patient[:was_in_health_care_facility_with_known_cases] = rand < 0.15
+            patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
+          end
           patient[:exposure_risk_assessment] = ['High', 'Medium', 'Low', 'No Identified Risk', nil].sample
           patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
                                        'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
-          
-          if !isol && rand < 0.1
-            patient[:public_health_action] = [
-              'Recommended medical evaluation of symptoms',
-              'Document results of medical evaluation',
-              'Recommended laboratory testing'
-            ].sample
-          end
+          patient[:jurisdiction_id] = jurisdictions.sample[:id]
+
+          # Other fields populated upon enrollment
+          patient[:submission_token] = SecureRandom.hex(20),
+          patient[:creator_id] = enrollers.sample[:id],
+          patient[:responder_id] = 1, # temporarily set responder_id to 1 to pass schema validation
+          patient[:created_at] = Faker::Time.between_dates(from: today, to: today, period: :day)
+          patient[:updated_at] = Faker::Time.between_dates(from: patient[:created_at], to: today, period: :day)
+
+          # Update monitoring status
+          patient[:isolation] = rand < 0.30
+          patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil
+          patient[:monitoring] = rand < 0.95
+          patient[:closed_at] = patient[:updated_at] unless patient[:monitoring].nil?
+          patient[:monitoring_reason] = ['Completed Monitoring', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
+                                         'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
+                                         'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
+                                         'Meets criteria to discontinue isolation', 'Deceased', 'Other'].sample unless patient[:monitoring].nil?
+          patient[:public_health_action] = ['Recommended medical evaluation of symptoms', 'Document results of medical evaluation',
+                                            'Recommended laboratory testing'].sample unless patient[:isolation] || rand < 0.9
+          patient[:pause_notifications] = rand < 0.1
 
           patients << patient
         end
