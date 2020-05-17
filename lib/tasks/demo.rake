@@ -127,7 +127,7 @@ namespace :demo do
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
 
     jurisdictions = Jurisdiction.all
-    jurisdiction_paths = jurisdictions.pluck(:id, :path)
+    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map {|key, value| [key, value]}]
     Analytic.delete_all
 
     territory_names = ['American Samoa',
@@ -139,6 +139,18 @@ namespace :demo do
       'Palau',
       'Puerto Rico',
       'Virgin Islands']
+
+    monitoring_reasons = ['Completed Monitoring',
+                          'Meets Case Definition',
+                          'Lost to follow-up during monitoring period',
+                          'Lost to follow-up (contact never established)',
+                          'Transferred to another jurisdiction',
+                          'Person Under Investigation (PUI)',
+                          'Case confirmed',
+                          'Past monitoring period',
+                          'Meets criteria to discontinue isolation',
+                          'Deceased',
+                          'Other']
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
@@ -318,9 +330,11 @@ namespace :demo do
             responder_id: 1, # temporarily set responder_id to 1 to pass schema validation
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             isolation: isol,
-            case_status: isol ? 'Confirmed' : '',
+            case_status: isol ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil,
             monitoring: monitoring,
             closed_at: monitoring ? nil : today,
+            monitoring_reason: monitoring ? nil : monitoring_reasons.sample,
+            pause_notifications: rand < 0.1,
             submission_token: SecureRandom.hex(20),
             created_at: timestamp,
             updated_at: timestamp
@@ -372,17 +386,64 @@ namespace :demo do
         end
         
         Patient.import! patients
+
         new_patients = Patient.where('created_at >= ?', today)
         new_patients.update_all('responder_id = id')
-        new_patients.pluck(:id, :created_at).each do |(patient_id, timestamp)|
+        new_patients.each do |patient|
+          # enrollment
           histories << History.new(
             created_by: 'Sara Alert System',
             comment: 'User enrolled monitoree.',
-            patient_id: patient_id,
+            patient_id: patient[:id],
             history_type: 'Enrollment',
-            created_at: timestamp,
-            updated_at: timestamp
+            created_at: patient[:created_at],
+            updated_at: patient[:updated_at],
           )
+          # monitoring status
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: "User changed monitoring status to \"Not Monitoring\". Reason: #{patient[:monitoring_reason]}",
+            patient_id: patient[:id],
+            history_type: 'Monitoring Change',
+            created_at: patient[:created_at],
+            updated_at: patient[:updated_at],
+          ) unless patient[:monitoring]
+          # exposure risk assessment
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: "User changed exposure risk assessment to \"#{patient[:exposure_risk_assessment]}\".",
+            patient_id: patient[:id],
+            history_type: 'Monitoring Change',
+            created_at: patient[:created_at],
+            updated_at: patient[:updated_at],
+          ) unless patient[:exposure_risk_assessment].nil?
+          # case status
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: "User changed case status to \"#{patient[:case_status]}\", and chose to \"Continue Monitoring in Isolation Workflow\".",
+            patient_id: patient[:id],
+            history_type: 'Monitoring Change',
+            created_at: patient[:created_at],
+            updated_at: patient[:updated_at],
+          ) unless patient[:case_status].nil?
+          # public health action
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: "User changed latest public health action to \"#{patient[:public_health_action]}\".",
+            patient_id: patient[:id],
+            history_type: 'Monitoring Change',
+            created_at: patient[:created_at],
+            updated_at: patient[:updated_at],
+          ) unless patient[:public_health_action] == 'None'
+          # pause notifications
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: "User paused notifications for this monitoree.",
+            patient_id: patient[:id],
+            history_type: 'Monitoring Change',
+            created_at: patient[:created_at],
+            updated_at: patient[:updated_at],
+          ) unless patient[:public_health_action] == 'None'
         end
         printf(" done.\n")
 

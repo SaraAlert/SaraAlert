@@ -5,39 +5,41 @@ class CacheAnalyticsJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    jurisdiction_analytic_map = {}
+    Analytic.transaction do
+      jurisdiction_analytic_map = {}
 
-    leaf_nodes = Jurisdiction.all.select { |jur| jur.has_children? == false }
-    leaf_nodes.each do |leaf_jurisdiction|
-      leaf_analytic = self.class.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
-      jurisdiction_analytic_map[leaf_jurisdiction[:path]] = leaf_analytic
-      # Start recursive bubble up of analytic data
-      self.class.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, jurisdiction_analytic_map)
-    end
-
-    # Map data will be on the top-level jurisdiction only
-    root_nodes = Jurisdiction.where(ancestry: nil)
-    root_nodes.each do |root_jurisdiction|
-      symp_by_state = root_jurisdiction.all_patients.pluck(:monitored_address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
-      monitored_by_state = root_jurisdiction.all_patients.symptomatic.uniq.pluck(:monitored_address_state).each_with_object(Hash.new(0)) do |state, counts|
-        counts[state] += 1
+      leaf_nodes = Jurisdiction.all.select { |jur| jur.has_children? == false }
+      leaf_nodes.each do |leaf_jurisdiction|
+        leaf_analytic = self.class.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
+        jurisdiction_analytic_map[leaf_jurisdiction[:path]] = leaf_analytic
+        # Start recursive bubble up of analytic data
+        self.class.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, jurisdiction_analytic_map)
       end
-      root_node_path = root_jurisdiction[:path]
-      # These maps can be retrieved back into a hash by running the following
-      # JSON.parse <analytic>.monitoree_state_map.to_s.gsub('=>', ':')
-      jurisdiction_analytic_map[root_node_path].symptomatic_state_map = symp_by_state.to_s
-      jurisdiction_analytic_map[root_node_path].monitoree_state_map = monitored_by_state.to_s
+
+      # Map data will be on the top-level jurisdiction only
+      root_nodes = Jurisdiction.where(ancestry: nil)
+      root_nodes.each do |root_jurisdiction|
+        symp_by_state = root_jurisdiction.all_patients.pluck(:monitored_address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
+        monitored_by_state = root_jurisdiction.all_patients.symptomatic.uniq.pluck(:monitored_address_state).each_with_object(Hash.new(0)) do |state, counts|
+          counts[state] += 1
+        end
+        root_node_path = root_jurisdiction[:path]
+        # These maps can be retrieved back into a hash by running the following
+        # JSON.parse <analytic>.monitoree_state_map.to_s.gsub('=>', ':')
+        jurisdiction_analytic_map[root_node_path].symptomatic_state_map = symp_by_state.to_s
+        jurisdiction_analytic_map[root_node_path].monitoree_state_map = monitored_by_state.to_s
+      end
+      monitoree_counts = []
+      monitoree_snapshots = []
+      jurisdiction_analytic_map.each do |_jur_path, analytic|
+        analytic.save!
+        patients = Jurisdiction.find(analytic.jurisdiction_id).all_patients
+        monitoree_counts.concat(self.class.all_monitoree_counts(analytic.id, patients))
+        monitoree_snapshots.concat(self.class.all_monitoree_snapshots(analytic.id, patients, analytic.jurisdiction_id))
+      end
+      MonitoreeCount.import! monitoree_counts
+      MonitoreeSnapshot.import! monitoree_snapshots
     end
-    monitoree_counts = []
-    monitoree_snapshots = []
-    jurisdiction_analytic_map.each do |_jur_path, analytic|
-      analytic.save!
-      patients = Jurisdiction.find(analytic.jurisdiction_id).all_patients
-      monitoree_counts.concat(self.class.all_monitoree_counts(analytic.id, patients))
-      monitoree_snapshots.concat(self.class.all_monitoree_snapshots(analytic.id, patients, analytic.jurisdiction_id))
-    end
-    MonitoreeCount.import! monitoree_counts
-    MonitoreeSnapshot.import! monitoree_snapshots
   end
 
   MONITORING_STATUSES ||= %w[Symptomatic Non-Reporting Asymptomatic].freeze
