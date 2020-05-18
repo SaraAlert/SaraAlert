@@ -7,7 +7,7 @@ class ThresholdCondition < Condition
   # symptoms with nil values to build a ReportedCondition with nil values
   # flagging the monitoree for manual follow-up.
   def clone_symptoms_remove_values
-    new_symptoms = symptoms.deep_dup
+    new_symptoms = symptoms.to_a.deep_dup
     new_symptoms.each { |s| s.value = nil }
   end
 
@@ -16,7 +16,7 @@ class ThresholdCondition < Condition
   # symptoms with false boolean values so that the monitoree is not flagged for
   # manual follow-up.
   def clone_symptoms_negate_bool_values
-    new_symptoms = symptoms.deep_dup
+    new_symptoms = symptoms.to_a.deep_dup
     new_symptoms.each { |s| s.value = 0 }
   end
 end
