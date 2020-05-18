@@ -12,7 +12,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     MonitoreeSnapshot.delete_all
     CacheAnalyticsJob.perform_now()
     assert_equal(8, Analytic.all.size)
-    assert_equal(593, MonitoreeCount.all.size)
+    assert_equal(589, MonitoreeCount.all.size)
     assert_equal(24, MonitoreeSnapshot.all.size)
   end
   
@@ -47,7 +47,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   
   test 'all monitoree counts' do
     counts = CacheAnalyticsJob.all_monitoree_counts(1, @@monitorees)
-    assert_equal(244, counts.length)
+    assert_equal(241, counts.length)
   end
   
   test 'monitoree counts by total' do
