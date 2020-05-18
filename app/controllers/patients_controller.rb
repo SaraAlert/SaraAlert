@@ -209,7 +209,7 @@ class PatientsController < ApplicationController
   def update_hoh
     new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]
     current_patient_id = params.permit(:id)[:id]
-    household_ids = params[:household_ids]
+    household_ids = params[:household_ids] || []
     redirect_to(root_url) && return unless new_hoh_id
 
     patients_to_update = household_ids + [current_patient_id]
@@ -322,6 +322,19 @@ class PatientsController < ApplicationController
     history.patient = patient
     history.history_type = 'Report Reviewed'
     history.save
+  end
+
+  # A patient is eligible to be removed from a household if their responder doesn't have the same contact
+  # information of them
+  def household_removeable
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    patient = current_user.get_patient(params.permit(:id)[:id])
+    duplicate_contact = false
+    duplicate_contact = patient[:primary_telephone] == patient.responder[:primary_telephone] unless patient[:primary_telephone]&.blank?
+    duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email]&.blank?
+    # They are removeable from the household if their current responder does not have duplicate contact information
+    render json: { removeable: !duplicate_contact }
   end
 
   def send_reminder

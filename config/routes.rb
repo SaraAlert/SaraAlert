@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   get '/import/download_guidance', to: 'import#download_guidance'
   get '/import/error', to: 'import#error'
 
+  get '/patients/:id/household_removeable', to: 'patients#household_removeable'
   post '/patients/:id/status', to: 'patients#update_status'
   post '/patients/:id/status/clear', to: 'patients#clear_assessments'
   post '/patients/:id/status/clear/:assessment_id', to: 'patients#clear_assessment'

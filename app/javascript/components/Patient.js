@@ -2,6 +2,7 @@ import React from 'react';
 import { Col, Row, Button, Collapse, Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import ChangeHOH from './subject/ChangeHOH';
+import RemoveFromHousehold from './subject/RemoveFromHousehold';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -15,10 +16,15 @@ class Patient extends React.Component {
     return (
       <React.Fragment>
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
-          <Row className="pb-3 mx-3">
-            The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
-            <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
-          </Row>
+          <div>
+            <Row className="mx-3">
+              The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
+              <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
+            </Row>
+            <Row className="pb-2 mx-3">
+              <RemoveFromHousehold patient={this.props?.details} groupMembers={this.props?.groupMembers} authenticity_token={this.props.authenticity_token} />
+            </Row>
+          </div>
         )}
         {this.props?.groupMembers && this.props?.groupMembers?.length > 0 && (
           <Row className="pb-3 mx-3">
