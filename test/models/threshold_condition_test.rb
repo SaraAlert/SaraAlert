@@ -17,11 +17,8 @@ class ThresholdConditionTest < ActiveSupport::TestCase
     threshold_condition = create(:threshold_condition, symptoms_count: 5)
     symptoms = threshold_condition.clone_symptoms_remove_values
 
-    symptoms.each do |symptom|
-      assert_nil(symptom.value)
-    end
-
     symptoms.each_with_index do |symptom, idx|
+      assert_nil(symptom.value)
       assert_equal(threshold_condition.symptoms[idx].name, symptom.name)
       assert_equal(threshold_condition.symptoms[idx].label, symptom.label)
       assert_equal(threshold_condition.symptoms[idx].notes, symptom.notes)
@@ -32,15 +29,12 @@ class ThresholdConditionTest < ActiveSupport::TestCase
     threshold_condition = create(:threshold_condition, symptoms_count: 5)
     symptoms = threshold_condition.clone_symptoms_negate_bool_values
 
-    symptoms.each do |symptom|
+    symptoms.each_with_index do |symptom, idx|
       if symptom.type == 'BoolSymptom'
-        assert_equal(false, symptom.value)
+        assert_not_equal(threshold_condition.symptoms[idx].value, symptom.value)
       else
         assert_equal(0, symptom.value)
       end
-    end
-
-    symptoms.each_with_index do |symptom, idx|
       assert_equal(threshold_condition.symptoms[idx].name, symptom.name)
       assert_equal(threshold_condition.symptoms[idx].label, symptom.label)
       assert_equal(threshold_condition.symptoms[idx].notes, symptom.notes)
