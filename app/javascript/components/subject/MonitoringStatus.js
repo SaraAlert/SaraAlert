@@ -237,7 +237,7 @@ class MonitoringStatus extends React.Component {
           pause_notifications: this.state.pause_notifications,
         })
         .then(() => {
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);

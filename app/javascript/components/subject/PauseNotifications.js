@@ -31,7 +31,7 @@ class PauseNotifications extends React.Component {
               comment: 'User ' + (this.props.patient.pause_notifications ? 'resumed' : 'paused') + ' notifications for this monitoree.',
             })
             .then(() => {
-              location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+              location.reload(true);
             })
             .catch(error => {
               reportError(error);

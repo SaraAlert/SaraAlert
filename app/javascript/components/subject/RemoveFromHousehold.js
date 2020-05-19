@@ -36,7 +36,7 @@ class RemoveFromHousehold extends React.Component {
           new_hoh_id: this.props.patient.id,
         })
         .then(() => {
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           console.error(error);

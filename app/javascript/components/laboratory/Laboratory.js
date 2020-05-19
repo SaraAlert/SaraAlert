@@ -41,7 +41,7 @@ class Laboratory extends React.Component {
         result: this.state.result,
       })
       .then(() => {
-        location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+        location.reload(true);
       })
       .catch(error => {
         reportError(error);

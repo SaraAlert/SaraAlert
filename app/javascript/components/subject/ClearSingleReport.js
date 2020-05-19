@@ -35,7 +35,7 @@ class ClearSingleReport extends React.Component {
           reasoning: this.state.reasoning,
         })
         .then(() => {
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);

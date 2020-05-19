@@ -36,7 +36,7 @@ class SymptomOnset extends React.Component {
           symptom_onset: this.state.symptom_onset,
         })
         .then(() => {
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);
