@@ -12,7 +12,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     MonitoreeSnapshot.delete_all
     CacheAnalyticsJob.perform_now()
     assert_equal(8, Analytic.all.size)
-    assert_equal(589, MonitoreeCount.all.size)
+    assert_equal(587, MonitoreeCount.all.size)
     assert_equal(24, MonitoreeSnapshot.all.size)
   end
   
