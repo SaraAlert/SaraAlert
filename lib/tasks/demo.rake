@@ -143,62 +143,73 @@ namespace :demo do
       # Create the patients for this day
       printf("Simulating day #{day + 1} (#{today}):\n")
 
-      # Transaction speeds things up a bit
-      Patient.transaction do
-
-        # Create assessments for 80-90% of patients on any given day
+      # Create assessments for 80-90% of patients on any given day (transactions speeds things up a bit)
+      Assessment.transaction do
         printf("Generating assessments...")
+
+        # Get symptoms for each jurisdiction
+        unpopulated_conditions = {}
+        jurisdictions.each do |jurisdiction|
+          unpopulated_conditions[jurisdiction.id] = jurisdiction.hierarchical_condition_unpopulated_symptoms
+        end
+        
+        # Generate unpopulated assessments
         patients = Patient.where('created_at <= ?', today)
-        patient_ids_assessment = patients.pluck(:id).sample(patients.count * rand(80..90) / 100)
-        pcount_assessment = patient_ids_assessment.length
-        Patient.find(patient_ids_assessment).each_with_index do |patient, index|
-          next if patient.assessments.any? { |a| a.created_at.to_date == today }
-          printf("\rGenerating assessment #{index+1} of #{pcount_assessment}...")
-          reported_condition = patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
-          assessment = Assessment.new
+        patient_and_jur_ids_assessment = patients.pluck(:id, :jurisdiction_id).sample(patients.count * rand(80..90) / 100)
+        patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
+          printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
+          reported_condition = unpopulated_conditions[jur_id].dup
+          symptoms = []
+          unpopulated_conditions[jur_id].symptoms.each do |symptom|
+            symptoms.push(symptom.dup)
+          end
+          reported_condition.symptoms = symptoms
+          bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
+          bool_symps.each do |symp| symp['bool_value'] = false end
+          assessment = Assessment.new(
+            patient_id: patient_id,
+            reported_condition: reported_condition,
+            created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
+            symptomatic: false
+          )
+          assessment.save
           if rand < 0.3 # 30% report some sort of symptoms
-            bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
             number_of_symptoms = rand(bool_symps.count) + 1
-            bool_symps.each do |symp|  symp['bool_value'] = false end
-            bool_symps.shuffle[0,number_of_symptoms].each do |symp| symp['bool_value'] = true end
-            assessment.update(reported_condition: reported_condition, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
+            bool_symps.shuffle[0, number_of_symptoms].each do |symp| symp['bool_value'] = true end
             # Outside the context of the demo script, an assessment would already have a threshold condition saved to check the symptomatic status
             # We'll compensate for that here by just re-updating
             assessment.update(symptomatic: assessment.symptomatic?)
-            patient.assessments << assessment
-            patient.save
-          else
-            bool_symps = reported_condition.symptoms.select {|s| s.type == "BoolSymptom" }
-            bool_symps.each do |symp|  symp['bool_value'] = false end
-            assessment.update(reported_condition: reported_condition, symptomatic: false, created_at: Faker::Time.between_dates(from: today, to: today, period: :day))
-            assessment.save
-            patient.assessments << assessment
-            patient.save
+            Patient.find(patient_id).refresh_symptom_onset(assessment.id)
           end
-          patient.refresh_symptom_onset(assessment.id)
         end
         printf(" done.\n")
+      end
 
-        # Create laboratories for 10-20% of isolation patients on any given day
+      # Create laboratories for 10-20% of isolation patients on any given day
+      Laboratory.transaction do
         printf("Generating laboratories...")
+        laboratories = []
         isol_patients = Patient.where(isolation: true).where('created_at <= ?', today)
-        patient_ids_lab = isol_patients.pluck(:id).sample(isol_patients.count * rand(10..20) / 100)
-        pcount_lab = patient_ids_lab.length
-        Patient.find(patient_ids_lab).each_with_index do |patient, index|
-          printf("\rGenerating laboratory #{index+1} of #{pcount_lab}...")
+        patient_ids_lab = isol_patients.pluck(:id).sample(isol_patients.count * rand(15..25) / 100)
+        patient_ids_lab.each_with_index do |patient_id, index|
+          printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
           report_date = Faker::Time.between_dates(from: 1.week.ago, to: today, period: :day)
-          lab = Laboratory.new(
+          laboratories << Laboratory.new(
+            patient_id: patient_id,
             lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
             specimen_collection: Faker::Time.between_dates(from: 2.weeks.ago, to: report_date, period: :day),
             report: report_date,
             result: ['positive', 'negative', 'indeterminate', 'other'].sample
           )
-          patient.laboratories << lab
-          patient.save
         end
+        Laboratory.import! laboratories
         printf(" done.\n")
+      end
 
-        # Create count patients
+      # Create count patients
+      Patient.transaction do
+        printf("Generating monitorees...")
+        patients = []
         count.times do |i|
           printf("\rGenerating monitoree #{i+1} of #{count}...")
 
@@ -206,12 +217,12 @@ namespace :demo do
           birthday = Faker::Date.birthday(min_age: 1, max_age: 85)
           risk_factors = rand < 0.9
           isol = rand < 0.30
-          monitoring = rand < 0.9
+          monitoring = rand < 0.95
           patient = Patient.new(
             first_name: "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}",
             middle_name: "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}",
             last_name: "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}",
-            sex: rand > 0.9 ? sex : 'Unknown',
+            sex: rand < 0.9 ? sex : 'Unknown',
             date_of_birth: birthday,
             age: ((Date.today - birthday) / 365.25).round,
             ethnicity: rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino',
@@ -245,88 +256,84 @@ namespace :demo do
             healthcare_personnel: risk_factors && rand < 0.2,
             crew_on_passenger_or_cargo_flight: risk_factors && rand < 0.25,
             member_of_a_common_exposure_cohort: risk_factors && rand < 0.1,
-            creator: enrollers.sample,
+            creator_id: enrollers.sample.id,
+            jurisdiction_id: jurisdictions.sample.id,
+            responder_id: 1, # temporarily set responder_id to 1 to pass schema validation
             user_defined_id_statelocal: "EX-#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
             created_at: Faker::Time.between_dates(from: today, to: today, period: :day),
             isolation: isol,
             case_status: isol ? 'Confirmed' : '',
             monitoring: monitoring,
-            closed_at: monitoring ? nil : today
+            closed_at: monitoring ? nil : today,
+            submission_token: SecureRandom.hex(20)
           )
-
-          patient.submission_token = SecureRandom.hex(20)
 
           patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
 
           if rand < 0.7
-            patient.monitored_address_line_1 = patient.address_line_1
-            patient.monitored_address_city = patient.address_city
-            patient.monitored_address_state = patient.address_state
-            patient.monitored_address_line_2 = patient.address_line_2
-            patient.monitored_address_zip = patient.address_zip
+            patient[:monitored_address_line_1] = patient[:address_line_1]
+            patient[:monitored_address_city] = patient[:address_city]
+            patient[:monitored_address_state] = patient[:address_state]
+            patient[:monitored_address_line_2] = patient[:address_line_2]
+            patient[:monitored_address_zip] = patient[:address_zip]
           else
-            patient.monitored_address_line_1 = Faker::Address.street_address
-            patient.monitored_address_city = Faker::Address.city
-            patient.monitored_address_state = rand > 0.5 ? Faker::Address.state : territory_names[rand(territory_names.count)]
-            patient.monitored_address_line_2 = rand < 0.3 ? Faker::Address.secondary_address : nil
-            patient.monitored_address_zip = Faker::Address.zip_code
+            patient[:monitored_address_line_1] = Faker::Address.street_address
+            patient[:monitored_address_city] = Faker::Address.city
+            patient[:monitored_address_state] = rand > 0.5 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+            patient[:monitored_address_line_2] = rand < 0.3 ? Faker::Address.secondary_address : nil
+            patient[:monitored_address_zip] = Faker::Address.zip_code
           end
 
           if rand < 0.3
             if rand < 0.7
-              patient.additional_planned_travel_type = 'Domestic'
-              patient.additional_planned_travel_destination_state = rand > 0.5 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+              patient[:additional_planned_travel_type] = 'Domestic'
+              patient[:additional_planned_travel_destination_state] = rand > 0.5 ? Faker::Address.state : territory_names[rand(territory_names.count)]
             else
-              patient.additional_planned_travel_type = 'International'
-              patient.additional_planned_travel_destination_country = Faker::Address.country
+              patient[:additional_planned_travel_type] = 'International'
+              patient[:additional_planned_travel_destination_country] = Faker::Address.country
             end
-            patient.additional_planned_travel_destination = Faker::Address.city
-            patient.additional_planned_travel_port_of_departure = Faker::Address.city
-            patient.additional_planned_travel_start_date = today + rand(6).days
-            patient.additional_planned_travel_end_date = patient.additional_planned_travel_start_date + rand(10).days
+            patient[:additional_planned_travel_destination] = Faker::Address.city
+            patient[:additional_planned_travel_port_of_departure] = Faker::Address.city
+            patient[:additional_planned_travel_start_date] = today + rand(6).days
+            patient[:additional_planned_travel_end_date] = patient[:additional_planned_travel_start_date] + rand(10).days
           end
 
-          if rand < 0.1
-            patient.exposure_risk_assessment = 'High'
-            patient.monitoring_plan = 'Self-monitoring with delegated supervision'
-          elsif rand < 0.3
-            patient.exposure_risk_assessment = 'Medium'
-            patient.monitoring_plan = 'Daily active monitoring'
-          elsif rand < 0.55
-            patient.exposure_risk_assessment = 'Low'
-            patient.monitoring_plan = 'Self-monitoring with public health supervision'
-          elsif rand < 0.7
-            patient.exposure_risk_assessment = 'No Identified Risk'
-            patient.monitoring_plan = 'Self-observation'
-          elsif rand < 0.9
-            patient.monitoring_plan = 'None'
-          end
-
-          if !isol && rand < 0.15
-            patient.public_health_action = [
+          patient[:exposure_risk_assessment] = ['High', 'Medium', 'Low', 'No Identified Risk', nil].sample
+          patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
+                                       'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
+          
+          if !isol && rand < 0.1
+            patient[:public_health_action] = [
               'Recommended medical evaluation of symptoms',
               'Document results of medical evaluation',
               'Recommended laboratory testing'
             ].sample
           end
 
-          patient.jurisdiction = jurisdictions.sample
-          patient.responder = patient
-          patient.save
-
-          history = History.new
-          history.created_by = 'Sara Alert System'
-          history.comment = 'This synthetic monitoree was randomly generated.'
-          history.patient = patient
-          history.history_type = 'Enrollment'
-          history.save
+          patients << patient
         end
+        res = Patient.import! patients
         printf(" done.\n")
 
-        # Cases increase 10-20% every day
-        count += (count * (0.1 + (rand / 10))).round
+        # set the responder_id properly
+        Patient.where('created_at >= ?', today).update_all('responder_id = id')
 
-        # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
+        # add enrollments to history
+        histories = []
+        new_patient_ids = Patient.where('created_at >= ?', today).ids
+        new_patient_ids.each do |patient_id|
+          histories << History.new(
+            created_by: 'Sara Alert System',
+            comment: 'This synthetic monitoree was randomly generated.',
+            patient_id: patient_id,
+            history_type: 'Enrollment',
+          )
+        end
+        History.import! histories
+      end
+
+      # Run the analytics cache update at the end of each simulation day, or only on final day if SKIP is set.
+      Patient.transaction do
         if perform_daily_analytics_update || (day + 1) == days
           printf("Caching analytics...")
           before_analytics_count = Analytic.count
@@ -341,9 +348,11 @@ namespace :demo do
           end
           printf(" done.\n")
         end
-
       end
       printf("\n")
+
+      # Cases increase 10-20% every day
+      count += (count * (0.1 + (rand / 10))).round
     end
   end
 end
