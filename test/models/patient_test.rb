@@ -64,6 +64,44 @@ class PatientTest < ActiveSupport::TestCase
     assert Patient.purge_eligible.count.zero?
   end
 
+  test 'asymp non test based' do
+    # setup
+    jur = Jurisdiction.create
+    user = User.create!(
+      email: 'foobar@example.com',
+      password: '1234567ab!',
+      jurisdiction: jur,
+      force_password_change: true # Require user to change password on first login
+    )
+    Patient.destroy_all
+    patient = Patient.new(creator: user, jurisdiction: jur)
+    patient.responder = patient
+    patient.save!
+    assert_equal 1, Patient.count
+    assert_equal 0, Patient.asymp_non_test_based.count
+
+    patient.update!(monitoring: true, purged: false, isolation: true)
+
+    # meets definition: has positive test result more than 10 days ago, no tests and symptoms since then
+    Laboratory.create(patient_id: patient.id, result: 'positive', created_at: 15.days.ago, updated_at: 15.days.ago)
+    assert_equal 1, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+
+    # still meets asymptomatic recovery definition
+    Laboratory.create(patient_id: patient.id, result: 'positive', created_at: 15.days.ago, updated_at: 15.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 8.days.ago, updated_at: 8.days.ago)
+    assert_equal 1, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+    Assessment.destroy_all
+
+    # no longer meets asymptomatic recovery definition
+    Laboratory.create(patient_id: patient.id, result: 'positive', created_at: 15.days.ago, updated_at: 15.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 8.days.ago, updated_at: 8.days.ago)
+    assert_equal 1, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+    Assessment.destroy_all
+  end
+
   test 'get timezone offset' do
     jur = Jurisdiction.create
     user = User.create!(

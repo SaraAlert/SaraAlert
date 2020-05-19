@@ -3,7 +3,7 @@
 require 'chronic'
 
 # Patient: patient model
-class Patient < ApplicationRecord
+class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   include PatientHelper
 
   columns.each do |column|
@@ -201,6 +201,38 @@ class Patient < ApplicationRecord
       .distinct
   }
 
+  # Individuals that meet the asymptomatic recovery definition
+  scope :asymp_non_test_based, lambda {
+    where(id: Patient.unscoped.asymp_non_test_based_no_assessments)
+      .or(
+        where(id: Patient.unscoped.asymp_non_test_based_asymp_assessments)
+      )
+  }
+
+  scope :asymp_non_test_based_no_assessments, lambda {
+    where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
+      .where_assoc_exists(:laboratories, &:before_ten_days_positive)
+      .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
+      .where_assoc_not_exists(:assessments)
+      .distinct
+  }
+
+  scope :asymp_non_test_based_asymp_assessments, lambda {
+    where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
+      .where_assoc_exists(:laboratories, &:before_ten_days_positive)
+      .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
+      .left_outer_joins(:laboratories)
+      .where('laboratories.patient_id = patients.id')
+      .left_outer_joins(:assessments)
+      .where('assessments.patient_id = patients.id')
+      .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.created_at')
+      .distinct
+  }
+
   # Individuals in the isolation workflow that require review
   scope :isolation_requiring_review, lambda {
     where(id: Patient.unscoped.test_based)
@@ -373,6 +405,7 @@ class Patient < ApplicationRecord
     end
     return :isolation_test_based if Patient.where(id: id).test_based.exists?
     return :isolation_non_test_based if Patient.where(id: id).non_test_based.exists?
+    return :isolation_asymp_non_test_based if Patient.where(id: id).asymp_non_test_based.exists?
     return :isolation_non_reporting if Patient.where(id: id).isolation_non_reporting.exists?
     return :isolation_reporting if Patient.where(id: id).isolation_reporting.exists?
     return :purged if purged?
