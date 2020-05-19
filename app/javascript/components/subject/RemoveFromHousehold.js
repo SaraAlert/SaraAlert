@@ -98,13 +98,16 @@ class RemoveFromHousehold extends React.Component {
     );
   }
 
+  componentDidMount() {
+    this.checkHouseholdRemoveEligible();
+  }
+
   render() {
     return (
       <React.Fragment>
         <Button size="sm" className="my-2" onClick={this.toggleModal}>
           <i className="fas fa-house-user"></i> Remove From Household
         </Button>
-        {this.state.removeEligible == undefined && this.checkHouseholdRemoveEligible()}
         {this.state.showModal && this.state.removeEligible && this.createModal('Remove Monitoree From Household', this.toggleModal, this.submit)}
         {this.state.showModal &&
           this.state.removeEligible == false &&
