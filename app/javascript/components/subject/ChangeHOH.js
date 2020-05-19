@@ -40,7 +40,7 @@ class ChangeHOH extends React.Component {
         })
         .then(() => {
           this.setState({ updateDisabled: false });
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           console.error(error);

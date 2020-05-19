@@ -38,7 +38,7 @@ class AddReportingNote extends React.Component {
           type: 'Report Note',
         })
         .then(() => {
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);

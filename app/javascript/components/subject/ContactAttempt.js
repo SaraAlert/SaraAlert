@@ -39,7 +39,7 @@ class ContactAttempt extends React.Component {
           type: 'Contact Attempt',
         })
         .then(() => {
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);

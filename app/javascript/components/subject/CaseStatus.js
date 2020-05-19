@@ -76,7 +76,7 @@ class CaseStatus extends React.Component {
               : this.state.public_health_action,
         })
         .then(() => {
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);

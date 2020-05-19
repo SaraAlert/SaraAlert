@@ -28,11 +28,10 @@ class SendReminder extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/reminder', {})
         .then(() => {
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);
-          location.href = window.BASE_PATH + '/patients/' + this.props.patient.id;
         });
     });
   }
