@@ -103,7 +103,7 @@ class Assessment extends React.Component {
     })
       .then(function() {
         if (self.props.reload) {
-          location.href = window.BASE_PATH + '/patients/' + self.props.patient_id;
+          location.reload(true);
         }
       })
       .catch(error => {
