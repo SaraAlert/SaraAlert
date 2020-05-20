@@ -42,6 +42,7 @@ class ImportController < ApplicationController
     begin
       xlsx = Roo::Excelx.new(params[:file].tempfile.path, file_warning: :ignore)
       validate_headers(format, xlsx.sheet(0).row(1))
+      raise ValidationError.new('File must contain at least one monitoree to import', 2) if xlsx.sheet(0).last_row < 2
 
       xlsx.sheet(0).each_with_index do |row, row_num|
         next if row_num.zero? # Skip headers
@@ -122,11 +123,16 @@ class ImportController < ApplicationController
   private
 
   def validate_headers(format, row)
-    expected_headers = COMPREHENSIVE_HEADERS if format == :comprehensive_monitorees
-    expected_headers = EPI_X_HEADERS if format == :epix
-    expected_headers.each_with_index do |field, col_num|
-      err_msg = "Incorrect headers, please make sure you are using the latest format specified by the guidance doc. Field: #{field}"
-      raise ValidationError.new(err_msg, 1) if field != row[col_num]
+    if format == :comprehensive_monitorees
+      COMPREHENSIVE_HEADERS.each_with_index do |field, col_num|
+        err_msg = "Invalid headers, please make sure to use the latest format specified by the guidance doc. Header field name mismatch: #{field}"
+        raise ValidationError.new(err_msg, 1) if field != row[col_num]
+      end
+    elsif format == :epix
+      EPI_X_HEADERS.each_with_index do |field, col_num|
+        err_msg = "Invalid headers, please make sure to use the latest epi-x format. Header field name mismatch: #{field}"
+        raise ValidationError.new(err_msg, 1) if field != row[col_num]
+      end
     end
   end
 
