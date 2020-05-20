@@ -14,16 +14,17 @@ class ApplicationController < ActionController::Base
 
     return if request.url == edit_user_registration_url || request.url == user_registration_url || request.url == destroy_user_session_url
 
-    if current_user&.force_password_change
-      redirect_to edit_user_registration_url
-      return
-    end
+    return unless current_user&.force_password_change
+
+    redirect_to edit_user_registration_url
   end
 
   def ensure_authy_enabled
-    return if params[:controller] == "devise_authy" || params[:controller] == "users/registrations" || (params[:controller] == "devise/sessions" && params[:action] == 'destroy')
-    if current_user and !current_user.authy_enabled? and current_user.authy_enforced
-      redirect_to user_enable_authy_url
-    end
+    return if params[:controller] == 'devise_authy' || params[:controller] == 'users/registrations' ||
+              (params[:controller] == 'devise/sessions' && params[:action] == 'destroy')
+
+    return unless current_user && !current_user.authy_enabled? && current_user.authy_enforced
+
+    redirect_to user_enable_authy_url
   end
 end
