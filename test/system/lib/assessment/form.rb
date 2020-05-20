@@ -24,7 +24,7 @@ class AssessmentForm < ApplicationSystemTestCase
         find('label', text: symptom['label']).click if symptom['bool_value']
       when 'FloatSymptom'
         fill_in symptom['label'], with: symptom['float_value']
-      when 'IntSymptom'
+      when 'IntegerSymptom'
         fill_in symptom['label'], with: symptom['int_value']
       end
     }

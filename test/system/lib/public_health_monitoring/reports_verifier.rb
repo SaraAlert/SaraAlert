@@ -37,7 +37,7 @@ class PublicHealthMonitoringReportsVerifier < ApplicationSystemTestCase
         assert page.has_content?(symptom['bool_value'] ? 'Yes' : 'No'), @@system_test_utils.get_err_msg('Report', 'boolean symptom', symptom['bool_value'])
       when 'FloatSymptom'
         assert page.has_content?(symptom['float_value']), @@system_test_utils.get_err_msg('Report', 'float symptom', symptom['float_value'])
-      when 'IntSymptom'
+      when 'IntegerSymptom'
         assert page.has_content?(symptom['int_value']), @@system_test_utils.get_err_msg('Report', 'int symptom', symptom['int_value'])
       end
     }

@@ -25,6 +25,14 @@ class Symptom < ApplicationRecord
     where(['name = ? and bool_value = ?', 'used-a-fever-reducer', true])
   }
 
+  def bool_based_prompt
+    if self.type == 'BoolSymptom'
+      return self.label
+    elsif self.type == 'IntegerSymptom' || self.type == 'FloatSymptom'
+      return [self.label, self.threshold_operator, self.value].to_sentence(words_connector: ' ', last_word_connector: ' ').humanize
+    end
+  end
+
   def as_json(options = {})
     super(options).merge({
                            type: type

@@ -5,8 +5,10 @@
 # A `symptom` will be identified by it's name, which is the key in the symptom object, a `value` and a `type`.
 # The `value` of a symptom defines the threshold of the symptom, this is the value that is considered as
 # symptomatic for the symptom which it is defining, only symptoms marked as 'required' will be considered when
-# determining whether or not a patient is symptomatic. For float and integer symptoms, a reported symptom greater
-# than or equal to the specified `value` wil be considered as symptomatic. Available values for the `type`
+# determining whether or not a patient is symptomatic. For float and integer symptoms, a reported symptom 
+# will be compared using the specified 'threshold_operator' to the specified `value` and will be considered as symptomatic.
+# if the result of the comparison is true. Available values for the 'threshold_operator' field are 'Less Than', 'Less Than Or Equal',
+# 'Greater Than', 'Greater Than Or Equal', 'Equal To' and 'Not Equal'. Available values for the `type`
 # field in a symptom are `FloatSymptom`, `IntegerSymptom`, or `BoolSymptom`. The `children` of a jurisdiction are
 # nested jurisdictions that may have their own `symptoms` and/or `children`.
 #
@@ -35,6 +37,13 @@
 #             type: 'BoolSymptom'
 #     children:
 #         'State 1':
+#            symptoms:
+#                'Pulse Ox':
+#                    value: 93
+#                    operator: 'Less Than'
+#                    type: 'FloatSymptom'
+#                    notes: 'Enter your lowest pulse oximeter reading from last 24 hours'
+#                    required: true
 #             symptoms:
 #               'Vomit':
 #                 value: true
@@ -99,6 +108,13 @@
     # in the children: field
     children:
         'State 1':
+            symptoms:
+                'Pulse Ox':
+                    value: 93
+                    threshold_operator: 'Less Than'
+                    type: 'FloatSymptom'
+                    notes: 'Enter your lowest pulse oximeter reading from last 24 hours'
+                    required: true
             children:
                 'County 1':
                 'County 2':

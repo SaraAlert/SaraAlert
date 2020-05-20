@@ -55,7 +55,12 @@ class Assessment < ApplicationRecord
     return nil if threshold_symptom.nil? || threshold_symptom.value.nil?
 
     if reported_symptom.type == 'FloatSymptom' || reported_symptom.type == 'IntegerSymptom'
-      return true if reported_symptom.value < threshold_symptom.value
+      return true if threshold_symptom.threshold_operator.downcase == 'less than' && reported_symptom.value < threshold_symptom.value
+      return true if threshold_symptom.threshold_operator.downcase == 'less than or equal' && reported_symptom.value <= threshold_symptom.value
+      return true if threshold_symptom.threshold_operator.downcase == 'greater than' && reported_symptom.value > threshold_symptom.value
+      return true if threshold_symptom.threshold_operator.downcase == 'greater than or equal' && reported_symptom.value >= threshold_symptom.value
+      return true if threshold_symptom.threshold_operator.downcase == 'equal' && reported_symptom.value == threshold_symptom.value
+      return true if threshold_symptom.threshold_operator.downcase == 'equal' && reported_symptom.value != threshold_symptom.value
     elsif reported_symptom.type == 'BoolSymptom'
       return true if reported_symptom.value == threshold_symptom.value
     end
