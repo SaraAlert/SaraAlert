@@ -229,7 +229,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where('laboratories.patient_id = patients.id')
       .left_outer_joins(:assessments)
       .where('assessments.patient_id = patients.id')
-      .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.created_at')
+      .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.report')
       .distinct
   }
 
@@ -403,9 +403,9 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       return :asymptomatic if asymptomatic?
       return :non_reporting if non_reporting?
     end
+    return :isolation_asymp_non_test_based if Patient.where(id: id).asymp_non_test_based.exists?
     return :isolation_test_based if Patient.where(id: id).test_based.exists?
     return :isolation_non_test_based if Patient.where(id: id).non_test_based.exists?
-    return :isolation_asymp_non_test_based if Patient.where(id: id).asymp_non_test_based.exists?
     return :isolation_non_reporting if Patient.where(id: id).isolation_non_reporting.exists?
     return :isolation_reporting if Patient.where(id: id).isolation_reporting.exists?
     return :purged if purged?
