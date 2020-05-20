@@ -254,11 +254,11 @@ namespace :demo do
         Patient.update(patient_symptom_onset_date_updates.keys, patient_symptom_onset_date_updates.values)
         printf(" done.\n")
 
-        # Create laboratories for 10-20% of isolation patients on any given day
+        # Create laboratories for 20-30% of isolation patients on any given day
         printf("Generating laboratories...")
         laboratories = []
         isolation_patients = existing_patients.where(isolation: true)
-        patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(20..25) / 100)
+        patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(20..30) / 100)
         patient_ids_lab.each_with_index do |patient_id, index|
           printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
@@ -268,7 +268,7 @@ namespace :demo do
             lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
             specimen_collection: Faker::Time.between_dates(from: 2.weeks.ago, to: report_date, period: :day),
             report: report_date,
-            result: ['positive', 'negative', 'indeterminate', 'other'].sample,
+            result: (Array.new(3, 'positive') + Array.new(5, 'negative') + ['indeterminate', 'other']).sample,
             created_at: timestamp,
             updated_at: timestamp
           )
