@@ -296,6 +296,20 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     end
   }
 
+  # All individuals closed within the given time frame
+  scope :closed_in_time_frame, lambda { |time_frame|
+    case time_frame
+    when 'Last 24 Hours'
+      where('patients.closed_at >= ?', 24.hours.ago)
+    when 'Last 14 Days'
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
+    when 'Total'
+      all
+    else
+      none
+    end
+  }
+
   # Order individuals based on their public health assigned risk assessment
   def self.order_by_risk(asc = true)
     order_by = ["WHEN exposure_risk_assessment='High' THEN 0",

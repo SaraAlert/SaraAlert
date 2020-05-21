@@ -10,6 +10,11 @@ class ReportedConditionTest < ActiveSupport::TestCase
   test 'create reported condition' do
     assert create(:reported_condition)
     assert create(:reported_condition, threshold_condition_hash: Faker::Alphanumeric.alphanumeric(number: 64))
+
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      create(:reported_condition, assessment: nil)
+    end
+    assert_includes(error.message, 'Assessment')
   end
 
   test 'threshold condition' do

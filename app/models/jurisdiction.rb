@@ -13,14 +13,6 @@ class Jurisdiction < ApplicationRecord
 
   has_many :analytics, class_name: 'Analytic'
 
-  scope :leaf_nodes, lambda {
-    Jurisdiction.all.select { |jur| jur.has_children? == false }
-  }
-
-  scope :non_leaf_nodes, lambda {
-    Jurisdiction.all.select { |jur| jur.has_children? == true }
-  }
-
   # All patients are all those in this or descendent jurisdictions
   def all_patients
     Patient.includes([:jurisdiction]).where(jurisdiction_id: subtree_ids)

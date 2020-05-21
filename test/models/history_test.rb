@@ -76,16 +76,6 @@ class HistoryTest < ActiveSupport::TestCase
     end
   end
 
-  test 'not monitoring' do
-    assert_difference('History.not_monitoring.size', 1) do
-      create(:history, history_type: 'Monitoring Change', comment: 'Not Monitoring')
-    end
-
-    assert_no_difference('History.not_monitoring.size') do
-      create(:history, history_type: 'Monitoring Change', comment: 'Monitoring')
-    end
-  end
-
   test 'referral for medical evaluation' do
     assert_difference('History.referral_for_medical_evaluation.size', 1) do
       create(:history, history_type: 'Monitoring Change', comment: 'Recommended medical evaluation of symptoms')
