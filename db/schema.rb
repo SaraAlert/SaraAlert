@@ -286,6 +286,7 @@ ActiveRecord::Schema.define(version: 2020_05_20_113748) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "required", default: true
     t.string "threshold_operator", default: "Less Than"
+    t.integer "group", default: 1
     t.index ["condition_id"], name: "index_symptoms_on_condition_id"
     t.index ["name", "bool_value", "condition_id"], name: "symptoms_index_chain_1"
   end

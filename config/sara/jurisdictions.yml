@@ -65,52 +65,72 @@
             # The expected threshold value for bool_values should always be true
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             required: true
+            group: 1
         'Difficulty Breathing':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             required: true
+            group: 1
         'Fever':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
             required: true
+            group: 2
         'Used A Fever Reducer':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
             required: false
+            group: 2
         'Chills':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             required: true
+            group: 2
         'Repeated Shaking with Chills':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             required: true
+            group: 2
         'Muscle Pain':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             required: true
+            group: 2
         'Headache':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             required: true
+            group: 2
         'Sore Throat':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             required: true
+            group: 2
         'New Loss of Taste or Smell':
             value: true
             type: 'BoolSymptom'
+            threshold_operator: 'Equal'
             required: true
+            group: 2
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
     # in the children: field
     children:
         'State 1':
             symptoms:
                 'Pulse Ox':
-                    value: 93
+                    value: 90
                     threshold_operator: 'Less Than'
                     type: 'FloatSymptom'
                     notes: 'Enter your lowest pulse oximeter reading from last 24 hours'
