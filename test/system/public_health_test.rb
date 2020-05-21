@@ -137,20 +137,28 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.import_epi_x('jurisdiction_10_epi', :isolation, 'Epi-X-Format.xlsx', :valid, nil, false)
   end
 
-  test 'import epi-x to exposure and validate file type' do
-    @@public_health_monitoring_helper.import_epi_x('locals2c4_epi', :exposure, 'Invalid-Text-File.txt', :invalid_file, nil)
+  test 'import epi-x to isolation and validate file type' do
+    @@public_health_monitoring_helper.import_epi_x('locals2c4_epi', :isolation, 'Invalid-Text-File.txt', :invalid_file, nil)
   end
 
-  test 'import epi-x to isolation and validate file format' do
-    @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :isolation, 'Invalid-Excel-File.xlsx', :invalid_format, nil)
+  test 'import epi-x to exposure and validate file format' do
+    @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :exposure, 'Invalid-Excel-File.xlsx', :invalid_format, nil)
+  end
+
+  test 'import epi-x to isolation and validate headers' do
+    @@public_health_monitoring_helper.import_epi_x('locals2c4_epi', :isolation, 'Epi-X-Format-Invalid-Headers.xlsx', :invalid_headers, nil)
+  end
+
+  test 'import epi-x to exposure and validate empty monitorees list' do
+    @@public_health_monitoring_helper.import_epi_x('locals2c3_epi', :exposure, 'Epi-X-Format-Invalid-Monitorees.xlsx', :invalid_monitorees, nil)
   end
 
   test 'import epi-x to exposure and validate fields' do
-    @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :exposure, 'Epi-X-Format-Invalid.xlsx', :invalid_fields, nil)
+    @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :exposure, 'Epi-X-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
   end
 
   test 'import epi-x to isolation and validate fields' do
-    @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :isolation, 'Epi-X-Format-Invalid.xlsx', :invalid_fields, nil)
+    @@public_health_monitoring_helper.import_epi_x('locals1c2_epi', :isolation, 'Epi-X-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
   end
 
   test 'import sara alert format to exposure and accept all' do
@@ -189,20 +197,20 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :isolation, 'Invalid-Excel-File.xlsx', :invalid_format, nil)
   end
 
+  test 'import sara alert format to exposure and validate headers' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-Invalid-Headers.xlsx', :invalid_headers, nil)
+  end
+
+  test 'import sara alert format to isolation and validate empty monitorees list' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format-Invalid-Monitorees.xlsx', :invalid_monitorees, nil)
+  end
+
   test 'import sara alert format to exposure and validate fields' do
-    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :exposure, 'Sara-Alert-Format-Invalid.xlsx', :invalid_fields, nil)
+    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :exposure, 'Sara-Alert-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
   end
 
   test 'import sara alert format to isolation and validate fields' do
-    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :isolation, 'Sara-Alert-Format-Invalid.xlsx', :invalid_fields, nil)
-  end
-
-  test 'import sara alert format to exposure and validate old headers' do
-    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-Old.xlsx', :invalid_headers, nil)
-  end
-
-  test 'import sara alert format to isolation and validate old headers' do
-    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :isolation, 'Sara-Alert-Format-Old.xlsx', :invalid_headers, nil)
+    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :isolation, 'Sara-Alert-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
   end
 
   test 'download sara alert format guidance from exposure workflow' do
