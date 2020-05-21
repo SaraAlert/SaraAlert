@@ -19,9 +19,3 @@ production:
   database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'disease_trakker_production' %>
   host: <%= ENV['DISEASE_TRAKKER_DATABASE_HOST'] || '' %>
   port: <%= ENV['DISEASE_TRAKKER_DATABASE_PORT'] || '' %>
-
-demo:
-  <<: *default
-  database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'saraalert_demo' %>
-  host: <%= ENV['DISEASE_TRAKKER_DATABASE_HOST'] || '' %>
-  port: <%= ENV['DISEASE_TRAKKER_DATABASE_PORT'] || '' %>
