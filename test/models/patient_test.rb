@@ -64,6 +64,58 @@ class PatientTest < ActiveSupport::TestCase
     assert Patient.purge_eligible.count.zero?
   end
 
+  test 'asymp non test based' do
+    # setup
+    Patient.destroy_all
+    patient = create(:patient, monitoring: true, purged: false, isolation: true)
+    assert_equal 1, Patient.count
+    assert_equal 0, Patient.asymp_non_test_based.count
+
+    # meets definition: has positive test result more than 10 days ago, no tests and symptoms since then
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
+    assert_equal 1, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+
+    # meets definition: asymptomatic after positive test result
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 8.days.ago)
+    assert_equal 1, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+    Assessment.destroy_all
+
+    # meets definition: only symptomatic before positive test result but not afterwards
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 11.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 12.days.ago)
+    assert_equal 1, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+    Assessment.destroy_all
+
+    # does not meet defiition: has positive test result less than 10 days ago
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 8.days.ago)
+    assert_equal 0, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+
+    # does not meet defiition: has positive test result more than 10 days ago, but also has positive test result less than 10 days ago
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 11.days.ago)
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 9.days.ago)
+    assert_equal 0, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+
+    # does not meet definition: symptomatic after positive test result
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 8.days.ago)
+    assert_equal 0, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+    Assessment.destroy_all
+
+    # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 13.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 12.days.ago)
+    assert_equal 0, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+    Assessment.destroy_all
+  end
+
   test 'get timezone offset' do
     jur = Jurisdiction.create
     user = User.create!(
