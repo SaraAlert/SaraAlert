@@ -47,15 +47,15 @@ class Breadcrumb extends React.Component {
             <ol className="breadcrumb">
               {this.props.crumbs?.map((crumb, index) => {
                 return (
-                  <li key={'bc' + index} className={'breadcrumb-item lead ' + (crumb['href'] && 'active')}>
+                  <li key={'bc' + index} className={'breadcrumb-item lead lead-bc ' + (crumb['href'] && 'active')}>
                     {crumb['href'] && (
                       <a
                         href="#"
                         onClick={() => {
                           if (this.renderWorkflowName(crumb['value']).includes('Isolation')) {
-                            location.href = window.BASE_PATH + '/public_health/isolation';
+                            location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health/isolation');
                           } else if (this.renderWorkflowName(crumb['value']).includes('Exposure')) {
-                            location.href = window.BASE_PATH + '/public_health';
+                            location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health');
                           } else {
                             this.goBack(this.props.crumbs.length - (index + 1));
                           }
@@ -67,7 +67,7 @@ class Breadcrumb extends React.Component {
                   </li>
                 );
               })}
-              <span className="lead ml-auto">Your Jurisdiction: {this.props.jurisdiction}</span>
+              <span className="lead lead-bc ml-auto">Your Jurisdiction: {this.props.jurisdiction}</span>
             </ol>
           </nav>
         </div>
