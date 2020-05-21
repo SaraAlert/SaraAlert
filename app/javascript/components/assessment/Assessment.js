@@ -111,7 +111,7 @@ class Assessment extends React.Component {
       });
     if (!this.props.reload) {
       // No need to say thanks for reporting if we want to reload the page
-      this.goto(2);
+      this.goto(1);
     }
   }
 
