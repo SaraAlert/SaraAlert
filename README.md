@@ -28,7 +28,11 @@ To work with the application, you will need to install some prerequisites:
 
 #### Application
 
-Run the following commands from the root directory to pull in both frontend and backend dependencies:
+Ensure that [Git LFS](https://git-lfs.github.com/) is installed and initialized.
+
+Clone the project: `git clone https://github.com/SaraAlert/SaraAlert.git`
+
+Run the following commands from the project's root directory to pull in both frontend and backend dependencies:
 
 * `bundle install`
 * `yarn install`
@@ -82,7 +86,7 @@ The [Whenever](https://github.com/javan/whenever) gem is used to schedule jobs. 
 * Purging old monitoree records
 * Updating system analytics
 
-You must update your chrontab for these jobs to run periodically (defined in `config/schedule.rb`). To do so run:
+You must update your crontab for these jobs to run periodically (defined in `config/schedule.rb`). To do so run:
 
 ```
 bundle exec whenever --update-crontab
@@ -147,7 +151,7 @@ The `docker-compose.yml` file sets up three networks which route traffic between
 
 * `dt-net-enrollment`: Hosts the applications/services used for enrolling and monitoring.
 * `dt-net-assessment`: Hosts the application/services used by monitorees filling out assessments.
-* `dt-net-bridge`: Facilitiates communication between the two other networks.
+* `dt-net-bridge`: Facilitates communication between the two other networks.
 
 This results in a 'split architecture' where multiple instances of the SaraAlert application are running. This approach attempts to reduces the amount of services that have access to the monitoree database.
 
@@ -180,7 +184,7 @@ The following environment variables need to be set on the enrollment instances, 
 
 Create a directory for the deployment. Move both docker compose files and both environment variable files from the previous section into this folder. Within this deployment directory, create a subdirectory called `tls` and place your `.key` and `.crt` files for the webserver inside. Name the files `puma.key` and `puma.crt`. Ensure the `.crt` and `.key` files within the `tls` directory are at least `0x004` permissions so they can be read inside the container.
 
-The Nginx configuration is also statged within the same directory. You will need to move the `nginx.conf` provided in the root of this repository into `~/tls/nginx.conf`.
+The Nginx configuration is also staged within the same directory. You will need to move the `nginx.conf` provided in the root of this repository into `~/tls/nginx.conf`.
 
 **Deployment**
 
