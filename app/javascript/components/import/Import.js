@@ -14,6 +14,7 @@ class Import extends React.Component {
     this.rejectSub = this.rejectSub.bind(this);
     this.handleExtraOptionToggle = this.handleExtraOptionToggle.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
+    this.finishImport = this.finishImport.bind(this);
     this.submit = this.submit.bind(this);
   }
 
@@ -74,6 +75,13 @@ class Import extends React.Component {
     this.setState({ importDuplicates: value });
   }
 
+  finishImport = async () => {
+    let confirmText = `Ending the Import process will not undo any records imported, but no new records will be created.`;
+    if (await confirmDialog(confirmText, { title: 'Finish Import Process' })) {
+      window.history.go(-1);
+    }
+  };
+
   handleConfirm = async confirmText => {
     let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
     let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} detected duplicate monitorees` : undefined;
@@ -126,6 +134,9 @@ class Import extends React.Component {
                 )
               }>
               Accept All
+            </Button>
+            <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.finishImport()}>
+              Finish Import
             </Button>
             {this.state.patients.map((patient, index) => {
               return (
