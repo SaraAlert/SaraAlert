@@ -211,5 +211,6 @@ class PatientMailer < ApplicationMailer
     history.patient = patient
     history.history_type = 'Report Reminder'
     history.save
+    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 end
