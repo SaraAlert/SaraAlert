@@ -49,11 +49,12 @@ table.dataTable tbody td {
 table.dataTable tbody td.select-checkbox:before, table.dataTable tbody td.select-checkbox:after,
 table.dataTable tbody th.select-checkbox:before,
 table.dataTable tbody th.select-checkbox:after {
-  top: auto !important;
+  top: 50% !important;
 }
 
 table.dataTable tr.selected td.select-checkbox:after,
-table.dataTable tr.selected th.select-checkbox:after {
+table.dataTable tr.selected th.select-checkbox:after,
+table.dataTable tr th.select-checkbox.selected::after {
   font: 90%/1.45em "Helvetica Neue", HelveticaNeue, Helvetica, Arial, sans-serif !important;
   color: #333 !important;
 }
@@ -68,4 +69,37 @@ table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.
 
 table.dataTable tbody tr.selected, table.dataTable tbody th.selected, table.dataTable tbody td.selected {
 	color: black !important;
+}
+
+// Select All - Add standard checkbox to header
+
+table.dataTable thead th.select-checkbox {
+  position: relative;
+}
+
+table.dataTable thead th.select-checkbox:before,
+table.dataTable thead th.select-checkbox:after {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+}
+
+table.dataTable thead th.select-checkbox:before {
+  content: ' ';
+  margin-top: -6px;
+  margin-left: -6px;
+  border: 1px solid black;
+  border-radius: 3px;
+}
+
+table.dataTable tr th.select-checkbox.selected::after  {
+  content: '\2714';
+  margin-top: -11px;
+  margin-left: -4px;
+  text-align: center;
+  text-shadow: 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
 }
