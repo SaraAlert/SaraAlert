@@ -12,10 +12,10 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
   @@public_health_import_verifier = PublicHealthMonitoringImportVerifier.new(nil)
   @@public_health_monitoring_reports = PublicHealthMonitoringReports.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
-  
+
   PATIENTS = @@system_test_utils.get_patients
   MONITOREES = @@system_test_utils.get_monitorees
-  
+
   def search_for_and_view_patient(tab, patient_label)
     @@system_test_utils.go_to_tab(tab)
     fill_in 'Search:', with: PATIENTS[patient_label]['last_name']
@@ -133,7 +133,7 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
 
   def select_monitorees_to_import(rejects, accept_duplicates)
     if rejects.nil?
-      click_on 'Accept All'
+      click_on 'Accept'
       find(:css, '.form-check-input').set(true) if accept_duplicates
       click_on 'OK'
     else
