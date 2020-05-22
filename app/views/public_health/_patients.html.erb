@@ -31,6 +31,7 @@
     <thead>
       <tr>
         <% if isolation %>
+          <th class="DataTable-table-header"></th>
           <th class="DataTable-table-header">Monitoree</th>
           <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
           <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Assigned User</th> <% end %>
@@ -47,6 +48,7 @@
           <th class="DataTable-table-header"><% if type.include? 'transferred' %>Transferred At<% elsif type == 'closed_patients' %>Closed At<% else %>Latest Report<% end %></th>
           <% if type == 'all_patients' %><th class="DataTable-table-header">Status</th><% end %>
         <% else %>
+          <th class="DataTable-table-header"></th>
           <th class="DataTable-table-header">Monitoree</th>
           <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
           <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Assigned User</th> <% end %>
@@ -83,6 +85,11 @@
           }
         });
       },
+      select: {
+        style:    'multi+shift',
+        selector: 'td:first-child'
+      },
+      order: [[ 1, 'asc' ]],
       "serverSide": true,
       "deferLoading": 0, // Conditionally load tables (when tab is pressed)
       "ajax": route,
@@ -91,6 +98,13 @@
       'processing': true,
       "language": { processing: '<i class="fas fa-cog fa-spin fa-2x"></i>'},
       "columns": [
+        {
+          targets: 0,
+          data: null,
+          defaultContent: '',
+          orderable: false,
+          className: 'select-checkbox'
+        },
         <% if isolation %>
           {
             "data": "linelist.name",
