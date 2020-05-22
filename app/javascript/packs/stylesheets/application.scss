@@ -6,3 +6,48 @@
 @import 'recharts';
 @import 'datatables';
 @import 'toastify';
+
+.geographic-summary-header {
+  font-weight: bold;
+  border-bottom: 4px solid rgb(28,84,126);
+  font-size: 18px;
+}
+
+.geographic-summary-container {
+  border: 1px solid #dcdcdc;
+}
+
+.county-maps-loading {
+  position: absolute;
+  left: calc(50% - 2.5em);
+  z-index: 1000;
+  top: 50%;
+}
+
+
+
+.map-panel-contaianer {
+  border-right: 1px solid #dcdcdc;
+}
+
+.map-panel-mount-point {
+  position: relative;
+  border-left: 1px solid #dcdcdc;
+  border-top: 1px solid #dcdcdc;
+  border-bottom: 1px solid #e9e9e9;
+  border-right: 1px solid #e9e9e9;
+}
+
+.map-title {
+  border-bottom: 1px solid #dcdcdc;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.map-panel-controls {
+  border-right: 1px solid #dcdcdc;
+  border-left: 1px solid #dcdcdc;
+  border-bottom: 1px solid #dcdcdc;
+}

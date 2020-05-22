@@ -11,7 +11,7 @@ class MapComponent extends React.Component {
     this.updateMapWithDay = this.updateMapWithDay.bind(this);
     this.monitoreesMap = this.props.variant === 'Total' ? _.cloneDeep(totalMonitoreesMap) : _.cloneDeep(symptomaticMonitoreesMap);
     this.selectedDateIndex = 0;
-
+    console.log(this.props.patientInfo);
     this.state = {
       // All this does is translate`{'Kansas' : 5}` to `{'KA' : 5}` for all states
       mappedPatientsCountByStateAndDay: this.props.patientInfo.map(x => {

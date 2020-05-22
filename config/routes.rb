@@ -97,4 +97,7 @@ Rails.application.routes.draw do
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
 
   get '/analytics', to: 'analytics#index', as: :analytics
+  get '/county_level_maps/:mapFile', to: 'analytics#get_geo_json'
+  get '/county_level_data/:jurisdictionName', to: 'analytics#get_jurisdiction_data'
+
 end

@@ -17,7 +17,24 @@ class AnalyticsController < ApplicationController
     redirect_to(root_url) && return if @stats.nil?
   end
 
+  def get_geo_json
+    send_file(
+      "#{Rails.root}/public/CountyLevelMaps/#{params[:mapFile]}.json",
+      filename: "#{params[:mapFile]}.json",
+      type: 'application/json'
+    )
+  end
+
+  def get_jurisdiction_data
+    render json:
+    {
+      "total": {"Essex": 12345},
+      "symptomatic": {"Essex": 12345}
+    }
+  end
+
   protected
+
 
   def enroller_stats
     {
