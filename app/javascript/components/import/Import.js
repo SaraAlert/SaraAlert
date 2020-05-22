@@ -8,13 +8,21 @@ import reportError from '../util/ReportError';
 class Import extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { patients: props.patients, errors: props.errors, accepted: [], rejected: [], phased: [], progress: 0, importDuplicates: false };
+    this.state = {
+      patients: props.patients,
+      errors: props.errors,
+      accepted: [],
+      rejected: [],
+      phased: [],
+      progress: 0,
+      importDuplicates: false,
+      isPaused: false,
+    };
     this.importAll = this.importAll.bind(this);
     this.importSub = this.importSub.bind(this);
     this.rejectSub = this.rejectSub.bind(this);
     this.handleExtraOptionToggle = this.handleExtraOptionToggle.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
-    this.finishImport = this.finishImport.bind(this);
     this.submit = this.submit.bind(this);
   }
 
@@ -59,7 +67,9 @@ class Import extends React.Component {
         let next = [...this.state.accepted, num];
         this.setState({ accepted: next, progress: num }, () => {
           if (this.state.phased.length > num + 1) {
-            this.submit(this.state.phased[num + 1], num + 1, bypass);
+            if (!this.state.isPaused) {
+              this.submit(this.state.phased[num + 1], num + 1, bypass);
+            }
           } else if (this.state.phased.length != 0) {
             // if there are no monitorees to import, and import wasn't done one at a time go back to root after pressing the import button
             history.back();
@@ -75,10 +85,15 @@ class Import extends React.Component {
     this.setState({ importDuplicates: value });
   }
 
-  finishImport = async () => {
-    let confirmText = `Ending the Import process will not undo any records imported, but no new records will be created.`;
-    if (await confirmDialog(confirmText, { title: 'Finish Import Process' })) {
-      window.history.go(-1);
+  stopImport = async () => {
+    this.setState({ isPaused: true });
+    let confirmText = `Stopping the Import process will not undo any records already imported, but no new records will be created. Do you wish to stop the import process?`;
+    if (await confirmDialog(confirmText, { title: 'Import Paused!' })) {
+      this.setState({ isPaused: false });
+      location.href = '/';
+    } else {
+      this.setState({ isPaused: false });
+      this.submit(this.state.phased[this.state.progress + 1], this.state.progress + 1, true);
     }
   };
 
@@ -94,6 +109,7 @@ class Import extends React.Component {
     if (this.state.patients.length === this.state.accepted.length + this.state.rejected.length && this.state.errors.length == 0) {
       location.href = '/';
     }
+    console.log(JSON.parse(JSON.stringify(this.state)));
     return (
       <React.Fragment>
         {this.state.errors.length != 0 && (
@@ -135,8 +151,8 @@ class Import extends React.Component {
               }>
               Accept All
             </Button>
-            <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.finishImport()}>
-              Finish Import
+            <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.stopImport()}>
+              Stop Import
             </Button>
             {this.state.patients.map((patient, index) => {
               return (
