@@ -3,7 +3,7 @@
 namespace :demo do
   desc 'Configure the database for demo use'
   task setup: :environment do
-    raise 'This task is only for use in a development environment' unless Rails.env == 'development'
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
     #####################################
 
@@ -116,7 +116,7 @@ namespace :demo do
 
   desc 'Add lots of data to the database to provide some idea of basic scaling issues'
   task populate: :environment do
-    raise 'This task is only for use in a development environment' unless Rails.env == 'development'
+    raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
     days = (ENV['DAYS'] || 14).to_i
     count = (ENV['COUNT'] || 25).to_i
@@ -149,13 +149,13 @@ namespace :demo do
 
       # Transactions speeds things up a bit
       ActiveRecord::Base.transaction do
-      
+
         # Patients created before today
         existing_patients = Patient.where('created_at < ?', today)
 
         # Histories to be created today
         histories = []
-      
+
         # Create assessments
         printf("Generating assessments...")
         assessments = []
@@ -202,7 +202,7 @@ namespace :demo do
             threshold_condition_hash: threshold_conditions[assessment.patient.jurisdiction_id][:hash],
             created_at: assessment[:created_at],
             updated_at: assessment[:updated_at]
-          )          
+          )
         end
         ReportedCondition.import! reported_conditions
         printf(" done.\n")
@@ -467,7 +467,7 @@ namespace :demo do
 
           patients << patient
         end
-        
+
         Patient.import! patients
         new_patients = Patient.where('created_at >= ?', today)
         new_patients.update_all('responder_id = id')
