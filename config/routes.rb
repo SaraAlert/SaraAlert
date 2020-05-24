@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     root to: 'home#index'
   end
 
-  devise_for :users, only: [:sessions, :authy], :path_names => {
+  devise_for :users, only: [:sessions, :authy], controllers: {devise_authy: 'devise_authy'}, :path_names => {
     verify_authy: "/verify-token",
     enable_authy: "/enable-two-factor",
     verify_authy_installation: "/verify-installation"
