@@ -28,8 +28,7 @@ class PublicHealthController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .where(isolation: false)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: false))
   end
 
   def symptomatic_patients_exposure
@@ -38,8 +37,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .symptomatic
-                                                          .where(isolation: false)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: false))
   end
 
   def pui_patients_exposure
@@ -48,8 +46,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .under_investigation
-                                                          .where(isolation: false)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: false))
   end
 
   def closed_patients_exposure
@@ -58,8 +55,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .monitoring_closed_without_purged
-                                                          .where(isolation: false)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: false))
   end
 
   def non_reporting_patients_exposure
@@ -68,8 +64,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .non_reporting
-                                                          .where(isolation: false)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: false))
   end
 
   def asymptomatic_patients_exposure
@@ -78,8 +73,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .asymptomatic
-                                                          .where(isolation: false)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: false))
   end
 
   def transferred_in_patients_exposure
@@ -88,8 +82,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.jurisdiction
                                                           .transferred_in_patients
-                                                          .where(isolation: false)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: false))
   end
 
   def transferred_out_patients_exposure
@@ -97,8 +90,7 @@ class PublicHealthController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
     render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_out_patients
-                                                                       .where(isolation: false)
-                                                                       .includes(%i[latest_transfer latest_assessment]))
+                                                                       .where(isolation: false))
   end
 
   #############################################################################
@@ -124,8 +116,7 @@ class PublicHealthController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .where(isolation: true)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: true))
   end
 
   def requiring_review_patients_isolation
@@ -134,8 +125,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .isolation_requiring_review
-                                                          .where(isolation: true)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: true))
   end
 
   def closed_patients_isolation
@@ -144,8 +134,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .monitoring_closed_without_purged
-                                                          .where(isolation: true)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: true))
   end
 
   def non_reporting_patients_isolation
@@ -154,8 +143,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .isolation_non_reporting
-                                                          .where(isolation: true)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: true))
   end
 
   def reporting_patients_isolation
@@ -164,8 +152,7 @@ class PublicHealthController < ApplicationController
 
     render json: filter_sort_paginate(params, current_user.viewable_patients
                                                           .isolation_reporting
-                                                          .where(isolation: true)
-                                                          .includes(%i[latest_transfer latest_assessment]))
+                                                          .where(isolation: true))
   end
 
   def transferred_in_patients_isolation
@@ -173,8 +160,7 @@ class PublicHealthController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
     render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_in_patients
-                                                                       .where(isolation: true)
-                                                                       .includes(%i[latest_transfer latest_assessment]))
+                                                                       .where(isolation: true))
   end
 
   def transferred_out_patients_isolation
@@ -182,8 +168,7 @@ class PublicHealthController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
     render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_out_patients
-                                                                       .where(isolation: true)
-                                                                       .includes(%i[latest_transfer latest_assessment]))
+                                                                       .where(isolation: true))
   end
 
   protected
@@ -251,7 +236,7 @@ class PublicHealthController < ApplicationController
       elsif params[:columns][val['column']][:name] == 'public_health_action' # PHA
         sorted = sorted.order(public_health_action: direction)
       elsif params[:columns][val['column']][:name] == 'latest_report' # Latest Report
-        sorted = sorted.includes(:latest_assessment).order('assessments.created_at ' + direction.to_s)
+        sorted = sorted.includes(:assessments).order('assessments.created_at ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'closed_at' # Closed At
         sorted = sorted.order(closed_at: direction)
       end
