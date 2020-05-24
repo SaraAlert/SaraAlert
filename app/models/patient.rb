@@ -45,12 +45,15 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   belongs_to :creator, class_name: 'User'
   has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
   has_many :assessments
-  has_one :latest_assessment, -> { order created_at: :desc }, class_name: 'Assessment'
   belongs_to :jurisdiction
   has_many :histories
   has_many :transfers
   has_one :latest_transfer, -> { order(created_at: :desc) }, class_name: 'Transfer'
   has_many :laboratories
+
+  def latest_assessment
+    assessments.order(created_at: :desc).first
+  end
 
   # Patients who are eligible for reminders
   scope :reminder_eligible, lambda {
