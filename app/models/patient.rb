@@ -48,11 +48,16 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   belongs_to :jurisdiction
   has_many :histories
   has_many :transfers
-  has_one :latest_transfer, -> { order(created_at: :desc) }, class_name: 'Transfer'
   has_many :laboratories
 
+  # Most recent assessment
   def latest_assessment
     assessments.order(created_at: :desc).first
+  end
+
+  # Most recent transfer
+  def latest_transfer
+    transfers.order(created_at: :desc).first
   end
 
   # Patients who are eligible for reminders
