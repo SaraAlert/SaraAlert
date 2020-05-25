@@ -20,6 +20,7 @@ class PatientsController < ApplicationController
 
     @jurisdiction_path = @patient.jurisdiction_path
     @group_members = @patient.dependents.where.not(id: @patient.id)
+    @group_numbers = @patient.jurisdiction.immediate_patients.where.not(group_number: nil).distinct.pluck(:group_number).sort
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -227,11 +228,29 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
     patient = current_user.get_patient(params.permit(:id)[:id])
+    update_fields(patient, params)
+
+    # Do we need to propagate to household?
+    if params.permit(:apply_to_group)[:apply_to_group]
+      patient.dependents.where.not(id: patient.id).each do |member|
+        update_fields(member, params)
+        next unless params[:comment]
+
+        update_history(member, params)
+      end
+    end
+
+    return unless params[:comment]
+
+    update_history(patient, params)
+  end
+
+  def update_fields(patient, params)
     patient.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
     patient.update(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
                                                    :exposure_risk_assessment, :public_health_action,
                                                    :isolation, :pause_notifications, :symptom_onset,
-                                                   :case_status))
+                                                   :case_status, :group_number))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
@@ -242,40 +261,9 @@ class PatientsController < ApplicationController
       end
     end
     patient.save
+  end
 
-    # Do we need to propagate to household?
-    if params.permit(:apply_to_group)[:apply_to_group]
-      patient.dependents.where.not(id: patient.id).each do |member|
-        member.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != member.monitoring && member.monitoring
-        member.update(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
-                                                      :exposure_risk_assessment, :public_health_action, :isolation,
-                                                      :case_status))
-        if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != member.jurisdiction_id
-          # Jurisdiction has changed
-          jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
-          unless jur.nil?
-            transfer = Transfer.new(patient: member, from_jurisdiction: member.jurisdiction, to_jurisdiction: jur, who: current_user)
-            transfer.save!
-            member.jurisdiction_id = jur.id
-          end
-        end
-        member.save
-        next unless params[:comment]
-
-        history = History.new
-        history.created_by = current_user.email
-        comment = 'User changed '
-        comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
-        comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-        history.comment = comment
-        history.patient = member
-        history.history_type = 'Monitoring Change'
-        history.save
-      end
-    end
-
-    return unless params[:comment]
-
+  def update_history(patient, params)
     history = History.new
     history.created_by = current_user.email
     comment = 'User changed '
@@ -520,6 +508,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
+      group_number
     ]
   end
 end
