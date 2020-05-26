@@ -189,7 +189,7 @@ class PatientMailer < ApplicationMailer
   def add_success_history(patient)
     return if patient.nil?
 
-    unless patient&.preferred_contact_method&.nil?
+    unless patient&.preferred_contact_method.nil?
       history = History.new
       history.created_by = 'Sara Alert System'
       comment = 'Sara Alert sent a report reminder to this monitoree via ' + patient.preferred_contact_method + '.'
