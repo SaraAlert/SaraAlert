@@ -311,9 +311,7 @@ class Exposure extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md="18" controlId="jurisdiction_id" className="pt-2">
-                      <Form.Label className="nav-input-label">
-                        ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_label?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
@@ -353,7 +351,10 @@ class Exposure extends React.Component {
                         )}
                     </Form.Group>
                     <Form.Group as={Col} md="6" controlId="group_number" className="pt-2">
-                      <Form.Label className="nav-input-label">ASSIGNED GROUP{schema?.fields?.group_number?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="nav-input-label">
+                        ASSIGNED GROUP{schema?.fields?.group_number?._exclusive?.required && ' *'}
+                        <InfoTooltip tooltipTextKey="groupNumber" location="top"></InfoTooltip>
+                      </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['group_number']}
                         as="input"

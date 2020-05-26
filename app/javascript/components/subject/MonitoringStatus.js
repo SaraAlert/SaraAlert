@@ -461,7 +461,10 @@ class MonitoringStatus extends React.Component {
               </Form.Row>
               <Form.Row className="align-items-end">
                 <Form.Group as={Col} sm="10" md="8" className="pt-2">
-                  <Form.Label className="nav-input-label">ASSIGNED GROUP</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    ASSIGNED GROUP
+                    <InfoTooltip tooltipTextKey="groupNumber" location="right"></InfoTooltip>
+                  </Form.Label>
                   <Form.Control
                     as="input"
                     name="groupNumber"
