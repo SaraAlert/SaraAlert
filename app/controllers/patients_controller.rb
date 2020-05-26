@@ -20,7 +20,6 @@ class PatientsController < ApplicationController
 
     @jurisdiction_path = @patient.jurisdiction_path
     @group_members = @patient.dependents.where.not(id: @patient.id)
-    @group_numbers = @patient.jurisdiction.immediate_patients.where.not(group_number: nil).distinct.pluck(:group_number).sort
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -433,6 +432,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
+      group_number
       symptom_onset
       case_status
     ]
