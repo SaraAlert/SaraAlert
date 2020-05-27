@@ -72,7 +72,7 @@ class Assessment < ApplicationRecord
       return true if threshold_operator == 'equal' && reported_symptom.value == threshold_symptom.value
       return true if threshold_operator == 'not equal' && reported_symptom.value != threshold_symptom.value
     elsif reported_symptom.type == 'BoolSymptom'
-      return true if threshold_operator == 'not equal' && reported_symptom.value == threshold_symptom.value
+      return reported_symptom.value != threshold_symptom.value if threshold_operator == 'not equal'
       # Bool symptom threshold_operator will fall back to equal
       return true if reported_symptom.value == threshold_symptom.value
     end
