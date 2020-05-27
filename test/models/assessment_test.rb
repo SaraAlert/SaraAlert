@@ -8,11 +8,10 @@ class AssessmentTest < ActiveSupport::TestCase
 
   def teardown; end
 
-
   test 'float symptom less than passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Less Than', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:float_symptom, float_value: 90.0, threshold_operator: 'Less Than', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -30,7 +29,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'float symptom less than or equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Less Than Or Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:float_symptom, float_value: 90.0, threshold_operator: 'Less Than Or Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -48,7 +47,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'float symptom greater than passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Greater Than', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:float_symptom, float_value: 91.0, threshold_operator: 'Greater Than', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -66,7 +65,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'float symptom greater than or equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Greater Than Or Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:float_symptom, float_value: 91.0, threshold_operator: 'Greater Than Or Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -84,7 +83,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'float symptom equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -99,7 +98,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'float symptom not equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Not Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Not Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -114,7 +113,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'integer symptom less than passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Less Than', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:integer_symptom, int_value: 90, threshold_operator: 'Less Than', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -132,7 +131,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'integer symptom less than or equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Less Than Or Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:integer_symptom, int_value: 90, threshold_operator: 'Less Than Or Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -150,7 +149,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'integer symptom greater than passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:integer_symptom, int_value: 92, threshold_operator: 'Greater Than', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -168,7 +167,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'integer symptom greater than or equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than Or Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Greater Than Or Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -186,7 +185,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'integer symptom equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -201,7 +200,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'integer symptom not equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Not Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:integer_symptom, int_value: 91, threshold_operator: 'Not Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -216,7 +215,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'bool symptom equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
@@ -231,7 +230,7 @@ class AssessmentTest < ActiveSupport::TestCase
   test 'bool symptom not equal passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:bool_symptom, bool_value: true, threshold_operator: 'Not Equal', name: 'pulseox', label: 'Pulse Ox')
-    threshold_condition = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom])
     reported_symptom = create(:bool_symptom, bool_value: false, threshold_operator: 'Not Equal', name: 'pulseox', label: 'Pulse Ox')
     reported_condition = create(:reported_condition, symptoms: [reported_symptom], threshold_condition_hash: threshold_condition_hash)
     patient = create(:patient)
