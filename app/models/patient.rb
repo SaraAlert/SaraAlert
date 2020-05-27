@@ -542,6 +542,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     {
       name: { name: "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}", id: id },
       jurisdiction: jurisdiction&.name || '',
+      group_number: group_number || '',
       state_local_id: user_defined_id_statelocal || '',
       sex: sex || '',
       dob: date_of_birth&.strftime('%F') || '',

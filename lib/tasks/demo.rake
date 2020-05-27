@@ -451,7 +451,7 @@ namespace :demo do
           patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
                                        'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
           patient[:jurisdiction_id] = jurisdictions.sample[:id]
-          patient[:group_number] = (rand < 0.95 ? rand(1..50) : rand(1..1000)) if rand < 0.9
+          patient[:group_number] = (rand < 0.9 ? rand(1..10) : rand(1...100)) if rand < 0.9
 
           # Other fields populated upon enrollment
           patient[:submission_token] = SecureRandom.hex(20),

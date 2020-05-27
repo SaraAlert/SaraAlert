@@ -4,7 +4,8 @@
       <tr>
         <% if isolation %>
           <th class="DataTable-table-header">Monitoree</th>
-          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Assigned Jurisdiction<% end %></th>
+          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
+          <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Group</th> <% end %>
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
           <th class="DataTable-table-header">Date of Birth</th>
@@ -19,7 +20,8 @@
           <% if type == 'all_patients' %><th class="DataTable-table-header">Status</th><% end %>
         <% else %>
           <th class="DataTable-table-header">Monitoree</th>
-          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Assigned Jurisdiction<% end %></th>
+          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
+          <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Group</th> <% end %>
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
           <th class="DataTable-table-header">Date of Birth</th>
@@ -65,6 +67,7 @@
             }
           },
           <% if type == 'transferred_in_patients' %>{ "data": "linelist.transferred_from", "orderable": false, render: $.fn.dataTable.render.text() },<% elsif type == 'transferred_out_patients' %>{ "data": "linelist.transferred_to", "orderable": false, render: $.fn.dataTable.render.text() },<% else %>{ "data": "linelist.jurisdiction", "name": "jurisdiction", render: $.fn.dataTable.render.text() },<% end %>
+          <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %>{ "data": "linelist.group_number", "name": "group_number", render: $.fn.dataTable.render.text() },<% end %>
           { "data": "linelist.state_local_id", "name": "state_local_id", render: $.fn.dataTable.render.text() },
           { "data": "linelist.sex", "name": "sex", render: $.fn.dataTable.render.text() },
           { "data": "linelist.dob", "name": "dob", render: $.fn.dataTable.render.text() },
@@ -99,6 +102,7 @@
           <% else %>
             { "data": "linelist.jurisdiction", "name": "jurisdiction", render: $.fn.dataTable.render.text() },
           <% end %>
+          <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %>{ "data": "linelist.group_number", "name": "group_number", render: $.fn.dataTable.render.text() },<% end %>
           { "data": "linelist.state_local_id", "name": "state_local_id", render: $.fn.dataTable.render.text() },
           { "data": "linelist.sex", "name": "sex", render: $.fn.dataTable.render.text() },
           { "data": "linelist.dob", "name": "dob", render: $.fn.dataTable.render.text() },
