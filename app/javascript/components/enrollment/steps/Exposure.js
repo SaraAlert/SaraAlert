@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { countryOptions } from '../../data';
 import { PropTypes } from 'prop-types';
+import axios from 'axios';
 import * as yup from 'yup';
 import confirmDialog from '../../util/ConfirmDialog';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -17,6 +18,7 @@ class Exposure extends React.Component {
       jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalGroupNumber: this.props.currentState.patient.group_number,
+      groupNumbers: this.props.groupNumbers,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
@@ -31,7 +33,17 @@ class Exposure extends React.Component {
     if (event?.target?.name && event.target.name === 'jurisdictionId') {
       this.setState({ jurisdictionPath: event.target.value });
       let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
-      value = jurisdiction_id ? jurisdiction_id : -1;
+      if (jurisdiction_id) {
+        value = jurisdiction_id;
+        axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+        axios.get(window.BASE_PATH + `/jurisdictions/${jurisdiction_id}/group_numbers`).then(response => {
+          if (response?.data?.groupNumbers) {
+            this.setState({ groupNumbers: response.data.groupNumbers });
+          }
+        });
+      } else {
+        value = -1;
+      }
     } else if (event?.target?.name && event.target.name === 'groupNumber') {
       if (isNaN(event.target.value)) return;
 
@@ -364,10 +376,10 @@ class Exposure extends React.Component {
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
-                        value={this.state.current.patient.group_number}
+                        value={this.state.current.patient.group_number || ''}
                       />
                       <datalist id="groupNumbers">
-                        {this.props.groupNumbers.map(num => {
+                        {this.state.groupNumbers.map(num => {
                           return (
                             <option value={num} key={num}>
                               {num}
@@ -380,7 +392,7 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                       {this.props.has_group_members &&
                         this.state.current.patient.group_number !== this.state.originalGroupNumber &&
-                        this.props.groupNumbers.includes(this.state.current.patient.group_number) && (
+                        this.state.groupNumbers.includes(this.state.current.patient.group_number) && (
                           <Form.Group className="mt-2">
                             <Form.Check
                               type="switch"
@@ -546,6 +558,7 @@ Exposure.propTypes = {
   has_group_members: PropTypes.bool,
   jurisdictionPaths: PropTypes.object,
   groupNumbers: PropTypes.array,
+  authenticity_token: PropTypes.string,
 };
 
 export default Exposure;

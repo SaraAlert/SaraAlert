@@ -15,7 +15,7 @@
       has_group_members: @group_members.exists?,
       patient: @patient,
       jurisdictionPaths: Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}],
-      groupNumbers: @patient.jurisdiction.immediate_patients.where.not(group_number: nil).distinct.pluck(:group_number).sort
+      groupNumbers: @patient.jurisdiction.group_numbers
       }) %>
   </div>
 <% end %>

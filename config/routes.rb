@@ -34,6 +34,8 @@ Rails.application.routes.draw do
   post '/laboratories', to: 'laboratories#create'
   post '/laboratories/:id', to: 'laboratories#update'
 
+  get '/jurisdictions/:jurisdiction_id/group_numbers', to: 'patients#group_numbers'
+
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   get '/export/csv/patients/:type/:workflow', to: 'export#csv'

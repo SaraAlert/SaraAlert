@@ -219,6 +219,7 @@ class Enrollment extends React.Component {
               has_group_members={this.props.has_group_members}
               jurisdictionPaths={this.props.jurisdictionPaths}
               groupNumbers={this.props.groupNumbers}
+              authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
           <Carousel.Item>
