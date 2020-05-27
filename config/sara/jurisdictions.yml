@@ -8,7 +8,7 @@
 # determining whether or not a patient is symptomatic. For float and integer symptoms, a reported symptom 
 # will be compared using the specified 'threshold_operator' to the specified `value` and will be considered as symptomatic.
 # if the result of the comparison is true. Available values for the 'threshold_operator' field are 'Less Than', 'Less Than Or Equal',
-# 'Greater Than', 'Greater Than Or Equal', 'Equal To' and 'Not Equal'. Available values for the `type`
+# 'Greater Than', 'Greater Than Or Equal', 'Equal' and 'Not Equal'. Available values for the `type`
 # field in a symptom are `FloatSymptom`, `IntegerSymptom`, or `BoolSymptom`. The `children` of a jurisdiction are
 # nested jurisdictions that may have their own `symptoms` and/or `children`.
 #
