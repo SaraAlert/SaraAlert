@@ -241,4 +241,37 @@ class AssessmentTest < ActiveSupport::TestCase
     reported_symptom.value = true
     assert_not assessment.symptom_passes_threshold('pulseox')
   end
+
+  test 'symptomatic when symptom groups specified' do
+    threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
+    threshold_symptom_1 = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox', group: 2)
+    threshold_symptom_2 = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'fever', label: 'Fever', group: 2)
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom_1, threshold_symptom_2])
+    reported_symptom_1 = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
+    reported_symptom_2 = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'fever', label: 'Fever')
+    reported_condition = create(:reported_condition, symptoms: [reported_symptom_1, reported_symptom_2], threshold_condition_hash: threshold_condition_hash)
+    patient = create(:patient)
+    assessment = create(:assessment, reported_condition: reported_condition, patient: patient)
+    # Assert symptomatic when 2/2 group 2 symptoms pass threshold
+    assert assessment.symptomatic?
+    # Assert non_symptomatic when 1/2 group 2 symptoms pass threshold
+    reported_symptom_2.value = false
+    assert_not assessment.symptomatic?
+  end
+
+  test 'symptomatic when group defaults to group 1' do
+    threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
+    threshold_symptom_1 = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
+    threshold_symptom_2 = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'fever', label: 'Fever', group: 2)
+    create(:threshold_condition, threshold_condition_hash: threshold_condition_hash, symptoms: [threshold_symptom_1, threshold_symptom_2])
+    reported_symptom_1 = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'pulseox', label: 'Pulse Ox')
+    reported_symptom_2 = create(:bool_symptom, bool_value: true, threshold_operator: 'Equal', name: 'fever', label: 'Fever')
+    reported_condition = create(:reported_condition, symptoms: [reported_symptom_1, reported_symptom_2], threshold_condition_hash: threshold_condition_hash)
+    patient = create(:patient)
+    assessment = create(:assessment, reported_condition: reported_condition, patient: patient)
+    # Assert symptomatic when group 1 symptom is true regardless of what a group 2 symptom has for a value
+    assert assessment.symptomatic?
+    reported_symptom_2.value = false
+    assert assessment.symptomatic?
+  end
 end

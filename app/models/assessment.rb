@@ -46,7 +46,7 @@ class Assessment < ApplicationRecord
       symptom_groups[symptom_group_index] += 1 if symptom_passes
     end
     symptomatic = false
-    symptom_groups.each_with_index { |count, index| symptomatic ||= (count >= index + 1) }
+    symptom_groups.each_with_index { |count, index| symptomatic ||= (count >= index + 1) unless count.nil? }
     symptomatic
   end
 
