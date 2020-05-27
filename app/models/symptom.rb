@@ -29,7 +29,9 @@ class Symptom < ApplicationRecord
     if type == 'BoolSymptom'
       label
     elsif type == 'IntegerSymptom' || type == 'FloatSymptom'
-      [label, threshold_operator, value].to_sentence(words_connector: ' ', last_word_connector: ' ').humanize
+      threshold_op = threshold_operator
+      threshold_op += ' to' if threshold_op.ends_with? 'Equal'
+      [label, threshold_op, value].to_sentence(words_connector: ' ', last_word_connector: ' ').humanize
     end
   end
 
