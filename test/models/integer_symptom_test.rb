@@ -55,4 +55,19 @@ class IntegerSymptomTest < ActiveSupport::TestCase
     assert_includes symptom.to_json, 'int_value'
     assert_includes symptom.to_json, symptom.int_value.to_s
   end
+
+  test 'integer symptom bool based prompt' do
+    symptom = create(:integer_symptom, int_value: 90, threshold_operator: 'Less Than', name: 'pulseox', label: 'Pulse Ox')
+    assert_equal symptom.bool_based_prompt, 'Pulse ox less than 90'
+    symptom.threshold_operator = 'Less Than Or Equal'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox less than or equal to 90'
+    symptom.threshold_operator = 'Greater Than'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox greater than 90'
+    symptom.threshold_operator = 'Greater Than Or Equal'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox greater than or equal to 90'
+    symptom.threshold_operator = 'Equal'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox equal to 90'
+    symptom.threshold_operator = 'Not Equal'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox not equal to 90'
+  end
 end
