@@ -257,14 +257,14 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
          .left_outer_joins(:assessments)
          .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
          .or(
-          where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-            .where(monitoring: true)
-            .where(purged: false)
-            .where(isolation: true)
-            .left_outer_joins(:assessments)
-            .where(assessments: { patient_id: nil })
-        )
-        .distinct
+           where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+             .where(monitoring: true)
+             .where(purged: false)
+             .where(isolation: true)
+             .left_outer_joins(:assessments)
+             .where(assessments: { patient_id: nil })
+         )
+         .distinct
   }
 
   # All individuals currently being monitored if true, all individuals otherwise
