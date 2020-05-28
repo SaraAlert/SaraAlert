@@ -71,11 +71,6 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal 1, Patient.count
     assert_equal 0, Patient.asymp_non_test_based.count
 
-    # meets definition: has positive test result more than 10 days ago, no tests and symptoms since then
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
-    assert_equal 1, Patient.asymp_non_test_based.count
-    Laboratory.destroy_all
-
     # meets definition: asymptomatic after positive test result
     Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
     Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 8.days.ago)

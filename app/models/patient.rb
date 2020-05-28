@@ -193,6 +193,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where(purged: false)
       .where(isolation: true)
       .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
+      .left_outer_joins(:assessments)
+      .where.not(assessments: { patient_id: nil })
       .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever)
       .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_medication)
       .distinct
@@ -203,6 +205,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
+      .left_outer_joins(:assessments)
+      .where.not(assessments: { patient_id: nil })
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever)
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_medication)
       .where('symptom_onset <= ?', 10.days.ago)
@@ -211,23 +215,6 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
 
   # Individuals that meet the asymptomatic recovery definition
   scope :asymp_non_test_based, lambda {
-    where(id: Patient.unscoped.asymp_non_test_based_no_assessments)
-      .or(
-        where(id: Patient.unscoped.asymp_non_test_based_asymp_assessments)
-      )
-  }
-
-  scope :asymp_non_test_based_no_assessments, lambda {
-    where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: true)
-      .where_assoc_exists(:laboratories, &:before_ten_days_positive)
-      .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
-      .where_assoc_not_exists(:assessments)
-      .distinct
-  }
-
-  scope :asymp_non_test_based_asymp_assessments, lambda {
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
