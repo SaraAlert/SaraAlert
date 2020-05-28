@@ -39,7 +39,7 @@ class AnalyticsController < ApplicationController
     assessment_result_by_day_array = []
     total_patient_count_by_state_and_day = []
     symptomatic_patient_count_by_state_and_day = []
-    dates = (jurisdiction_analytics.pluck(:created_at).min.to_date..jurisdiction_analytics.pluck(:created_at).max.to_date).to_a
+    dates = (14.days.ago.to_date..Date.today).to_a
     dates.each do |date|
       next if date.nil?
 
