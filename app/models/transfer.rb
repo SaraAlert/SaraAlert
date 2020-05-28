@@ -9,11 +9,13 @@ class Transfer < ApplicationRecord
 
   def from_path
     return 'Unknown Jurisdiction' if from_jurisdiction.blank?
+
     from_jurisdiction[:path] || from_jurisdiction.jurisdiction_path_string
   end
 
   def to_path
     return 'Unknown Jurisdiction' if to_jurisdiction.blank?
+
     to_jurisdiction[:path] || to_jurisdiction.jurisdiction_path_string
   end
 
