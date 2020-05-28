@@ -7,15 +7,22 @@ namespace :demo do
 
     #####################################
 
-    print 'Creating jurisdictions...'
+    print 'Gathering jurisdictions...'
 
-    usa = Jurisdiction.where(name: 'USA').first
-    state1 = Jurisdiction.where(name: 'State 1').first
-    state2 = Jurisdiction.where(name: 'State 2').first
-    county1 = Jurisdiction.where(name: 'County 1').first
-    county2 = Jurisdiction.where(name: 'County 2').first
-    county3 = Jurisdiction.where(name: 'County 3').first
-    county4 = Jurisdiction.where(name: 'County 4').first
+    jurisdictions = {}
+
+    jurisdictions[:usa] = Jurisdiction.where(name: 'USA').first
+    jurisdictions[:state1] = Jurisdiction.where(name: 'State 1').first
+    jurisdictions[:state2] = Jurisdiction.where(name: 'State 2').first
+    jurisdictions[:county1] = Jurisdiction.where(name: 'County 1').first
+    jurisdictions[:county2] = Jurisdiction.where(name: 'County 2').first
+    jurisdictions[:county3] = Jurisdiction.where(name: 'County 3').first
+    jurisdictions[:county4] = Jurisdiction.where(name: 'County 4').first
+
+    if jurisdictions.has_value?(nil)
+      puts ' Demonstration jurisdictions were not found! Make sure to run `bundle exec rake admin:import_or_update_jurisdictions` with the demonstration jurisdictions.yml'
+      exit(1)
+    end
 
     puts ' done!'
 
@@ -23,27 +30,27 @@ namespace :demo do
 
     print 'Creating enroller users...'
 
-    enroller1 = User.new(email: 'state1_enroller@example.com', password: '1234567ab!', jurisdiction: state1, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller1 = User.new(email: 'state1_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
     enroller1.add_role :enroller
     enroller1.save
 
-    enroller2 = User.new(email: 'localS1C1_enroller@example.com', password: '1234567ab!', jurisdiction: county1, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller2 = User.new(email: 'localS1C1_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
     enroller2.add_role :enroller
     enroller2.save
 
-    enroller3 = User.new(email: 'localS1C2_enroller@example.com', password: '1234567ab!', jurisdiction: county2, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller3 = User.new(email: 'localS1C2_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county2], force_password_change: false, authy_enabled: false, authy_enforced: false)
     enroller3.add_role :enroller
     enroller3.save
 
-    enroller4 = User.new(email: 'state2_enroller@example.com', password: '1234567ab!', jurisdiction: state2, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller4 = User.new(email: 'state2_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state2], force_password_change: false, authy_enabled: false, authy_enforced: false)
     enroller4.add_role :enroller
     enroller4.save
 
-    enroller5 = User.new(email: 'localS2C3_enroller@example.com', password: '1234567ab!', jurisdiction: county3, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller5 = User.new(email: 'localS2C3_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county3], force_password_change: false, authy_enabled: false, authy_enforced: false)
     enroller5.add_role :enroller
     enroller5.save
 
-    enroller6 = User.new(email: 'localS2C4_enroller@example.com', password: '1234567ab!', jurisdiction: county4, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller6 = User.new(email: 'localS2C4_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county4], force_password_change: false, authy_enabled: false, authy_enforced: false)
     enroller6.add_role :enroller
     enroller6.save
 
@@ -53,27 +60,27 @@ namespace :demo do
 
     print 'Creating public health users...'
 
-    ph1 = User.new(email: 'state1_epi@example.com', password: '1234567ab!', jurisdiction: state1, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph1 = User.new(email: 'state1_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
     ph1.add_role :public_health
     ph1.save
 
-    ph2 = User.new(email: 'localS1C1_epi@example.com', password: '1234567ab!', jurisdiction: county1, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph2 = User.new(email: 'localS1C1_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
     ph2.add_role :public_health
     ph2.save
 
-    ph3 = User.new(email: 'localS1C2_epi@example.com', password: '1234567ab!', jurisdiction: county2, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph3 = User.new(email: 'localS1C2_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county2], force_password_change: false, authy_enabled: false, authy_enforced: false)
     ph3.add_role :public_health
     ph3.save
 
-    ph4 = User.new(email: 'state2_epi@example.com', password: '1234567ab!', jurisdiction: state2, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph4 = User.new(email: 'state2_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state2], force_password_change: false, authy_enabled: false, authy_enforced: false)
     ph4.add_role :public_health
     ph4.save
 
-    ph5 = User.new(email: 'localS2C3_epi@example.com', password: '1234567ab!', jurisdiction: county3, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph5 = User.new(email: 'localS2C3_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county3], force_password_change: false, authy_enabled: false, authy_enforced: false)
     ph5.add_role :public_health
     ph5.save
 
-    ph6 = User.new(email: 'localS2C4_epi@example.com', password: '1234567ab!', jurisdiction: county4, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph6 = User.new(email: 'localS2C4_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county4], force_password_change: false, authy_enabled: false, authy_enforced: false)
     ph6.add_role :public_health
     ph6.save
 
@@ -83,7 +90,7 @@ namespace :demo do
 
     print 'Creating public health enroller users...'
 
-    phe1 = User.new(email: 'state1_epi_enroller@example.com', password: '1234567ab!', jurisdiction: state1, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    phe1 = User.new(email: 'state1_epi_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
     phe1.add_role :public_health_enroller
     phe1.save
 
@@ -93,7 +100,7 @@ namespace :demo do
 
     print 'Creating admin users...'
 
-    admin1 = User.new(email: 'admin1@example.com', password: '1234567ab!', jurisdiction: usa, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    admin1 = User.new(email: 'admin1@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
     admin1.add_role :admin
     admin1.save
 
@@ -103,7 +110,7 @@ namespace :demo do
 
     print 'Creating analyst users...'
 
-    analyst1 = User.new(email: 'analyst_all@example.com', password: '1234567ab!', jurisdiction: usa, force_password_change: false, authy_enabled: false, authy_enforced: false)
+    analyst1 = User.new(email: 'analyst_all@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
     analyst1.add_role :analyst
     analyst1.save
 
