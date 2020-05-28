@@ -50,7 +50,7 @@
             "name": "name",
             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
               if (<%= p_links %>) {
-                $(nTd).text("<a href='/patients/"+filterXSS(oData.linelist.name.id)+"'>"+filterXSS(oData.linelist.name.name)+"</a>");
+                $(nTd).html("<a href='patients/"+filterXSS(oData.linelist.name.id)+"'>"+filterXSS(oData.linelist.name.name)+"</a>");
               } else {
                 $(nTd).text(filterXSS(oData.linelist.name.name));
               }
