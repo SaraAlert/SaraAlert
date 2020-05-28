@@ -227,8 +227,8 @@ namespace :demo do
               notes: threshold_symptom[:notes],
               type: threshold_symptom[:type],
               bool_value: threshold_symptom[:type] == 'BoolSymptom' ? symptomatic_symptom : nil,
-              float_value: threshold_symptom[:type] == 'FloatSymptom' ? (threshold_symptom[:float_value] + rand(10.0) * (symptomatic_symptom ? -1 : 1)) : nil,
-              int_value: threshold_symptom[:type] == 'IntSymptom' ? (threshold_symptom[:int_value] + rand(10) * (symptomatic_symptom ? -1 : 1)) : nil,
+              float_value: threshold_symptom[:type] == 'FloatSymptom' ? ((threshold_symptom.value || 0) + rand(10.0) * (symptomatic_symptom ? -1 : 1)) : nil,
+              int_value: threshold_symptom[:type] == 'IntSymptom' ? ((threshold_symptom.value || 0 )+ rand(10) * (symptomatic_symptom ? -1 : 1)) : nil,
               created_at: reported_condition[:created_at],
               updated_at: reported_condition[:created_at]
             )
