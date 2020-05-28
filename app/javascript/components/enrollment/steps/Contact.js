@@ -49,10 +49,7 @@ class Contact extends React.Component {
             .string()
             .phone()
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          primary_telephone_type: yup
-            .string()
-            .required('Please indicate the primary phone type.')
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           email: yup
             .string()
