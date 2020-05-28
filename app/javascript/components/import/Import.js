@@ -61,7 +61,7 @@ class Import extends React.Component {
             this.submit(this.state.phased[num + 1], num + 1, bypass);
           } else if (this.state.phased.length != 0) {
             // if there are no monitorees to import, and import wasn't done one at a time go back to root after pressing the import button
-            location.href = '/';
+            history.back();
           }
         });
       })

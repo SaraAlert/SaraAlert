@@ -234,11 +234,13 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .or(
         where(id: Patient.unscoped.non_test_based)
       )
+      .distinct
   }
 
   # Individuals in the isolation workflow, not meeting review and are not reporting
   scope :isolation_non_reporting, lambda {
     where.not(id: Patient.unscoped.isolation_requiring_review)
+         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
          .where(monitoring: true)
          .where(purged: false)
          .where(isolation: true)
@@ -252,7 +254,17 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
          .where(monitoring: true)
          .where(purged: false)
          .where(isolation: true)
+         .left_outer_joins(:assessments)
          .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+         .or(
+          where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+            .where(monitoring: true)
+            .where(purged: false)
+            .where(isolation: true)
+            .left_outer_joins(:assessments)
+            .where(assessments: { patient_id: nil })
+        )
+        .distinct
   }
 
   # All individuals currently being monitored if true, all individuals otherwise
