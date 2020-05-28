@@ -62,7 +62,8 @@ class Assessment < ApplicationRecord
 
     return nil if threshold_symptom.nil? || threshold_symptom.value.nil?
 
-    threshold_operator = threshold_symptom.threshold_operator.downcase
+    threshold_operator = threshold_symptom&.threshold_operator&.downcase
+    threshold_operator ||= 'less than'
 
     if reported_symptom.type == 'FloatSymptom' || reported_symptom.type == 'IntegerSymptom'
       return true if threshold_operator == 'less than' && reported_symptom.value < threshold_symptom.value
