@@ -37,19 +37,16 @@ namespace :admin do
   end
 
   # This is useful in case the base/sample jurisdiction.yml is run on prod and the jurisdictions with generic names need to be removed
-  # Example Usage: rake admin:delete_jurisdiction_with_name NAME='County 3'
+  # Example Usage: rake admin:delete_jurisdiction_with_id ID=3
   desc "Delete Jurisdiction"
-  task delete_jurisdiction_with_name: :environment do
-    jur_name = ENV['NAME']
-    if Jurisdiction.where(name: jur_name).count.zero?
-      puts "Error: Jurisdiction with name #{jur_name} not found"
-      exit
-    elsif Jurisdiction.where(name: jur_name).count != 1
-      puts "Error: Multiple jurisdiction with name #{jur_name} found"
+  task delete_jurisdiction_with_id: :environment do
+    jur_id = ENV['ID']
+    unless Jurisdiction.exists?(jur_id)
+      puts "Error: Jurisdiction with id #{jur_id} not found"
       exit
     end
-    jur_id = Jurisdiction.where(name: jur_name).first.id
     jur = Jurisdiction.find(jur_id)
+    jur_name = jur.name
     if !jur.children.count.zero?
       puts "Error: Will not delete jurisdiction that has child jurisdictions. Delete #{jur.children.pluck(:name).to_s} first"
       exit
@@ -66,21 +63,21 @@ namespace :admin do
     end
     threshold_conditions_count = ThresholdCondition.where(jurisdiction_id: jur_id).count
     analytic_count = Analytic.where(jurisdiction_id: jur_id).count
-    transfers_count = Transfer.where(to_jurisdiction_id: jur_id).count + Transfer.where(from_jurisdiction_id: jur_id).count
     puts "In addition to deleting jurisdiction #{jur_name} the following associated records will be deleted"
     puts "#{patient_count} Patients will be deleted"
     puts "#{user_count} Users will be deleted"
     puts "#{threshold_conditions_count} ThresholdCondition will be deleted"
     puts "#{analytic_count} Analytic will be deleted"
-    puts "#{transfers_count} Transfer objects will be deleted"
     puts "Are you sure you want to proceed? [Y/y] to continue"
     res = STDIN.getc
     exit unless res.downcase == 'y'
-    puts "Failed to Delete ThresholdConditions" unless ThresholdCondition.where(jurisdiction_id: jur_id).delete_all
-    puts "Failed to Delete Analytics" unless Analytic.where(jurisdiction_id: jur_id).delete_all
-    puts "Failed to Delete Transfers" unless Transfer.where(to_jurisdiction_id: jur_id).delete_all
-    puts "Failed to Delete Transfers" unless Transfer.where(from_jurisdiction_id: jur_id).delete_all
-    puts "Failed to Delete Jurisdiction" unless jur.delete
+    ActiveRecord::Base.transaction do
+      ThresholdCondition.where(jurisdiction_id: jur_id).delete_all
+      Analytic.where(jurisdiction_id: jur_id).delete_all
+      jur.delete
+    end
+    rescue ActiveRecord::RecordInvalid
+      puts "Jurisdiction transfer failed"
     puts "Complete"
   end
 
@@ -130,6 +127,27 @@ namespace :admin do
       end
     end
 
+  end
+
+  desc "Transfer Jurisdiction Resources To Another Jurisdiction"
+  # Example Usage: rake admin:transfer_jurisdiction_resources FROM=3 TO=4
+  task transfer_jurisdiction_resources: :environment do
+    from_id = ENV['FROM']
+    to_id = ENV['TO']
+    from_patients = Patient.where(jurisdiction_id: from_id)
+    from_users = User.where(jurisdiction_id: from_id)
+    from_analytics= Analytic.where(jurisdiction_id: from_id)
+    puts "#{from_patients.count} Patients will be moved"
+    puts "#{from_users.count} Users will be moved"
+    puts "Are you sure you want to proceed? [Y/y] to continue"
+    res = STDIN.getc
+    exit unless res.downcase == 'y'
+    ActiveRecord::Base.transaction do
+      from_patients.each do |p| p.update!(jurisdiction_id: to_id) end
+      from_users.each do |u| u.update!(jurisdiction_id: to_id) end
+    end
+    rescue ActiveRecord::RecordInvalid
+      puts "Jurisdiction transfer failed"
   end
 
   desc "Create User Role Types"

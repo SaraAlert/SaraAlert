@@ -47,4 +47,9 @@ class BoolSymptomTest < ActiveSupport::TestCase
     assert_includes symptom.to_json, 'bool_value'
     assert_includes symptom.to_json, symptom.bool_value.to_s
   end
+
+  test 'bool symptom bool based prompt' do
+    symptom = create(:bool_symptom, bool_value: true, name: 'fever', label: 'Fever')
+    assert_equal symptom.bool_based_prompt, 'Fever'
+  end
 end

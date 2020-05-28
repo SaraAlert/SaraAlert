@@ -18,7 +18,7 @@ class AssessmentsController < ApplicationController
       end
     end
 
-    jurisdiction = Jurisdiction.find_by(unique_identifier: params[:unique_identifier]) if ADMIN_OPTIONS['report_mode']
+    jurisdiction = Jurisdiction.where('unique_identifier like ?', "#{params[:unique_identifier]}%").first if ADMIN_OPTIONS['report_mode']
     jurisdiction = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction unless ADMIN_OPTIONS['report_mode']
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
     @symptoms = reporting_condition.symptoms

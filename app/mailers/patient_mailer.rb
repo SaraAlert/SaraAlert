@@ -61,7 +61,7 @@ class PatientMailer < ApplicationMailer
     add_success_history(patient)
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
     intro_contents = "This is the Sara Alert system please complete the report for #{patient_name} at the link provided"
-    url_contents = new_patient_assessment_jurisdiction_report_url(patient.submission_token, patient.jurisdiction.unique_identifier).to_s
+    url_contents = new_patient_assessment_jurisdiction_report_url(patient.submission_token, patient.jurisdiction.unique_identifier[0, 32]).to_s
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']

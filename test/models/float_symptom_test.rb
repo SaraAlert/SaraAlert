@@ -60,4 +60,19 @@ class FloatSymptomTest < ActiveSupport::TestCase
     assert_includes symptom.to_json, 'float_value'
     assert_includes symptom.to_json, symptom.float_value.to_s
   end
+
+  test 'float symptom bool based prompt' do
+    symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Less Than', name: 'pulseox', label: 'Pulse Ox')
+    assert_equal symptom.bool_based_prompt, 'Pulse ox less than 90.1'
+    symptom.threshold_operator = 'Less Than Or Equal'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox less than or equal to 90.1'
+    symptom.threshold_operator = 'Greater Than'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox greater than 90.1'
+    symptom.threshold_operator = 'Greater Than Or Equal'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox greater than or equal to 90.1'
+    symptom.threshold_operator = 'Equal'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox equal to 90.1'
+    symptom.threshold_operator = 'Not Equal'
+    assert_equal symptom.bool_based_prompt, 'Pulse ox not equal to 90.1'
+  end
 end
