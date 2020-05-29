@@ -109,6 +109,24 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal 0, Patient.asymp_non_test_based.count
     Laboratory.destroy_all
     Assessment.destroy_all
+
+    # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 12.days.ago)
+    Laboratory.create(patient_id: patient.id, result: 'negative', report: 3.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 6.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 5.days.ago)
+    assert_equal 0, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+    Assessment.destroy_all
+
+    # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
+    Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
+    Laboratory.create(patient_id: patient.id, result: 'negative', report: 12.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 14.days.ago)
+    Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 13.days.ago)
+    assert_equal 0, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+    Assessment.destroy_all
   end
 
   test 'get timezone offset' do
