@@ -58,24 +58,27 @@ class PatientMailer < ApplicationMailer
   def assessment_sms_weblink(patient)
     add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone&.blank?
 
-    add_success_history(patient)
-    patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
-    intro_contents = "This is the Sara Alert system please complete the report for #{patient_name} at the link provided"
-    url_contents = new_patient_assessment_jurisdiction_report_url(patient.submission_token, patient.jurisdiction.unique_identifier[0, 32]).to_s
-    account_sid = ENV['TWILLIO_API_ACCOUNT']
-    auth_token = ENV['TWILLIO_API_KEY']
-    from = ENV['TWILLIO_SENDING_NUMBER']
-    client = Twilio::REST::Client.new(account_sid, auth_token)
-    client.messages.create(
-      from: from,
-      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      body: intro_contents
-    )
-    client.messages.create(
-      from: from,
-      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      body: url_contents
-    )
+    num = patient.primary_telephone
+    ([patient] + patient.dependents).uniq.each do |p|
+      add_success_history(p)
+      patient_name = "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
+      intro_contents = "This is the Sara Alert system please complete the report for #{patient_name} at the link provided"
+      url_contents = new_patient_assessment_jurisdiction_report_url(p.submission_token, patient.jurisdiction.unique_identifier[0, 32]).to_s
+      account_sid = ENV['TWILLIO_API_ACCOUNT']
+      auth_token = ENV['TWILLIO_API_KEY']
+      from = ENV['TWILLIO_SENDING_NUMBER']
+      client = Twilio::REST::Client.new(account_sid, auth_token)
+      client.messages.create(
+        from: from,
+        to: Phonelib.parse(num, 'US').full_e164,
+        body: intro_contents
+      )
+      client.messages.create(
+        from: from,
+        to: Phonelib.parse(num, 'US').full_e164,
+        body: url_contents
+      )
+    end
   end
 
   def assessment_sms_reminder(patient)
