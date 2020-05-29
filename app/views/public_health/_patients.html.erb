@@ -1,4 +1,22 @@
 <div class="px-4">
+  <div class="row">
+    <div class="col-sm-24 col-md-12">
+      <label style="display:inline-flex;margin-bottom:0.25em">
+        <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
+        <select id="assigned_jurisdiction_<%= type =%>" class="custom-select custom-select-sm form-control form-control-sm">
+          <%= options_for_select(['All'].concat(@jurisdictions.keys)) %>
+        </select>
+      </label>
+    </div>
+    <div class="col-sm-24 col-md-12 text-right">
+      <label style="display:inline-flex;margin-bottom:0.25em">
+        <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
+        <select id="assigned_user_<%= type =%>" class="custom-select custom-select-sm form-control form-control-sm">
+          <%= options_for_select(['All', 'None'].concat(@groups)) %>
+        </select>
+      </label>
+    </div>
+  </div>
   <table id="patients_table_<%= type %>" class="table table-sm table-striped table-bordered table-hover" style="width:100%">
     <thead>
       <tr>
@@ -38,7 +56,7 @@
 <script>
   $(document).ready(function() {
     $.fn.dataTable.ext.errMode = 'throw';
-    $('#patients_table_<%= type %>').DataTable({
+    const table = $('#patients_table_<%= type %>').DataTable({
       "drawCallback": function(settings) {
         $('.datetime-convert').each(function() {
           if (moment.tz($(this).text(), 'UTC').isValid()) {
@@ -124,6 +142,14 @@
         <% end %>
       ],
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
+    });
+    $(document).on('change', 'select#assigned_jurisdiction_<%= type =%>', event => {
+      console.log(event.target.value);
+      table.ajax.url(<% if isolation %>"isolation/<%= type %>",<% else %>"public_health/<%= type %>",<% end %>).load();
+    });
+    $(document).on('change', 'select#assigned_user_<%= type =%>', event => {
+      console.log(event.target.value);
+      table.ajax.url(<% if isolation %>"isolation/<%= type %>",<% else %>"public_health/<%= type %>",<% end %>).load();
     });
   });
 </script>

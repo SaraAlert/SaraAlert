@@ -7,6 +7,9 @@ class PatientsController < ApplicationController
   # Enroller view to see enrolled subjects and button to enroll new subjects
   def index
     redirect_to(root_url) && return unless current_user.can_create_patient?
+
+    @jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:path, :id).map {|path, id| [path, id]}]
+    @groups = current_user.jurisdiction.assigned_users
   end
 
   # The single subject view

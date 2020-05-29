@@ -21,6 +21,8 @@ class PublicHealthController < ApplicationController
     @asymptomatic_count = current_user.viewable_patients.asymptomatic.where(isolation: false).size
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: false).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: false).size
+    @jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:path, :id).map {|path, id| [path, id]}]
+    @groups = current_user.jurisdiction.assigned_users
   end
 
   def all_patients_exposure
@@ -109,6 +111,8 @@ class PublicHealthController < ApplicationController
     @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: true).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: true).size
+    @jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:path, :id).map {|path, id| [path, id]}]
+    @groups = current_user.jurisdiction.assigned_users
   end
 
   def all_patients_isolation

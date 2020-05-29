@@ -40,32 +40,32 @@
 
   <div class="tab-content">
     <div class="card card-square tab-pane show active pb-4" id="requiring-review" role="tabpanel" aria-labelledby="requiring-review-tab">
-      <p class="lead px-4 pt-4 pb-3">Cases who preliminarily meet the recovery definition and require review. You are currently in the <u>isolation</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'requiring_review_patients', p_links: true, isolation: true } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Cases who preliminarily meet the recovery definition and require review. You are currently in the <u>isolation</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'requiring_review_patients', p_links: true, isolation: true, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
-      <p class="lead px-4 pt-4 pb-3">Cases who failed to report during the last day and have not yet met recovery definition. You are currently in the <u>isolation</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'non_reporting_patients', p_links: true, isolation: true } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Cases who failed to report during the last day and have not yet met recovery definition. You are currently in the <u>isolation</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'non_reporting_patients', p_links: true, isolation: true, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="reporting" role="tabpanel" aria-labelledby="reporting-tab">
-      <p class="lead px-4 pt-4 pb-3">Cases who have reported in the last day and have not yet met recovery definition. You are currently in the <u>isolation</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'reporting_patients', p_links: true, isolation: true } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Cases who have reported in the last day and have not yet met recovery definition. You are currently in the <u>isolation</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'reporting_patients', p_links: true, isolation: true, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="closed" role="tabpanel" aria-labelledby="closed-tab">
-      <p class="lead px-4 pt-4 pb-3">Cases not currently being monitored. You are currently in the <u>isolation</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'closed_patients', p_links: true, isolation: true } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Cases not currently being monitored. You are currently in the <u>isolation</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'closed_patients', p_links: true, isolation: true, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="transferred-in" role="tabpanel" aria-labelledby="transferred-in-tab">
-      <p class="lead px-4 pt-4 pb-3">Cases that have been transferred into this jurisdiction during the last 24 hours. You are currently in the <u>isolation</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'transferred_in_patients', p_links: true, isolation: true } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Cases that have been transferred into this jurisdiction during the last 24 hours. You are currently in the <u>isolation</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'transferred_in_patients', p_links: true, isolation: true, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="transferred-out" role="tabpanel" aria-labelledby="transferred-out-tab">
-      <p class="lead px-4 pt-4 pb-3">Cases that have been transferred out of this jurisdiction. You are currently in the <u>isolation</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'transferred_out_patients', p_links: false, isolation: true } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Cases that have been transferred out of this jurisdiction. You are currently in the <u>isolation</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'transferred_out_patients', p_links: false, isolation: true, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="all" role="tabpanel" aria-labelledby="all-tab">
-      <p class="lead px-4 pt-4 pb-3">All cases in this jurisdiction, in the Isolation workflow. You are currently in the <u>isolation</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'all_patients', p_links: true, isolation: true } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">All cases in this jurisdiction, in the Isolation workflow. You are currently in the <u>isolation</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'all_patients', p_links: true, isolation: true, jurisdictions: @jurisdictions, users: @users } %>
     </div>
   </div>
 
