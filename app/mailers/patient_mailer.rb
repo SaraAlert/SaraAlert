@@ -5,7 +5,7 @@ class PatientMailer < ApplicationMailer
   default from: 'notifications@saraalert.org'
 
   def enrollment_email(patient)
-    return if patient&.email&.blank?
+    return if patient&.email.blank?
 
     # Gather patients and jurisdictions
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
@@ -17,7 +17,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def enrollment_sms_weblink(patient)
-    return if patient&.primary_telephone&.blank?
+    return if patient&.primary_telephone.blank?
 
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
     intro_contents = "This is the Sara Alert system please complete the report for #{patient_name} at the link provided"
@@ -39,7 +39,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def enrollment_sms_text_based(patient)
-    return if patient&.primary_telephone&.blank?
+    return if patient&.primary_telephone.blank?
 
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
     contents = "Welcome to the Sara Alert system, we will be sending your daily reports for #{patient_name} to this phone number."
@@ -56,7 +56,7 @@ class PatientMailer < ApplicationMailer
 
   # Right now the wording of this message is the same as for enrollment
   def assessment_sms_weblink(patient)
-    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone&.blank?
+    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     num = patient.primary_telephone
     ([patient] + patient.dependents).uniq.each do |p|
@@ -82,7 +82,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def assessment_sms_reminder(patient)
-    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone&.blank?
+    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     add_success_history(patient)
     contents = 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
@@ -98,7 +98,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def assessment_sms(patient)
-    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone&.blank?
+    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     add_success_history(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
@@ -132,7 +132,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def assessment_voice(patient)
-    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone&.blank?
+    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     add_success_history(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
@@ -166,7 +166,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def assessment_email(patient)
-    add_fail_history(patient, 'email') && return if patient&.email&.blank?
+    add_fail_history(patient, 'email') && return if patient&.email.blank?
 
     add_success_history(patient)
     # Gather patients and jurisdictions
@@ -179,7 +179,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def closed_email(patient)
-    return if patient&.email&.blank?
+    return if patient&.email.blank?
 
     @patient = patient
     mail(to: patient.email, subject: 'Sara Alert Reporting Complete') do |format|
@@ -195,7 +195,7 @@ class PatientMailer < ApplicationMailer
     unless patient&.preferred_contact_method.nil?
       history = History.new
       history.created_by = 'Sara Alert System'
-      comment = 'Sara Alert sent a report reminder to this monitoree via ' + patient.preferred_contact_method + '.'
+      comment = "Sara Alert sent a report reminder to this monitoree via #{patient.preferred_contact_method}."
       history.comment = comment
       history.patient = patient
       history.history_type = 'Report Reminder'

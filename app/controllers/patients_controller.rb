@@ -331,8 +331,8 @@ class PatientsController < ApplicationController
 
     patient = current_user.get_patient(params.permit(:id)[:id])
     duplicate_contact = false
-    duplicate_contact = patient[:primary_telephone] == patient.responder[:primary_telephone] unless patient[:primary_telephone]&.blank?
-    duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email]&.blank?
+    duplicate_contact = patient[:primary_telephone] == patient.responder[:primary_telephone] unless patient[:primary_telephone].blank?
+    duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email].blank?
     # They are removeable from the household if their current responder does not have duplicate contact information
     render json: { removeable: !duplicate_contact }
   end
