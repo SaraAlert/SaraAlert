@@ -15,7 +15,7 @@ class MonitoringStatus extends React.Component {
       showMonitoringPlanModal: false,
       showMonitoringStatusModal: false,
       showJurisdictionModal: false,
-      showGroupNumberModal: false,
+      showassignedUserModal: false,
       showPublicHealthActionModal: false,
       showIsolationModal: false,
       showNotificationsModal: false,
@@ -27,7 +27,7 @@ class MonitoringStatus extends React.Component {
       jurisdictionPath: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
       originalJurisdictionId: this.props.patient.jurisdiction_id,
       validJurisdiction: true,
-      groupNumber: props.patient.group_number ? props.patient.group_number : '',
+      assignedUser: props.patient.assigned_user ? props.patient.assigned_user : '',
       monitoring_status_options: null,
       monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
@@ -44,7 +44,7 @@ class MonitoringStatus extends React.Component {
     this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
     this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
-    this.toggleGroupNumberModal = this.toggleGroupNumberModal.bind(this);
+    this.toggleassignedUserModal = this.toggleassignedUserModal.bind(this);
     this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
     this.toggleIsolation = this.toggleIsolation.bind(this);
     this.toggleNotifications = this.toggleNotifications.bind(this);
@@ -60,12 +60,12 @@ class MonitoringStatus extends React.Component {
         monitoring_status_options: null,
         validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
       });
-    } else if (event?.target?.name && event.target.name === 'groupNumber') {
-      if (!isNaN(event.target.value)) {
+    } else if (event?.target?.name && event.target.name === 'assignedUser') {
+      if (event?.target?.value === '' || (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) <= 9999)) {
         this.setState({
-          message: 'group from "' + this.props.patient.group_number + '"to"' + event.target.value + '".',
+          message: 'assigned user from "' + this.props.patient.assigned_user + '"to"' + event.target.value + '".',
           message_warning: '',
-          groupNumber: event?.target?.value ? parseInt(event.target.value) : '',
+          assignedUser: event?.target?.value ? parseInt(event.target.value) : '',
           monitoring_status_options: null,
         });
       }
@@ -160,9 +160,9 @@ class MonitoringStatus extends React.Component {
       if (event?.target?.name && event.target.name === 'jurisdictionId') {
         event.preventDefault();
         this.toggleJurisdictionModal();
-      } else if (event?.target?.name && event.target.name === 'groupNumber') {
+      } else if (event?.target?.name && event.target.name === 'assignedUser') {
         event.preventDefault();
-        this.toggleGroupNumberModal();
+        this.toggleassignedUserModal();
       }
     }
   }
@@ -218,12 +218,12 @@ class MonitoringStatus extends React.Component {
     });
   }
 
-  toggleGroupNumberModal() {
-    let current = this.state.showGroupNumberModal;
+  toggleassignedUserModal() {
+    let current = this.state.showassignedUserModal;
     this.setState({
-      message: 'group from "' + this.props.patient.group_number + '" to "' + this.state.groupNumber + '".',
-      showGroupNumberModal: !current,
-      groupNumber: current ? this.props.patient.group_number : this.state.groupNumber,
+      message: 'assigned user from "' + this.props.patient.assigned_user + '" to "' + this.state.assignedUser + '".',
+      showassignedUserModal: !current,
+      assignedUser: current ? this.props.patient.assigned_user : this.state.assignedUser,
       apply_to_group: false,
       reasoning: '',
     });
@@ -265,7 +265,7 @@ class MonitoringStatus extends React.Component {
             (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
           monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
           jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdictionPath),
-          group_number: this.state.groupNumber,
+          assigned_user: this.state.assignedUser,
           apply_to_group: this.state.apply_to_group,
           isolation: this.state.isolation,
           pause_notifications: this.state.pause_notifications,
@@ -462,21 +462,21 @@ class MonitoringStatus extends React.Component {
               <Form.Row className="align-items-end">
                 <Form.Group as={Col} sm="10" md="8" className="pt-2">
                   <Form.Label className="nav-input-label">
-                    ASSIGNED GROUP
-                    <InfoTooltip tooltipTextKey="groupNumber" location="right"></InfoTooltip>
+                    ASSIGNED USER
+                    <InfoTooltip tooltipTextKey="assignedUser" location="right"></InfoTooltip>
                   </Form.Label>
                   <Form.Control
                     as="input"
-                    name="groupNumber"
-                    list="groupNumbers"
+                    name="assignedUser"
+                    list="assignedUsers"
                     autoComplete="off"
                     className="form-control-lg"
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}
-                    value={this.state.groupNumber}
+                    value={this.state.assignedUser}
                   />
-                  <datalist id="groupNumbers">
-                    {this.props.groupNumbers.map(num => {
+                  <datalist id="assignedUsers">
+                    {this.props.assignedUsers.map(num => {
                       return (
                         <option value={num} key={num}>
                           {num}
@@ -486,13 +486,13 @@ class MonitoringStatus extends React.Component {
                   </datalist>
                 </Form.Group>
                 <Form.Group as={Col} sm="10" md="8">
-                  {this.state.groupNumber === this.props.patient.group_number ? (
+                  {this.state.assignedUser === this.props.patient.assigned_user ? (
                     <Button disabled className="btn-lg btn-square">
-                      <i className="fas fa-users"></i> Change Group
+                      <i className="fas fa-users"></i> Change User
                     </Button>
                   ) : (
-                    <Button onClick={this.toggleGroupNumberModal} className="btn-lg btn-square">
-                      <i className="fas fa-users"></i> Change Group
+                    <Button onClick={this.toggleassignedUserModal} className="btn-lg btn-square">
+                      <i className="fas fa-users"></i> Change User
                     </Button>
                   )}
                 </Form.Group>
@@ -504,7 +504,7 @@ class MonitoringStatus extends React.Component {
         {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
         {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
-        {this.state.showGroupNumberModal && this.createModal('Group', this.toggleGroupNumberModal, this.submit)}
+        {this.state.showassignedUserModal && this.createModal('Group', this.toggleassignedUserModal, this.submit)}
         {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
         {this.state.showIsolationModal && this.createModal('Isolation', this.toggleIsolation, this.submit)}
         {this.state.showNotificationsModal && this.createModal('Notifications', this.toggleNotifications, this.submit)}
@@ -517,7 +517,7 @@ MonitoringStatus.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   jurisdictionPaths: PropTypes.object,
-  groupNumbers: PropTypes.array,
+  assignedUsers: PropTypes.array,
   has_group_members: PropTypes.bool,
 };
 

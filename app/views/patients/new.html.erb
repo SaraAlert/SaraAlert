@@ -9,7 +9,7 @@
   can_add_group: current_user.can_create_patient?,
   has_group_members: false,
   jurisdictionPaths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map {|id, path| [id, path]}],
-  groupNumbers: @patient.jurisdiction.group_numbers
+  assignedUsers: @patient.jurisdiction.assigned_users
   }) %>
 
 <div class="pb-4"></div>

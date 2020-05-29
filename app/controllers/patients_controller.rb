@@ -64,16 +64,16 @@ class PatientsController < ApplicationController
   end
 
   # Get group number suggestions
-  def group_numbers
+  def assigned_users
     render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient?
 
     jurisdiction_id = params.require(:jurisdiction_id).to_i
 
     render status: 400 unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
 
-    group_numbers = Jurisdiction.find(jurisdiction_id).group_numbers
+    assigned_users = Jurisdiction.find(jurisdiction_id).assigned_users
 
-    render json: { groupNumbers: group_numbers }
+    render json: { assignedUsers: assigned_users }
   end
 
   # This follows 'new', this will receive the subject details and save a new subject
@@ -262,7 +262,7 @@ class PatientsController < ApplicationController
     patient.update(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
                                                    :exposure_risk_assessment, :public_health_action,
                                                    :isolation, :pause_notifications, :symptom_onset,
-                                                   :case_status, :group_number))
+                                                   :case_status, :assigned_user))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
@@ -445,7 +445,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
-      group_number
+      assigned_user
       symptom_onset
       case_status
     ]
@@ -521,7 +521,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
-      group_number
+      assigned_user
     ]
   end
 end

@@ -17,8 +17,8 @@ class Exposure extends React.Component {
       modified: {},
       jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
-      originalGroupNumber: this.props.currentState.patient.group_number,
-      groupNumbers: this.props.groupNumbers,
+      originalassignedUser: this.props.currentState.patient.assigned_user,
+      assignedUsers: this.props.assignedUsers,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
@@ -36,16 +36,16 @@ class Exposure extends React.Component {
       if (jurisdiction_id) {
         value = jurisdiction_id;
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-        axios.get(window.BASE_PATH + `/jurisdictions/${jurisdiction_id}/group_numbers`).then(response => {
-          if (response?.data?.groupNumbers) {
-            this.setState({ groupNumbers: response.data.groupNumbers });
+        axios.get(window.BASE_PATH + `/jurisdictions/${jurisdiction_id}/assigned_users`).then(response => {
+          if (response?.data?.assignedUsers) {
+            this.setState({ assignedUsers: response.data.assignedUsers });
           }
         });
       } else {
         value = -1;
       }
-    } else if (event?.target?.name && event.target.name === 'groupNumber') {
-      if (isNaN(event.target.value)) return;
+    } else if (event?.target?.name && event.target.name === 'assignedUser') {
+      if (isNaN(event.target.value) || parseInt(event.target.value) > 9999) return;
 
       value = event.target.value === '' ? null : parseInt(event.target.value);
     }
@@ -362,24 +362,24 @@ class Exposure extends React.Component {
                           </Form.Group>
                         )}
                     </Form.Group>
-                    <Form.Group as={Col} md="6" controlId="group_number" className="pt-2">
+                    <Form.Group as={Col} md="6" controlId="assigned_user" className="pt-2">
                       <Form.Label className="nav-input-label">
-                        ASSIGNED GROUP{schema?.fields?.group_number?._exclusive?.required && ' *'}
-                        <InfoTooltip tooltipTextKey="groupNumber" location="top"></InfoTooltip>
+                        ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
+                        <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
                       </Form.Label>
                       <Form.Control
-                        isInvalid={this.state.errors['group_number']}
+                        isInvalid={this.state.errors['assigned_user']}
                         as="input"
-                        name="groupNumber"
-                        list="groupNumbers"
+                        name="assignedUser"
+                        list="assignedUsers"
                         autoComplete="off"
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
-                        value={this.state.current.patient.group_number || ''}
+                        value={this.state.current.patient.assigned_user || ''}
                       />
-                      <datalist id="groupNumbers">
-                        {this.state.groupNumbers.map(num => {
+                      <datalist id="assignedUsers">
+                        {this.state.assignedUsers.map(num => {
                           return (
                             <option value={num} key={num}>
                               {num}
@@ -388,19 +388,19 @@ class Exposure extends React.Component {
                         })}
                       </datalist>
                       <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['group_number']}
+                        {this.state.errors['assigned_user']}
                       </Form.Control.Feedback>
                       {this.props.has_group_members &&
-                        this.state.current.patient.group_number !== this.state.originalGroupNumber &&
-                        this.state.groupNumbers.includes(this.state.current.patient.group_number) && (
+                        this.state.current.patient.assigned_user !== this.state.originalassignedUser &&
+                        this.state.assignedUsers.includes(this.state.current.patient.assigned_user) && (
                           <Form.Group className="mt-2">
                             <Form.Check
                               type="switch"
-                              id="update_group_member_group_number"
-                              name="group_number"
+                              id="update_group_member_assigned_user"
+                              name="assigned_user"
                               label="Apply this change to the entire household that this monitoree is responsible for"
                               onChange={this.handlePropagatedFieldChange}
-                              checked={this.state.current.propagatedFields.group_number === true || false}
+                              checked={this.state.current.propagatedFields.assigned_user === true || false}
                             />
                           </Form.Group>
                         )}
@@ -539,9 +539,9 @@ const schema = yup.object().shape({
     .number()
     .positive('Please enter a valid jurisdiction.')
     .required(),
-  group_number: yup
+  assigned_user: yup
     .number()
-    .positive('Please enter a valid group number')
+    .positive('Please enter a valid assigned user')
     .nullable(),
   exposure_notes: yup
     .string()
@@ -557,7 +557,7 @@ Exposure.propTypes = {
   submit: PropTypes.func,
   has_group_members: PropTypes.bool,
   jurisdictionPaths: PropTypes.object,
-  groupNumbers: PropTypes.array,
+  assignedUsers: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 

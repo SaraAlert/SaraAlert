@@ -54,7 +54,7 @@ const TOOLTIP_TEXT = {
 
   lastDateOfExposure: <div> Used by the system to automatically calculate the monitoring period. </div>,
 
-  groupNumber: <div> Used to group monitorees within a jurisdiction. </div>,
+  assignedUser: <div> Used to group monitorees within a jurisdiction. </div>,
 };
 
 class InfoTooltip extends React.Component {

@@ -2,8 +2,8 @@
   <thead>
     <tr>
       <th class="DataTable-table-header">Monitoree</th>
-      <th class="DataTable-table-header">Jurisdiction</th>
-      <th class="DataTable-table-header">Group</th>
+      <th class="DataTable-table-header">Assigned Jurisdiction</th>
+      <th class="DataTable-table-header">Assigned User</th>
       <th class="DataTable-table-header">State&#47;Local ID</th>
       <th class="DataTable-table-header">Sex</th>
       <th class="DataTable-table-header">Date of Birth</th>
@@ -15,7 +15,7 @@
       <tr>
         <td><%= link_to "#{patient.last_name}, #{patient.first_name}", patient, class: '' %></td>
         <td><%= patient.jurisdiction.name %></td>
-        <td><%= patient.group_number %></td>
+        <td><%= patient.assigned_user %></td>
         <td><%= patient.user_defined_id_statelocal.blank? ? '' : patient.user_defined_id_statelocal %></td>
         <td><%= patient.sex %></td>
         <td><%= patient.date_of_birth&.strftime('%F') %></td>

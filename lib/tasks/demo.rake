@@ -447,11 +447,11 @@ namespace :demo do
             patient[:was_in_health_care_facility_with_known_cases] = rand < 0.15
             patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
           end
+          patient[:jurisdiction_id] = jurisdictions.sample[:id]
+          patient[:assigned_user] = (rand < 0.8 ? rand(1..10) : rand(1..9999)) if rand < 0.9
           patient[:exposure_risk_assessment] = ['High', 'Medium', 'Low', 'No Identified Risk', nil].sample
           patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
                                        'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
-          patient[:jurisdiction_id] = jurisdictions.sample[:id]
-          patient[:group_number] = (rand < 0.9 ? rand(1..10) : rand(1...100)) if rand < 0.9
 
           # Other fields populated upon enrollment
           patient[:submission_token] = SecureRandom.hex(20),

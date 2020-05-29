@@ -52,10 +52,10 @@ class Patient extends React.Component {
             </Col>
           </Row>
         )}
-        {this.props.details.group_number && (
+        {this.props.details.assigned_user && (
           <Row className="mx-1">
             <Col className="text-truncate">
-              <span className="font-weight-normal">Assigned Group:</span> <span className="font-weight-light">{this.props.details.group_number}</span>
+              <span className="font-weight-normal">Assigned User:</span> <span className="font-weight-light">{this.props.details.assigned_user}</span>
             </Col>
           </Row>
         )}

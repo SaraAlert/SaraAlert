@@ -57,7 +57,9 @@ class ImportController < ApplicationController
           begin
             if format == :comprehensive_monitorees
               if col_num == 95
-                patient[:jurisdiction_id] = validate_jurisdiction(row[95], row_num, jurisdiction_paths)
+                patient[:jurisdiction_id] = validate_jurisdiction(field, row[95], row_num, jurisdiction_paths)
+              elsif col_num == 96
+                patient[:assigned_user] = validate_assigned_user(field, row[96], row_num)
               else
                 patient[field] = validate_field(field, row[col_num], row_num) unless [85, 86].include?(col_num) && workflow != :isolation
               end
@@ -154,7 +156,6 @@ class ImportController < ApplicationController
     value = validate_state_field(field, value, row_num) if VALIDATION[field][:checks].include?(:state)
     value = validate_sex_field(field, value, row_num) if VALIDATION[field][:checks].include?(:sex)
     value = validate_email_field(field, value, row_num) if VALIDATION[field][:checks].include?(:email)
-    value = validate_group_field(value, row_num) if VALIDATION[field][:checks].include?(:group)
     value
   end
 
@@ -230,20 +231,20 @@ class ImportController < ApplicationController
     value
   end
 
-  def validate_group_field(value, row_num)
-    return nil if value.blank?
-
-    return value.to_i if value.to_i.positive?
-
-    raise ValidationError.new("#{value} is not a valid group number", row_num)
-  end
-
-  def validate_jurisdiction(value, row_num, jurisdiction_paths)
+  def validate_jurisdiction(field, value, row_num, jurisdiction_paths)
     return nil if value.blank?
 
     return jurisdiction_paths.key(value) if jurisdiction_paths.values.include?(value)
 
-    raise ValidationError.new("#{value} is not a valid jurisdiction", row_num)
+    raise ValidationError.new("#{value} is not a valid jurisdiction for field '#{VALIDATION[field][:label]}'", row_num)
+  end
+
+  def validate_assigned_user(field, value, row_num)
+    return nil if value.blank?
+
+    return value.to_i if value.to_i.between?(1, 9999)
+
+    raise ValidationError.new("#{value} is not a valid number for field '#{VALIDATION[field][:label]}'", row_num)
   end
 
   def validate_address(patient, row_num)
