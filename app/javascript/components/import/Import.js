@@ -87,26 +87,30 @@ class Import extends React.Component {
   }
 
   stopImport = async () => {
-    this.setState({ isPaused: true });
-    let confirmText = `This will stop the  creation of new records from the list below. Records that were imported prior to clicking “Stop Import” will not be deleted from the system.`;
-    if (await confirmDialog(confirmText, { title: 'Stop Import Process' })) {
-      this.setState({ isPaused: false });
-      location.href = '/';
-    } else {
-      this.setState({ isPaused: false });
-      if (this.state.acceptedAllStarted) {
-        this.submit(this.state.phased[this.state.progress], this.state.progress, true);
+    this.setState({ isPaused: true }, async () => {
+      let confirmText = `This will stop the  creation of new records from the list below. Records that were imported prior to clicking “Stop Import” will not be deleted from the system.`;
+      if (await confirmDialog(confirmText, { title: 'Stop Import Process' })) {
+        this.setState({ isPaused: false });
+        location.href = '/';
+      } else {
+        this.setState({ isPaused: false });
+        if (this.state.acceptedAllStarted) {
+          this.submit(this.state.phased[this.state.progress + 1], this.state.progress + 1, true);
+        }
       }
-    }
+    });
   };
 
   handleConfirm = async confirmText => {
-    this.setState({ acceptedAllStarted: true });
-    let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
-    let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} detected duplicate monitorees` : undefined;
-    if (await confirmDialog(confirmText, { title: 'Import Monitorees', extraOption: duplicatePrompt, extraOptionChange: this.handleExtraOptionToggle })) {
-      this.importAll();
-    }
+    this.setState({ acceptedAllStarted: true }, async () => {
+      let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
+      let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} detected duplicate monitorees` : undefined;
+      if (await confirmDialog(confirmText, { title: 'Import Monitorees', extraOption: duplicatePrompt, extraOptionChange: this.handleExtraOptionToggle })) {
+        this.importAll();
+      } else {
+        this.setState({ acceptedAllStarted: false });
+      }
+    });
   };
 
   render() {
@@ -157,9 +161,11 @@ class Import extends React.Component {
               }>
               Accept
             </Button>
-            <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.stopImport()}>
-              Stop Import
-            </Button>
+            {this.state.acceptedAllStarted && (
+              <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.stopImport()}>
+                Stop Import
+              </Button>
+            )}
             {this.state.patients.map((patient, index) => {
               return (
                 <Card
