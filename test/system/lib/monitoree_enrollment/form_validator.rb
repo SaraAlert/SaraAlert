@@ -69,30 +69,25 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
     verify_text_not_displayed('Please provide an email')
     verify_text_not_displayed('Please confirm email')
     verify_text_displayed('Please provide a primary telephone number')
-    verify_text_displayed('Please indicate the primary phone type')
     select 'SMS Text-message', from: 'preferred_contact_method'
     click_on 'Next'
     verify_text_not_displayed('Please provide an email')
     verify_text_not_displayed('Please confirm email')
     verify_text_displayed('Please provide a primary telephone number')
-    verify_text_displayed('Please indicate the primary phone type')
     select 'E-mailed Web Link', from: 'preferred_contact_method'
     click_on 'Next'
     verify_text_displayed('Please provide an email')
     verify_text_displayed('Please confirm email')
     verify_text_not_displayed('Please provide a primary telephone number')
-    verify_text_not_displayed('Please indicate the primary phone type')
     fill_in 'email', with: 'email@eample.com'
     click_on 'Next'
     verify_text_not_displayed('Please provide an email')
     verify_text_displayed('Please confirm email')
     verify_text_not_displayed('Please provide a primary telephone number')
-    verify_text_not_displayed('Please indicate the primary phone type')
     @@monitoree_enrollment_form.populate_enrollment_step(:contact_info, contact_info)
     verify_text_not_displayed('Please provide an email')
     verify_text_not_displayed('Please confirm email')
     verify_text_not_displayed('Please provide a primary telephone number')
-    verify_text_not_displayed('Please indicate the primary phone type')
   end
 
   def verify_input_validation_for_arrival_info(arrival_info)
