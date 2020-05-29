@@ -4,7 +4,8 @@
       <label style="display:inline-flex;margin-bottom:0.25em">
         <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
         <select id="assigned_jurisdiction_<%= type =%>" class="custom-select custom-select-sm form-control form-control-sm">
-          <%= options_for_select(['All'].concat(@jurisdictions.keys)) %>
+          <option value="all">All</option>
+          <%= options_from_collection_for_select(@assigned_jurisdictions, :first, :last) %>
         </select>
       </label>
     </div>
@@ -12,7 +13,9 @@
       <label style="display:inline-flex;margin-bottom:0.25em">
         <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
         <select id="assigned_user_<%= type =%>" class="custom-select custom-select-sm form-control form-control-sm">
-          <%= options_for_select(['All', 'None'].concat(@groups)) %>
+          <option value="all">All</option>
+          <option value="none">None</option>
+          <%= options_for_select(@assigned_users) %>
         </select>
       </label>
     </div>
@@ -56,6 +59,9 @@
 <script>
   $(document).ready(function() {
     $.fn.dataTable.ext.errMode = 'throw';
+    let assigned_jurisdiction = 'all';
+    let assigned_user = 'all';
+    const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${assigned_user}`;
     const table = $('#patients_table_<%= type %>').DataTable({
       "drawCallback": function(settings) {
         $('.datetime-convert').each(function() {
@@ -66,7 +72,7 @@
       },
       "serverSide": true,
       "deferLoading": 0, // Conditionally load tables (when tab is pressed)
-      <% if isolation %>"ajax": "isolation/<%= type %>",<% else %>"ajax": "public_health/<%= type %>",<% end %>
+      "ajax": route,
       "lengthMenu": [10, 15, 25, 50, 100],
       "pageLength": 15,
       'processing': true,
@@ -144,12 +150,15 @@
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });
     $(document).on('change', 'select#assigned_jurisdiction_<%= type =%>', event => {
-      console.log(event.target.value);
-      table.ajax.url(<% if isolation %>"isolation/<%= type %>",<% else %>"public_health/<%= type %>",<% end %>).load();
+      assigned_jurisdiction = event.target.value;
+      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${assigned_user}`;
+      table.ajax.url(route).load();
+
     });
     $(document).on('change', 'select#assigned_user_<%= type =%>', event => {
-      console.log(event.target.value);
-      table.ajax.url(<% if isolation %>"isolation/<%= type %>",<% else %>"public_health/<%= type %>",<% end %>).load();
+      assigned_user = event.target.value;
+      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${assigned_user}`;
+      table.ajax.url(route).load();
     });
   });
 </script>

@@ -8,8 +8,8 @@ class PatientsController < ApplicationController
   def index
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
-    @jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:path, :id).map {|path, id| [path, id]}]
-    @groups = current_user.jurisdiction.assigned_users
+    @assigned_jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }]
+    @assigned_users = current_user.jurisdiction.assigned_users_under_subtree
   end
 
   # The single subject view

@@ -27,6 +27,10 @@ class Jurisdiction < ApplicationRecord
     immediate_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
   end
 
+  def assigned_users_under_subtree
+    all_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
+  end
+
   # All patients that were in the jurisdiction before (but were transferred), and are not currently in the subtree
   def transferred_out_patients
     Patient.where(id: Transfer.where(from_jurisdiction_id: subtree_ids).pluck(:patient_id)).where.not(jurisdiction_id: subtree_ids + [id])

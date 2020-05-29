@@ -4,10 +4,6 @@
 class PublicHealthController < ApplicationController
   before_action :authenticate_user!
 
-  #############################################################################
-  # EXPOSURE
-  #############################################################################
-
   def exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
@@ -21,83 +17,9 @@ class PublicHealthController < ApplicationController
     @asymptomatic_count = current_user.viewable_patients.asymptomatic.where(isolation: false).size
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: false).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: false).size
-    @jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:path, :id).map {|path, id| [path, id]}]
-    @groups = current_user.jurisdiction.assigned_users
+    @assigned_jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }]
+    @assigned_users = current_user.jurisdiction.assigned_users_under_subtree
   end
-
-  def all_patients_exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .where(isolation: false))
-  end
-
-  def symptomatic_patients_exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .symptomatic
-                                                          .where(isolation: false))
-  end
-
-  def pui_patients_exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .under_investigation
-                                                          .where(isolation: false))
-  end
-
-  def closed_patients_exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .monitoring_closed_without_purged
-                                                          .where(isolation: false))
-  end
-
-  def non_reporting_patients_exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .non_reporting
-                                                          .where(isolation: false))
-  end
-
-  def asymptomatic_patients_exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .asymptomatic
-                                                          .where(isolation: false))
-  end
-
-  def transferred_in_patients_exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.jurisdiction
-                                                          .transferred_in_patients
-                                                          .where(isolation: false))
-  end
-
-  def transferred_out_patients_exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_out_patients
-                                                                       .where(isolation: false))
-  end
-
-  #############################################################################
-  # ISOLATION
-  #############################################################################
 
   def isolation
     # Restrict access to public health only
@@ -111,68 +33,69 @@ class PublicHealthController < ApplicationController
     @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: true).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: true).size
-    @jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:path, :id).map {|path, id| [path, id]}]
-    @groups = current_user.jurisdiction.assigned_users
+    @assigned_jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }]
+    @assigned_users = current_user.jurisdiction.assigned_users_under_subtree
   end
 
-  def all_patients_isolation
+  def patients
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .where(isolation: true))
-  end
+    # Validate workflow param
+    workflow = params.permit(:workflow)[:workflow].to_sym
+    redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
 
-  def requiring_review_patients_isolation
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+    # Validate type param
+    type = params.permit(:type)[:type].to_sym
+    if workflow == :exposure
+      redirect_to(root_url) && return unless %i[all symptomatic_patients non_reporting_patients asymptomatic_patients pui_patients
+                                                closed_patients transferred_in_patients transferred_out_patients].include?(type)
+    else
+      redirect_to(root_url) && return unless %i[all requiring_review_patients non_reporting_patients reporting_patients
+                                                closed_patients transferred_in_patients transferred_out_patients].include?(type)
+    end
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .isolation_requiring_review
-                                                          .where(isolation: true))
-  end
+    # Validate assigned jurisdiction param
+    assigned_jurisdiction = params.permit(:assigned_jurisdiction)[:assigned_jurisdiction]
+    redirect_to(root_url) && return unless assigned_jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(assigned_jurisdiction.to_i)
 
-  def closed_patients_isolation
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+    # Validate assigned user param
+    assigned_user = params.permit(:assigned_user)[:assigned_user]
+    redirect_to(root_url) && return unless %w[all none].include?(assigned_user) || current_user.jurisdiction.assigned_users.include?(assigned_user.to_i)
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .monitoring_closed_without_purged
-                                                          .where(isolation: true))
-  end
+    patients = current_user.viewable_patients
 
-  def non_reporting_patients_isolation
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+    # Filter by workflow and type
+    if workflow == :exposure
+      patients = patients.where(isolation: false)
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .isolation_non_reporting
-                                                          .where(isolation: true))
-  end
+      patients = patients if type == :all
+      patients = patients.symptomatic if type == :symptomatic_patients
+      patients = patients.non_reporting if type == :non_reporting_patients
+      patients = patients.asymptomatic if type == :asymptomatic_patients
+      patients = patients.under_investigation if type == :pui_patients
+      patients = patients.monitoring_closed_without_purged if type == :closed_patients
+      patients = current_user.jurisdiction.transferred_in_patients.where(isolation: false) if type == :transferred_in_patients
+      patients = current_user.jurisdiction.transferred_out_patients.where(isolation: false) if type == :transferred_out_patients
+    else
+      patients = patients.where(isolation: true)
 
-  def reporting_patients_isolation
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+      patients = patients if type == :all
+      patients = patients.isolation_requiring_review if type == :requiring_review_patients
+      patients = patients.isolation_non_reporting if type == :non_reporting_patients
+      patients = patients.isolation_reporting if type == :reporting_patients
+      patients = patients.monitoring_closed_without_purged if type == :closed_patients
+      patients = current_user.jurisdiction.transferred_in_patients.where(isolation: true) if type == :transferred_in_patients
+      patients = current_user.jurisdiction.transferred_out_patients.where(isolation: true) if type == :transferred_out_patients
+    end
 
-    render json: filter_sort_paginate(params, current_user.viewable_patients
-                                                          .isolation_reporting
-                                                          .where(isolation: true))
-  end
+    # Filter by assigned jurisdiction
+    patients = patients.where(jurisdiction_id: assigned_jurisdiction.to_i) unless assigned_jurisdiction == 'all'
 
-  def transferred_in_patients_isolation
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+    # Filter by assigned user
+    patients = patients.where(assigned_user: assigned_user == 'none' ? nil : assigned_user.to_i) unless assigned_user == 'all'
 
-    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_in_patients
-                                                                       .where(isolation: true))
-  end
-
-  def transferred_out_patients_isolation
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: filter_sort_paginate(params, current_user.jurisdiction.transferred_out_patients
-                                                                       .where(isolation: true))
+    render json: filter_sort_paginate(params, patients)
   end
 
   protected
