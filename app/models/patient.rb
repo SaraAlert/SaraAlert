@@ -221,7 +221,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where_assoc_exists(:laboratories, &:before_ten_days_positive)
       .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
       .left_outer_joins(:laboratories)
-      .where('laboratories.patient_id = patients.id')
+      .where('laboratories.patient_id = patients.id AND laboratories.result = \'positive\'')
       .left_outer_joins(:assessments)
       .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.report')
