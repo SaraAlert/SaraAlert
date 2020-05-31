@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import ReactDOM from 'react-dom';
 
 class CaseStatus extends React.Component {
   constructor(props) {
@@ -172,5 +171,10 @@ class CaseStatus extends React.Component {
     }
   }
 }
+
+CaseStatus.propTypes = {
+  active: PropTypes.bool,
+  has_group_members: PropTypes.bool,
+};
 
 export default CaseStatus;
