@@ -1,4 +1,15 @@
 <div class="px-4">
+
+  <div id="caseStatusModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p>Some text in the Modal..</p>
+    </div>
+
+  </div>
+
   <% unless type == 'transferred_out_patients' %>
     <div class="row">
       <div class="col-sm-24 col-md-16 col-lg-18">
@@ -27,6 +38,7 @@
       </div>
     </div>
   <% end %>
+    
   <table id="patients_table_<%= type %>" class="table table-sm table-striped table-bordered table-hover" style="width:100%">
     <thead>
       <tr>
@@ -67,6 +79,8 @@
 </div>
 <script>
   $(document).ready(function() {
+    var caseStatusModal = document.getElementById("caseStatusModal");
+
     <% if type == 'transferred_out_patients' %>
       const route = '/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/all/all/all';
     <% else %>
@@ -85,10 +99,56 @@
           }
         });
       },
+      // buttons: [{
+      //               "extend": "copy",
+      //               "text": "<i class='far fa-copy text-125 text-purple'></i> <span class='d-none'>Copy to clipboard</span>",
+      //               "className": "btn-sm btn-outline-info btn-h-outline-primary btn-a-outline-primary"
+      //           }],
+      //buttons: true,
+      // buttons: ['copy', 'excel', 'pdf'],
+      buttons: [
+        {
+                extend: 'collection',
+                text: 'Actions',
+                buttons: [
+                    {
+                        text: 'Update Case Status',
+                        action: function ( e, dt, node, config ) {
+                            selected_ids = table.rows({ selected: true }).data().map(x => x["id"]);
+                            console.log(selected_ids);
+                            caseStatusModal.style.display = "block";
+                            //console.log(table.rows({ selected: true }).data().eq(0) );
+                            //dt.column( -2 ).visible( ! dt.column( -2 ).visible() );
+                            //Patients.where(id: selected_ids).update_all()
+                        }
+                    },
+                    {
+                        text: 'Move to Closed',
+                        action: function ( e, dt, node, config ) {
+                            dt.column( -1 ).visible( ! dt.column( -1 ).visible() );
+                        }
+                    },
+                    {
+                        text: 'Pause/Resume Notifications',
+                        action: function ( e, dt, node, config ) {
+                            dt.column( -1 ).visible( ! dt.column( -1 ).visible() );
+                        }
+                    },
+                    {
+                        text: 'Update Jurisdiction',
+                        action: function ( e, dt, node, config ) {
+                            dt.column( -1 ).visible( ! dt.column( -1 ).visible() );
+                        }
+                    },
+                ]
+            }
+      ],
       select: {
         style:    'multi+shift',
-        selector: 'td:first-child'
+        selector: 'td:first-child',
+        info: true
       },
+      info: true,
       order: [[ 1, 'asc' ]],
       "serverSide": true,
       "deferLoading": 0, // Conditionally load tables (when tab is pressed)
@@ -176,7 +236,7 @@
           <% if type == 'all_patients' %>,{ "data": "linelist.status", "orderable": false, render: $.fn.dataTable.render.text() }<% end %>
         <% end %>
       ],
-      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
+      "dom": "<'row'<'col-sm-24 col-md-4'l><'col-sm-24 col-md-8'i><'col-sm-24 col-md-6'B><'col-sm-24 col-md-4'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>",
     });
 
     $(document).on('change', 'select#assigned_jurisdiction_<%= type %>', function(event) {
@@ -222,6 +282,9 @@
       });
     }
 
+    table.buttons().container()
+        .appendTo( '#patients_table_<%= type %>_wrapper .row .col-md-6:eq(0)' );
+
     table.on("click", "th.select-checkbox", function() {
       if ($("th.select-checkbox").hasClass("selected")) {
         table.rows().deselect();
@@ -242,3 +305,43 @@
     });
   });
 </script>
+
+<style> 
+ /* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+} 
+</style>

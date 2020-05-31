@@ -103,3 +103,7 @@ table.dataTable tr th.select-checkbox.selected::after  {
   text-align: center;
   text-shadow: 1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
 }
+
+div.dataTables_wrapper div.dataTables_info {
+	padding-top: 0 !important;
+}
