@@ -188,6 +188,15 @@
         $.each(data.assignedUsers, (_, assignedUser) => {
           options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
         });
+
+        // reset assigned user search value to 'all' if the new list of options does not include the current assigned user search value
+        if (assigned_user === 'all' || assigned_user === 'none' || Array.from(data.assignedUsers).includes(parseInt(assigned_user))) {
+          $('#assigned_user_<%= type %>').val(assigned_user);
+        } else {
+          assigned_user = 'all';
+          $('#assigned_user_<%= type %>').val('all');
+          updateDataTable();
+        }
       });
     }
   });
