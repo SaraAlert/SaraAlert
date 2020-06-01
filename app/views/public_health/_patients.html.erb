@@ -63,11 +63,12 @@
 </div>
 <script>
   $(document).ready(function() {
-    $.fn.dataTable.ext.errMode = 'throw';
     let assigned_jurisdiction = $('#assigned_jurisdiction_<%= type %>').val();
     let scope = $('#scope<%= type %>').val();
     let assigned_user = $('#assigned_user_<%= type %>').val();
     const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
+
+    $.fn.dataTable.ext.errMode = 'throw';
     const table = $('#patients_table_<%= type %>').DataTable({
       "drawCallback": function(settings) {
         $('.datetime-convert').each(function() {
