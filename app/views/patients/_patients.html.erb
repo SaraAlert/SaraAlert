@@ -65,11 +65,14 @@
       ]
     });
 
-    updateAssignedJurisdictionOptions();
-    updateAssignedUserOptions();
-
-    let assigned_jurisdiction = $('#assigned_jurisdiction').val();
+    let assigned_user = $('#assigned_user').val()
     let scope = $('#scope').val();
+
+    updateAssignedJurisdictionOptions();
+    
+    let assigned_jurisdiction = $('#assigned_jurisdiction').val();
+
+    updateAssignedUserOptions();
 
     $(document).on('change', 'select#assigned_jurisdiction', event => {
       assigned_jurisdiction = event.target.value;
@@ -84,48 +87,75 @@
     });
 
     $(document).on('change', 'select#assigned_user', event => {
-      if (event.target.value == 'all') {
-        table.column(2).search('').draw();
-      } else if (event.target.value == 'none') {
-        table.column(2).search('^$', true, false).draw();
-      } else {
-        table.column(2).search(event.target.value).draw();
-      }
+      assigned_user = event.target.value;
+      searchByAssignedUser();
     });
 
     function searchByAssignedJurisdiction() {
       if (scope === 'all') {
-        table.column(7).search(assigned_jurisdiction).draw();
+        table.column(7).search(assigned_jurisdiction, false, false).draw();
       } else {
         table.column(7).search(`^${assigned_jurisdiction}$`, true, false).draw();
       }
     }
 
+    function searchByAssignedUser() {
+      if (assigned_user === 'all') {
+        table.column(2).search('', false, false).draw();
+      } else if (assigned_user === 'none') {
+        table.column(2).search('^$', true, false).draw();
+      } else {
+        table.column(2).search(`^${assigned_user}$`, true, false).draw();
+      }
+    }
+
     function updateAssignedJurisdictionOptions() {
+      // get a sorted, unique list of assigned jurisdictions
+      const assignedJurisdictions = table.column(7)
+                                         .data()
+                                         .unique()
+                                         .sort();
+
+      // reset and update assigned jurisdiction options
       const options = $('#assigned_jurisdiction');
       options.empty();
-      $.each(table.rows({search: 'applied'})
-                  .column(7)
-                  .data()
-                  .unique()
-                  .sort(), (_, assignedJurisdiction) => {
-                    options.append($('<option></option>').attr('value', assignedJurisdiction).text(assignedJurisdiction));
-                  });
+      $.each(assignedJurisdictions, (_, assignedJurisdiction) => {
+        options.append($('<option></option>').attr('value', assignedJurisdiction).text(assignedJurisdiction));
+      });
     }
 
     function updateAssignedUserOptions() {
+      // get a sorted, unique list of assigned users based on the scope
+      const assignedUsers = table.data()
+                                 .filter(row => {
+                                   if (scope === 'all') {
+                                     return row[7].includes(assigned_jurisdiction);
+                                   } else {
+                                     return row[7] === assigned_jurisdiction;
+                                   }
+                                 })
+                                 .map(row => parseInt(row[2]))
+                                 .unique()
+                                 .filter(assignedUser => { return !isNaN(assignedUser) })
+                                 .sort((a, b) => { return a - b });
+      
+      // reset and update assigned user options 
       const options = $('#assigned_user');
       options.empty();
       options.append($('<option></option>').attr('value', 'all').text('All'));
       options.append($('<option></option>').attr('value', 'none').text('None'));
-      $.each(table.rows({search: 'applied'})
-                  .column(2)
-                  .data()
-                  .unique()
-                  .filter(value => { return value !== '' })
-                  .map(x => parseInt(x)).sort((a, b) => { return a - b }), (_, assignedUser) => {
-                    options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
-                  });
+      $.each(assignedUsers, (_, assignedUser) => {
+        options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
+      });
+
+      // reset assigned user search value to 'all' if the new list of options does not include the current assigned user search value
+      if (assigned_user === 'all' || assigned_user === 'none' || Array.from(assignedUsers).includes(parseInt(assigned_user))) {
+        $('#assigned_user').val(assigned_user);
+      } else {
+        assigned_user = 'all';
+        $('#assigned_user').val('all');
+        searchByAssignedUser();
+      }
     }
   });
 </script>
