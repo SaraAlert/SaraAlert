@@ -48,20 +48,24 @@ class PublicHealthController < ApplicationController
     # Validate type param
     type = params.permit(:type)[:type].to_sym
     if workflow == :exposure
-      redirect_to(root_url) && return unless %i[all symptomatic_patients non_reporting_patients asymptomatic_patients pui_patients
+      redirect_to(root_url) && return unless %i[all_patients symptomatic_patients non_reporting_patients asymptomatic_patients pui_patients
                                                 closed_patients transferred_in_patients transferred_out_patients].include?(type)
     else
-      redirect_to(root_url) && return unless %i[all requiring_review_patients non_reporting_patients reporting_patients
+      redirect_to(root_url) && return unless %i[all_patients requiring_review_patients non_reporting_patients reporting_patients
                                                 closed_patients transferred_in_patients transferred_out_patients].include?(type)
     end
 
     # Validate assigned jurisdiction param
     assigned_jurisdiction = params.permit(:assigned_jurisdiction)[:assigned_jurisdiction]
-    redirect_to(root_url) && return unless assigned_jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(assigned_jurisdiction.to_i)
+    redirect_to(root_url) && return unless current_user.jurisdiction.subtree_ids.include?(assigned_jurisdiction.to_i)
+
+    # Validate scope param
+    scope = params.permit(:scope)[:scope].to_sym
+    redirect_to(root_url) && return unless %i[all immediate].include?(scope)
 
     # Validate assigned user param
     assigned_user = params.permit(:assigned_user)[:assigned_user]
-    redirect_to(root_url) && return unless %w[all none].include?(assigned_user) || current_user.jurisdiction.all_assigned_users.include?(assigned_user.to_i)
+    redirect_to(root_url) && return unless %w[all none].include?(assigned_user) || assigned_user.to_i.between?(1, 9999)
 
     patients = current_user.viewable_patients
 
@@ -69,7 +73,6 @@ class PublicHealthController < ApplicationController
     if workflow == :exposure
       patients = patients.where(isolation: false)
 
-      patients = patients if type == :all
       patients = patients.symptomatic if type == :symptomatic_patients
       patients = patients.non_reporting if type == :non_reporting_patients
       patients = patients.asymptomatic if type == :asymptomatic_patients
@@ -80,7 +83,6 @@ class PublicHealthController < ApplicationController
     else
       patients = patients.where(isolation: true)
 
-      patients = patients if type == :all
       patients = patients.isolation_requiring_review if type == :requiring_review_patients
       patients = patients.isolation_non_reporting if type == :non_reporting_patients
       patients = patients.isolation_reporting if type == :reporting_patients
@@ -90,7 +92,8 @@ class PublicHealthController < ApplicationController
     end
 
     # Filter by assigned jurisdiction
-    patients = patients.where(jurisdiction_id: assigned_jurisdiction.to_i) unless assigned_jurisdiction == 'all'
+    jur_id = assigned_jurisdiction.to_i
+    patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
 
     # Filter by assigned user
     patients = patients.where(assigned_user: assigned_user == 'none' ? nil : assigned_user.to_i) unless assigned_user == 'all'

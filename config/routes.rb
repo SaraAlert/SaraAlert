@@ -34,7 +34,7 @@ Rails.application.routes.draw do
   post '/laboratories', to: 'laboratories#create'
   post '/laboratories/:id', to: 'laboratories#update'
 
-  get '/jurisdictions/:jurisdiction_id/assigned_users', to: 'patients#assigned_users'
+  get '/jurisdictions/:jurisdiction_id/assigned_users/:scope', to: 'patients#assigned_users'
 
   get '/patients/:id/group', to: 'patients#new_group_member'
 
@@ -69,7 +69,7 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
-  get '/public_health/patients/:workflow/:type/:assigned_jurisdiction/:assigned_user', to: 'public_health#patients', as: :public_health_patients
+  get '/public_health/patients/:workflow/:type/:assigned_jurisdiction/:scope/:assigned_user', to: 'public_health#patients', as: :public_health_patients
   get '/public_health', to: 'public_health#exposure', as: :public_health
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
 

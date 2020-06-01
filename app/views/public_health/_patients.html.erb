@@ -1,18 +1,23 @@
 <div class="px-4">
   <div class="row">
-    <div class="col-sm-24 col-md-12">
+    <div class="col-sm-24 col-md-16">
       <label style="display:inline-flex;margin-bottom:0.25em">
         <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
-        <select id="assigned_jurisdiction_<%= type =%>" class="custom-select custom-select-sm form-control form-control-sm">
-          <option value="all">All</option>
+        <select id="assigned_jurisdiction_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
           <%= options_from_collection_for_select(@assigned_jurisdictions, :first, :last) %>
         </select>
       </label>
+      <label style="display:inline-flex;margin-bottom:0.25em">
+        <select id="scope<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
+          <option value="all">All</option>
+          <option value="immediate">Immediate</option>
+        </select>
+      </label>
     </div>
-    <div class="col-sm-24 col-md-12 text-right">
+    <div class="col-sm-24 col-md-8 text-right">
       <label style="display:inline-flex;margin-bottom:0.25em">
         <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
-        <select id="assigned_user_<%= type =%>" class="custom-select custom-select-sm form-control form-control-sm">
+        <select id="assigned_user_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
           <option value="all">All</option>
           <option value="none">None</option>
           <%= options_for_select(@assigned_users) %>
@@ -59,9 +64,10 @@
 <script>
   $(document).ready(function() {
     $.fn.dataTable.ext.errMode = 'throw';
-    let assigned_jurisdiction = 'all';
-    let assigned_user = 'all';
-    const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${assigned_user}`;
+    let assigned_jurisdiction = $('#assigned_jurisdiction_<%= type %>').val();
+    let scope = $('#scope<%= type %>').val();
+    let assigned_user = $('#assigned_user_<%= type %>').val();
+    const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
     const table = $('#patients_table_<%= type %>').DataTable({
       "drawCallback": function(settings) {
         $('.datetime-convert').each(function() {
@@ -149,15 +155,39 @@
       ],
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });
-    $(document).on('change', 'select#assigned_jurisdiction_<%= type =%>', event => {
+
+    $(document).on('change', 'select#assigned_jurisdiction_<%= type %>', event => {
       assigned_jurisdiction = event.target.value;
-      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${assigned_user}`;
-      table.ajax.url(route).load();
+      updateDataTable();
+      updateAssignedUserOptions();
     });
-    $(document).on('change', 'select#assigned_user_<%= type =%>', event => {
+
+    $(document).on('change', 'select#scope<%= type %>', event => {
+      scope = event.target.value;
+      updateDataTable();
+      updateAssignedUserOptions();
+    });
+
+    $(document).on('change', 'select#assigned_user_<%= type %>', event => {
       assigned_user = event.target.value;
-      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${assigned_user}`;
-      table.ajax.url(route).load();
+      updateDataTable();
     });
+
+    function updateDataTable() {
+      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
+      table.ajax.url(route).load();
+    }
+
+    function updateAssignedUserOptions() {
+      $.get(`/jurisdictions/${assigned_jurisdiction}/assigned_users/${scope}`, data => {
+        const options = $('#assigned_user_<%= type %>');
+        options.empty();
+        options.append($('<option></option>').attr('value', 'all').text('All'));
+        options.append($('<option></option>').attr('value', 'none').text('None'));
+        $.each(data.assignedUsers, (_, assignedUser) => {
+          options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
+        });
+      });
+    }
   });
 </script>
