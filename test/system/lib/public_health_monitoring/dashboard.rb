@@ -133,7 +133,7 @@ class PublicHealthMonitoringDashboard < ApplicationSystemTestCase
 
   def select_monitorees_to_import(rejects, accept_duplicates)
     if rejects.nil?
-      click_on 'Accept'
+      click_on 'Import All'
       find(:css, '.form-check-input').set(true) if accept_duplicates
       click_on 'OK'
     else

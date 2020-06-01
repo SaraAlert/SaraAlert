@@ -159,7 +159,7 @@ class Import extends React.Component {
                   `This will import all records listed below that you did not manually accept or reject.If potential duplicates have been detected, check the box if you would like to import them.`
                 )
               }>
-              Accept
+              Import All
             </Button>
             {this.state.acceptedAllStarted && (
               <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.stopImport()}>
