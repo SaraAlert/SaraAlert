@@ -1,3 +1,24 @@
+<div class="row">
+  <div class="col-sm-24 col-md-12">
+    <label style="display:inline-flex;margin-bottom:0.25em">
+      <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
+      <select id="assigned_jurisdiction" class="custom-select custom-select-sm form-control form-control-sm">
+        <option value="all">All</option>
+        <%= options_for_select(@assigned_jurisdictions.values) %>
+      </select>
+    </label>
+  </div>
+  <div class="col-sm-24 col-md-12 text-right">
+    <label style="display:inline-flex;margin-bottom:0.25em">
+      <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
+      <select id="assigned_user" class="custom-select custom-select-sm form-control form-control-sm">
+        <option value="all">All</option>
+        <option value="none">None</option>
+        <%= options_for_select(@assigned_users) %>
+      </select>
+    </label>
+  </div>
+</div>
 <table class="patients_table table table-sm table-striped table-bordered table-hover" style="width:100%">
   <thead>
     <tr>
@@ -26,11 +47,29 @@
 </table>
 <script>
   $(document).ready(function() {
-    $('.patients_table').DataTable({
+    const table = $('.patients_table').DataTable({
       "info": false,
       "lengthMenu": [10, 15, 25, 50, 100],
       "pageLength": 15,
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
+    });
+    $(document).on('change', 'select#assigned_jurisdiction', event => {
+      if (event.target.value == 'all') {
+        table.column(1).search('').draw();
+      } else {
+        const jurisdiction_path = event.target.value.split(', ');
+        const assigned_jurisdiction = jurisdiction_path[jurisdiction_path.length - 1];
+        table.column(1).search(assigned_jurisdiction).draw();
+      }
+    });
+    $(document).on('change', 'select#assigned_user', event => {
+      if (event.target.value == 'all') {
+        table.column(2).search('').draw();
+      } else if (event.target.value == 'none') {
+        table.column(2).search('^$', true, false).draw();
+      } else {
+        table.column(2).search(event.target.value).draw();
+      }
     });
   });
 </script>

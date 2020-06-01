@@ -136,7 +136,8 @@ namespace :demo do
     all_false = assessment_columns.each_with_object({}) { |column, hash| hash[column] = false }
 
     jurisdictions = Jurisdiction.all
-    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map {|key, value| [key, value]}]
+    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map {|id, path| [id, path]}]
+    assigned_users = Hash[jurisdictions.pluck(:id).map {|id| [id, (1..9999).to_a.sample(10)]}]
     Analytic.delete_all
 
     territory_names = ['American Samoa',
@@ -295,12 +296,15 @@ namespace :demo do
         printf("Generating transfers...")
         transfers = []
         patient_updates = {}
-        patient_and_jur_ids_transfer = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(5..10) / 100)
-        patient_and_jur_ids_transfer.each_with_index do |(patient_id, jur_id), index|
-          printf("\rGenerating transfer #{index+1} of #{patient_and_jur_ids_transfer.length}...")
+        patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
+        patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
+          printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
           to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
-          patient_updates[patient_id] = { jurisdiction_id: to_jurisdiction }
+          patient_updates[patient_id] = { 
+            jurisdiction_id: to_jurisdiction,
+            assigned_user: assigned_user.nil? ? nil : assigned_users[to_jurisdiction].sample
+          }
           transfers << Transfer.new(
             patient_id: patient_id,
             to_jurisdiction_id: to_jurisdiction,
@@ -448,7 +452,7 @@ namespace :demo do
             patient[:was_in_health_care_facility_with_known_cases_facility_name] = Faker::GreekPhilosophers.name if patient[:was_in_health_care_facility_with_known_cases] && rand < 0.15
           end
           patient[:jurisdiction_id] = jurisdictions.sample[:id]
-          patient[:assigned_user] = (rand < 0.8 ? rand(1..10) : rand(1..9999)) if rand < 0.9
+          patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.9
           patient[:exposure_risk_assessment] = ['High', 'Medium', 'Low', 'No Identified Risk', nil].sample
           patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
                                        'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample

@@ -27,7 +27,7 @@ class Jurisdiction < ApplicationRecord
     immediate_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
   end
 
-  def assigned_users_under_subtree
+  def all_assigned_users
     all_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort
   end
 

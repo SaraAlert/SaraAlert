@@ -153,7 +153,6 @@
       assigned_jurisdiction = event.target.value;
       const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${assigned_user}`;
       table.ajax.url(route).load();
-
     });
     $(document).on('change', 'select#assigned_user_<%= type =%>', event => {
       assigned_user = event.target.value;

@@ -18,7 +18,7 @@ class PublicHealthController < ApplicationController
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: false).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: false).size
     @assigned_jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }]
-    @assigned_users = current_user.jurisdiction.assigned_users_under_subtree
+    @assigned_users = current_user.jurisdiction.all_assigned_users
   end
 
   def isolation
@@ -34,7 +34,7 @@ class PublicHealthController < ApplicationController
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: true).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: true).size
     @assigned_jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }]
-    @assigned_users = current_user.jurisdiction.assigned_users_under_subtree
+    @assigned_users = current_user.jurisdiction.all_assigned_users
   end
 
   def patients
@@ -61,7 +61,7 @@ class PublicHealthController < ApplicationController
 
     # Validate assigned user param
     assigned_user = params.permit(:assigned_user)[:assigned_user]
-    redirect_to(root_url) && return unless %w[all none].include?(assigned_user) || current_user.jurisdiction.assigned_users.include?(assigned_user.to_i)
+    redirect_to(root_url) && return unless %w[all none].include?(assigned_user) || current_user.jurisdiction.all_assigned_users.include?(assigned_user.to_i)
 
     patients = current_user.viewable_patients
 
