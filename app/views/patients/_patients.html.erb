@@ -2,12 +2,13 @@
   <div class="col-sm-24 col-md-12">
     <label style="display:inline-flex;margin-bottom:0.25em">
       <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
-      <select id="assigned_jurisdiction" class="custom-select custom-select-sm form-control form-control-sm"></select>
+      <select id="assigned_jurisdiction" class="custom-select custom-select-sm form-control form-control-sm">
+        <option value="all">All</option>
+      </select>
     </label>
     <label style="display:inline-flex;margin-bottom:0.25em">
       <select id="scope" class="custom-select custom-select-sm form-control form-control-sm">
         <option value="all">All</option>
-        <option value="immediate">Immediate</option>
       </select>
     </label>
   </div>
@@ -65,19 +66,19 @@
       ]
     });
 
-    let assigned_user = $('#assigned_user').val()
+    let assigned_jurisdiction = $('#assigned_jurisdiction').val();
     let scope = $('#scope').val();
+    let assigned_user = $('#assigned_user').val()
 
     updateAssignedJurisdictionOptions();
-    
-    let assigned_jurisdiction = $('#assigned_jurisdiction').val();
-
     updateAssignedUserOptions();
+    updateScopeOptions();
 
     $(document).on('change', 'select#assigned_jurisdiction', event => {
       assigned_jurisdiction = event.target.value;
       searchByAssignedJurisdiction();
       updateAssignedUserOptions();
+      updateScopeOptions();
     });
 
     $(document).on('change', 'select#scope', event => {
@@ -93,9 +94,9 @@
 
     function searchByAssignedJurisdiction() {
       if (scope === 'all') {
-        table.column(7).search(assigned_jurisdiction, false, false).draw();
+        table.column(7).search(assigned_jurisdiction === 'all' ? '' : assigned_jurisdiction, false, false).draw();
       } else {
-        table.column(7).search(`^${assigned_jurisdiction}$`, true, false).draw();
+        table.column(7).search(assigned_jurisdiction === 'all' ? '' : `^${assigned_jurisdiction}$`, true, false).draw();
       }
     }
 
@@ -119,6 +120,7 @@
       // reset and update assigned jurisdiction options
       const options = $('#assigned_jurisdiction');
       options.empty();
+      options.append($('<option></option>').attr('value', 'all').text('All'));
       $.each(assignedJurisdictions, (_, assignedJurisdiction) => {
         options.append($('<option></option>').attr('value', assignedJurisdiction).text(assignedJurisdiction));
       });
@@ -128,7 +130,9 @@
       // get a sorted, unique list of assigned users based on the scope
       const assignedUsers = table.data()
                                  .filter(row => {
-                                   if (scope === 'all') {
+                                   if (assigned_jurisdiction == 'all') {
+                                     return true;
+                                   } else if (scope === 'all') {
                                      return row[7].includes(assigned_jurisdiction);
                                    } else {
                                      return row[7] === assigned_jurisdiction;
@@ -155,6 +159,15 @@
         assigned_user = 'all';
         $('#assigned_user').val('all');
         searchByAssignedUser();
+      }
+    }
+
+    function updateScopeOptions() {
+      const options = $('#scope');
+      options.empty();
+      options.append($('<option></option>').attr('value', 'all').text('All'));
+      if (assigned_jurisdiction !== 'all') {
+        options.append($('<option></option>').attr('value', 'immediate').text('Immediate'));
       }
     }
   });

@@ -7,6 +7,15 @@ require_relative 'lib/monitoree_enrollment/helper'
 class EnrollerTest < ApplicationSystemTestCase
   @@monitoree_enrollment_helper = MonitoreeEnrollmentHelper.new(nil)
 
+  test 'view enrolled monitorees' do
+    @@monitoree_enrollment_helper.view_enrolled_monitorees('state1_epi_enroller')
+    @@monitoree_enrollment_helper.view_enrolled_monitorees('locals1c1_enroller')
+    @@monitoree_enrollment_helper.view_enrolled_monitorees('locals1c2_enroller')
+    @@monitoree_enrollment_helper.view_enrolled_monitorees('state2_enroller')
+    @@monitoree_enrollment_helper.view_enrolled_monitorees('locals2c3_enroller')
+    @@monitoree_enrollment_helper.view_enrolled_monitorees('locals2c4_enroller')
+  end
+
   test 'enroll monitoree with all fields' do
     @@monitoree_enrollment_helper.enroll_monitoree('state1_epi_enroller', 'monitoree_2', true)
   end
