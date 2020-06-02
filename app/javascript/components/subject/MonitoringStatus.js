@@ -56,7 +56,7 @@ class MonitoringStatus extends React.Component {
       // Jurisdiction is a weird case; the datalist and input work differently together
       this.setState({
         message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.originalJurisdictionId] + '" to "' + event.target.value + '".',
-        message_warning: '',
+        message_warning: this.state.assignedUser === '' ? '' : 'Please also consider removing or updating the assigned user if it is no longer applicable.',
         jurisdictionPath: event?.target?.value ? event.target.value : '',
         monitoring_status_options: null,
         validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
@@ -266,7 +266,9 @@ class MonitoringStatus extends React.Component {
           public_health_action: this.state.public_health_action,
           message: this.state.message,
           reasoning:
-            (this.state.monitoring_status_option ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '') : '') + this.state.reasoning,
+            (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
+              ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '')
+              : '') + this.state.reasoning,
           monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
           jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdictionPath),
           assigned_user: this.state.assignedUser,
@@ -427,78 +429,74 @@ class MonitoringStatus extends React.Component {
                     <option>Recommended laboratory testing</option>
                   </Form.Control>
                 </Form.Group>
-              </Form.Row>
-              <Form.Row className="align-items-end">
-                <Form.Group as={Col} lg="16" className="pt-2">
-                  <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
-                  <Form.Control
-                    as="input"
-                    name="jurisdictionId"
-                    list="jurisdictionPaths"
-                    autoComplete="off"
-                    className="form-control-lg"
-                    onChange={this.handleChange}
-                    onKeyPress={this.handleKeyPress}
-                    value={this.state.jurisdictionPath}
-                  />
-                  <datalist id="jurisdictionPaths">
-                    {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
-                      return (
-                        <option value={path} key={id}>
-                          {path}
-                        </option>
-                      );
-                    })}
-                  </datalist>
-                </Form.Group>
-                <Form.Group as={Col} lg="8">
-                  {!this.state.validJurisdiction || this.state.jurisdictionPath === this.props.jurisdictionPaths[this.state.originalJurisdictionId] ? (
-                    <Button disabled className="btn-lg btn-square">
-                      <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
-                    </Button>
-                  ) : (
-                    <Button onClick={this.toggleJurisdictionModal} className="btn-lg btn-square">
-                      <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
-                    </Button>
-                  )}
-                </Form.Group>
-              </Form.Row>
-              <Form.Row className="align-items-end">
-                <Form.Group as={Col} sm="10" md="8" className="pt-2">
+                <Form.Group as={Col} md="12" lg="8" className="pt-2" inline>
                   <Form.Label className="nav-input-label">
                     ASSIGNED USER
                     <InfoTooltip tooltipTextKey="assignedUser" location="right"></InfoTooltip>
                   </Form.Label>
-                  <Form.Control
-                    as="input"
-                    name="assignedUser"
-                    list="assignedUsers"
-                    autoComplete="off"
-                    className="form-control-lg"
-                    onChange={this.handleChange}
-                    onKeyPress={this.handleKeyPress}
-                    value={this.state.assignedUser}
-                  />
-                  <datalist id="assignedUsers">
-                    {this.props.assignedUsers.map(num => {
-                      return (
-                        <option value={num} key={num}>
-                          {num}
-                        </option>
-                      );
-                    })}
-                  </datalist>
+                  <Form.Group className="d-flex mb-0">
+                    <Form.Control
+                      as="input"
+                      name="assignedUser"
+                      list="assignedUsers"
+                      autoComplete="off"
+                      className="form-control-lg"
+                      onChange={this.handleChange}
+                      onKeyPress={this.handleKeyPress}
+                      value={this.state.assignedUser}
+                    />
+                    <datalist id="assignedUsers">
+                      {this.props.assignedUsers.map(num => {
+                        return (
+                          <option value={num} key={num}>
+                            {num}
+                          </option>
+                        );
+                      })}
+                    </datalist>
+                    {this.state.assignedUser === this.state.originalAssignedUser ? (
+                      <Button className="btn-lg btn-square text-nowrap ml-2" disabled>
+                        <i className="fas fa-users"></i> Change User
+                      </Button>
+                    ) : (
+                      <Button className="btn-lg btn-square text-nowrap ml-2" onClick={this.toggleassignedUserModal}>
+                        <i className="fas fa-users"></i> Change User
+                      </Button>
+                    )}
+                  </Form.Group>
                 </Form.Group>
-                <Form.Group as={Col} sm="10" md="8">
-                  {this.state.assignedUser === this.state.originalAssignedUser ? (
-                    <Button disabled className="btn-lg btn-square">
-                      <i className="fas fa-users"></i> Change User
-                    </Button>
-                  ) : (
-                    <Button onClick={this.toggleassignedUserModal} className="btn-lg btn-square">
-                      <i className="fas fa-users"></i> Change User
-                    </Button>
-                  )}
+                <Form.Group as={Col} lg="24" className="pt-2">
+                  <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
+                  <Form.Group className="d-flex mb-0">
+                    <Form.Control
+                      as="input"
+                      name="jurisdictionId"
+                      list="jurisdictionPaths"
+                      autoComplete="off"
+                      className="form-control-lg"
+                      onChange={this.handleChange}
+                      onKeyPress={this.handleKeyPress}
+                      value={this.state.jurisdictionPath}
+                    />
+                    <datalist id="jurisdictionPaths">
+                      {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
+                        return (
+                          <option value={path} key={id}>
+                            {path}
+                          </option>
+                        );
+                      })}
+                    </datalist>
+                    {!this.state.validJurisdiction || this.state.jurisdictionPath === this.props.jurisdictionPaths[this.state.originalJurisdictionId] ? (
+                      <Button className="btn-lg btn-square text-nowrap ml-2" disabled>
+                        <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
+                      </Button>
+                    ) : (
+                      <Button className="btn-lg btn-square text-nowrap ml-2" onClick={this.toggleJurisdictionModal}>
+                        <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
+                      </Button>
+                    )}
+                  </Form.Group>
                 </Form.Group>
               </Form.Row>
             </Col>
@@ -508,7 +506,7 @@ class MonitoringStatus extends React.Component {
         {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
         {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
-        {this.state.showassignedUserModal && this.createModal('Group', this.toggleassignedUserModal, this.submit)}
+        {this.state.showassignedUserModal && this.createModal('Assigned User', this.toggleassignedUserModal, this.submit)}
         {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
         {this.state.showIsolationModal && this.createModal('Isolation', this.toggleIsolation, this.submit)}
         {this.state.showNotificationsModal && this.createModal('Notifications', this.toggleNotifications, this.submit)}

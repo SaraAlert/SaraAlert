@@ -9,22 +9,22 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   include ImportExportHelper
   @@system_test_utils = SystemTestUtils.new(nil)
     
-  def verify_epi_x_field_validation(workflow, file_name)
+  def verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       row.each_with_index do |value, index|
-        verify_validation(workflow, EPI_X_FIELDS[index], [41, 42].include?(index) ? !value.blank? : value)
+        verify_validation(jurisdiction_id, workflow, EPI_X_FIELDS[index], [41, 42].include?(index) ? !value.blank? : value)
       end
     end
   end
   
-  def verify_sara_alert_format_field_validation(workflow, file_name)
+  def verify_sara_alert_format_field_validation(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       row.each_with_index do |value, index|
-        verify_validation(workflow, COMPREHENSIVE_FIELDS[index], value)
+        verify_validation(jurisdiction_id, workflow, COMPREHENSIVE_FIELDS[index], value)
       end
     end
   end
@@ -90,6 +90,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
         assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
       end
+      assert card.has_content?("This monitoree will be imported into '#{row[95]}'") if row[95]
+      assert card.has_content?("This monitoree will be assigned to user '#{row[96]}'") if row[96]
     end
   end
 
@@ -170,7 +172,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_validation(workflow, field, value)
+  def verify_validation(jurisdiction_id, workflow, field, value)
     return if workflow != :isolation && %i[symptom_onset case_status].include?(field)
     if VALIDATION[field]
       # TODO: Un-comment when required fields are to be checked upon import
@@ -178,29 +180,48 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       #   assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
       # end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !VALID_ENUMS[field].include?(value)
-        assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:bool) && !%w[true false].include?(value.to_s.downcase)
-        assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date)
         begin
           Date.parse(value)
         rescue ArgumentError
-          assert page.has_content?("#{value} is not a valid date for field '#{VALIDATION[field][:label]}"), "Error message for #{field} missing"
+          assert page.has_content?("'#{value}' is not a valid date for '#{VALIDATION[field][:label]}"), "Error message for #{field} missing"
         end
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
-        assert page.has_content?("#{value} is not a valid phone number for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("'#{value}' is not a valid phone number for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.upcase.to_sym].nil?
-        assert page.has_content?("#{value} is not a valid state for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("'#{value}' is not a valid state for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:sex) && !%[Male Female Unknown M F].include?(value.capitalize)
-        assert page.has_content?("#{value} is not a valid sex for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:email) && !ValidEmail2::Address.new(value).valid?
-        assert page.has_content?("#{value} is not a valid Email Address for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        assert page.has_content?("'#{value}' is not a valid Email Address for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+      end
+    elsif field == :jurisdiction_path
+      if value && !value.blank?
+        jurisdiction = Jurisdiction.where(path: value).first
+        if jurisdiction.nil?
+          if Jurisdiction.where(name: value).empty?
+            assert page.has_content?("'#{value}' is not valid for 'Full Assigned Jurisdiction Path'"), "Error message for #{field} missing"
+          else
+            assert page.has_content?("'#{value}' is not valid for 'Full Assigned Jurisdiction Path', please provide the full path instead of just the name"), "Error message for #{field} missing"
+          end
+        else
+          unless Jurisdiction.find(jurisdiction_id).subtree_ids.include?(jurisdiction[:id])
+            assert page.has_content?("'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it"), "Error message for #{field} missing"
+          end
+        end
+      end
+    elsif field == :assigned_user
+      if value && !value.blank? && !value.to_i.between?(1, 9999)
+        assert page.has_content?("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999"), "Error message for #{field} missing"
       end
     end
   end

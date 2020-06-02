@@ -70,7 +70,7 @@
     </div>
     <div class="card card-square tab-pane pb-4" id="transferred-out" role="tabpanel" aria-labelledby="transferred-out-tab">
       <p class="lead px-4 pt-4 pb-3 mb-2">Monitorees that have been transferred out of this jurisdiction. You are currently in the <u>exposure</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'transferred_out_patients', p_links: false, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
+      <%= render partial: "patients", locals: { type: 'transferred_out_patients', p_links: false, isolation: false } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="all" role="tabpanel" aria-labelledby="all-tab">
       <p class="lead px-4 pt-4 pb-3 mb-2">All Monitorees in this jurisdiction, in the Exposure workflow. You are currently in the <u>exposure</u> workflow.</p>

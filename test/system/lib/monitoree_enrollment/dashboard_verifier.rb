@@ -22,7 +22,7 @@ class MonitoreeEnrollmentDashboardVerifier < ApplicationSystemTestCase
         verify_patient_info_in_data_table(patient) if patient.jurisdiction[:path].include?(jur.split(', ').last)
 
         unless jur == 'All'
-          select 'Immediate', from: "scope"
+          select 'Exact Match', from: "scope"
           page.all('.dataTable tbody tr').each do |row|
             assigned_jurisdiction_cell = row.all('td')[1]
             assert_equal(jur.split(', ').last, assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?

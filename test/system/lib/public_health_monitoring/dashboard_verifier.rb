@@ -68,7 +68,7 @@ class PublicHealthMonitoringDashboardVerifier < ApplicationSystemTestCase
         select jur[:path], from: "assigned_jurisdiction_#{tab.gsub('-', '_')}_patients"      
         verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path].include?(jur[:name])
   
-        select 'Immediate', from: "scope_#{tab.gsub('-', '_')}_patients"
+        select 'Exact Match', from: "scope_#{tab.gsub('-', '_')}_patients"
         if verify_scope
           @@system_test_utils.wait_for_data_table_load_delay
           page.all('.dataTable tbody tr').each do |row|

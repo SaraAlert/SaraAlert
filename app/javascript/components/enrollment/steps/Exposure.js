@@ -17,7 +17,7 @@ class Exposure extends React.Component {
       modified: {},
       jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
-      originalassignedUser: this.props.currentState.patient.assigned_user,
+      originalAssignedUser: this.props.currentState.patient.assigned_user,
       assignedUsers: this.props.assignedUsers,
     };
     this.handleChange = this.handleChange.bind(this);
@@ -84,7 +84,13 @@ class Exposure extends React.Component {
           if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
             const originalJurisdictionPath = self.props.jurisdictionPaths[self.state.originalJurisdictionId];
             const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdictionPath}. Are you sure you want to do this?`;
-            if (await confirmDialog(message)) {
+            const options = { title: 'Confirm Jurisdiction Change' };
+
+            if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
+              options.additionalNote = 'Please also consider removing or updating the assigned user if it is no longer applicable.';
+            }
+
+            if (await confirmDialog(message, options)) {
               callback();
             }
           } else {
@@ -391,7 +397,7 @@ class Exposure extends React.Component {
                         {this.state.errors['assigned_user']}
                       </Form.Control.Feedback>
                       {this.props.has_group_members &&
-                        this.state.current.patient.assigned_user !== this.state.originalassignedUser &&
+                        this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
                         (this.state.current.patient.assigned_user === null ||
                           (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 9999)) && (
                           <Form.Group className="mt-2">

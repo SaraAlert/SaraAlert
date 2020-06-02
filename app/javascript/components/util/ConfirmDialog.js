@@ -18,7 +18,17 @@ class Confirmation extends React.Component {
   }
 
   render() {
-    const { okLabbel = 'OK', cancelLabel = 'Cancel', title, confirmation, show, proceed, enableEscape = true, extraOption = undefined } = this.props;
+    const {
+      okLabbel = 'OK',
+      cancelLabel = 'Cancel',
+      title,
+      confirmation,
+      additionalNote,
+      show,
+      proceed,
+      enableEscape = true,
+      extraOption = undefined,
+    } = this.props;
     return (
       <Modal
         className="static-modal-container"
@@ -31,7 +41,10 @@ class Confirmation extends React.Component {
         <Modal.Header>
           <Modal.Title>{title || 'Confirm'}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{confirmation}</Modal.Body>
+        <Modal.Body>
+          <p className="mb-0">{confirmation}</p>
+          {additionalNote && <p className="mb-0 mt-4">{additionalNote}</p>}
+        </Modal.Body>
         {extraOption && <Form.Check type="checkbox" label={extraOption} className="mx-3" onChange={this.handleChange}></Form.Check>}
         <Modal.Footer>
           <Button onClick={() => proceed(false)}>{cancelLabel}</Button>
@@ -49,6 +62,7 @@ Confirmation.propTypes = {
   cancelLabel: PropTypes.string,
   title: PropTypes.string,
   confirmation: PropTypes.string,
+  additionalNote: PropTypes.string,
   extraOptionChange: PropTypes.func,
   extraOption: PropTypes.string,
   show: PropTypes.bool,

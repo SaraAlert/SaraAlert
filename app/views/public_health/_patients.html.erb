@@ -1,9 +1,9 @@
 <div class="px-4">
   <% unless type == 'transferred_out_patients' %>
     <div class="row">
-      <div class="col-sm-24 col-md-16">
+      <div class="col-sm-24 col-md-16 col-lg-18">
         <label style="display:inline-flex;margin-bottom:0.25em">
-          <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
+          <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Show Jurisdiction:</span>
           <select id="assigned_jurisdiction_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
             <%= options_from_collection_for_select(@assigned_jurisdictions, :first, :last) %>
           </select>
@@ -11,11 +11,11 @@
         <label style="display:inline-flex;margin-bottom:0.25em">
           <select id="scope_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
             <option value="all">All</option>
-            <option value="immediate">Immediate</option>
+            <option value="immediate">Exact Match</option>
           </select>
         </label>
       </div>
-      <div class="col-sm-24 col-md-8 text-right">
+      <div class="col-sm-24 col-md-8 col-lg-6 text-right">
         <label style="display:inline-flex;margin-bottom:0.25em">
           <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
           <select id="assigned_user_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
@@ -32,7 +32,7 @@
       <tr>
         <% if isolation %>
           <th class="DataTable-table-header">Monitoree</th>
-          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Assigned Jurisdiction<% end %></th>
+          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
           <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Assigned User</th> <% end %>
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
@@ -48,7 +48,7 @@
           <% if type == 'all_patients' %><th class="DataTable-table-header">Status</th><% end %>
         <% else %>
           <th class="DataTable-table-header">Monitoree</th>
-          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Assigned Jurisdiction<% end %></th>
+          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
           <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Assigned User</th> <% end %>
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>

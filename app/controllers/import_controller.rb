@@ -35,7 +35,7 @@ class ImportController < ApplicationController
     workflow = params.permit(:workflow)[:workflow].to_sym
     format = params.permit(:format)[:format].to_sym
 
-    jurisdiction_paths = Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
+    valid_jurisdiction_ids = current_user.jurisdiction.subtree.pluck(:id)
 
     @errors = []
     @patients = []
@@ -57,7 +57,7 @@ class ImportController < ApplicationController
           begin
             if format == :comprehensive_monitorees
               if col_num == 95
-                patient[:jurisdiction_id] = validate_jurisdiction(row[95], row_ind, jurisdiction_paths)
+                patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
               elsif col_num == 96
                 patient[:assigned_user] = validate_assigned_user(row[96], row_ind)
               else
@@ -106,6 +106,8 @@ class ImportController < ApplicationController
         end
         @patients << patient
       end
+    rescue ValidationError => e
+      @errors << e&.message || "Unknown error on row #{row_ind}"
     rescue Zip::Error
       # Roo throws this if the file is not an excel file
       @errors << 'File Error: Please make sure that your import file is a .xlsx file.'
@@ -134,16 +136,16 @@ class ImportController < ApplicationController
       COMPREHENSIVE_HEADERS.each_with_index do |field, col_num|
         next if field == headers[col_num]
 
-        err_msg = 'Invalid headers, please make sure to use the latest format specified by the Sara Alert Format guidance doc.'\
-                    "Header in column #{col_num} is '#{headers[col_num]}' but should be '#{field}'"
+        err_msg = "Invalid header in column #{col_num} should be '#{field}' instead of '#{headers[col_num]}'. "\
+                  'Please make sure to use the latest format specified by the Sara Alert Format guidance doc.'
         raise ValidationError.new(err_msg, 1)
       end
     elsif format == :epix
       EPI_X_HEADERS.each_with_index do |field, col_num|
         next if field == headers[col_num]
 
-        err_msg = 'Invalid headers, please make sure to use the latest Epi-X format.'\
-                  "Header in column #{col_num} is '#{headers[col_num]}' but should be '#{field}'"
+        err_msg = "Invalid header in column #{col_num} should be '#{field}' instead of '#{headers[col_num]}'. "\
+                  'Please make sure to use the latest Epi-X format.'
         raise ValidationError.new(err_msg, 1)
       end
     end
@@ -174,7 +176,7 @@ class ImportController < ApplicationController
     return nil if value.blank?
     return value if VALID_ENUMS[field].include?(value)
 
-    err_msg = "#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}', acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+    err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are: #{VALID_ENUMS[field].to_sentence}"
     raise ValidationError.new(err_msg, row_ind)
   end
 
@@ -182,7 +184,7 @@ class ImportController < ApplicationController
     return value if value.blank?
     return (value.to_s.downcase == 'true') if %w[true false].include?(value.to_s.downcase)
 
-    err_msg = "#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}', acceptable values are: 'True' and 'False'"
+    err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are: 'True' and 'False'"
     raise ValidationError.new(err_msg, row_ind)
   end
 
@@ -193,7 +195,7 @@ class ImportController < ApplicationController
     begin
       Date.parse(value)
     rescue ArgumentError
-      raise ValidationError.new("#{value} is not a valid date for field '#{VALIDATION[field][:label]}", row_ind)
+      raise ValidationError.new("'#{value}' is not a valid date for '#{VALIDATION[field][:label]}", row_ind)
     end
   end
 
@@ -203,7 +205,7 @@ class ImportController < ApplicationController
     normalized_phone = Phonelib.parse(value, 'US').full_e164
     return normalized_phone if normalized_phone
 
-    raise ValidationError.new("#{value} is not a valid phone number for field '#{VALIDATION[field][:label]}'", row_ind)
+    raise ValidationError.new("'#{value}' is not a valid phone number for '#{VALIDATION[field][:label]}'", row_ind)
   end
 
   def validate_state_field(field, value, row_ind)
@@ -213,7 +215,7 @@ class ImportController < ApplicationController
     normalized_state = STATE_ABBREVIATIONS[value.upcase.to_sym]
     return normalized_state if normalized_state
 
-    err_msg = "#{value} is not a valid state for field '#{VALIDATION[field][:label]}', please use the full state name or two letter abbreviation"
+    err_msg = "'#{value}' is not a valid state for '#{VALIDATION[field][:label]}', please use the full state name or two letter abbreviation"
     raise ValidationError.new(err_msg, row_ind)
   end
 
@@ -224,24 +226,31 @@ class ImportController < ApplicationController
     normalized_sex = SEX_ABBREVIATIONS[value.upcase.to_sym]
     return normalized_sex if normalized_sex
 
-    raise ValidationError.new("#{value} is not a valid sex for field '#{VALIDATION[field][:label]}'", row_ind)
+    raise ValidationError.new("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}'", row_ind)
   end
 
   def validate_email_field(field, value, row_ind)
     return nil if value.blank?
     unless ValidEmail2::Address.new(value).valid?
-      raise ValidationError.new("#{value} is not a valid Email Address for field '#{VALIDATION[field][:label]}'", row_ind)
+      raise ValidationError.new("'#{value}' is not a valid Email Address for '#{VALIDATION[field][:label]}'", row_ind)
     end
 
     value
   end
 
-  def validate_jurisdiction(value, row_ind, jurisdiction_paths)
+  def validate_jurisdiction(value, row_ind, valid_jurisdiction_ids)
     return nil if value.blank?
 
-    return jurisdiction_paths.key(value) if jurisdiction_paths.values.include?(value)
+    jurisdiction = Jurisdiction.where(path: value).first
+    if jurisdiction.nil?
+      raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path'", row_ind) if Jurisdiction.where(name: value).empty?
 
-    raise ValidationError.new("#{value} is not a valid jurisdiction for field 'Jurisdiction Path'", row_ind)
+      raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path', please provide the full path instead of just the name", row_ind)
+    end
+
+    return jurisdiction[:id], jurisdiction[:path] if valid_jurisdiction_ids.include?(jurisdiction[:id])
+
+    raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it", row_ind)
   end
 
   def validate_assigned_user(value, row_ind)
@@ -249,7 +258,7 @@ class ImportController < ApplicationController
 
     return value.to_i if value.to_i.between?(1, 9999)
 
-    raise ValidationError.new("#{value} is not a valid number for field 'Assigned User'", row_ind)
+    raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999", row_ind)
   end
 
   def validate_address(patient, row_ind)
@@ -261,19 +270,19 @@ class ImportController < ApplicationController
 
   def validate_required_primary_contact(patient, row_ind)
     if patient[:email].blank? && patient[:preferred_contact_method] == 'E-mailed Web Link'
-      raise ValidationError.new("Field 'Email' is required when Primary Contact Method is 'E-mailed Web Link'", row_ind)
+      raise ValidationError.new("'Email' is required when Primary Contact Method is 'E-mailed Web Link'", row_ind)
     end
     unless patient[:primary_telephone].blank? && (['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? patient[:preferred_contact_method])
       return
     end
 
-    raise ValidationError.new("Field 'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_ind)
+    raise ValidationError.new("'Primary Telephone' is required when Primary Contact Method is '#{patient[:preferred_contact_method]}'", row_ind)
   end
 end
 
 # Exception used for reporting validation errors
 class ValidationError < StandardError
   def initialize(message, row_ind)
-    super("Validation Error: #{message} in row #{row_ind + 1}")
+    super("Validation Error (row #{row_ind + 1}): #{message}")
   end
 end

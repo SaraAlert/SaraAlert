@@ -1,7 +1,7 @@
 <div class="row">
-  <div class="col-sm-24 col-md-12">
+  <div class="col-sm-24 col-md-16 col-lg-18">
     <label style="display:inline-flex;margin-bottom:0.25em">
-      <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
+      <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Show Jurisdiction:</span>
       <select id="assigned_jurisdiction" class="custom-select custom-select-sm form-control form-control-sm">
         <option value="all">All</option>
       </select>
@@ -12,7 +12,7 @@
       </select>
     </label>
   </div>
-  <div class="col-sm-24 col-md-12 text-right">
+  <div class="col-sm-24 col-md-8 col-lg-6 text-right">
     <label style="display:inline-flex;margin-bottom:0.25em">
       <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
       <select id="assigned_user" class="custom-select custom-select-sm form-control form-control-sm">
@@ -26,7 +26,7 @@
   <thead>
     <tr>
       <th class="DataTable-table-header">Monitoree</th>
-      <th class="DataTable-table-header">Assigned Jurisdiction</th>
+      <th class="DataTable-table-header">Jurisdiction</th>
       <th class="DataTable-table-header">Assigned User</th>
       <th class="DataTable-table-header">State&#47;Local ID</th>
       <th class="DataTable-table-header">Sex</th>
@@ -167,7 +167,7 @@
       options.empty();
       options.append($('<option></option>').attr('value', 'all').text('All'));
       if (assigned_jurisdiction !== 'all') {
-        options.append($('<option></option>').attr('value', 'immediate').text('Immediate'));
+        options.append($('<option></option>').attr('value', 'immediate').text('Exact Match'));
       }
     }
   });

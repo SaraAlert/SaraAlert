@@ -240,7 +240,7 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'import sara alert format to exposure and validate jurisdiction path' do
-    @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :invalid_jurisdiction, [])
+    @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :invalid_fields, [])
   end
 
   test 'download sara alert format guidance from exposure workflow' do
