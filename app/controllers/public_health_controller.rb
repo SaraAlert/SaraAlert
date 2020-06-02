@@ -57,7 +57,7 @@ class PublicHealthController < ApplicationController
 
     # Validate assigned jurisdiction param
     assigned_jurisdiction = params.permit(:assigned_jurisdiction)[:assigned_jurisdiction]
-    redirect_to(root_url) && return unless current_user.jurisdiction.subtree_ids.include?(assigned_jurisdiction.to_i)
+    redirect_to(root_url) && return unless assigned_jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(assigned_jurisdiction.to_i)
 
     # Validate scope param
     scope = params.permit(:scope)[:scope].to_sym
@@ -92,8 +92,10 @@ class PublicHealthController < ApplicationController
     end
 
     # Filter by assigned jurisdiction
-    jur_id = assigned_jurisdiction.to_i
-    patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
+    unless assigned_jurisdiction == 'all'
+      jur_id = assigned_jurisdiction.to_i
+      patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
+    end
 
     # Filter by assigned user
     patients = patients.where(assigned_user: assigned_user == 'none' ? nil : assigned_user.to_i) unless assigned_user == 'all'

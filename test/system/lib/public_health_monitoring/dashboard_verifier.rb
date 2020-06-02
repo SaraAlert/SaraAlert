@@ -47,7 +47,7 @@ class PublicHealthMonitoringDashboardVerifier < ApplicationSystemTestCase
   end
   
   def verify_patient_under_tab(tab, patient)
-    if patient_count_under_tab(tab) > find('select', class: 'custom-select')['value'].to_i
+    if patient_count_under_tab(tab) > find('.dataTables_length').find('select', class: 'custom-select')['value'].to_i
       fill_in 'Search:', with: patient.last_name
     end
     assert page.has_content?(patient.first_name), @@system_test_utils.get_err_msg('Patient info', 'first name', patient.first_name)

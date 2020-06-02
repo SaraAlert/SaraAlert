@@ -1,30 +1,32 @@
 <div class="px-4">
-  <div class="row">
-    <div class="col-sm-24 col-md-16">
-      <label style="display:inline-flex;margin-bottom:0.25em">
-        <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
-        <select id="assigned_jurisdiction_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
-          <%= options_from_collection_for_select(@assigned_jurisdictions, :first, :last) %>
-        </select>
-      </label>
-      <label style="display:inline-flex;margin-bottom:0.25em">
-        <select id="scope<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
-          <option value="all">All</option>
-          <option value="immediate">Immediate</option>
-        </select>
-      </label>
+  <% unless type == 'transferred_out_patients' %>
+    <div class="row">
+      <div class="col-sm-24 col-md-16">
+        <label style="display:inline-flex;margin-bottom:0.25em">
+          <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned Jurisdiction:</span>
+          <select id="assigned_jurisdiction_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
+            <%= options_from_collection_for_select(@assigned_jurisdictions, :first, :last) %>
+          </select>
+        </label>
+        <label style="display:inline-flex;margin-bottom:0.25em">
+          <select id="scope<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
+            <option value="all">All</option>
+            <option value="immediate">Immediate</option>
+          </select>
+        </label>
+      </div>
+      <div class="col-sm-24 col-md-8 text-right">
+        <label style="display:inline-flex;margin-bottom:0.25em">
+          <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
+          <select id="assigned_user_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
+            <option value="all">All</option>
+            <option value="none">None</option>
+            <%= options_for_select(@assigned_users) %>
+          </select>
+        </label>
+      </div>
     </div>
-    <div class="col-sm-24 col-md-8 text-right">
-      <label style="display:inline-flex;margin-bottom:0.25em">
-        <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
-        <select id="assigned_user_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
-          <option value="all">All</option>
-          <option value="none">None</option>
-          <%= options_for_select(@assigned_users) %>
-        </select>
-      </label>
-    </div>
-  </div>
+  <% end %>
   <table id="patients_table_<%= type %>" class="table table-sm table-striped table-bordered table-hover" style="width:100%">
     <thead>
       <tr>
@@ -63,11 +65,15 @@
 </div>
 <script>
   $(document).ready(function() {
-    let assigned_jurisdiction = $('#assigned_jurisdiction_<%= type %>').val();
-    let scope = $('#scope<%= type %>').val();
-    let assigned_user = $('#assigned_user_<%= type %>').val();
-    const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
-
+    <% if type == 'transferred_out_patients' %>
+      const route = '/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/all/all/all';
+    <% else %>
+      let assigned_jurisdiction = $('#assigned_jurisdiction_<%= type %>').val();
+      let scope = $('#scope<%= type %>').val();
+      let assigned_user = $('#assigned_user_<%= type %>').val();
+      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
+    <% end %>
+    
     $.fn.dataTable.ext.errMode = 'throw';
     const table = $('#patients_table_<%= type %>').DataTable({
       "drawCallback": function(settings) {
