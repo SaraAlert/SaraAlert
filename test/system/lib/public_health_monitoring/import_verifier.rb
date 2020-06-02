@@ -136,7 +136,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
-      patients = Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2], date_of_birth: row[3])
+      user_jurisdiction = Jurisdiction.find(jurisdiction_id)
+      patients = user_jurisdiction.all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2], date_of_birth: row[3])
       patient = patients.where('created_at > ?', 1.minute.ago)[0]
       duplicate = patients.where('created_at < ?', 1.minute.ago).exists?
       if rejects.include?(row_num - 2) || (duplicate && !accept_duplicates)
@@ -156,6 +157,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 85 || index == 86 # isolation workflow specific fields
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif index == 95 # jurisdiction_path
+            assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path], patient.jurisdiction[:path], "#{field} mismatch in row #{row_num}")
           elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
@@ -175,29 +178,29 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       #   assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
       # end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !VALID_ENUMS[field].include?(value)
-        assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+        assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:bool) && !%w[true false].include?(value.to_s.downcase)
-        assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+        assert page.has_content?("#{value} is not one of the accepted values for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date)
         begin
           Date.parse(value)
         rescue ArgumentError
-          assert page.has_content?("#{value} is not a valid date for field '#{VALIDATION[field][:label]}"), "Error message for #{field}"
+          assert page.has_content?("#{value} is not a valid date for field '#{VALIDATION[field][:label]}"), "Error message for #{field} missing"
         end
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
-        assert page.has_content?("#{value} is not a valid phone number for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+        assert page.has_content?("#{value} is not a valid phone number for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.upcase.to_sym].nil?
-        assert page.has_content?("#{value} is not a valid state for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+        assert page.has_content?("#{value} is not a valid state for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:sex) && !%[Male Female Unknown M F].include?(value.capitalize)
-        assert page.has_content?("#{value} is not a valid sex for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+        assert page.has_content?("#{value} is not a valid sex for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:email) && !ValidEmail2::Address.new(value).valid?
-        assert page.has_content?("#{value} is not a valid Email Address for field '#{VALIDATION[field][:label]}'"), "Error message for #{field}"
+        assert page.has_content?("#{value} is not a valid Email Address for field '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
     end
   end
