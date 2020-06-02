@@ -67,28 +67,28 @@ class PublicHealthController < ApplicationController
     assigned_user = params.permit(:assigned_user)[:assigned_user]
     redirect_to(root_url) && return unless %w[all none].include?(assigned_user) || assigned_user.to_i.between?(1, 9999)
 
-    patients = current_user.viewable_patients
-
     # Filter by workflow and type
-    if workflow == :exposure
-      patients = patients.where(isolation: false)
-
-      patients = patients.symptomatic if type == :symptomatic_patients
-      patients = patients.non_reporting if type == :non_reporting_patients
-      patients = patients.asymptomatic if type == :asymptomatic_patients
-      patients = patients.under_investigation if type == :pui_patients
-      patients = patients.monitoring_closed_without_purged if type == :closed_patients
-      patients = current_user.jurisdiction.transferred_in_patients.where(isolation: false) if type == :transferred_in_patients
-      patients = current_user.jurisdiction.transferred_out_patients.where(isolation: false) if type == :transferred_out_patients
+    if type == :transferred_in_patients
+      patients = current_user.jurisdiction.transferred_in_patients.where(isolation: workflow == :isolation)
+    elsif type == :transferred_out_patients
+      patients = current_user.jurisdiction.transferred_out_patients.where(isolation: workflow == :isolation)
     else
-      patients = patients.where(isolation: true)
+      patients = current_user.viewable_patients
 
-      patients = patients.isolation_requiring_review if type == :requiring_review_patients
-      patients = patients.isolation_non_reporting if type == :non_reporting_patients
-      patients = patients.isolation_reporting if type == :reporting_patients
+      if workflow == :exposure
+        patients = patients.where(isolation: false)
+        patients = patients.symptomatic if type == :symptomatic_patients
+        patients = patients.non_reporting if type == :non_reporting_patients
+        patients = patients.asymptomatic if type == :asymptomatic_patients
+        patients = patients.under_investigation if type == :pui_patients
+      else
+        patients = patients.where(isolation: true)
+        patients = patients.isolation_requiring_review if type == :requiring_review_patients
+        patients = patients.isolation_non_reporting if type == :non_reporting_patients
+        patients = patients.isolation_reporting if type == :reporting_patients
+      end
+
       patients = patients.monitoring_closed_without_purged if type == :closed_patients
-      patients = current_user.jurisdiction.transferred_in_patients.where(isolation: true) if type == :transferred_in_patients
-      patients = current_user.jurisdiction.transferred_out_patients.where(isolation: true) if type == :transferred_out_patients
     end
 
     # Filter by assigned jurisdiction
