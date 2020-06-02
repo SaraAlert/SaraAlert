@@ -44,7 +44,9 @@ class MonitorAnalytics extends React.Component {
     // The two datatables in the cdc-maps cause the export to fail
     // remove them before the export then reload the page so that they come back
     if (window.document.documentMode) {
-      alert('Analytics export is not availale using the Internet Explorer web browser. Please use an alternative browser or a local image capture application instead.');
+      alert(
+        'Analytics export is not availale using the Internet Explorer web browser. Please use an alternative browser or a local image capture application instead.'
+      );
     } else {
       document.getElementsByClassName('data-table')[0].remove();
       document.getElementsByClassName('data-table')[0].remove();
@@ -87,7 +89,11 @@ class MonitorAnalytics extends React.Component {
           <Col md="24" className="mx-2 px-0">
             <p className="display-6">
               <i className="fas fa-info-circle mr-1"></i> Analytics are generated using data from both exposure and isolation workflows. Last Updated At{' '}
-              {moment(this.props.stats.last_updated_at).format('YYYY-MM-DD HH:mm:ss')} UTC.
+              {moment
+                .tz(this.props.stats.last_updated_at, 'UTC')
+                .tz(moment.tz.guess())
+                .format('YYYY-MM-DD HH:mm z')}
+              .
             </p>
           </Col>
         </Row>

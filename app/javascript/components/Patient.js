@@ -122,12 +122,12 @@ class Patient extends React.Component {
               <Col>
                 <div className="float-left">
                   <h5>
-                    <u>Address</u>
+                    <u>Contact Information</u>
                   </h5>
                 </div>
                 <div className="float-right">
                   {this.props.goto && (
-                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}>
+                    <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
                       <h5>Edit</h5>
                     </Button>
                   )}
@@ -137,23 +137,20 @@ class Patient extends React.Component {
             </Row>
             <Row>
               <Col className="text-truncate">
-                <span className="font-weight-light">
-                  {this.props.details.address_line_1 && `${this.props.details.address_line_1}`}
-                  {this.props.details.address_line_2 && ` ${this.props.details.address_line_2}`}
-                  {this.props.details.foreign_address_line_1 && `${this.props.details.foreign_address_line_1}`}
-                  {this.props.details.foreign_address_line_2 && ` ${this.props.details.foreign_address_line_2}`}
-                </span>
+                <span className="font-weight-normal">Phone:</span>{' '}
+                <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
                 <br />
-                <span className="font-weight-light">
-                  {this.props.details.address_city ? this.props.details.address_city : ''}
-                  {this.props.details.address_state ? ` ${this.props.details.address_state}` : ''}
-                  {this.props.details.address_county ? ` ${this.props.details.address_county}` : ''}
-                  {this.props.details.address_zip ? ` ${this.props.details.address_zip}` : ''}
-                  {this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}
-                  {this.props.details.foreign_address_country ? ` ${this.props.details.foreign_address_country}` : ''}
-                  {this.props.details.foreign_address_zip ? ` ${this.props.details.foreign_address_zip}` : ''}
-                </span>
+                <span className="font-weight-normal">Preferred Contact Time:</span>{' '}
+                <span className="font-weight-light">{this.props.details.preferred_contact_time && `${this.props.details.preferred_contact_time}`}</span>
                 <br />
+                <span className="font-weight-normal">Type:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Email:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Preferred Reporting Method:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''}`}</span>
               </Col>
             </Row>
           </Col>
@@ -167,12 +164,12 @@ class Patient extends React.Component {
                   <Col>
                     <div className="float-left">
                       <h5>
-                        <u>Contact Information</u>
+                        <u>Address</u>
                       </h5>
                     </div>
                     <div className="float-right">
                       {this.props.goto && (
-                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}>
                           <h5>Edit</h5>
                         </Button>
                       )}
@@ -182,22 +179,23 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col className="text-truncate">
-                    <span className="font-weight-normal">Phone:</span>{' '}
-                    <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
+                    <span className="font-weight-light">
+                      {this.props.details.address_line_1 && `${this.props.details.address_line_1}`}
+                      {this.props.details.address_line_2 && ` ${this.props.details.address_line_2}`}
+                      {this.props.details.foreign_address_line_1 && `${this.props.details.foreign_address_line_1}`}
+                      {this.props.details.foreign_address_line_2 && ` ${this.props.details.foreign_address_line_2}`}
+                    </span>
                     <br />
-                    <span className="font-weight-normal">Preferred Contact Time:</span>{' '}
-                    <span className="font-weight-light">{this.props.details.preferred_contact_time && `${this.props.details.preferred_contact_time}`}</span>
+                    <span className="font-weight-light">
+                      {this.props.details.address_city ? this.props.details.address_city : ''}
+                      {this.props.details.address_state ? ` ${this.props.details.address_state}` : ''}
+                      {this.props.details.address_county ? ` ${this.props.details.address_county}` : ''}
+                      {this.props.details.address_zip ? ` ${this.props.details.address_zip}` : ''}
+                      {this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}
+                      {this.props.details.foreign_address_country ? ` ${this.props.details.foreign_address_country}` : ''}
+                      {this.props.details.foreign_address_zip ? ` ${this.props.details.foreign_address_zip}` : ''}
+                    </span>
                     <br />
-                    <span className="font-weight-normal">Type:</span>{' '}
-                    <span className="font-weight-light">{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : ''}`}</span>
-                    <br />
-                    <span className="font-weight-normal">Email:</span>{' '}
-                    <span className="font-weight-light">{`${this.props.details.email ? this.props.details.email : ''}`}</span>
-                    <br />
-                    <span className="font-weight-normal">Preferred Reporting Method:</span>{' '}
-                    <span className="font-weight-light">{`${
-                      this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : ''
-                    }`}</span>
                   </Col>
                 </Row>
               </Col>

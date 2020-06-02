@@ -60,7 +60,7 @@
             <th class="DataTable-table-header">ID</th>
             <th class="DataTable-table-header dt-a-w-50">Needs Review</th>
             <th class="DataTable-table-header">Reporter</th>
-            <th class="DataTable-table-header">Created (UTC)</th>
+            <th class="DataTable-table-header">Created</th>
             <% columns.each do |column| -%>
               <th class="DataTable-table-header dt-a-w-75"><%= column&.titleize %></th>
             <% end -%>
@@ -73,7 +73,7 @@
               <td><%= assessment.id %></td>
               <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
               <td><%= assessment.who_reported %></td>
-              <td><%= assessment.created_at&.strftime('%F %H:%M') %></td>
+              <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
               <% columns.each do |column| -%>
                 <% if assessment.get_reported_symptom_by_name(column) == nil %>
                 <td></td>
