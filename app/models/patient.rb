@@ -373,8 +373,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
 
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
-    return last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days if last_date_of_exposure
-    return created_at + ADMIN_OPTIONS['monitoring_period_days'].days if created_at
+    return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
+    return (created_at + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end
 
   # Is this patient symptomatic?
@@ -545,18 +545,18 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       state_local_id: user_defined_id_statelocal || '',
       sex: sex || '',
       dob: date_of_birth&.strftime('%F') || '',
-      end_of_monitoring: end_of_monitoring&.strftime('%F') || '',
+      end_of_monitoring: end_of_monitoring || '',
       risk_level: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
-      latest_report: latest_assessment&.created_at&.strftime('%F') || '',
-      transferred: latest_transfer&.created_at&.to_s || '',
+      latest_report: latest_assessment&.created_at&.rfc2822 || '',
+      transferred: latest_transfer&.created_at&.rfc2822 || '',
       reason_for_closure: monitoring_reason || '',
       public_health_action: public_health_action || '',
       status: status&.to_s&.humanize&.downcase || '',
-      closed_at: closed_at&.to_s || '',
+      closed_at: closed_at&.rfc2822 || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || '',
-      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes).strftime('%F') || '')
+      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || '')
     }
   end
 

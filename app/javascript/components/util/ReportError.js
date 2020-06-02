@@ -20,28 +20,28 @@ export default function reportError(error, reportToSentry = true) {
 
   if (reportToSentry) {
     Sentry.captureException(error);
-    if (Object.prototype.hasOwnProperty.call(error, 'toJSON')) {
-      Sentry.captureMessage(error.toJSON());
-    }
   }
 
   if (httpStatus) {
     httpStatus = Number(httpStatus);
     switch (httpStatus) {
       case 400:
-        errorExplanationString += 'Server reported malformed request.';
+        errorExplanationString += 'Server reported malformed request (Error 400).';
         break;
       case 401:
-        errorExplanationString += 'Invalid authentication provided.';
+        errorExplanationString += 'Invalid authentication provided (Error 401).';
         break;
       case 403:
-        errorExplanationString += 'Invalid permission.';
+        errorExplanationString += 'Invalid permission (Error 403).';
         break;
       case 404:
-        errorExplanationString += 'Failed to communicate with the Sara Alert Server.';
+        errorExplanationString += 'Failed to communicate with the Sara Alert Server (Error 404).';
         break;
       case 500:
-        errorExplanationString += 'An error occurred on the Sara Alert Server.';
+        errorExplanationString += 'An error occurred on the Sara Alert Server (Error 500).';
+        break;
+      case 504:
+        errorExplanationString += 'The server timed out (Error 504).';
         break;
       default:
         errorExplanationString += 'An unspecified error occurred.';

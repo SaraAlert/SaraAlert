@@ -79,6 +79,9 @@ gem 'valid_email2'
 # Bulk db inserts
 gem 'activerecord-import'
 
+# ERB local time
+gem 'local_time'
+
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
