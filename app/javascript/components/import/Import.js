@@ -8,7 +8,17 @@ import reportError from '../util/ReportError';
 class Import extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { patients: props.patients, errors: props.errors, accepted: [], rejected: [], phased: [], progress: 0, importDuplicates: false };
+    this.state = {
+      patients: props.patients,
+      errors: props.errors,
+      accepted: [],
+      rejected: [],
+      phased: [],
+      progress: 0,
+      importDuplicates: false,
+      isPaused: false,
+      acceptedAllStarted: false,
+    };
     this.importAll = this.importAll.bind(this);
     this.importSub = this.importSub.bind(this);
     this.rejectSub = this.rejectSub.bind(this);
@@ -58,7 +68,9 @@ class Import extends React.Component {
         let next = [...this.state.accepted, num];
         this.setState({ accepted: next, progress: num }, () => {
           if (this.state.phased.length > num + 1) {
-            this.submit(this.state.phased[num + 1], num + 1, bypass);
+            if (!this.state.isPaused) {
+              this.submit(this.state.phased[num + 1], num + 1, bypass);
+            }
           } else if (this.state.phased.length != 0) {
             // if there are no monitorees to import, and import wasn't done one at a time go back to root after pressing the import button
             history.back();
@@ -74,12 +86,31 @@ class Import extends React.Component {
     this.setState({ importDuplicates: value });
   }
 
+  stopImport = async () => {
+    this.setState({ isPaused: true }, async () => {
+      let confirmText = `This will stop the  creation of new records from the list below. Records that were imported prior to clicking “Stop Import” will not be deleted from the system.`;
+      if (await confirmDialog(confirmText, { title: 'Stop Import Process' })) {
+        this.setState({ isPaused: false });
+        location.href = '/';
+      } else {
+        this.setState({ isPaused: false });
+        if (this.state.acceptedAllStarted) {
+          this.submit(this.state.phased[this.state.progress + 1], this.state.progress + 1, true);
+        }
+      }
+    });
+  };
+
   handleConfirm = async confirmText => {
-    let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
-    let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} detected duplicate monitorees` : undefined;
-    if (await confirmDialog(confirmText, { title: 'Import all monitorees', extraOption: duplicatePrompt, extraOptionChange: this.handleExtraOptionToggle })) {
-      this.importAll();
-    }
+    this.setState({ acceptedAllStarted: true }, async () => {
+      let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
+      let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} detected duplicate monitorees` : undefined;
+      if (await confirmDialog(confirmText, { title: 'Import Monitorees', extraOption: duplicatePrompt, extraOptionChange: this.handleExtraOptionToggle })) {
+        this.importAll();
+      } else {
+        this.setState({ acceptedAllStarted: false });
+      }
+    });
   };
 
   render() {
@@ -116,17 +147,25 @@ class Import extends React.Component {
                   aria-valuemax={this.state.phased.length}></div>
               </div>
             )}
-            <h5>Please review the monitorees that are about to be imported below. You can individually accept each monitoree, or accept all at once.</h5>
+            <h5>
+              Please review the monitoree records that are about to be imported. You can individually accept or reject each record below. You can also choose to
+              import all unique records or all records (including duplicates) by clicking the &quot;Import All&quot; button.
+            </h5>
             <Button
               variant="primary"
               className="btn-lg my-2"
               onClick={() =>
                 this.handleConfirm(
-                  'This will not import already rejected or re-import already accepted monitorees listed below. If duplicates are detected, you will be presented with an option to include them.'
+                  `This will import all records listed below that you did not manually accept or reject.If potential duplicates have been detected, check the box if you would like to import them.`
                 )
               }>
-              Accept All
+              Import All
             </Button>
+            {this.state.acceptedAllStarted && (
+              <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.stopImport()}>
+                Stop Import
+              </Button>
+            )}
             {this.state.patients.map((patient, index) => {
               return (
                 <Card
