@@ -9,7 +9,7 @@
           </select>
         </label>
         <label style="display:inline-flex;margin-bottom:0.25em">
-          <select id="scope<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
+          <select id="scope_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
             <option value="all">All</option>
             <option value="immediate">Immediate</option>
           </select>
@@ -69,7 +69,7 @@
       const route = '/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/all/all/all';
     <% else %>
       let assigned_jurisdiction = $('#assigned_jurisdiction_<%= type %>').val();
-      let scope = $('#scope<%= type %>').val();
+      let scope = $('#scope_<%= type %>').val();
       let assigned_user = $('#assigned_user_<%= type %>').val();
       const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
     <% end %>
@@ -169,7 +169,7 @@
       updateAssignedUserOptions();
     });
 
-    $(document).on('change', 'select#scope<%= type %>', event => {
+    $(document).on('change', 'select#scope_<%= type %>', event => {
       scope = event.target.value;
       updateDataTable();
       updateAssignedUserOptions();

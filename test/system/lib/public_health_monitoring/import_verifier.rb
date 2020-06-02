@@ -158,7 +158,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
           elsif index == 85 || index == 86 # isolation workflow specific fields
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 95 # jurisdiction_path
-            assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path], patient.jurisdiction[:path], "#{field} mismatch in row #{row_num}")
+            assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
           elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end

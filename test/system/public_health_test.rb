@@ -11,14 +11,19 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   ASSESSMENTS = @@system_test_utils.get_assessments
 
-  test 'view patient information on dashboard' do
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('state1_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c1_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c2_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('state2_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c3_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c4_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('state1_epi_enroller')
+  test 'verify patient information on dashboard' do
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c2_epi', false)
+  end
+
+  test 'verify jurisdiction scope filtering logic on dashboard' do
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('state1_epi_enroller', true)
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c1_epi', true)
+  end
+
+  test 'verify assigned user filtering logic on dashboard' do
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('state2_epi', false)
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c3_epi', false)
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c4_epi', false)
   end
 
   test 'verify patient details and reports' do
