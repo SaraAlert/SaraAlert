@@ -148,8 +148,8 @@ class Import extends React.Component {
               </div>
             )}
             <h5>
-              Please review the monitoree records that are about to be imported. You can individually accept or reject each record below. You can choose to
-              import all unique records or all records (including duplicates) by selecting Accept.
+              Please review the monitoree records that are about to be imported. You can individually accept or reject each record below. You can also choose to
+              import all unique records or all records (including duplicates) by clicking the &quot;Import All&quot; button.
             </h5>
             <Button
               variant="primary"
