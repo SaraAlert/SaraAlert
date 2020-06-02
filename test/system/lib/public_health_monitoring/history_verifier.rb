@@ -37,6 +37,10 @@ class PublicHealthMonitoringHistoryVerifier < ApplicationSystemTestCase
     verify_historical_event(user_label, 'Monitoring Change', ['User changed jurisdiction', jurisdiction, reasoning])
   end
 
+  def verify_assigned_user(user_label, assigned_user, reasoning)
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed assigned user', assigned_user, reasoning])
+  end
+
   def verify_add_report(user_label)
     verify_historical_event(user_label, 'Report Created', ['User created a new report'])
   end

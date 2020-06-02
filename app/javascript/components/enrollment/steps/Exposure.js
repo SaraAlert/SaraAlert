@@ -392,7 +392,8 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                       {this.props.has_group_members &&
                         this.state.current.patient.assigned_user !== this.state.originalassignedUser &&
-                        this.state.assignedUsers.includes(this.state.current.patient.assigned_user) && (
+                        (this.state.current.patient.assigned_user === null ||
+                          (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 9999)) && (
                           <Form.Group className="mt-2">
                             <Form.Check
                               type="switch"

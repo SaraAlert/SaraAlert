@@ -15,7 +15,8 @@ monitoree_1:
     primary_telephone_type: "Plain Cell"
   potential_exposure_info:
     last_date_of_exposure: "02/05/2020"
-    jurisdiction_id: "USA, State 2"
+    jurisdiction_id: "USA, State 1, County 1"
+    assigned_user: "5"
 monitoree_2:
   identification:
     first_name: "Chi10"
@@ -144,6 +145,7 @@ monitoree_4:
     additional_planned_travel_related_notes: "asdogihlawkefjionak"
   potential_exposure_info:
     last_date_of_exposure: "12/30/2019"
+    assigned_user: "9429"
 monitoree_5:
   identification:
     first_name: "Ulrich"
@@ -385,3 +387,10 @@ monitoree_14:
   potential_exposure_info:
     jurisdiction_id: "USA, State 2, County 4"
     update_group_member_jurisdiction_id: true
+monitoree_15:
+  potential_exposure_info:
+    assigned_user: "5"
+monitoree_16:
+  potential_exposure_info:
+    assigned_user: "6"
+    update_group_member_assigned_user: true

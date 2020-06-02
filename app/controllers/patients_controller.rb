@@ -186,7 +186,7 @@ class PatientsController < ApplicationController
       patient.dependents.where.not(id: patient.id).update(propagated_content)
     end
 
-    # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user
+    # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user, update history and propagate
     if content[:jurisdiction_id] && content[:jurisdiction_id] != patient.jurisdiction_id
       if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id].to_i)
         history = History.new
@@ -213,6 +213,27 @@ class PatientsController < ApplicationController
         end
       else
         content[:jurisdiction_id] = patient.jurisdiction_id
+      end
+    end
+
+    # If the assigned user is updated, update history and propagate
+    if content[:assigned_user] && content[:assigned_user] != patient.assigned_user
+      history = History.new
+      history.created_by = current_user.email
+      old_assigned_user = patient.assigned_user || ''
+      new_assigned_user = content[:assigned_user] || ''
+      history.comment = "User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"."
+      history.patient = patient
+      history.history_type = 'Monitoring Change'
+      history.save
+      if propagated_fields.include?('assigned_user')
+        group_members = patient.dependents.where.not(id: patient.id)
+        group_members.update(assigned_user: content[:assigned_user])
+        group_members.each do |group_member|
+          propagated_history = history.dup
+          propagated_history.patient = group_member
+          propagated_history.save
+        end
       end
     end
 

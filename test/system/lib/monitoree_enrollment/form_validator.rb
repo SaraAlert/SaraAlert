@@ -120,6 +120,15 @@ class MonitoreeEnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'jurisdiction_id', with: 'USA'
     click_on 'Next'
     verify_text_displayed('Please enter a valid jurisdiction')
+    fill_in 'jurisdiction_id', with: 'USA, State 1, County 1'
+    fill_in 'assigned_user', with: '-8.5'
+    assert_not_equal('-8.5', page.find_field('assignedUser').value)
+    fill_in 'assigned_user', with: '10000'
+    assert_not_equal('10000', page.find_field('assignedUser').value)
+    fill_in 'assigned_user', with: 'asdf'
+    assert_not_equal('asdf', page.find_field('assignedUser').value)
+    fill_in 'assigned_user', with: 'W(#*&R#(W&'
+    assert_not_equal('W(#*&R#(W&', page.find_field('assignedUser').value)
     @@monitoree_enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
     verify_text_not_displayed('Please enter a last date of exposure')
     verify_text_not_displayed('Date can not be in the future')

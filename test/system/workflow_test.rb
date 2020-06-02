@@ -136,4 +136,44 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_monitoring_history_verifier.verify_assigned_jurisdiction(enroller_user_label, newer_jurisdiction, '')
     @@system_test_utils.logout
   end
+
+  test 'epi enroll monitoree with group member, edit parent assigned user and verify propagation' do
+    # enroll monitoree and group member
+    epi_enroller_user_label = 'state1_epi_enroller'
+    monitoree_label = 'monitoree_3'
+    group_member_label = 'monitoree_8'
+    @@monitoree_enrollment_helper.enroll_group_member(epi_enroller_user_label, monitoree_label, group_member_label, true)
+
+    # edit parent assigned user but do not propagate to group member
+    @@system_test_utils.login(epi_enroller_user_label)
+    @@public_health_monitoring_dashboard.search_for_and_view_monitoree('all', monitoree_label)
+    edited_monitoree_without_propogation_label = 'monitoree_15'
+    @@monitoree_enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_without_propogation_label])
+    click_on 'Finish'
+    @@system_test_utils.wait_for_enrollment_submission
+
+    # parent should have been updated but not child, verify history
+    old_assigned_user = MONITOREES[monitoree_label]['potential_exposure_info']['assigned_user'] || ''
+    new_assigned_user = MONITOREES[edited_monitoree_without_propogation_label]['potential_exposure_info']['assigned_user'] || ''
+    assert page.has_content?(new_assigned_user)
+    @@public_health_monitoring_history_verifier.verify_assigned_user(epi_enroller_user_label, new_assigned_user, '')
+    click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])
+    assert page.has_no_content?("User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"")
+
+    # edit parent assigned user and propagate to group member
+    edited_monitoree_with_propogation_label = 'monitoree_16'
+    click_on 'Click here to view that monitoree'
+    @@monitoree_enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_with_propogation_label])
+    click_on 'Finish'
+    @@system_test_utils.wait_for_enrollment_submission
+
+    # parent and child should have been updated, verify history
+    newer_assigned_user = MONITOREES[edited_monitoree_with_propogation_label]['potential_exposure_info']['assigned_user'] || ''
+    assert page.has_content?(newer_assigned_user)
+    @@public_health_monitoring_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '')
+    click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])
+    assert page.has_content?(newer_assigned_user)
+    @@public_health_monitoring_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '')
+    @@system_test_utils.logout
+  end
 end

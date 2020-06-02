@@ -120,6 +120,7 @@ patient_4:
   responder_id: 4
   creator_id: 3
   jurisdiction_id: 4
+  assigned_user: 8
   submission_token: "4ce17914ec60b9a9ceec9c9e1314d940542c2820"
   monitoring: true
   first_name: "Lavern91"

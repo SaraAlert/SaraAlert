@@ -28,6 +28,7 @@ class MonitoringStatus extends React.Component {
       originalJurisdictionId: this.props.patient.jurisdiction_id,
       validJurisdiction: true,
       assignedUser: props.patient.assigned_user ? props.patient.assigned_user : '',
+      originalAssignedUser: props.patient.assigned_user ? props.patient.assigned_user : '',
       monitoring_status_options: null,
       monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
@@ -61,9 +62,12 @@ class MonitoringStatus extends React.Component {
         validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
       });
     } else if (event?.target?.name && event.target.name === 'assignedUser') {
-      if (event?.target?.value === '' || (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) <= 9999)) {
+      if (
+        event?.target?.value === '' ||
+        (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
+      ) {
         this.setState({
-          message: 'assigned user from "' + this.props.patient.assigned_user + '"to"' + event.target.value + '".',
+          message: 'assigned user from "' + this.state.originalAssignedUser + '"to"' + event.target.value + '".',
           message_warning: '',
           assignedUser: event?.target?.value ? parseInt(event.target.value) : '',
           monitoring_status_options: null,
@@ -221,9 +225,9 @@ class MonitoringStatus extends React.Component {
   toggleassignedUserModal() {
     let current = this.state.showassignedUserModal;
     this.setState({
-      message: 'assigned user from "' + this.props.patient.assigned_user + '" to "' + this.state.assignedUser + '".',
+      message: 'assigned user from "' + this.state.originalAssignedUser + '" to "' + this.state.assignedUser + '".',
       showassignedUserModal: !current,
-      assignedUser: current ? this.props.patient.assigned_user : this.state.assignedUser,
+      assignedUser: current ? this.state.originalAssignedUser : this.state.assignedUser,
       apply_to_group: false,
       reasoning: '',
     });
@@ -486,7 +490,7 @@ class MonitoringStatus extends React.Component {
                   </datalist>
                 </Form.Group>
                 <Form.Group as={Col} sm="10" md="8">
-                  {this.state.assignedUser === this.props.patient.assigned_user ? (
+                  {this.state.assignedUser === this.state.originalAssignedUser ? (
                     <Button disabled className="btn-lg btn-square">
                       <i className="fas fa-users"></i> Change User
                     </Button>

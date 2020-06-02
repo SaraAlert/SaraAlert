@@ -48,6 +48,19 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_10', 'pui', 'USA, State 1', 'details', true, false)
   end
 
+  test 'update assigned user' do
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '9', 'reasoning', true, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reasoning', true, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reason', false, false)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', 'reason', true, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', '', false, false)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '0', 'reason', false, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '10000', '', false, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi_enroller', 'patient_4', 'all', '-8', 'reason', false, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', '1.5', '', false, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', 'not valid', 'reason', false, true)
+  end
+
   test 'add report' do
     @@public_health_monitoring_helper.add_report('locals1c1_epi', 'patient_4', 'asymptomatic', ASSESSMENTS["assessment_1"])
   end
