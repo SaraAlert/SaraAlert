@@ -223,7 +223,16 @@ class Identification extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row className="pt-3 ml-0">
+                <div className="nav-input-label">LANGUAGE</div>
+              </Form.Row>
+              <Form.Row className="pb-3 pt-1 ml-0">
+                <div>
+                  Primary Language is used to determine the translations for what the monitoree sees/hears. Currently supported languages are English and
+                  Spanish. Other languages will currently default to English.
+                </div>
+              </Form.Row>
+              <Form.Row>
                 <Form.Group as={Col} controlId="primary_language">
                   <Form.Label className="nav-input-label">PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -232,7 +241,44 @@ class Identification extends React.Component {
                     className="form-square"
                     value={this.state.current.patient.primary_language || ''}
                     onChange={this.handleChange}
+                    as="input"
+                    list="languages"
                   />
+                  <datalist id="languages">
+                    <option></option>
+                    <option>English</option>
+                    <option>Spanish</option>
+                    <option>Arabic</option>
+                    <option>Bengali</option>
+                    <option>Czech</option>
+                    <option>Danish</option>
+                    <option>German</option>
+                    <option>Greek</option>
+                    <option>Finnish</option>
+                    <option>French</option>
+                    <option>Frysian</option>
+                    <option>Hindi</option>
+                    <option>Croatian</option>
+                    <option>Italian</option>
+                    <option>Japanese</option>
+                    <option>Korean</option>
+                    <option>Dutch</option>
+                    <option>Norwegian</option>
+                    <option>Punjabi</option>
+                    <option>Polish</option>
+                    <option>Portuguese</option>
+                    <option>Russian</option>
+                    <option>Serbian</option>
+                    <option>Swedish</option>
+                    <option>Telegu</option>
+                    <option>Chinese</option>
+                    <option>Vietnamese</option>
+                    <option>Tagalog</option>
+                    <option>Somali</option>
+                    <option>Nepali</option>
+                    <option>Swahili</option>
+                    <option>Burmese</option>
+                  </datalist>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['primary_language']}
                   </Form.Control.Feedback>
@@ -246,7 +292,44 @@ class Identification extends React.Component {
                     className="form-square"
                     value={this.state.current.patient.secondary_language || ''}
                     onChange={this.handleChange}
+                    as="input"
+                    list="languages"
                   />
+                  <datalist id="languages">
+                    <option></option>
+                    <option>English</option>
+                    <option>Spanish</option>
+                    <option>Arabic</option>
+                    <option>Bengali</option>
+                    <option>Czech</option>
+                    <option>Danish</option>
+                    <option>German</option>
+                    <option>Greek</option>
+                    <option>Finnish</option>
+                    <option>French</option>
+                    <option>Frysian</option>
+                    <option>Hindi</option>
+                    <option>Croatian</option>
+                    <option>Italian</option>
+                    <option>Japanese</option>
+                    <option>Korean</option>
+                    <option>Dutch</option>
+                    <option>Norwegian</option>
+                    <option>Punjabi</option>
+                    <option>Polish</option>
+                    <option>Portuguese</option>
+                    <option>Russian</option>
+                    <option>Serbian</option>
+                    <option>Swedish</option>
+                    <option>Telegu</option>
+                    <option>Chinese</option>
+                    <option>Vietnamese</option>
+                    <option>Tagalog</option>
+                    <option>Somali</option>
+                    <option>Nepali</option>
+                    <option>Swahili</option>
+                    <option>Burmese</option>
+                  </datalist>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['secondary_language']}
                   </Form.Control.Feedback>

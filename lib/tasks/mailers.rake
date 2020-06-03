@@ -28,6 +28,7 @@ namespace :mailers do
     # patient = Patient.first.dup
     # patient.first_name = "Test"
     # patient.last_name = "McTest"
+    # patient.primary_language = "Spanish"
     # patient.age = 27
     # patient.primary_telephone = <Test Number in E164 format>
     # patient.save!
@@ -39,6 +40,7 @@ namespace :mailers do
     # patient = Patient.first.dup
     # patient.first_name = "Test"
     # patient.last_name = "McTest"
+    # patient.primary_language = "Spanish"
     # patient.age = 27
     # patient.primary_telephone = <Test Number in E164 format>
     # patient.save

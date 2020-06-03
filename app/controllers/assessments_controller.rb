@@ -23,6 +23,9 @@ class AssessmentsController < ApplicationController
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
     @symptoms = reporting_condition.symptoms
     @threshold_hash = jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash
+    @translations = @assessment.translations
+    @lang = params.permit(:lang)[:lang] if %w[en es].include?(params[:lang])
+    @lang = 'en' if @lang.nil? # Default to english
   end
 
   def create

@@ -147,4 +147,42 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     }
     timezones[normalize_name(name)] || '-04:00'
   end
+
+  def self.languages(language)
+    languages = {
+      'arabic': { code: 'ar', display: 'Arabic', system: 'urn:ietf:bcp:47' },
+      'bengali': { code: 'bn', display: 'Bengali', system: 'urn:ietf:bcp:47' },
+      'czech': { code: 'cs', display: 'Czech', system: 'urn:ietf:bcp:47' },
+      'danish': { code: 'da', display: 'Danish', system: 'urn:ietf:bcp:47' },
+      'german': { code: 'de', display: 'German', system: 'urn:ietf:bcp:47' },
+      'greek': { code: 'el', display: 'Greek', system: 'urn:ietf:bcp:47' },
+      'english': { code: 'en', display: 'English', system: 'urn:ietf:bcp:47' },
+      'spanish': { code: 'es', display: 'Spanish', system: 'urn:ietf:bcp:47' },
+      'finnish': { code: 'fi', display: 'Finnish', system: 'urn:ietf:bcp:47' },
+      'french': { code: 'fr', display: 'French', system: 'urn:ietf:bcp:47' },
+      'frysian': { code: 'fy', display: 'Frysian', system: 'urn:ietf:bcp:47' },
+      'hindi': { code: 'hi', display: 'Hindi', system: 'urn:ietf:bcp:47' },
+      'croatian': { code: 'hr', display: 'Croatian', system: 'urn:ietf:bcp:47' },
+      'italian': { code: 'it', display: 'Italian', system: 'urn:ietf:bcp:47' },
+      'japanese': { code: 'ja', display: 'Japanese', system: 'urn:ietf:bcp:47' },
+      'korean': { code: 'ko', display: 'Korean', system: 'urn:ietf:bcp:47' },
+      'dutch': { code: 'nl', display: 'Dutch', system: 'urn:ietf:bcp:47' },
+      'norwegian': { code: 'no', display: 'Norwegian', system: 'urn:ietf:bcp:47' },
+      'punjabi': { code: 'pa', display: 'Punjabi', system: 'urn:ietf:bcp:47' },
+      'polish': { code: 'pl', display: 'Polish', system: 'urn:ietf:bcp:47' },
+      'portuguese': { code: 'pt', display: 'Portuguese', system: 'urn:ietf:bcp:47' },
+      'russian': { code: 'ru', display: 'Russian', system: 'urn:ietf:bcp:47' },
+      'serbian': { code: 'sr', display: 'Serbian', system: 'urn:ietf:bcp:47' },
+      'swedish': { code: 'sv', display: 'Swedish', system: 'urn:ietf:bcp:47' },
+      'telegu': { code: 'te', display: 'Telegu', system: 'urn:ietf:bcp:47' },
+      'chinese': { code: 'zh', display: 'Chinese', system: 'urn:ietf:bcp:47' },
+      'vietnamese': { code: 'vi', display: 'Vietnamese', system: 'urn:ietf:bcp:47' },
+      'tagalog': { code: 'tl', display: 'Tagalog', system: 'urn:ietf:bcp:47' },
+      'somali': { code: 'so', display: 'Somali', system: 'urn:ietf:bcp:47' },
+      'nepali': { code: 'ne', display: 'Nepali', system: 'urn:ietf:bcp:47' },
+      'swahili': { code: 'sw', display: 'Swahili', system: 'urn:ietf:bcp:47' },
+      'burmese': { code: 'my', display: 'Burmese', system: 'urn:ietf:bcp:47' }
+    }
+    languages[language&.downcase&.to_sym].present? ? languages[language&.downcase&.to_sym] : nil
+  end
 end

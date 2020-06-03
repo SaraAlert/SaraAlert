@@ -1,0 +1,89 @@
+es:
+  assessments:
+    symptoms:
+      cough:
+        name: 'Tos'
+        notes: ''
+      difficulty-breathing:
+        name: 'Problemas para respirar'
+        notes: ''
+      fever:
+        name: 'Fiebre'
+        notes: 'Si siente que tiene fiebre o tiene una temperatura igual o superior a 100.4°F/38°C'
+      used-a-fever-reducer:
+        name: 'Tomó medicina para reducir la fiebre'
+        notes: 'En las últimas 24 horas, ¿ha tomado algún medicamento para reducir la fiebre?'
+      chills:
+        name: 'Escalofrío'
+        notes: ''
+      repeated-shaking-with-chills:
+        name: 'Tiembla repetidamente y tiene escalofríos'
+        notes: ''
+      muscle-pain:
+        name: 'Dolor muscular'
+        notes: ''
+      headache:
+        name: 'Dolor de cabeza'
+        notes: ''
+      sore-throat:
+        name: 'Dolor de garganta'
+        notes: ''
+      new-loss-of-taste-or-smell:
+        name: 'Perdió recientemente el sentido del olfato y de gusto'
+        notes: ''
+      pulseox:
+        name: 'oxímetro de pulso'
+        notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
+      pulse-ox:
+        name: 'oxímetro de pulso'
+        notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
+    web:
+      title: 'Reporte diario'
+      bool-title: 'Por favor, seleccione los síntomas que está sintiendo actualmente.'
+      submit: 'Enviar'
+      thank-you: '"¡Gracias por completar su informe diario!'
+      instruction1: 'Si no informó ningún síntoma, siga las recomendaciones proporcionadas por su departamento de salud local.'
+      instruction2: 'Si informó algún síntoma, su departamento de salud local se comunicará pronto. Si tiene alguna inquietud inmediata, llame a su proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa.'
+      instruction3: 'Si tiene una emergencia médica, llame al 911 e infórmeles que el departamento de salud lo está monitoreando.'
+    email:
+      reminder:
+        subject: 'Recordatorio del reporte de Sara Alert'
+        header: 'Recordatorio del reporte de Sara Alert'
+        dear: 'Estimado/a'
+        thank-you: 'Gracias por participar en el programa de monitoreo de Sara Alert. Por favor complete su informe diario utilizando el siguiente enlace.'
+        report: 'Reporte diario'
+        footer: 'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local.'
+      enrollment:
+        subject: 'Inscripción de Sara Alert'
+        header: 'Bienvenido al sistema Sara Alert'
+        dear: 'Estimado/a'
+        info1: 'Usted ha sido inscrito en el sistema de monitoreo Sara Alert. Le pedimos que proporcione informes diarios de su estado de salud. Simplemente haga clic en el botón a continuación y siga las instrucciones en pantalla.'
+        info2: 'Usted recibirá un recordatorio diario similar hasta que finalice su período de monitoreo. Si tiene alguna pregunta, por favor pónganse en contacto con el proveedor de atención médica que le ayudó a inscribirse.'
+        report: 'Reporte diario'
+        footer: 'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local.'
+      closed:
+        subject: 'Reporte de Sara Alert completo'
+        header: 'Reporte de Sara Alert completo'
+        dear: 'Estimado/a'
+        thank-you: '¡Su reporte de Sara Alert está completo! Gracias por su participación.'
+        footer: 'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local.'
+    sms:
+      prompt:
+        intro1: 'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para'
+        intro2: 'a este número de teléfono.'
+        reminder: 'Este es el sistema Sara Alert recordándole que por favor responda a nuestros mensajes de reporte diario.'
+        daily1: 'Este es el informe diario de Sara Alert para: '
+        daily2-p: ' ¿Esta alguna de estas personas '
+        daily2-s: ' Es esta una persona? '
+        daily3: 'sintiendo uno o mas de los siguientes síntomas: '
+        daily4: ' Responda con "Sí" o "No"'
+      weblink:
+        intro1: 'Este es el sistema Sara Alert, complete el informe para'
+        intro2: 'en este enlace.'
+    phone:
+      age: ''
+      daily1: ' Este es el informe diario de Sara Alert para: '
+      daily2-p: ' ¿Esta alguna de estas personas '
+      daily2-s: ' Es esta una persona? '
+      daily3: ' sintiendo uno o mas de los siguientes síntomas '
+      daily4: ' Responda con "Sí" o "No"'
