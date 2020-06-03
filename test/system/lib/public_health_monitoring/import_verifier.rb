@@ -186,10 +186,19 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date)
-        begin
-          Date.parse(value)
-        rescue ArgumentError
-          assert page.has_content?("'#{value}' is not a valid date for '#{VALIDATION[field][:label]}"), "Error message for #{field} missing"
+        if value.match(/\d{4}-\d{2}-\d{2}/)
+          begin
+            Date.parse(value)
+          rescue ArgumentError
+            assert page.has_content?("'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+          end
+        else
+          err_msg = "'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"
+          if value.match(%r{\d{2}\/\d{2}\/\d{4}})
+            assert page.has_content?("#{err_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead"), "Error message for #{field} missing"
+          else
+            assert page.has_content?("#{err_msg}, please use the 'YYYY-MM-DD' format"), "Error message for #{field} missing"
+          end
         end
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
