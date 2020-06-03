@@ -160,4 +160,8 @@ namespace :admin do
     end
   end
 
+  desc 'Run the purge job immediately'
+  task purge_job: :environment do
+    PurgeJob.perform_now
+  end
 end
