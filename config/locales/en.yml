@@ -31,12 +31,16 @@ en:
       new-loss-of-taste-or-smell:
         name: 'New Loss of Taste or Smell'
         notes: ''
-      pulseox:
-        name: 'Pulse Ox'
-        notes: 'Enter your lowest pulse oximeter reading from last 24 hours'
       pulse-ox:
         name: 'Pulse Ox'
-        notes: 'Enter your lowest pulse oximeter reading from last 24 hours'
+        notes: 'What was your lowest oxygen level in the past 24 hours?'
+    threshold-op:
+      less-than: 'Less Than'
+      less-than-or-equal: 'Less Than Or Equal to'
+      greater-than: 'Greater Than'
+      greater-than-or-equal: 'Greater Than Or Equal to'
+      equal: 'Equal to'
+      not-equal: 'Not Equal to'
     web:
       title: 'Daily Self-Report'
       bool-title: 'Please select all symptoms which you are experiencing.'

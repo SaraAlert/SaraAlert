@@ -57,7 +57,7 @@ class IntegerSymptomTest < ActiveSupport::TestCase
   end
 
   test 'integer symptom bool based prompt' do
-    symptom = create(:integer_symptom, int_value: 90, threshold_operator: 'Less Than', name: 'pulseox', label: 'Pulse Ox')
+    symptom = create(:integer_symptom, int_value: 90, threshold_operator: 'Less Than', name: 'pulse-ox', label: 'Pulse Ox')
     assert_equal symptom.bool_based_prompt, 'Pulse ox less than 90'
     symptom.threshold_operator = 'Less Than Or Equal'
     assert_equal symptom.bool_based_prompt, 'Pulse ox less than or equal to 90'

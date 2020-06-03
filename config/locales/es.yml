@@ -31,12 +31,16 @@ es:
       new-loss-of-taste-or-smell:
         name: 'Perdió recientemente el sentido del olfato y de gusto'
         notes: ''
-      pulseox:
-        name: 'oxímetro de pulso'
-        notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
       pulse-ox:
         name: 'oxímetro de pulso'
         notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
+    threshold-op:
+      less-than: 'Menos que'
+      less-than-or-equal: 'Menor o igual a'
+      greater-than: 'Mas grande que'
+      greater-than-or-equal: 'Mayor que o igual a'
+      equal: 'Igual a'
+      not-equal: 'no es igual a'
     web:
       title: 'Reporte diario'
       bool-title: 'Por favor, seleccione los síntomas que está sintiendo actualmente.'

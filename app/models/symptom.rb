@@ -30,9 +30,10 @@ class Symptom < ApplicationRecord
     if type == 'BoolSymptom'
       I18n.t("assessments.symptoms.#{name}.name", locale: lang)
     elsif type == 'IntegerSymptom' || type == 'FloatSymptom'
-      threshold_op = threshold_operator
-      threshold_op += ' to' if threshold_op.ends_with? 'Equal'
-      [I18n.t("assessments.symptoms.#{name}.name", locale: lang), threshold_op, value].to_sentence(words_connector: ' ', last_word_connector: ' ').humanize
+      [
+        I18n.t("assessments.symptoms.#{name}.name", locale: lang),
+        I18n.t("assessments.threshold-op.#{threshold_operator.parameterize}", locale: lang), value
+      ].to_sentence(words_connector: ' ', last_word_connector: ' ').humanize
     end
   end
 
