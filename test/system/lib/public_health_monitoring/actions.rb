@@ -67,4 +67,22 @@ class PublicHealthMonitoringActions < ApplicationSystemTestCase
       assert page.has_button?('Change Jurisdiction', disabled: true)
     end
   end
+
+  def update_assigned_user(user_label, assigned_user, reasoning, valid_assigned_user=true, changed=true)
+    assert page.has_button?('Change User', disabled: true)
+    fill_in 'assignedUser', with: assigned_user
+    if valid_assigned_user && changed
+      assert page.has_button?('Change User', disabled: false)
+      click_on 'Change User'
+      fill_in 'reasoning', with: reasoning
+      click_on 'Submit'
+      @@system_test_utils.wait_for_modal_animation
+      assert page.has_button?('Change User', disabled: true)
+      @@public_health_monitoring_history_verifier.verify_assigned_user(user_label, assigned_user, reasoning)
+    elsif valid_assigned_user && !changed
+      assert page.has_button?('Change User', disabled: true)
+    elsif !valid_assigned_user && changed
+      assert_not_equal(assigned_user, page.find_field('assignedUser').value)
+    end
+  end
 end

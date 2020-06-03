@@ -19,9 +19,9 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
   @@public_health_monitoring_dashboard_verifier = PublicHealthMonitoringDashboardVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_patients_on_dashboard(user_label)
+  def verify_patients_on_dashboard(user_label, verify_scope=false)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_monitoring_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id)
+    @@public_health_monitoring_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id, verify_scope)
     @@system_test_utils.logout
   end
 
@@ -65,6 +65,13 @@ class PublicHealthMonitoringHelper < ApplicationSystemTestCase
     @@system_test_utils.login(user_label)
     @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_label)
     @@public_health_monitoring_actions.update_assigned_jurisdiction(user_label, jurisdiction, reasoning, valid_jurisdiction, under_hierarchy)
+    @@system_test_utils.logout
+  end
+
+  def update_assigned_user(user_label, patient_label, tab, assigned_user, reasoning, valid_assigned_user=true, changed=true)
+    @@system_test_utils.login(user_label)
+    @@public_health_monitoring_dashboard.search_for_and_view_patient(tab, patient_label)
+    @@public_health_monitoring_actions.update_assigned_user(user_label, assigned_user, reasoning, valid_assigned_user, changed)
     @@system_test_utils.logout
   end
 

@@ -21,6 +21,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   MODAL_ANIMATION_DELAY = 0.5 # wait for modal to load
   ACCEPT_REJECT_DELAY = 0.01 # wait for UI to update after accepting or rejecting monitoree on import
   DB_WRITE_DELAY = 1.5 # wait for DB write to finish
+  DATA_TABLE_LOAD_DELAY = 0.5 # wait for table data to load
 
   def login(user_label)
     visit '/'
@@ -90,6 +91,10 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   def wait_for_db_write_delay
     sleep(inspection_time = DB_WRITE_DELAY)
+  end
+
+  def wait_for_data_table_load_delay
+    sleep(inspection_time = DATA_TABLE_LOAD_DELAY)
   end
 
   def verify_user_jurisdiction(user_label)

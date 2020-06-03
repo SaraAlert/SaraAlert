@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { countryOptions } from '../../data';
 import { PropTypes } from 'prop-types';
+import axios from 'axios';
 import * as yup from 'yup';
 import confirmDialog from '../../util/ConfirmDialog';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -16,6 +17,8 @@ class Exposure extends React.Component {
       modified: {},
       jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
+      originalAssignedUser: this.props.currentState.patient.assigned_user,
+      assignedUsers: this.props.assignedUsers,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
@@ -30,7 +33,21 @@ class Exposure extends React.Component {
     if (event?.target?.name && event.target.name === 'jurisdictionId') {
       this.setState({ jurisdictionPath: event.target.value });
       let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
-      value = jurisdiction_id ? jurisdiction_id : -1;
+      if (jurisdiction_id) {
+        value = jurisdiction_id;
+        axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+        axios.get(window.BASE_PATH + `/jurisdictions/${jurisdiction_id}/assigned_users/immediate`).then(response => {
+          if (response?.data?.assignedUsers) {
+            this.setState({ assignedUsers: response.data.assignedUsers });
+          }
+        });
+      } else {
+        value = -1;
+      }
+    } else if (event?.target?.name && event.target.name === 'assignedUser') {
+      if (isNaN(event.target.value) || parseInt(event.target.value) > 9999) return;
+
+      value = event.target.value === '' ? null : parseInt(event.target.value);
     }
     this.setState(
       {
@@ -67,7 +84,13 @@ class Exposure extends React.Component {
           if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
             const originalJurisdictionPath = self.props.jurisdictionPaths[self.state.originalJurisdictionId];
             const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdictionPath}. Are you sure you want to do this?`;
-            if (await confirmDialog(message)) {
+            const options = { title: 'Confirm Jurisdiction Change' };
+
+            if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
+              options.additionalNote = 'Please also consider removing or updating the assigned user if it is no longer applicable.';
+            }
+
+            if (await confirmDialog(message, options)) {
               callback();
             }
           } else {
@@ -148,11 +171,11 @@ class Exposure extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3 pb-4 h-100">
+              <Form.Row className="pt-2 pb-4 h-100">
                 <Form.Group as={Col} className="my-auto">
-                  <Form.Label className="nav-input-label pb-4">EXPOSURE RISK FACTORS (USE COMMAS TO SEPERATE MULTIPLE SPECIFIED VALUES)</Form.Label>
-                  <Form.Row className="pb-2">
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                  <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPERATE MULTIPLE SPECIFIED VALUES)</Form.Label>
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
                       <Form.Check
                         type="switch"
                         id="contact_of_known_case"
@@ -175,8 +198,8 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-2">
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
@@ -187,8 +210,8 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-2">
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
@@ -212,8 +235,8 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-2">
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
@@ -237,8 +260,8 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-2">
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
@@ -262,8 +285,8 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-2">
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
                       <Form.Check
                         className="pt-2 my-auto"
                         type="switch"
@@ -274,8 +297,8 @@ class Exposure extends React.Component {
                       />
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pb-2">
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto">
+                  <Form.Row>
+                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
                       <Form.Check
                         type="switch"
                         id="member_of_a_common_exposure_cohort"
@@ -299,58 +322,14 @@ class Exposure extends React.Component {
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-4 g-border-bottom-2" />
-                  <Form.Row className="pt-3">
+                  <Form.Row className="pt-2">
                     <Form.Group as={Col}>
                       <Form.Label className="nav-input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-3">
-                    <Form.Group as={Col} md="8" controlId="exposure_risk_assessment">
-                      <Form.Label className="nav-input-label">
-                        EXPOSURE RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
-                      </Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['exposure_risk_assessment']}
-                        as="select"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.current.patient.exposure_risk_assessment || ''}>
-                        <option></option>
-                        <option>High</option>
-                        <option>Medium</option>
-                        <option>Low</option>
-                        <option>No Identified Risk</option>
-                      </Form.Control>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['exposure_risk_assessment']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group as={Col} md="8" controlId="monitoring_plan">
-                      <Form.Label className="nav-input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['monitoring_plan']}
-                        as="select"
-                        size="lg"
-                        className="form-square"
-                        onChange={this.handleChange}
-                        value={this.state.current.patient.monitoring_plan || ''}>
-                        <option>None</option>
-                        <option>Daily active monitoring</option>
-                        <option>Self-monitoring with public health supervision</option>
-                        <option>Self-monitoring with delegated supervision</option>
-                        <option>Self-observation</option>
-                      </Form.Control>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['monitoring_plan']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row className="pt-3 align-items-end">
-                    <Form.Group as={Col} md="14" controlId="jurisdiction_id">
-                      <Form.Label className="nav-input-label">
-                        ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_label?._exclusive?.required && ' *'}
-                      </Form.Label>
+                  <Form.Row>
+                    <Form.Group as={Col} md="18" controlId="jurisdiction_id" className="pt-2">
+                      <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
@@ -389,9 +368,91 @@ class Exposure extends React.Component {
                           </Form.Group>
                         )}
                     </Form.Group>
-                  </Form.Row>
-                  <Form.Row className="pt-4 pb-3">
-                    <Form.Group as={Col} md="24" controlId="exposure_notes">
+                    <Form.Group as={Col} md="6" controlId="assigned_user" className="pt-2">
+                      <Form.Label className="nav-input-label">
+                        ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
+                        <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
+                      </Form.Label>
+                      <Form.Control
+                        isInvalid={this.state.errors['assigned_user']}
+                        as="input"
+                        name="assignedUser"
+                        list="assignedUsers"
+                        autoComplete="off"
+                        size="lg"
+                        className="form-square"
+                        onChange={this.handleChange}
+                        value={this.state.current.patient.assigned_user || ''}
+                      />
+                      <datalist id="assignedUsers">
+                        {this.state.assignedUsers.map(num => {
+                          return (
+                            <option value={num} key={num}>
+                              {num}
+                            </option>
+                          );
+                        })}
+                      </datalist>
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['assigned_user']}
+                      </Form.Control.Feedback>
+                      {this.props.has_group_members &&
+                        this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
+                        (this.state.current.patient.assigned_user === null ||
+                          (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 9999)) && (
+                          <Form.Group className="mt-2">
+                            <Form.Check
+                              type="switch"
+                              id="update_group_member_assigned_user"
+                              name="assigned_user"
+                              label="Apply this change to the entire household that this monitoree is responsible for"
+                              onChange={this.handlePropagatedFieldChange}
+                              checked={this.state.current.propagatedFields.assigned_user === true || false}
+                            />
+                          </Form.Group>
+                        )}
+                    </Form.Group>
+                    <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="pt-2">
+                      <Form.Label className="nav-input-label">
+                        EXPOSURE RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
+                      </Form.Label>
+                      <Form.Control
+                        isInvalid={this.state.errors['exposure_risk_assessment']}
+                        as="select"
+                        size="lg"
+                        className="form-square"
+                        onChange={this.handleChange}
+                        value={this.state.current.patient.exposure_risk_assessment || ''}>
+                        <option></option>
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                        <option>No Identified Risk</option>
+                      </Form.Control>
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['exposure_risk_assessment']}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group as={Col} md="16" controlId="monitoring_plan" className="pt-2">
+                      <Form.Label className="nav-input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Control
+                        isInvalid={this.state.errors['monitoring_plan']}
+                        as="select"
+                        size="lg"
+                        className="form-square"
+                        onChange={this.handleChange}
+                        value={this.state.current.patient.monitoring_plan || ''}>
+                        <option>None</option>
+                        <option>Daily active monitoring</option>
+                        <option>Self-monitoring with public health supervision</option>
+                        <option>Self-monitoring with delegated supervision</option>
+                        <option>Self-observation</option>
+                      </Form.Control>
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['monitoring_plan']}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-2">
                       <Form.Label className="nav-input-label">EXPOSURE NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['exposure_notes']}
@@ -485,6 +546,10 @@ const schema = yup.object().shape({
     .number()
     .positive('Please enter a valid jurisdiction.')
     .required(),
+  assigned_user: yup
+    .number()
+    .positive('Please enter a valid assigned user')
+    .nullable(),
   exposure_notes: yup
     .string()
     .max(2000, 'Max length exceeded, please limit to 2000 characters.')
@@ -499,6 +564,8 @@ Exposure.propTypes = {
   submit: PropTypes.func,
   has_group_members: PropTypes.bool,
   jurisdictionPaths: PropTypes.object,
+  assignedUsers: PropTypes.array,
+  authenticity_token: PropTypes.string,
 };
 
 export default Exposure;

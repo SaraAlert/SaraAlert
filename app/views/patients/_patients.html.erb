@@ -1,12 +1,38 @@
+<div class="row">
+  <div class="col-sm-24 col-md-16 col-lg-18">
+    <label style="display:inline-flex;margin-bottom:0.25em">
+      <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Show Jurisdiction:</span>
+      <select id="assigned_jurisdiction" class="custom-select custom-select-sm form-control form-control-sm">
+        <option value="all">All</option>
+      </select>
+    </label>
+    <label style="display:inline-flex;margin-bottom:0.25em">
+      <select id="scope" class="custom-select custom-select-sm form-control form-control-sm">
+        <option value="all">All</option>
+      </select>
+    </label>
+  </div>
+  <div class="col-sm-24 col-md-8 col-lg-6 text-right">
+    <label style="display:inline-flex;margin-bottom:0.25em">
+      <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
+      <select id="assigned_user" class="custom-select custom-select-sm form-control form-control-sm">
+        <option value="all">All</option>
+        <option value="none">None</option>
+      </select>
+    </label>
+  </div>
+</div>
 <table class="patients_table table table-sm table-striped table-bordered table-hover" style="width:100%">
   <thead>
     <tr>
       <th class="DataTable-table-header">Monitoree</th>
-      <th class="DataTable-table-header">Assigned Jurisdiction</th>
+      <th class="DataTable-table-header">Jurisdiction</th>
+      <th class="DataTable-table-header">Assigned User</th>
       <th class="DataTable-table-header">State&#47;Local ID</th>
       <th class="DataTable-table-header">Sex</th>
       <th class="DataTable-table-header">Date of Birth</th>
       <th class="DataTable-table-header">Enrollment Date</th>
+      <th class="DataTable-table-header">Jurisdiction Path</th>
     </tr>
   </thead>
   <tbody class="table-striped">
@@ -14,21 +40,135 @@
       <tr>
         <td><%= link_to "#{patient.last_name}, #{patient.first_name}", patient, class: '' %></td>
         <td><%= patient.jurisdiction.name %></td>
+        <td><%= patient.assigned_user %></td>
         <td><%= patient.user_defined_id_statelocal.blank? ? '' : patient.user_defined_id_statelocal %></td>
         <td><%= patient.sex %></td>
         <td><%= patient.date_of_birth&.strftime('%F') %></td>
         <td><%= patient.created_at.to_date&.strftime('%F') %></td>
+        <td><%= patient.jurisdiction[:path] %></td>
       </tr>
     <% end -%>
   </tbody>
 </table>
 <script>
   $(document).ready(function() {
-    $('.patients_table').DataTable({
+    const table = $('.patients_table').DataTable({
       "info": false,
       "lengthMenu": [10, 15, 25, 50, 100],
       "pageLength": 15,
-      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
+      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>",
+      "columnDefs": [
+        {
+          "targets": [7],
+          "visible": false,
+          "searchable": true
+        }
+      ]
     });
+
+    let assigned_jurisdiction = $('#assigned_jurisdiction').val();
+    let scope = $('#scope').val();
+    let assigned_user = $('#assigned_user').val()
+
+    updateAssignedJurisdictionOptions();
+    updateAssignedUserOptions();
+    updateScopeOptions();
+
+    $(document).on('change', 'select#assigned_jurisdiction', event => {
+      assigned_jurisdiction = event.target.value;
+      searchByAssignedJurisdiction();
+      updateAssignedUserOptions();
+      updateScopeOptions();
+    });
+
+    $(document).on('change', 'select#scope', event => {
+      scope = event.target.value;
+      searchByAssignedJurisdiction();
+      updateAssignedUserOptions();
+    });
+
+    $(document).on('change', 'select#assigned_user', event => {
+      assigned_user = event.target.value;
+      searchByAssignedUser();
+    });
+
+    function searchByAssignedJurisdiction() {
+      if (scope === 'all') {
+        table.column(7).search(assigned_jurisdiction === 'all' ? '' : assigned_jurisdiction, false, false).draw();
+      } else {
+        table.column(7).search(assigned_jurisdiction === 'all' ? '' : `^${assigned_jurisdiction}$`, true, false).draw();
+      }
+    }
+
+    function searchByAssignedUser() {
+      if (assigned_user === 'all') {
+        table.column(2).search('', false, false).draw();
+      } else if (assigned_user === 'none') {
+        table.column(2).search('^$', true, false).draw();
+      } else {
+        table.column(2).search(`^${assigned_user}$`, true, false).draw();
+      }
+    }
+
+    function updateAssignedJurisdictionOptions() {
+      // get a sorted, unique list of assigned jurisdictions
+      const assignedJurisdictions = table.column(7)
+                                         .data()
+                                         .unique()
+                                         .sort();
+
+      // reset and update assigned jurisdiction options
+      const options = $('#assigned_jurisdiction');
+      options.empty();
+      options.append($('<option></option>').attr('value', 'all').text('All'));
+      $.each(assignedJurisdictions, (_, assignedJurisdiction) => {
+        options.append($('<option></option>').attr('value', assignedJurisdiction).text(assignedJurisdiction));
+      });
+    }
+
+    function updateAssignedUserOptions() {
+      // get a sorted, unique list of assigned users based on the scope
+      const assignedUsers = table.data()
+                                 .filter(row => {
+                                   if (assigned_jurisdiction == 'all') {
+                                     return true;
+                                   } else if (scope === 'all') {
+                                     return row[7].includes(assigned_jurisdiction);
+                                   } else {
+                                     return row[7] === assigned_jurisdiction;
+                                   }
+                                 })
+                                 .map(row => parseInt(row[2]))
+                                 .unique()
+                                 .filter(assignedUser => { return !isNaN(assignedUser) })
+                                 .sort((a, b) => { return a - b });
+      
+      // reset and update assigned user options 
+      const options = $('#assigned_user');
+      options.empty();
+      options.append($('<option></option>').attr('value', 'all').text('All'));
+      options.append($('<option></option>').attr('value', 'none').text('None'));
+      $.each(assignedUsers, (_, assignedUser) => {
+        options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
+      });
+
+      // reset assigned user search value to 'all' if the new list of options does not include the current assigned user search value
+      if (assigned_user === 'all' || assigned_user === 'none' || Array.from(assignedUsers).includes(parseInt(assigned_user))) {
+        $('#assigned_user').val(assigned_user);
+      } else {
+        assigned_user = 'all';
+        $('#assigned_user').val('all');
+        searchByAssignedUser();
+      }
+    }
+
+    function updateScopeOptions() {
+      const options = $('#scope');
+      options.empty();
+      options.append($('<option></option>').attr('value', 'all').text('All'));
+      if (assigned_jurisdiction !== 'all') {
+        options.append($('<option></option>').attr('value', 'immediate').text('Exact Match'));
+      }
+    }
   });
 </script>

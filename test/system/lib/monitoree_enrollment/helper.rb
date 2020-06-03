@@ -19,6 +19,12 @@ class MonitoreeEnrollmentHelper < ApplicationSystemTestCase
 
   MONITOREES = @@system_test_utils.get_monitorees
 
+  def view_enrolled_monitorees(user_label)
+    @@system_test_utils.login(user_label)
+    @@monitoree_enrollment_dashboard_verifier.verify_enrolled_monitorees(user_label)
+    @@system_test_utils.logout
+  end
+  
   def enroll_monitoree(user_label, monitoree_label, is_epi=false)
     monitoree = MONITOREES[monitoree_label]
     @@system_test_utils.login(user_label)

@@ -99,10 +99,12 @@ class MonitoreeEnrollmentSteps < ApplicationSystemTestCase
         { id: 'crew_on_passenger_or_cargo_flight', type: 'risk factor', required: false, info_page: true, label: 'CREW ON PASSENGER OR CARGO FLIGHT' },
         { id: 'member_of_a_common_exposure_cohort', type: 'risk factor', required: false, info_page: true, label: 'MEMBER OF A COMMON EXPOSURE COHORT' },
         { id: 'member_of_a_common_exposure_cohort_type', type: 'text', required: false, info_page: true },
-        { id: 'exposure_risk_assessment', type: 'select', required: false, info_page: false },
-        { id: 'monitoring_plan', type: 'select', required: false, info_page: false },
         { id: 'jurisdiction_id', type: 'text', required: false, info_page: true },
         { id: 'update_group_member_jurisdiction_id', type: 'checkbox', required: false, info_page: false, label: 'Apply this change to the entire household that this monitoree is responsible for' },
+        { id: 'assigned_user', type: 'text', required: false, info_page: true},
+        { id: 'update_group_member_assigned_user', type: 'checkbox', required: false, info_page: false, label: 'Apply this change to the entire household that this monitoree is responsible for' },
+        { id: 'exposure_risk_assessment', type: 'select', required: false, info_page: false },
+        { id: 'monitoring_plan', type: 'select', required: false, info_page: false },
         { id: 'exposure_notes', type: 'text', required: false, info_page: false }
       ]
     }

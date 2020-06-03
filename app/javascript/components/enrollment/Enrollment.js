@@ -218,6 +218,8 @@ class Enrollment extends React.Component {
               currentState={this.state.enrollmentState}
               has_group_members={this.props.has_group_members}
               jurisdictionPaths={this.props.jurisdictionPaths}
+              assignedUsers={this.props.assignedUsers}
+              authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -245,6 +247,7 @@ Enrollment.propTypes = {
   propagated_fields: PropTypes.object,
   authenticity_token: PropTypes.string,
   jurisdictionPaths: PropTypes.object,
+  assignedUsers: PropTypes.array,
   editMode: PropTypes.bool,
   parent_id: PropTypes.number,
   can_add_group: PropTypes.bool,

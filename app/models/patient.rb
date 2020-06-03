@@ -41,6 +41,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
                                                          'No Identified Risk',
                                                          nil, ''] }
 
+  validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
+
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
   has_many :dependents, class_name: 'Patient', foreign_key: 'responder_id'
@@ -542,6 +544,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     {
       name: { name: "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}", id: id },
       jurisdiction: jurisdiction&.name || '',
+      assigned_user: assigned_user || '',
       state_local_id: user_defined_id_statelocal || '',
       sex: sex || '',
       dob: date_of_birth&.strftime('%F') || '',
@@ -658,7 +661,9 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       lab_2_type: labs[1] ? (labs[1].lab_type || '') : '',
       lab_2_specimen_collection: labs[1] ? (labs[1].specimen_collection&.strftime('%F') || '') : '',
       lab_2_report: labs[1] ? (labs[1].report&.strftime('%F') || '') : '',
-      lab_2_result: labs[1] ? (labs[1].result || '') : ''
+      lab_2_result: labs[1] ? (labs[1].result || '') : '',
+      jurisdiction_path: jurisdiction[:path] || '',
+      assigned_user: assigned_user || ''
     }
   end
 

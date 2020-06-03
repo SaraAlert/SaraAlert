@@ -9,6 +9,36 @@ class MonitoreeEnrollmentDashboardVerifier < ApplicationSystemTestCase
   @@monitoree_enrollment_info_page_verifier = MonitoreeEnrollmentInfoPageVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
+  def verify_enrolled_monitorees(user_label)
+    creator_id = User.where(email: "#{user_label}@example.com").first
+    Patient.where(creator_id: creator_id).each do |patient|
+      # view patient without any filters
+      fill_in 'Search:', with: "#{patient.first_name} #{patient.last_name}"
+      verify_patient_info_in_data_table(patient)
+
+      # view patient with assigned jurisdiction filter
+      page.all('select#assigned_jurisdiction option').map(&:text).each do |jur|
+        select jur, from: 'assigned_jurisdiction'
+        verify_patient_info_in_data_table(patient) if patient.jurisdiction[:path].include?(jur.split(', ').last)
+
+        unless jur == 'All'
+          select 'Exact Match', from: "scope"
+          page.all('.dataTable tbody tr').each do |row|
+            assigned_jurisdiction_cell = row.all('td')[1]
+            assert_equal(jur.split(', ').last, assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
+          end
+          select 'All', from: "scope"
+        end
+      end
+      select 'All', from: 'assigned_jurisdiction'
+
+      # view patient with assigned user filter
+      select patient[:assigned_user].nil? ? 'None' : patient[:assigned_user], from: "assigned_user"
+      verify_patient_info_in_data_table(patient)
+      select 'All', from: "assigned_user"
+    end
+  end
+  
   def verify_monitoree_info_on_dashboard(monitoree, is_epi=false, go_back=true)
     displayed_name = search_for_monitoree(monitoree, is_epi)
     click_on displayed_name
@@ -50,6 +80,21 @@ class MonitoreeEnrollmentDashboardVerifier < ApplicationSystemTestCase
     click_on 'Asymptomatic' if is_epi
     fill_in 'Search:', with: query
     assert page.has_content?('No matching records found'), @@system_test_utils.get_err_msg('Dashboard', 'monitoree', 'non-existent')
+  end
+
+  def verify_patient_info_in_data_table(patient)
+    verify_patient_field_in_data_table('first name', patient.first_name)
+    verify_patient_field_in_data_table('last name', patient.last_name)
+    verify_patient_field_in_data_table('assigned jurisdiction', patient.jurisdiction[:name])
+    verify_patient_field_in_data_table('assigned user', patient.assigned_user)
+    verify_patient_field_in_data_table('state/local id', patient.user_defined_id_statelocal)
+    verify_patient_field_in_data_table('sex', patient.sex)
+    verify_patient_field_in_data_table('date of birth', patient.date_of_birth)
+    verify_patient_field_in_data_table('enrollment date', patient.created_at.to_date)
+  end
+
+  def verify_patient_field_in_data_table(field, value)
+    assert page.has_content?(value), @@system_test_utils.get_err_msg('Patient info', field, value) unless value.nil?
   end
 
   def verify_enrollment_analytics(jurisdiction_id)

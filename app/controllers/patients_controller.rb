@@ -63,6 +63,22 @@ class PatientsController < ApplicationController
     @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
+  # Get group number suggestions
+  def assigned_users
+    render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient?
+
+    jurisdiction_id = params.require(:jurisdiction_id).to_i
+
+    render status: 400 unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
+
+    scope = params.permit(:scope)[:scope].to_sym
+    render status: 400 unless %i[all immediate].include?(scope)
+
+    assigned_users = scope == :all ? Jurisdiction.find(jurisdiction_id).all_assigned_users : Jurisdiction.find(jurisdiction_id).assigned_users
+
+    render json: { assignedUsers: assigned_users }
+  end
+
   # This follows 'new', this will receive the subject details and save a new subject
   # to the database.
   def create
@@ -170,7 +186,7 @@ class PatientsController < ApplicationController
       patient.dependents.where.not(id: patient.id).update(propagated_content)
     end
 
-    # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user
+    # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user, update history and propagate
     if content[:jurisdiction_id] && content[:jurisdiction_id] != patient.jurisdiction_id
       if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id].to_i)
         history = History.new
@@ -197,6 +213,27 @@ class PatientsController < ApplicationController
         end
       else
         content[:jurisdiction_id] = patient.jurisdiction_id
+      end
+    end
+
+    # If the assigned user is updated, update history and propagate
+    if content[:assigned_user] && content[:assigned_user] != patient.assigned_user
+      history = History.new
+      history.created_by = current_user.email
+      old_assigned_user = patient.assigned_user || ''
+      new_assigned_user = content[:assigned_user] || ''
+      history.comment = "User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"."
+      history.patient = patient
+      history.history_type = 'Monitoring Change'
+      history.save
+      if propagated_fields.include?('assigned_user')
+        group_members = patient.dependents.where.not(id: patient.id)
+        group_members.update(assigned_user: content[:assigned_user])
+        group_members.each do |group_member|
+          propagated_history = history.dup
+          propagated_history.patient = group_member
+          propagated_history.save
+        end
       end
     end
 
@@ -227,11 +264,29 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
     patient = current_user.get_patient(params.permit(:id)[:id])
+    update_fields(patient, params)
+
+    # Do we need to propagate to household?
+    if params.permit(:apply_to_group)[:apply_to_group]
+      patient.dependents.where.not(id: patient.id).each do |member|
+        update_fields(member, params)
+        next unless params[:comment]
+
+        update_history(member, params)
+      end
+    end
+
+    return unless params[:comment]
+
+    update_history(patient, params)
+  end
+
+  def update_fields(patient, params)
     patient.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
     patient.update(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
                                                    :exposure_risk_assessment, :public_health_action,
                                                    :isolation, :pause_notifications, :symptom_onset,
-                                                   :case_status))
+                                                   :case_status, :assigned_user))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
@@ -242,40 +297,9 @@ class PatientsController < ApplicationController
       end
     end
     patient.save
+  end
 
-    # Do we need to propagate to household?
-    if params.permit(:apply_to_group)[:apply_to_group]
-      patient.dependents.where.not(id: patient.id).each do |member|
-        member.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != member.monitoring && member.monitoring
-        member.update(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
-                                                      :exposure_risk_assessment, :public_health_action, :isolation,
-                                                      :case_status))
-        if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != member.jurisdiction_id
-          # Jurisdiction has changed
-          jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
-          unless jur.nil?
-            transfer = Transfer.new(patient: member, from_jurisdiction: member.jurisdiction, to_jurisdiction: jur, who: current_user)
-            transfer.save!
-            member.jurisdiction_id = jur.id
-          end
-        end
-        member.save
-        next unless params[:comment]
-
-        history = History.new
-        history.created_by = current_user.email
-        comment = 'User changed '
-        comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
-        comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-        history.comment = comment
-        history.patient = member
-        history.history_type = 'Monitoring Change'
-        history.save
-      end
-    end
-
-    return unless params[:comment]
-
+  def update_history(patient, params)
     history = History.new
     history.created_by = current_user.email
     comment = 'User changed '
@@ -445,6 +469,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
+      assigned_user
       symptom_onset
       case_status
     ]
@@ -520,6 +545,7 @@ class PatientsController < ApplicationController
       member_of_a_common_exposure_cohort_type
       isolation
       jurisdiction_id
+      assigned_user
     ]
   end
 end

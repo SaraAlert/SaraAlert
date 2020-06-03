@@ -1,10 +1,39 @@
 <div class="px-4">
+  <% unless type == 'transferred_out_patients' %>
+    <div class="row">
+      <div class="col-sm-24 col-md-16 col-lg-18">
+        <label style="display:inline-flex;margin-bottom:0.25em">
+          <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Show Jurisdiction:</span>
+          <select id="assigned_jurisdiction_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
+            <%= options_from_collection_for_select(@assigned_jurisdictions, :first, :last) %>
+          </select>
+        </label>
+        <label style="display:inline-flex;margin-bottom:0.25em">
+          <select id="scope_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
+            <option value="all">All</option>
+            <option value="immediate">Exact Match</option>
+          </select>
+        </label>
+      </div>
+      <div class="col-sm-24 col-md-8 col-lg-6 text-right">
+        <label style="display:inline-flex;margin-bottom:0.25em">
+          <span style="white-space:nowrap;line-height:1.9;margin-right:0.375em">Assigned User:</span>
+          <select id="assigned_user_<%= type %>" class="custom-select custom-select-sm form-control form-control-sm">
+            <option value="all">All</option>
+            <option value="none">None</option>
+            <%= options_for_select(@assigned_users) %>
+          </select>
+        </label>
+      </div>
+    </div>
+  <% end %>
   <table id="patients_table_<%= type %>" class="table table-sm table-striped table-bordered table-hover" style="width:100%">
     <thead>
       <tr>
         <% if isolation %>
           <th class="DataTable-table-header">Monitoree</th>
-          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Assigned Jurisdiction<% end %></th>
+          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
+          <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Assigned User</th> <% end %>
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
           <th class="DataTable-table-header">Date of Birth</th>
@@ -19,7 +48,8 @@
           <% if type == 'all_patients' %><th class="DataTable-table-header">Status</th><% end %>
         <% else %>
           <th class="DataTable-table-header">Monitoree</th>
-          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Assigned Jurisdiction<% end %></th>
+          <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
+          <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Assigned User</th> <% end %>
           <th class="DataTable-table-header">State&#47;Local ID</th>
           <th class="DataTable-table-header">Sex</th>
           <th class="DataTable-table-header">Date of Birth</th>
@@ -35,8 +65,17 @@
 </div>
 <script>
   $(document).ready(function() {
+    <% if type == 'transferred_out_patients' %>
+      const route = '/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/all/all/all';
+    <% else %>
+      let assigned_jurisdiction = $('#assigned_jurisdiction_<%= type %>').val();
+      let scope = $('#scope_<%= type %>').val();
+      let assigned_user = $('#assigned_user_<%= type %>').val();
+      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
+    <% end %>
+    
     $.fn.dataTable.ext.errMode = 'throw';
-    $('#patients_table_<%= type %>').DataTable({
+    const table = $('#patients_table_<%= type %>').DataTable({
       "drawCallback": function(settings) {
         $('.datetime-convert').each(function() {
           if (moment.tz($(this).text(), 'UTC').isValid()) {
@@ -46,7 +85,7 @@
       },
       "serverSide": true,
       "deferLoading": 0, // Conditionally load tables (when tab is pressed)
-      <% if isolation %>"ajax": "isolation/<%= type %>",<% else %>"ajax": "public_health/<%= type %>",<% end %>
+      "ajax": route,
       "lengthMenu": [10, 15, 25, 50, 100],
       "pageLength": 15,
       'processing': true,
@@ -65,6 +104,7 @@
             }
           },
           <% if type == 'transferred_in_patients' %>{ "data": "linelist.transferred_from", "orderable": false, render: $.fn.dataTable.render.text() },<% elsif type == 'transferred_out_patients' %>{ "data": "linelist.transferred_to", "orderable": false, render: $.fn.dataTable.render.text() },<% else %>{ "data": "linelist.jurisdiction", "name": "jurisdiction", render: $.fn.dataTable.render.text() },<% end %>
+          <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %>{ "data": "linelist.assigned_user", "name": "assigned_user", render: $.fn.dataTable.render.text() },<% end %>
           { "data": "linelist.state_local_id", "name": "state_local_id", render: $.fn.dataTable.render.text() },
           { "data": "linelist.sex", "name": "sex", render: $.fn.dataTable.render.text() },
           { "data": "linelist.dob", "name": "dob", render: $.fn.dataTable.render.text() },
@@ -99,6 +139,7 @@
           <% else %>
             { "data": "linelist.jurisdiction", "name": "jurisdiction", render: $.fn.dataTable.render.text() },
           <% end %>
+          <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %>{ "data": "linelist.assigned_user", "name": "assigned_user", render: $.fn.dataTable.render.text() },<% end %>
           { "data": "linelist.state_local_id", "name": "state_local_id", render: $.fn.dataTable.render.text() },
           { "data": "linelist.sex", "name": "sex", render: $.fn.dataTable.render.text() },
           { "data": "linelist.dob", "name": "dob", render: $.fn.dataTable.render.text() },
@@ -121,5 +162,48 @@
       ],
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });
+
+    $(document).on('change', 'select#assigned_jurisdiction_<%= type %>', event => {
+      assigned_jurisdiction = event.target.value;
+      updateDataTable();
+      updateAssignedUserOptions();
+    });
+
+    $(document).on('change', 'select#scope_<%= type %>', event => {
+      scope = event.target.value;
+      updateDataTable();
+      updateAssignedUserOptions();
+    });
+
+    $(document).on('change', 'select#assigned_user_<%= type %>', event => {
+      assigned_user = event.target.value;
+      updateDataTable();
+    });
+
+    function updateDataTable() {
+      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
+      table.ajax.url(route).load();
+    }
+
+    function updateAssignedUserOptions() {
+      $.get(`/jurisdictions/${assigned_jurisdiction}/assigned_users/${scope}`, data => {
+        const options = $('#assigned_user_<%= type %>');
+        options.empty();
+        options.append($('<option></option>').attr('value', 'all').text('All'));
+        options.append($('<option></option>').attr('value', 'none').text('None'));
+        $.each(data.assignedUsers, (_, assignedUser) => {
+          options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
+        });
+
+        // reset assigned user search value to 'all' if the new list of options does not include the current assigned user search value
+        if (assigned_user === 'all' || assigned_user === 'none' || Array.from(data.assignedUsers).includes(parseInt(assigned_user))) {
+          $('#assigned_user_<%= type %>').val(assigned_user);
+        } else {
+          assigned_user = 'all';
+          $('#assigned_user_<%= type %>').val('all');
+          updateDataTable();
+        }
+      });
+    }
   });
 </script>

@@ -11,14 +11,19 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   ASSESSMENTS = @@system_test_utils.get_assessments
 
-  test 'view patient information on dashboard' do
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('state1_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c1_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c2_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('state2_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c3_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c4_epi')
-    @@public_health_monitoring_helper.verify_patients_on_dashboard('state1_epi_enroller')
+  test 'verify patient information on dashboard' do
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c2_epi', false)
+  end
+
+  test 'verify jurisdiction scope filtering logic on dashboard' do
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('state1_epi_enroller', true)
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals1c1_epi', true)
+  end
+
+  test 'verify assigned user filtering logic on dashboard' do
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('state2_epi', false)
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c3_epi', false)
+    @@public_health_monitoring_helper.verify_patients_on_dashboard('locals2c4_epi', false)
   end
 
   test 'verify patient details and reports' do
@@ -46,6 +51,19 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'Fake Jurisdiction', 'details', false, true)
     @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'USA, State 2, County 4', 'details', true, true)
     @@public_health_monitoring_helper.update_assigned_jurisdiction('state2_epi', 'patient_10', 'pui', 'USA, State 1', 'details', true, false)
+  end
+
+  test 'update assigned user' do
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '9', 'reasoning', true, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reasoning', true, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reason', false, false)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', 'reason', true, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', '', false, false)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '0', 'reason', false, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '10000', '', false, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi_enroller', 'patient_4', 'all', '-8', 'reason', false, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', '1.5', '', false, true)
+    @@public_health_monitoring_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', 'not valid', 'reason', false, true)
   end
 
   test 'add report' do
@@ -166,11 +184,11 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
   
   test 'import sara alert format to isolation and accept all' do
-    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, nil)
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format.xlsx', :valid, nil)
   end
 
   test 'import sara alert format to exposure and accept all individually' do
-    @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, [])
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi_enroller', :exposure, 'Sara-Alert-Format.xlsx', :valid, [])
   end
 
   test 'import sara alert format to isolation and accept some' do
@@ -189,6 +207,14 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.import_sara_alert_format('jurisdiction_10_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, nil, false)
   end
 
+  test 'import sara alert format to exposure with custom jurisdictions' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :valid, nil)
+  end
+
+  test 'import sara alert format to isolation with custom jurisdictions' do
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :valid, nil)
+  end
+
   test 'import sara alert format to exposure and validate file type' do
     @@public_health_monitoring_helper.import_sara_alert_format('locals1c2_epi', :exposure, 'Invalid-Text-File.txt', :invalid_file, nil)
   end
@@ -196,7 +222,7 @@ class PublicHealthTest < ApplicationSystemTestCase
   test 'import sara alert format to isolation and validate file format' do
     @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :isolation, 'Invalid-Excel-File.xlsx', :invalid_format, nil)
   end
-
+  
   test 'import sara alert format to exposure and validate headers' do
     @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-Invalid-Headers.xlsx', :invalid_headers, nil)
   end
@@ -206,11 +232,15 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'import sara alert format to exposure and validate fields' do
-    @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :exposure, 'Sara-Alert-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
+    @@public_health_monitoring_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
   end
 
   test 'import sara alert format to isolation and validate fields' do
     @@public_health_monitoring_helper.import_sara_alert_format('state2_epi', :isolation, 'Sara-Alert-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
+  end
+
+  test 'import sara alert format to exposure and validate jurisdiction path' do
+    @@public_health_monitoring_helper.import_sara_alert_format('locals2c4_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :invalid_fields, [])
   end
 
   test 'download sara alert format guidance from exposure workflow' do

@@ -34,6 +34,8 @@ Rails.application.routes.draw do
   post '/laboratories', to: 'laboratories#create'
   post '/laboratories/:id', to: 'laboratories#update'
 
+  get '/jurisdictions/:jurisdiction_id/assigned_users/:scope', to: 'patients#assigned_users'
+
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   get '/export/csv/patients/:type/:workflow', to: 'export#csv'
@@ -67,23 +69,8 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
-  get '/public_health/all_patients', to: 'public_health#all_patients_exposure', as: :public_health_all_patients_exposure
-  get '/public_health/asymptomatic_patients', to: 'public_health#asymptomatic_patients_exposure', as: :public_health_asymptomatic_patients_exposure
-  get '/public_health/pui_patients', to: 'public_health#pui_patients_exposure', as: :public_health_pui_patients_exposure
-  get '/public_health/non_reporting_patients', to: 'public_health#non_reporting_patients_exposure', as: :public_health_non_reporting_patients_exposure
-  get '/public_health/symptomatic_patients', to: 'public_health#symptomatic_patients_exposure', as: :public_health_symptomatic_patients_exposure
-  get '/public_health/closed_patients', to: 'public_health#closed_patients_exposure', as: :public_health_closed_patients_exposure
-  get '/public_health/transferred_in_patients', to: 'public_health#transferred_in_patients_exposure', as: :public_health_transferred_in_patients_exposure
-  get '/public_health/transferred_out_patients', to: 'public_health#transferred_out_patients_exposure', as: :public_health_transferred_out_patients_exposure
+  get '/public_health/patients/:workflow/:type/:assigned_jurisdiction/:scope/:assigned_user', to: 'public_health#patients', as: :public_health_patients
   get '/public_health', to: 'public_health#exposure', as: :public_health
-
-  get '/public_health/isolation/all_patients', to: 'public_health#all_patients_isolation', as: :public_health_all_patients_isolation
-  get '/public_health/isolation/requiring_review_patients', to: 'public_health#requiring_review_patients_isolation', as: :public_health_requiring_review_patients_isolation
-  get '/public_health/isolation/non_reporting_patients', to: 'public_health#non_reporting_patients_isolation', as: :public_health_non_reporting_patients_isolation
-  get '/public_health/isolation/reporting_patients', to: 'public_health#reporting_patients_isolation', as: :public_health_reporting_patients_isolation
-  get '/public_health/isolation/closed_patients', to: 'public_health#closed_patients_isolation', as: :public_health_closed_patients_isolation
-  get '/public_health/isolation/transferred_in_patients', to: 'public_health#transferred_in_patients_isolation', as: :public_health_transferred_in_patients_isolation
-  get '/public_health/isolation/transferred_out_patients', to: 'public_health#transferred_out_patients_isolation', as: :public_health_transferred_out_patients_isolation
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
 
   get '/analytics', to: 'analytics#index', as: :analytics

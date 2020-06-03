@@ -45,36 +45,36 @@
 
   <div class="tab-content">
     <div class="card card-square tab-pane show active pb-4" id="symptomatic" role="tabpanel" aria-labelledby="symptomatic-tab">
-      <p class="lead px-4 pt-4 pb-3">Monitorees who have reported symptoms, which need to be reviewed. You are currently in the <u>exposure</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'symptomatic_patients', p_links: true, isolation: false } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Monitorees who have reported symptoms, which need to be reviewed. You are currently in the <u>exposure</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'symptomatic_patients', p_links: true, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="non-reporting" role="tabpanel" aria-labelledby="non-reporting-tab">
-      <p class="lead px-4 pt-4 pb-3">Monitorees who have failed to report in the last day, and are not symptomatic. You are currently in the <u>exposure</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'non_reporting_patients', p_links: true, isolation: false } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Monitorees who have failed to report in the last day, and are not symptomatic. You are currently in the <u>exposure</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'non_reporting_patients', p_links: true, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="asymptomatic" role="tabpanel" aria-labelledby="asymptomatic-tab">
-      <p class="lead px-4 pt-4 pb-3">Monitorees currently reporting no symptoms, who have reported during the last day. You are currently in the <u>exposure</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'asymptomatic_patients', p_links: true, isolation: false } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Monitorees currently reporting no symptoms, who have reported during the last day. You are currently in the <u>exposure</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'asymptomatic_patients', p_links: true, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane show pb-4" id="pui" role="tabpanel" aria-labelledby="pui-tab">
-      <p class="lead px-4 pt-4 pb-3">Monitorees who are currently under investigation. You are currently in the <u>exposure</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'pui_patients', p_links: true, isolation: false } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Monitorees who are currently under investigation. You are currently in the <u>exposure</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'pui_patients', p_links: true, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="closed" role="tabpanel" aria-labelledby="closed-tab">
-      <p class="lead px-4 pt-4 pb-3">Monitorees not currently being monitored. You are currently in the <u>exposure</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'closed_patients', p_links: true, isolation: false } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Monitorees not currently being monitored. You are currently in the <u>exposure</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'closed_patients', p_links: true, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="transferred-in" role="tabpanel" aria-labelledby="transferred-in-tab">
-      <p class="lead px-4 pt-4 pb-3">Monitorees that have been transferred into this jurisdiction during the last 24 hours. You are currently in the <u>exposure</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'transferred_in_patients', p_links: true, isolation: false } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Monitorees that have been transferred into this jurisdiction during the last 24 hours. You are currently in the <u>exposure</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'transferred_in_patients', p_links: true, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="transferred-out" role="tabpanel" aria-labelledby="transferred-out-tab">
-      <p class="lead px-4 pt-4 pb-3">Monitorees that have been transferred out of this jurisdiction. You are currently in the <u>exposure</u> workflow.</p>
+      <p class="lead px-4 pt-4 pb-3 mb-2">Monitorees that have been transferred out of this jurisdiction. You are currently in the <u>exposure</u> workflow.</p>
       <%= render partial: "patients", locals: { type: 'transferred_out_patients', p_links: false, isolation: false } %>
     </div>
     <div class="card card-square tab-pane pb-4" id="all" role="tabpanel" aria-labelledby="all-tab">
-      <p class="lead px-4 pt-4 pb-3">All Monitorees in this jurisdiction, in the Exposure workflow. You are currently in the <u>exposure</u> workflow.</p>
-      <%= render partial: "patients", locals: { type: 'all_patients', p_links: true, isolation: false } %>
+      <p class="lead px-4 pt-4 pb-3 mb-2">All Monitorees in this jurisdiction, in the Exposure workflow. You are currently in the <u>exposure</u> workflow.</p>
+      <%= render partial: "patients", locals: { type: 'all_patients', p_links: true, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
     </div>
   </div>
 

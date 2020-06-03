@@ -87,7 +87,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         elsif details[field] == !!details[field]
           assert_equal(details[field] ? 'true' : 'false', csv[row][col], "For field: #{field}")
         else
-          assert_equal(details[field], csv[row][col], "For field: #{field}")
+          assert_equal(details[field].to_s, csv[row][col].to_s, "For field: #{field}")
         end
       end
     end

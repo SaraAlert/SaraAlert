@@ -14,7 +14,8 @@
       authenticity_token: form_authenticity_token,
       has_group_members: @group_members.exists?,
       patient: @patient,
-      jurisdictionPaths: Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
+      jurisdictionPaths: Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}],
+      assignedUsers: @patient.jurisdiction.assigned_users
       }) %>
   </div>
 <% end %>

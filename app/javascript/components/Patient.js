@@ -48,7 +48,14 @@ class Patient extends React.Component {
         {this.props.jurisdictionPath && (
           <Row className="mx-1">
             <Col className="text-truncate">
-              <span className="font-weight-normal">Assigned Jurisdiction:</span> <span className="font-weight-light">{`${this.props.jurisdictionPath}`}</span>
+              <span className="font-weight-normal">Assigned Jurisdiction:</span> <span className="font-weight-light">{this.props.jurisdictionPath}</span>
+            </Col>
+          </Row>
+        )}
+        {this.props.details.assigned_user && (
+          <Row className="mx-1">
+            <Col className="text-truncate">
+              <span className="font-weight-normal">Assigned User:</span> <span className="font-weight-light">{this.props.details.assigned_user}</span>
             </Col>
           </Row>
         )}

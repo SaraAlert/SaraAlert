@@ -54,6 +54,7 @@ patient_2:
   responder_id: 2
   creator_id: 4
   jurisdiction_id: 2
+  assigned_user: 7493
   submission_token: "0badf6de985b9d1d954db6f6c80d1d367e5975d5"
   monitoring: true
   user_defined_id_statelocal: "EX-904188"
@@ -120,6 +121,7 @@ patient_4:
   responder_id: 4
   creator_id: 3
   jurisdiction_id: 4
+  assigned_user: 8
   submission_token: "4ce17914ec60b9a9ceec9c9e1314d940542c2820"
   monitoring: true
   first_name: "Lavern91"
@@ -191,6 +193,7 @@ patient_7:
   responder_id: 7
   creator_id: 3
   jurisdiction_id: 2
+  assigned_user: 6379
   submission_token: "0c5047b6101d1fb0f5e3c257d8b074dbfe2e9d2c"
   monitoring: true
   first_name: "Emory10"
@@ -215,6 +218,7 @@ patient_8:
   responder_id: 8
   creator_id: 3
   jurisdiction_id: 2
+  assigned_user: 6379
   submission_token: "e475c6380a6fc306acf77c1f803fdc1a25fc6753"
   monitoring: true
   first_name: "Carmelina02"
@@ -240,6 +244,7 @@ patient_9:
   responder_id: 9
   creator_id: 3
   jurisdiction_id: 3
+  assigned_user: 297
   submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
   monitoring: true
   first_name: "Borer35"
@@ -265,6 +270,7 @@ patient_10:
   responder_id: 10
   creator_id: 3
   jurisdiction_id: 7
+  assigned_user: 1098
   submission_token: "84a2182880cddef4935b76ae5395e069b185a996"
   monitoring: true
   first_name: "Hettinger54"
@@ -288,6 +294,7 @@ patient_11:
   responder_id: 11
   creator_id: 3
   jurisdiction_id: 6
+  assigned_user: 79
   submission_token: "5f85adc4bb3191c54918e90311bd252909b4c129"
   monitoring: true
   first_name: "Danelle24"

@@ -176,6 +176,13 @@ class Import extends React.Component {
                   border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
                   <React.Fragment>
                     {patient.appears_to_be_duplicate && <Alert variant="danger">Warning: This monitoree already appears to exist in the system!</Alert>}
+                    {(patient.jurisdiction_path || patient.assigned_user) && (
+                      <Alert variant="info">
+                        Note:
+                        {patient.jurisdiction_path && <span>{` This monitoree will be imported into '${patient.jurisdiction_path}'.`}</span>}
+                        {patient.assigned_user && <span>{` This monitoree will be assigned to user '${patient.assigned_user}'.`}</span>}
+                      </Alert>
+                    )}
                     <Row>
                       <Col>
                         <b>State/Local ID:</b> {patient.user_defined_id_statelocal}
