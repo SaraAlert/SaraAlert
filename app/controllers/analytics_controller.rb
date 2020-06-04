@@ -64,6 +64,8 @@ class AnalyticsController < ApplicationController
 
     most_recent_analytics = current_user.jurisdiction.analytics.last
 
+    return nil if most_recent_analytics.nil?
+
     {
       last_updated_at: most_recent_analytics.updated_at,
       subject_status: [

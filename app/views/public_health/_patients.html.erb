@@ -71,7 +71,7 @@
       let assigned_jurisdiction = $('#assigned_jurisdiction_<%= type %>').val();
       let scope = $('#scope_<%= type %>').val();
       let assigned_user = $('#assigned_user_<%= type %>').val();
-      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
+      const route = '/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/' + assigned_jurisdiction + '/' + scope + '/' + assigned_user; // IE 11 does not support template strings
     <% end %>
     
     $.fn.dataTable.ext.errMode = 'throw';
@@ -181,12 +181,12 @@
     });
 
     function updateDataTable() {
-      const route = `/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/${assigned_jurisdiction}/${scope}/${assigned_user}`;
+      const route = '/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/' + assigned_jurisdiction + '/' + scope + '/' + assigned_user; // IE 11 does not support template strings
       table.ajax.url(route).load();
     }
 
     function updateAssignedUserOptions() {
-      $.get(`/jurisdictions/${assigned_jurisdiction}/assigned_users/${scope}`, data => {
+      $.get('/jurisdictions/' + assigned_jurisdiction + '/assigned_users/' + scope, data => { // IE 11 does not support template strings
         const options = $('#assigned_user_<%= type %>');
         options.empty();
         options.append($('<option></option>').attr('value', 'all').text('All'));
