@@ -85,7 +85,7 @@ es:
         intro1: 'Este es el sistema Sara Alert, complete el informe para'
         intro2: 'en este enlace.'
     phone:
-      age: ''
+      age: 'años'
       daily1: ' Este es el informe diario de Sara Alert para: '
       daily2-p: ' ¿Esta alguna de estas personas '
       daily2-s: ' Es esta una persona? '
