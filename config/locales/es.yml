@@ -46,9 +46,9 @@ es:
       bool-title: 'Por favor, seleccione los síntomas que está sintiendo actualmente.'
       submit: 'Enviar'
       thank-you: '"¡Gracias por completar su informe diario!'
-      instruction1: 'Si no informó ningún síntoma, siga las recomendaciones proporcionadas por su departamento de salud local.'
-      instruction2: 'Si informó algún síntoma, su departamento de salud local se comunicará pronto. Si tiene alguna inquietud inmediata, llame a su proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa.'
-      instruction3: 'Si tiene una emergencia médica, llame al 911 e infórmeles que el departamento de salud lo está monitoreando.'
+      instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones proveídas por su departamento de salud local.'
+      instruction2: 'Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa por favor.'
+      instruction3: 'Si tiene una emergencia médica, por favor llame al 911 e infórmeles que el departamento de salud lo está monitoreando.'
     email:
       reminder:
         subject: 'Recordatorio del reporte de Sara Alert'
@@ -82,7 +82,7 @@ es:
         daily3: 'sintiendo uno o mas de los siguientes síntomas: '
         daily4: ' Responda con "Sí" o "No"'
       weblink:
-        intro1: 'Este es el sistema Sara Alert, complete el informe para'
+        intro1: 'Este es el sistema Sara Alert. Por favor complete el reporte de'
         intro2: 'en este enlace.'
     phone:
       age: 'años'
