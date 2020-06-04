@@ -335,7 +335,7 @@ namespace :demo do
 
           # Identification
           sex = Faker::Gender.binary_type
-          patient[:sex] = rand < 0.9 ? sex : 'Unknown'
+          patient[:sex] = rand < 0.9 ? sex : 'Unknown' if rand < 0.9
           patient[:first_name] = "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
           patient[:middle_name] = "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}" if rand < 0.7
           patient[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"

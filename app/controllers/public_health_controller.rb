@@ -148,29 +148,31 @@ class PublicHealthController < ApplicationController
         sorted = sorted.order(last_name: direction).order(first_name: direction)
       elsif params[:columns][val['column']][:name] == 'jurisdiction' # Jurisdiction
         sorted = sorted.includes(:jurisdiction).order('jurisdictions.name ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'state_local_id' # ID
-        sorted = sorted.order(user_defined_id_statelocal: direction)
+      elsif params[:columns][val['column']][:name] == 'assigned_user' # Assigned User
+        sorted = sorted.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + direction.to_s)
+      elsif params[:columns][val['column']][:name] == 'state_local_id' # State/Local ID
+        sorted = sorted.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'sex' # Sex
-        sorted = sorted.order(sex: direction)
+        sorted = sorted.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'dob' # DOB
-        sorted = sorted.order(date_of_birth: direction)
+        sorted = sorted.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'end_of_monitoring' # End of Monitoring
-        sorted = sorted.order(last_date_of_exposure: direction)
+        sorted = sorted.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'expected_purge_date' # Expected Purge Date
         # Same as end of monitoring
-        sorted = sorted.order(last_date_of_exposure: direction)
+        sorted = sorted.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'risk' # Risk
         sorted = sorted.order_by_risk(val['dir'] == 'asc')
-      elsif params[:columns][val['column']][:name] == 'monitoring_plan' # Plan
-        sorted = sorted.order(monitoring_plan: direction)
+      elsif params[:columns][val['column']][:name] == 'monitoring_plan' # Monitoring Plan
+        sorted = sorted.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'monitoring_reason' # Reason
-        sorted = sorted.order(monitoring_reason: direction)
+        sorted = sorted.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'public_health_action' # PHA
-        sorted = sorted.order(public_health_action: direction)
+        sorted = sorted.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'latest_report' # Latest Report
-        sorted = sorted.includes(:assessments).order('assessments.created_at ' + direction.to_s)
+        sorted = sorted.left_outer_joins(:assessments).order('assessments.created_at ' + direction.to_s)
       elsif params[:columns][val['column']][:name] == 'closed_at' # Closed At
-        sorted = sorted.order(closed_at: direction)
+        sorted = sorted.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + direction.to_s)
       end
     end
     sorted
