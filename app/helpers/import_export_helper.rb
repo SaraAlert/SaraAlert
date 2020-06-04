@@ -76,7 +76,8 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
 
   SEX_ABBREVIATIONS = {
     M: 'Male',
-    F: 'Female'
+    F: 'Female',
+    U: 'Unknown'
   }.freeze
 
   STATE_ABBREVIATIONS = {

@@ -111,8 +111,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
         EPI_X_FIELDS.each_with_index do |field, index|
           if index == 28 || index == 29 # phone number fields
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 13 # sex
-            assert_equal(row[index] == 'M' ? 'Male' : 'Female', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif index == 13 && !row[index].blank? # sex
+            assert_equal(SEX_ABBREVIATIONS[row[index].to_sym], patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 18 || (index == 22 && !row[22].nil?) # state fields
             assert_equal(normalize_state_field(row[index].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 22 && row[22].nil? # copy over monitored address state if state is nil
