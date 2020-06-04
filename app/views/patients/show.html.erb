@@ -134,7 +134,10 @@
 
 <% if current_user.can_view_patient_laboratories? %>
   <div class="card mx-2 mt-3 mb-4 card-square">
-    <h5 class="card-header"> Lab Results</h5>
+    <h5 class="card-header">
+      Lab Results
+      <%= react_component("util/InfoTooltip", { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
+    </h5>
     <div class="m-4">
       <table class="lab_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
         <thead>

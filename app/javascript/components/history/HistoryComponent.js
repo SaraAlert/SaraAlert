@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Row } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import History from './History';
+import InfoTooltip from '../util/InfoTooltip';
 import Select from 'react-select';
 import Pagination from 'jw-react-pagination';
 
@@ -79,7 +80,8 @@ class HistoryComponent extends React.Component {
         <Card className="mx-2 mt-3 mb-4 card-square">
           <Card.Header>
             <div className="d-flex flex-row align-items-center">
-              <h5 className="float-left flex-grow-1 mb-0">History</h5>
+              <h5 className="float-left flex-grow-1 mb-0">History </h5>
+              <InfoTooltip tooltipTextKey="history" location="right"></InfoTooltip>
             </div>
           </Card.Header>
           <Card.Body className="py-0 px-1">

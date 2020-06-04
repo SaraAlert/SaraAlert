@@ -381,7 +381,10 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
-                  <Form.Label className="nav-input-label">EXPOSURE RISK ASSESSMENT</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    EXPOSURE RISK ASSESSMENT
+                    <InfoTooltip tooltipTextKey="exposureRiskAssessment" location="right"></InfoTooltip>
+                  </Form.Label>
                   <Form.Control
                     as="select"
                     className="form-control-lg"
@@ -396,7 +399,10 @@ class MonitoringStatus extends React.Component {
                   </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
-                  <Form.Label className="nav-input-label">MONITORING PLAN</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    MONITORING PLAN
+                    <InfoTooltip tooltipTextKey="monitoringPlan" location="right"></InfoTooltip>
+                  </Form.Label>
                   <Form.Control as="select" className="form-control-lg" id="monitoring_plan" onChange={this.handleChange} value={this.state.monitoring_plan}>
                     <option>None</option>
                     <option>Daily active monitoring</option>
@@ -429,7 +435,7 @@ class MonitoringStatus extends React.Component {
                     <option>Recommended laboratory testing</option>
                   </Form.Control>
                 </Form.Group>
-                <Form.Group as={Col} md="12" lg="8" className="pt-2" inline>
+                <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <Form.Label className="nav-input-label">
                     ASSIGNED USER
                     <InfoTooltip tooltipTextKey="assignedUser" location="right"></InfoTooltip>
@@ -466,7 +472,10 @@ class MonitoringStatus extends React.Component {
                   </Form.Group>
                 </Form.Group>
                 <Form.Group as={Col} lg="24" className="pt-2">
-                  <Form.Label className="nav-input-label">ASSIGNED JURISDICTION</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    ASSIGNED JURISDICTION
+                    <InfoTooltip tooltipTextKey="assignedJurisdiction" location="right"></InfoTooltip>
+                  </Form.Label>
                   <Form.Group className="d-flex mb-0">
                     <Form.Control
                       as="input"

@@ -4,14 +4,6 @@ import ReactTooltip from 'react-tooltip';
 
 // When adding a new tooltip in the UI create an entry in this object, and pass in the entry `key` as props
 const TOOLTIP_TEXT = {
-  caseStatus: (
-    <div>
-      Used to move records into the appropriate workflow after investigating a report of symptoms. If <i>confirmed</i> or <i>probable</i> is selected, the user
-      is prompted to choose between moving the record to the isolation workflow or to end monitoring. If the user selects another case status, the record will
-      be returned to the appropriate exposure monitoring line list.
-    </div>
-  ),
-
   monitoringStatus: (
     <div>
       If set to{' '}
@@ -27,10 +19,39 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  exposureRiskAssessment: (
+    <div>
+      Used to prioritize responses to symptomatic and non-reporting individuals. This element does not impact the type or frequency of messages sent by the
+      system to monitorees.
+    </div>
+  ),
+
+  monitoringPlan: (
+    <div>
+      Used to prioritize responses to symptomatic and non-reporting individuals in the exposure workflow. This element does not impact the type or frequency of
+      messages sent by the system to monitorees.
+    </div>
+  ),
+
+  caseStatus: (
+    <div>
+      Used to move records into the appropriate workflow after investigating a report of symptoms. If <i>confirmed</i> or <i>probable</i> is selected, the user
+      is prompted to choose between moving the record to the isolation workflow or to end monitoring. If the user selects another case status, the record will
+      be returned to the appropriate exposure monitoring line list.
+    </div>
+  ),
+
   latestPublicHealthAction: (
     <div>
       Selecting any option other than <i>none</i> moves record from the symptomatic line list to the Person Under Investigation (PUI) line list in the exposure
       workflow. To move a record off the PUI line list, update <i>Case Status</i> based on the findings of the investigation.
+    </div>
+  ),
+
+  assignedJurisdiction: (
+    <div>
+      This controls which users have access to records. Users can access records associated with their assigned jurisdiction and records assigned to any
+      jurisdictions below theirs in the jurisdictional hierarchy defined by each agency before onboarding.
     </div>
   ),
 
@@ -56,6 +77,26 @@ const TOOLTIP_TEXT = {
 
   assignedUser: (
     <div> Used to identify the user or group within a jurisdiction responsible for monitoring a monitoree (Values: 1-9999 for each jurisdiction). </div>
+  ),
+
+  labResults: (
+    <div>
+      Lab Results are used in the isolation workflow to determine if a case might meet the test-based or asymptomatic non-test based recovery definitions.
+    </div>
+  ),
+
+  history: (
+    <div>
+      Use to view past changes made by users and a log of system contact attempts. Comments can be added to this section to document information not captured
+      elsewhere.
+    </div>
+  ),
+
+  preferredContactTime: (
+    <div>
+      Specifies time period that system will send out messages. If blank, the system will start to send daily notifications 24 hours after enrollment. If
+      monitorees home address state is left blank, the Eastern time zone is used for preferred contact time by default.
+    </div>
   ),
 };
 
