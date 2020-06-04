@@ -4,6 +4,17 @@ import ReactTooltip from 'react-tooltip';
 
 // When adding a new tooltip in the UI create an entry in this object, and pass in the entry `key` as props
 const TOOLTIP_TEXT = {
+  // MONITOREE DETAILS
+  preferredContactTime: (
+    <div>
+      Specifies time period that system will send out messages. If blank, the system will start to send daily notifications 24 hours after enrollment. If
+      monitorees home address state is left blank, the Eastern time zone is used for preferred contact time by default.
+    </div>
+  ),
+
+  lastDateOfExposure: <div> Used by the system to automatically calculate the monitoring period. </div>,
+
+  // MONITORING ACTIONS
   monitoringStatus: (
     <div>
       If set to{' '}
@@ -48,6 +59,10 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  assignedUser: (
+    <div> Used to identify the user or group within a jurisdiction responsible for monitoring a monitoree (Values: 1-9999 for each jurisdiction). </div>
+  ),
+
   assignedJurisdiction: (
     <div>
       This controls which users have access to records. Users can access records associated with their assigned jurisdiction and records assigned to any
@@ -55,6 +70,7 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  // REPORTS
   symptomOnset: (
     <div>
       {' '}
@@ -63,28 +79,14 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  purgeDate: (
-    <div>
-      {' '}
-      In order to minimize the amount of identifiable information stored on the production servers, Sara Alert will purge identifiers in records for which there
-      have been no updates for a defined time period, provided that monitoree is no longer being actively monitored. An update includes any action on the
-      record, including adding comments or updating any fields. Local administrators are sent weekly email reminders about records that meet this definition.
-      See User Guide for list of fields that are not purged for use in the analytics summary.{' '}
-    </div>
-  ),
-
-  lastDateOfExposure: <div> Used by the system to automatically calculate the monitoring period. </div>,
-
-  assignedUser: (
-    <div> Used to identify the user or group within a jurisdiction responsible for monitoring a monitoree (Values: 1-9999 for each jurisdiction). </div>
-  ),
-
+  // LAB RESULTS
   labResults: (
     <div>
       Lab Results are used in the isolation workflow to determine if a case might meet the test-based or asymptomatic non-test based recovery definitions.
     </div>
   ),
 
+  // HISTORY
   history: (
     <div>
       Use to view past changes made by users and a log of system contact attempts. Comments can be added to this section to document information not captured
@@ -92,10 +94,43 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  preferredContactTime: (
+  // EXPOSURE WORKFLOW LINE LIST DEFINITIONS
+  exposure_symptomatic: (
+    <div>Public health follow-up needed to determine if disease is suspected. Follow-up should be based on current guidelines and available resources.</div>
+  ),
+
+  exposure_nonReporting: (
     <div>
-      Specifies time period that system will send out messages. If blank, the system will start to send daily notifications 24 hours after enrollment. If
-      monitorees home address state is left blank, the Eastern time zone is used for preferred contact time by default.
+      Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these monitorees should be based on current
+      guidelines and available resources.
+    </div>
+  ),
+
+  exposure_asymptomatic: <div>Monitorees on this list do not require public health follow-up unless otherwise indicated.</div>,
+
+  exposure_pui: (
+    <div>
+      A ‘Latest Public Health Action’ other than “None” has been documented in the monitoree’s record. Monitorees on this list do not receive daily reminder
+      notifications because they are already being contacted by public health.
+    </div>
+  ),
+
+  exposure_closed: (
+    <div>
+      Monitorees on this list do not receive daily reminder notifications. Records on this list are accessible by users until the expected purge date. Your
+      local administrator receives a weekly email notification about records eligible for purge and will coordinate with a public health user to export records
+      for local retention before purge (if necessary).
+    </div>
+  ),
+
+  // CLOSED TABLE HEADERS
+  purgeDate: (
+    <div>
+      {' '}
+      In order to minimize the amount of identifiable information stored on the production servers, Sara Alert will purge identifiers in records for which there
+      have been no updates for a defined time period, provided that monitoree is no longer being actively monitored. An update includes any action on the
+      record, including adding comments or updating any fields. Local administrators are sent weekly email reminders about records that meet this definition.
+      See User Guide for list of fields that are not purged for use in the analytics summary.{' '}
     </div>
   ),
 };
