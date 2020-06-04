@@ -123,6 +123,33 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  // ISOLATION WORKFLOW LINE LIST DEFINITIONS
+  isolation_recordsRequiringReview: (
+    <div>
+      These cases meet one of the recovery definitions and require review by public health to validate that it is safe to discontinue isolation. The recovery
+      definition logic has been designed to be sensitive; as a result, cases that do not meet requirements for recovery may appear. To view which recovery
+      definition was met, open the record and view the reports section. Follow-up with these cases should be based on current guidelines and available
+      resources.
+    </div>
+  ),
+
+  isolation_nonReporting: (
+    <div>
+      Monitorees on this list require public health follow-up to collect missing symptom report(s). Follow-up with these cases should be based on current
+      guidelines and available resources.
+    </div>
+  ),
+
+  isolation_reporting: <div>Monitorees on this list do not require public health follow-up unless otherwise indicated.</div>,
+
+  isolation_closed: (
+    <div>
+      Cases on this list do not receive notifications. Records on this list are accessible by users until the expected purge date. Your local administrator
+      receives a weekly email notification about records eligible for purge and will coordinate with a public health user to export records for local retention
+      before purge (if necessary).
+    </div>
+  ),
+
   // CLOSED TABLE HEADERS
   purgeDate: (
     <div>
