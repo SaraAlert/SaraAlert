@@ -20,6 +20,7 @@ class PatientsController < ApplicationController
 
     @jurisdiction_path = @patient.jurisdiction_path
     @group_members = @patient.dependents.where.not(id: @patient.id)
+    @translations = Assessment.new.translations
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?

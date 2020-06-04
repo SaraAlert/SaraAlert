@@ -9,7 +9,7 @@ A `symptom` will be identified by it's name, which is the key in the symptom obj
 ### value
 The `value` of a symptom defines the threshold of the symptom, this is the value that is considered as
 symptomatic for the symptom which it is defining, only symptoms marked as 'required' will be considered when
-determining whether or not a patient is symptomatic. For float and integer symptoms, a reported symptom 
+determining whether or not a patient is symptomatic. For float and integer symptoms, a reported symptom
 will be compared using the specified `threshold_operator` to the specified `value` and will be considered as symptomatic. if the result of the comparison is true.
 ### threshold_operator
 Available values for the `threshold_operator` field are `Less Than`, `Less Than Or Equal`,
@@ -21,6 +21,9 @@ The group parameter specifies how many symptoms within the same group must pass 
 Note: Sub-jurisdictinos can add symptoms to groups, but should not be specifying their own groups.
 ### required
 The `required` field can either take the value `true` of `false`. Only symptoms with `required` set to `true` will be taken into consideration during symptomatic assessment calculation. Additionally, symptoms that have the `required` attribute set to `false` will be omitted from the voice and SMS assessment prompts.
+
+## Translations and Notes
+Each symptom supports the inclusion of a more descriptive sentence about what the symptom entails. This, as well as the translations for each symptom name are defined in a locale file under `config/locales`. When adding symptoms, you MUST include entries for these symptoms in each locale!
 
 ### Example Use:
 
@@ -55,14 +58,12 @@ County 1 or County 2 will be asked about 8 total symptoms as part of their asses
             value: true
             type: 'BoolSymptom'
             threshold_operator: 'Equal'
-            notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
             required: true
             group: 2
         'Used A Fever Reducer':
             value: true
             type: 'BoolSymptom'
             threshold_operator: 'Equal'
-            notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
             required: false
             group: 2
         'Chills':
@@ -92,7 +93,6 @@ County 1 or County 2 will be asked about 8 total symptoms as part of their asses
                     value: 90
                     threshold_operator: 'Less Than'
                     type: 'FloatSymptom'
-                    notes: 'Enter your lowest pulse oximeter reading from last 24 hours'
                     required: true
             children:
                 'County 1':

@@ -11,7 +11,9 @@ class PatientMailer < ApplicationMailer
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
-    mail(to: patient.email, subject: 'Sara Alert Enrollment') do |format|
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    @lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    mail(to: patient.email, subject: I18n.t('assessments.email.enrollment.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
@@ -19,9 +21,13 @@ class PatientMailer < ApplicationMailer
   def enrollment_sms_weblink(patient)
     return if patient&.primary_telephone.blank?
 
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
-    intro_contents = "This is the Sara Alert system please complete the report for #{patient_name} at the link provided"
-    url_contents = new_patient_assessment_jurisdiction_report_url(patient.submission_token, patient.jurisdiction.unique_identifier).to_s
+    intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
+    url_contents = new_patient_assessment_jurisdiction_report_lang_url(patient.submission_token,
+                                                                       lang&.to_s || 'en',
+                                                                       patient.jurisdiction.unique_identifier[0, 32]).to_s
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
@@ -41,8 +47,10 @@ class PatientMailer < ApplicationMailer
   def enrollment_sms_text_based(patient)
     return if patient&.primary_telephone.blank?
 
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
-    contents = "Welcome to the Sara Alert system, we will be sending your daily reports for #{patient_name} to this phone number."
+    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
@@ -58,12 +66,16 @@ class PatientMailer < ApplicationMailer
   def assessment_sms_weblink(patient)
     add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     num = patient.primary_telephone
     ([patient] + patient.dependents).uniq.each do |p|
+      lang = PatientHelper.languages(p.primary_language)&.dig(:code)&.to_sym || :en
       add_success_history(p)
       patient_name = "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
-      intro_contents = "This is the Sara Alert system please complete the report for #{patient_name} at the link provided"
-      url_contents = new_patient_assessment_jurisdiction_report_url(p.submission_token, patient.jurisdiction.unique_identifier[0, 32]).to_s
+      intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
+      url_contents = new_patient_assessment_jurisdiction_report_lang_url(p.submission_token,
+                                                                         lang&.to_s || 'en',
+                                                                         patient.jurisdiction.unique_identifier[0, 32]).to_s
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
       from = ENV['TWILLIO_SENDING_NUMBER']
@@ -84,8 +96,10 @@ class PatientMailer < ApplicationMailer
   def assessment_sms_reminder(patient)
     add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     add_success_history(patient)
-    contents = 'This is the Sara Alert system reminding you to please reply to our daily-report messages.'
+    contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
@@ -100,30 +114,32 @@ class PatientMailer < ApplicationMailer
   def assessment_sms(patient)
     add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     add_success_history(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
       "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
     end
-    contents = 'This is the Sara Alert daily report for: ' + patient_names.to_sentence
+    contents = I18n.t('assessments.sms.prompt.daily1', locale: lang) + patient_names.join(', ') + '.'
 
     # Prepare text asking about anyone in the group
     contents += if ([patient] + patient.dependents).uniq.count > 1
-                  ' Are any of these people '
+                  I18n.t('assessments.sms.prompt.daily2-p', locale: lang)
                 else
-                  ' Is this person '
+                  I18n.t('assessments.sms.prompt.daily2-s', locale: lang)
                 end
 
     # This assumes that all of the dependents will be in the same jurisdiction and therefore have the same symptom questions
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
-    contents += 'experiencing any of the following symptoms ' + patient.jurisdiction.hierarchical_condition_bool_symptoms_string + '?'
-    contents += ' Please reply with "Yes" or "No"'
+    contents += I18n.t('assessments.sms.prompt.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '.'
+    contents += I18n.t('assessments.sms.prompt.daily4', locale: lang)
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
-    params = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash, medium: 'SMS' }
+    params = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.upcase }
     client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
       from: from,
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
@@ -134,30 +150,33 @@ class PatientMailer < ApplicationMailer
   def assessment_voice(patient)
     add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     add_success_history(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
-      "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, Age #{p&.calc_current_age || '0'},"
+      "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
     end
-    contents = ' This is the report for: ' + patient_names.to_sentence
+    contents = I18n.t('assessments.phone.daily1', locale: lang) + patient_names.join(', ')
 
     # Prepare text asking about anyone in the group
     contents += if ([patient] + patient.dependents).uniq.count > 1
-                  ' Are any of these people '
+                  I18n.t('assessments.phone.daily2-p', locale: lang)
                 else
-                  ' Is this person '
+                  I18n.t('assessments.phone.daily2-s', locale: lang)
                 end
 
     # This assumes that all of the dependents will be in the same jurisdiction and therefore have the same symptom questions
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
-    contents += 'experiencing any of the following symptoms, ' + patient.jurisdiction.hierarchical_condition_bool_symptoms_string + '?'
-    contents += ' Please reply with "Yes" or "No"'
+    contents += I18n.t('assessments.phone.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '?'
+    contents += I18n.t('assessments.phone.daily4', locale: lang)
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
-    params = { prompt: contents, patient_submission_token: patient.submission_token, threshold_hash: threshold_hash, medium: 'VOICE' }
+    params = { prompt: contents, patient_submission_token: patient.submission_token,
+               threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.upcase }
     client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
       from: from,
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
@@ -168,12 +187,14 @@ class PatientMailer < ApplicationMailer
   def assessment_email(patient)
     add_fail_history(patient, 'email') && return if patient&.email.blank?
 
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    @lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     add_success_history(patient)
     # Gather patients and jurisdictions
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
-    mail(to: patient.email, subject: 'Sara Alert Report Reminder') do |format|
+    mail(to: patient.email, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
@@ -182,7 +203,9 @@ class PatientMailer < ApplicationMailer
     return if patient&.email.blank?
 
     @patient = patient
-    mail(to: patient.email, subject: 'Sara Alert Reporting Complete') do |format|
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    @lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    mail(to: patient.email, subject: I18n.t('assessments.email.closed.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
   end

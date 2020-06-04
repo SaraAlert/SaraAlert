@@ -104,4 +104,12 @@ class Assessment < ApplicationRecord
   def get_reported_symptom_by_name(symptom_name)
     reported_condition&.symptoms&.select { |symp| symp.name == symptom_name }&.first || nil
   end
+
+  def translations
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    {
+      en: I18n.backend.send(:translations)[:en][:assessments],
+      es: I18n.backend.send(:translations)[:es][:assessments]
+    }
+  end
 end

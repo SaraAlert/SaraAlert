@@ -21,20 +21,19 @@ class AssessmentCompleted extends React.Component {
       <React.Fragment>
         <Card className="mx-0 card-square align-item-center">
           <Card.Header className="text-center" as="h4">
-            Daily Self-Report
+            {this.props.translations[this.props.lang]['web']['title']}
           </Card.Header>
           <Card.Body className="text-center">
             <Form.Label className="text-center pt-1">
-              <b>Thank You For Completing Your Self Report</b>
+              <b>{this.props.translations[this.props.lang]['web']['thank-you']}</b>
             </Form.Label>
             <br />
             <Form.Label className="text-left pt-1">
-              <br />• If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.
+              <br />• {this.props.translations[this.props.lang]['web']['instruction1']}
               <br />
-              <br />• If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please call your
-              medical provider or local health department. Avoid close contact with other people and stay at home.
+              <br />• {this.props.translations[this.props.lang]['web']['instruction2']}
               <br />
-              <br />• If you are experiencing a medical emergency, please call 911 and let them know you are being monitored by the health department.
+              <br />• {this.props.translations[this.props.lang]['web']['instruction3']}
             </Form.Label>
             <br />
             <Form.Label className="fas fa-check fa-10x text-center pt-2"> </Form.Label>
@@ -46,6 +45,8 @@ class AssessmentCompleted extends React.Component {
 }
 
 AssessmentCompleted.propTypes = {
+  translations: PropTypes.object,
+  lang: PropTypes.string,
   currentState: PropTypes.object,
   setAssessmentState: PropTypes.func,
 };

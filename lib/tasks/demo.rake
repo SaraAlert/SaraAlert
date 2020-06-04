@@ -458,9 +458,9 @@ namespace :demo do
                                        'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
 
           # Other fields populated upon enrollment
-          patient[:submission_token] = SecureRandom.hex(20),
-          patient[:creator_id] = enrollers.sample[:id],
-          patient[:responder_id] = 1, # temporarily set responder_id to 1 to pass schema validation
+          patient[:submission_token] = SecureRandom.hex(20)
+          patient[:creator_id] = enrollers.sample[:id]
+          patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
           patient[:created_at] = Faker::Time.between_dates(from: today, to: today, period: :day)
           patient[:updated_at] = Faker::Time.between_dates(from: patient[:created_at], to: today, period: :day)
 

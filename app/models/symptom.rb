@@ -25,13 +25,15 @@ class Symptom < ApplicationRecord
     where(['name = ? and bool_value = ?', 'used-a-fever-reducer', true])
   }
 
-  def bool_based_prompt
+  def bool_based_prompt(lang = :en)
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     if type == 'BoolSymptom'
-      label
+      I18n.t("assessments.symptoms.#{name}.name", locale: lang)
     elsif type == 'IntegerSymptom' || type == 'FloatSymptom'
-      threshold_op = threshold_operator
-      threshold_op += ' to' if threshold_op.ends_with? 'Equal'
-      [label, threshold_op, value].to_sentence(words_connector: ' ', last_word_connector: ' ').humanize
+      [
+        I18n.t("assessments.symptoms.#{name}.name", locale: lang),
+        I18n.t("assessments.threshold-op.#{threshold_operator.parameterize}", locale: lang), value
+      ].to_sentence(words_connector: ' ', last_word_connector: ' ').humanize
     end
   end
 

@@ -35,7 +35,10 @@ class SymptomsAssessment extends React.Component {
         checked={symp.value === true || false}
         label={
           <div>
-            <b>{symp.label}</b> {symp.notes ? ' ' + symp.notes : ''}
+            <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
+            {this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
+              ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
+              : ''}
           </div>
         }
         className="pb-2"
@@ -47,7 +50,10 @@ class SymptomsAssessment extends React.Component {
     return (
       <Form.Row className="pt-3" key={`label_key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}>
         <Form.Label className="nav-input-label" key={`label_key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}>
-          <b>{symp.label}</b> {symp.notes ? ' ' + symp.notes : ''}
+          <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
+          {this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
+            ? ' ' + this.props.translations[this.props.lang]['symptoms'][symp.name]['notes']
+            : ''}
         </Form.Label>
         <Form.Control
           size="lg"
@@ -66,10 +72,10 @@ class SymptomsAssessment extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-0 card-square">
-          <Card.Header as="h4">Daily Self-Report</Card.Header>
+          <Card.Header as="h4">{this.props.translations[this.props.lang]['web']['title']}</Card.Header>
           <Card.Body>
             <Form.Row>
-              <Form.Label className="nav-input-label pb-3">Please select all symptoms which you are experiencing.</Form.Label>
+              <Form.Label className="nav-input-label pb-3">{this.props.translations[this.props.lang]['web']['bool-title']}</Form.Label>
             </Form.Row>
             <Form.Row>
               <Form.Group className="pt-1">
@@ -87,7 +93,7 @@ class SymptomsAssessment extends React.Component {
             </Form.Row>
             <Form.Row className="pt-4">
               <Button variant="primary" block size="lg" className="btn-block btn-square" onClick={this.navigate}>
-                Submit
+                {this.props.translations[this.props.lang]['web']['submit']}
               </Button>
             </Form.Row>
           </Card.Body>
@@ -98,6 +104,8 @@ class SymptomsAssessment extends React.Component {
 }
 
 SymptomsAssessment.propTypes = {
+  translations: PropTypes.object,
+  lang: PropTypes.string,
   currentState: PropTypes.object,
   setAssessmentState: PropTypes.func,
   goto: PropTypes.func,

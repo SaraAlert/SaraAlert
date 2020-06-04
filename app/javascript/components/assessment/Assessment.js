@@ -149,6 +149,8 @@ class Assessment extends React.Component {
               symptoms={this.state.symptoms}
               currentState={this.state.assessmentState}
               idPre={this.props.idPre}
+              translations={this.props.translations}
+              lang={this.props.lang || 'en'}
             />
           </Carousel.Item>
           <Carousel.Item>
@@ -157,6 +159,8 @@ class Assessment extends React.Component {
               submit={this.handleSubmit}
               setAssessmentState={this.setAssessmentState}
               currentState={this.state.assessmentState}
+              translations={this.props.translations}
+              lang={this.props.lang || 'en'}
             />
           </Carousel.Item>
         </Carousel>
@@ -166,6 +170,8 @@ class Assessment extends React.Component {
 }
 
 Assessment.propTypes = {
+  translations: PropTypes.object,
+  lang: PropTypes.string,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
