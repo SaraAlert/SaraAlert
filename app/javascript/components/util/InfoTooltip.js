@@ -79,6 +79,28 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  // REQUIRES REVIEW RECOVERY LOGIC
+  syptomatocNonTestBased: (
+    <div>
+      At least 10 days have passed since the symptom onset date and at least 72 hours have passed since the case last reported “Yes” for fever or use of
+      fever-inducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other
+      symptoms have improved.
+    </div>
+  ),
+
+  asyptomatocNonTestBased: (
+    <div>At least 10 days have passed since the report date of a positive laboratory test and the monitoree has never reported symptoms.</div>
+  ),
+
+  testBased: (
+    <div>
+      Two negative laboratory results have been documented and at least 24 hours have passed since the case last reported “Yes” for fever or use of
+      fever-inducing medicine to the system. The system does not validate the type of test, time between specimen collection, or if the tests were consecutive.
+      Public health will need to validate that the test results meet the latest guidance prior to discontinuing isolation. The system does not collect
+      information on severity of symptoms. Public health will also need to validate if other symptoms have improved.
+    </div>
+  ),
+
   // LAB RESULTS
   labResults: (
     <div>

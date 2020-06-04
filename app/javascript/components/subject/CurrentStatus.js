@@ -1,5 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
+import InfoTooltip from '../util/InfoTooltip';
 
 class CurrentStatus extends React.Component {
   constructor(props) {
@@ -36,17 +37,31 @@ class CurrentStatus extends React.Component {
     }
   }
 
+  generateInfoHover(status) {
+    if (status === 'isolation_non_test_based') {
+      return <InfoTooltip tooltipTextKey="syptomatocNonTestBased" location="right"></InfoTooltip>;
+    } else if (status === 'isolation_asymp_non_test_based') {
+      return <InfoTooltip tooltipTextKey="asyptomatocNonTestBased" location="right"></InfoTooltip>;
+    } else if (status === 'isolation_test_based') {
+      return <InfoTooltip tooltipTextKey="testBased" location="right"></InfoTooltip>;
+    } else {
+      return null;
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
         {!this.props.isolation && (
           <h1 className="display-6 pb-3">
             This monitoree is in the <u>exposure</u> workflow, and their current status is <b>{this.generateStatus(this.props.status)}</b>.
+            {this.generateInfoHover(this.props.status)}
           </h1>
         )}
         {this.props.isolation && (
           <h1 className="display-6 pb-3">
             This monitoree is in the <u>isolation</u> workflow, and their current status is <b>{this.generateStatus(this.props.status)}</b>.
+            {this.generateInfoHover(this.props.status)}
           </h1>
         )}
       </React.Fragment>
