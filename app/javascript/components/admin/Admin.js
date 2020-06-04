@@ -14,7 +14,7 @@ class Admin extends React.Component {
     var dataLen = props.data.length;
     for (var i = 0; i < dataLen; i++) {
       if (Array.isArray(props.data[parseInt(i)]['jurisdiction_path'])) {
-        props.data[parseInt(i)]['jurisdiction_path'] = props.data[parseInt(i)]['jurisdiction_path'].join(',');
+        props.data[parseInt(i)]['jurisdiction_path'] = props.data[parseInt(i)]['jurisdiction_path'].join(', ');
       }
     }
     this.onAddRow = this.onAddRow.bind(this);

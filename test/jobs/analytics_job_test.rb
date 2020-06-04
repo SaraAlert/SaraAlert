@@ -11,21 +11,21 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     MonitoreeCount.delete_all
     MonitoreeSnapshot.delete_all
     CacheAnalyticsJob.perform_now()
-    assert_equal(8, Analytic.all.size)
-    assert_equal(38, MonitoreeCount.where(category_type: 'Overall Total').size)
-    assert_equal(17, MonitoreeCount.where(category_type: 'Monitoring Status').size)
-    assert_equal(95, MonitoreeCount.where(category_type: 'Age Group').size)
-    assert_equal(79, MonitoreeCount.where(category_type: 'Sex').size)
+    assert_equal(10, Analytic.all.size)
+    assert_equal(55, MonitoreeCount.where(category_type: 'Overall Total').size)
+    assert_equal(25, MonitoreeCount.where(category_type: 'Monitoring Status').size)
+    assert_equal(112, MonitoreeCount.where(category_type: 'Age Group').size)
+    assert_equal(96, MonitoreeCount.where(category_type: 'Sex').size)
     assert_equal(53, MonitoreeCount.where(category_type: 'Risk Factor').size)
-    assert_equal(63, MonitoreeCount.where(category_type: 'Exposure Country').size)
+    assert_equal(80, MonitoreeCount.where(category_type: 'Exposure Country').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Date').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Week').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Month').size)
     assert_not_equal(0, MonitoreeCount.all.size)
-    assert_equal(8, MonitoreeSnapshot.where(time_frame: 'Last 24 Hours').size)
-    assert_equal(8, MonitoreeSnapshot.where(time_frame: 'Last 14 Days').size)
-    assert_equal(8, MonitoreeSnapshot.where(time_frame: 'Total').size)
-    assert_equal(24, MonitoreeSnapshot.all.size)
+    assert_equal(10, MonitoreeSnapshot.where(time_frame: 'Last 24 Hours').size)
+    assert_equal(10, MonitoreeSnapshot.where(time_frame: 'Last 14 Days').size)
+    assert_equal(10, MonitoreeSnapshot.where(time_frame: 'Total').size)
+    assert_equal(30, MonitoreeSnapshot.all.size)
   end
   
   test 'calculate analytic local to jurisdiction' do

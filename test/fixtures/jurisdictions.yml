@@ -59,15 +59,18 @@ jurisdiction_8:
   updated_at: "<%= 54.weeks.ago %>"
   name: "State 3"
   ancestry: "1"
+  path: "USA, State 3"
 jurisdiction_9:
   id: 9
   created_at: "<%= 54.weeks.ago %>"
   updated_at: "<%= 54.weeks.ago %>"
   name: "State 4"
   ancestry: "1"
+  path: "USA, State 4"
 jurisdiction_10:
   id: 10
   created_at: "<%= 54.weeks.ago %>"
   updated_at: "<%= 54.weeks.ago %>"
   name: "State 5"
   ancestry: "1"
+  path: "USA, State 5"

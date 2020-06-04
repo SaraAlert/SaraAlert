@@ -11,6 +11,7 @@ state1_enroller:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 locals1c1_enroller:
   id: 2
   email: "locals1c1_enroller@example.com"
@@ -24,6 +25,7 @@ locals1c1_enroller:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 locals1c2_enroller:
   id: 3
   email: "locals1c2_enroller@example.com"
@@ -37,6 +39,7 @@ locals1c2_enroller:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 state2_enroller:
   id: 4
   email: "state2_enroller@example.com"
@@ -50,6 +53,7 @@ state2_enroller:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 locals2c3_enroller:
   id: 5
   email: "locals2c3_enroller@example.com"
@@ -63,6 +67,7 @@ locals2c3_enroller:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 locals2c4_enroller:
   id: 6
   email: "locals2c4_enroller@example.com"
@@ -76,6 +81,7 @@ locals2c4_enroller:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 state1_epi:
   id: 7
   email: "state1_epi@example.com"
@@ -90,6 +96,7 @@ state1_epi:
   authy_enabled: false
   authy_enforced: false
   api_enabled: true
+  api_enabled: false
 locals1c1_epi:
   id: 8
   email: "locals1c1_epi@example.com"
@@ -103,6 +110,7 @@ locals1c1_epi:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 locals1c2_epi:
   id: 9
   email: "locals1c2_epi@example.com"
@@ -116,6 +124,7 @@ locals1c2_epi:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 state2_epi:
   id: 10
   email: "state2_epi@example.com"
@@ -129,6 +138,7 @@ state2_epi:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 locals2c3_epi:
   id: 11
   email: "locals2c3_epi@example.com"
@@ -142,6 +152,7 @@ locals2c3_epi:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 locals2c4_epi:
   id: 12
   email: "locals2c4_epi@example.com"
@@ -155,6 +166,7 @@ locals2c4_epi:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 state1_epi_enroller:
   id: 13
   email: "state1_epi_enroller@example.com"
@@ -169,9 +181,9 @@ state1_epi_enroller:
   authy_enabled: false
   authy_enforced: false
   api_enabled: true
-admin1:
+usa_admin:
   id: 14
-  email: "admin1@example.com"
+  email: "usa_admin@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 192
   failed_attempts: 1
@@ -182,6 +194,7 @@ admin1:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 analyst_all:
   id: 15
   email: "analyst_all@example.com"
@@ -195,6 +208,7 @@ analyst_all:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 usa_epi:
   id: 16
   email: "usa_epi@example.com"
@@ -208,6 +222,7 @@ usa_epi:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 forced_password_change_user:
   id: 17
   email: "forced_password_change_user@example.com"
@@ -221,6 +236,7 @@ forced_password_change_user:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
 locked_user:
   id: 18
   email: "locked_user@example.com"
@@ -234,9 +250,10 @@ locked_user:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
-jurisdiction_10_epi:
+  api_enabled: false
+state5_epi:
   id: 19
-  email: "jurisdiction_10_epi@example.com"
+  email: "state5_epi@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 5
   failed_attempts: 1
@@ -246,3 +263,18 @@ jurisdiction_10_epi:
   updated_at: "<%= 50.days.ago %>"
   authy_enabled: false
   authy_enforced: false
+  api_enabled: false
+state1_admin:
+  id: 20
+  email: "state1_admin@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 29
+  failed_attempts: 3
+  force_password_change: false
+  jurisdiction_id: 2
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false
+  api_enabled: false
