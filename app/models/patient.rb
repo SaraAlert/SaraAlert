@@ -209,6 +209,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where(isolation: true)
       .left_outer_joins(:assessments)
       .where.not(assessments: { patient_id: nil })
+      .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever)
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_medication)
       .where('symptom_onset <= ?', 10.days.ago)

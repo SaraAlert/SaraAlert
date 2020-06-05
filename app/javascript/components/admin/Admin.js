@@ -7,6 +7,7 @@ import { BootstrapTable, TableHeaderColumn, InsertModalHeader, InsertModalFooter
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReleaseUpdate from './ReleaseUpdate';
+import { CSVLink } from 'react-csv';
 
 class Admin extends React.Component {
   constructor(props) {
@@ -100,11 +101,16 @@ class Admin extends React.Component {
     return <InsertModalFooter saveBtnText="Add User" />;
   };
 
-  addUserButton = onClick => {
+  addButtons = onClick => {
     return (
-      <Button variant="primary" size="lg" className="btn-block btn-square my-2" onClick={onClick}>
-        Add User
-      </Button>
+      <div>
+        <Button variant="primary" size="lg" className="btn-block btn-square my-2" onClick={onClick}>
+          Add User
+        </Button>
+        <CSVLink data={this.props.data} className="btn btn-primary btn-lg mb-3" filename={'sara-accounts.csv'}>
+          Export to CSV
+        </CSVLink>
+      </div>
     );
   };
 
@@ -291,7 +297,7 @@ class Admin extends React.Component {
     const options = {
       onAddRow: this.onAddRow,
       btnGroup: this.createCustomButtonGroup,
-      insertBtn: this.addUserButton,
+      insertBtn: this.addButtons,
       insertModalHeader: this.addUserModalHeader,
       insertModalFooter: this.addUserModalFooter,
       toolBar: this.createCustomToolBar,
@@ -318,6 +324,9 @@ class Admin extends React.Component {
           className="table table-striped py-2">
           <TableHeaderColumn dataField="email" dataSort={true} isKey={true}>
             Email
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="id" dataSort={true}>
+            ID
           </TableHeaderColumn>
           <TableHeaderColumn
             dataField="jurisdiction_path"
