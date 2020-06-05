@@ -358,6 +358,6 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       'swahili': { code: 'sw', display: 'Swahili', system: 'urn:ietf:bcp:47' },
       'burmese': { code: 'my', display: 'Burmese', system: 'urn:ietf:bcp:47' }
     }
-    languages[language&.downcase].present? ? languages[language&.downcase] : nil
+    languages[language&.downcase&.to_sym].present? ? languages[language&.downcase&.to_sym] : nil
   end
 end
