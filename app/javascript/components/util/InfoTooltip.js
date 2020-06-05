@@ -7,8 +7,8 @@ const TOOLTIP_TEXT = {
   // MONITOREE DETAILS
   preferredContactTime: (
     <div>
-      Specifies time period that system will send out messages. If blank, the system will start to send daily notifications 24 hours after enrollment. If
-      monitorees home address state is left blank, the Eastern time zone is used for preferred contact time by default.
+      The monitoree will be sent a reminder as soon as they move to non-reporting. If monitorees home address state is left blank, the Eastern time zone is used
+      for preferred contact time by default.
     </div>
   ),
 
@@ -80,7 +80,7 @@ const TOOLTIP_TEXT = {
   ),
 
   // REQUIRES REVIEW RECOVERY LOGIC
-  syptomatocNonTestBased: (
+  symptomaticNonTestBased: (
     <div>
       At least 10 days have passed since the symptom onset date and at least 72 hours have passed since the case last reported “Yes” for fever or use of
       fever-inducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other
@@ -88,14 +88,14 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  asyptomatocNonTestBased: (
+  asymptomaticNonTestBased: (
     <div>At least 10 days have passed since the report date of a positive laboratory test and the monitoree has never reported symptoms.</div>
   ),
 
   testBased: (
     <div>
       Two negative laboratory results have been documented and at least 24 hours have passed since the case last reported “Yes” for fever or use of
-      fever-inducing medicine to the system. The system does not validate the type of test, time between specimen collection, or if the tests were consecutive.
+      fever-reducing medicine to the system. The system does not validate the type of test, time between specimen collection, or if the tests were consecutive.
       Public health will need to validate that the test results meet the latest guidance prior to discontinuing isolation. The system does not collect
       information on severity of symptoms. Public health will also need to validate if other symptoms have improved.
     </div>
@@ -118,7 +118,10 @@ const TOOLTIP_TEXT = {
 
   // EXPOSURE WORKFLOW LINE LIST DEFINITIONS
   exposure_symptomatic: (
-    <div>Public health follow-up needed to determine if disease is suspected. Follow-up should be based on current guidelines and available resources.</div>
+    <div>
+      Monitorees on this list require public health follow-up to determine if disease is suspected. Follow-up should be based on current guidelines and
+      available resources.
+    </div>
   ),
 
   exposure_nonReporting: (

@@ -39,9 +39,9 @@ class CurrentStatus extends React.Component {
 
   generateInfoHover(status) {
     if (status === 'isolation_non_test_based') {
-      return <InfoTooltip tooltipTextKey="syptomatocNonTestBased" location="right"></InfoTooltip>;
+      return <InfoTooltip tooltipTextKey="symptomaticNonTestBased" location="right"></InfoTooltip>;
     } else if (status === 'isolation_asymp_non_test_based') {
-      return <InfoTooltip tooltipTextKey="asyptomatocNonTestBased" location="right"></InfoTooltip>;
+      return <InfoTooltip tooltipTextKey="asymptomaticNonTestBased" location="right"></InfoTooltip>;
     } else if (status === 'isolation_test_based') {
       return <InfoTooltip tooltipTextKey="testBased" location="right"></InfoTooltip>;
     } else {
