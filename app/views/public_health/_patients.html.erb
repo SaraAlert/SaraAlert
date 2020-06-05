@@ -73,7 +73,7 @@
       let assigned_user = $('#assigned_user_<%= type %>').val();
       const route = '/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/' + assigned_jurisdiction + '/' + scope + '/' + assigned_user; // IE 11 does not support template strings
     <% end %>
-    
+
     $.fn.dataTable.ext.errMode = 'throw';
     const table = $('#patients_table_<%= type %>').DataTable({
       "drawCallback": function(settings) {
@@ -163,19 +163,19 @@
       "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
     });
 
-    $(document).on('change', 'select#assigned_jurisdiction_<%= type %>', event => {
+    $(document).on('change', 'select#assigned_jurisdiction_<%= type %>', function(event) {
       assigned_jurisdiction = event.target.value;
       updateDataTable();
       updateAssignedUserOptions();
     });
 
-    $(document).on('change', 'select#scope_<%= type %>', event => {
+    $(document).on('change', 'select#scope_<%= type %>', function(event) {
       scope = event.target.value;
       updateDataTable();
       updateAssignedUserOptions();
     });
 
-    $(document).on('change', 'select#assigned_user_<%= type %>', event => {
+    $(document).on('change', 'select#assigned_user_<%= type %>', function(event) {
       assigned_user = event.target.value;
       updateDataTable();
     });
@@ -186,12 +186,12 @@
     }
 
     function updateAssignedUserOptions() {
-      $.get('/jurisdictions/' + assigned_jurisdiction + '/assigned_users/' + scope, data => { // IE 11 does not support template strings
+      $.get('/jurisdictions/' + assigned_jurisdiction + '/assigned_users/' + scope, function(data) { // IE 11 does not support template strings
         const options = $('#assigned_user_<%= type %>');
         options.empty();
         options.append($('<option></option>').attr('value', 'all').text('All'));
         options.append($('<option></option>').attr('value', 'none').text('None'));
-        $.each(data.assignedUsers, (_, assignedUser) => {
+        $.each(data.assignedUsers, function (_, assignedUser) {
           options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
         });
 
