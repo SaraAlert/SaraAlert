@@ -74,20 +74,20 @@
     updateAssignedUserOptions();
     updateScopeOptions();
 
-    $(document).on('change', 'select#assigned_jurisdiction', event => {
+    $(document).on('change', 'select#assigned_jurisdiction', function (event) {
       assigned_jurisdiction = event.target.value;
       searchByAssignedJurisdiction();
       updateAssignedUserOptions();
       updateScopeOptions();
     });
 
-    $(document).on('change', 'select#scope', event => {
+    $(document).on('change', 'select#scope', function (event) {
       scope = event.target.value;
       searchByAssignedJurisdiction();
       updateAssignedUserOptions();
     });
 
-    $(document).on('change', 'select#assigned_user', event => {
+    $(document).on('change', 'select#assigned_user', function (event) {
       assigned_user = event.target.value;
       searchByAssignedUser();
     });
@@ -121,7 +121,7 @@
       const options = $('#assigned_jurisdiction');
       options.empty();
       options.append($('<option></option>').attr('value', 'all').text('All'));
-      $.each(assignedJurisdictions, (_, assignedJurisdiction) => {
+      $.each(assignedJurisdictions, function (_, assignedJurisdiction) {
         options.append($('<option></option>').attr('value', assignedJurisdiction).text(assignedJurisdiction));
       });
     }
@@ -129,7 +129,7 @@
     function updateAssignedUserOptions() {
       // get a sorted, unique list of assigned users based on the scope
       const assignedUsers = table.data()
-                                 .filter(row => {
+                                 .filter(function (row) {
                                    if (assigned_jurisdiction == 'all') {
                                      return true;
                                    } else if (scope === 'all') {
@@ -138,17 +138,17 @@
                                      return row[7] === assigned_jurisdiction;
                                    }
                                  })
-                                 .map(row => parseInt(row[2]))
+                                 .map(function (row) {parseInt(row[2])})
                                  .unique()
-                                 .filter(assignedUser => { return !isNaN(assignedUser) })
-                                 .sort((a, b) => { return a - b });
-      
-      // reset and update assigned user options 
+                                 .filter(function (assignedUser) { return !isNaN(assignedUser) })
+                                 .sort(function (a, b) { return a - b });
+
+      // reset and update assigned user options
       const options = $('#assigned_user');
       options.empty();
       options.append($('<option></option>').attr('value', 'all').text('All'));
       options.append($('<option></option>').attr('value', 'none').text('None'));
-      $.each(assignedUsers, (_, assignedUser) => {
+      $.each(assignedUsers, function (_, assignedUser) {
         options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
       });
 
