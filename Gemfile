@@ -71,6 +71,9 @@ gem 'sara-schema'
 # Send errors to Sentry
 gem 'sentry-raven'
 
+# New Relic APM
+gem 'newrelic_rpm'
+
 # Better phone number handling
 gem 'phonelib'
 
