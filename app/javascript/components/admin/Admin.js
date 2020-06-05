@@ -15,7 +15,7 @@ class Admin extends React.Component {
     var dataLen = props.data.length;
     for (var i = 0; i < dataLen; i++) {
       if (Array.isArray(props.data[parseInt(i)]['jurisdiction_path'])) {
-        props.data[parseInt(i)]['jurisdiction_path'] = props.data[parseInt(i)]['jurisdiction_path'].join(',');
+        props.data[parseInt(i)]['jurisdiction_path'] = props.data[parseInt(i)]['jurisdiction_path'].join(', ');
       }
     }
     this.onAddRow = this.onAddRow.bind(this);
@@ -195,6 +195,70 @@ class Admin extends React.Component {
     });
   };
 
+  onClickApiEnableButton = row => {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    let submit_data = { email: row.email };
+    let send_result = axios({
+      method: 'post',
+      url: window.BASE_PATH + '/admin/enable_api',
+      data: submit_data,
+    })
+      .then(() => {
+        toast.success('API enabled for user account: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
+        return true;
+      })
+      .catch(() => {
+        toast.error('Failed to enable API for user account: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
+        return false;
+      });
+    send_result.then(success => {
+      if (success) {
+        this.props.data.find(r => r.email === row.email).api_enabled = true;
+        this.setState({ data: this.props.data });
+      } else {
+        alert('Error enabling API for user.');
+      }
+    });
+  };
+
+  onClickApiDisableButton = row => {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    let submit_data = { email: row.email };
+    let send_result = axios({
+      method: 'post',
+      url: window.BASE_PATH + '/admin/disable_api',
+      data: submit_data,
+    })
+      .then(() => {
+        toast.success('API disabled for user account: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
+        return true;
+      })
+      .catch(() => {
+        toast.error('Failed to disable API for user account: ' + row.email, {
+          autoClose: 2000,
+          position: toast.POSITION.TOP_CENTER,
+        });
+        return false;
+      });
+    send_result.then(success => {
+      if (success) {
+        this.props.data.find(r => r.email === row.email).api_enabled = false;
+        this.setState({ data: this.props.data });
+      } else {
+        alert('Error disabling API for user.');
+      }
+    });
+  };
+
   onClickSendResetButton = row => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     let submit_data = { email: row.email };
@@ -276,6 +340,23 @@ class Admin extends React.Component {
   };
 
   // eslint-disable-next-line no-unused-vars
+  apiButton = (cell, row, enumObject, rowIndex) => {
+    if (row['api_enabled']) {
+      return (
+        <Button variant="primary" size="md" className="btn-block btn-square btn-danger" onClick={() => this.onClickApiDisableButton(row)}>
+          Disable
+        </Button>
+      );
+    } else {
+      return (
+        <Button variant="primary" size="md" className="btn-block btn-square btn-success" onClick={() => this.onClickApiEnableButton(row)}>
+          Enable
+        </Button>
+      );
+    }
+  };
+
+  // eslint-disable-next-line no-unused-vars
   sendResetButton = (cell, row, enumObject, rowIndex) => {
     return (
       <Button variant="primary" size="md" className="btn-block btn-square btn-info" onClick={() => this.onClickSendResetButton(row)}>
@@ -340,9 +421,6 @@ class Admin extends React.Component {
           <TableHeaderColumn dataField="configured_2fa" searchable={false} editable={false} hiddenOnInsert={true} dataSort={true}>
             2FA Enabled
           </TableHeaderColumn>
-          <TableHeaderColumn dataField="failed_attempts" searchable={false} editable={false} hiddenOnInsert={true} dataSort={true}>
-            Failed Logins
-          </TableHeaderColumn>
           <TableHeaderColumn dataField="locked" editable={false} hiddenOnInsert={true} dataSort={true}>
             Status
           </TableHeaderColumn>
@@ -354,6 +432,9 @@ class Admin extends React.Component {
           </TableHeaderColumn>
           <TableHeaderColumn dataField="button" dataFormat={this.reset2FAButton.bind(this)} searchable={false} editable={false} hiddenOnInsert={true}>
             Reset 2FA
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="button" dataFormat={this.apiButton.bind(this)} searchable={false} editable={false} hiddenOnInsert={true}>
+            API Access
           </TableHeaderColumn>
         </BootstrapTable>
         {this.props.is_usa_admin && (

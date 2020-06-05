@@ -41,3 +41,5 @@ Style/HashTransformValues:
   Enabled: true
 Naming/VariableNumber:
   EnforcedStyle: snake_case
+Style/MultilineTernaryOperator:
+  Enabled: false

@@ -67,6 +67,11 @@ class User < ApplicationRecord
   # Access Restrictions for users
   #############################################################################
 
+  # Can this user use the API?
+  def can_use_api?
+    api_enabled
+  end
+
   # Can this user create a new Patient?
   def can_create_patient?
     has_role?(:enroller) || has_role?(:public_health_enroller)
@@ -155,5 +160,35 @@ class User < ApplicationRecord
   # Can this user send system email messages?
   def can_send_admin_emails?
     has_role?(:admin) && jurisdiction&.name == 'USA'
+  end
+
+  # Can this user send system email messages?
+  def admin?
+    has_role?(:admin)
+  end
+
+  # Can this user send system email messages?
+  def usa_admin?
+    has_role?(:admin) && jurisdiction&.name == 'USA'
+  end
+
+  # Can this user send system email messages?
+  def enroller?
+    has_role?(:enroller)
+  end
+
+  # Can this user send system email messages?
+  def public_health?
+    has_role?(:public_health)
+  end
+
+  # Can this user send system email messages?
+  def public_health_enroller?
+    has_role?(:public_health_enroller)
+  end
+
+  # Can this user send system email messages?
+  def analyst?
+    has_role?(:analyst)
   end
 end

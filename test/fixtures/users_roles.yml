@@ -55,3 +55,6 @@ users_role_18:
 users_role_19:
   user_id: 19
   role_id: 2
+users_role_20:
+  user_id: 20
+  role_id: 4

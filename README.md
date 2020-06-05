@@ -224,6 +224,10 @@ Setup the demonstration accounts and population:
 
 The applications should be running on port 443 with Nginx proxying traffic between.
 
+## API
+
+See [API documentation](API.md) for more information.
+
 ## Testing
 
 ### Backend Tests

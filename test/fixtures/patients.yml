@@ -30,6 +30,7 @@ patient_1:
   secondary_telephone_type: "Landline"
   email: "jeremy@example.com"
   preferred_contact_method: "Telephone call"
+  preferred_contact_time: "Morning"
   port_of_origin: "South Mandieshire"
   source_of_report: "Self_Identified"
   flight_or_vessel_number: "W345"
@@ -47,6 +48,7 @@ patient_1:
   potential_exposure_location: "East Troy"
   potential_exposure_country: "Malaysia"
   travel_to_affected_country_or_area: true
+  symptom_onset: "<%= 5.days.ago %>"
 patient_2:
   id: 2
   created_at: "<%= 45.days.ago %>"

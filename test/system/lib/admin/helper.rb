@@ -12,10 +12,14 @@ class AdminHelper < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def view_users(user_label)
-    @@system_test_utils.login(user_label)
-    User.all.each { |user|
+    jurisdiction_id = @@system_test_utils.login(user_label)
+    User.where(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each { |user|
       @@admin_dashboard.search_for_user(user.email)
-      @@admin_dashboard_verifier.verify_user(user)
+      @@admin_dashboard_verifier.verify_user(user, true)
+    }
+    User.where.not(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each { |user|
+      @@admin_dashboard.search_for_user(user.email)
+      @@admin_dashboard_verifier.verify_user(user, false)
     }
     @@system_test_utils.logout
   end
@@ -46,6 +50,12 @@ class AdminHelper < ApplicationSystemTestCase
   def reset_user_password(user_label, email)
     @@system_test_utils.login(user_label)
     @@admin_dashboard.reset_user_password(email)
+    @@system_test_utils.logout
+  end
+
+  def enable_api(user_label, email, enable)
+    @@system_test_utils.login(user_label)
+    @@admin_dashboard.enable_api(email, enable)
     @@system_test_utils.logout
   end
 end

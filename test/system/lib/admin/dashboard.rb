@@ -40,6 +40,12 @@ class AdminDashboard < ApplicationSystemTestCase
     @@admin_dashboard_verifier.verify_reset_user_password(email)
   end
 
+  def enable_api(email, enable)
+    search_for_user(email)
+    click_on enable ? 'Enable' : 'Disable'
+    @@admin_dashboard_verifier.verify_enable_api(email, enable)
+  end
+
   def search_for_user(query)
     fill_in 'Search', with: query
   end

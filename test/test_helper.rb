@@ -5,3 +5,10 @@ require_relative '../lib/simplecov_saraalert'
 SimpleCov.start('saraalert')
 require_relative '../config/environment'
 require 'rails/test_help'
+require 'rack/test'
+require 'mocha/test_unit'
+require 'mocha/minitest'
+
+def app
+  Rails.application
+end
