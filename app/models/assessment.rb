@@ -33,8 +33,8 @@ class Assessment < ApplicationRecord
     where('created_at >= ?', 10.days.ago).where(symptomatic: true)
   }
 
-  scope :created_last_seventy_two_hours, lambda {
-    where('created_at >= ?', 72.hours.ago)
+  scope :older_than_seventy_two_hours, lambda {
+    where('created_at <= ?', 72.hours.ago)
   }
 
   def symptomatic?
