@@ -8,7 +8,7 @@ const TOOLTIP_TEXT = {
   preferredContactTime: (
     <div>
       The monitoree will be sent a reminder as soon as they move to non-reporting. If monitorees home address state is left blank, the Eastern time zone is used
-      for preferred contact time by default.
+      for preferred contact time by default. If preferred contact time is left blank, reminders will be sent during the afternoon contact times listed below.
     </div>
   ),
 

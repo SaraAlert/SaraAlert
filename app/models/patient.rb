@@ -492,6 +492,12 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       end
     end
 
+    # Default calling to afternoon if not specified
+    if preferred_contact_method&.downcase == 'telephone call' && responder.id == id && preferred_contact_time.blank?
+      hour = Time.now.getlocal(address_timezone_offset).hour
+      return unless (12..16).include? hour
+    end
+
     if preferred_contact_method&.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
       # SMS-based assessments assess the patient _and_ all of their dependents
       # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
@@ -758,10 +764,12 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   end
 
   def address_timezone_offset
-    if !monitored_address_state.nil?
+    if monitored_address_state.present?
       timezone_for_state(monitored_address_state)
-    else
+    elsif address_state.present?
       timezone_for_state(address_state)
+    else
+      timezone_for_state('massachusetts')
     end
   end
 end
