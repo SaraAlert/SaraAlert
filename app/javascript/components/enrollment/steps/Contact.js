@@ -3,6 +3,7 @@ import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
 import libphonenumber from 'google-libphonenumber';
+import InfoTooltip from '../../util/InfoTooltip';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -147,6 +148,7 @@ class Contact extends React.Component {
                   <Form.Group as={Col} md="8" controlId="preferred_contact_time">
                     <Form.Label className="nav-input-label">
                       PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
+                      <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
                     </Form.Label>
                     <Form.Control
                       isInvalid={this.state.errors['preferred_contact_time']}
