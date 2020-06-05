@@ -80,8 +80,10 @@ class HistoryComponent extends React.Component {
         <Card className="mx-2 mt-3 mb-4 card-square">
           <Card.Header>
             <div className="d-flex flex-row align-items-center">
-              <h5 className="float-left flex-grow-1 mb-0">History </h5>
-              <InfoTooltip tooltipTextKey="history" location="right"></InfoTooltip>
+              <h5 className="float-left flex-grow-1 mb-0">
+                <span>History </span>
+                <InfoTooltip tooltipTextKey="history" location="right"></InfoTooltip>
+              </h5>
             </div>
           </Card.Header>
           <Card.Body className="py-0 px-1">
