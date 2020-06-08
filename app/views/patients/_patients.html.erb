@@ -138,7 +138,7 @@
                                      return row[7] === assigned_jurisdiction;
                                    }
                                  })
-                                 .map(function (row) {parseInt(row[2])})
+                                 .map(function (row) { return parseInt(row[2]) })
                                  .unique()
                                  .filter(function (assignedUser) { return !isNaN(assignedUser) })
                                  .sort(function (a, b) { return a - b });
