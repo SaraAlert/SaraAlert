@@ -8,10 +8,10 @@ JSON is currently the only supported format. Please make use of the `application
 
 This API follows the FHIR RESTful API (https://www.hl7.org/fhir/http.html) and SMART-on-FHIR SMART App Launch Framework standards (http://hl7.org/fhir/smart-app-launch/index.html), so there is nothing unique or custom about this implementation in particular. Capabilities are described by the `/metadata` endpoint. This means that developers can utilize existing open source libraries for FHIR/SMART-on-FHIR, such as:
 
-Python SMART on FHIR client: https://github.com/smart-on-fhir/client-py
-JavaScript SMART on FHIR client: https://github.com/smart-on-fhir/client-js
-Official .NET FHIR API: https://github.com/FirelyTeam/fhir-net-api
-Java HAPI FHIR API: https://hapifhir.io/
+* Python SMART on FHIR client: https://github.com/smart-on-fhir/client-py
+* JavaScript SMART on FHIR client: https://github.com/smart-on-fhir/client-js
+* Official .NET FHIR API: https://github.com/FirelyTeam/fhir-net-api
+* Java HAPI FHIR API: https://hapifhir.io/
 
 ## Contents
 
