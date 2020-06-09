@@ -13,6 +13,7 @@ class PatientMailer < ApplicationMailer
     end
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     @lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    @lang = :en unless %i[en es].include?(@lang)
     mail(to: patient.email, subject: I18n.t('assessments.email.enrollment.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
@@ -23,6 +24,7 @@ class PatientMailer < ApplicationMailer
 
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    lang = :en unless %i[en es].include?(lang)
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
     intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
     url_contents = new_patient_assessment_jurisdiction_report_lang_url(patient.submission_token,
@@ -49,6 +51,7 @@ class PatientMailer < ApplicationMailer
 
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    lang = :en unless %i[en es].include?(lang)
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
@@ -70,6 +73,7 @@ class PatientMailer < ApplicationMailer
     num = patient.primary_telephone
     ([patient] + patient.dependents).uniq.each do |p|
       lang = PatientHelper.languages(p.primary_language)&.dig(:code)&.to_sym || :en
+      lang = :en unless %i[en es].include?(lang)
       add_success_history(p)
       patient_name = "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
       intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
@@ -98,6 +102,7 @@ class PatientMailer < ApplicationMailer
 
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    lang = :en unless %i[en es].include?(lang)
     add_success_history(patient)
     contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
     account_sid = ENV['TWILLIO_API_ACCOUNT']
@@ -116,6 +121,7 @@ class PatientMailer < ApplicationMailer
 
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    lang = :en unless %i[en es].include?(lang)
     add_success_history(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
       "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
@@ -152,6 +158,7 @@ class PatientMailer < ApplicationMailer
 
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    lang = :en unless %i[en es].include?(lang)
     add_success_history(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
       "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
@@ -189,6 +196,7 @@ class PatientMailer < ApplicationMailer
 
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     @lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    @lang = :en unless %i[en es].include?(@lang)
     add_success_history(patient)
     # Gather patients and jurisdictions
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
@@ -205,6 +213,7 @@ class PatientMailer < ApplicationMailer
     @patient = patient
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     @lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
+    @lang = :en unless %i[en es].include?(@lang)
     mail(to: patient.email, subject: I18n.t('assessments.email.closed.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
