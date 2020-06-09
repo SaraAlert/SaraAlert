@@ -67,17 +67,17 @@ class ExportController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_export?
     return unless current_user.viewable_patients.exists?(params[:patient_id])
 
-    patient = current_user.viewable_patients.where(id: params[:patient_id])
-    return if patient.nil?
+    patients = current_user.viewable_patients.where(id: params[:patient_id])
+    return if patients.empty?
 
     history = History.new
     history.created_by = current_user.email
     comment = 'User downloaded monitoree\'s data in Excel Export.'
     history.comment = comment
-    history.patient = patient
+    history.patient = patients.first
     history.history_type = 'Monitoree Data Downloaded'
     history.save
-    send_data build_excel_export_for_patients(patient)
+    send_data build_excel_export_for_patients(patients)
   end
 
   def build_excel_export_for_patients(patients)
