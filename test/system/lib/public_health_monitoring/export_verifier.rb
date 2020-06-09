@@ -6,61 +6,33 @@ require 'roo'
 require_relative '../system_test_utils'
 
 class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
+  include ImportExportHelper
   @@system_test_utils = SystemTestUtils.new(nil)
     
   DOWNLOAD_TIMEOUT = 10
   DOWNLOAD_CHECK_INTERVAL = 0.1
-
-  LINELIST_HEADERS = ['Monitoree', 'Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level', 'Monitoring Plan',
-                      'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At', 'Transferred From',
-                      'Transferred To', 'Expected Purge Date'].freeze
-
-  COMPREHENSIVE_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
-                           'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
-                           'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',
-                           'Identifier (NNDSS)', 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County',
-                           'Foreign Address Line 1', 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip',
-                           'Foreign Address Line 3', 'Foreign Address State', 'Monitored Address Line 1', 'Monitored Address City', 'Monitored Address State',
-                           'Monitored Address Line 2', 'Monitored Address Zip', 'Monitored Address County', 'Foreign Monitored Address Line 1',
-                           'Foreign Monitored Address City', 'Foreign Monitored Address State', 'Foreign Monitored Address Line 2',
-                           'Foreign Monitored Address Zip', 'Foreign Monitored Address County', 'Preferred Contact Method', 'Primary Telephone',
-                           'Primary Telephone Type', 'Secondary Telephone', 'Secondary Telephone Type', 'Preferred Contact Time', 'Email', 'Port of Origin',
-                           'Date of Departure', 'Source of Report', 'Flight or Vessel Number', 'Flight or Vessel Carrier', 'Port of Entry Into USA',
-                           'Date of Arrival', 'Travel Related Notes', 'Additional Planned Travel Type', 'Additional Planned Travel Destination',
-                           'Additional Planned Travel Destination State', 'Additional Planned Travel Destination Country',
-                           'Additional Planned Travel Port of Departure', 'Additional Planned Travel Start Date', 'Additional Planned Travel End Date',
-                           'Additional Planned Travel Related Notes', 'Last Date of Exposure', 'Potential Exposure Location', 'Potential Exposure Country',
-                           'Contact of Known Case?', 'Contact of Known Case ID', 'Travel from Affected Country or Area?',
-                           'Was in Health Care Facility With Known Cases?', 'Health Care Facility with Known Cases Name', 'Laboratory Personnel?',
-                           'Laboratory Personnel Facility Name', 'Health Care Personnel?', 'Health Care Personnel Facility Name',
-                           'Crew on Passenger or Cargo Flight?', 'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name',
-                           'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type',
-                           'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date',
-                           'Lab 2 Report Date', 'Lab 2 Result'].freeze
-
-  MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS.freeze
   
   def verify_line_list_csv(jurisdiction_id, workflow)
     csv = get_csv("Sara-Alert-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-Linelist-????-??-??T??_??_?????_??.csv")
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation)
+    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation).order(:id)
     verify_csv_export(csv, :line_list, LINELIST_HEADERS, patients)
   end
   
   def verify_sara_alert_format(jurisdiction_id, workflow)
     xlsx = get_xlsx("Sara-Alert-Format-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??.xlsx")
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation)
+    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation).order(:id)
     verify_sara_alert_format_export(xlsx, patients)
   end
 
   def verify_excel_purge_eligible_monitorees(jurisdiction_id)
     xlsx = get_xlsx('Sara-Alert-Full-History-Purgeable-Monitorees-????-??-??T??_??_?????_??.xlsx')
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.purge_eligible
+    patients = Jurisdiction.find(jurisdiction_id).all_patients.purge_eligible.order(:id)
     verify_excel_export(xlsx, patients)
   end
 
   def verify_excel_all_monitorees(jurisdiction_id)
     xlsx = get_xlsx('Sara-Alert-Full-History-All-Monitorees-????-??-??T??_??_?????_??.xlsx')
-    patients = Jurisdiction.find(jurisdiction_id).all_patients
+    patients = Jurisdiction.find(jurisdiction_id).all_patients.order(:id)
     verify_excel_export(xlsx, patients)
   end
 
