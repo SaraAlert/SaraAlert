@@ -44,8 +44,8 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: url_contents
     )
-  rescue Twilio::REST::RestError
-    add_twilio_reject_history(patient)
+  rescue Twilio::REST::RestError => e
+    Rails.logger.warn e.error_message
   end
 
   def enrollment_sms_text_based(patient)
@@ -65,8 +65,8 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: contents
     )
-  rescue Twilio::REST::RestError
-    add_twilio_reject_history(patient)
+  rescue Twilio::REST::RestError => e
+    Rails.logger.warn e.error_message
   end
 
   # Right now the wording of this message is the same as for enrollment
@@ -99,8 +99,8 @@ class PatientMailer < ApplicationMailer
         body: url_contents
       )
     end
-  rescue Twilio::REST::RestError
-    add_twilio_reject_history(patient)
+  rescue Twilio::REST::RestError => e
+    Rails.logger.warn e.error_message
   end
 
   def assessment_sms_reminder(patient)
@@ -120,8 +120,8 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: contents
     )
-  rescue Twilio::REST::RestError
-    add_twilio_reject_history(patient)
+  rescue Twilio::REST::RestError => e
+    Rails.logger.warn e.error_message
   end
 
   def assessment_sms(patient)
@@ -159,8 +159,8 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
     )
-  rescue Twilio::REST::RestError
-    add_twilio_reject_history(patient)
+  rescue Twilio::REST::RestError => e
+    Rails.logger.warn e.error_message
   end
 
   def assessment_voice(patient)
@@ -199,8 +199,8 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
     )
-  rescue Twilio::REST::RestError
-    add_twilio_reject_history(patient)
+  rescue Twilio::REST::RestError => e
+    Rails.logger.warn e.error_message
   end
 
   def assessment_email(patient)
@@ -257,19 +257,6 @@ class PatientMailer < ApplicationMailer
     history.comment = comment
     history.patient = patient
     history.history_type = 'Report Reminder'
-    history.save
-    patient.update(last_assessment_reminder_sent: DateTime.now)
-  end
-
-  def add_twilio_reject_history(patient)
-    return if patient.nil?
-
-    history = History.new
-    history.created_by = 'Sara Alert System'
-    comment = "Sara Alert could not send a report reminder to this monitoree via #{patient.preferred_contact_method}, because the number appeared to be invalid or has been blacklisted by a carrier."
-    history.comment = comment
-    history.patient = patient
-    history.history_type = 'Contact Attempt'
     history.save
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
