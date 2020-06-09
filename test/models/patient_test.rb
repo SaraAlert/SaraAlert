@@ -64,72 +64,307 @@ class PatientTest < ActiveSupport::TestCase
     assert Patient.purge_eligible.count.zero?
   end
 
+  test 'test based' do
+    # setup
+    Patient.destroy_all
+    patient = create(:patient, monitoring: true, purged: false, isolation: true)
+    assert_equal 0, Patient.test_based.count
+
+    # meets definition: has at least 1 assessment and 2 negative test results
+    create(:assessment, patient: patient, created_at: 50.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 50.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 50.days.ago)
+    assert_equal 1, Patient.test_based.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+
+    # does not meet definition: no assessments
+    create(:laboratory, patient: patient, result: 'negative')
+    create(:laboratory, patient: patient, result: 'negative')
+    assert_equal 0, Patient.test_based.count
+    Laboratory.destroy_all
+
+    # does not meet definition: only 1 negative test result
+    create(:assessment, patient: patient)
+    create(:laboratory, patient: patient, result: 'negative')
+    assert_equal 0, Patient.test_based.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+  end
+
+  test 'symp non test based' do
+    # setup
+    Patient.destroy_all
+    patient = create(:patient, monitoring: true, purged: false, isolation: true, symptom_onset: 12.days.ago)
+    assert_equal 0, Patient.symp_non_test_based.count
+
+    # meets definition: assessment older than 72 hours
+    create(:assessment, patient: patient, created_at: 80.hours.ago)
+    assert_equal 1, Patient.symp_non_test_based.count
+    Assessment.destroy_all
+
+    # does not meet definition: assessment not older than 72 hours
+    create(:assessment, patient: patient, created_at: 70.hours.ago)
+    assert_equal 0, Patient.symp_non_test_based.count
+    Assessment.destroy_all
+
+    # does not meet definition: had a fever within the past 72 hours
+    create(:assessment, patient: patient, created_at: 80.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, created_at: 70.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment_2)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
+    assert_equal 0, Patient.symp_non_test_based.count
+    Assessment.destroy_all
+
+    # does not meet definition: used a fever reducer within the past 72 hours
+    create(:assessment, patient: patient, created_at: 80.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, created_at: 70.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment_2)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'used-a-fever-reducer', bool_value: true)
+    assert_equal 0, Patient.symp_non_test_based.count
+    Assessment.destroy_all
+
+    # meets definition: had an assessment with no fever
+    create(:assessment, patient: patient, created_at: 80.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, created_at: 70.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment_2)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: false)
+    assert_equal 1, Patient.symp_non_test_based.count
+    Assessment.destroy_all
+
+    # meets definition: had a fever more than 72 hours ago
+    assessment = create(:assessment, patient: patient, created_at: 80.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
+    assert_equal 1, Patient.symp_non_test_based.count
+    Assessment.destroy_all
+  end
+
   test 'asymp non test based' do
     # setup
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: true)
-    assert_equal 1, Patient.count
     assert_equal 0, Patient.asymp_non_test_based.count
 
     # meets definition: asymptomatic after positive test result
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
-    Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 8.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: 8.days.ago)
     assert_equal 1, Patient.asymp_non_test_based.count
-    Laboratory.destroy_all
     Assessment.destroy_all
+    Laboratory.destroy_all
 
     # meets definition: only symptomatic before positive test result but not afterwards
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 11.days.ago)
-    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 12.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
     assert_equal 1, Patient.asymp_non_test_based.count
-    Laboratory.destroy_all
     Assessment.destroy_all
+    Laboratory.destroy_all
 
     # does not meet defiition: has positive test result less than 10 days ago
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 8.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 8.days.ago)
     assert_equal 0, Patient.asymp_non_test_based.count
     Laboratory.destroy_all
 
     # does not meet defiition: has positive test result more than 10 days ago, but also has positive test result less than 10 days ago
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 11.days.ago)
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 9.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 9.days.ago)
+    assert_equal 0, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+
+    # does not meet defiition: has negative test result more than 10 days ago, but also has positive test result less than 10 days ago
+    create(:laboratory, patient: patient, result: 'negative', report: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 9.days.ago)
+    assert_equal 0, Patient.asymp_non_test_based.count
+    Laboratory.destroy_all
+
+    # does not meet defiition: has positive test result more than 10 days ago, but also has positive test result less than 10 days ago
+    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 9.days.ago)
     assert_equal 0, Patient.asymp_non_test_based.count
     Laboratory.destroy_all
 
     # does not meet definition: symptomatic after positive test result
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
-    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 8.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 8.days.ago)
     assert_equal 0, Patient.asymp_non_test_based.count
-    Laboratory.destroy_all
     Assessment.destroy_all
+    Laboratory.destroy_all
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 13.days.ago)
-    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 12.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 13.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
     assert_equal 0, Patient.asymp_non_test_based.count
-    Laboratory.destroy_all
     Assessment.destroy_all
+    Laboratory.destroy_all
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 12.days.ago)
-    Laboratory.create(patient_id: patient.id, result: 'negative', report: 3.days.ago)
-    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 6.days.ago)
-    Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 5.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 12.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 6.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: 5.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 3.days.ago)
     assert_equal 0, Patient.asymp_non_test_based.count
-    Laboratory.destroy_all
     Assessment.destroy_all
+    Laboratory.destroy_all
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
-    Laboratory.create(patient_id: patient.id, result: 'positive', report: 15.days.ago)
-    Laboratory.create(patient_id: patient.id, result: 'negative', report: 12.days.ago)
-    Assessment.create(patient_id: patient.id, symptomatic: true, created_at: 14.days.ago)
-    Assessment.create(patient_id: patient.id, symptomatic: false, created_at: 13.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 14.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: 13.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 12.days.ago)
     assert_equal 0, Patient.asymp_non_test_based.count
-    Laboratory.destroy_all
     Assessment.destroy_all
+    Laboratory.destroy_all
   end
 
-  test 'get timezone offset' do
+  test 'isolation requiring review' do
+    # setup for test based case
+    Patient.destroy_all
+    patient = create(:patient, monitoring: true, purged: false, isolation: true)
+    assert_equal 0, Patient.isolation_requiring_review.count
+
+    # meets definition: has at least 1 assessment and 2 negative test results
+    create(:assessment, patient: patient, created_at: 50.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 50.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 50.days.ago)
+    assert_equal 1, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+
+    # does not meet definition: no assessments
+    create(:laboratory, patient: patient, result: 'negative')
+    create(:laboratory, patient: patient, result: 'negative')
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Laboratory.destroy_all
+
+    # does not meet definition: only 1 negative test result
+    create(:assessment, patient: patient)
+    create(:laboratory, patient: patient, result: 'negative')
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+
+    # setup for non test based case
+    Patient.destroy_all
+    patient = create(:patient, monitoring: true, purged: false, isolation: true, symptom_onset: 12.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+
+    # meets definition: assessment older than 72 hours
+    create(:assessment, patient: patient, created_at: 80.hours.ago)
+    assert_equal 1, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+
+    # does not meet definition: assessment not older than 72 hours
+    create(:assessment, patient: patient, created_at: 70.hours.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+
+    # does not meet definition: had a fever within the past 72 hours
+    create(:assessment, patient: patient, created_at: 80.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, created_at: 70.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment_2)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+
+    # does not meet definition: used a fever reducer within the past 72 hours
+    create(:assessment, patient: patient, created_at: 80.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, created_at: 70.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment_2)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'used-a-fever-reducer', bool_value: true)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+
+    # meets definition: had an assessment with no fever
+    create(:assessment, patient: patient, created_at: 80.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, created_at: 70.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment_2)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: false)
+    assert_equal 1, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+
+    # meets definition: had a fever more than 72 hours ago
+    assessment = create(:assessment, patient: patient, created_at: 80.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
+    assert_equal 1, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+
+    # setup for asymp non test based case
+    Patient.destroy_all
+    patient = create(:patient, monitoring: true, purged: false, isolation: true)
+    assert_equal 0, Patient.isolation_requiring_review.count
+
+    # meets definition: asymptomatic after positive test result
+    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: 8.days.ago)
+    assert_equal 1, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+
+    # meets definition: only symptomatic before positive test result but not afterwards
+    create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
+    assert_equal 1, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+
+    # does not meet defiition: has positive test result less than 10 days ago
+    create(:laboratory, patient: patient, result: 'positive', report: 8.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Laboratory.destroy_all
+
+    # does not meet defiition: has positive test result more than 10 days ago, but also has positive test result less than 10 days ago
+    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 9.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Laboratory.destroy_all
+
+    # does not meet defiition: has negative test result more than 10 days ago, but also has positive test result less than 10 days ago
+    create(:laboratory, patient: patient, result: 'negative', report: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', report: 9.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Laboratory.destroy_all
+
+    # does not meet defiition: has positive test result more than 10 days ago, but also has positive test result less than 10 days ago
+    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 9.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Laboratory.destroy_all
+
+    # does not meet definition: symptomatic after positive test result
+    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 8.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+
+    # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
+    create(:laboratory, patient: patient, result: 'positive', report: 13.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+
+    # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
+    create(:laboratory, patient: patient, result: 'positive', report: 12.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 6.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: 5.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 3.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+
+    # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
+    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:assessment, patient: patient, symptomatic: true, created_at: 14.days.ago)
+    create(:assessment, patient: patient, symptomatic: false, created_at: 13.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', report: 12.days.ago)
+    assert_equal 0, Patient.isolation_requiring_review.count
+    Assessment.destroy_all
+    Laboratory.destroy_all
+  end
+
+  test 'address timezone offset' do
     jur = Jurisdiction.create
     user = User.create!(
       email: 'foobar@example.com',

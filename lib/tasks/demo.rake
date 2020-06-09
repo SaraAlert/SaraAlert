@@ -172,168 +172,6 @@ namespace :demo do
         # Histories to be created today
         histories = []
 
-        # Create assessments
-        printf("Generating assessments...")
-        assessments = []
-        patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(60..70) / 100)
-        patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
-          printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
-          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
-          assessments << Assessment.new(
-            patient_id: patient_id,
-            symptomatic: false,
-            created_at: timestamp,
-            updated_at: timestamp
-          )
-          histories << History.new(
-            patient_id: patient_id,
-            created_by: 'Sara Alert System',
-            comment: "User created a new report.",
-            history_type: 'Report Created',
-            created_at: timestamp,
-            updated_at: timestamp
-          )
-        end
-
-        Assessment.import! assessments
-        printf(" done.\n")
-
-        # Get symptoms for each jurisdiction
-        threshold_conditions = {}
-        jurisdictions.each do |jurisdiction|
-          threshold_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
-          threshold_conditions[jurisdiction[:id]] = {
-            hash: threshold_condition[:threshold_condition_hash],
-            symptoms: threshold_condition.symptoms
-          }
-        end
-
-        printf("Generating condition for assessments...")
-        reported_conditions = []
-        new_assessments = Assessment.where('assessments.created_at >= ?', today).joins(:patient)
-        new_assessments.each_with_index do |assessment, index|
-          printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...")
-          reported_conditions << ReportedCondition.new(
-            assessment_id: assessment[:id],
-            threshold_condition_hash: threshold_conditions[assessment.patient.jurisdiction_id][:hash],
-            created_at: assessment[:created_at],
-            updated_at: assessment[:updated_at]
-          )
-        end
-        ReportedCondition.import! reported_conditions
-        printf(" done.\n")
-
-        # 25-35% of assessments are symptomatic
-        symptomatic_assessments = new_assessments.sample(new_assessments.count * rand(25..35) / 100)
-
-        printf("Generating symptoms for assessments...")
-        symptoms = []
-        new_reported_conditions = ReportedCondition.where('conditions.created_at >= ?', today).joins(assessment: :reported_condition)
-        new_reported_conditions.each_with_index do |reported_condition, index|
-          printf("\rGenerating symptoms for assessment #{index+1} of #{new_reported_conditions.length}...")
-          threshold_symptoms = threshold_conditions[reported_condition.assessment.patient.jurisdiction_id][:symptoms]
-          symptomatic_assessment = symptomatic_assessments.include?(reported_condition.assessment)
-          symptomatic_symptoms = symptomatic_assessment ? threshold_symptoms.to_a.shuffle[0..rand(threshold_symptoms.length)] : []
-          threshold_symptoms.each do |threshold_symptom|
-            symptomatic_symptom = symptomatic_symptoms.include?(threshold_symptom)
-            symptoms << Symptom.new(
-              condition_id: reported_condition[:id],
-              name: threshold_symptom[:name],
-              label: threshold_symptom[:label],
-              notes: threshold_symptom[:notes],
-              type: threshold_symptom[:type],
-              bool_value: threshold_symptom[:type] == 'BoolSymptom' ? symptomatic_symptom : nil,
-              float_value: threshold_symptom[:type] == 'FloatSymptom' ? ((threshold_symptom.value || 0) + rand(10.0) * (symptomatic_symptom ? -1 : 1)) : nil,
-              int_value: threshold_symptom[:type] == 'IntSymptom' ? ((threshold_symptom.value || 0 )+ rand(10) * (symptomatic_symptom ? -1 : 1)) : nil,
-              created_at: reported_condition[:created_at],
-              updated_at: reported_condition[:created_at]
-            )
-          end
-        end
-        Symptom.import! symptoms
-        printf(" done.\n")
-
-        printf("Updating symptomatic statuses...")
-        assessment_symptomatic_statuses = {}
-        patient_symptom_onset_date_updates = {}
-        symptomatic_patients_without_symptom_onset_ids = Patient.where(id: symptomatic_assessments.pluck(:patient_id), symptom_onset: nil).ids
-        symptomatic_assessments.each_with_index do |assessment, index|
-          printf("\rUpdating symptomatic status #{index+1} of #{symptomatic_assessments.length}...")
-          if assessment.symptomatic?
-            assessment_symptomatic_statuses[assessment[:id]] = { symptomatic: true }
-            if symptomatic_patients_without_symptom_onset_ids.include?(assessment[:patient_id])
-              patient_symptom_onset_date_updates[assessment[:patient_id]] = { symptom_onset: assessment[:created_at] }
-            end
-          end
-        end
-        Assessment.update(assessment_symptomatic_statuses.keys, assessment_symptomatic_statuses.values)
-        Patient.update(patient_symptom_onset_date_updates.keys, patient_symptom_onset_date_updates.values)
-        printf(" done.\n")
-
-        # Create laboratories for 20-30% of isolation patients on any given day
-        printf("Generating laboratories...")
-        laboratories = []
-        isolation_patients = existing_patients.where(isolation: true)
-        patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(20..30) / 100)
-        patient_ids_lab.each_with_index do |patient_id, index|
-          printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
-          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
-          report_date = Faker::Time.between_dates(from: 1.week.ago, to: today, period: :day)
-          laboratories << Laboratory.new(
-            patient_id: patient_id,
-            lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
-            specimen_collection: Faker::Time.between_dates(from: 2.weeks.ago, to: report_date, period: :day),
-            report: report_date,
-            result: (Array.new(3, 'positive') + Array.new(5, 'negative') + ['indeterminate', 'other']).sample,
-            created_at: timestamp,
-            updated_at: timestamp
-          )
-          histories << History.new(
-            patient_id: patient_id,
-            created_by: 'Sara Alert System',
-            comment: "User added a new lab result.",
-            history_type: 'Lab Result',
-            created_at: timestamp,
-            updated_at: timestamp
-          )
-        end
-        Laboratory.import! laboratories
-        printf(" done.\n")
-
-        # Create transfers
-        printf("Generating transfers...")
-        transfers = []
-        patient_updates = {}
-        patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
-        patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
-          printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
-          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
-          to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
-          patient_updates[patient_id] = { 
-            jurisdiction_id: to_jurisdiction,
-            assigned_user: assigned_user.nil? ? nil : assigned_users[to_jurisdiction].sample
-          }
-          transfers << Transfer.new(
-            patient_id: patient_id,
-            to_jurisdiction_id: to_jurisdiction,
-            from_jurisdiction_id: jur_id,
-            who_id: epis.sample[:id],
-            created_at: timestamp,
-            updated_at: timestamp
-          )
-          histories << History.new(
-            patient_id: patient_id,
-            created_by: 'Sara Alert System',
-            comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
-            history_type: 'Monitoring Change',
-            created_at: timestamp,
-            updated_at: timestamp
-          )
-        end
-        Patient.update(patient_updates.keys, patient_updates.values)
-        Transfer.import! transfers
-        printf(" done.\n")
-
         # Create count patients
         printf("Generating monitorees...")
         patients = []
@@ -473,7 +311,7 @@ namespace :demo do
           patient[:updated_at] = Faker::Time.between_dates(from: patient[:created_at], to: today, period: :day)
 
           # Update monitoring status
-          patient[:isolation] = rand < 0.30
+          patient[:isolation] = days - day > 10 ? rand < 0.9 : rand < 0.4
           patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil
           patient[:monitoring] = rand < 0.95
           patient[:closed_at] = patient[:updated_at] unless patient[:monitoring].nil?
@@ -481,8 +319,9 @@ namespace :demo do
                                          'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
                                          'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
                                          'Meets criteria to discontinue isolation', 'Deceased', 'Other'].sample unless patient[:monitoring].nil?
-          patient[:public_health_action] = ['Recommended medical evaluation of symptoms', 'Document results of medical evaluation',
-                                            'Recommended laboratory testing'].sample unless patient[:isolation] || rand < 0.9
+          patient[:public_health_action] = patient[:isolation] || rand < 0.9 ? 'None' : ['Recommended medical evaluation of symptoms',
+                                                                                         'Document results of medical evaluation',
+                                                                                         'Recommended laboratory testing'].sample
           patient[:pause_notifications] = rand < 0.1
 
           patients << patient
@@ -555,8 +394,186 @@ namespace :demo do
             history_type: 'Monitoring Change',
             created_at: patient[:updated_at],
             updated_at: patient[:updated_at],
-          ) unless patient[:public_health_action] == 'None'
+          ) unless patient[:pause_notifications] == false
         end
+        printf(" done.\n")
+
+        # Create assessments
+        printf("Generating assessments...")
+        assessments = []
+        patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(55..60) / 100)
+        patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
+          printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
+          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+          assessments << Assessment.new(
+            patient_id: patient_id,
+            symptomatic: false,
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+          histories << History.new(
+            patient_id: patient_id,
+            created_by: 'Sara Alert System',
+            comment: "User created a new report.",
+            history_type: 'Report Created',
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+        end
+
+        Assessment.import! assessments
+        printf(" done.\n")
+
+        # Get symptoms for each jurisdiction
+        threshold_conditions = {}
+        jurisdictions.each do |jurisdiction|
+          threshold_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
+          threshold_conditions[jurisdiction[:id]] = {
+            hash: threshold_condition[:threshold_condition_hash],
+            symptoms: threshold_condition.symptoms
+          }
+        end
+
+        printf("Generating condition for assessments...")
+        reported_conditions = []
+        new_assessments = Assessment.where('assessments.created_at >= ?', today).joins(:patient)
+        new_assessments.each_with_index do |assessment, index|
+          printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...")
+          reported_conditions << ReportedCondition.new(
+            assessment_id: assessment[:id],
+            threshold_condition_hash: threshold_conditions[assessment.patient.jurisdiction_id][:hash],
+            created_at: assessment[:created_at],
+            updated_at: assessment[:updated_at]
+          )
+        end
+        ReportedCondition.import! reported_conditions
+        printf(" done.\n")
+
+        # Create earlier symptom onset dates to meet isolation symptomatic non test based requirement
+        if days - day > 10
+          symptomatic_assessments = new_assessments.where('patient_id % 4 <> 0').sample(new_assessments.count * rand(75..80) / 100)
+        else
+          symptomatic_assessments = new_assessments.where('patient_id % 4 <> 0').sample(new_assessments.count * rand(20..25) / 100)
+        end
+
+        printf("Generating symptoms for assessments...")
+        symptoms = []
+        new_reported_conditions = ReportedCondition.where('conditions.created_at >= ?', today).joins(assessment: :reported_condition)
+        new_reported_conditions.each_with_index do |reported_condition, index|
+          printf("\rGenerating symptoms for assessment #{index+1} of #{new_reported_conditions.length}...")
+          threshold_symptoms = threshold_conditions[reported_condition.assessment.patient.jurisdiction_id][:symptoms]
+          symptomatic_assessment = symptomatic_assessments.include?(reported_condition.assessment)
+          num_symptomatic_symptoms = ((rand ** 2) * threshold_symptoms.length).floor # creates a distribution favored towards fewer symptoms
+          symptomatic_symptoms = symptomatic_assessment ? threshold_symptoms.to_a.shuffle[1..num_symptomatic_symptoms] : []
+
+          threshold_symptoms.each do |threshold_symptom|
+            symptomatic_symptom = %w[fever used-a-fever-reducer].include?(threshold_symptom[:name]) && rand < 0.8 ? false : symptomatic_symptoms.include?(threshold_symptom)
+            symptoms << Symptom.new(
+              condition_id: reported_condition[:id],
+              name: threshold_symptom[:name],
+              label: threshold_symptom[:label],
+              notes: threshold_symptom[:notes],
+              type: threshold_symptom[:type],
+              bool_value: threshold_symptom[:type] == 'BoolSymptom' ? symptomatic_symptom : nil,
+              float_value: threshold_symptom[:type] == 'FloatSymptom' ? ((threshold_symptom.value || 0) + rand(10.0) * (symptomatic_symptom ? -1 : 1)) : nil,
+              int_value: threshold_symptom[:type] == 'IntSymptom' ? ((threshold_symptom.value || 0 )+ rand(10) * (symptomatic_symptom ? -1 : 1)) : nil,
+              created_at: reported_condition[:created_at],
+              updated_at: reported_condition[:updated_at]
+            )
+          end
+        end
+        Symptom.import! symptoms
+        printf(" done.\n")
+
+        printf("Updating symptomatic statuses...")
+        assessment_symptomatic_statuses = {}
+        patient_symptom_onset_date_updates = {}
+        symptomatic_patients_without_symptom_onset_ids = Patient.where(id: symptomatic_assessments.pluck(:patient_id), symptom_onset: nil).ids
+        symptomatic_assessments.each_with_index do |assessment, index|
+          printf("\rUpdating symptomatic status #{index+1} of #{symptomatic_assessments.length}...")
+          if assessment.symptomatic?
+            assessment_symptomatic_statuses[assessment[:id]] = { symptomatic: true }
+            if symptomatic_patients_without_symptom_onset_ids.include?(assessment[:patient_id])
+              patient_symptom_onset_date_updates[assessment[:patient_id]] = { symptom_onset: assessment[:created_at] }
+            end
+          end
+        end
+        Assessment.update(assessment_symptomatic_statuses.keys, assessment_symptomatic_statuses.values)
+        Patient.update(patient_symptom_onset_date_updates.keys, patient_symptom_onset_date_updates.values)
+        printf(" done.\n")
+
+        # Create laboratories for 20-30% of isolation patients on any given day
+        printf("Generating laboratories...")
+        laboratories = []
+        isolation_patients = existing_patients.where(isolation: true)
+        if days - day > 10
+          patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(90..95) / 100)
+        else
+          patient_ids_lab = isolation_patients.pluck(:id).sample(isolation_patients.count * rand(20..30) / 100)
+        end
+        patient_ids_lab.each_with_index do |patient_id, index|
+          printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
+          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+          if days - day > 10
+            result = (Array.new(12, 'positive') + ['negative', 'indeterminate', 'other']).sample
+          elsif patient_id % 4 == 0
+            result = ['negative', 'indeterminate', 'other'].sample
+          else
+            result = (Array.new(1, 'positive') + Array.new(1, 'negative') + ['indeterminate', 'other']).sample
+          end
+          laboratories << Laboratory.new(
+            patient_id: patient_id,
+            lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
+            specimen_collection: Faker::Time.between_dates(from: 1.week.ago, to: today, period: :day),
+            report: Faker::Time.between_dates(from: today, to: today, period: :day),
+            result: result,
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+          histories << History.new(
+            patient_id: patient_id,
+            created_by: 'Sara Alert System',
+            comment: "User added a new lab result.",
+            history_type: 'Lab Result',
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+        end
+        Laboratory.import! laboratories
+        printf(" done.\n")
+
+        # Create transfers
+        printf("Generating transfers...")
+        transfers = []
+        patient_updates = {}
+        patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
+        patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
+          printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
+          timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+          to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
+          patient_updates[patient_id] = { 
+            jurisdiction_id: to_jurisdiction,
+            assigned_user: assigned_user.nil? ? nil : assigned_users[to_jurisdiction].sample
+          }
+          transfers << Transfer.new(
+            patient_id: patient_id,
+            to_jurisdiction_id: to_jurisdiction,
+            from_jurisdiction_id: jur_id,
+            who_id: epis.sample[:id],
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+          histories << History.new(
+            patient_id: patient_id,
+            created_by: 'Sara Alert System',
+            comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
+            history_type: 'Monitoring Change',
+            created_at: timestamp,
+            updated_at: timestamp
+          )
+        end
+        Patient.update(patient_updates.keys, patient_updates.values)
+        Transfer.import! transfers
         printf(" done.\n")
 
         # Create histories
