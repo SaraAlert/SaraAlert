@@ -1,3 +1,8 @@
+<% content_for :assets do %>
+  <%= javascript_pack_tag "xss" %>
+  <%= javascript_pack_tag "datatables" %>
+  <%= javascript_pack_tag "moment" %>
+<% end %>
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Isolation Dashboard", href: nil} ] } %>
 
 <div class="btn-group">

@@ -1,3 +1,7 @@
+<% content_for :assets do %>
+  <%= javascript_pack_tag "moment" %>
+  <%= javascript_pack_tag "closest" %>
+<% end %>
 <% if current_user.has_role? :analyst %>
   <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Analytics", href: nil} ] } %>
 <% else %>

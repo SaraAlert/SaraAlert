@@ -1,3 +1,7 @@
+<% content_for :assets do %>
+  <%= javascript_pack_tag "databales" %>
+  <%= javascript_pack_tag "moment" %>
+<% end %>
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
 
 <% if current_user.can_view_patient_assessments? %>

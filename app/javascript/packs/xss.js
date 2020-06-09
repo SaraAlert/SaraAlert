@@ -1,0 +1,2 @@
+// XSS sanitization
+require("xss");
