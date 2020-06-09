@@ -54,7 +54,7 @@ es:
         subject: 'Recordatorio del reporte de Sara Alert'
         header: 'Recordatorio del reporte de Sara Alert'
         dear: 'Estimado/a'
-        thank-you: 'Gracias por participar en el programa de monitoreo de Sara Alert. Por favor complete su informe diario utilizando el siguiente enlace.'
+        thank-you: 'Gracias por participar en el programa de monitoreo de Sara Alert. Por favor de completar su informe diario utilizando el siguiente enlace.'
         report: 'Reporte diario'
         footer: 'No responda o reenvíe este correo electrónico, ni comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local.'
       enrollment:
@@ -82,7 +82,7 @@ es:
         daily3: 'sintiendo uno o mas de los siguientes síntomas: '
         daily4: ' Responda con "Sí" o "No"'
       weblink:
-        intro1: 'Este es el sistema Sara Alert. Por favor complete el reporte de'
+        intro1: 'Este es el sistema Sara Alert. Por favor de completar el reporte de'
         intro2: 'en este enlace.'
     phone:
       age: 'años'
