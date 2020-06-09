@@ -23,7 +23,7 @@ class ExportController < ApplicationController
     # Build CSV
     csv_result = CSV.generate(headers: true) do |csv|
       csv << headers
-      patients.each do |patient|
+      patients.find_each(batch_size: 100) do |patient|
         p = params[:type] == 'linelist' ? patient.linelist.values : patient.comprehensive_details.values
         p[0] = p[0][:name] if params[:type] == 'linelist'
         csv << p
@@ -48,7 +48,7 @@ class ExportController < ApplicationController
       p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
         headers = COMPREHENSIVE_HEADERS
         sheet.add_row headers
-        patients.each do |patient|
+        patients.find_each(batch_size: 100) do |patient|
           sheet.add_row patient.comprehensive_details.values, { types: Array.new(headers.length, :string) }
         end
       end
@@ -84,7 +84,7 @@ class ExportController < ApplicationController
       p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
         headers = MONITOREES_LIST_HEADERS
         sheet.add_row headers
-        patients.each do |patient|
+        patients.find_each(batch_size: 100) do |patient|
           sheet.add_row [patient.id] + patient.comprehensive_details.values, { types: Array.new(headers.length, :string) }
         end
       end
@@ -101,7 +101,7 @@ class ExportController < ApplicationController
         patient_info_headers = %w[patient_id symptomatic who_reported created_at updated_at]
         human_readable_headers = ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels
         sheet.add_row human_readable_headers
-        patients.each do |patient|
+        patients.find_each(batch_size: 100) do |patient|
           patient_assessments = patient.assessmenmts_summary_array(patient_info_headers, symptom_names)
           patient_assessments.each do |assessment|
             sheet.add_row assessment, { types: Array.new(human_readable_headers.length, :string) }
@@ -112,7 +112,7 @@ class ExportController < ApplicationController
         labs = Laboratory.where(patient_id: patient_ids)
         lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
         sheet.add_row lab_headers
-        labs.each do |lab|
+        labs.find_each(batch_size: 100) do |lab|
           sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
         end
       end
@@ -120,7 +120,7 @@ class ExportController < ApplicationController
         histories = History.where(patient_id: patient_ids)
         history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
         sheet.add_row history_headers
-        histories.each do |history|
+        histories.find_each(batch_size: 100) do |history|
           sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
         end
       end
