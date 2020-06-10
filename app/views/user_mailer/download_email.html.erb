@@ -1,0 +1,9 @@
+<% content_for :body do %>
+  Hello, your requested export of &quot;<%= @export_type.titleize %>&quot; is now ready.
+
+  <%= render partial: 'main_mailer/responsive_button', locals: {link: export_download_url(lookup: @lookup) , text: 'Click here to download'} %>
+<% end %>
+
+<% content_for :footer do %>
+  <p>This notification was sent by the Sara Alert system. If you wish to stop receiving these notifications or believe that it was a mistake, please contact the help desk.</p>
+<% end %>
