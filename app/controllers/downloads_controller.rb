@@ -22,6 +22,6 @@ class DownloadsController < ApplicationController
       return
     end
 
-    send_data(Base64.decode64(download.contents), filename: download.filename) && download.destroy
+    send_data(download.contents, filename: download.filename) && download.destroy
   end
 end

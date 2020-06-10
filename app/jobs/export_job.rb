@@ -42,7 +42,9 @@ class ExportJob < ApplicationJob
     existing_download = user.downloads.find_by(export_type: export_type)
     existing_download&.destroy!
     download = Download.new(user_id: user_id, contents: data, filename: filename, lookup: SecureRandom.uuid, export_type: export_type)
-    return unless download.save
+    ActiveRecord::Base.logger.silence do
+      download.save!
+    end
 
     # Send an email to user
     UserMailer.download_email(user, export_type, download.lookup).deliver_later
