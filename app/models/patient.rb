@@ -671,6 +671,30 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     }
   end
 
+  # Linelist info without status, which gets populated in bulk during export
+  def linelist_export
+    {
+      name: { name: "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}", id: id },
+      jurisdiction: jurisdiction&.name || '',
+      assigned_user: assigned_user || '',
+      state_local_id: user_defined_id_statelocal || '',
+      sex: sex || '',
+      dob: date_of_birth&.strftime('%F') || '',
+      end_of_monitoring: end_of_monitoring || '',
+      risk_level: exposure_risk_assessment || '',
+      monitoring_plan: monitoring_plan || '',
+      latest_report: '',
+      transferred: '',
+      reason_for_closure: monitoring_reason || '',
+      public_health_action: public_health_action || '',
+      status: '',
+      closed_at: closed_at&.rfc2822 || '',
+      transferred_from: '',
+      transferred_to: '',
+      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || '')
+    }
+  end
+
   # All information about this subject
   def comprehensive_details
     labs = Laboratory.where(patient_id: id).order(report: :desc)

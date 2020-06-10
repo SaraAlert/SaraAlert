@@ -207,10 +207,20 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
   def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|
       csv << LINELIST_HEADERS
+      patient_statuses = get_patient_statuses(patients)
+      latest_assessments = get_latest_assessments(patients)
+      latest_transfers = get_latest_transfers(patients)
       patients.find_each(batch_size: 500) do |patient|
-        p = patient.linelist.values
-        p[0] = p[0][:name]
-        csv << p
+        patient_details = patient.linelist_export
+        patient_details[:name] = patient_details[:name][:name]
+        patient_details[:latest_report] = latest_assessments[patient.id]&.rfc2822 || ''
+        if latest_transfers[patient.id]
+          patient_details[:transferred] = latest_transfers[patient.id][:transferred]
+          patient_details[:transferred_from] = latest_transfers[patient.id][:transferred_from]
+          patient_details[:transferred_to] = latest_transfers[patient.id][:transferred_to]
+        end
+        patient_details[:status] = patient_statuses[patient.id] || ''
+        csv << patient_details.values
       end
     end
     Base64.encode64(package)
@@ -219,13 +229,12 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
   def sara_alert_format(patients)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
-        headers = COMPREHENSIVE_HEADERS
-        sheet.add_row headers
+        sheet.add_row COMPREHENSIVE_HEADERS
         patient_statuses = get_patient_statuses(patients)
         patients.find_each(batch_size: 500) do |patient|
           patient_details = patient.comprehensive_details
           patient_details[:status] = patient_statuses[patient.id] || ''
-          sheet.add_row patient_details.values, { types: Array.new(headers.length, :string) }
+          sheet.add_row patient_details.values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
         end
       end
       return Base64.encode64(p.to_stream.read)
@@ -305,5 +314,27 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
       end
     end
     patient_statuses
+  end
+
+  def get_latest_assessments(patients)
+    latest_assessments = Assessment.where(patient_id: patients.pluck(:id)).group(:patient_id).maximum(:created_at)
+    assessments = Assessment.where(patient_id: latest_assessments.keys, created_at: latest_assessments.values)
+    Hash[assessments.pluck(:patient_id, :created_at).map { |patient_id, created_at| [patient_id, created_at] }]
+  end
+
+  def get_latest_transfers(patients)
+    latest_transfers = Transfer.where(patient_id: patients.pluck(:id)).group(:patient_id).maximum(:created_at)
+    transfers = Transfer.where(patient_id: latest_transfers.keys, created_at: latest_transfers.values)
+    jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
+    jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
+    Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)
+                  .map do |patient_id, created_at, from_jurisdiction_id, to_jurisdiction_id|
+                    [patient_id, {
+                      transferred: created_at.rfc2822,
+                      transferred_from: jurisdiction_paths[from_jurisdiction_id],
+                      transferred_to: jurisdiction_paths[to_jurisdiction_id]
+                    }]
+                  end
+        ]
   end
 end
