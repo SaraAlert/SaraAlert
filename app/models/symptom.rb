@@ -17,12 +17,8 @@ class Symptom < ApplicationRecord
 
   validates :type, inclusion: valid_types, presence: true
 
-  scope :fever, lambda {
-    where(['name = ? and bool_value = ?', 'fever', true])
-  }
-
-  scope :fever_medication, lambda {
-    where(['name = ? and bool_value = ?', 'used-a-fever-reducer', true])
+  scope :fever_or_fever_medication, lambda {
+    where(['(name = ? OR name = ?) AND bool_value = ?', 'fever', 'used-a-fever-reducer', true])
   }
 
   def bool_based_prompt(lang = :en)

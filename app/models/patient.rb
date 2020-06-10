@@ -194,11 +194,9 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
+      .joins(:assessments)
+      .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_or_fever_medication)
       .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
-      .left_outer_joins(:assessments)
-      .where.not(assessments: { patient_id: nil })
-      .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever)
-      .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_medication)
       .distinct
   }
 
@@ -207,12 +205,10 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .left_outer_joins(:assessments)
-      .where.not(assessments: { patient_id: nil })
-      .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
-      .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever)
-      .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_medication)
+      .joins(:assessments)
       .where('symptom_onset <= ?', 10.days.ago)
+      .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
+      .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_or_fever_medication)
       .distinct
   }
 
@@ -221,24 +217,43 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .where_assoc_exists(:laboratories, &:before_ten_days_positive)
+      .joins(:assessments)
+      .joins(:laboratories)
+      .where('laboratories.result = \'positive\' AND laboratories.report <= ?', 10.days.ago)
       .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
-      .left_outer_joins(:laboratories)
-      .where('laboratories.patient_id = patients.id AND laboratories.result = \'positive\'')
-      .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.report')
       .distinct
   }
 
   # Individuals in the isolation workflow that require review
   scope :isolation_requiring_review, lambda {
-    where(id: Patient.unscoped.test_based)
+    where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
+      .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
+      .joins(:assessments)
+      .left_outer_joins(:laboratories)
+      .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_or_fever_medication)
       .or(
-        where(id: Patient.unscoped.symp_non_test_based)
-          .or(
-            where(id: Patient.unscoped.asymp_non_test_based)
-          )
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .joins(:assessments)
+        .left_outer_joins(:laboratories)
+        .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
+        .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_or_fever_medication)
+        .where('symptom_onset <= ?', 10.days.ago)
+      )
+      .or(
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .joins(:assessments)
+        .left_outer_joins(:laboratories)
+        .where('laboratories.patient_id = patients.id AND laboratories.result = \'positive\'')
+        .where_assoc_exists(:laboratories, &:before_ten_days_positive)
+        .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
+        .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.report')
       )
       .distinct
   }
