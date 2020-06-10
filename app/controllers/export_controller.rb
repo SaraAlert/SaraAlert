@@ -18,7 +18,7 @@ class ExportController < ApplicationController
     headers = params[:type] == 'linelist' ? LINELIST_HEADERS : COMPREHENSIVE_HEADERS
 
     # Grab patients to export based on monitoring type
-    patients = current_user.viewable_patients.where(isolation: params[:workflow] == 'isolation')
+    patients = current_user.viewable_patients.where(isolation: params[:workflow] == 'isolation').where(purged: false)
 
     # Build CSV
     csv_result = CSV.generate(headers: true) do |csv|
@@ -41,7 +41,7 @@ class ExportController < ApplicationController
     redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
     # Grab patients to export
-    patients = current_user.viewable_patients.where(isolation: params[:workflow] == 'isolation')
+    patients = current_user.viewable_patients.where(isolation: params[:workflow] == 'isolation').where(purged: false)
 
     # Build Excel
     Axlsx::Package.new do |p|
@@ -59,7 +59,7 @@ class ExportController < ApplicationController
   def excel_full_history_patients
     redirect_to(root_url) && return unless current_user.can_export?
 
-    patients = params[:scope] == 'purgeable' ? current_user.viewable_patients.purge_eligible : current_user.viewable_patients
+    patients = params[:scope] == 'purgeable' ? current_user.viewable_patients.purge_eligible : current_user.viewable_patients.where(purged: false)
     send_data build_excel_export_for_patients(patients)
   end
 
