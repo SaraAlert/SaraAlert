@@ -40,7 +40,7 @@ class ExportJob < ApplicationJob
 
     # Construct download object from export data and save (overwrite any of existing type for this user)
     existing_download = user.downloads.find_by(export_type: export_type)
-    existing_download.destroy! unless existing_download.nil?
+    existing_download&.destroy!
     download = Download.new(user_id: user_id, contents: data, filename: filename, lookup: SecureRandom.uuid, export_type: export_type)
     return unless download.save
 
