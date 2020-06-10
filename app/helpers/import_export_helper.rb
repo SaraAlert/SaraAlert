@@ -213,7 +213,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
         csv << p
       end
     end
-    package.force_encoding('BINARY')
+    Base64.encode64(package)
   end
 
   def sara_alert_format(patients)
@@ -228,7 +228,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
           sheet.add_row patient_details.values, { types: Array.new(headers.length, :string) }
         end
       end
-      return p.to_stream.read.force_encoding('BINARY')
+      return Base64.encode64(p.to_stream.read)
     end
   end
 
@@ -280,7 +280,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
           sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
         end
       end
-      return p.to_stream.read.force_encoding('BINARY')
+      return Base64.encode64(p.to_stream.read)
     end
   end
 
