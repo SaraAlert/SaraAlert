@@ -203,7 +203,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   }
 
   # Individuals that meet the non test based review requirement (symptomatic)
-  scope :non_test_based, lambda {
+  scope :symp_non_test_based, lambda {
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
@@ -235,7 +235,10 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   scope :isolation_requiring_review, lambda {
     where(id: Patient.unscoped.test_based)
       .or(
-        where(id: Patient.unscoped.non_test_based)
+        where(id: Patient.unscoped.symp_non_test_based)
+          .or(
+            where(id: Patient.unscoped.asymp_non_test_based)
+          )
       )
       .distinct
   }
@@ -419,21 +422,20 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
 
   # Current patient status
   def status
+    return :purged if purged?
+    return :closed if closed?
+
     unless isolation
       return :pui if pui?
-      return :purged if purged?
-      return :closed if closed?
       return :symptomatic if symptomatic?
       return :asymptomatic if asymptomatic?
       return :non_reporting if non_reporting?
     end
     return :isolation_asymp_non_test_based if Patient.where(id: id).asymp_non_test_based.exists?
+    return :isolation_symp_non_test_based if Patient.where(id: id).symp_non_test_based.exists?
     return :isolation_test_based if Patient.where(id: id).test_based.exists?
-    return :isolation_non_test_based if Patient.where(id: id).non_test_based.exists?
-    return :isolation_non_reporting if Patient.where(id: id).isolation_non_reporting.exists?
     return :isolation_reporting if Patient.where(id: id).isolation_reporting.exists?
-    return :purged if purged?
-    return :closed if closed?
+    return :isolation_non_reporting if Patient.where(id: id).isolation_non_reporting.exists?
 
     :unknown
   end

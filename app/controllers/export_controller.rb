@@ -48,8 +48,11 @@ class ExportController < ApplicationController
       p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
         headers = COMPREHENSIVE_HEADERS
         sheet.add_row headers
+        patient_statuses = get_patient_statuses(patients)
         patients.find_each(batch_size: 500) do |patient|
-          sheet.add_row patient.comprehensive_details.values, { types: Array.new(headers.length, :string) }
+          patient_details = patient.comprehensive_details
+          patient_details[:status] = patient_statuses[patient.id] || ''
+          sheet.add_row patient_details.values, { types: Array.new(headers.length, :string) }
         end
       end
       send_data p.to_stream.read, filename: "Sara-Alert-Format-#{params[:workflow].capitalize}-#{DateTime.now}.xlsx"
@@ -85,8 +88,11 @@ class ExportController < ApplicationController
       p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
         headers = MONITOREES_LIST_HEADERS
         sheet.add_row headers
+        patient_statuses = get_patient_statuses(patients)
         patients.find_each(batch_size: 500) do |patient|
-          sheet.add_row [patient.id] + patient.comprehensive_details.values, { types: Array.new(headers.length, :string) }
+          patient_details = patient.comprehensive_details
+          patient_details[:status] = patient_statuses[patient.id] || ''
+          sheet.add_row [patient.id] + patient_details.values, { types: Array.new(headers.length, :string) }
         end
       end
       p.workbook.add_worksheet(name: 'Assessments') do |sheet|
@@ -127,5 +133,28 @@ class ExportController < ApplicationController
       end
       return Base64.encode64(p.to_stream.read)
     end
+  end
+
+  def get_patient_statuses(patients)
+    statuses = {
+      closed: patients.monitoring_closed.pluck(:id),
+      purged: patients.purged.pluck(:id),
+      pui: patients.under_investigation.pluck(:id),
+      symptomatic: patients.symptomatic.pluck(:id),
+      asymptomatic: patients.asymptomatic.pluck(:id),
+      non_reporting: patients.non_reporting.pluck(:id),
+      isolation_asymp_non_test_based: patients.asymp_non_test_based.pluck(:id),
+      isolation_symp_non_test_based: patients.symp_non_test_based.pluck(:id),
+      isolation_test_based: patients.test_based.pluck(:id),
+      isolation_reporting: patients.isolation_reporting.pluck(:id),
+      isolation_non_reporting: patients.isolation_non_reporting.pluck(:id)
+    }
+    patient_statuses = {}
+    statuses.each do |status, patient_ids|
+      patient_ids.each do |patient_id|
+        patient_statuses[patient_id] = status&.to_s&.humanize&.downcase
+      end
+    end
+    patient_statuses
   end
 end

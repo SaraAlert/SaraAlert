@@ -75,7 +75,11 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       details = patient.comprehensive_details
       details.keys.each_with_index do |field, col|
         cell_value = monitorees.cell(row + 2, col + 1)
-        assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field}")
+        if field == :status
+          assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field}")
+        else
+          assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field}")
+        end
       end
     end
   end
@@ -90,7 +94,11 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       details = { patient_id: patient.id }.merge(patient.comprehensive_details)
       details.keys.each_with_index do |field, col|
         cell_value = monitorees_list.cell(row + 2, col + 1)
-        assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field} in Monitorees List")
+        if field == :status
+          assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} in Monitorees List")
+        else
+          assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field} in Monitorees List")
+        end
       end
     end
 
