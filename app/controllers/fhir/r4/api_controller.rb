@@ -368,16 +368,16 @@ class Fhir::R4::ApiController < ActionController::API
   # Generic 201 created response
   def status_created(resource)
     respond_to do |format|
-      format.json { render json: resource.to_json, status: :created, location: full_url_helper(resource), content_type: 'applicaton/fhir+json' }
-      format.fhir_json { render json: resource.to_json, status: :ok, location: full_url_helper(resource), content_type: 'applicaton/fhir+json' }
+      format.json { render json: resource.to_json, status: :created, location: full_url_helper(resource), content_type: 'application/fhir+json' }
+      format.fhir_json { render json: resource.to_json, status: :ok, location: full_url_helper(resource), content_type: 'application/fhir+json' }
     end
   end
 
   # Generic 200 okay response
   def status_ok(resource)
     respond_to do |format|
-      format.json { render json: resource.to_json, status: :ok, content_type: 'applicaton/fhir+json' }
-      format.fhir_json { render json: resource.to_json, status: :ok, content_type: 'applicaton/fhir+json' }
+      format.json { render json: resource.to_json, status: :ok, content_type: 'application/fhir+json' }
+      format.fhir_json { render json: resource.to_json, status: :ok, content_type: 'application/fhir+json' }
     end
   end
 
