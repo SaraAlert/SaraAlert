@@ -83,7 +83,7 @@ class Export extends React.Component {
               this.setState({ showCSVModal: true });
             }}
             href="#">
-            Line list CSV
+            Line list CSV ({this.props.workflow})
           </a>
           <a
             className="dropdown-item"
@@ -91,7 +91,7 @@ class Export extends React.Component {
               this.setState({ showSaraFormatModal: true });
             }}
             href="#">
-            Sara Alert Format
+            Sara Alert Format ({this.props.workflow})
           </a>
           <a
             className="dropdown-item"

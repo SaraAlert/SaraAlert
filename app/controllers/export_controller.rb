@@ -16,7 +16,7 @@ class ExportController < ApplicationController
     redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
     # Spawn job to handle export
-    ExportJob.perform_now(current_user.id, "csv_#{params[:workflow]}")
+    ExportJob.perform_later(current_user.id, "csv_#{params[:workflow]}")
 
     respond_to do |format|
       format.any { head :ok }
@@ -31,7 +31,7 @@ class ExportController < ApplicationController
     redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
     # Spawn job to handle export
-    ExportJob.perform_now(current_user.id, "sara_format_#{params[:workflow]}")
+    ExportJob.perform_later(current_user.id, "sara_format_#{params[:workflow]}")
 
     respond_to do |format|
       format.any { head :ok }
@@ -42,7 +42,7 @@ class ExportController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_export?
 
     # Spawn job to handle export
-    ExportJob.perform_now(current_user.id, "full_history_#{params[:scope] == 'purgeable' ? 'purgeable' : 'all'}")
+    ExportJob.perform_later(current_user.id, "full_history_#{params[:scope] == 'purgeable' ? 'purgeable' : 'all'}")
 
     respond_to do |format|
       format.any { head :ok }
