@@ -742,7 +742,6 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       exposure_notes: exposure_notes || '',
-      status: status&.to_s&.humanize&.downcase || '',
       symptom_onset: symptom_onset&.strftime('%F') || '',
       case_status: case_status || '',
       lab_1_type: labs[0] ? (labs[0].lab_type || '') : '',
