@@ -406,7 +406,7 @@ class Admin extends React.Component {
           <TableHeaderColumn dataField="email" dataSort={true} isKey={true}>
             Email
           </TableHeaderColumn>
-          <TableHeaderColumn dataField="id" dataSort={true} editable={false}>
+          <TableHeaderColumn dataField="id" dataSort={true} editable={false} hiddenOnInsert={true}>
             ID
           </TableHeaderColumn>
           <TableHeaderColumn
