@@ -12,32 +12,40 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   DOWNLOAD_TIMEOUT = 10
   DOWNLOAD_CHECK_INTERVAL = 0.1
   
-  def verify_line_list_csv(jurisdiction_id, workflow)
-    csv = get_csv("Sara-Alert-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-Linelist-????-??-??T??_??_?????_??.csv")
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation).order(:id)
+  def verify_line_list_csv(user_label, workflow)
+    current_user = @@system_test_utils.get_user(user_label)
+    download_file(current_user, "csv_#{workflow}")
+    csv = get_csv("Sara-Alert-Linelist-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??.csv")
+    patients = current_user.jurisdiction.all_patients.where(isolation: workflow == :isolation).order(:id)
     verify_csv_export(csv, :line_list, LINELIST_HEADERS, patients)
   end
   
-  def verify_sara_alert_format(jurisdiction_id, workflow)
+  def verify_sara_alert_format(user_label, workflow)
+    current_user = @@system_test_utils.get_user(user_label)
+    download_file(current_user, "sara_format_#{workflow}")
     xlsx = get_xlsx("Sara-Alert-Format-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??.xlsx")
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.where(isolation: workflow == :isolation).order(:id)
+    patients = current_user.jurisdiction.all_patients.where(isolation: workflow == :isolation).order(:id)
     verify_sara_alert_format_export(xlsx, patients)
   end
 
-  def verify_excel_purge_eligible_monitorees(jurisdiction_id)
-    xlsx = get_xlsx('Sara-Alert-Full-History-Purgeable-Monitorees-????-??-??T??_??_?????_??.xlsx')
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.purge_eligible.order(:id)
+  def verify_excel_purge_eligible_monitorees(user_label)
+    current_user = @@system_test_utils.get_user(user_label)
+    download_file(current_user, 'full_history_purgeable')
+    xlsx = get_xlsx('Sara-Alert-Purge-Eligible-Export-????-??-??T??_??_?????_??.xlsx')
+    patients = current_user.jurisdiction.all_patients.purge_eligible.order(:id)
     verify_excel_export(xlsx, patients)
   end
 
-  def verify_excel_all_monitorees(jurisdiction_id)
-    xlsx = get_xlsx('Sara-Alert-Full-History-All-Monitorees-????-??-??T??_??_?????_??.xlsx')
-    patients = Jurisdiction.find(jurisdiction_id).all_patients.order(:id)
+  def verify_excel_all_monitorees(user_label)
+    current_user = @@system_test_utils.get_user(user_label)
+    download_file(current_user, 'full_history_all')
+    xlsx = get_xlsx('Sara-Alert-Full-Export-????-??-??T??_??_?????_??.xlsx')
+    patients = current_user.jurisdiction.all_patients.order(:id)
     verify_excel_export(xlsx, patients)
   end
 
   def verify_excel_single_monitoree(patient_id)
-    xlsx = get_xlsx("Sara-Alert-Full-History-Monitoree-#{patient_id}-????-??-??T??_??_?????_??.xlsx")
+    xlsx = get_xlsx("Sara-Alert-Monitoree-Export-#{patient_id}-????-??-??T??_??_?????_??.xlsx")
     patients = Patient.where(id: patient_id)
     verify_excel_export(xlsx, patients)
   end
@@ -165,6 +173,13 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field} in Edit Histories")
       end
     end
+  end
+
+  def download_file(current_user, export_type)
+    @@system_test_utils.wait_for_export_delay
+    download = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).first
+    visit "/export/download/#{download.lookup}"
+    download.filename
   end
 
   def get_csv(file_name_glob)

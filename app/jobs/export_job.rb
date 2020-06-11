@@ -13,11 +13,11 @@ class ExportJob < ApplicationJob
     case export_type
     when 'csv_exposure'
       patients = user.viewable_patients.where(isolation: false).where(purged: false)
-      filename = "Sara-Alert-Exposure-#{export_type.capitalize}-#{DateTime.now}.csv"
+      filename = "Sara-Alert-Linelist-Exposure-#{DateTime.now}.csv"
       data = csv_line_list(patients)
     when 'csv_isolation'
       patients = user.viewable_patients.where(isolation: true).where(purged: false)
-      filename = "Sara-Alert-Isolation-#{export_type.capitalize}-#{DateTime.now}.csv"
+      filename = "Sara-Alert-Linelist-Isolation-#{DateTime.now}.csv"
       data = csv_line_list(patients)
     when 'sara_format_exposure'
       patients = user.viewable_patients.where(isolation: false).where(purged: false)
@@ -31,9 +31,9 @@ class ExportJob < ApplicationJob
       patients = user.viewable_patients.where(purged: false)
       filename = "Sara-Alert-Full-Export-#{DateTime.now}.xlsx"
       data = build_excel_export_for_patients(patients)
-    when 'full_history_purgable'
+    when 'full_history_purgeable'
       patients = user.viewable_patients.purge_eligible
-      filename = "Sara-Alert-Purge-Eligable-Export-#{DateTime.now}.xlsx"
+      filename = "Sara-Alert-Purge-Eligible-Export-#{DateTime.now}.xlsx"
       data = build_excel_export_for_patients(patients)
     end
     return if data.blank?

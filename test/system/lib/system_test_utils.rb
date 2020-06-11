@@ -22,6 +22,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   ACCEPT_REJECT_DELAY = 0.01 # wait for UI to update after accepting or rejecting monitoree on import
   DB_WRITE_DELAY = 1.5 # wait for DB write to finish
   DATA_TABLE_LOAD_DELAY = 0.5 # wait for table data to load
+  EXPORT_DELAY = 0.5 # wait for export job to finish running
 
   def login(user_label)
     visit '/'
@@ -65,6 +66,50 @@ class SystemTestUtils < ApplicationSystemTestCase
     click_on 'Previous'
   end
 
+  def verify_user_jurisdiction(user_label)
+    jurisdiction = get_user(user_label).jurisdiction
+    assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) if !user_label.include?('admin')
+    jurisdiction.id
+  end
+
+  def get_user(user_label)
+    User.where(email: "#{user_label}@example.com").includes(:jurisdiction).first
+  end
+
+  def get_displayed_name(monitoree)
+    "#{monitoree['identification']['last_name']}, #{monitoree['identification']['first_name']}"
+  end
+
+  def get_err_msg(component, field, value)
+    "#{component} - #{field} should be: #{value}"
+  end
+
+  def get_assessment_name(patient_label, assessment_label)
+    "#{patient_label}_assessment_#{assessment_label.to_s}"
+  end
+
+  def get_patient_display_name(patient_label)
+    "#{PATIENTS[patient_label]['last_name']}, #{PATIENTS[patient_label]['first_name']}"
+  end
+
+  def get_monitoree_display_name(monitoree_label)
+    "#{MONITOREES[monitoree_label]['identification']['last_name']}, #{MONITOREES[monitoree_label]['identification']['first_name']}"
+  end
+
+  def format_date(value)
+    "#{value[6..9]}-#{value[0..1]}-#{value[3..4]}"
+  end
+
+  def trim_ms_from_date(value)
+    Time.parse(value).change(:usec => 0).strftime('%Y-%m-%d %H:%M:%S')
+  end
+
+  def calculate_age(value)
+    dob = Date.parse(format_date(value))
+    now = Time.now.utc.to_date
+    now.year - dob.year - (now.month > dob.month || (now.month == dob.month && now.day >= dob.day) ? 0 : 1)
+  end
+
   def wait_for_enrollment_submission
     sleep(inspection_time = ENROLLMENT_SUBMISSION_DELAY)
   end
@@ -97,18 +142,8 @@ class SystemTestUtils < ApplicationSystemTestCase
     sleep(inspection_time = DATA_TABLE_LOAD_DELAY)
   end
 
-  def verify_user_jurisdiction(user_label)
-    jurisdiction = User.where(email: "#{user_label}@example.com").includes(:jurisdiction).first.jurisdiction
-    assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) if !user_label.include?('admin')
-    jurisdiction.id
-  end
-
-  def get_displayed_name(monitoree)
-    "#{monitoree['identification']['last_name']}, #{monitoree['identification']['first_name']}"
-  end
-
-  def get_err_msg(component, field, value)
-    "#{component} - #{field} should be: #{value}"
+  def wait_for_export_delay
+    sleep(inspection_time = EXPORT_DELAY)
   end
 
   def get_assessments
@@ -141,31 +176,5 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   def get_download_path
     DOWNLOAD_PATH
-  end
-
-  def get_assessment_name(patient_label, assessment_label)
-    "#{patient_label}_assessment_#{assessment_label.to_s}"
-  end
-
-  def get_patient_display_name(patient_label)
-    "#{PATIENTS[patient_label]['last_name']}, #{PATIENTS[patient_label]['first_name']}"
-  end
-
-  def get_monitoree_display_name(monitoree_label)
-    "#{MONITOREES[monitoree_label]['identification']['last_name']}, #{MONITOREES[monitoree_label]['identification']['first_name']}"
-  end
-
-  def format_date(value)
-    "#{value[6..9]}-#{value[0..1]}-#{value[3..4]}"
-  end
-
-  def trim_ms_from_date(value)
-    Time.parse(value).change(:usec => 0).strftime('%Y-%m-%d %H:%M:%S')
-  end
-
-  def calculate_age(value)
-    dob = Date.parse(format_date(value))
-    now = Time.now.utc.to_date
-    now.year - dob.year - (now.month > dob.month || (now.month == dob.month && now.day >= dob.day) ? 0 : 1)
   end
 end
