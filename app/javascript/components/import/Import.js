@@ -88,7 +88,7 @@ class Import extends React.Component {
 
   stopImport = async () => {
     this.setState({ isPaused: true }, async () => {
-      let confirmText = `This will stop the  creation of new records from the list below. Records that were imported prior to clicking “Stop Import” will not be deleted from the system.`;
+      let confirmText = `This will stop the creation of new records from the list below. Records that were imported prior to clicking “Stop Import” will not be deleted from the system.`;
       if (await confirmDialog(confirmText, { title: 'Stop Import Process' })) {
         this.setState({ isPaused: false });
         location.href = '/';
