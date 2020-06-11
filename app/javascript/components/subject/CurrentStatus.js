@@ -22,7 +22,7 @@ class CurrentStatus extends React.Component {
       return <span className="text-secondary">not currently being monitored</span>;
     } else if (status === 'isolation_requiring_review') {
       return <span className="text-danger">requires review</span>;
-    } else if (status === 'isolation_non_test_based') {
+    } else if (status === 'isolation_symp_non_test_based') {
       return <span className="text-danger">requires review (symptomatic non test based)</span>;
     } else if (status === 'isolation_asymp_non_test_based') {
       return <span className="text-danger">requires review (asymptomatic non test based)</span>;
@@ -38,7 +38,7 @@ class CurrentStatus extends React.Component {
   }
 
   generateInfoHover(status) {
-    if (status === 'isolation_non_test_based') {
+    if (status === 'isolation_symp_non_test_based') {
       return <InfoTooltip tooltipTextKey="symptomaticNonTestBased" location="right"></InfoTooltip>;
     } else if (status === 'isolation_asymp_non_test_based') {
       return <InfoTooltip tooltipTextKey="asymptomaticNonTestBased" location="right"></InfoTooltip>;

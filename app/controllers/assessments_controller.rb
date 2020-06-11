@@ -45,6 +45,7 @@ class AssessmentsController < ApplicationController
           assessment_placeholder['experiencing_symptoms'] = experiencing_symptoms
         end
         ProduceAssessmentJob.perform_later assessment_placeholder
+        AssessmentReceipt.where(submission_token: params.permit(:patient_submission_token)[:patient_submission_token]).destroy_all
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save
       end

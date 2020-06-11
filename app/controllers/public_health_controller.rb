@@ -8,8 +8,8 @@ class PublicHealthController < ApplicationController
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    @all_count = current_user.viewable_patients.where(isolation: false).size
-    @i_all_count = current_user.viewable_patients.where(isolation: true).size
+    @all_count = current_user.viewable_patients.where(isolation: false).where(purged: false).size
+    @i_all_count = current_user.viewable_patients.where(isolation: true).where(purged: false).size
     @symptomatic_count = current_user.viewable_patients.symptomatic.where(isolation: false).size
     @pui_count = current_user.viewable_patients.under_investigation.where(isolation: false).size
     @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size
@@ -25,8 +25,8 @@ class PublicHealthController < ApplicationController
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    @all_count = current_user.viewable_patients.where(isolation: true).size
-    @e_all_count = current_user.viewable_patients.where(isolation: false).size
+    @all_count = current_user.viewable_patients.where(isolation: true).where(purged: false).size
+    @e_all_count = current_user.viewable_patients.where(isolation: false).where(purged: false).size
     @requiring_review_count = current_user.viewable_patients.isolation_requiring_review.where(isolation: true).size
     @non_reporting_count = current_user.viewable_patients.isolation_non_reporting.where(isolation: true).size
     @reporting_count = current_user.viewable_patients.isolation_reporting.where(isolation: true).size

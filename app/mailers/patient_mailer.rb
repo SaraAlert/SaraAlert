@@ -78,7 +78,6 @@ class PatientMailer < ApplicationMailer
     ([patient] + patient.dependents).uniq.each do |p|
       lang = PatientHelper.languages(p.primary_language)&.dig(:code)&.to_sym || :en
       lang = :en unless %i[en es].include?(lang)
-      add_success_history(p)
       patient_name = "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
       intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
       url_contents = new_patient_assessment_jurisdiction_report_lang_url(p.submission_token,
@@ -98,6 +97,7 @@ class PatientMailer < ApplicationMailer
         to: Phonelib.parse(num, 'US').full_e164,
         body: url_contents
       )
+      add_success_history(p)
     end
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
@@ -109,7 +109,6 @@ class PatientMailer < ApplicationMailer
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     lang = :en unless %i[en es].include?(lang)
-    add_success_history(patient)
     contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
@@ -120,6 +119,7 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: contents
     )
+    add_success_history(patient)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
   end
@@ -130,7 +130,6 @@ class PatientMailer < ApplicationMailer
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     lang = :en unless %i[en es].include?(lang)
-    add_success_history(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
       "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
     end
@@ -159,6 +158,7 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
     )
+    add_success_history(patient)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
   end
@@ -169,7 +169,6 @@ class PatientMailer < ApplicationMailer
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     lang = :en unless %i[en es].include?(lang)
-    add_success_history(patient)
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
       "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
     end
@@ -199,6 +198,7 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
     )
+    add_success_history(patient)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
   end
@@ -209,7 +209,6 @@ class PatientMailer < ApplicationMailer
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     @lang = PatientHelper.languages(patient.primary_language)&.dig(:code)&.to_sym || :en
     @lang = :en unless %i[en es].include?(@lang)
-    add_success_history(patient)
     # Gather patients and jurisdictions
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
@@ -217,6 +216,7 @@ class PatientMailer < ApplicationMailer
     mail(to: patient.email, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
+    add_success_history(patient)
   end
 
   def closed_email(patient)

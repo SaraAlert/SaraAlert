@@ -20,6 +20,8 @@ class User < ApplicationRecord
 
   has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
 
+  has_many :downloads
+
   belongs_to :jurisdiction
 
   # Random password for temp password changes

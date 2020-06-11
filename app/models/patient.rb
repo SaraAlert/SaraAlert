@@ -194,25 +194,21 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
+      .joins(:assessments)
+      .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_or_fever_medication)
       .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
-      .left_outer_joins(:assessments)
-      .where.not(assessments: { patient_id: nil })
-      .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever)
-      .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_medication)
       .distinct
   }
 
   # Individuals that meet the non test based review requirement (symptomatic)
-  scope :non_test_based, lambda {
+  scope :symp_non_test_based, lambda {
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .left_outer_joins(:assessments)
-      .where.not(assessments: { patient_id: nil })
-      .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
-      .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever)
-      .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_medication)
+      .joins(:assessments)
       .where('symptom_onset <= ?', 10.days.ago)
+      .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
+      .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_or_fever_medication)
       .distinct
   }
 
@@ -221,21 +217,43 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .where_assoc_exists(:laboratories, &:before_ten_days_positive)
+      .joins(:assessments)
+      .joins(:laboratories)
+      .where('laboratories.result = \'positive\' AND laboratories.report <= ?', 10.days.ago)
       .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
-      .left_outer_joins(:laboratories)
-      .where('laboratories.patient_id = patients.id AND laboratories.result = \'positive\'')
-      .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
       .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.report')
       .distinct
   }
 
   # Individuals in the isolation workflow that require review
   scope :isolation_requiring_review, lambda {
-    where(id: Patient.unscoped.test_based)
+    where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
+      .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
+      .joins(:assessments)
+      .left_outer_joins(:laboratories)
+      .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_or_fever_medication)
       .or(
-        where(id: Patient.unscoped.non_test_based)
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .joins(:assessments)
+        .left_outer_joins(:laboratories)
+        .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
+        .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_or_fever_medication)
+        .where('symptom_onset <= ?', 10.days.ago)
+      )
+      .or(
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .joins(:assessments)
+        .left_outer_joins(:laboratories)
+        .where('laboratories.patient_id = patients.id AND laboratories.result = \'positive\'')
+        .where_assoc_exists(:laboratories, &:before_ten_days_positive)
+        .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
+        .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.report')
       )
       .distinct
   }
@@ -419,21 +437,20 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
 
   # Current patient status
   def status
+    return :purged if purged?
+    return :closed if closed?
+
     unless isolation
       return :pui if pui?
-      return :purged if purged?
-      return :closed if closed?
       return :symptomatic if symptomatic?
       return :asymptomatic if asymptomatic?
       return :non_reporting if non_reporting?
     end
     return :isolation_asymp_non_test_based if Patient.where(id: id).asymp_non_test_based.exists?
+    return :isolation_symp_non_test_based if Patient.where(id: id).symp_non_test_based.exists?
     return :isolation_test_based if Patient.where(id: id).test_based.exists?
-    return :isolation_non_test_based if Patient.where(id: id).non_test_based.exists?
-    return :isolation_non_reporting if Patient.where(id: id).isolation_non_reporting.exists?
     return :isolation_reporting if Patient.where(id: id).isolation_reporting.exists?
-    return :purged if purged?
-    return :closed if closed?
+    return :isolation_non_reporting if Patient.where(id: id).isolation_non_reporting.exists?
 
     :unknown
   end
@@ -742,7 +759,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       exposure_risk_assessment: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       exposure_notes: exposure_notes || '',
-      status: status&.to_s&.humanize&.downcase || '',
+      status: '',
       symptom_onset: symptom_onset&.strftime('%F') || '',
       case_status: case_status || '',
       lab_1_type: labs[0] ? (labs[0].lab_type || '') : '',

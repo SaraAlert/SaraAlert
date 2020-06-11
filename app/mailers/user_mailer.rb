@@ -6,6 +6,15 @@ require 'chronic'
 class UserMailer < ApplicationMailer
   default from: 'notifications@saraalert.org'
 
+  def download_email(user, export_type, lookup)
+    @user = user
+    @export_type = export_type
+    @lookup = lookup
+    mail(to: user.email, subject: 'Your Sara Alert system export is ready') do |format|
+      format.html { render layout: 'main_mailer' }
+    end
+  end
+
   def welcome_email(user, password)
     @user = user
     @password = password

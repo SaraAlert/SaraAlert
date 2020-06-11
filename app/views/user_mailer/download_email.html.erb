@@ -1,0 +1,9 @@
+<% content_for :body do %>
+  <p>Your requested export of &quot;<%= @export_type.titleize %>&quot; is now ready.</p>
+  <p>Please note that this download link is one-time use only, and is only valid for 24 hours after creation. The system will delete the export once you've downloaded it or the 24 hour period has elapsed.</p>
+  <%= render partial: 'main_mailer/responsive_button', locals: {link: export_download_url(lookup: @lookup) , text: 'Click here to download'} %>
+<% end %>
+
+<% content_for :footer do %>
+  <p>This notification was sent by the Sara Alert system. If you wish to stop receiving these notifications or believe that it was a mistake, please contact the help desk.</p>
+<% end %>

@@ -23,7 +23,8 @@ class PurgeJob < ApplicationJob
       monitoree.update!(mask)
       monitoree.purged = true
       monitoree.save!
-      History.where(patient_id: monitoree.id).delete_all
+      monitoree.histories.destroy_all
     end
+    Download.where('created_at < ?', 24.hours.ago).destroy_all
   end
 end

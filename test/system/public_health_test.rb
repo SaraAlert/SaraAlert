@@ -91,36 +91,34 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_monitoring_helper.add_comment('locals2c3_epi', 'patient_11', 'pui', 'comment')
   end
 
-  test 'export line list csv from exposure workflow' do
-    @@public_health_monitoring_helper.export_line_list_csv('locals2c3_epi', :exposure)
+  test 'export line list csv (exposure)' do
+    @@public_health_monitoring_helper.export_line_list_csv('locals2c3_epi', :exposure, :cancel)
+    @@public_health_monitoring_helper.export_line_list_csv('state1_epi', :exposure, :export)
   end
 
-  test 'export line list csv from isolation workflow' do
-    @@public_health_monitoring_helper.export_line_list_csv('locals2c4_epi', :isolation)
+  test 'export line list csv (isolation)' do
+    @@public_health_monitoring_helper.export_line_list_csv('locals2c4_epi', :isolation, :cancel)
+    @@public_health_monitoring_helper.export_line_list_csv('state1_epi_enroller', :isolation, :export)
   end
 
-  test 'export sara alert format csv from exposure workflow' do
-    @@public_health_monitoring_helper.export_sara_alert_format('locals2c4_epi', :exposure)
+  test 'export sara alert format (exposure)' do
+    @@public_health_monitoring_helper.export_sara_alert_format('locals1c1_epi', :exposure, :cancel)
+    @@public_health_monitoring_helper.export_sara_alert_format('state1_epi_enroller', :exposure, :export)
   end
 
-  test 'export sara alert format csv from isolation workflow' do
-    @@public_health_monitoring_helper.export_sara_alert_format('locals2c3_epi', :isolation)
+  test 'export sara alert format (isolation)' do
+    @@public_health_monitoring_helper.export_sara_alert_format('locals2c3_epi', :isolation, :cancel)
+    @@public_health_monitoring_helper.export_sara_alert_format('state1_epi', :isolation, :export)
   end
 
   test 'export excel purge-eligible monitorees' do
-    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('state1_epi', :download)
-  end
-
-  test 'export excel purge-eligible monitorees and cancel' do
-    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('locals1c1_epi', :cancel)
+    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('state1_epi_enroller', :isolation, :cancel)
+    @@public_health_monitoring_helper.export_excel_purge_eligible_monitorees('state1_epi', :exposure, :export)
   end
 
   test 'export excel all monitorees' do
-    @@public_health_monitoring_helper.export_excel_all_monitorees('state1_epi', :download)
-  end
-
-  test 'export excel all monitorees and cancel' do
-    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', :cancel)
+    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c1_epi', :exposure, :cancel)
+    @@public_health_monitoring_helper.export_excel_all_monitorees('locals1c2_epi', :isolation, :export)
   end
 
   test 'export excel single monitoree' do
