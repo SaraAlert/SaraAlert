@@ -156,7 +156,7 @@ class Import extends React.Component {
               className="btn-lg my-2"
               onClick={() =>
                 this.handleConfirm(
-                  `This will import all records listed below that you did not manually accept or reject.If potential duplicates have been detected, check the box if you would like to import them.`
+                  `This will import all records listed below that you did not manually accept or reject. If potential duplicates have been detected, check the box if you would like to import them.`
                 )
               }>
               Import All
