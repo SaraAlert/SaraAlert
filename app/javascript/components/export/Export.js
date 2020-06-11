@@ -51,7 +51,8 @@ class Export extends React.Component {
           </p>
           <p>
             Please note that only one of each type of download per workflow will be retained for your user account. Once you use the one-time download link in
-            the email you are sent, that export will be deleted. If you initiate a second export of the same type, any old ones will be overwritten.
+            the email you are sent, that export will be deleted. If you initiate a second export of the same type, any old ones will be overwritten. The
+            download link you are sent via email is only valid for 24 hours after creation.
           </p>
         </Modal.Body>
         <Modal.Footer>
@@ -112,7 +113,7 @@ class Export extends React.Component {
         </div>
         {this.state.showCSVModal &&
           this.createModal(
-            'Line list CSV',
+            `Line list CSV (${this.props.workflow})`,
             () => {
               this.setState({ showCSVModal: false });
             },
@@ -121,7 +122,7 @@ class Export extends React.Component {
           )}
         {this.state.showSaraFormatModal &&
           this.createModal(
-            'Sara Alert Format',
+            `Sara Alert Format (${this.props.workflow})`,
             () => {
               this.setState({ showSaraFormatModal: false });
             },

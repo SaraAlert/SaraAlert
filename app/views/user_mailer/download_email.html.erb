@@ -1,6 +1,6 @@
 <% content_for :body do %>
   <p>Your requested export of &quot;<%= @export_type.titleize %>&quot; is now ready.</p>
-  <p>Please note that this download link is one-time use only, the system will delete the export once you've downloaded it.</p>
+  <p>Please note that this download link is one-time use only, and is only valid for 24 hours after creation. The system will delete the export once you've downloaded it or the 24 hour period has elapsed.</p>
   <%= render partial: 'main_mailer/responsive_button', locals: {link: export_download_url(lookup: @lookup) , text: 'Click here to download'} %>
 <% end %>
 

@@ -25,5 +25,6 @@ class PurgeJob < ApplicationJob
       monitoree.save!
       monitoree.histories.destroy_all
     end
+    Download.where('created_at < ?', 24.hours.ago).destroy_all
   end
 end
