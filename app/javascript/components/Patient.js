@@ -2,6 +2,7 @@ import React from 'react';
 import { Col, Row, Button, Collapse, Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import ChangeHOH from './subject/ChangeHOH';
+import MoveToHousehold from './subject/MoveToHousehold';
 import RemoveFromHousehold from './subject/RemoveFromHousehold';
 
 class Patient extends React.Component {
@@ -41,6 +42,25 @@ class Patient extends React.Component {
               })}
               <Row>
                 <ChangeHOH patient={this.props?.details} groupMembers={this.props?.groupMembers} authenticity_token={this.props.authenticity_token} />
+              </Row>
+            </Col>
+          </Row>
+        )}
+        {this.props?.groupMembers && this.props?.groupMembers?.length == 0 && (
+          <Row className="pb-3 mx-3">
+            <Col>
+              <Row>This monitoree is not a member of a household:</Row>
+              {this.props?.groupMembers?.map((member, index) => {
+                return (
+                  <Row key={'gm' + index}>
+                    <a href={'/patients/' + member.id}>
+                      {member.last_name}, {member.first_name} {member.middle_name || ''}
+                    </a>
+                  </Row>
+                );
+              })}
+              <Row>
+                <MoveToHousehold patient={this.props?.details} groupMembers={this.props?.groupMembers} authenticity_token={this.props.authenticity_token} />
               </Row>
             </Col>
           </Row>
