@@ -27,25 +27,36 @@ class CaseStatus extends React.Component {
 
   handleChange(event) {
     event.persist();
-    this.setState({ [event.target.id]: event.target.type === 'checkbox' ? event.target.checked : event.target.value, showCaseStatusModal: true }, () => {
-      if (event.target.id === 'confirmed') {
-        if (event.target.value === 'End Monitoring') {
-          this.setState({
-            monitoring: false,
-            monitoring_reason: 'Meets Case Definition',
-            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
-          });
+
+    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    let hideModal = this.state.isolation && (value === 'Confirmed' || value === 'Probable');
+
+    this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal }, () => {
+      // update case status without showing modal (rare)
+      if (hideModal) {
+        this.submit();
+
+        // instances where case status modal is shown
+      } else {
+        if (event.target.id === 'confirmed') {
+          if (event.target.value === 'End Monitoring') {
+            this.setState({
+              monitoring: false,
+              monitoring_reason: 'Meets Case Definition',
+              message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+            });
+          }
+          if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
+            this.setState({
+              monitoring: true,
+              isolation: true,
+              monitoring_reason: 'Meets Case Definition',
+              message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+            });
+          }
+        } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
+          this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
         }
-        if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
-          this.setState({
-            monitoring: true,
-            isolation: true,
-            monitoring_reason: 'Meets Case Definition',
-            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
-          });
-        }
-      } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
-        this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
       }
     });
   }
@@ -85,7 +96,49 @@ class CaseStatus extends React.Component {
   }
 
   createModal(title, toggle, submit) {
-    if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
+    if (
+      this.props.patient.isolation &&
+      (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable') &&
+      (this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status === 'Not a Case' || this.state.case_status === '')
+    ) {
+      return (
+        <Modal size="lg" show centered>
+          <Modal.Header>
+            <Modal.Title>{title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to
+              continue exposure monitoring.
+            </p>
+            {this.props.has_group_members && (
+              <Form.Group className="mt-2">
+                <Form.Check
+                  type="switch"
+                  id="apply_to_group"
+                  label="Apply this change to the entire household that this monitoree is responsible for"
+                  onChange={this.handleChange}
+                  checked={this.state.apply_to_group === true || false}
+                />
+              </Form.Group>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
+              Submit
+            </Button>
+            <Button variant="secondary btn-square" onClick={toggle}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      );
+    } else if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
       return (
         <Modal size="lg" show centered>
           <Modal.Header>
