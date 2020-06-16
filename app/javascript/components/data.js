@@ -153,7 +153,7 @@ export const customTerritories = [
   { name: 'Northern Mariana Islands', abbrv: 'MP', mapFile: 'RANDOMSQUARE' },
   { name: 'Palau', abbrv: 'PW', mapFile: 'palau' },
   { name: 'Puerto Rico', abbrv: 'PR', mapFile: 'prLow' },
-  { name: 'Virgin Islands', abbrv: 'VI', mapFile: 'RANDOMSQUARE' }
+  { name: 'Virgin Islands', abbrv: 'VI', mapFile: 'RANDOMSQUARE' },
 ];
 
 export const countryOptions = [

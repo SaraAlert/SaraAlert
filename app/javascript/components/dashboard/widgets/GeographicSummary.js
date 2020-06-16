@@ -132,14 +132,6 @@ class GeographicSummary extends React.Component {
         this.handleJurisdictionChange('USA');
       }
     );
-    // this.setState({
-    //   jurisdictionToShow: {
-    //     category: 'fullCountry',
-    //     name: 'USA',
-    //     eventValue: null,
-    //   },
-    //   showBackButton: false,
-    // });
   };
 
   handleJurisdictionChange = jurisdiction => {
@@ -164,7 +156,7 @@ class GeographicSummary extends React.Component {
         mapObject: null,
       });
     } else if (_.some(customTerritories, c => _.isEqual(c.name, jurisdiction))) {
-      console.log('I NEED TO IMPLEMENT TERRITORY CODE');
+      console.log(`I NEED TO IMPLEMENT TERRITORY CODE to load ${jurisdiction}`);
     } else {
       this.setState({ showBackButton: true, showSpinner: true });
       console.log(`Loading: ${jurisdiction.target.dataItem.dataContext.map} mapFile`);
@@ -263,13 +255,11 @@ class GeographicSummary extends React.Component {
           /> */}
           <Row className="mx-0 map-panel-controls">
             <DropdownButton variant="primary" size="md" drop="up" className="mr-auto btn-square" title="View Other Jurisdiction">
-              <Dropdown.Item onClick={() => this.handleJurisdictionChange('American Samoa')}>American Samoa</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.handleJurisdictionChange('Federated States of Micronesia')}>Federated States of Micronesia</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.handleJurisdictionChange('Guam')}>Guam</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.handleJurisdictionChange('Marshall Islands')}>Marshall Islands</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.handleJurisdictionChange('Northern Mariana Islands')}>Northern Mariana Islands</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.handleJurisdictionChange('Palau')}>Palau</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.handleJurisdictionChange('Virgin Islands')}>Virgin Islands</Dropdown.Item>
+              {customTerritories.map((territory, index) => (
+                <Dropdown.Item key={index} onClick={() => this.handleJurisdictionChange(territory.name)}>
+                  {territory.name}
+                </Dropdown.Item>
+              ))}
             </DropdownButton>
             {backButton}
           </Row>
