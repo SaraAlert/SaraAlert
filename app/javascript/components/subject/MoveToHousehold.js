@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
+import reportError from '../util/ReportError';
 
 class MoveToHousehold extends React.Component {
   constructor(props) {
@@ -10,10 +11,12 @@ class MoveToHousehold extends React.Component {
       updateDisabled: true,
       showModal: false,
       loading: false,
+      groupMembers: [],
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
+    this.getResponders = this.getResponders.bind(this);
   }
 
   toggleModal() {
@@ -21,11 +24,33 @@ class MoveToHousehold extends React.Component {
     this.setState({
       updateDisabled: true,
       showModal: !current,
+      loading: !current,
     });
+    if (!current) {
+      this.getResponders();
+    }
   }
 
   handleChange(event) {
     this.setState({ [event.target.id]: event.target.value, updateDisabled: false });
+  }
+
+  getResponders() {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios({
+      method: 'get',
+      url: window.BASE_PATH + '/public_health/patients/self_reporting',
+      params: {},
+    })
+      .then(response => {
+        this.setState({
+          loading: false,
+          groupMembers: JSON.parse(response['data']['self_reporting']),
+        });
+      })
+      .catch(err => {
+        reportError(err);
+      });
   }
 
   submit() {
@@ -34,9 +59,6 @@ class MoveToHousehold extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
           new_hoh_id: this.state.hoh_selection,
-          household_ids: this.props?.groupMembers?.map(member => {
-            return member.id;
-          }),
         })
         .then(() => {
           this.setState({ updateDisabled: false });
@@ -66,10 +88,10 @@ class MoveToHousehold extends React.Component {
                   <option value={-1} disabled>
                     --
                   </option>
-                  {this.props?.groupMembers?.map((member, index) => {
+                  {this.state?.groupMembers?.map((member, index) => {
                     return (
                       <option key={`option-${index}`} value={member.id}>
-                        {member.last_name}, {member.first_name} {member.middle_name || ''}
+                        {member.last_name}, {member.first_name} Age: {member.age}
                       </option>
                     );
                   })}
@@ -109,7 +131,6 @@ class MoveToHousehold extends React.Component {
 
 MoveToHousehold.propTypes = {
   patient: PropTypes.object,
-  groupMembers: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 
