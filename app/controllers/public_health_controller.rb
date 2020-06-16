@@ -103,6 +103,17 @@ class PublicHealthController < ApplicationController
     render json: filter_sort_paginate(params, patients)
   end
 
+  # Get all individuals whose responder_id = id, these people are "HOH eligible"
+  def self_reporting
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+
+    patients = current_user.viewable_patients.where('patients.responder_id = patients.id').pluck(:id, :first_name, :last_name, :age).map do |p|
+      { id: p[0], first_name: p[1], last_name: p[2], age: p[3] }
+    end
+    patients = patients.sort_by { |p| p[:last_name] }
+    render json: { self_reporting: patients.to_json }
+  end
+
   protected
 
   def filter_sort_paginate(params, data)

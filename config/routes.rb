@@ -91,6 +91,7 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
+  get '/public_health/patients/self_reporting', to: 'public_health#self_reporting', as: :self_reporting
   get '/public_health/patients/:workflow/:type/:assigned_jurisdiction/:scope/:assigned_user', to: 'public_health#patients', as: :public_health_patients
   get '/public_health', to: 'public_health#exposure', as: :public_health
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
