@@ -133,37 +133,37 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal 0, Patient.confirmed_case.where(id: patient.id).count
   end
 
-  test 'under investigation' do
+  test 'exposure pui' do
     patient = create(:patient, monitoring: true, purged: false, isolation: false, public_health_action: 'Recommended laboratory testing')
-    verify_patient_status_scopes(patient, :pui)
+    verify_patient_status_scopes(patient, :exposure_pui)
   end
 
-  test 'symptomatic' do
+  test 'exposure symptomatic' do
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None')
     create(:assessment, patient: patient, symptomatic: true)
-    verify_patient_status_scopes(patient, :symptomatic)
+    verify_patient_status_scopes(patient, :exposure_symptomatic)
 
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None', created_at: 25.hours.ago)
     create(:assessment, patient: patient, symptomatic: true, created_at: 25.hours.ago)
-    verify_patient_status_scopes(patient, :symptomatic)
+    verify_patient_status_scopes(patient, :exposure_symptomatic)
   end
 
-  test 'non reporting' do
+  test 'exposure non reporting' do
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None', created_at: 25.hours.ago)
-    verify_patient_status_scopes(patient, :non_reporting)
+    verify_patient_status_scopes(patient, :exposure_non_reporting)
 
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None', created_at: 25.hours.ago)
     create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
-    verify_patient_status_scopes(patient, :non_reporting)
+    verify_patient_status_scopes(patient, :exposure_non_reporting)
   end
 
-  test 'asymptomatic' do
+  test 'exposure asymptomatic' do
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None')
-    verify_patient_status_scopes(patient, :asymptomatic)
+    verify_patient_status_scopes(patient, :exposure_asymptomatic)
 
     patient = create(:patient, monitoring: true, purged: false, public_health_action: 'None', created_at: 25.hours.ago)
     create(:assessment, patient: patient, symptomatic: false)
-    verify_patient_status_scopes(patient, :asymptomatic)
+    verify_patient_status_scopes(patient, :exposure_asymptomatic)
   end
 
   test 'test based' do
@@ -367,19 +367,27 @@ class PatientTest < ActiveSupport::TestCase
 
   def verify_patient_status_scopes(patient, status)
     patients = Patient.where(id: patient.id)
+
+    assert patients.symptomatic.exists? if status == :exposure_symptomatic
+    assert patients.non_reporting.exists? if status == :exposure_non_reporting
+    assert patients.asymptomatic.exists? if status == :exposure_asymptomatic
+
     assert_equal status == :purged, patients.purged.exists?
     assert_equal status == :closed, patients.monitoring_closed_without_purged.exists?
-    assert_equal status == :pui, patients.under_investigation.exists?
-    assert patients.symptomatic.exists? if status == :symptomatic
-    assert patients.asymptomatic.exists? if status == :asymptomatic
-    assert patients.non_reporting.exists? if status == :non_reporting
-    assert_equal status == :isolation_asymp_non_test_based, patients.asymp_non_test_based.exists?
-    assert_equal status == :isolation_symp_non_test_based, patients.symp_non_test_based.exists?
-    assert_equal status == :isolation_test_based, patients.test_based.exists?
+
+    assert_equal status == :exposure_symptomatic, patients.exposure_symptomatic.exists?
+    assert_equal status == :exposure_non_reporting, patients.exposure_non_reporting.exists?
+    assert_equal status == :exposure_asymptomatic, patients.exposure_asymptomatic.exists?
+    assert_equal status == :exposure_pui, patients.exposure_pui.exists?
+
+    assert_equal status == :isolation_asymp_non_test_based, patients.isolation_asymp_non_test_based.exists?
+    assert_equal status == :isolation_symp_non_test_based, patients.isolation_symp_non_test_based.exists?
+    assert_equal status == :isolation_test_based, patients.isolation_test_based.exists?
     isolation_requiring_review = %i[isolation_asymp_non_test_based isolation_symp_non_test_based isolation_test_based].include?(status)
     assert_equal isolation_requiring_review, patients.isolation_requiring_review.exists?
     assert_equal status == :isolation_reporting, patients.isolation_reporting.exists?
     assert_equal status == :isolation_non_reporting, patients.isolation_non_reporting.exists?
+
     assert_equal status, patient.status
   end
 end

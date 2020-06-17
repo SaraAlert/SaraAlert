@@ -335,13 +335,13 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     statuses = {
       closed: patients.monitoring_closed.pluck(:id),
       purged: patients.purged.pluck(:id),
-      pui: patients.under_investigation.pluck(:id),
-      symptomatic: patients.symptomatic.pluck(:id),
-      asymptomatic: patients.asymptomatic.pluck(:id),
-      non_reporting: patients.non_reporting.pluck(:id),
-      isolation_asymp_non_test_based: patients.asymp_non_test_based.pluck(:id),
-      isolation_symp_non_test_based: patients.symp_non_test_based.pluck(:id),
-      isolation_test_based: patients.test_based.pluck(:id),
+      pui: patients.exposure_pui.pluck(:id),
+      exposure_symptomatic: patients.exposure_symptomatic.pluck(:id),
+      exposure_asymptomatic: patients.exposure_asymptomatic.pluck(:id),
+      exposure_non_reporting: patients.exposure_non_reporting.pluck(:id),
+      isolation_asymp_non_test_based: patients.isolation_asymp_non_test_based.pluck(:id),
+      isolation_symp_non_test_based: patients.isolation_symp_non_test_based.pluck(:id),
+      isolation_test_based: patients.isolation_test_based.pluck(:id),
       isolation_reporting: patients.isolation_reporting.pluck(:id),
       isolation_non_reporting: patients.isolation_non_reporting.pluck(:id)
     }
