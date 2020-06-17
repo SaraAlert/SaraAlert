@@ -107,8 +107,9 @@ class PublicHealthController < ApplicationController
   def self_reporting
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    patients = current_user.viewable_patients.where('patients.responder_id = patients.id').pluck(:id, :first_name, :last_name, :age).map do |p|
-      { id: p[0], first_name: p[1], last_name: p[2], age: p[3] }
+    patients = current_user.viewable_patients.where('patients.responder_id = patients.id')
+    patients = patients.pluck(:id, :first_name, :last_name, :age, :user_defined_id_statelocal).map do |p|
+      { id: p[0], first_name: p[1], last_name: p[2], age: p[3], state_id: p[4] }
     end
     patients = patients.sort_by { |p| p[:last_name] }
     render json: { self_reporting: patients.to_json }

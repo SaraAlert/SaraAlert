@@ -58,7 +58,7 @@ class MoveToHousehold extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
-          new_hoh_id: this.state.hoh_selection,
+          new_hoh_id: this.state.hoh_selection.split('SaraID: ')[1].split(' ')[0],
         })
         .then(() => {
           this.setState({ updateDisabled: false });
@@ -84,18 +84,25 @@ class MoveToHousehold extends React.Component {
                 <Form.Label size="sm" className="nav-input-label">
                   Note: The current monitoree will be moved into the selected monitorees household
                 </Form.Label>
-                <Form.Control as="select" className="form-control-lg" id="hoh_selection" onChange={this.handleChange} defaultValue={-1}>
-                  <option value={-1} disabled>
-                    --
-                  </option>
+                <Form.Control
+                  className="form-square"
+                  id="hoh_selection"
+                  onChange={this.handleChange}
+                  as="input"
+                  name="newhohcandidate"
+                  list="newhohcandidates"
+                  autoComplete="on"
+                  size="lg"
+                />
+                <datalist id="newhohcandidates">
                   {this.state?.groupMembers?.map((member, index) => {
                     return (
-                      <option key={`option-${index}`} value={member.id}>
-                        {member.last_name}, {member.first_name} Age: {member.age}
+                      <option key={`option-${index}`} data-value={member.id}>
+                        {member.last_name}, {member.first_name} Age: {member.age} SaraID: {member.id} StateID: {member.state_id}
                       </option>
                     );
                   })}
-                </Form.Control>
+                </datalist>
               </Form.Group>
             </Row>
           </Form>
