@@ -10,7 +10,7 @@ class UserMailer < ApplicationMailer
     @user = user
     @export_type = export_type
     @lookup = lookup
-    mail(to: user.email, subject: 'Your Sara Alert system export is ready') do |format|
+    mail(to: user.email.strip, subject: 'Your Sara Alert system export is ready') do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
@@ -18,14 +18,14 @@ class UserMailer < ApplicationMailer
   def welcome_email(user, password)
     @user = user
     @password = password
-    mail(to: user.email, subject: 'Welcome to the Sara Alert system') do |format|
+    mail(to: user.email.strip, subject: 'Welcome to the Sara Alert system') do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
 
   def admin_message_email(user, comment)
     @comment = comment
-    mail(to: user.email, subject: 'Message from the Sara Alert system') do |format|
+    mail(to: user.email.strip, subject: 'Message from the Sara Alert system') do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
@@ -42,7 +42,7 @@ class UserMailer < ApplicationMailer
 
       subject = @num_purgeable_records.zero? ? 'Sara Alert Notification' : 'Sara Alert User Records Expiring Soon'
 
-      mail(to: user.email, subject: subject) do |format|
+      mail(to: user.email.strip, subject: subject) do |format|
         format.html { render layout: 'main_mailer' }
       end
     end
