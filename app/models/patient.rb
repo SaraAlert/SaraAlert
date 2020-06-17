@@ -713,7 +713,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
-      name: { name: (first_name.present? || last_name.present?) ? "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}" : 'NAME NOT PROVIDED', id: id },
+      name: { name: first_name.present? || last_name.present? ? "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}" : 'NAME NOT PROVIDED', id: id },
       jurisdiction: jurisdiction&.name || '',
       assigned_user: assigned_user || '',
       state_local_id: user_defined_id_statelocal || '',
