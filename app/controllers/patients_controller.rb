@@ -272,6 +272,47 @@ class PatientsController < ApplicationController
     current_user_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
   end
 
+  def bulk_update_status
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    patient_ids = params.permit(ids: [])[:ids]
+
+    # If apply to group, find dependents ids and add to id array before user accessor for validation of access
+    if params.permit(:apply_to_group)[:apply_to_group]
+      dependent_ids = Patient.where(responder_id: params.permit(ids: [])[:ids]).where.not(id: params.permit(ids: [])[:ids]).select("id")
+      patient_ids = patient_ids.union(dependent_ids)
+    end
+
+    patients = current_user.get_patients(patient_ids)
+
+    patients.where.not(monitoring: params.require(:patient).permit(:monitoring)[:monitoring]).where(monitoring: true).update_all(closed_at: DateTime.now)
+    patients.update_all(params.permit(:monitoring, :monitoring_reason, :monitoring_plan,
+                                                        :exposure_risk_assessment, :public_health_action,
+                                                        :isolation, :pause_notifications, :symptom_onset,
+                                                        :case_status).to_h)
+
+    # Check for juristdiction change
+    if !params.permit(:jurisdiction)[:jurisdiction].nil? 
+      transfered_patients = patients.where.not(jurisdiction: params.require(:patient).permit(:jurisdiction)[:jurisdiction])
+      if !transfered_patients.empty?
+        new_jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
+        unless new_jur.nil?
+          transfers = transfered_patients.map { |p| {patient_id: p.id, from_jurisdiction_id: p.jurisdiction.id, to_jurisdiction_id: new_jur.id, who_id: current_user.id, created_at: DateTime.now, updated_at: DateTime.now} }
+          Transfer.insert_all(transfers)
+          transfered_patients.update_all(jurisdiction_id: new_jur.id)
+        end
+      end
+    end
+
+    # Add histories to all updated patients
+    comment = 'User changed '
+    comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
+    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
+    histories = patients.map { |p| {patient_id: p.id, comment: comment, created_by: current_user.email, history_type: 'Monitoring Change', created_at: DateTime.now, updated_at: DateTime.now} }
+    History.insert_all(histories)
+
+  end
+
   # Updates to workflow/tracking status for a subject
   def update_status
     redirect_to(root_url) && return unless current_user.can_edit_patient?

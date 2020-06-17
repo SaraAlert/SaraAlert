@@ -55,6 +55,19 @@ class User < ApplicationRecord
     end
   end
 
+  # Get multiple patients (that this user is allowed to get)
+  def get_patients(ids)
+    if has_role?(:enroller)
+      enrolled_patients.where(id: ids)
+    elsif has_role?(:public_health)
+      viewable_patients.where(id: ids)
+    elsif has_role?(:public_health_enroller)
+      viewable_patients.where(id: ids)
+    elsif has_role?(:admin)
+      Patient.where(id: ids)
+    end
+  end
+
   # Allow information on the user's jurisdiction to be displayed
   def jurisdiction_path
     jurisdiction&.path&.map(&:name)
