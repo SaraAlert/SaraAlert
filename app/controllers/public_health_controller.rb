@@ -13,7 +13,7 @@ class PublicHealthController < ApplicationController
     @symptomatic_count = current_user.viewable_patients.exposure_symptomatic.size
     @non_reporting_count = current_user.viewable_patients.exposure_non_reporting.size
     @asymptomatic_count = current_user.viewable_patients.exposure_asymptomatic.size
-    @pui_count = current_user.viewable_patients.exposure_pui.size
+    @pui_count = current_user.viewable_patients.exposure_under_investigation.size
     @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: false).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: false).size
@@ -80,7 +80,7 @@ class PublicHealthController < ApplicationController
         patients = patients.exposure_symptomatic if type == :symptomatic_patients
         patients = patients.exposure_non_reporting if type == :non_reporting_patients
         patients = patients.exposure_asymptomatic if type == :asymptomatic_patients
-        patients = patients.exposure_pui if type == :pui_patients
+        patients = patients.exposure_under_investigation if type == :pui_patients
       else
         patients = patients.where(isolation: true)
         patients = patients.isolation_requiring_review if type == :requiring_review_patients

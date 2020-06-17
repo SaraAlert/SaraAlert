@@ -68,7 +68,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where(monitoring: true)
       .where(purged: false)
       .where.not(id: Patient.unscoped.isolation_requiring_review)
-      .where.not(id: Patient.unscoped.exposure_pui)
+      .where.not(id: Patient.unscoped.exposure_under_investigation)
       .left_outer_joins(:assessments)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
       .or(
@@ -76,7 +76,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
           .where(monitoring: true)
           .where(purged: false)
           .where.not(id: Patient.unscoped.isolation_requiring_review)
-          .where.not(id: Patient.unscoped.exposure_pui)
+          .where.not(id: Patient.unscoped.exposure_under_investigation)
           .left_outer_joins(:assessments)
           .where(assessments: { patient_id: nil })
       )
@@ -237,15 +237,15 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .distinct
   }
 
-  # Any individual who is currently under investigation
-  scope :exposure_pui, lambda {
+  # Any individual who is currently under investigation (exposure workflow only)
+  scope :exposure_under_investigation, lambda {
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: false)
       .where.not(public_health_action: 'None')
   }
 
-  # Individuals that meet the test based review requirement
+  # Individuals that meet the test based review requirement (isolation workflow only)
   scope :isolation_test_based, lambda {
     where(monitoring: true)
       .where(purged: false)
@@ -256,7 +256,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .distinct
   }
 
-  # Individuals that meet the non test based review requirement (symptomatic)
+  # Individuals that meet the symptomatic non test based review requirement (isolation workflow only)
   scope :isolation_symp_non_test_based, lambda {
     where(monitoring: true)
       .where(purged: false)
@@ -267,7 +267,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .distinct
   }
 
-  # Individuals that meet the asymptomatic recovery definition
+  # Individuals that meet the asymptomatic recovery definition (isolation workflow only)
   scope :isolation_asymp_non_test_based, lambda {
     where(monitoring: true)
       .where(purged: false)
@@ -280,7 +280,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .distinct
   }
 
-  # Individuals in the isolation workflow that require review
+  # Individuals in the isolation workflow that require review (isolation workflow only)
   scope :isolation_requiring_review, lambda {
     where(monitoring: true)
       .where(purged: false)
@@ -313,7 +313,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .distinct
   }
 
-  # Individuals in the isolation workflow, not meeting review and are not reporting
+  # Individuals not meeting review and are not reporting (isolation workflow only)
   scope :isolation_non_reporting, lambda {
     where.not(id: Patient.unscoped.isolation_requiring_review)
          .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
@@ -324,7 +324,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
          .distinct
   }
 
-  # Individuals in the isolation workflow, not meeting review but are reporting
+  # Individuals not meeting review but are reporting (isolation workflow only)
   scope :isolation_reporting, lambda {
     where.not(id: Patient.unscoped.isolation_requiring_review)
          .where(monitoring: true)
@@ -497,7 +497,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     return :closed if closed?
 
     unless isolation
-      return :exposure_pui if pui?
+      return :exposure_under_investigation if pui?
       return :exposure_symptomatic if symptomatic?
       return :exposure_asymptomatic if asymptomatic?
 
@@ -719,7 +719,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       transferred: latest_transfer&.created_at&.rfc2822 || '',
       reason_for_closure: monitoring_reason || '',
       public_health_action: public_health_action || '',
-      status: status&.to_s&.humanize&.downcase || '',
+      status: status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '',
       closed_at: closed_at&.rfc2822 || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || '',

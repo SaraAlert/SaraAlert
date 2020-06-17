@@ -17,7 +17,7 @@ class PublicHealthMonitoringDashboardVerifier < ApplicationSystemTestCase
     verify_patients_under_tab(jurisdiction, verify_scope, 'symptomatic', patients.exposure_symptomatic)
     verify_patients_under_tab(jurisdiction, verify_scope, 'non-reporting', patients.exposure_non_reporting)
     verify_patients_under_tab(jurisdiction, verify_scope, 'asymptomatic', patients.exposure_asymptomatic)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'pui', patients.exposure_pui)
+    verify_patients_under_tab(jurisdiction, verify_scope, 'pui', patients.exposure_under_investigation)
     verify_patients_under_tab(jurisdiction, verify_scope, 'closed', patients.monitoring_closed_without_purged.where(isolation: false))
     verify_patients_under_tab(jurisdiction, false, 'transferred-in', jurisdiction.transferred_in_patients.where(isolation: false))
     verify_patients_under_tab(jurisdiction, false, 'transferred-out', jurisdiction.transferred_out_patients.where(isolation: false))

@@ -135,7 +135,7 @@ class PatientTest < ActiveSupport::TestCase
 
   test 'exposure pui' do
     patient = create(:patient, monitoring: true, purged: false, isolation: false, public_health_action: 'Recommended laboratory testing')
-    verify_patient_status_scopes(patient, :exposure_pui)
+    verify_patient_status_scopes(patient, :exposure_under_investigation)
   end
 
   test 'exposure symptomatic' do
@@ -378,7 +378,7 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal status == :exposure_symptomatic, patients.exposure_symptomatic.exists?
     assert_equal status == :exposure_non_reporting, patients.exposure_non_reporting.exists?
     assert_equal status == :exposure_asymptomatic, patients.exposure_asymptomatic.exists?
-    assert_equal status == :exposure_pui, patients.exposure_pui.exists?
+    assert_equal status == :exposure_under_investigation, patients.exposure_under_investigation.exists?
 
     assert_equal status == :isolation_asymp_non_test_based, patients.isolation_asymp_non_test_based.exists?
     assert_equal status == :isolation_symp_non_test_based, patients.isolation_symp_non_test_based.exists?
