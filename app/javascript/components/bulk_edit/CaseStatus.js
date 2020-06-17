@@ -54,12 +54,12 @@ class CaseStatus extends React.Component {
     var maxEl = patients[0],
       maxCount = 1;
     for (var i = 0; i < patients.length; i++) {
-      var el = patients[i].case_status;
-      if (modeMap[el] == null) modeMap[el] = 1;
-      else modeMap[el]++;
-      if (modeMap[el] > maxCount) {
+      var el = patients[parseInt(i)].case_status;
+      if (modeMap[`${el}`] == null) modeMap[`${el}`] = 1;
+      else modeMap[`${el}`]++;
+      if (modeMap[`${el}`] > maxCount) {
         maxEl = el;
-        maxCount = modeMap[el];
+        maxCount = modeMap[`${el}`];
       }
     }
     return maxEl;
@@ -111,7 +111,7 @@ class CaseStatus extends React.Component {
               : this.state.public_health_action,
         })
         .then(() => {
-          //location.href = window.BASE_PATH;
+          location.href = window.BASE_PATH;
         })
         .catch(error => {
           reportError(error);
