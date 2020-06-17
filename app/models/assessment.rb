@@ -101,7 +101,8 @@ class Assessment < ApplicationRecord
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     {
       en: I18n.backend.send(:translations)[:en][:assessments],
-      es: I18n.backend.send(:translations)[:es][:assessments]
+      es: I18n.backend.send(:translations)[:es][:assessments],
+      'es-PR': I18n.backend.send(:translations)[:'es-PR'][:assessments]
     }
   end
 

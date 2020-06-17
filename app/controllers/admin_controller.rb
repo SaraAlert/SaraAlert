@@ -11,8 +11,11 @@ class AdminController < ApplicationController
   def create_user
     permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
     roles = Role.pluck(:name)
-    email = permitted_params[:email]
+    email = permitted_params[:email].strip
     raise 'EMAIL must be provided' unless email
+
+    address = ValidEmail2::Address.new(email)
+    raise 'EMAIL is invalid' unless address.valid? && !address.disposable?
 
     password = User.rand_gen
     role = permitted_params[:role_title]

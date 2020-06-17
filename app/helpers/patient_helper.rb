@@ -356,7 +356,8 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       'somali': { code: 'so', display: 'Somali', system: 'urn:ietf:bcp:47' },
       'nepali': { code: 'ne', display: 'Nepali', system: 'urn:ietf:bcp:47' },
       'swahili': { code: 'sw', display: 'Swahili', system: 'urn:ietf:bcp:47' },
-      'burmese': { code: 'my', display: 'Burmese', system: 'urn:ietf:bcp:47' }
+      'burmese': { code: 'my', display: 'Burmese', system: 'urn:ietf:bcp:47' },
+      'spanish (puerto rican)': { code: 'es-PR', display: 'Spanish (Puerto Rican)', system: 'urn:ietf:bcp:47' }
     }
     languages[language&.downcase&.to_sym].present? ? languages[language&.downcase&.to_sym] : nil
   end
