@@ -92,7 +92,7 @@ class PublicHealthController < ApplicationController
     end
 
     # Filter by assigned jurisdiction
-    unless assigned_jurisdiction.to_i == current_user.jurisdiction.id || assigned_jurisdiction == 'all'
+    unless assigned_jurisdiction == 'all'
       jur_id = assigned_jurisdiction.to_i
       patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
     end

@@ -194,7 +194,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .joins(:assessments)
+      .where_assoc_exists(:assessments)
       .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_or_fever_medication)
       .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
       .distinct
@@ -205,10 +205,9 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .joins(:assessments)
-      .where('symptom_onset <= ?', 10.days.ago)
       .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
       .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_or_fever_medication)
+      .where('symptom_onset <= ?', 10.days.ago)
       .distinct
   }
 
@@ -278,7 +277,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
          .left_outer_joins(:assessments)
          .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
          .or(
-           where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+           where.not(id: Patient.unscoped.isolation_requiring_review)
+             .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
              .where(monitoring: true)
              .where(purged: false)
              .where(isolation: true)
