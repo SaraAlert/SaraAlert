@@ -25,6 +25,6 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   begin
     driven_by driver, using: :chrome, screen_size: [1400, 1400]
   rescue Webdrivers::BrowserNotFound
-    driven_by :selenium, using: :headless_firefox, screen_size: [1400, 1400]
+    driven_by :selenium, using: :firefox, screen_size: [1400, 1400]
   end
 end
