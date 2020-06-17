@@ -14,6 +14,8 @@ if (!!window.SENTRY_URL) {
 // Rails
 require("@rails/ujs").start()
 
+require('bootstrap');
+
 // React
 var componentRequireContext = require.context("components", true);
 var ReactRailsUJS = require("react_ujs");
