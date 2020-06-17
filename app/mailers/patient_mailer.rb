@@ -12,7 +12,7 @@ class PatientMailer < ApplicationMailer
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
     @lang = patient.select_language
-    mail(to: patient.email, subject: I18n.t('assessments.email.enrollment.subject', locale: @lang)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.enrollment.subject', locale: @lang)) do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
@@ -197,7 +197,7 @@ class PatientMailer < ApplicationMailer
     @patients = ([patient] + patient.dependents).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
-    mail(to: patient.email, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
     add_success_history(patient)
@@ -208,7 +208,7 @@ class PatientMailer < ApplicationMailer
 
     @patient = patient
     @lang = patient.select_language
-    mail(to: patient.email, subject: I18n.t('assessments.email.closed.subject', locale: @lang || :en)) do |format|
+    mail(to: patient.email&.strip, subject: I18n.t('assessments.email.closed.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
