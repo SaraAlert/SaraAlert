@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import { time_ago_in_words } from './helpers';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const history = ({ history }) => {
   return (

@@ -7,7 +7,7 @@ import Demographics from './widgets/Demographics';
 import RiskFactors from './widgets/RiskFactors';
 import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
 import MapComponent from './widgets/MapComponent';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
 import domtoimage from 'dom-to-image';

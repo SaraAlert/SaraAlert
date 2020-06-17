@@ -4,7 +4,7 @@ import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import FileDownload from 'js-file-download';
 import base64StringToBlob from 'base64toblob';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import reportError from '../util/ReportError';
 
 class DownloadMonitoreeExcel extends React.Component {
