@@ -6,12 +6,8 @@ import { Row, Col, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
-import am4themes_animated from '@amcharts/amcharts4/themes/animated';
-import * as am4core from '@amcharts/amcharts4/core';
 import { customTerritories } from '../../data';
 import CountyLevelMaps from './CountyLevelMaps';
-
-am4core.useTheme(am4themes_animated);
 
 const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today
 const INITIAL_SELECTED_DATE_INDEX = 0; // Maybe at some point, we would want to show the latest day initially
@@ -88,7 +84,7 @@ class GeographicSummary extends React.Component {
 
   handleDateRangeChange = value => {
     if (this.state.jurisdictionToShow.category === 'fullCountry') {
-      (this.spinnerState += 2),
+      (this.spinnerState = 2),
         this.setState(
           {
             selectedDateIndex: value,
@@ -106,7 +102,7 @@ class GeographicSummary extends React.Component {
           }
         );
     } else if (this.state.jurisdictionToShow.category === 'state') {
-      (this.spinnerState += 2),
+      (this.spinnerState = 2),
         this.setState(
           {
             selectedDateIndex: value,
@@ -123,7 +119,7 @@ class GeographicSummary extends React.Component {
   };
 
   backToFullCountryMap = () => {
-    this.spinnerState += 2;
+    this.spinnerState = 2;
     this.setState(
       {
         showSpinner: true,
@@ -142,7 +138,7 @@ class GeographicSummary extends React.Component {
     //           mapObject: jurisdictionData.mapObject
 
     console.log(`GeographicSummary: handleJurisdictionChange`);
-    this.spinnerState += 2; // assumed to be 0 + 2, but += is a safer condition
+    this.spinnerState = 2; // assumed to be 0 + 2, but += is a safer condition
     if (jurisdiction === 'USA') {
       this.setState({
         showBackButton: false,
@@ -155,8 +151,22 @@ class GeographicSummary extends React.Component {
         symptomaticJurisdictionData: this.symptomaticFullCountryDataByStateAndDay[this.state.selectedDateIndex],
         mapObject: null,
       });
-    } else if (_.some(customTerritories, c => _.isEqual(c.name, jurisdiction))) {
-      console.log(`I NEED TO IMPLEMENT TERRITORY CODE to load ${jurisdiction}`);
+    } else if (_.some(customTerritories, c => _.isEqual(c, jurisdiction))) {
+      this.setState({ showBackButton: true, showSpinner: true });
+      console.log(`Loading: ${jurisdiction} mapFile`);
+      this.loadJurisdictionData(jurisdiction.mapFile, jurisdiction.name, jurisdictionData => {
+        this.setState({
+          showBackButton: true,
+          jurisdictionToShow: {
+            category: 'territory',
+            name: jurisdiction.name,
+            eventValue: null,
+          },
+          totalJurisdictionData: jurisdictionData.totalJurisdictionData,
+          symptomaticJurisdictionData: jurisdictionData.symptomaticJurisdictionData,
+          mapObject: jurisdictionData.mapObject,
+        });
+      });
     } else {
       this.setState({ showBackButton: true, showSpinner: true });
       console.log(`Loading: ${jurisdiction.target.dataItem.dataContext.map} mapFile`);
@@ -182,6 +192,11 @@ class GeographicSummary extends React.Component {
     const loadJurisdictionMonitoreeData = () => axios.get(`${window.location.origin}/county_level_data/${jurisdictionName}`).then(res => res.data);
 
     const [jurisdictionMapData, jurisdictionMonitoreeData] = await Promise.all([loadJurisdictionMapData(), loadJurisdictionMonitoreeData()]);
+    console.log(`GeographicSummary: values`);
+    console.log(jurisdictionMonitoreeData);
+    console.log(jurisdictionName);
+    console.log(this.totalFullCountryDataByStateAndDay[this.state.selectedDateIndex]);
+    console.log(this.symptomaticFullCountryDataByStateAndDay[this.state.selectedDateIndex]);
 
     callback({
       mapObject: jurisdictionMapData,
@@ -256,7 +271,7 @@ class GeographicSummary extends React.Component {
           <Row className="mx-0 map-panel-controls">
             <DropdownButton variant="primary" size="md" drop="up" className="mr-auto btn-square" title="View Other Jurisdiction">
               {customTerritories.map((territory, index) => (
-                <Dropdown.Item key={index} onClick={() => this.handleJurisdictionChange(territory.name)}>
+                <Dropdown.Item key={index} onClick={() => this.handleJurisdictionChange(territory)}>
                   {territory.name}
                 </Dropdown.Item>
               ))}

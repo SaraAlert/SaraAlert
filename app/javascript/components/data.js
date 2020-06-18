@@ -127,7 +127,7 @@ export const stateOptions = [
   { name: 'Ohio', abbrv: 'OH', mapFile: 'ohLow' },
   { name: 'Oklahoma', abbrv: 'OK', mapFile: 'okLow' },
   { name: 'Oregon', abbrv: 'OR', mapFile: 'orLow' },
-  { name: 'Palau', abbrv: 'PW', mapFile: 'palau' },
+  { name: 'Palau', abbrv: 'PW', mapFile: 'palauLow' },
   { name: 'Pennsylvania', abbrv: 'PA', mapFile: 'paLow' },
   { name: 'Puerto Rico', abbrv: 'PR', mapFile: 'prLow' },
   { name: 'Rhode Island', abbrv: 'RI', mapFile: 'riLow' },
@@ -146,12 +146,12 @@ export const stateOptions = [
 ];
 
 export const customTerritories = [
-  { name: 'American Samoa', abbrv: 'AS', mapFile: 'RANDOMSQUARE' },
-  { name: 'Federated States of Micronesia', abbrv: 'FM', mapFile: 'RANDOMSQUARE' },
+  { name: 'American Samoa', abbrv: 'AS', mapFile: 'asLow' },
+  { name: 'Federated States of Micronesia', abbrv: 'FM', mapFile: 'usaTerritoriesHigh' },
   { name: 'Guam', abbrv: 'GU', mapFile: 'RANDOMSQUARE' },
   { name: 'Marshall Islands', abbrv: 'MH', mapFile: 'RANDOMSQUARE' },
   { name: 'Northern Mariana Islands', abbrv: 'MP', mapFile: 'RANDOMSQUARE' },
-  { name: 'Palau', abbrv: 'PW', mapFile: 'palau' },
+  { name: 'Palau', abbrv: 'PW', mapFile: 'palauLow' },
   { name: 'Puerto Rico', abbrv: 'PR', mapFile: 'prLow' },
   { name: 'Virgin Islands', abbrv: 'VI', mapFile: 'RANDOMSQUARE' },
 ];
