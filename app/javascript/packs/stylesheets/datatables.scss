@@ -107,3 +107,15 @@ table.dataTable tr th.select-checkbox.selected::after  {
 div.dataTables_wrapper div.dataTables_info {
 	padding-top: 0 !important;
 }
+
+button.dt-button {
+  color: #fff;
+	background-color: #226891;
+	border-color: #226891;
+}
+
+button.dt-button:hover {
+  color: #fff;
+	background-color: #1b5272;
+	border-color: #184a68;
+}

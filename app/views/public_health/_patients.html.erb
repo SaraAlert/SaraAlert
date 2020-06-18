@@ -98,30 +98,15 @@
         {
           extend: 'collection',
           text: 'Actions',
+          autoClose: true,
+          className: 'dt-button',
+          enabled: false,
           buttons: [
             {
               text: 'Update Case Status',
               action: function ( e, dt, node, config ) {
                 let selectedPatients = patients_table.rows({ selected: true }).data().toArray();
                 window.bulkEditCaseStatusComponent.activate(selectedPatients);
-              }
-            },
-            {
-              text: 'Move to Closed',
-              action: function ( e, dt, node, config ) {
-                dt.column( -1 ).visible( ! dt.column( -1 ).visible() );
-              }
-            },
-            {
-              text: 'Pause/Resume Notifications',
-              action: function ( e, dt, node, config ) {
-                dt.column( -1 ).visible( ! dt.column( -1 ).visible() );
-              }
-            },
-            {
-              text: 'Update Jurisdiction',
-              action: function ( e, dt, node, config ) {
-                dt.column( -1 ).visible( ! dt.column( -1 ).visible() );
               }
             },
           ]
@@ -220,7 +205,7 @@
           <% if type == 'all_patients' %>,{ "data": "linelist.status", "orderable": false, render: $.fn.dataTable.render.text() }<% end %>
         <% end %>
       ],
-      "dom": "<'row'<'col-sm-24 col-md-4'l><'col-sm-24 col-md-8'i><'col-sm-24 col-md-6'B><'col-sm-24 col-md-4'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>",
+      "dom": "<'row'<'col-sm-24 col-md-6'B><'col-sm-24 col-md-4'l><'col-sm-24 col-md-8'i><'col-sm-24 col-md-4'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>",
     });
 
     $(document).on('change', 'select#assigned_jurisdiction_<%= type %>', function(event) {
@@ -269,7 +254,16 @@
     table.buttons().container()
         .appendTo( '#patients_table_<%= type %>_wrapper .row .col-md-6:eq(0)' );
 
+<<<<<<< HEAD
     table.on("click", "th.select-checkbox", function() {
+=======
+    patients_table.on( 'select deselect', function () {
+        var selectedRows = patients_table.rows( { selected: true } ).count();
+        patients_table.button( 0 ).enable( selectedRows > 0 );
+    } );
+
+    patients_table.on("click", "th.select-checkbox", function() {
+>>>>>>> Styling for datatable buttons
       if ($("th.select-checkbox").hasClass("selected")) {
         table.rows().deselect();
         $("th.select-checkbox").removeClass("selected");
