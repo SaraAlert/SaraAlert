@@ -251,13 +251,18 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless new_hoh_id
 
     patients_to_update = household_ids + [current_patient_id]
+    current_user_patients = if current_user.has_role?(:enroller)
+                              current_user.enrolled_patients
+                            else
+                              current_user.viewable_patients
+                            end
     # Make sure all household ids are within jurisdiction
     redirect_to(root_url) && return if patients_to_update.any? do |patient_id|
-      !current_user.viewable_patients.exists?(patient_id)
+      !current_user_patients.exists?(patient_id)
     end
 
     # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
-    current_user.viewable_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
+    current_user_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
   end
 
   # Updates to workflow/tracking status for a subject
