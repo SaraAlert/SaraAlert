@@ -32,31 +32,31 @@ class CaseStatus extends React.Component {
     let hideModal = this.state.isolation && (value === 'Confirmed' || value === 'Probable');
 
     this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal }, () => {
-      // update case status without showing modal (rare)
+      // specific case where case status is just changed with no modal
       if (hideModal) {
+        this.setState({ message: 'case status to "' + this.state.case_status + '".' });
         this.submit();
+      }
 
-        // instances where case status modal is shown
-      } else {
-        if (event.target.id === 'confirmed') {
-          if (event.target.value === 'End Monitoring') {
-            this.setState({
-              monitoring: false,
-              monitoring_reason: 'Meets Case Definition',
-              message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
-            });
-          }
-          if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
-            this.setState({
-              monitoring: true,
-              isolation: true,
-              monitoring_reason: 'Meets Case Definition',
-              message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
-            });
-          }
-        } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
-          this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
+      // all other cases
+      if (event.target.id === 'confirmed') {
+        if (event.target.value === 'End Monitoring') {
+          this.setState({
+            monitoring: false,
+            monitoring_reason: 'Meets Case Definition',
+            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+          });
         }
+        if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
+          this.setState({
+            monitoring: true,
+            isolation: true,
+            monitoring_reason: 'Meets Case Definition',
+            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+          });
+        }
+      } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
+        this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
       }
     });
   }
