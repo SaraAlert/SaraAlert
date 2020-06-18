@@ -19,6 +19,8 @@ class CountyLevelMaps extends React.Component {
     this.territoryChart = null;
     this.usaSeries = null;
     this.usaPolygon = null;
+    this.usaSeries2 = null;
+    this.usaPolygon2 = null;
     this.jurisdictionSeries = null;
     this.jurisdictionPolygon = null;
     this.territorySeries = null;
@@ -56,10 +58,12 @@ class CountyLevelMaps extends React.Component {
     this.usaSeries.geodata = usaLow;
 
     this.usaPolygon = this.usaSeries.mapPolygons.template;
+    this.usaPolygon.tooltipPosition = 'fixed';
     this.usaPolygon.tooltipText = '{name}: {value}';
     this.usaPolygon.nonScalingStroke = true;
     this.usaPolygon.fill = am4core.color('#3e6887');
     this.usaPolygon.propertyFields.fill = 'color';
+    this.usaSeries.exclude = this.props.statesNotInUse;
 
     this.usaSeries.heatRules.push({
       property: 'fill',
@@ -72,19 +76,23 @@ class CountyLevelMaps extends React.Component {
       this.props.handleJurisdictionChange(ev);
     });
 
+    // the `2` series and polygon are for the states not in use.
+    this.usaSeries2 = this.chart.series.push(new am4maps.MapPolygonSeries());
+    this.usaSeries2.useGeodata = true;
+    this.usaSeries2.geodata = usaLow;
+    this.usaSeries2.include = this.props.statesNotInUse;
+
+    this.usaPolygon2 = this.usaSeries2.mapPolygons.template;
+    this.usaPolygon2.tooltipPosition = 'fixed';
+    this.usaPolygon2.tooltipText = 'Sara Alert Not In Use';
+    this.usaPolygon2.nonScalingStroke = true;
+    this.usaPolygon2.fill = am4core.color('#a5a5a5');
+    this.usaSeries2.tooltip.getFillFromObject = false;
+    this.usaSeries2.tooltip.background.fill = am4core.color('#333');
+
     this.jurisdictionSeries = this.chart.series.push(new am4maps.MapPolygonSeries());
     this.jurisdictionSeries.useGeodata = true;
     this.jurisdictionSeries.hide();
-
-    // this.jurisdictionSeries.events.onAll(ev => {
-    // console.log('Remove this at some point, but its interesting to see all events', ev);
-    // });
-    // this.jurisdictionSeries.geodataSource.events.on('done', () => {
-    //   console.log("done fires...?")
-    //   this.usaSeries.hide();
-    //   this.jurisdictionSeries.show();
-    //   this.updateJurisdictionData();
-    // });
 
     this.jurisdictionSeries.geodataSource.events.on('error', ev => {
       reportError(ev);
@@ -92,36 +100,6 @@ class CountyLevelMaps extends React.Component {
 
     this.jurisdictionPolygon = this.jurisdictionSeries.mapPolygons.template;
     this.jurisdictionPolygon.tooltipText = '{name} : {value}';
-    console.log(`this.jurisdictionPolygon`);
-    console.log(this.jurisdictionPolygon);
-    // this.mapImageSeries.tooltip
-    // this.jurisdictionPolygon.adapter.add("tooltipText", ev => {
-    // this.jurisdictionSeries.adapter.add("tooltipText", ev => {
-    // var text = "[bold]{dateX}[/]\n"
-    // chart.series.each(function(item) {
-    // text += "[" + item.stroke.hex + "]●[/] " + item.name + ": {" + item.dataFields.valueY + "}\n";
-    // });÷
-    // return '{name} : {value}'
-    // return text;
-    // });
-    // Set up tooltip
-    // series.adapter.add("tooltipText", function(ev) {
-    //   var text = "[bold]{dateX}[/]\n"
-    //   chart.series.each(function(item) {
-    //     text += "[" + item.stroke.hex + "]●[/] " + item.name + ": {" + item.dataFields.valueY + "}\n";
-    //   });
-    //   return text;
-    // });
-    // this.jurisdictionSeries.calculateVisualCenter = true;
-    // this.jurisdictionTemplate.tooltipPosition = "fixed";
-    // series.tooltip.label.adapter.add("text", function(text, target) {
-    //   if (target.dataItem && target.dataItem.valueY == 0) {
-    //     return "Sara Alert Not in Use";
-    //   }
-    //   else {
-    //     return text;
-    //   }
-    // });
     this.jurisdictionPolygon.nonScalingStroke = true;
     this.jurisdictionPolygon.fill = am4core.color('#f06a6d');
     this.jurisdictionSeries.heatRules.push({
@@ -156,7 +134,7 @@ class CountyLevelMaps extends React.Component {
       max: am4core.color('#A62639').brighten(0.5),
     });
 
-    // this.territorySeries.hide();// = usaLow;
+    this.territorySeries.hide();
 
     // Assign the hover colors to the jurisdictionPolygons and usaPolygons
     var hoverColor = this.usaPolygon.states.create('hover');
@@ -168,14 +146,20 @@ class CountyLevelMaps extends React.Component {
     hoverColor = this.territoryPolygon.states.create('hover');
     hoverColor.properties.fill = this.territoryChart.colors.getIndex(1);
 
-    // selectedDateIndex will mostly likely be initialized as 0 (meaning the oldest date in our dataset)
-    // this.updateDataWithNewDate(this.props.selectedDateIndex)
     this.updateJurisdictionData();
   };
 
+  hideUSAMap = () => {
+    this.usaSeries.hide();
+    this.usaSeries2.hide();
+  };
+
+  showUSAMap = () => {
+    this.usaSeries.show();
+    this.usaSeries2.show();
+  };
+
   renderHeatLegend = dataSeries => {
-    console.log(`CLM : Render Heat Legend`);
-    console.log(this.props.jurisdictionToShow.category);
     let heatLegendReference = this.props.jurisdictionToShow.category === 'territory' ? this.territoryHeatLegend : this.heatLegend;
     heatLegendReference.id = 'heatLegend';
     heatLegendReference.series = dataSeries;
@@ -195,8 +179,7 @@ class CountyLevelMaps extends React.Component {
 
     heatLegendReference.valueAxis.renderer.labels.template.adapter.add('text', () => ``);
 
-    dataSeries.events.on('datavalidated', ev => {
-      heatLegendReference = ev.target.map.getKey('heatLegend');
+    dataSeries.events.on('datavalidated', () => {
       let min = heatLegendReference.series.dataItem.values.value.low;
       let minRange = heatLegendReference.valueAxis.axisRanges.getIndex(0);
       minRange.value = min;
@@ -209,6 +192,7 @@ class CountyLevelMaps extends React.Component {
   };
 
   componentDidUpdate = prevProps => {
+    console.log('CLM: ComponentDidUpdate');
     // The ordering of these two if statements is important
     // If a new jurisdiction is specified, then transition to the new jurisdiction
     // Else if JUST the data has updated, then just update the data
@@ -224,15 +208,13 @@ class CountyLevelMaps extends React.Component {
     if (this.props.jurisdictionToShow.category === 'fullCountry') {
       this.setState({ showTerritory: false }, () => {
         this.jurisdictionSeries.hide();
-        this.usaSeries.show();
+        this.showUSAMap();
         this.chart.maxZoomLevel = 32;
         this.chart.goHome();
         setTimeout(() => {
           this.chart.maxZoomLevel = 1;
           this.updateJurisdictionData();
           this.props.decrementSpinnerCount();
-          console.log('here:');
-          console.log(this.usaSeries);
         }, 1050);
       });
     } else if (this.props.jurisdictionToShow.category === 'territory') {
@@ -255,8 +237,7 @@ class CountyLevelMaps extends React.Component {
         // Delaying the render by 1.05 seconds (That's how long the zoom takes - I timed it)
         // makes the UI feel more responsive
         setTimeout(() => {
-          // this.chart.maxZoomLevel = 1;
-          this.usaSeries.hide();
+          this.hideUSAMap();
           this.jurisdictionSeries.geodata = this.props.mapObject;
           this.jurisdictionSeries.show();
           this.updateJurisdictionData();
@@ -284,7 +265,7 @@ class CountyLevelMaps extends React.Component {
       this.renderHeatLegend(this.usaSeries);
       this.props.decrementSpinnerCount();
     } else if (this.props.jurisdictionToShow.category === 'territory') {
-      console.log('I need to make a write code to handle TERRITORY');
+      console.log('Need to make a write code to handle TERRITORY');
       let counties = this.territorySeries.geodata.features;
       counties.forEach(county => {
         data.push({
@@ -326,6 +307,7 @@ CountyLevelMaps.propTypes = {
   mapObject: PropTypes.object,
   handleJurisdictionChange: PropTypes.func,
   decrementSpinnerCount: PropTypes.func,
+  statesNotInUse: PropTypes.array,
 };
 
 export default CountyLevelMaps;

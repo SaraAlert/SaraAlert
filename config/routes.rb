@@ -98,6 +98,6 @@ Rails.application.routes.draw do
 
   get '/analytics', to: 'analytics#index', as: :analytics
   get '/county_level_maps/:mapFile', to: 'analytics#get_geo_json'
-  get '/county_level_data/:jurisdictionName', to: 'analytics#get_jurisdiction_data'
+  get '/county_level_data/:jurisdictionName/:date', to: 'analytics#get_jurisdiction_data'
 
 end

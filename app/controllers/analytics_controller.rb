@@ -26,10 +26,12 @@ class AnalyticsController < ApplicationController
   end
 
   def get_jurisdiction_data
+    # STUB ENDPOINT
+    # Currently just returns massachusetts values
     render json:
     {
       "total": {
-        "Worcester": "SARA ALERT",
+        "Worcester": 12,
         "Suffolk": 145,
         "Plymouth": 14,
         "Norfolk": 68,

@@ -6,16 +6,16 @@ import { Row, Col, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
-import { customTerritories } from '../../data';
+import { stateOptions, customTerritories } from '../../data';
 import CountyLevelMaps from './CountyLevelMaps';
 
 const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today
 const INITIAL_SELECTED_DATE_INDEX = 0; // Maybe at some point, we would want to show the latest day initially
+const STATES_NOT_IN_USE = [];
 
 class GeographicSummary extends React.Component {
   constructor(props) {
     super(props);
-
     // We will load each state individually, as required, but the data for the entire country is always loaded
     // omit `day` from these, because they index-match the `dateSubset`. Makes parsing easier later (no need to remove the `day` flag)
     this.totalFullCountryDataByStateAndDay = _.takeRight(this.props.stats.total_patient_count_by_state_and_day, MAX_DAYS_OF_HISTORY).map(x => _.omit(x, 'day'));
@@ -23,7 +23,13 @@ class GeographicSummary extends React.Component {
       _.omit(x, 'day')
     );
 
-    console.log(this.symptomaticFullCountryDataByStateAndDay);
+    let statesInUse = _.uniq(_.flatten(this.totalFullCountryDataByStateAndDay.map(x => Object.keys(_.omit(x, 'day')))));
+    stateOptions.map(state => {
+      if (!statesInUse.includes(state.name)) {
+        STATES_NOT_IN_USE.push(`US-${state.abbrv}`);
+      }
+    });
+
     this.state = {
       selectedDateIndex: INITIAL_SELECTED_DATE_INDEX,
       showBackButton: false,
@@ -112,7 +118,7 @@ class GeographicSummary extends React.Component {
           }
         );
     } else if (this.state.jurisdictionToShow.category === 'territory') {
-      console.log('I need to make a request for a TERRITORY DATA');
+      console.log('Need to make a request for a TERRITORY DATA');
     } else {
       console.error('THIS SHOULD NEVER HAPPEN');
     }
@@ -131,14 +137,8 @@ class GeographicSummary extends React.Component {
   };
 
   handleJurisdictionChange = jurisdiction => {
-    // Everyone in this function needs to provide:
-    //           jurisdictionToShow: newJurisdiction,
-    //           totalJurisdictionData: jurisdictionData.totalJurisdictionData,
-    //           symptomaticJurisdictionData: jurisdictionData.symptomaticJurisdictionData,
-    //           mapObject: jurisdictionData.mapObject
-
     console.log(`GeographicSummary: handleJurisdictionChange`);
-    this.spinnerState = 2; // assumed to be 0 + 2, but += is a safer condition
+    this.spinnerState = 2;
     if (jurisdiction === 'USA') {
       this.setState({
         showBackButton: false,
@@ -152,6 +152,7 @@ class GeographicSummary extends React.Component {
         mapObject: null,
       });
     } else if (_.some(customTerritories, c => _.isEqual(c, jurisdiction))) {
+      // THIS IS TERRITORY CODE
       this.setState({ showBackButton: true, showSpinner: true });
       console.log(`Loading: ${jurisdiction} mapFile`);
       this.loadJurisdictionData(jurisdiction.mapFile, jurisdiction.name, jurisdictionData => {
@@ -168,6 +169,7 @@ class GeographicSummary extends React.Component {
         });
       });
     } else {
+      // THIS IS STATE CODE
       this.setState({ showBackButton: true, showSpinner: true });
       console.log(`Loading: ${jurisdiction.target.dataItem.dataContext.map} mapFile`);
       this.loadJurisdictionData(jurisdiction.target.dataItem.dataContext.map, jurisdiction.target.dataItem.dataContext.name, jurisdictionData => {
@@ -189,14 +191,12 @@ class GeographicSummary extends React.Component {
   loadJurisdictionData = async (jurisdictionFileName, jurisdictionName, callback) => {
     console.log(`GeographicSummary: loadJurisdictionData`);
     const loadJurisdictionMapData = () => axios.get(`${window.location.origin}/county_level_maps/${jurisdictionFileName}`).then(res => res.data);
-    const loadJurisdictionMonitoreeData = () => axios.get(`${window.location.origin}/county_level_data/${jurisdictionName}`).then(res => res.data);
+    // IS THIS EVEN THE CORRECT WAY TO USE MULTIPLE GET Parameters? Should it be ?val1=x&val2=y
+    // TODO later
+    const loadJurisdictionMonitoreeData = () =>
+      axios.get(`${window.location.origin}/county_level_data/${jurisdictionName}/${this.state.selectedDateIndex}`).then(res => res.data);
 
     const [jurisdictionMapData, jurisdictionMonitoreeData] = await Promise.all([loadJurisdictionMapData(), loadJurisdictionMonitoreeData()]);
-    console.log(`GeographicSummary: values`);
-    console.log(jurisdictionMonitoreeData);
-    console.log(jurisdictionName);
-    console.log(this.totalFullCountryDataByStateAndDay[this.state.selectedDateIndex]);
-    console.log(this.symptomaticFullCountryDataByStateAndDay[this.state.selectedDateIndex]);
 
     callback({
       mapObject: jurisdictionMapData,
@@ -206,7 +206,7 @@ class GeographicSummary extends React.Component {
   };
 
   render() {
-    console.log('GS - render');
+    console.log('GeographicSummary - render');
     let backButton = this.state.showBackButton && (
       <Button variant="primary" size="md" className="ml-auto btn-square" onClick={() => this.backToFullCountryMap()}>
         <i className="fas fa-arrow-left mr-2"> </i>
@@ -244,6 +244,7 @@ class GeographicSummary extends React.Component {
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
+                  statesNotInUse={STATES_NOT_IN_USE}
                 />
               </Col>
               <Col md="12" className="pl-0">
@@ -254,6 +255,7 @@ class GeographicSummary extends React.Component {
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
+                  statesNotInUse={STATES_NOT_IN_USE}
                 />
               </Col>
             </Row>
