@@ -227,10 +227,8 @@ class Identification extends React.Component {
                 <div className="nav-input-label">LANGUAGE</div>
               </Form.Row>
               <Form.Row className="pb-3 pt-1 ml-0">
-                <div>
-                  Primary Language is used to determine the translations for what the monitoree sees/hears. Currently supported languages are English and
-                  Spanish. Other languages will currently default to English.
-                </div>
+                Primary Language is used to determine the translations for what the monitoree sees/hears. Currently supported languages are indicated by a * in
+                the below list. When a primary contact method is selected for a language that is not supported, Sara Alert will default to English.
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="primary_language">
@@ -246,38 +244,39 @@ class Identification extends React.Component {
                   />
                   <datalist id="languages">
                     <option></option>
-                    <option>English</option>
-                    <option>Spanish</option>
-                    <option>Arabic</option>
-                    <option>Bengali</option>
-                    <option>Czech</option>
-                    <option>Danish</option>
-                    <option>German</option>
-                    <option>Greek</option>
-                    <option>Finnish</option>
-                    <option>French</option>
-                    <option>Frysian</option>
-                    <option>Hindi</option>
-                    <option>Croatian</option>
-                    <option>Italian</option>
-                    <option>Japanese</option>
-                    <option>Korean</option>
-                    <option>Dutch</option>
-                    <option>Norwegian</option>
-                    <option>Punjabi</option>
-                    <option>Polish</option>
-                    <option>Portuguese</option>
-                    <option>Russian</option>
-                    <option>Serbian</option>
-                    <option>Swedish</option>
-                    <option>Telegu</option>
-                    <option>Chinese</option>
-                    <option>Vietnamese</option>
-                    <option>Tagalog</option>
-                    <option>Somali</option>
-                    <option>Nepali</option>
-                    <option>Swahili</option>
-                    <option>Burmese</option>
+                    <option value="English">English*</option>
+                    <option value="Spanish">Spanish*</option>
+                    <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)*</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="Czech">Czech</option>
+                    <option value="Danish">Danish</option>
+                    <option value="German">German</option>
+                    <option value="Greek">Greek</option>
+                    <option value="Finnish">Finnish</option>
+                    <option value="French">French</option>
+                    <option value="Frysian">Frysian</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Croatian">Croatian</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Korean">Korean</option>
+                    <option value="Dutch">Dutch</option>
+                    <option value="Norwegian">Norwegian</option>
+                    <option value="Punjabi">Punjabi</option>
+                    <option value="Polish">Polish</option>
+                    <option value="Portuguese">Portuguese</option>
+                    <option value="Russian">Russian</option>
+                    <option value="Serbian">Serbian</option>
+                    <option value="Swedish">Swedish</option>
+                    <option value="Telegu">Telegu</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Vietnamese">Vietnamese</option>
+                    <option value="Tagalog">Tagalog</option>
+                    <option value="Somali">Somali</option>
+                    <option value="Nepali">Nepali</option>
+                    <option value="Swahili">Swahili</option>
+                    <option value="Burmese">Burmese</option>
                   </datalist>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['primary_language']}
@@ -297,38 +296,39 @@ class Identification extends React.Component {
                   />
                   <datalist id="languages">
                     <option></option>
-                    <option>English</option>
-                    <option>Spanish</option>
-                    <option>Arabic</option>
-                    <option>Bengali</option>
-                    <option>Czech</option>
-                    <option>Danish</option>
-                    <option>German</option>
-                    <option>Greek</option>
-                    <option>Finnish</option>
-                    <option>French</option>
-                    <option>Frysian</option>
-                    <option>Hindi</option>
-                    <option>Croatian</option>
-                    <option>Italian</option>
-                    <option>Japanese</option>
-                    <option>Korean</option>
-                    <option>Dutch</option>
-                    <option>Norwegian</option>
-                    <option>Punjabi</option>
-                    <option>Polish</option>
-                    <option>Portuguese</option>
-                    <option>Russian</option>
-                    <option>Serbian</option>
-                    <option>Swedish</option>
-                    <option>Telegu</option>
-                    <option>Chinese</option>
-                    <option>Vietnamese</option>
-                    <option>Tagalog</option>
-                    <option>Somali</option>
-                    <option>Nepali</option>
-                    <option>Swahili</option>
-                    <option>Burmese</option>
+                    <option value="English">English</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)</option>
+                    <option value="Arabic">Arabic</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="Czech">Czech</option>
+                    <option value="Danish">Danish</option>
+                    <option value="German">German</option>
+                    <option value="Greek">Greek</option>
+                    <option value="Finnish">Finnish</option>
+                    <option value="French">French</option>
+                    <option value="Frysian">Frysian</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Croatian">Croatian</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Korean">Korean</option>
+                    <option value="Dutch">Dutch</option>
+                    <option value="Norwegian">Norwegian</option>
+                    <option value="Punjabi">Punjabi</option>
+                    <option value="Polish">Polish</option>
+                    <option value="Portuguese">Portuguese</option>
+                    <option value="Russian">Russian</option>
+                    <option value="Serbian">Serbian</option>
+                    <option value="Swedish">Swedish</option>
+                    <option value="Telegu">Telegu</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Vietnamese">Vietnamese</option>
+                    <option value="Tagalog">Tagalog</option>
+                    <option value="Somali">Somali</option>
+                    <option value="Nepali">Nepali</option>
+                    <option value="Swahili">Swahili</option>
+                    <option value="Burmese">Burmese</option>
                   </datalist>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['secondary_language']}

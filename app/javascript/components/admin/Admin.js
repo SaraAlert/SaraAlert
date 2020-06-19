@@ -40,7 +40,6 @@ class Admin extends React.Component {
       .catch(() => {
         return false;
       });
-
     send_result.then(success => {
       if (success) {
         row['failed_attempts'] = 0;
@@ -49,7 +48,7 @@ class Admin extends React.Component {
         this.props.data.push(row);
         this.setState({ data: this.props.data });
       } else {
-        alert('Error adding new user.');
+        alert('Error adding new user. Was the specified email address valid?');
       }
     });
   }

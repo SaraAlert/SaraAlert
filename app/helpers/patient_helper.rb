@@ -102,14 +102,14 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Helper to create an extension for preferred contact method
   def to_preferred_contact_method_extension(preferred_contact_method)
     preferred_contact_method.nil? ? nil : FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/preferred_contact_method',
+      url: 'http://saraalert.org/StructureDefinition/preferred-contact-method',
       valueString: preferred_contact_method
     )
   end
 
   # Helper to understand an extension for preferred contact method
   def self.from_preferred_contact_method_extension(patient)
-    pcm = patient&.extension&.select { |e| e.url.include?('preferred_contact_method') }&.first&.valueString
+    pcm = patient&.extension&.select { |e| e.url.include?('preferred-contact-method') }&.first&.valueString
     pcm = nil unless ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include?(pcm)
     pcm
   end
@@ -117,14 +117,14 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Helper to create an extension for preferred contact time
   def to_preferred_contact_time_extension(_preferred_contact_method)
     preferred_contact_time.nil? ? nil : FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/preferred_contact_time',
+      url: 'http://saraalert.org/StructureDefinition/preferred-contact-time',
       valueString: preferred_contact_time
     )
   end
 
   # Helper to understand an extension for preferred contact time
   def self.from_preferred_contact_time_extension(patient)
-    pct = patient&.extension&.select { |e| e.url.include?('preferred_contact_time') }&.first&.valueString
+    pct = patient&.extension&.select { |e| e.url.include?('preferred-contact-time') }&.first&.valueString
     pct = nil unless %w[Morning Afternoon Evening].include?(pct)
     pct
   end
@@ -132,14 +132,14 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Helper to create an extension for symptom onset date
   def to_symptom_onset_date_extension(symptom_onset)
     symptom_onset.nil? ? nil : FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/symptom_onset_date',
+      url: 'http://saraalert.org/StructureDefinition/symptom-onset-date',
       valueDate: symptom_onset
     )
   end
 
   # Helper to understand an extension for symptom onset date
   def self.from_symptom_onset_date_extension(patient)
-    Date.strptime(patient&.extension&.select { |e| e.url.include?('symptom_onset_date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
+    Date.strptime(patient&.extension&.select { |e| e.url.include?('symptom-onset-date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
   rescue ArgumentError
     nil
   end
@@ -147,14 +147,14 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Helper to create an extension for last exposure date
   def to_last_exposure_date_extension(last_exposure)
     last_exposure.nil? ? nil : FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/last_exposure_date',
+      url: 'http://saraalert.org/StructureDefinition/last-exposure-date',
       valueDate: last_exposure
     )
   end
 
   # Helper to understand an extension for last exposure date
   def self.from_last_exposure_date_extension(patient)
-    Date.strptime(patient&.extension&.select { |e| e.url.include?('last_exposure_date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
+    Date.strptime(patient&.extension&.select { |e| e.url.include?('last-exposure-date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
   rescue ArgumentError
     nil
   end
@@ -356,7 +356,8 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       'somali': { code: 'so', display: 'Somali', system: 'urn:ietf:bcp:47' },
       'nepali': { code: 'ne', display: 'Nepali', system: 'urn:ietf:bcp:47' },
       'swahili': { code: 'sw', display: 'Swahili', system: 'urn:ietf:bcp:47' },
-      'burmese': { code: 'my', display: 'Burmese', system: 'urn:ietf:bcp:47' }
+      'burmese': { code: 'my', display: 'Burmese', system: 'urn:ietf:bcp:47' },
+      'spanish (puerto rican)': { code: 'es-PR', display: 'Spanish (Puerto Rican)', system: 'urn:ietf:bcp:47' }
     }
     languages[language&.downcase&.to_sym].present? ? languages[language&.downcase&.to_sym] : nil
   end

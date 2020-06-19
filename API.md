@@ -343,15 +343,15 @@ Get a monitoree via an id, e.g.:
       "valueCode": "M"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
       "valueString": "E-mailed Web Link"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+      "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
       "valueDate": "2020-05-18"
     },
     {
@@ -625,15 +625,15 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
             "valueCode": "F"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
             "valueString": "E-mailed Web Link"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+            "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
             "valueDate": "2020-05-16"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
             "valueDate": "2020-05-11"
           },
           {
@@ -820,30 +820,39 @@ The API supports creating new monitorees.
 
 Along with supporting the US Core extensions for race, ethnicity, and birthsex, Sara Alert includes four additional extensions for things specific to the Sara Alert workflows.
 
-Use `http://saraalert.org/StructureDefinition/preferred_contact_method` for specifying the monitorees Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, and `SMS Text-message`).
+Use `http://saraalert.org/StructureDefinition/preferred-contact-method` for specifying the monitorees Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, and `SMS Text-message`).
 
 ```json
 {
-  "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+  "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
   "valueString": "E-mailed Web Link"
 }
 ```
 
-Use `http://saraalert.org/StructureDefinition/symptom_onset_date` to specify when the monitoree's first symptoms appeared for use in the Sara Alert isolation workflow.
+Use `http://saraalert.org/StructureDefinition/preferred-contact-time` for specifying the monitorees Sara Alert preferred contact time (options are: `Morning`, `Afternoon`, and `Evening`).
 
 ```json
 {
-  "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+  "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+  "valueString": "Morning"
+}
+```
+
+Use `http://saraalert.org/StructureDefinition/symptom-onset-date` to specify when the monitoree's first symptoms appeared for use in the Sara Alert isolation workflow.
+
+```json
+{
+  "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
   "valueDate": "2020-05-23"
 }
 ```
 
-Use `http://saraalert.org/StructureDefinition/last_exposure_date` to specify when the monitoree's last exposure occurred for use in the Sara Alert exposure workflow.
+Use `http://saraalert.org/StructureDefinition/last-exposure-date` to specify when the monitoree's last exposure occurred for use in the Sara Alert exposure workflow.
 
 
 ```json
 {
-  "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+  "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
   "valueDate": "2020-05-18"
 }
 ```
@@ -910,15 +919,15 @@ To create a new monitoree, simply POST a FHIR Patient resource.
       "valueCode": "M"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
       "valueString": "E-mailed Web Link"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+      "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
       "valueDate": "2020-05-18"
     },
     {
@@ -1036,15 +1045,15 @@ On success, the server will return the newly created resource with an id. This i
       "valueCode": "M"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
       "valueString": "E-mailed Web Link"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+      "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
       "valueDate": "2020-05-18"
     },
     {
@@ -1166,15 +1175,15 @@ The API supports updating existing monitorees.
       "valueCode": "M"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
       "valueString": "E-mailed Web Link"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+      "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
       "valueDate": "2020-05-18"
     },
     {
@@ -1292,15 +1301,15 @@ On success, the server will update the existing resource given the id.
       "valueCode": "M"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
       "valueString": "E-mailed Web Link"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+      "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
       "valueDate": "2020-05-23"
     },
     {
-      "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
       "valueDate": "2020-05-18"
     },
     {
@@ -1438,15 +1447,15 @@ GET `[base]/Patient?given=testy&family=mctest`
             "valueCode": "F"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
             "valueString": "E-mailed Web Link"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+            "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
             "valueDate": "2020-05-16"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
             "valueDate": "2020-05-11"
           },
           {
@@ -1633,15 +1642,15 @@ GET `[base]/Patient?_count=2`
             "valueCode": "M"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
             "valueString": "E-mailed Web Link"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+            "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
             "valueDate": "2020-05-18"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
             "valueDate": "2020-05-12"
           },
           {
@@ -1750,15 +1759,15 @@ GET `[base]/Patient?_count=2`
             "valueCode": "M"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/preferred_contact_method",
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
             "valueString": "E-mailed Web Link"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/symptom_onset_date",
+            "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
             "valueDate": "2020-05-19"
           },
           {
-            "url": "http://saraalert.org/StructureDefinition/last_exposure_date",
+            "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
             "valueDate": "2020-05-15"
           },
           {

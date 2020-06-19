@@ -51,10 +51,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Patient', json_response['resourceType']
     assert_equal 3, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
-    assert_equal 'Telephone call', json_response['extension'].filter { |e| e['url'].include? 'preferred_contact_method' }.first['valueString']
-    assert_equal 'Morning', json_response['extension'].filter { |e| e['url'].include? 'preferred_contact_time' }.first['valueString']
-    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last_exposure_date' }.first['valueDate']
-    assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom_onset_date' }.first['valueDate']
+    assert_equal 'Telephone call', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
+    assert_equal 'Morning', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
+    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
+    assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
   end
 
@@ -145,10 +145,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not p.nil?
     assert_equal 'Patient', json_response['resourceType']
     assert_equal 'Kirlin44', json_response['name'].first['family']
-    assert_equal 'SMS Texted Weblink', json_response['extension'].filter { |e| e['url'].include? 'preferred_contact_method' }.first['valueString']
-    assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred_contact_time' }.first['valueString']
-    assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last_exposure_date' }.first['valueDate']
-    assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom_onset_date' }.first['valueDate']
+    assert_equal 'SMS Texted Weblink', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
+    assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
+    assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
+    assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
   end
 

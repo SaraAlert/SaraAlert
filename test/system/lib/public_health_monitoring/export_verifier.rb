@@ -8,10 +8,10 @@ require_relative '../system_test_utils'
 class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   include ImportExportHelper
   @@system_test_utils = SystemTestUtils.new(nil)
-    
+
   DOWNLOAD_TIMEOUT = 10
   DOWNLOAD_CHECK_INTERVAL = 0.1
-  
+
   def verify_line_list_csv(user_label, workflow)
     current_user = @@system_test_utils.get_user(user_label)
     download_file(current_user, "csv_#{workflow}")
@@ -19,7 +19,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     patients = current_user.jurisdiction.all_patients.where(isolation: workflow == :isolation).order(:id)
     verify_csv_export(csv, :line_list, LINELIST_HEADERS, patients)
   end
-  
+
   def verify_sara_alert_format(user_label, workflow)
     current_user = @@system_test_utils.get_user(user_label)
     download_file(current_user, "sara_format_#{workflow}")
@@ -51,7 +51,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   end
 
   def verify_sara_alert_format_guidance
-    xlsx = get_xlsx("sara_alert_comprehensive_monitoree.xlsx")
+    xlsx = get_xlsx("Sara%20Alert%20Import%20Format.xlsx")
   end
 
   def verify_csv_export(csv, type, headers, patients)

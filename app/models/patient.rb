@@ -619,6 +619,13 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     age
   end
 
+  def select_language
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    lang = PatientHelper.languages(primary_language)&.dig(:code)&.to_sym || :en
+    lang = :en unless %i[en es es-PR].include?(lang)
+    lang
+  end
+
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
@@ -706,7 +713,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   # Information about this subject (that is useful in a linelist)
   def linelist
     {
-      name: { name: "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}", id: id },
+      name: { name: first_name.present? || last_name.present? ? "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}" : 'NAME NOT PROVIDED', id: id },
       jurisdiction: jurisdiction&.name || '',
       assigned_user: assigned_user || '',
       state_local_id: user_defined_id_statelocal || '',

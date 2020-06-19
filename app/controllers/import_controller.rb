@@ -19,8 +19,8 @@ class ImportController < ApplicationController
 
   def download_guidance
     send_file(
-      "#{Rails.root}/public/sara_alert_comprehensive_monitoree.xlsx",
-      filename: 'sara_alert_comprehensive_monitoree.xlsx',
+      "#{Rails.root}/public/Sara%20Alert%20Import%20Format.xlsx",
+      filename: 'Sara%20Alert%20Import%20Format.xlsx',
       type: 'application/vnd.ms-excel'
     )
   end
