@@ -31,7 +31,8 @@ class RiskFactors extends React.Component {
     if (!this.ERRORS) {
       this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', this.state.viewTotal);
       this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
-      this.NO_COUNTRY_DATA = this.coiData.some(x => x.name === null);
+      this.coiData = this.coiData.filter(data => data.name && data.name != null);
+      this.NO_COUNTRY_DATA = this.coiData.length === 0;
       this.fullCountryData = JSON.parse(JSON.stringify(this.coiData));
       // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
       // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category

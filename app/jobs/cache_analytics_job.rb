@@ -19,8 +19,8 @@ class CacheAnalyticsJob < ApplicationJob
       # Map data will be on the top-level jurisdiction only
       root_nodes = Jurisdiction.where(ancestry: nil)
       root_nodes.each do |root_jurisdiction|
-        symp_by_state = root_jurisdiction.all_patients.pluck(:monitored_address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
-        monitored_by_state = root_jurisdiction.all_patients.symptomatic.uniq.pluck(:monitored_address_state).each_with_object(Hash.new(0)) do |state, counts|
+        symp_by_state = root_jurisdiction.all_patients.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
+        monitored_by_state = root_jurisdiction.all_patients.symptomatic.uniq.pluck(:address_state).each_with_object(Hash.new(0)) do |state, counts|
           counts[state] += 1
         end
         root_node_path = root_jurisdiction[:path]
@@ -214,6 +214,7 @@ class CacheAnalyticsJob < ApplicationJob
     counts = []
     # Individual countries
     exposure_countries = monitorees.monitoring_active(active_monitoring)
+                                   .where.not(potential_exposure_country: nil)
                                    .group(:potential_exposure_country)
                                    .order(count_potential_exposure_country: :desc)
                                    .order(:potential_exposure_country)
