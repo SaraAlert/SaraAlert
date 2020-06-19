@@ -22,5 +22,9 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
   end
 
-  driven_by driver, using: :chrome, screen_size: [1400, 1400]
+  begin
+    driven_by driver, using: :chrome, screen_size: [1400, 1400]
+  rescue Webdrivers::BrowserNotFound
+    driven_by :selenium, using: :firefox, screen_size: [1400, 1400]
+  end
 end

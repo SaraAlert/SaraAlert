@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
 
