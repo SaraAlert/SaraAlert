@@ -8,6 +8,11 @@ class Breadcrumb extends React.Component {
   }
 
   goBack(index) {
+    // check for if the browser is safari and bump up the index due to a safari off by one history.go bug
+    // remove once this bug is fixed in safari
+    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) index++;
+
     window.history.go(0 - index);
   }
 
