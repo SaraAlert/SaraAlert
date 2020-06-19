@@ -133,7 +133,7 @@ const TOOLTIP_TEXT = {
 
   exposure_asymptomatic: <div>Monitorees on this list do not require public health follow-up unless otherwise indicated.</div>,
 
-  exposure_pui: (
+  exposure_under_investigation: (
     <div>
       A ‘Latest Public Health Action’ other than “None” has been documented in the monitoree’s record. Monitorees on this list do not receive daily reminder
       notifications because they are already being contacted by public health.

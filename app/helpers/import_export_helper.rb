@@ -319,7 +319,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     patients_transfers = get_latest_transfers(patients)
     patients.each do |patient|
       linelists[patient.id][:jurisdiction] = patients_jurisdiction_names[patient.id]
-      linelists[patient.id][:status] = patient_statuses[patient.id]
+      linelists[patient.id][:status] = patient_statuses[patient.id]&.gsub('exposure ', '')&.gsub('isolation ', '')
       linelists[patient.id][:latest_report] = patients_assessments[patient.id]&.rfc2822
       linelists[patient.id][:end_of_monitoring] = patients_end_of_monitorings[patient.id]
       next unless patients_transfers[patient.id]
@@ -335,15 +335,15 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     statuses = {
       closed: patients.monitoring_closed.pluck(:id),
       purged: patients.purged.pluck(:id),
-      pui: patients.under_investigation.pluck(:id),
-      symptomatic: patients.symptomatic.pluck(:id),
-      asymptomatic: patients.asymptomatic.pluck(:id),
-      non_reporting: patients.non_reporting.pluck(:id),
-      isolation_asymp_non_test_based: patients.asymp_non_test_based.pluck(:id),
-      isolation_symp_non_test_based: patients.symp_non_test_based.pluck(:id),
-      isolation_test_based: patients.test_based.pluck(:id),
-      isolation_reporting: patients.isolation_reporting.pluck(:id),
-      isolation_non_reporting: patients.isolation_non_reporting.pluck(:id)
+      exposure_symptomatic: patients.exposure_symptomatic.pluck(:id),
+      exposure_non_reporting: patients.exposure_non_reporting.pluck(:id),
+      exposure_asymptomatic: patients.exposure_asymptomatic.pluck(:id),
+      exposure_under_investigation: patients.exposure_under_investigation.pluck(:id),
+      isolation_asymp_non_test_based: patients.isolation_asymp_non_test_based.pluck(:id),
+      isolation_symp_non_test_based: patients.isolation_symp_non_test_based.pluck(:id),
+      isolation_test_based: patients.isolation_test_based.pluck(:id),
+      isolation_non_reporting: patients.isolation_non_reporting.pluck(:id),
+      isolation_reporting: patients.isolation_reporting.pluck(:id)
     }
     patient_statuses = {}
     statuses.each do |status, patient_ids|

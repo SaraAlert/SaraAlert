@@ -10,11 +10,11 @@ class PublicHealthController < ApplicationController
 
     @all_count = current_user.viewable_patients.where(isolation: false).where(purged: false).size
     @i_all_count = current_user.viewable_patients.where(isolation: true).where(purged: false).size
-    @symptomatic_count = current_user.viewable_patients.symptomatic.where(isolation: false).size
-    @pui_count = current_user.viewable_patients.under_investigation.where(isolation: false).size
+    @symptomatic_count = current_user.viewable_patients.exposure_symptomatic.size
+    @non_reporting_count = current_user.viewable_patients.exposure_non_reporting.size
+    @asymptomatic_count = current_user.viewable_patients.exposure_asymptomatic.size
+    @pui_count = current_user.viewable_patients.exposure_under_investigation.size
     @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size
-    @non_reporting_count = current_user.viewable_patients.non_reporting.where(isolation: false).size
-    @asymptomatic_count = current_user.viewable_patients.asymptomatic.where(isolation: false).size
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: false).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: false).size
     @assigned_jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }]
@@ -27,9 +27,9 @@ class PublicHealthController < ApplicationController
 
     @all_count = current_user.viewable_patients.where(isolation: true).where(purged: false).size
     @e_all_count = current_user.viewable_patients.where(isolation: false).where(purged: false).size
-    @requiring_review_count = current_user.viewable_patients.isolation_requiring_review.where(isolation: true).size
-    @non_reporting_count = current_user.viewable_patients.isolation_non_reporting.where(isolation: true).size
-    @reporting_count = current_user.viewable_patients.isolation_reporting.where(isolation: true).size
+    @requiring_review_count = current_user.viewable_patients.isolation_requiring_review.size
+    @non_reporting_count = current_user.viewable_patients.isolation_non_reporting.size
+    @reporting_count = current_user.viewable_patients.isolation_reporting.size
     @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size
     @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: true).size
     @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: true).size
@@ -77,10 +77,10 @@ class PublicHealthController < ApplicationController
 
       if workflow == :exposure
         patients = patients.where(isolation: false)
-        patients = patients.symptomatic if type == :symptomatic_patients
-        patients = patients.non_reporting if type == :non_reporting_patients
-        patients = patients.asymptomatic if type == :asymptomatic_patients
-        patients = patients.under_investigation if type == :pui_patients
+        patients = patients.exposure_symptomatic if type == :symptomatic_patients
+        patients = patients.exposure_non_reporting if type == :non_reporting_patients
+        patients = patients.exposure_asymptomatic if type == :asymptomatic_patients
+        patients = patients.exposure_under_investigation if type == :pui_patients
       else
         patients = patients.where(isolation: true)
         patients = patients.isolation_requiring_review if type == :requiring_review_patients

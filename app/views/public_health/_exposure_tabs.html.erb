@@ -68,7 +68,7 @@
     <div class="card card-square tab-pane show pb-4" id="pui" role="tabpanel" aria-labelledby="pui-tab">
       <div class="lead px-4 pt-4 pb-3 mb-2">
         Monitorees who are currently under investigation. You are currently in the <u>exposure</u> workflow.
-        <%= react_component("util/InfoTooltip", { tooltipTextKey: 'exposure_pui', location: 'right' }, { style: 'display:inline' }) %>
+        <%= react_component("util/InfoTooltip", { tooltipTextKey: 'exposure_under_investigation', location: 'right' }, { style: 'display:inline' }) %>
       </div>
       <%= render partial: "patients", locals: { type: 'pui_patients', p_links: true, isolation: false, jurisdictions: @jurisdictions, users: @users } %>
     </div>

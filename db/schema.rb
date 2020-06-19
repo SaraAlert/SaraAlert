@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_10_172958) do
+ActiveRecord::Schema.define(version: 2020_06_17_191458) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -290,12 +290,14 @@ ActiveRecord::Schema.define(version: 2020_06_10_172958) do
     t.index ["email", "responder_id", "id", "jurisdiction_id"], name: "patients_index_chain_two_2"
     t.index ["first_name"], name: "index_patients_on_first_name"
     t.index ["id", "monitoring", "purged", "isolation", "symptom_onset"], name: "patients_index_chain_4"
+    t.index ["id"], name: "index_patients_on_id"
     t.index ["isolation", "jurisdiction_id"], name: "patients_index_chain_6"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
     t.index ["last_date_of_exposure"], name: "index_patients_on_last_date_of_exposure"
     t.index ["last_name", "first_name"], name: "patients_index_chain_3"
     t.index ["monitoring", "purged", "isolation", "id", "public_health_action"], name: "patients_index_chain_5"
     t.index ["monitoring", "purged", "isolation", "jurisdiction_id"], name: "patients_index_chain_2"
+    t.index ["monitoring", "purged", "isolation"], name: "patients_index_chain_7"
     t.index ["monitoring", "purged", "public_health_action", "isolation", "jurisdiction_id"], name: "patients_index_chain_1"
     t.index ["potential_exposure_country"], name: "index_patients_on_potential_exposure_country"
     t.index ["primary_telephone", "responder_id", "id", "jurisdiction_id"], name: "patients_index_chain_two_1"
