@@ -18,11 +18,12 @@ patient_1:
   primary_language: "English"
   address_line_1: "76640 Barney Street"
   address_city: "South Lenport"
-  address_state: "New Jersey"
+  address_state: "New York"
   address_zip: "41987-5448"
+  address_county: "Monroe"
   monitored_address_line_1: "77289 Noma Row"
   monitored_address_city: "Grahamshire"
-  monitored_address_state: "VT"
+  monitored_address_state: "California"
   monitored_address_zip: "03824"
   primary_telephone: "(555) 555-0111"
   primary_telephone_type: "Smartphone"
@@ -70,11 +71,12 @@ patient_2:
   primary_language: "English"
   address_line_1: "358 Stefany Village"
   address_city: "Spinkaville"
-  address_state: "Pennsylvania"
+  address_state: "California"
+  address_county: "Monroe"
   address_zip: "19521"
   monitored_address_line_1: "358 Stefany Village"
   monitored_address_city: "Spinkaville"
-  monitored_address_state: "NH"
+  monitored_address_state: "New Hampshire"
   monitored_address_zip: "19521"
   primary_telephone: "(555) 555-0141"
   primary_telephone_type: "Plain Cell"
@@ -132,7 +134,7 @@ patient_4:
   sex: "Female"
   address_line_1: "91227 Rueben Skyway"
   address_city: "Port Kaycee"
-  address_state: "Connecticut"
+  address_state: "New York"
   address_zip: "15212"
   primary_telephone: "(555) 555-0146"
   primary_telephone_type: "Plain Cell"
@@ -156,6 +158,7 @@ patient_5:
   address_line_1: "74671 Beahan Stravenue"
   address_city: "South Wilmertown"
   address_state: "New York"
+  address_county: "Warren"
   address_zip: "08291"
   primary_telephone: "(555) 555-0148"
   primary_telephone_type: "Plain Cell"
@@ -179,8 +182,9 @@ patient_6:
   sex: "Male"
   address_line_1: "3212 Granville Corners"
   address_city: "Emoryburgh"
-  address_state: "Wisconsin"
+  address_state: "California"
   address_zip: "39204"
+  address_county: "Monroe"
   primary_telephone: "(555) 555-0152"
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
@@ -204,7 +208,8 @@ patient_7:
   sex: "Unknown"
   address_line_1: "55068 Elliott Garden"
   address_city: "Mohammedville"
-  address_state: "North Dakota"
+  address_state: "New York"
+  address_county: "Pike"
   address_zip: "16810-0047"
   primary_telephone: "(555) 555-0164"
   primary_telephone_type: "Plain Cell"
@@ -231,6 +236,7 @@ patient_8:
   address_city: "Port Kermithaven"
   address_state: "Delaware"
   address_zip: "62431-6865"
+  address_county: "Pike"
   primary_telephone: "(555) 555-0169"
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
@@ -255,8 +261,9 @@ patient_9:
   sex: "Female"
   address_line_1: "65278 Ledner Island"
   address_city: "West Amosfurt"
-  address_state: "Hawaii"
+  address_state: "Delaware"
   address_zip: "62431-6865"
+  address_county: "Jackson"
   primary_telephone: "(555) 555-0189"
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
@@ -280,8 +287,9 @@ patient_10:
   date_of_birth: "<%= 9.years.ago %>"
   address_line_1: "7135 Michaela Stravenue"
   address_city: "North Maciefort"
-  address_state: "Kansas"
+  address_state: "Massachusetts"
   address_zip: "62431-6865"
+  address_county: "Jackson"
   primary_telephone: "(555) 555-0173"
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
@@ -307,6 +315,7 @@ patient_11:
   address_city: "South Arthur"
   address_state: "Massachusetts"
   address_zip: "62431-6865"
+  address_county: "Suffolk"
   primary_telephone: "(555) 555-0174"
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
@@ -323,6 +332,8 @@ patient_12:
   last_name: "Smith"
   sex: "Male"
   date_of_birth: "<%= 100.years.ago %>"
+  address_state: "Massachusetts"
+  address_county: "Suffolk"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 35.days.ago %>"
   potential_exposure_country: "China"
@@ -344,6 +355,8 @@ patient_13:
   last_name: "Yoo"
   sex: "Male"
   date_of_birth: "<%= 69.years.ago %>"
+  address_state: "Massachusetts"
+  address_county: "Suffolk"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 179.days.ago %>"
   potential_exposure_country: "Korea"
@@ -366,6 +379,7 @@ patient_14:
   last_name: "Chung"
   sex: "Female"
   date_of_birth: "<%= 66.years.ago %>"
+  address_state: "Massachusetts"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 318.days.ago %>"
   potential_exposure_country: "Brazil"
@@ -387,6 +401,8 @@ patient_15:
   last_name: "Snow"
   sex: "Unknown"
   date_of_birth: "<%= 50.years.ago %>"
+  address_state: "Massachusetts"
+  address_county: "Lake"
   exposure_risk_assessment: 'High'
   last_date_of_exposure: "<%= 134.days.ago %>"
   potential_exposure_country: "Iceland"
@@ -409,6 +425,8 @@ patient_16:
   last_name: "Curry"
   sex: "Male"
   date_of_birth: "<%= 45.years.ago %>"
+  address_state: "Massachusetts"
+  address_county: "Lake"
   exposure_risk_assessment: 'High'
   last_date_of_exposure: "<%= 26.days.ago %>"
   potential_exposure_country: "Faroe Islands"
@@ -430,6 +448,8 @@ patient_17:
   last_name: "Stark"
   sex: "Unknown"
   date_of_birth: "<%= 36.years.ago %>"
+  address_state: "Massachusetts"
+  address_county: "Lake"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 84.days.ago %>"
   potential_exposure_country: "Faroe Islands"
@@ -452,6 +472,8 @@ patient_18:
   last_name: "Greyjoy"
   sex: "Unknown"
   date_of_birth: "<%= 35.years.ago %>"
+  address_state: "Massachusetts"
+  address_county: "Lake"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 322.days.ago %>"
   potential_exposure_country: "Malaysia"
@@ -473,6 +495,7 @@ patient_19:
   last_name: "Smith"
   sex: "Female"
   date_of_birth: "<%= 19.years.ago %>"
+  address_county: "Lake"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 34.days.ago %>"
   potential_exposure_country: "Malaysia"
@@ -510,18 +533,22 @@ patient_21:
   id: 21
   jurisdiction_id: 8
   monitoring: true
+  address_state: "American Samoa"
   exposure_risk_assessment: 'High'
   last_date_of_exposure: "<%= 1.week.ago %>"
 patient_22:
   id: 22
   jurisdiction_id: 8
   monitoring: true
+  address_state: "American Samoa"
   exposure_risk_assessment: 'High'
   last_date_of_exposure: "<%= 3.weeks.ago %>"
 patient_23:
   id: 23
   jurisdiction_id: 8
   monitoring: false
+  address_state: "American Samoa"
+  address_county: "Hancock"
   closed_at: "<%= 9.hours.ago %>"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 3.weeks.ago %>"
@@ -529,6 +556,8 @@ patient_24:
   id: 24
   jurisdiction_id: 8
   monitoring: false
+  address_state: "American Samoa"
+  address_county: "Crawford"
   closed_at: "<%= 1.week.ago %>"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 11.weeks.ago %>"
@@ -536,12 +565,14 @@ patient_25:
   id: 25
   jurisdiction_id: 8
   monitoring: true
+  address_state: "Puerto Rico"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 19.weeks.ago %>"
 patient_26:
   id: 26
   jurisdiction_id: 8
   monitoring: false
+  address_state: "Puerto Rico"
   closed_at: "<%= 1.day.ago %>"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 21.weeks.ago %>"
@@ -549,40 +580,53 @@ patient_27:
   id: 27
   jurisdiction_id: 8
   monitoring: true
+  address_state: "Puerto Rico"
+  address_county: "Jackson"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 25.weeks.ago %>"
 patient_28:
   id: 28
   jurisdiction_id: 8
   monitoring: true
+  address_state: "Puerto Rico"
+  address_county: "Jackson"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 25.weeks.ago %>"
 patient_29:
   id: 29
   jurisdiction_id: 8
   monitoring: true
+  address_state: "Guam"
+  address_county: "Lawrence"
   last_date_of_exposure: "<%= 52.weeks.ago %>"
 patient_30:
   id: 30
   jurisdiction_id: 8
   monitoring: true
+  address_state: "Guam"
   last_date_of_exposure: "<%= 54.weeks.ago %>"
 patient_31:
   id: 31
   jurisdiction_id: 9
   monitoring: true
+  address_state: "Guam"
+  address_county: "Lawrence"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: '<%= 1.month.ago %>'
 patient_32:
   id: 32
   jurisdiction_id: 9
   monitoring: true
+  address_state: "Alaska"
+  address_county: "Lawrence"
   exposure_risk_assessment: 'High'
   last_date_of_exposure: '<%= 1.month.ago %>'
 patient_33:
   id: 33
   jurisdiction_id: 9
   monitoring: false
+  address_state: "Alaska"
+  address_county: "Pike"
   closed_at: "<%= 3.weeks.ago %>"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: '<%= 2.months.ago %>'
@@ -590,30 +634,39 @@ patient_34:
   id: 34
   jurisdiction_id: 9
   monitoring: true
+  address_state: "Alaska"
+  address_county: "Polk"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: '<%= 2.months.ago %>'
 patient_35:
   id: 35
   jurisdiction_id: 9
   monitoring: true
+  address_state: "Alaska"
+  address_county: "Polk"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: '<%= 5.months.ago %>'
 patient_36:
   id: 36
   jurisdiction_id: 9
   monitoring: true
+  address_state: "Indiana"
+  address_county: "Polk"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: '<%= 5.months.ago %>'
 patient_37:
   id: 37
   jurisdiction_id: 9
   monitoring: true
+  address_state: "Indiana"
+  address_county: "Warren"
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: '<%= 11.months.ago %>'
 patient_38:
   id: 38
   jurisdiction_id: 9
   monitoring: false
+  address_state: "Indiana"
   closed_at: "<%= 5.days.ago %>"
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: '<%= 11.months.ago %>'
@@ -621,12 +674,16 @@ patient_39:
   id: 39
   jurisdiction_id: 9
   monitoring: true
+  address_state: "Indiana"
+  address_county: "Warren"
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: '<%= 13.months.ago %>'
 patient_40:
   id: 40
   jurisdiction_id: 9
   monitoring: true
+  address_state: "Indiana"
+  address_county: "Washington"
   exposure_risk_assessment: 'High'
   last_date_of_exposure: '<%= 14.months.ago %>'
 patient_41:
@@ -643,7 +700,7 @@ patient_41:
   date_of_birth: "<%= 35.years.ago %>"
   address_line_1: "796 Lesch Heights"
   address_city: "Laurenceborough"
-  address_state: "Rhode Island"
+  address_state: "New York"
   address_zip: "55335"
   primary_telephone: "(555) 555-0175"
   primary_telephone_type: "Plain Cell"
@@ -665,7 +722,7 @@ patient_42:
   date_of_birth: "<%= 48.years.ago %>"
   address_line_1: "45727 Skiles Parkways"
   address_city: "Yundtborough"
-  address_state: "Indiana"
+  address_state: "California"
   address_zip: "53922"
   primary_telephone: "(555) 555-0176"
   primary_telephone_type: "Plain Cell"
@@ -687,7 +744,7 @@ patient_43:
   date_of_birth: "<%= 79.years.ago %>"
   address_line_1: "656 Gracie Drives"
   address_city: "East Dewayneberg"
-  address_state: "West Virginia"
+  address_state: "New York"
   address_zip: "27382"
   primary_telephone: "(555) 555-0177"
   primary_telephone_type: "Plain Cell"
@@ -710,7 +767,7 @@ patient_44:
   date_of_birth: "<%= 61.years.ago %>"
   address_line_1: "5309 Nan Centers Suite 344"
   address_city: "Ailenemouth"
-  address_state: "Vermont"
+  address_state: "California"
   address_zip: "93872"
   primary_telephone: "(555) 555-0177"
   primary_telephone_type: "Plain Cell"
@@ -732,7 +789,7 @@ patient_45:
   date_of_birth: "<%= 2.years.ago %>"
   address_line_1: "544 Saul Green"
   address_city: "Port Walter"
-  address_state: "Oklahoma"
+  address_state: "California"
   address_zip: "61411-4761"
   primary_telephone: "(555) 555-0178"
   primary_telephone_type: "Plain Cell"
@@ -754,7 +811,7 @@ patient_46:
   date_of_birth: "<%= 18.years.ago %>"
   address_line_1: "630 Frederick Land Apt. 170"
   address_city: "Haydenburgh"
-  address_state: "Pennsylvania"
+  address_state: "California"
   address_zip: "82912-2919"
   primary_telephone: "(555) 555-0179"
   primary_telephone_type: "Plain Cell"
@@ -799,7 +856,7 @@ patient_48:
   date_of_birth: "<%= 31.years.ago %>"
   address_line_1: "7854 Funk Junctions"
   address_city: "South Douglasview"
-  address_state: "Texas"
+  address_state: "California"
   address_zip: "82922-2919"
   primary_telephone: "(555) 555-0182"
   primary_telephone_type: "Plain Cell"
@@ -821,7 +878,7 @@ patient_49:
   date_of_birth: "<%= 63.years.ago %>"
   address_line_1: "630 Frederick Land Apt. 170"
   address_city: "Port Clementeland"
-  address_state: "Nevada"
+  address_state: "California"
   address_zip: "99920"
   primary_telephone: "(555) 555-0188"
   primary_telephone_type: "Plain Cell"
@@ -845,7 +902,7 @@ patient_50:
   date_of_birth: "<%= 52.years.ago %>"
   address_line_1: "144 Jama Spurs"
   address_city: "West April"
-  address_state: "Wisconsin"
+  address_state: "California"
   address_zip: "22804"
   primary_telephone: "(555) 555-0189"
   primary_telephone_type: "Plain Cell"
@@ -869,7 +926,7 @@ patient_51:
   date_of_birth: "2005-08-18"
   address_line_1: "7197 Johnson Dale"
   address_city: "Irmaborough"
-  address_state: "South Dakota"
+  address_state: "California"
   address_zip: "86846-7192"
   primary_telephone: "(555) 555-0189"
   primary_telephone_type: "Plain Cell"

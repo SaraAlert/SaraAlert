@@ -90,9 +90,13 @@ namespace :demo do
 
     print 'Creating public health enroller users...'
 
-    phe1 = User.new(email: 'state1_epi_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
+    phe1 = User.new(email: 'epi_enroller_all@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
     phe1.add_role :public_health_enroller
     phe1.save
+
+    phe2 = User.new(email: 'state1_epi_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
+    phe2.add_role :public_health_enroller
+    phe2.save
 
     puts ' done!'
 
@@ -113,6 +117,14 @@ namespace :demo do
     analyst1 = User.new(email: 'analyst_all@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
     analyst1.add_role :analyst
     analyst1.save
+
+    analyst2 = User.new(email: 'state1_analyst@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    analyst2.add_role :analyst
+    analyst2.save
+
+    analyst3 = User.new(email: 'localS1C1_analyst@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    analyst3.add_role :analyst
+    analyst3.save
 
     puts ' done!'
 
@@ -208,46 +220,49 @@ namespace :demo do
 
           # Address
           if rand < 0.8
-            patient[:address_line_1] = Faker::Address.street_address
-            patient[:address_city] = Faker::Address.city
-            patient[:address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+            patient[:address_line_1] = Faker::Address.street_address if rand < 0.95
+            patient[:address_city] = Faker::Address.city if rand < 0.95
+            patient[:address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)] if rand < 0.95
             patient[:address_line_2] = Faker::Address.secondary_address if rand < 0.4
-            patient[:address_zip] = Faker::Address.zip_code
+            patient[:address_zip] = Faker::Address.zip_code if rand < 0.95
+            patient[:address_county] = Faker::Address.community if rand < 0.7
             if rand < 0.7
               patient[:monitored_address_line_1] = patient[:address_line_1]
               patient[:monitored_address_city] = patient[:address_city]
               patient[:monitored_address_state] = patient[:address_state]
               patient[:monitored_address_line_2] = patient[:address_line_2]
               patient[:monitored_address_zip] = patient[:address_zip]
+              patient[:monitored_address_county] = patient[:address_county]
             else
-              patient[:monitored_address_line_1] = Faker::Address.street_address
-              patient[:monitored_address_city] = Faker::Address.city
-              patient[:monitored_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+              patient[:monitored_address_line_1] = Faker::Address.street_address if rand < 0.95
+              patient[:monitored_address_city] = Faker::Address.city if rand < 0.95
+              patient[:monitored_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)] if rand < 0.95
               patient[:monitored_address_line_2] = Faker::Address.secondary_address if rand < 0.4
-              patient[:monitored_address_zip] = Faker::Address.zip_code
+              patient[:monitored_address_zip] = Faker::Address.zip_code if rand < 0.95
+              patient[:monitored_address_county] = Faker::Address.community if rand < 0.7
             end
           else
-            patient[:foreign_address_line_1] = Faker::Address.street_address
-            patient[:foreign_address_city] = Faker::Nation.capital_city
-            patient[:foreign_address_country] = Faker::Address.country
+            patient[:foreign_address_line_1] = Faker::Address.street_address if rand < 0.95
+            patient[:foreign_address_city] = Faker::Nation.capital_city if rand < 0.95
+            patient[:foreign_address_country] = Faker::Address.country if rand < 0.95
             patient[:foreign_address_line_2] = Faker::Address.secondary_address if rand < 0.4
-            patient[:foreign_address_zip] = Faker::Address.zip_code
+            patient[:foreign_address_zip] = Faker::Address.zip_code if rand < 0.95
             patient[:foreign_address_line_3] = Faker::Address.secondary_address if patient[:foreign_address_line2] && rand < 0.3
-            patient[:foreign_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+            patient[:foreign_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)] if rand < 0.95
             if rand < 0.6
               patient[:foreign_monitored_address_line_1] = patient[:foreign_address_line_1]
               patient[:foreign_monitored_address_city] = patient[:foreign_address_city]
               patient[:foreign_monitored_address_state] = patient[:foreign_address_state]
               patient[:foreign_monitored_address_line_2] = patient[:foreign_address_line_2]
               patient[:foreign_monitored_address_zip] = patient[:foreign_address_zip]
-              patient[:foreign_monitored_address_county] = Faker::Nation.capital_city if rand < 0.5
+              patient[:foreign_monitored_address_county] = Faker::Nation.capital_city if rand < 0.6
             else
-              patient[:foreign_monitored_address_line_1] = Faker::Address.street_address
-              patient[:foreign_monitored_address_city] = Faker::Address.city
-              patient[:foreign_monitored_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)]
+              patient[:foreign_monitored_address_line_1] = Faker::Address.street_address if rand < 0.95
+              patient[:foreign_monitored_address_city] = Faker::Nation.capital_city if rand < 0.95
+              patient[:foreign_monitored_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)] if rand < 0.95
               patient[:foreign_monitored_address_line_2] = Faker::Address.secondary_address if rand < 0.4
-              patient[:foreign_monitored_address_zip] = Faker::Address.zip_code
-              patient[:foreign_monitored_address_county] = Faker::Nation.capital_city if rand < 0.5
+              patient[:foreign_monitored_address_zip] = Faker::Address.zip_code if rand < 0.95
+              patient[:foreign_monitored_address_county] = Faker::Address.community if rand < 0.7
             end
           end
 
