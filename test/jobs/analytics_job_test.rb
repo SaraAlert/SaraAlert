@@ -11,7 +11,9 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     MonitoreeCount.delete_all
     MonitoreeSnapshot.delete_all
     CacheAnalyticsJob.perform_now()
+
     assert_equal(10, Analytic.all.size)
+
     assert_equal(55, MonitoreeCount.where(category_type: 'Overall Total').size)
     assert_equal(25, MonitoreeCount.where(category_type: 'Monitoring Status').size)
     assert_equal(112, MonitoreeCount.where(category_type: 'Age Group').size)
@@ -22,10 +24,17 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Week').size)
     assert_not_equal(0, MonitoreeCount.where(category_type: 'Last Exposure Month').size)
     assert_not_equal(0, MonitoreeCount.all.size)
+
     assert_equal(10, MonitoreeSnapshot.where(time_frame: 'Last 24 Hours').size)
     assert_equal(10, MonitoreeSnapshot.where(time_frame: 'Last 14 Days').size)
     assert_equal(10, MonitoreeSnapshot.where(time_frame: 'Total').size)
     assert_equal(30, MonitoreeSnapshot.all.size)
+
+    assert_equal(10, MonitoreeMap.where(level: 'State', workflow: 'Exposure').size)
+    assert_equal(3, MonitoreeMap.where(level: 'State', workflow: 'Isolation').size)
+    assert_equal(22, MonitoreeMap.where(level: 'County', workflow: 'Exposure').size)
+    assert_equal(3, MonitoreeMap.where(level: 'County', workflow: 'Isolation').size)
+    assert_equal(38, MonitoreeMap.all.size)
   end
   
   test 'calculate analytic local to jurisdiction' do
@@ -70,6 +79,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 3, true, 'Overall Total', 'Total', 'Medium', 4)
     verify_monitoree_count(active_counts, 4, true, 'Overall Total', 'Total', 'No Identified Risk', 4)
     assert_equal(5, active_counts.length)
+
     overall_counts = CacheAnalyticsJob.monitoree_counts_by_total(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Overall Total', 'Total', 'Missing', 14)
     verify_monitoree_count(overall_counts, 1, false, 'Overall Total', 'Total', 'High', 3)
@@ -108,6 +118,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 16, true, 'Age Group', '70-79', 'Missing', 1)
     verify_monitoree_count(active_counts, 17, true, 'Age Group', '>=80', 'No Identified Risk', 1)
     assert_equal(18, active_counts.length)
+
     overall_counts = CacheAnalyticsJob.monitoree_counts_by_age_group(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Age Group', '0-19', 'Missing', 3)
     verify_monitoree_count(overall_counts, 1, false, 'Age Group', '0-19', 'High', 1)
@@ -151,6 +162,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 14, true, 'Sex', 'Unknown', 'Medium', 1)
     verify_monitoree_count(active_counts, 15, true, 'Sex', 'Unknown', 'No Identified Risk', 1)
     assert_equal(16, active_counts.length)
+
     overall_counts = CacheAnalyticsJob.monitoree_counts_by_sex(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Sex', 'Missing', 'Medium', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Sex', 'Missing', 'No Identified Risk', 1)
@@ -195,6 +207,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 18, true, 'Risk Factor', 'Total', 'Medium', 2)
     verify_monitoree_count(active_counts, 19, true, 'Risk Factor', 'Total', 'No Identified Risk', 2)
     assert_equal(20, active_counts.length)
+
     overall_counts = CacheAnalyticsJob.monitoree_counts_by_risk_factor(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Risk Factor', 'Close Contact with Known Case', 'High', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Risk Factor', 'Close Contact with Known Case', 'Low', 1)
@@ -241,6 +254,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 10, true, 'Exposure Country', 'Total', 'Medium', 2)
     verify_monitoree_count(active_counts, 11, true, 'Exposure Country', 'Total', 'No Identified Risk', 2)
     assert_equal(12, active_counts.length)
+
     overall_counts = CacheAnalyticsJob.monitoree_counts_by_exposure_country(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Exposure Country', 'Brazil', 'Low', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Exposure Country', 'China', 'No Identified Risk', 1)
@@ -274,6 +288,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 10, true, 'Last Exposure Date', days_ago(3), 'Missing', 1)
     verify_monitoree_count(active_counts, 11, true, 'Last Exposure Date', days_ago(1), 'High', 1)
     assert_equal(12, active_counts.length)
+
     overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_date(1, @@monitorees, false)
     verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Date', days_ago(27), 'Missing', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Date', days_ago(27), 'Medium', 1)
@@ -298,6 +313,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 3, true, 'Last Exposure Week', weeks_ago(3), 'High', 1)
     verify_monitoree_count(active_counts, 4, true, 'Last Exposure Week', weeks_ago(1), 'High', 1)
     assert_equal(5, active_counts.length)
+
     overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_week(1, @@monitorees_by_exposure_week, false)
     verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Week', weeks_ago(52), 'Missing', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Week', weeks_ago(25), 'Low', 2)
@@ -320,6 +336,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 5, true, 'Last Exposure Month', months_ago(1), 'High', 1)
     verify_monitoree_count(active_counts, 6, true, 'Last Exposure Month', months_ago(1), 'Low', 1)
     assert_equal(7, active_counts.length)
+
     overall_counts = CacheAnalyticsJob.monitoree_counts_by_last_exposure_month(1, @@monitorees_by_exposure_month, false)
     verify_monitoree_count(overall_counts, 0, false, 'Last Exposure Month', months_ago(13), 'Low', 1)
     verify_monitoree_count(overall_counts, 1, false, 'Last Exposure Month', months_ago(11), 'Medium', 1)
@@ -336,18 +353,47 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, @@monitorees, 1)
     verify_snapshot(snapshots, 0, 'Last 24 Hours', 5, 0, 2, 0)
     verify_snapshot(snapshots, 2, 'Total', 30, 0, 3, 0)
+
     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, Patient.where(jurisdiction_id: 2), 2)
     verify_snapshot(snapshots, 0, 'Last 24 Hours', 2, 1, 1, 1)
     verify_snapshot(snapshots, 2, 'Total', 12, 2, 1, 2)
   end
 
-  def verify_monitoree_count(counts, index, active_monitoring, category_type, category, risk_level, count)
+  test 'monitoree maps' do
+    maps = CacheAnalyticsJob.all_monitoree_maps(1, @@monitorees)
+    verify_map(maps, 0, 'State', 'Exposure', nil, nil, 2)
+    verify_map(maps, 1, 'State', 'Exposure', 'California', nil, 4)
+    verify_map(maps, 2, 'State', 'Exposure', 'Delaware', nil, 2)
+    verify_map(maps, 3, 'State', 'Exposure', 'Massachusetts', nil, 7)
+    verify_map(maps, 4, 'State', 'Exposure', 'New York', nil, 4)
+    verify_map(maps, 5, 'State', 'Isolation', 'California', nil, 6)
+    verify_map(maps, 6, 'State', 'Isolation', 'Massachusetts', nil, 1)
+    verify_map(maps, 7, 'State', 'Isolation', 'New York', nil, 1)
+    verify_map(maps, 8, 'County', 'Exposure', nil, nil, 1)
+    verify_map(maps, 9, 'County', 'Exposure', nil, 'Lake', 1)
+    verify_map(maps, 10, 'County', 'Exposure', 'California', nil, 2)
+    verify_map(maps, 11, 'County', 'Exposure', 'California', 'Monroe', 2)
+    verify_map(maps, 12, 'County', 'Exposure', 'Delaware', 'Jackson', 1)
+    verify_map(maps, 13, 'County', 'Exposure', 'Delaware', 'Pike', 1)
+    verify_map(maps, 14, 'County', 'Exposure', 'Massachusetts', 'Jackson', 1)
+    verify_map(maps, 15, 'County', 'Exposure', 'Massachusetts', 'Lake', 3)
+    verify_map(maps, 16, 'County', 'Exposure', 'Massachusetts', 'Suffolk', 3)
+    verify_map(maps, 17, 'County', 'Exposure', 'New York', nil, 2)
+    verify_map(maps, 18, 'County', 'Exposure', 'New York', 'Monroe', 1)
+    verify_map(maps, 19, 'County', 'Exposure', 'New York', 'Pike', 1)
+    verify_map(maps, 20, 'County', 'Isolation', 'California', nil, 6)
+    verify_map(maps, 21, 'County', 'Isolation', 'Massachusetts', nil, 1)
+    verify_map(maps, 22, 'County', 'Isolation', 'New York', nil, 1)
+    assert_equal(23, maps.length)
+  end
+
+  def verify_monitoree_count(counts, index, active_monitoring, category_type, category, risk_level, total)
     assert_equal(1, counts[index].analytic_id, monitoree_count_err_msg(index, active_monitoring, category_type))
     assert_equal(active_monitoring, counts[index].active_monitoring, monitoree_count_err_msg(index, active_monitoring, category_type))
     assert_equal(category_type, counts[index].category_type, monitoree_count_err_msg(index, active_monitoring, category_type))
     assert_equal(category, counts[index].category, monitoree_count_err_msg(index, active_monitoring, category_type))
     assert_equal(risk_level, counts[index].risk_level, monitoree_count_err_msg(index, active_monitoring, category_type))
-    assert_equal(count, counts[index].total, monitoree_count_err_msg(index, active_monitoring, category_type))
+    assert_equal(total, counts[index].total, monitoree_count_err_msg(index, active_monitoring, category_type))
   end
 
   def verify_snapshot(snapshots, index, time_frame, new_enrollments, transferred_in, closed, transferred_out)
@@ -357,6 +403,23 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(transferred_in, snapshots[index].transferred_in, 'Incoming transfers')
     assert_equal(closed, snapshots[index].closed, 'Closed patients')
     assert_equal(transferred_out, snapshots[index].transferred_out, 'Outgoing transfers')
+  end
+
+  def verify_map(maps, index, level, workflow, state, county, total)
+    assert_equal(1, maps[index].analytic_id, 'Analytic ID')
+    assert_equal(level, maps[index].level, 'Level')
+    assert_equal(workflow, maps[index].workflow, 'Workflow')
+    if state.nil?
+      assert_nil(maps[index].state, 'State')
+    else
+      assert_equal(state, maps[index].state, 'State')
+    end
+    if county.nil?
+      assert_nil(maps[index].county, 'County')
+    else
+      assert_equal(county, maps[index].county, 'County')
+    end
+    assert_equal(total, maps[index].total, 'Total')
   end
 
   def get_absolute_date(relative_date)
