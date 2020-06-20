@@ -3,8 +3,6 @@
   <%# Modals %>
   <%= react_component("bulk_edit/CaseStatus", { authenticity_token: form_authenticity_token}) %>
 
-  </div>
-
   <% unless type == 'transferred_out_patients' %>
     <div class="row">
       <div class="col-sm-24 col-md-16 col-lg-18">
@@ -119,15 +117,15 @@
       },
       info: true,
       order: [[ 1, 'asc' ]],
+      selectAll: "Select all items",
+      selectNone: "Select none",
       "serverSide": true,
       "deferLoading": 0, // Conditionally load tables (when tab is pressed)
       "ajax": route,
       "lengthMenu": [10, 15, 25, 50, 100],
       "pageLength": 15,
       'processing': true,
-      "language": { processing: '<i class="fas fa-cog fa-spin fa-2x"></i>',
-      selectAll: "Select all items",
-            selectNone: "Select none"},
+      "language": { processing: '<i class="fas fa-cog fa-spin fa-2x"></i>'},
       "columns": [
         {
           targets: 0,
