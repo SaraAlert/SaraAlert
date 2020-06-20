@@ -36,9 +36,7 @@ class CacheAnalyticsJob < ApplicationJob
         patients = Jurisdiction.find(analytic.jurisdiction_id).all_patients
         MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
         MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, analytic.jurisdiction_id)
-        if root_jurs.include?(analytic.jurisdiction_id)
-          MonitoreeMap.import! self.class.all_monitoree_maps(analytic.id, patients)
-        end
+        MonitoreeMap.import! self.class.all_monitoree_maps(analytic.id, patients) if root_jurs.include?(analytic.jurisdiction_id)
       end
     end
   end
@@ -172,8 +170,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(age_groups, :exposure_risk_assessment)
               .order(Arel.sql(age_groups), :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Age Group', fields[0], fields[1], total)
+              .map do |(age_group, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Age Group', age_group, risk, total)
               end
   end
 
@@ -183,8 +181,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(:sex, :exposure_risk_assessment)
               .order(:sex, :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Sex', fields[0].nil? ? 'Missing' : fields[0], fields[1], total)
+              .map do |(sex, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Sex', sex.nil? ? 'Missing' : sex, risk, total)
               end
   end
 
@@ -198,8 +196,8 @@ class CacheAnalyticsJob < ApplicationJob
                 .group(risk_factor, :exposure_risk_assessment)
                 .order(:exposure_risk_assessment)
                 .size
-                .map do |fields, total|
-                  counts.append(monitoree_count(analytic_id, active_monitoring, 'Risk Factor', label, fields[1], total))
+                .map do |(_, risk), total|
+                  counts.append(monitoree_count(analytic_id, active_monitoring, 'Risk Factor', label, risk, total))
                 end
     end
     # Total
@@ -231,8 +229,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(:potential_exposure_country, :exposure_risk_assessment)
               .order(:potential_exposure_country, :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                counts.append(monitoree_count(analytic_id, active_monitoring, 'Exposure Country', fields[0], fields[1], total))
+              .map do |(country, risk), total|
+                counts.append(monitoree_count(analytic_id, active_monitoring, 'Exposure Country', country, risk, total))
               end
     # Total
     monitorees.monitoring_active(active_monitoring)
@@ -252,8 +250,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(:last_date_of_exposure, :exposure_risk_assessment)
               .order(:last_date_of_exposure, :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Date', fields[0], fields[1], total)
+              .map do |(date, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Date', date, risk, total)
               end
   end
 
@@ -267,8 +265,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(exposure_weeks, :exposure_risk_assessment)
               .order(Arel.sql(exposure_weeks), :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Week', fields[0], fields[1], total)
+              .map do |(week, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Week', week, risk, total)
               end
   end
 
@@ -282,8 +280,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(exposure_months, :exposure_risk_assessment)
               .order(Arel.sql(exposure_months), :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Month', fields[0], fields[1], total)
+              .map do |(month, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Month', month, risk, total)
               end
   end
 
@@ -345,7 +343,7 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   # Monitoree map
-  def self.monitoree_map(analytic_id, level, workflow, state, county, total)
+  def self.monitoree_map(analytic_id, level, workflow, state, county, total) # rubocop:todo Metrics/ParameterLists
     MonitoreeMap.new(
       analytic_id: analytic_id,
       level: level,
