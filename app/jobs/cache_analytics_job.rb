@@ -6,14 +6,15 @@ class CacheAnalyticsJob < ApplicationJob
 
   def perform(*_args)
     Analytic.transaction do
-      jurisdiction_analytic_map = {}
+      analytics_by_jur_path = {}
+      root_jurs = []
 
       leaf_nodes = Jurisdiction.all.select { |jur| jur.has_children? == false }
       leaf_nodes.each do |leaf_jurisdiction|
         leaf_analytic = self.class.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
-        jurisdiction_analytic_map[leaf_jurisdiction[:path]] = leaf_analytic
+        analytics_by_jur_path[leaf_jurisdiction[:path]] = leaf_analytic
         # Start recursive bubble up of analytic data
-        self.class.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, jurisdiction_analytic_map)
+        self.class.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, analytics_by_jur_path)
       end
 
       # Map data will be on the top-level jurisdiction only
@@ -26,14 +27,16 @@ class CacheAnalyticsJob < ApplicationJob
         root_node_path = root_jurisdiction[:path]
         # These maps can be retrieved back into a hash by running the following
         # JSON.parse <analytic>.monitoree_state_map.to_s.gsub('=>', ':')
-        jurisdiction_analytic_map[root_node_path].symptomatic_state_map = symp_by_state.to_s
-        jurisdiction_analytic_map[root_node_path].monitoree_state_map = monitored_by_state.to_s
+        analytics_by_jur_path[root_node_path].symptomatic_state_map = symp_by_state.to_s
+        analytics_by_jur_path[root_node_path].monitoree_state_map = monitored_by_state.to_s
+        root_jurs.append(root_jurisdiction[:id])
       end
-      jurisdiction_analytic_map.each do |_jur_path, analytic|
+      analytics_by_jur_path.each do |_jur_path, analytic|
         analytic.save!
         patients = Jurisdiction.find(analytic.jurisdiction_id).all_patients
         MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
         MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, analytic.jurisdiction_id)
+        MonitoreeMap.import! self.class.all_monitoree_maps(analytic.id, patients) if root_jurs.include?(analytic.jurisdiction_id)
       end
     end
   end
@@ -67,17 +70,17 @@ class CacheAnalyticsJob < ApplicationJob
     analytic
   end
 
-  def self.add_analytic_to_parent(jurisdiction, analytic, jurisdiction_analytic_map)
+  def self.add_analytic_to_parent(jurisdiction, analytic, analytics_by_jur_path)
     parent = jurisdiction.parent
     return if parent.nil?
 
     # Create analytic for patients local to parent if it does not exist
     parent_path_string = parent[:path]
-    parent_analytic = jurisdiction_analytic_map[parent_path_string]
+    parent_analytic = analytics_by_jur_path[parent_path_string]
     if parent_analytic.nil?
       parent_analytic = calculate_analytic_local_to_jurisdiction(parent)
-      add_analytic_to_parent(parent, parent_analytic, jurisdiction_analytic_map)
-      jurisdiction_analytic_map[parent_path_string] = parent_analytic
+      add_analytic_to_parent(parent, parent_analytic, analytics_by_jur_path)
+      analytics_by_jur_path[parent_path_string] = parent_analytic
     end
 
     parent_analytic.monitorees_count += analytic.monitorees_count
@@ -88,7 +91,7 @@ class CacheAnalyticsJob < ApplicationJob
     parent_analytic.open_cases_count += analytic.open_cases_count
     parent_analytic.non_reporting_monitorees_count += analytic.non_reporting_monitorees_count
 
-    add_analytic_to_parent(parent, analytic, jurisdiction_analytic_map)
+    add_analytic_to_parent(parent, analytic, analytics_by_jur_path)
   end
 
   # Compute all monitoree counts
@@ -167,8 +170,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(age_groups, :exposure_risk_assessment)
               .order(Arel.sql(age_groups), :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Age Group', fields[0], fields[1], total)
+              .map do |(age_group, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Age Group', age_group, risk, total)
               end
   end
 
@@ -178,8 +181,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(:sex, :exposure_risk_assessment)
               .order(:sex, :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Sex', fields[0].nil? ? 'Missing' : fields[0], fields[1], total)
+              .map do |(sex, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Sex', sex.nil? ? 'Missing' : sex, risk, total)
               end
   end
 
@@ -193,8 +196,8 @@ class CacheAnalyticsJob < ApplicationJob
                 .group(risk_factor, :exposure_risk_assessment)
                 .order(:exposure_risk_assessment)
                 .size
-                .map do |fields, total|
-                  counts.append(monitoree_count(analytic_id, active_monitoring, 'Risk Factor', label, fields[1], total))
+                .map do |(_, risk), total|
+                  counts.append(monitoree_count(analytic_id, active_monitoring, 'Risk Factor', label, risk, total))
                 end
     end
     # Total
@@ -226,8 +229,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(:potential_exposure_country, :exposure_risk_assessment)
               .order(:potential_exposure_country, :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                counts.append(monitoree_count(analytic_id, active_monitoring, 'Exposure Country', fields[0], fields[1], total))
+              .map do |(country, risk), total|
+                counts.append(monitoree_count(analytic_id, active_monitoring, 'Exposure Country', country, risk, total))
               end
     # Total
     monitorees.monitoring_active(active_monitoring)
@@ -247,8 +250,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(:last_date_of_exposure, :exposure_risk_assessment)
               .order(:last_date_of_exposure, :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Date', fields[0], fields[1], total)
+              .map do |(date, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Date', date, risk, total)
               end
   end
 
@@ -262,8 +265,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(exposure_weeks, :exposure_risk_assessment)
               .order(Arel.sql(exposure_weeks), :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Week', fields[0], fields[1], total)
+              .map do |(week, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Week', week, risk, total)
               end
   end
 
@@ -277,8 +280,8 @@ class CacheAnalyticsJob < ApplicationJob
               .group(exposure_months, :exposure_risk_assessment)
               .order(Arel.sql(exposure_months), :exposure_risk_assessment)
               .size
-              .map do |fields, total|
-                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Month', fields[0], fields[1], total)
+              .map do |(month, risk), total|
+                monitoree_count(analytic_id, active_monitoring, 'Last Exposure Month', month, risk, total)
               end
   end
 
@@ -315,5 +318,39 @@ class CacheAnalyticsJob < ApplicationJob
       )
     end
     # rubocop:enable Layout/LineLength
+  end
+
+  # Compute all monitoree maps
+  def self.all_monitoree_maps(analytic_id, monitorees)
+    maps = []
+    monitorees.monitoring_open
+              .group(:isolation, :address_state)
+              .order(:isolation, :address_state)
+              .size
+              .map do |(isolation, state), total|
+                workflow = isolation ? 'Isolation' : 'Exposure'
+                maps.append(monitoree_map(analytic_id, 'State', workflow, state, nil, total))
+              end
+    monitorees.monitoring_open
+              .group(:isolation, :address_state, :address_county)
+              .order(:isolation, :address_state, :address_county)
+              .size
+              .map do |(isolation, state, county), total|
+                workflow = isolation ? 'Isolation' : 'Exposure'
+                maps.append(monitoree_map(analytic_id, 'County', workflow, state, county, total))
+              end
+    maps
+  end
+
+  # Monitoree map
+  def self.monitoree_map(analytic_id, level, workflow, state, county, total) # rubocop:todo Metrics/ParameterLists
+    MonitoreeMap.new(
+      analytic_id: analytic_id,
+      level: level,
+      workflow: workflow,
+      state: state,
+      county: county,
+      total: total
+    )
   end
 end
