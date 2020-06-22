@@ -47,39 +47,12 @@ class CaseStatus extends React.Component {
     });
   }
 
-  // Creates a dictionary, tracking the count of common attributes. This list is used to pre-populate
-  // the form fields and can be displayed to the user for knowledge of the selection.
   getCommonAttributes(patients) {
-    if (patients.length == 0) return '';
-    var dict = {
-      case_status: {},
-      monitoring: {},
-      isolation: {},
-    };
-    for (var i = 0; i < patients.length; i++) {
-      const patient = patients[parseInt(i)];
-
-      let case_status = patient.case_status;
-      if (case_status == null) case_status = '';
-      if (dict.case_status[`${case_status}`] == null) dict.case_status[`${case_status}`] = 1;
-      else dict.case_status[`${case_status}`]++;
-
-      let monitoring = patient.monitoring;
-      if (monitoring == null) monitoring = 'unknown';
-      else monitoring = monitoring.toString();
-      if (dict.monitoring[`${monitoring}`] == null) dict.monitoring[`${monitoring}`] = 1;
-      else dict.monitoring[`${monitoring}`]++;
-
-      let isolation = patient.isolation;
-      if (isolation == null) isolation = 'unknown';
-      else isolation = isolation.toString();
-      if (dict.isolation[`${isolation}`] == null) dict.isolation[`${isolation}`] = 1;
-      else dict.isolation[`${isolation}`]++;
-    }
-
-    if (Object.keys(dict.case_status).length === 1) {
+    const distinctCaseStatus = [...new Set(patients.map(x => x.case_status))];
+    console.log(distinctCaseStatus);
+    if (distinctCaseStatus.length === 1) {
       this.setState({
-        case_status: Object.keys(dict.case_status)[0],
+        case_status: distinctCaseStatus[0],
       });
     }
   }
