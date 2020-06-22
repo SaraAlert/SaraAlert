@@ -95,13 +95,15 @@ class MoveToHousehold extends React.Component {
                   size="lg"
                 />
                 <datalist id="newhohcandidates">
-                  {this.state?.groupMembers?.map((member, index) => {
-                    return (
-                      <option key={`option-${index}`} data-value={member.id}>
-                        {member.last_name}, {member.first_name} Age: {member.age} SaraID: {member.id} StateID: {member.state_id}
-                      </option>
-                    );
-                  })}
+                  {this.state?.groupMembers
+                    ?.sort((a, b) => (a.last_name > b.last_name ? 1 : -1))
+                    .map((member, index) => {
+                      return (
+                        <option key={`option-${index}`} data-value={member.id}>
+                          {member.last_name}, {member.first_name} Age: {member.age} SaraID: {member.id} StateID: {member.state_id}
+                        </option>
+                      );
+                    })}
                 </datalist>
               </Form.Group>
             </Row>
