@@ -32,11 +32,10 @@ class CaseStatus extends React.Component {
       return;
     }
 
-    let commonCaseStatus = this.getCommonCaseStatus(patients);
+    this.getCommonAttributes(patients);
 
     this.setState({
       showModal: true,
-      case_status: commonCaseStatus,
       patients: patients,
     });
   }
@@ -48,21 +47,41 @@ class CaseStatus extends React.Component {
     });
   }
 
-  getCommonCaseStatus(patients) {
+  // Creates a dictionary, tracking the count of common attributes. This list is used to pre-populate
+  // the form fields and can be displayed to the user for knowledge of the selection.
+  getCommonAttributes(patients) {
     if (patients.length == 0) return '';
-    var modeMap = {};
-    var maxEl = patients[0],
-      maxCount = 1;
+    var dict = {
+      case_status: {},
+      monitoring: {},
+      isolation: {},
+    };
     for (var i = 0; i < patients.length; i++) {
-      var el = patients[parseInt(i)].case_status;
-      if (modeMap[`${el}`] == null) modeMap[`${el}`] = 1;
-      else modeMap[`${el}`]++;
-      if (modeMap[`${el}`] > maxCount) {
-        maxEl = el;
-        maxCount = modeMap[`${el}`];
-      }
+      const patient = patients[parseInt(i)];
+
+      let case_status = patient.case_status;
+      if (case_status == null) case_status = '';
+      if (dict.case_status[`${case_status}`] == null) dict.case_status[`${case_status}`] = 1;
+      else dict.case_status[`${case_status}`]++;
+
+      let monitoring = patient.monitoring;
+      if (monitoring == null) monitoring = 'unknown';
+      else monitoring = monitoring.toString();
+      if (dict.monitoring[`${monitoring}`] == null) dict.monitoring[`${monitoring}`] = 1;
+      else dict.monitoring[`${monitoring}`]++;
+
+      let isolation = patient.isolation;
+      if (isolation == null) isolation = 'unknown';
+      else isolation = isolation.toString();
+      if (dict.isolation[`${isolation}`] == null) dict.isolation[`${isolation}`] = 1;
+      else dict.isolation[`${isolation}`]++;
     }
-    return maxEl;
+
+    if (Object.keys(dict.case_status).length === 1) {
+      this.setState({
+        case_status: Object.keys(dict.case_status)[0],
+      });
+    }
   }
 
   handleChange(event) {
@@ -171,7 +190,7 @@ class CaseStatus extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Please select what you would like to do:</p>
+          <p>Please select the desired case status to be assigned to a all selected patients:</p>
           <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
             <option></option>
             <option>Confirmed</option>
