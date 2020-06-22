@@ -31,6 +31,13 @@ namespace :admin do
       combined_hash += jur.jurisdiction_path_threshold_hash
     end
 
+    unique_identifier_check = if Jurisdiction.where(unique_identifier: nil).count.zero?
+                                "\e[42mChecking Jurisdictions for nil unique identifiers... no nil unique identifiers found, no further action is needed.\e[0m"
+                              else
+                                "\e[41mChecking Jurisdictions for nil unique identifiers... nil unique identifiers found! This should be investigated as soon as possible.\e[0m"
+                              end
+    puts unique_identifier_check
+
     final_hash = Digest::SHA256.hexdigest(combined_hash)
     puts "\e[41mCompare the following hash as output by this task when run on the enrollment and assessment servers and make sure that the hashes are EXACTLY EQUAL\e[0m"
     puts "\e[41m>>>>>>>>>>#{final_hash}<<<<<<<<<<\e[0m"
