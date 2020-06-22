@@ -275,21 +275,30 @@ class PatientsController < ApplicationController
   def bulk_update_status
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    patient_ids = params.permit(ids: [])[:ids]
+    # Nothing to do in this function if there isn't a list of patient ids.
+    patient_ids = params.require(:ids)
 
     # If apply to group, find dependents ids and add to id array before user accessor for validation of access
-    if params.permit(:apply_to_group)[:apply_to_group]
-      dependent_ids = Patient.where(responder_id: params.permit(ids: [])[:ids]).where.not(id: params.permit(ids: [])[:ids]).select('id')
-      patient_ids = patient_ids.union(dependent_ids)
+    if params.require(:apply_to_group)
+      patient_ids = patient_ids.union(Patient.dependent_ids_for_patients(patient_ids))
     end
 
     patients = current_user.get_patients(patient_ids)
 
-    patients.where.not(monitoring: params.require(:patient).permit(:monitoring)[:monitoring]).where(monitoring: true).update_all(closed_at: DateTime.now)
-    patients.update_all(params.permit(:monitoring, :monitoring_reason, :monitoring_plan,
-                                      :exposure_risk_assessment, :public_health_action,
-                                      :isolation, :pause_notifications, :symptom_onset,
-                                      :case_status).to_h)
+    # If incomming monitoring is being set to false and current patient is being monitored, set the close_at
+    if !params.permit(:monitoring)[:monitoring] && !params.permit(:monitoring)[:monitoring].nil?
+      patients.where(monitoring: true).update_all(closed_at: DateTime.now)
+    end
+
+    patients.update_all(monitoring: params.permit(:monitoring)[:monitoring],
+                        monitoring_reason: params.permit(:monitoring_reason)[:monitoring_reason],
+                        monitoring_plan: params.permit(:monitoring_plan)[:monitoring_plan],
+                        exposure_risk_assessment: params.permit(:exposure_risk_assessment)[:exposure_risk_assessment],
+                        public_health_action: params.permit(:public_health_action)[:public_health_action],
+                        isolation: params.permit(:isolation)[:isolation],
+                        pause_notifications: params.permit(:pause_notifications)[:pause_notifications],
+                        symptom_onset: params.permit(:symptom_onset)[:symptom_onset],
+                        case_status: params.permit(:case_status)[:case_status])
 
     # Check for juristdiction change
     unless params.permit(:jurisdiction)[:jurisdiction].nil?

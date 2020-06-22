@@ -469,6 +469,20 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where('responder_id = id')
   end
 
+  def self.dependent_ids_for_patients(patient_ids)
+    return nil unless patient_ids.respond_to?(:each)
+
+    dependent_ids = []
+    Patient.find(patient_ids).each do |patient|
+      next if patient.self_reporter_or_proxy?
+
+      dependent_ids << patient.dependents.pluck('id')
+    end
+    dependent_ids.reject! { |value| value.nil? || value.empty? }
+    # if no changes were made with reject!, the function will return nil.
+    dependent_ids
+  end
+
   # True if this person is responsible for reporting
   def self_reporter_or_proxy?
     responder_id == id
