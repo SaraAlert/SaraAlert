@@ -37,35 +37,6 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(72, MonitoreeMap.all.size)
   end
   
-  test 'calculate analytic local to jurisdiction' do
-    jurisdiction = Jurisdiction.find(2)
-    analytic = CacheAnalyticsJob.calculate_analytic_local_to_jurisdiction(jurisdiction)
-    assert_equal(12, analytic.monitorees_count)
-    assert_equal(2, analytic.symptomatic_monitorees_count)
-    assert_equal(1, analytic.asymptomatic_monitorees_count)
-    assert_equal(0, analytic.confirmed_cases_count)
-    assert_equal(0, analytic.closed_cases_count)
-    assert_equal(11, analytic.open_cases_count)
-    assert_equal(6, analytic.non_reporting_monitorees_count)
-  end
-  
-  test 'add analytic to parent' do
-    leaf_jurisdiction = Jurisdiction.find(4)
-    leaf_analytic = CacheAnalyticsJob.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
-    jurisdiction_analytic_map = {}
-    jurisdiction_analytic_map[leaf_jurisdiction[:path]] = leaf_analytic
-    CacheAnalyticsJob.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, jurisdiction_analytic_map)
-    root_analytic = jurisdiction_analytic_map[Jurisdiction.find(1)[:path]]
-    assert_equal(3, jurisdiction_analytic_map.length)
-    assert_equal(23, root_analytic.monitorees_count)
-    assert_equal(2, root_analytic.symptomatic_monitorees_count)
-    assert_equal(2, root_analytic.asymptomatic_monitorees_count)
-    assert_equal(0, root_analytic.confirmed_cases_count)
-    assert_equal(0, root_analytic.closed_cases_count)
-    assert_equal(20, root_analytic.open_cases_count)
-    assert_equal(7, root_analytic.non_reporting_monitorees_count)
-  end
-  
   test 'all monitoree counts' do
     counts = CacheAnalyticsJob.all_monitoree_counts(1, @@monitorees)
     assert_not_equal(0, counts.length)

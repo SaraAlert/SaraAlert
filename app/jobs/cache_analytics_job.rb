@@ -5,39 +5,27 @@ class CacheAnalyticsJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    analytics_by_jur_path = {}
-    root_jurs = []
-
-    leaf_nodes = Jurisdiction.all.select { |jur| jur.has_children? == false }
-    leaf_nodes.each do |leaf_jurisdiction|
-      leaf_analytic = self.class.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
-      analytics_by_jur_path[leaf_jurisdiction[:path]] = leaf_analytic
-      # Start recursive bubble up of analytic data
-      self.class.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, analytics_by_jur_path)
-    end
-
-    # Map data will be on the top-level jurisdiction only
-    root_nodes = Jurisdiction.where(ancestry: nil)
-    root_nodes.each do |root_jurisdiction|
-      symp_by_state = root_jurisdiction.all_patients.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
-      monitored_by_state = root_jurisdiction.all_patients.symptomatic.uniq.pluck(:address_state).each_with_object(Hash.new(0)) do |state, counts|
-        counts[state] += 1
-      end
-      root_node_path = root_jurisdiction[:path]
-      # These maps can be retrieved back into a hash by running the following
-      # JSON.parse <analytic>.monitoree_state_map.to_s.gsub('=>', ':')
-      analytics_by_jur_path[root_node_path].symptomatic_state_map = symp_by_state.to_s
-      analytics_by_jur_path[root_node_path].monitoree_state_map = monitored_by_state.to_s
-      root_jurs.append(root_jurisdiction[:id])
-    end
-    analytics_by_jur_path.each do |_jur_path, analytic|
+    Jurisdiction.all.find_each do |jur|
       Analytic.transaction do
+        analytic = Analytic.new(jurisdiction_id: jur.id)
+
+        # Map data will be on the top-level jurisdiction only (will be removed once new maps are implemented)
+        if jur.root?
+          symp_by_state = jur.all_patients.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
+          monitored_by_state = jur.all_patients.symptomatic.uniq.pluck(:address_state).each_with_object(Hash.new(0)) do |state, counts|
+            counts[state] += 1
+          end
+          analytic.symptomatic_state_map = symp_by_state.to_s
+          analytic.monitoree_state_map = monitored_by_state.to_s
+        end
+
         analytic.save!
-        patients = Jurisdiction.find(analytic.jurisdiction_id).all_patients
+
+        patients = jur.all_patients
         MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
-        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, analytic.jurisdiction_id)
+        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id)
         MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
-        MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless root_jurs.include?(analytic.jurisdiction_id)
+        MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
       end
     end
   end
@@ -57,43 +45,6 @@ class CacheAnalyticsJob < ApplicationJob
   NUM_PAST_EXPOSURE_DAYS ||= 28
   NUM_PAST_EXPOSURE_WEEKS ||= 53
   NUM_PAST_EXPOSURE_MONTHS ||= 13
-
-  def self.calculate_analytic_local_to_jurisdiction(jurisdiction)
-    analytic = Analytic.new(jurisdiction_id: jurisdiction.id)
-    jurisdiction_monitorees = jurisdiction.immediate_patients
-    analytic.monitorees_count = jurisdiction_monitorees.size
-    analytic.symptomatic_monitorees_count = jurisdiction_monitorees.symptomatic.size
-    analytic.asymptomatic_monitorees_count = jurisdiction_monitorees.asymptomatic.size
-    analytic.confirmed_cases_count = jurisdiction_monitorees.confirmed_case.size
-    analytic.closed_cases_count = jurisdiction_monitorees.monitoring_closed_with_purged.size
-    analytic.open_cases_count = jurisdiction_monitorees.monitoring_open.size
-    analytic.non_reporting_monitorees_count = jurisdiction_monitorees.non_reporting.size
-    analytic
-  end
-
-  def self.add_analytic_to_parent(jurisdiction, analytic, analytics_by_jur_path)
-    parent = jurisdiction.parent
-    return if parent.nil?
-
-    # Create analytic for patients local to parent if it does not exist
-    parent_path_string = parent[:path]
-    parent_analytic = analytics_by_jur_path[parent_path_string]
-    if parent_analytic.nil?
-      parent_analytic = calculate_analytic_local_to_jurisdiction(parent)
-      add_analytic_to_parent(parent, parent_analytic, analytics_by_jur_path)
-      analytics_by_jur_path[parent_path_string] = parent_analytic
-    end
-
-    parent_analytic.monitorees_count += analytic.monitorees_count
-    parent_analytic.symptomatic_monitorees_count += analytic.symptomatic_monitorees_count
-    parent_analytic.asymptomatic_monitorees_count += analytic.asymptomatic_monitorees_count
-    parent_analytic.confirmed_cases_count += analytic.confirmed_cases_count
-    parent_analytic.closed_cases_count += analytic.closed_cases_count
-    parent_analytic.open_cases_count += analytic.open_cases_count
-    parent_analytic.non_reporting_monitorees_count += analytic.non_reporting_monitorees_count
-
-    add_analytic_to_parent(parent, analytic, analytics_by_jur_path)
-  end
 
   # Compute all monitoree counts
   def self.all_monitoree_counts(analytic_id, monitorees)
