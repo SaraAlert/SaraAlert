@@ -317,14 +317,9 @@ class PatientsController < ApplicationController
     end
 
     # Add histories to all updated patients
-    comment = 'User changed '
-    comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
-    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-    histories = patients.map do |p|
-      { patient_id: p.id, comment: comment, created_by: current_user.email, history_type: 'Monitoring Change',
-        created_at: DateTime.now, updated_at: DateTime.now }
+    patients.each do |patient|
+      update_history(patient, params)
     end
-    History.insert_all(histories)
   end
 
   # Updates to workflow/tracking status for a subject
