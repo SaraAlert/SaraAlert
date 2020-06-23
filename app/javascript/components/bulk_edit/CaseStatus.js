@@ -108,6 +108,7 @@ class CaseStatus extends React.Component {
         })
         .catch(error => {
           reportError(error);
+          this.setState({ loading: false });
         });
     });
   }
