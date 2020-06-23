@@ -279,9 +279,7 @@ class PatientsController < ApplicationController
     patient_ids = params.require(:ids)
 
     # If apply to group, find dependents ids and add to id array before user accessor for validation of access
-    if params.require(:apply_to_group)
-      patient_ids = patient_ids.union(Patient.dependent_ids_for_patients(patient_ids))
-    end
+    patient_ids = patient_ids.union(Patient.dependent_ids_for_patients(patient_ids)) if params.require(:apply_to_group)
 
     # At this point, if apply_to_group was set, and there exists a patient that has dependents in a different
     # jurisdiction - one that the user may not have access to - those patients will get filtered out.
