@@ -31,7 +31,7 @@
       </div>
     </div>
   <% end %>
-    
+
   <table id="patients_table_<%= type %>" class="table table-sm table-striped table-bordered table-hover" style="width:100%">
     <thead>
       <tr>
@@ -252,10 +252,10 @@
     table.buttons().container()
         .appendTo( '#patients_table_<%= type %>_wrapper .row .col-md-6:eq(0)' );
 
-    table.on( 'select deselect', function () {
+    table.on('select deselect', function () {
         var selectedRows = table.rows( { selected: true } ).count();
         table.button( 0 ).enable( selectedRows > 0 );
-    } );
+    });
 
     table.on("click", "th.select-checkbox", function() {
       if ($("th.select-checkbox").hasClass("selected")) {
