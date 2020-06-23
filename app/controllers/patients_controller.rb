@@ -283,41 +283,13 @@ class PatientsController < ApplicationController
       patient_ids = patient_ids.union(Patient.dependent_ids_for_patients(patient_ids))
     end
 
+    # At this point, if apply_to_group was set, and there exists a patient that has dependents in a different
+    # jurisdiction - one that the user may not have access to - those patients will get filtered out.
     patients = current_user.get_patients(patient_ids)
 
-    # If incomming monitoring is being set to false and current patient is being monitored, set the close_at
-    if !params.permit(:monitoring)[:monitoring] && !params.permit(:monitoring)[:monitoring].nil?
-      patients.where(monitoring: true).update_all(closed_at: DateTime.now)
-    end
-
-    patients.update_all(monitoring: params.permit(:monitoring)[:monitoring],
-                        monitoring_reason: params.permit(:monitoring_reason)[:monitoring_reason],
-                        monitoring_plan: params.permit(:monitoring_plan)[:monitoring_plan],
-                        exposure_risk_assessment: params.permit(:exposure_risk_assessment)[:exposure_risk_assessment],
-                        public_health_action: params.permit(:public_health_action)[:public_health_action],
-                        isolation: params.permit(:isolation)[:isolation],
-                        pause_notifications: params.permit(:pause_notifications)[:pause_notifications],
-                        symptom_onset: params.permit(:symptom_onset)[:symptom_onset],
-                        case_status: params.permit(:case_status)[:case_status])
-
-    # Check for juristdiction change
-    unless params.permit(:jurisdiction)[:jurisdiction].nil?
-      transfered_patients = patients.where.not(jurisdiction: params.require(:patient).permit(:jurisdiction)[:jurisdiction])
-      unless transfered_patients.empty?
-        new_jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
-        unless new_jur.nil?
-          transfers = transfered_patients.map do |p|
-            { patient_id: p.id, from_jurisdiction_id: p.jurisdiction.id, to_jurisdiction_id: new_jur.id,
-              who_id: current_user.id, created_at: DateTime.now, updated_at: DateTime.now }
-          end
-          Transfer.insert_all(transfers)
-          transfered_patients.update_all(jurisdiction_id: new_jur.id)
-        end
-      end
-    end
-
-    # Add histories to all updated patients
     patients.each do |patient|
+      # Also updates jurisdiction if required
+      update_fields(patient, params)
       update_history(patient, params)
     end
   end
