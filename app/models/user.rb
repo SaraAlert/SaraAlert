@@ -51,7 +51,7 @@ class User < ApplicationRecord
     elsif has_role?(:public_health_enroller)
       viewable_patients.find_by_id(id)
     elsif has_role?(:admin)
-      Patient.find_by_id(id)
+      nil
     end
   end
 
