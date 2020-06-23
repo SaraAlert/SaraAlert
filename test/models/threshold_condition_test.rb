@@ -22,6 +22,7 @@ class ThresholdConditionTest < ActiveSupport::TestCase
       assert_equal(threshold_condition.symptoms[idx].name, symptom.name)
       assert_equal(threshold_condition.symptoms[idx].label, symptom.label)
       assert_equal(threshold_condition.symptoms[idx].notes, symptom.notes)
+      assert_nil(symptom.id)
     end
   end
 
@@ -38,6 +39,7 @@ class ThresholdConditionTest < ActiveSupport::TestCase
       assert_equal(threshold_condition.symptoms[idx].name, symptom.name)
       assert_equal(threshold_condition.symptoms[idx].label, symptom.label)
       assert_equal(threshold_condition.symptoms[idx].notes, symptom.notes)
+      assert_nil(symptom.id)
     end
   end
 end
