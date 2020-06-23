@@ -6,7 +6,7 @@ RUN echo "${cert}" > /usr/local/share/ca-certificates/ca-certificates.crt
 RUN update-ca-certificates
 
 RUN apk --update add nodejs yarn mariadb-dev tzdata
-RUN apk --update add --virtual build-dependencies make g++
+RUN apk --update add --virtual build-dependencies make g++ patch
 
 RUN yarn config set cafile /etc/ssl/certs/ca-certificates.crt
 
