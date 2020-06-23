@@ -24,7 +24,9 @@ class Export extends React.Component {
       url: window.BASE_PATH + endpoint,
     })
       .then(() => {
-        toast.success('Export has been initiated!');
+        toast.success('Export has been initiated!', {
+          containerId: 'exports',
+        });
         this.setState({
           showCSVModal: false,
           showSaraFormatModal: false,
@@ -146,7 +148,16 @@ class Export extends React.Component {
             this.submit,
             '/export/excel/patients/full_history/all'
           )}
-        <ToastContainer position="top-center" autoClose={3000} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          enableMultiContainer
+          containerId={'exports'}
+          closeOnClick
+          pauseOnVisibilityChange
+          draggable
+          pauseOnHover
+        />
       </React.Fragment>
     );
   }
