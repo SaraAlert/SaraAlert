@@ -96,10 +96,10 @@ class UserTest < ActiveSupport::TestCase
     user_outside_jurisdiction.remove_role(:public_health_enroller)
 
     # Admin outside of jurisdiction
-    assert_equal patient, admin.get_patient(patient.id)
+    assert_nil admin.get_patient(patient.id)
     # Admin inside jurisdiction
     admin.update(jurisdiction: @jurisdiction)
-    assert_equal patient, admin.get_patient(patient.id)
+    assert_nil admin.get_patient(patient.id)
   end
 
   test 'jurisdiction path' do
