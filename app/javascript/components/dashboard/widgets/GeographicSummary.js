@@ -2,16 +2,17 @@ import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import { PropTypes } from 'prop-types';
-import { Row, Col, Button, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
-import { stateOptions, customTerritories } from '../../data';
+import { stateOptions } from '../../data';
 import CountyLevelMaps from './CountyLevelMaps';
 
 const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today
 const INITIAL_SELECTED_DATE_INDEX = 0; // Maybe at some point, we would want to show the latest day initially
-const STATES_NOT_IN_USE = [];
+const TERRITORY_GEOJSON_FILE = 'usaTerritories.json';
+let STATES_NOT_IN_USE = [];
 
 class GeographicSummary extends React.Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class GeographicSummary extends React.Component {
     let statesInUse = _.uniq(_.flatten(this.totalFullCountryDataByStateAndDay.map(x => Object.keys(_.omit(x, 'day')))));
     stateOptions.map(state => {
       if (!statesInUse.includes(state.name)) {
-        STATES_NOT_IN_USE.push(`US-${state.abbrv}`);
+        STATES_NOT_IN_USE.push(state.isoCode);
       }
     });
 
@@ -151,11 +152,12 @@ class GeographicSummary extends React.Component {
         symptomaticJurisdictionData: this.symptomaticFullCountryDataByStateAndDay[this.state.selectedDateIndex],
         mapObject: null,
       });
-    } else if (_.some(customTerritories, c => _.isEqual(c, jurisdiction))) {
+    } else if (jurisdiction === 'territory') {
       // THIS IS TERRITORY CODE
       this.setState({ showBackButton: true, showSpinner: true });
-      console.log(`Loading: ${jurisdiction} mapFile`);
-      this.loadJurisdictionData(jurisdiction.mapFile, jurisdiction.name, jurisdictionData => {
+      let mapFile = TERRITORY_GEOJSON_FILE;
+      let jurisdictionName = 'territory';
+      this.loadJurisdictionData(mapFile, jurisdictionName, jurisdictionData => {
         this.setState({
           showBackButton: true,
           jurisdictionToShow: {
@@ -271,13 +273,17 @@ class GeographicSummary extends React.Component {
             showBackButton={this.state.showBackButton}
           /> */}
           <Row className="mx-0 map-panel-controls">
-            <DropdownButton variant="primary" size="md" drop="up" className="mr-auto btn-square" title="View Other Jurisdiction">
-              {customTerritories.map((territory, index) => (
-                <Dropdown.Item key={index} onClick={() => this.handleJurisdictionChange(territory)}>
-                  {territory.name}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
+            <Button
+              variant="primary"
+              size="md"
+              className="mr-auto btn-square"
+              disabled={this.state.jurisdictionToShow.category === 'territory'}
+              title="View Island Jurisdictions"
+              onClick={() => this.handleJurisdictionChange('territory')}
+              style={{ cursor: this.state.jurisdictionToShow.category === 'territory' ? 'not-allowed' : 'pointer' }}>
+              View Insular Areas
+              <i className="fas fa-search-location ml-2"> </i>
+            </Button>
             {backButton}
           </Row>
         </div>

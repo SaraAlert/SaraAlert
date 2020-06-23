@@ -7,6 +7,8 @@ import * as am4maps from '@amcharts/amcharts4/maps';
 import * as am4core from '@amcharts/amcharts4/core';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 import usaLow from '@amcharts/amcharts4-geodata/usaLow.js';
+import separatorLines from '../../assets/separatorLines.js';
+import usaTerritories2High from '../../assets/usaTerritories.json';
 
 // import maLow from '@amcharts/amcharts4-geodata/region/usa/maLow';
 
@@ -110,20 +112,38 @@ class CountyLevelMaps extends React.Component {
     });
 
     this.territoryChart = am4core.create(`territorydiv-${this.customID}`, am4maps.MapChart);
-    this.territoryChart.projection = new am4maps.projections.Mercator();
-    this.territoryChart.seriesContainer.draggable = false;
-    this.territoryChart.seriesContainer.resizable = false;
-    this.territoryChart.seriesContainer.wheelable = false;
-    this.territoryChart.maxZoomLevel = 1;
+
+    this.territoryChart.projection = new am4maps.projections.Miller();
+    // this.territoryChart.seriesContainer.draggable = false;
+    // this.territoryChart.seriesContainer.resizable = false;
+    // this.territoryChart.seriesContainer.wheelable = false;
+    // this.territoryChart.maxZoomLevel = 1;
+
+    // It appears the separatorLines must be mounted on the chart instance (as opposed to a Series)
+    this.territoryChart.geodata = separatorLines;
+    var separatorSeries = this.territoryChart.series.push(new am4maps.MapLineSeries());
+    separatorSeries.useGeodata = true;
+    separatorSeries.mapLines.template.stroke = am4core.color('#ccc');
+    separatorSeries.mapLines.template.strokeWidth = 0.025;
+
     this.territoryHeatLegend = this.territoryChart.createChild(am4maps.HeatLegend);
 
     this.territorySeries = this.territoryChart.series.push(new am4maps.MapPolygonSeries());
     this.territorySeries.useGeodata = true;
-    // this.territorySeries.geodata = usaLow;
-
+    this.territorySeries.geodata = usaTerritories2High;
+    console.log(this.territorySeries);
+    console.log('thi^^territorySeries');
+    // console.log(`dave:`)
+    // console.log(this.territoryChart.homeGeoPoint)
+    // this.territoryChart.homeGeoPoint = {
+    //   latitude: 21.5218,
+    //   longitude: 77.7812
+    // };
+    // this.territoryChart.goHome()
     this.territoryPolygon = this.territorySeries.mapPolygons.template;
     this.territoryPolygon.tooltipText = '{name}: {value}';
-    this.territoryPolygon.nonScalingStroke = true;
+    this.territoryPolygon.strokeWidth = 1;
+    this.territoryPolygon.stroke = am4core.color('#333');
     this.territoryPolygon.fill = am4core.color('#3e6887');
     this.territoryPolygon.propertyFields.fill = 'color';
 
@@ -133,6 +153,8 @@ class CountyLevelMaps extends React.Component {
       min: am4core.color('#E89005').lighten(0.5),
       max: am4core.color('#A62639').brighten(0.5),
     });
+
+    this.territorySeries.include = customTerritories.map(customTerritory => customTerritory.isoCode);
 
     this.territorySeries.hide();
 
@@ -218,12 +240,13 @@ class CountyLevelMaps extends React.Component {
         }, 1050);
       });
     } else if (this.props.jurisdictionToShow.category === 'territory') {
+      this.hideUSAMap();
       if (this.territorySeries.isHidden) this.territorySeries.show();
       this.territorySeries.geodata = this.props.mapObject;
       this.setState({ showTerritory: true }, () => {
         setTimeout(() => {
-          this.territoryChart.goHome();
           this.updateJurisdictionData();
+          this.territoryChart.goHome();
           this.props.decrementSpinnerCount();
         }, 1050);
       });
@@ -256,7 +279,7 @@ class CountyLevelMaps extends React.Component {
       let nonCustomJurisdictions = stateOptions.filter(jurisdiction => !_.some(customTerritories, v => v.name === jurisdiction.name));
       nonCustomJurisdictions.forEach(region => {
         data.push({
-          id: `US-${region.abbrv}`,
+          id: region.isoCode,
           map: region.mapFile,
           value: this.props.jurisdictionData[region.name] || 0,
         });
@@ -266,10 +289,10 @@ class CountyLevelMaps extends React.Component {
       this.props.decrementSpinnerCount();
     } else if (this.props.jurisdictionToShow.category === 'territory') {
       console.log('Need to make a write code to handle TERRITORY');
-      let counties = this.territorySeries.geodata.features;
+      let counties = customTerritories;
       counties.forEach(county => {
         data.push({
-          id: `${county.id}`,
+          id: `${county.isoCode}`,
           value: parseInt(Math.random() * 50),
         });
       });
