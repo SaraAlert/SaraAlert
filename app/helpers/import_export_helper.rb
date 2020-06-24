@@ -2,7 +2,7 @@
 
 # Helper methods for the import controller
 module ImportExportHelper # rubocop:todo Metrics/ModuleLength
-  LINELIST_HEADERS = ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
+  LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
                       'Transferred From', 'Transferred To', 'Expected Purge Date'].freeze
 
@@ -427,6 +427,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     linelists = {}
     patients.each do |patient|
       linelists[patient.id] = {
+        id: patient[:id],
         name: "#{patient[:last_name]}#{patient[:first_name].blank? ? '' : ', ' + patient[:first_name]}",
         jurisdiction: '',
         assigned_user: patient[:assigned_user] || '',
