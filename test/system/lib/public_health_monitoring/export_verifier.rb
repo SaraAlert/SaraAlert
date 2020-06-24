@@ -17,7 +17,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     download_file(current_user, "csv_#{workflow}")
     csv = get_csv("Sara-Alert-Linelist-#{workflow == :isolation ? 'Isolation' : 'Exposure'}-????-??-??T??_??_?????_??.csv")
     patients = current_user.jurisdiction.all_patients.where(isolation: workflow == :isolation).order(:id)
-    verify_csv_export(csv, :line_list, LINELIST_HEADERS, patients)
+    verify_line_list_export(csv, LINELIST_HEADERS, patients)
   end
 
   def verify_sara_alert_format(user_label, workflow)
@@ -54,20 +54,21 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     xlsx = get_xlsx("Sara%20Alert%20Import%20Format.xlsx")
   end
 
-  def verify_csv_export(csv, type, headers, patients)
+  def verify_line_list_export(csv, headers, patients)
     assert_equal(patients.size, csv.length(), "Number of patients")
     headers.each_with_index do |header, col|
       assert_equal(header, csv.headers[col], "For header: #{header}")
     end
     patients.each_with_index do |patient, row|
-      details = type == :line_list ? patient.linelist : patient.comprehensive_details
+      assert_equal(patient[:id].to_s, csv[row][0], 'For field: id')
+      details = patient.linelist
       details.keys.each_with_index do |field, col|
         if field == :name
-          assert_equal(details[field][:name], csv[row][col], "For field: #{field}")
+          assert_equal(details[field][:name], csv[row][col + 1], "For field: #{field}")
         elsif details[field] == !!details[field]
-          assert_equal(details[field] ? 'true' : 'false', csv[row][col], "For field: #{field}")
+          assert_equal(details[field] ? 'true' : 'false', csv[row][col + 1], "For field: #{field}")
         else
-          assert_equal(details[field].to_s, csv[row][col].to_s, "For field: #{field}")
+          assert_equal(details[field].to_s, csv[row][col + 1].to_s, "For field: #{field}")
         end
       end
     end
