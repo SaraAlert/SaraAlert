@@ -14,6 +14,7 @@ class CaseStatus extends React.Component {
       message: '',
       confirmed: '',
       isolation: undefined,
+      initial_case_status: undefined,
       initial_isolation: undefined,
       initial_monitoring: undefined,
       apply_to_group: false,
@@ -37,6 +38,7 @@ class CaseStatus extends React.Component {
       message: '',
       confirmed: '',
       isolation: undefined,
+      initial_case_status: undefined,
       initial_isolation: undefined,
       initial_monitoring: undefined,
       apply_to_group: false,
@@ -76,13 +78,16 @@ class CaseStatus extends React.Component {
 
     var state_updates = {};
     if (distinctCaseStatus.length === 1 && distinctCaseStatus[0] !== null) {
+      state_updates.initial_case_status = distinctCaseStatus[0];
       state_updates.case_status = distinctCaseStatus[0];
     }
     if (distinctIsolation.length === 1 && distinctIsolation[0] !== null) {
       state_updates.initial_isolation = distinctIsolation[0];
+      state_updates.isolation = distinctIsolation[0];
     }
     if (distinctMonitoring.length === 1 && distinctMonitoring[0] !== null) {
       state_updates.initial_monitoring = distinctMonitoring[0];
+      state_updates.monitoring = distinctMonitoring[0];
     }
 
     if (Object.keys(state_updates).length) {
@@ -267,9 +272,12 @@ class CaseStatus extends React.Component {
             disabled={
               this.state.case_status === '' ||
               ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') &&
-                !(this.state.initial_isolation && !this.state.initial_monitoring) &&
+                !this.state.initial_isolation &&
                 this.state.confirmed === '') ||
-              this.state.loading
+              this.state.loading ||
+              (this.state.initial_case_status === this.state.case_status && // checks if no changes have been made
+                this.state.initial_isolation === this.state.isolation &&
+                this.state.initial_monitoring === this.state.monitoring)
             }>
             {this.state.loading && (
               <React.Fragment>
