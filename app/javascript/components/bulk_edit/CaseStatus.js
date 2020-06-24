@@ -114,11 +114,11 @@ class CaseStatus extends React.Component {
         this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
       }
 
-      // If in isolation and close the follow up will not be displayed, ensure its properties do not carry over
-      if ((event.target.value === 'Confirmed' || event.target.value === 'Probable') && this.state.initial_isolation && !this.state.initial_monitoring) {
+      // If in isolation the follow up will not be displayed, ensure changed properties do not carry over
+      if ((event.target.value === 'Confirmed' || event.target.value === 'Probable') && this.state.initial_isolation) {
         this.setState({
-          monitoring: false,
-          isolation: true,
+          monitoring: this.state.initial_monitoring,
+          isolation: this.state.initial_isolation,
           monitoring_reason: 'Meets Case Definition',
           message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
         });
@@ -158,7 +158,7 @@ class CaseStatus extends React.Component {
 
   renderFollowUp() {
     if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
-      if (this.state.initial_isolation && !this.state.initial_monitoring) {
+      if (this.state.initial_isolation) {
         return (
           <div>
             <p>The selected cases will remain in the isolation workflow.</p>
@@ -180,7 +180,7 @@ class CaseStatus extends React.Component {
             <Form.Control as="select" className="form-control-lg" id="confirmed" onChange={this.handleChange} value={this.state.confirmed}>
               <option></option>
               <option>End Monitoring</option>
-              {!this.state.initial_isolation && <option>Continue Monitoring in Isolation Workflow</option>}
+              <option>Continue Monitoring in Isolation Workflow</option>
             </Form.Control>
             {this.state.confirmed === 'End Monitoring' && (
               <p className="pt-4">The selected monitorees will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
