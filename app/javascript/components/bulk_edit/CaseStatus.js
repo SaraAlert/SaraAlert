@@ -162,102 +162,139 @@ class CaseStatus extends React.Component {
   }
 
   renderFollowUp() {
+    // Exposure -> Isolation: Follow up question required
+    if ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') && !this.state.initial_isolation) {
+      return (
+        <div>
+          <p>Please select what you would like to do:</p>
+          <Form.Control as="select" className="form-control-lg" id="confirmed" onChange={this.handleChange} value={this.state.confirmed}>
+            <option></option>
+            <option>End Monitoring</option>
+            <option>Continue Monitoring in Isolation Workflow</option>
+          </Form.Control>
+          {this.state.confirmed === 'End Monitoring' && (
+            <p className="pt-4">The selected cases will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
+          )}
+          {this.state.confirmed === 'Continue Monitoring in Isolation Workflow' && (
+            <p className="pt-4">The selected cases will be moved to the isolation workflow.</p>
+          )}
+        </div>
+      );
+    }
+
+    let follow_up_text;
+
     // Selection -> Confirmed or Probable -> Result is Isolation or Closed
-    if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
+    if ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') && this.state.initial_isolation) {
       // Isolation -> Isolation
       if (this.state.initial_isolation) {
-        return (
-          <div>
-            {// proper message if closed or open
-            this.state.initial_monitoring ? (
-              <p>
-                The selected cases will remain in the isolation workflow and placed in the requires review, non-reporting, or reporting line list as
-                appropriate.
-              </p>
-            ) : (
-              <p>The selected cases will remain in the isolation workflow as closed.</p>
-            )}
-            <Form.Group className="mt-2">
-              <Form.Check
-                type="switch"
-                id="apply_to_group"
-                label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group === true || false}
-              />
-            </Form.Group>
-          </div>
-        );
-      } else {
-        // Exposure -> Isolation
-        return (
-          <div>
-            <p>Please select what you would like to do:</p>
-            <Form.Control as="select" className="form-control-lg" id="confirmed" onChange={this.handleChange} value={this.state.confirmed}>
-              <option></option>
-              <option>End Monitoring</option>
-              <option>Continue Monitoring in Isolation Workflow</option>
-            </Form.Control>
-            {this.state.confirmed === 'End Monitoring' && (
-              <p className="pt-4">The selected cases will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
-            )}
-            {this.state.confirmed === 'Continue Monitoring in Isolation Workflow' && (
-              <p className="pt-4">The selected cases will be moved to the isolation workflow.</p>
-            )}
-            <Form.Group className="mt-2">
-              <Form.Check
-                type="switch"
-                id="apply_to_group"
-                label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group === true || false}
-              />
-            </Form.Group>
-          </div>
-        );
+        // Open Monitoring
+        if (this.state.initial_monitoring) {
+          follow_up_text = (
+            <p>
+              The selected cases will remain in the isolation workflow and placed in the requires review, non-reporting, or reporting line list as appropriate.
+            </p>
+          );
+        } else {
+          // Closed Monitoring
+          follow_up_text = <p>The selected cases will remain in the isolation workflow as closed.</p>;
+        }
       }
     } else {
       // Selected -> Suspect, Unknown, Not a case -> Result is Exposure
-      // Isolation -> Exposure
       if (this.state.initial_isolation) {
-        return (
-          <div>
-            <p>
-              The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
-              asymptomatic line list as appropriate.
-            </p>
-            <Form.Group className="mt-2">
-              <Form.Check
-                type="switch"
-                id="apply_to_group"
-                label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group === true || false}
-              />
-            </Form.Group>
-          </div>
+        // Isolation -> Exposure
+        follow_up_text = (
+          <p>
+            The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic
+            line list as appropriate.
+          </p>
         );
       } else {
         // Exposure -> Exposure
-        return (
-          <div>
-            <p>
-              The selected cases will remain in the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.
-            </p>
-            <Form.Group className="mt-2">
-              <Form.Check
-                type="switch"
-                id="apply_to_group"
-                label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group === true || false}
-              />
-            </Form.Group>
-          </div>
+        follow_up_text = (
+          <p>The selected cases will remain in the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.</p>
         );
       }
     }
+
+    return (
+      <div>
+        {follow_up_text}
+        <Form.Group className="mt-2">
+          <Form.Check
+            type="switch"
+            id="apply_to_group"
+            label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
+            onChange={this.handleChange}
+            checked={this.state.apply_to_group === true || false}
+          />
+        </Form.Group>
+      </div>
+    );
   }
+
+  // renderFollowUp() {
+  //   // Selection -> Confirmed or Probable -> Result is Isolation or Closed
+  //   if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
+  //     // Isolation -> Isolation
+  //     if (this.state.initial_isolation) {
+  //       return (
+  //         <div>
+  //           {// proper message if closed or open
+  //           this.state.initial_monitoring ? (
+  //             <p>
+  //               The selected cases will remain in the isolation workflow and placed in the requires review, non-reporting, or reporting line list as
+  //               appropriate.
+  //             </p>
+  //           ) : (
+  //             <p>The selected cases will remain in the isolation workflow as closed.</p>
+  //           )}
+  //         </div>
+  //       );
+  //     } else {
+  //       // Exposure -> Isolation
+  //       return (
+  //         <div>
+  //           <p>Please select what you would like to do:</p>
+  //           <Form.Control as="select" className="form-control-lg" id="confirmed" onChange={this.handleChange} value={this.state.confirmed}>
+  //             <option></option>
+  //             <option>End Monitoring</option>
+  //             <option>Continue Monitoring in Isolation Workflow</option>
+  //           </Form.Control>
+  //           {this.state.confirmed === 'End Monitoring' && (
+  //             <p className="pt-4">The selected cases will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
+  //           )}
+  //           {this.state.confirmed === 'Continue Monitoring in Isolation Workflow' && (
+  //             <p className="pt-4">The selected cases will be moved to the isolation workflow.</p>
+  //           )}
+  //         </div>
+  //       );
+  //     }
+  //   } else {
+  //     // Selected -> Suspect, Unknown, Not a case -> Result is Exposure
+  //     // Isolation -> Exposure
+  //     if (this.state.initial_isolation) {
+  //       return (
+  //         <div>
+  //           <p>
+  //             The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
+  //             asymptomatic line list as appropriate.
+  //           </p>
+  //         </div>
+  //       );
+  //     } else {
+  //       // Exposure -> Exposure
+  //       return (
+  //         <div>
+  //           <p>
+  //             The selected cases will remain in the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.
+  //           </p>
+  //         </div>
+  //       );
+  //     }
+  //   }
+  // }
 
   createModal(title, toggle, submit) {
     return (
@@ -283,7 +320,6 @@ class CaseStatus extends React.Component {
             variant="primary btn-square"
             onClick={submit}
             disabled={
-              this.state.case_status === '' ||
               ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') &&
                 !this.state.initial_isolation &&
                 this.state.confirmed === '') ||
