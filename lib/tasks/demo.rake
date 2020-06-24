@@ -333,7 +333,7 @@ namespace :demo do
           patient[:monitoring_reason] = ['Completed Monitoring', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
                                          'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
                                          'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
-                                         'Meets criteria to discontinue isolation', 'Deceased', 'Other'].sample unless patient[:monitoring].nil?
+                                         'Meets criteria to discontinue isolation', 'Deceased', 'Duplicate', 'Other'].sample unless patient[:monitoring].nil?
           patient[:public_health_action] = patient[:isolation] || rand < 0.9 ? 'None' : ['Recommended medical evaluation of symptoms',
                                                                                          'Document results of medical evaluation',
                                                                                          'Recommended laboratory testing'].sample

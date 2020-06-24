@@ -149,6 +149,7 @@ class MonitoringStatus extends React.Component {
                 'Case confirmed',
                 'Meets criteria to discontinue isolation',
                 'Deceased',
+                'Duplicate',
                 'Other',
               ]
             : null,

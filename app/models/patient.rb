@@ -25,6 +25,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
                                                   'Past monitoring period',
                                                   'Meets criteria to discontinue isolation',
                                                   'Deceased',
+                                                  'Duplicate',
                                                   'Other',
                                                   nil, ''] }
 
