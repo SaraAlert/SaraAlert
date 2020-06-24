@@ -161,12 +161,12 @@ class CaseStatus extends React.Component {
       if (this.state.initial_isolation && !this.state.initial_monitoring) {
         return (
           <div>
-            <p>This case will remain in the isolation workflow.</p>
+            <p>The selected cases will remain in the isolation workflow.</p>
             <Form.Group className="mt-2">
               <Form.Check
                 type="switch"
                 id="apply_to_group"
-                label="Apply this change to the entire household that this monitoree is responsible for, if it applies"
+                label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group === true || false}
               />
@@ -183,16 +183,16 @@ class CaseStatus extends React.Component {
               {!this.state.initial_isolation && <option>Continue Monitoring in Isolation Workflow</option>}
             </Form.Control>
             {this.state.confirmed === 'End Monitoring' && (
-              <p className="pt-4">The monitoree will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
+              <p className="pt-4">The selected monitorees will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
             )}
             {this.state.confirmed === 'Continue Monitoring in Isolation Workflow' && (
-              <p className="pt-4">The monitoree will be moved to the isolation workflow.</p>
+              <p className="pt-4">The selected monitorees will be moved to the isolation workflow.</p>
             )}
             <Form.Group className="mt-2">
               <Form.Check
                 type="switch"
                 id="apply_to_group"
-                label="Apply this change to the entire household that this monitoree is responsible for, if it applies"
+                label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group === true || false}
               />
@@ -201,20 +201,43 @@ class CaseStatus extends React.Component {
         );
       }
     } else {
-      return (
-        <div>
-          <p>This case will be moved from the PUI to symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.</p>
-          <Form.Group className="mt-2">
-            <Form.Check
-              type="switch"
-              id="apply_to_group"
-              label="Apply this change to the entire household that this monitoree is responsible for, if it applies"
-              onChange={this.handleChange}
-              checked={this.state.apply_to_group === true || false}
-            />
-          </Form.Group>
-        </div>
-      );
+      if (this.state.initial_isolation) {
+        return (
+          <div>
+            <p>
+              The selected cases will be moved from the isolation workflow to the exposure workflow and placed in the symptomatic, non-reporting, or
+              asymptomatic line list as appropriate.
+            </p>
+            <Form.Group className="mt-2">
+              <Form.Check
+                type="switch"
+                id="apply_to_group"
+                label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group === true || false}
+              />
+            </Form.Group>
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            <p>
+              The selected cases will be moved from the PUI to symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure
+              monitoring.
+            </p>
+            <Form.Group className="mt-2">
+              <Form.Check
+                type="switch"
+                id="apply_to_group"
+                label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group === true || false}
+              />
+            </Form.Group>
+          </div>
+        );
+      }
     }
   }
 
