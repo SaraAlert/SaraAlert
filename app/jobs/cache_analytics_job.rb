@@ -12,9 +12,7 @@ class CacheAnalyticsJob < ApplicationJob
         # Map data will be on the top-level jurisdiction only (will be removed once new maps are implemented)
         if jur.root?
           symp_by_state = jur.all_patients.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
-          monitored_by_state = jur.all_patients.symptomatic.uniq.pluck(:address_state).each_with_object(Hash.new(0)) do |state, counts|
-            counts[state] += 1
-          end
+          monitored_by_state = jur.all_patients.symptomatic.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
           analytic.symptomatic_state_map = symp_by_state.to_s
           analytic.monitoree_state_map = monitored_by_state.to_s
         end
