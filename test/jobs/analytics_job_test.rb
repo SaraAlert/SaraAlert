@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'test_case'
+
 class AnalyticsJobTest < ActiveSupport::TestCase
   fixtures :all
   @@monitorees = Patient.where('jurisdiction_id >= ?', 1).where('jurisdiction_id <= ?', 7)
@@ -36,12 +38,12 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(6, MonitoreeMap.where(level: 'County', workflow: 'Isolation').size)
     assert_equal(72, MonitoreeMap.all.size)
   end
-  
+
   test 'all monitoree counts' do
     counts = CacheAnalyticsJob.all_monitoree_counts(1, @@monitorees)
     assert_not_equal(0, counts.length)
   end
-  
+
   test 'monitoree counts by total' do
     active_counts = CacheAnalyticsJob.monitoree_counts_by_total(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Overall Total', 'Total', 'Missing', 14)
