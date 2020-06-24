@@ -29,10 +29,30 @@ class CaseStatus extends React.Component {
     window.bulkEditCaseStatusComponent = this;
   }
 
+  clearState() {
+    this.setState({
+      showModal: false,
+      patients: [],
+      case_status: '',
+      message: '',
+      confirmed: '',
+      isolation: undefined,
+      initial_isolation: undefined,
+      initial_monitoring: undefined,
+      apply_to_group: false,
+      monitoring: false,
+      monitoring_reason: '',
+      public_health_action: '',
+      loading: false,
+    });
+  }
+
   activate(patients) {
     if (!patients || !patients.length) {
       return;
     }
+
+    this.clearState();
 
     this.getCommonAttributes(patients);
 
@@ -55,13 +75,13 @@ class CaseStatus extends React.Component {
     const distinctMonitoring = [...new Set(patients.map(x => x.monitoring))];
 
     var state_updates = {};
-    if (distinctCaseStatus.length === 1) {
+    if (distinctCaseStatus.length === 1 && distinctCaseStatus[0] !== null) {
       state_updates.case_status = distinctCaseStatus[0];
     }
-    if (distinctIsolation.length === 1) {
+    if (distinctIsolation.length === 1 && distinctIsolation[0] !== null) {
       state_updates.initial_isolation = distinctIsolation[0];
     }
-    if (distinctMonitoring.length === 1) {
+    if (distinctMonitoring.length === 1 && distinctMonitoring[0] !== null) {
       state_updates.initial_monitoring = distinctMonitoring[0];
     }
 
