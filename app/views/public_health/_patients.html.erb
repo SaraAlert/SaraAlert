@@ -206,8 +206,6 @@
       "dom": "<'row'<'col-sm-24 col-md-4 my-auto'l><'col-sm-24 col-md-8 my-auto'i><'col-sm-24 col-md-12 my-auto'f>>" + "<'row'<'col-sm-24 col-md-24'B>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>",
     });
 
-    // "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
-
     $(document).on('change', 'select#assigned_jurisdiction_<%= type %>', function(event) {
       assigned_jurisdiction = event.target.value;
       updateDataTable();
