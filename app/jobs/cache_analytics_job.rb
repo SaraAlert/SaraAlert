@@ -5,7 +5,7 @@ class CacheAnalyticsJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    Jurisdiction.all.find_each do |jur|
+    Jurisdiction.find_each do |jur|
       Analytic.transaction do
         analytic = Analytic.new(jurisdiction_id: jur.id)
 
