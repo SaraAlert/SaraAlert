@@ -14,6 +14,8 @@ class CaseStatus extends React.Component {
       message: '',
       confirmed: '',
       isolation: undefined,
+      initial_isolation: undefined,
+      initial_monitoring: undefined,
       apply_to_group: false,
       monitoring: false,
       monitoring_reason: '',
@@ -49,11 +51,22 @@ class CaseStatus extends React.Component {
 
   getCommonAttributes(patients) {
     const distinctCaseStatus = [...new Set(patients.map(x => x.case_status))];
-    console.log(distinctCaseStatus);
+    const distinctIsolation = [...new Set(patients.map(x => x.isolation))];
+    const distinctMonitoring = [...new Set(patients.map(x => x.monitoring))];
+
+    var state_updates = {};
     if (distinctCaseStatus.length === 1) {
-      this.setState({
-        case_status: distinctCaseStatus[0],
-      });
+      state_updates.case_status = distinctCaseStatus[0];
+    }
+    if (distinctIsolation.length === 1) {
+      state_updates.initial_isolation = distinctIsolation[0];
+    }
+    if (distinctMonitoring.length === 1) {
+      state_updates.initial_monitoring = distinctMonitoring[0];
+    }
+
+    if (Object.keys(state_updates).length) {
+      this.setState(state_updates);
     }
   }
 
@@ -79,6 +92,16 @@ class CaseStatus extends React.Component {
         }
       } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
         this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
+      }
+
+      // If in isolation and close the follow up will not be displayed, ensure its properties do not carry over
+      if ((event.target.value === 'Confirmed' || event.target.value === 'Probable') && this.state.initial_isolation && !this.state.initial_monitoring) {
+        this.setState({
+          monitoring: false,
+          isolation: true,
+          monitoring_reason: 'Meets Case Definition',
+          message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+        });
       }
     });
   }
@@ -115,31 +138,48 @@ class CaseStatus extends React.Component {
 
   renderFollowUp() {
     if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
-      return (
-        <div>
-          <p>Please select what you would like to do:</p>
-          <Form.Control as="select" className="form-control-lg" id="confirmed" onChange={this.handleChange} value={this.state.confirmed}>
-            <option></option>
-            <option>End Monitoring</option>
-            <option>Continue Monitoring in Isolation Workflow</option>
-          </Form.Control>
-          {this.state.confirmed === 'End Monitoring' && (
-            <p className="pt-4">The monitoree will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
-          )}
-          {this.state.confirmed === 'Continue Monitoring in Isolation Workflow' && (
-            <p className="pt-4">The monitoree will be moved to the isolation workflow.</p>
-          )}
-          <Form.Group className="mt-2">
-            <Form.Check
-              type="switch"
-              id="apply_to_group"
-              label="Apply this change to the entire household that this monitoree is responsible for, if it applies"
-              onChange={this.handleChange}
-              checked={this.state.apply_to_group === true || false}
-            />
-          </Form.Group>
-        </div>
-      );
+      if (this.state.initial_isolation && !this.state.initial_monitoring) {
+        return (
+          <div>
+            <p>This case will remain in the isolation workflow.</p>
+            <Form.Group className="mt-2">
+              <Form.Check
+                type="switch"
+                id="apply_to_group"
+                label="Apply this change to the entire household that this monitoree is responsible for, if it applies"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group === true || false}
+              />
+            </Form.Group>
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            <p>Please select what you would like to do:</p>
+            <Form.Control as="select" className="form-control-lg" id="confirmed" onChange={this.handleChange} value={this.state.confirmed}>
+              <option></option>
+              <option>End Monitoring</option>
+              {!this.state.initial_isolation && <option>Continue Monitoring in Isolation Workflow</option>}
+            </Form.Control>
+            {this.state.confirmed === 'End Monitoring' && (
+              <p className="pt-4">The monitoree will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
+            )}
+            {this.state.confirmed === 'Continue Monitoring in Isolation Workflow' && (
+              <p className="pt-4">The monitoree will be moved to the isolation workflow.</p>
+            )}
+            <Form.Group className="mt-2">
+              <Form.Check
+                type="switch"
+                id="apply_to_group"
+                label="Apply this change to the entire household that this monitoree is responsible for, if it applies"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group === true || false}
+              />
+            </Form.Group>
+          </div>
+        );
+      }
     } else {
       return (
         <div>
@@ -174,6 +214,7 @@ class CaseStatus extends React.Component {
             <option>Unknown</option>
             <option>Not a Case</option>
           </Form.Control>
+          <br />
           {this.state.case_status !== '' && this.renderFollowUp()}
         </Modal.Body>
         <Modal.Footer>
@@ -182,7 +223,9 @@ class CaseStatus extends React.Component {
             onClick={submit}
             disabled={
               this.state.case_status === '' ||
-              ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') && this.state.confirmed === '') ||
+              ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') &&
+                !(this.state.initial_isolation && !this.state.initial_monitoring) &&
+                this.state.confirmed === '') ||
               this.state.loading
             }>
             {this.state.loading && (
