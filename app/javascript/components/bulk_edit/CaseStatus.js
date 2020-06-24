@@ -162,7 +162,9 @@ class CaseStatus extends React.Component {
   }
 
   renderFollowUp() {
+    // Selection -> Confirmed or Probable -> Result is Isolation or Closed
     if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
+      // Isolation -> Isolation
       if (this.state.initial_isolation) {
         return (
           <div>
@@ -187,6 +189,7 @@ class CaseStatus extends React.Component {
           </div>
         );
       } else {
+        // Exposure -> Isolation
         return (
           <div>
             <p>Please select what you would like to do:</p>
@@ -214,6 +217,8 @@ class CaseStatus extends React.Component {
         );
       }
     } else {
+      // Selected -> Suspect, Unknown, Not a case -> Result is Exposure
+      // Isolation -> Exposure
       if (this.state.initial_isolation) {
         return (
           <div>
@@ -233,17 +238,12 @@ class CaseStatus extends React.Component {
           </div>
         );
       } else {
+        // Exposure -> Exposure
         return (
           <div>
-            {// proper message if closed or open
-            this.state.initial_monitoring ? (
-              <p>
-                The selected cases will remain in the isolation workflow and placed in the requires review, non-reporting, or reporting line list as
-                appropriate.
-              </p>
-            ) : (
-              <p>The selected cases will remain in the isolation workflow as closed.</p>
-            )}
+            <p>
+              The selected cases will remain in the exposure workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.
+            </p>
             <Form.Group className="mt-2">
               <Form.Check
                 type="switch"
@@ -266,7 +266,7 @@ class CaseStatus extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Please select the desired case status to be assigned to a all selected patients:</p>
+          <p>Please select the desired case status to be assigned to all selected patients:</p>
           <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
             <option></option>
             <option>Confirmed</option>
