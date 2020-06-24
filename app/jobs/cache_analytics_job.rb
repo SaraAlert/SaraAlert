@@ -9,17 +9,18 @@ class CacheAnalyticsJob < ApplicationJob
       Analytic.transaction do
         analytic = Analytic.new(jurisdiction_id: jur.id)
 
+        patients = jur.all_patients
+
         # Map data will be on the top-level jurisdiction only (will be removed once new maps are implemented)
         if jur.root?
-          symp_by_state = jur.all_patients.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
-          monitored_by_state = jur.all_patients.symptomatic.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
+          symp_by_state = patients.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
+          monitored_by_state = patients.symptomatic.pluck(:address_state).each_with_object(Hash.new(0)) { |state, counts| counts[state] += 1 }
           analytic.symptomatic_state_map = symp_by_state.to_s
           analytic.monitoree_state_map = monitored_by_state.to_s
         end
 
         analytic.save!
 
-        patients = jur.all_patients
         MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
         MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id)
         MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
