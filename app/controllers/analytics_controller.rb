@@ -33,10 +33,8 @@ class AnalyticsController < ApplicationController
   end
 
   def epi_stats
-    jurisdiction_analytics = current_user.jurisdiction.analytics
+    # Map analytics are pulled from the root jurisdiction (will be removed and replaced by new monitoree_maps data when ready)
     root_jurisdiction_analytics = current_user.jurisdiction.root.analytics
-    patient_count_by_day_array = []
-    assessment_result_by_day_array = []
     total_patient_count_by_state_and_day = []
     symptomatic_patient_count_by_state_and_day = []
     dates = (14.days.ago.to_date..Date.today).to_a
@@ -44,44 +42,22 @@ class AnalyticsController < ApplicationController
       next if date.nil?
 
       # Get last saved analytic for each date
-      analytic = jurisdiction_analytics.where(created_at: date.beginning_of_day..date.end_of_day).last
       root_analytic = root_jurisdiction_analytics.where(created_at: date.beginning_of_day..date.end_of_day).last
-      open_cases = !analytic&.open_cases_count.nil? ? analytic.open_cases_count : 0
-      patient_count_by_day_array << { day: date, cases: open_cases }
-      symp_count = !analytic&.symptomatic_monitorees_count.nil? ? analytic.symptomatic_monitorees_count : 0
-      asymp_count = !analytic&.asymptomatic_monitorees_count.nil? ? analytic.asymptomatic_monitorees_count : 0
-      assessment_result_by_day_array << {
-        'name' => date.to_s,
-        'Symptomatic Assessments' => symp_count,
-        'Asymptomatic Assessments' => asymp_count
-      }
-      # Map analytics are pulled from the root (most likely USA) jurisdiction
       sym_map = !root_analytic&.monitoree_state_map.nil? ? (JSON.parse root_analytic.monitoree_state_map.gsub('=>', ':').gsub('nil', '"Unknown"')) : {}
       symptomatic_patient_count_by_state_and_day << { day: date }.merge(sym_map)
       count_map = !root_analytic&.symptomatic_state_map.nil? ? (JSON.parse root_analytic.symptomatic_state_map.gsub('=>', ':').gsub('nil', '"Unknown"')) : {}
       total_patient_count_by_state_and_day << { day: date }.merge(count_map)
     end
 
+    # Get analytics from most recent cache analytics job
     most_recent_analytics = current_user.jurisdiction.analytics.last
 
     return nil if most_recent_analytics.nil?
 
     {
       last_updated_at: most_recent_analytics.updated_at,
-      subject_status: [
-        { name: 'Asymptomatic', value: most_recent_analytics.asymptomatic_monitorees_count },
-        { name: 'Non-Reporting', value: most_recent_analytics.non_reporting_monitorees_count },
-        { name: 'Symptomatic', value: most_recent_analytics.symptomatic_monitorees_count },
-        { name: 'Closed', value: most_recent_analytics.closed_cases_count }
-      ],
-      reporting_summmary: [
-        { name: 'Reported Today', value: most_recent_analytics.open_cases_count - most_recent_analytics.non_reporting_monitorees_count },
-        { name: 'Not Yet Reported', value: most_recent_analytics.non_reporting_monitorees_count }
-      ],
-      monitoring_distribution_by_day: patient_count_by_day_array,
       symptomatic_patient_count_by_state_and_day: symptomatic_patient_count_by_state_and_day,
       total_patient_count_by_state_and_day: total_patient_count_by_state_and_day,
-      assessment_result_by_day: assessment_result_by_day_array,
       monitoree_counts: MonitoreeCount.where(analytic_id: most_recent_analytics.id),
       monitoree_snapshots: MonitoreeSnapshot.where(analytic_id: most_recent_analytics.id)
     }

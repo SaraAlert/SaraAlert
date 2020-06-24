@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'test_case'
+
 class AnalyticsJobTest < ActiveSupport::TestCase
   fixtures :all
   @@monitorees = Patient.where('jurisdiction_id >= ?', 1).where('jurisdiction_id <= ?', 7)
@@ -30,47 +32,18 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(10, MonitoreeSnapshot.where(time_frame: 'Total').size)
     assert_equal(30, MonitoreeSnapshot.all.size)
 
-    assert_equal(10, MonitoreeMap.where(level: 'State', workflow: 'Exposure').size)
-    assert_equal(3, MonitoreeMap.where(level: 'State', workflow: 'Isolation').size)
-    assert_equal(22, MonitoreeMap.where(level: 'County', workflow: 'Exposure').size)
-    assert_equal(3, MonitoreeMap.where(level: 'County', workflow: 'Isolation').size)
-    assert_equal(38, MonitoreeMap.all.size)
+    assert_equal(29, MonitoreeMap.where(level: 'State', workflow: 'Exposure').size)
+    assert_equal(9, MonitoreeMap.where(level: 'State', workflow: 'Isolation').size)
+    assert_equal(28, MonitoreeMap.where(level: 'County', workflow: 'Exposure').size)
+    assert_equal(6, MonitoreeMap.where(level: 'County', workflow: 'Isolation').size)
+    assert_equal(72, MonitoreeMap.all.size)
   end
-  
-  test 'calculate analytic local to jurisdiction' do
-    jurisdiction = Jurisdiction.find(2)
-    analytic = CacheAnalyticsJob.calculate_analytic_local_to_jurisdiction(jurisdiction)
-    assert_equal(12, analytic.monitorees_count)
-    assert_equal(2, analytic.symptomatic_monitorees_count)
-    assert_equal(1, analytic.asymptomatic_monitorees_count)
-    assert_equal(0, analytic.confirmed_cases_count)
-    assert_equal(0, analytic.closed_cases_count)
-    assert_equal(11, analytic.open_cases_count)
-    assert_equal(6, analytic.non_reporting_monitorees_count)
-  end
-  
-  test 'add analytic to parent' do
-    leaf_jurisdiction = Jurisdiction.find(4)
-    leaf_analytic = CacheAnalyticsJob.calculate_analytic_local_to_jurisdiction(leaf_jurisdiction)
-    jurisdiction_analytic_map = {}
-    jurisdiction_analytic_map[leaf_jurisdiction[:path]] = leaf_analytic
-    CacheAnalyticsJob.add_analytic_to_parent(leaf_jurisdiction, leaf_analytic, jurisdiction_analytic_map)
-    root_analytic = jurisdiction_analytic_map[Jurisdiction.find(1)[:path]]
-    assert_equal(3, jurisdiction_analytic_map.length)
-    assert_equal(23, root_analytic.monitorees_count)
-    assert_equal(2, root_analytic.symptomatic_monitorees_count)
-    assert_equal(2, root_analytic.asymptomatic_monitorees_count)
-    assert_equal(0, root_analytic.confirmed_cases_count)
-    assert_equal(0, root_analytic.closed_cases_count)
-    assert_equal(20, root_analytic.open_cases_count)
-    assert_equal(7, root_analytic.non_reporting_monitorees_count)
-  end
-  
+
   test 'all monitoree counts' do
     counts = CacheAnalyticsJob.all_monitoree_counts(1, @@monitorees)
     assert_not_equal(0, counts.length)
   end
-  
+
   test 'monitoree counts by total' do
     active_counts = CacheAnalyticsJob.monitoree_counts_by_total(1, @@monitorees, true)
     verify_monitoree_count(active_counts, 0, true, 'Overall Total', 'Total', 'Missing', 14)
@@ -359,8 +332,8 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_snapshot(snapshots, 2, 'Total', 12, 2, 1, 2)
   end
 
-  test 'monitoree maps' do
-    maps = CacheAnalyticsJob.all_monitoree_maps(1, @@monitorees)
+  test 'state level maps' do
+    maps = CacheAnalyticsJob.state_level_maps(1, @@monitorees)
     verify_map(maps, 0, 'State', 'Exposure', nil, nil, 2)
     verify_map(maps, 1, 'State', 'Exposure', 'California', nil, 4)
     verify_map(maps, 2, 'State', 'Exposure', 'Delaware', nil, 2)
@@ -369,22 +342,27 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_map(maps, 5, 'State', 'Isolation', 'California', nil, 6)
     verify_map(maps, 6, 'State', 'Isolation', 'Massachusetts', nil, 1)
     verify_map(maps, 7, 'State', 'Isolation', 'New York', nil, 1)
-    verify_map(maps, 8, 'County', 'Exposure', nil, nil, 1)
-    verify_map(maps, 9, 'County', 'Exposure', nil, 'Lake', 1)
-    verify_map(maps, 10, 'County', 'Exposure', 'California', nil, 2)
-    verify_map(maps, 11, 'County', 'Exposure', 'California', 'Monroe', 2)
-    verify_map(maps, 12, 'County', 'Exposure', 'Delaware', 'Jackson', 1)
-    verify_map(maps, 13, 'County', 'Exposure', 'Delaware', 'Pike', 1)
-    verify_map(maps, 14, 'County', 'Exposure', 'Massachusetts', 'Jackson', 1)
-    verify_map(maps, 15, 'County', 'Exposure', 'Massachusetts', 'Lake', 3)
-    verify_map(maps, 16, 'County', 'Exposure', 'Massachusetts', 'Suffolk', 3)
-    verify_map(maps, 17, 'County', 'Exposure', 'New York', nil, 2)
-    verify_map(maps, 18, 'County', 'Exposure', 'New York', 'Monroe', 1)
-    verify_map(maps, 19, 'County', 'Exposure', 'New York', 'Pike', 1)
-    verify_map(maps, 20, 'County', 'Isolation', 'California', nil, 6)
-    verify_map(maps, 21, 'County', 'Isolation', 'Massachusetts', nil, 1)
-    verify_map(maps, 22, 'County', 'Isolation', 'New York', nil, 1)
-    assert_equal(23, maps.length)
+    assert_equal(8, maps.length)
+  end
+
+  test 'county level maps' do
+    maps = CacheAnalyticsJob.county_level_maps(1, @@monitorees)
+    verify_map(maps, 0, 'County', 'Exposure', nil, nil, 1)
+    verify_map(maps, 1, 'County', 'Exposure', nil, 'Lake', 1)
+    verify_map(maps, 2, 'County', 'Exposure', 'California', nil, 2)
+    verify_map(maps, 3, 'County', 'Exposure', 'California', 'Monroe', 2)
+    verify_map(maps, 4, 'County', 'Exposure', 'Delaware', 'Jackson', 1)
+    verify_map(maps, 5, 'County', 'Exposure', 'Delaware', 'Pike', 1)
+    verify_map(maps, 6, 'County', 'Exposure', 'Massachusetts', 'Jackson', 1)
+    verify_map(maps, 7, 'County', 'Exposure', 'Massachusetts', 'Lake', 3)
+    verify_map(maps, 8, 'County', 'Exposure', 'Massachusetts', 'Suffolk', 3)
+    verify_map(maps, 9, 'County', 'Exposure', 'New York', nil, 2)
+    verify_map(maps, 10, 'County', 'Exposure', 'New York', 'Monroe', 1)
+    verify_map(maps, 11, 'County', 'Exposure', 'New York', 'Pike', 1)
+    verify_map(maps, 12, 'County', 'Isolation', 'California', nil, 6)
+    verify_map(maps, 13, 'County', 'Isolation', 'Massachusetts', nil, 1)
+    verify_map(maps, 14, 'County', 'Isolation', 'New York', nil, 1)
+    assert_equal(15, maps.length)
   end
 
   def verify_monitoree_count(counts, index, active_monitoring, category_type, category, risk_level, total)
