@@ -235,9 +235,15 @@ class CaseStatus extends React.Component {
       } else {
         return (
           <div>
-            <p>
-              The selected cases will remain in the isolation workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.
-            </p>
+            {// proper message if closed or open
+            this.state.initial_monitoring ? (
+              <p>
+                The selected cases will remain in the isolation workflow and placed in the requires review, non-reporting, or reporting line list as
+                appropriate.
+              </p>
+            ) : (
+              <p>The selected cases will remain in the isolation workflow as closed.</p>
+            )}
             <Form.Group className="mt-2">
               <Form.Check
                 type="switch"
