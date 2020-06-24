@@ -166,7 +166,15 @@ class CaseStatus extends React.Component {
       if (this.state.initial_isolation) {
         return (
           <div>
-            <p>The selected cases will remain in the isolation workflow.</p>
+            {// proper message if closed or open
+            this.state.initial_monitoring ? (
+              <p>
+                The selected cases will remain in the isolation workflow and placed in the requires review, non-reporting, or reporting line list as
+                appropriate.
+              </p>
+            ) : (
+              <p>The selected cases will remain in the isolation workflow as closed.</p>
+            )}
             <Form.Group className="mt-2">
               <Form.Check
                 type="switch"
@@ -188,10 +196,10 @@ class CaseStatus extends React.Component {
               <option>Continue Monitoring in Isolation Workflow</option>
             </Form.Control>
             {this.state.confirmed === 'End Monitoring' && (
-              <p className="pt-4">The selected monitorees will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
+              <p className="pt-4">The selected cases will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
             )}
             {this.state.confirmed === 'Continue Monitoring in Isolation Workflow' && (
-              <p className="pt-4">The selected monitorees will be moved to the isolation workflow.</p>
+              <p className="pt-4">The selected cases will be moved to the isolation workflow.</p>
             )}
             <Form.Group className="mt-2">
               <Form.Check
@@ -228,8 +236,7 @@ class CaseStatus extends React.Component {
         return (
           <div>
             <p>
-              The selected cases will be moved from the PUI to symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure
-              monitoring.
+              The selected cases will remain in the isolation workflow and placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate.
             </p>
             <Form.Group className="mt-2">
               <Form.Check
