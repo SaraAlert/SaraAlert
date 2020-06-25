@@ -39,7 +39,7 @@ class AnalystTest < ApplicationSystemTestCase
 
   def login_and_view_analytics(user_label)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    click_on 'Analytics' if !user_label.include? 'analyst'
+    click_on 'Analytics' unless user_label.include? 'analyst'
     jurisdiction_id
   end
 end

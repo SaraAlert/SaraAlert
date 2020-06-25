@@ -4,11 +4,8 @@ require 'application_system_test_case'
 
 class SystemTestUtils < ApplicationSystemTestCase
   ASSESSMENTS = YAML.safe_load(File.read("#{__dir__}/../form_data/assessments.yml"))
-  CONDITIONS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/conditions.yml"))
   MONITOREES = YAML.safe_load(File.read("#{__dir__}/../form_data/monitorees.yml"))
   PATIENTS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/patients.yml"))
-  REPORTS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/assessments.yml"))
-  SYMPTOMS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/symptoms.yml"))
   USERS = YAML.safe_load(File.read("#{__dir__}/../../fixtures/users.yml"))
 
   SIGN_IN_URL = '/users/sign_in'
@@ -38,7 +35,7 @@ class SystemTestUtils < ApplicationSystemTestCase
     click_on 'Logout'
   end
 
-  def return_to_dashboard(workflow, is_epi=true)
+  def return_to_dashboard(workflow, is_epi = true)
     if !is_epi
       click_on 'Return To Dashboard'
     elsif !workflow.nil?
@@ -56,19 +53,19 @@ class SystemTestUtils < ApplicationSystemTestCase
     find("##{tab}-tab").click
   end
 
-  def go_to_next_page(wait=true)
+  def go_to_next_page(wait = true)
     wait_for_enrollment_page_transition if wait
     click_on 'Next'
   end
 
-  def go_to_prev_page(wait=true)
+  def go_to_prev_page(wait = true)
     wait_for_enrollment_page_transition if wait
     click_on 'Previous'
   end
 
   def verify_user_jurisdiction(user_label)
     jurisdiction = get_user(user_label).jurisdiction
-    assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) if !user_label.include?('admin')
+    assert page.has_content?(jurisdiction.name), get_err_msg('Dashboard', 'user jurisdiction', jurisdiction.name) unless user_label.include?('admin')
     jurisdiction.id
   end
 
@@ -85,7 +82,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def get_assessment_name(patient_label, assessment_label)
-    "#{patient_label}_assessment_#{assessment_label.to_s}"
+    "#{patient_label}_assessment_#{assessment_label}"
   end
 
   def get_patient_display_name(patient_label)
@@ -101,7 +98,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def trim_ms_from_date(value)
-    Time.parse(value).change(:usec => 0).strftime('%Y-%m-%d %H:%M:%S')
+    Time.parse(value).change(usec: 0).strftime('%Y-%m-%d %H:%M:%S')
   end
 
   def calculate_age(value)
@@ -111,70 +108,58 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def wait_for_enrollment_submission
-    sleep(inspection_time = ENROLLMENT_SUBMISSION_DELAY)
+    sleep(ENROLLMENT_SUBMISSION_DELAY)
   end
 
   def wait_for_enrollment_page_transition
-    sleep(inspection_time = ENROLLMENT_PAGE_TRANSITION_DELAY)
+    sleep(ENROLLMENT_PAGE_TRANSITION_DELAY)
   end
 
   def wait_for_pop_up_alert
-    sleep(inspection_time = POP_UP_ALERT_ANIMATION_DELAY)
+    sleep(POP_UP_ALERT_ANIMATION_DELAY)
   end
 
   def wait_for_modal_animation
-    sleep(inspection_time = MODAL_ANIMATION_DELAY)
+    sleep(MODAL_ANIMATION_DELAY)
   end
 
   def wait_for_dashboard_load
-    sleep(inspection_time = DASHBOARD_LOAD_DELAY)
+    sleep(DASHBOARD_LOAD_DELAY)
   end
 
   def wait_for_accept_reject
-    sleep(inspection_time = ACCEPT_REJECT_DELAY)
+    sleep(ACCEPT_REJECT_DELAY)
   end
 
   def wait_for_db_write_delay
-    sleep(inspection_time = DB_WRITE_DELAY)
+    sleep(DB_WRITE_DELAY)
   end
 
   def wait_for_data_table_load_delay
-    sleep(inspection_time = DATA_TABLE_LOAD_DELAY)
+    sleep(DATA_TABLE_LOAD_DELAY)
   end
 
   def wait_for_export_delay
-    sleep(inspection_time = EXPORT_DELAY)
+    sleep(EXPORT_DELAY)
   end
 
-  def get_assessments
+  def assessments
     ASSESSMENTS
   end
 
-  def get_conditions
-    CONDITIONS
-  end
-
-  def get_monitorees
+  def monitorees
     MONITOREES
   end
 
-  def get_patients
+  def patients
     PATIENTS
   end
 
-  def get_reports
-    REPORTS
-  end
-
-  def get_symptoms
-    SYMPTOMS
-  end
-
-  def get_users
+  def users
     USERS
   end
 
-  def get_download_path
+  def download_path
     DOWNLOAD_PATH
   end
 end

@@ -9,7 +9,7 @@ class AdminDashboard < ApplicationSystemTestCase
   @@admin_dashboard_verifier = AdminDashboardVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def add_user(email, jurisdiction, role, submit=true)
+  def add_user(email, jurisdiction, role, submit = true)
     click_on 'Add User'
     fill_in 'Email', with: email
     select jurisdiction, from: 'Jurisdiction'

@@ -19,7 +19,7 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   @@public_health_patient_page = PublicHealthPatientPage.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_patients_on_dashboard(user_label, verify_scope=false)
+  def verify_patients_on_dashboard(user_label, verify_scope = false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id, verify_scope)
     @@system_test_utils.logout
@@ -31,6 +31,7 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
+  # rubocop:disable Metrics/ParameterLists
   def update_monitoring_status(user_label, patient_label, old_tab, new_tab, monitoring_status, status_change_reason, reasoning)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(old_tab, patient_label)
@@ -61,14 +62,14 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def update_assigned_jurisdiction(user_label, patient_label, tab, jurisdiction, reasoning, valid_jurisdiction=true, under_hierarchy=true)
+  def update_assigned_jurisdiction(user_label, patient_label, tab, jurisdiction, reasoning, valid_jurisdiction = true, under_hierarchy = true)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
     @@public_health_patient_page_actions.update_assigned_jurisdiction(user_label, jurisdiction, reasoning, valid_jurisdiction, under_hierarchy)
     @@system_test_utils.logout
   end
 
-  def update_assigned_user(user_label, patient_label, tab, assigned_user, reasoning, valid_assigned_user=true, changed=true)
+  def update_assigned_user(user_label, patient_label, tab, assigned_user, reasoning, valid_assigned_user = true, changed = true)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
     @@public_health_patient_page_actions.update_assigned_user(user_label, assigned_user, reasoning, valid_assigned_user, changed)
@@ -82,18 +83,18 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def edit_report(user_label, patient_label, old_tab, assessment_id, assessment, new_tab)
+  def edit_report(user_label, patient_label, old_tab, assessment_id, assessment)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(old_tab, patient_label)
-    @@public_health_patient_page_reports.edit_report(user_label, patient_label, assessment_id, assessment, true)
+    @@public_health_patient_page_reports.edit_report(user_label, assessment_id, assessment, true)
     @@system_test_utils.logout
   end
 
   def add_note_to_report(user_label, patient_label, tab, assessment_id, note)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_reports.add_note_to_report(user_label, patient_label, assessment_id, note, false)
-    @@public_health_patient_page_reports.add_note_to_report(user_label, patient_label, assessment_id, note, true)
+    @@public_health_patient_page_reports.add_note_to_report(user_label, assessment_id, note, false)
+    @@public_health_patient_page_reports.add_note_to_report(user_label, assessment_id, note, true)
   end
 
   def mark_all_as_reviewed(user_label, patient_label, tab, reasoning)
@@ -148,13 +149,13 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def import_epi_x(user_label, workflow, file_name, validity, rejects, accept_duplicates=false)
+  def import_epi_x(user_label, workflow, file_name, validity, rejects, accept_duplicates = false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard.import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     @@system_test_utils.logout
   end
 
-  def import_sara_alert_format(user_label, workflow, file_name, validity, rejects, accept_duplicates=false)
+  def import_sara_alert_format(user_label, workflow, file_name, validity, rejects, accept_duplicates = false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard.import_sara_alert_format(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     @@system_test_utils.logout
@@ -165,4 +166,5 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@public_health_dashboard.download_sara_alert_format_guidance(workflow)
     @@system_test_utils.logout
   end
+  # rubocop:enable Metrics/ParameterLists
 end

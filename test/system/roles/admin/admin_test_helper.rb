@@ -13,25 +13,25 @@ class AdminTestHelper < ApplicationSystemTestCase
 
   def view_users(user_label)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    User.where(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each { |user|
+    User.where(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each do |user|
       @@admin_dashboard.search_for_user(user.email)
       @@admin_dashboard_verifier.verify_user(user, true)
-    }
-    User.where.not(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each { |user|
+    end
+    User.where.not(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each do |user|
       @@admin_dashboard.search_for_user(user.email)
       @@admin_dashboard_verifier.verify_user(user, false)
-    }
+    end
     @@system_test_utils.logout
   end
-  
-  def add_user(user_label, email, jurisdiction, role, submit=true)
+
+  def add_user(user_label, email, jurisdiction, role, submit = true)
     @@system_test_utils.login(user_label)
     @@admin_dashboard.add_user(email, jurisdiction, role, submit)
     @@admin_dashboard.search_for_user(email)
     @@admin_dashboard_verifier.verify_add_user(email, jurisdiction, role, submit)
     @@system_test_utils.logout
   end
-  
+
   def add_existing_user(user_label, email, jurisdiction, role)
     @@system_test_utils.login(user_label)
     @@admin_dashboard.add_user(email, jurisdiction, role)

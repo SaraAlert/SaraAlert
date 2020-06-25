@@ -8,7 +8,7 @@ require_relative '../../../lib/system_test_utils'
 class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   include ImportExportHelper
   @@system_test_utils = SystemTestUtils.new(nil)
-    
+
   def verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
     (2..sheet.last_row).each do |row_num|
@@ -18,7 +18,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       end
     end
   end
-  
+
   def verify_sara_alert_format_field_validation(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
     (2..sheet.last_row).each do |row_num|
@@ -28,7 +28,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       end
     end
   end
-  
+
   def verify_epi_x_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
     page.all('div.card-body').each_with_index do |card, index|
@@ -109,7 +109,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       else
         assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]} in row #{row_num}")
         EPI_X_FIELDS.each_with_index do |field, index|
-          if index == 28 || index == 29 # phone number fields
+          if [28, 29].include?(index) # phone number fields
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 13 && !row[index].blank? # sex
             assert_equal(SEX_ABBREVIATIONS[row[index].to_sym], patient[field].to_s, "#{field} mismatch in row #{row_num}")
@@ -121,7 +121,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index - 4].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 34 # copy over potential exposure country to location
             assert_equal(row[35].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 41 || index == 42 # contact of known case and was in healthcare facilities
+          elsif [41, 42].include?(index) # contact of known case and was in healthcare facilities
             assert_equal(!row[index].blank?, patient[field], "#{field} mismatch in row #{row_num}")
           elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
@@ -147,7 +147,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       else
         assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_num}")
         COMPREHENSIVE_FIELDS.each_with_index do |field, index|
-          if index == 44 || index == 46 # phone number fields
+          if [44, 46].include?(index) # phone number fields
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif [5, 6, 7, 8, 9, 13, 69, 71, 72, 74, 76, 78, 79].include?(index) # bool fields
             assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
@@ -157,7 +157,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(normalize_state_field(row[index - 13].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif [31, 32, 33, 34, 35].include?(index) & row[index].nil? # copy over address fields if address is nil
             assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 85 || index == 86 # isolation workflow specific fields
+          elsif [85, 86].include?(index) # isolation workflow specific fields
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif index == 95 # jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
@@ -174,6 +174,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_validation(jurisdiction_id, workflow, field, value)
     return if workflow != :isolation && %i[symptom_onset case_status].include?(field)
+
     if VALIDATION[field]
       # TODO: Un-comment when required fields are to be checked upon import
       # if VALIDATION[field][:checks].include?(:required) && (!value || value.blank?)
@@ -185,20 +186,20 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       if value && !value.blank? && VALIDATION[field][:checks].include?(:bool) && !%w[true false].include?(value.to_s.downcase)
         assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
-      if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date)
-        if value.match(/\d{4}-\d{2}-\d{2}/)
-          begin
-            Date.parse(value)
-          rescue ArgumentError
-            assert page.has_content?("'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
-          end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date) && value.match(/\d{4}-\d{2}-\d{2}/)
+        begin
+          Date.parse(value)
+        rescue ArgumentError
+          assert page.has_content?("'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+        end
+      end
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date) && !value.match(/\d{4}-\d{2}-\d{2}/)
+        generic_msg = "'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"
+        if value.match(%r{\d{2}\/\d{2}\/\d{4}})
+          specific_msg = "#{generic_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead"
+          assert page.has_content?(specific_msg), "Error message for #{field} missing"
         else
-          err_msg = "'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"
-          if value.match(%r{\d{2}\/\d{2}\/\d{4}})
-            assert page.has_content?("#{err_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead"), "Error message for #{field} missing"
-          else
-            assert page.has_content?("#{err_msg}, please use the 'YYYY-MM-DD' format"), "Error message for #{field} missing"
-          end
+          assert page.has_content?("#{generic_msg}, please use the 'YYYY-MM-DD' format"), "Error message for #{field} missing"
         end
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:phone) && Phonelib.parse(value, 'US').full_e164.nil?
@@ -207,45 +208,48 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       if value && !value.blank? && VALIDATION[field][:checks].include?(:state) && !VALID_STATES.include?(value) && STATE_ABBREVIATIONS[value.upcase.to_sym].nil?
         assert page.has_content?("'#{value}' is not a valid state for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
-      if value && !value.blank? && VALIDATION[field][:checks].include?(:sex) && !%[Male Female Unknown M F].include?(value.capitalize)
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:sex) && !%(Male Female Unknown M F).include?(value.capitalize)
         assert page.has_content?("'#{value}' is not a valid sex for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:email) && !ValidEmail2::Address.new(value).valid?
         assert page.has_content?("'#{value}' is not a valid Email Address for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
     elsif field == :jurisdiction_path
-      if value && !value.blank?
-        jurisdiction = Jurisdiction.where(path: value).first
-        if jurisdiction.nil?
-          if Jurisdiction.where(name: value).empty?
-            assert page.has_content?("'#{value}' is not valid for 'Full Assigned Jurisdiction Path'"), "Error message for #{field} missing"
-          else
-            assert page.has_content?("'#{value}' is not valid for 'Full Assigned Jurisdiction Path', please provide the full path instead of just the name"), "Error message for #{field} missing"
-          end
+      return unless value && !value.blank?
+
+      jurisdiction = Jurisdiction.where(path: value).first
+      if jurisdiction.nil?
+        if Jurisdiction.where(name: value).empty?
+          assert page.has_content?("'#{value}' is not valid for 'Full Assigned Jurisdiction Path'"), "Error message for #{field} missing"
         else
-          unless Jurisdiction.find(jurisdiction_id).subtree_ids.include?(jurisdiction[:id])
-            assert page.has_content?("'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it"), "Error message for #{field} missing"
-          end
+          msg = "'#{value}' is not valid for 'Full Assigned Jurisdiction Path', please provide the full path instead of just the name"
+          assert page.has_content?(msg), "Error message for #{field} missing"
+        end
+      else
+        unless Jurisdiction.find(jurisdiction_id).subtree_ids.include?(jurisdiction[:id])
+          msg = "'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it"
+          assert page.has_content?(msg), "Error message for #{field} missing"
         end
       end
     elsif field == :assigned_user
-      if value && !value.blank? && !value.to_i.between?(1, 9999)
-        assert page.has_content?("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999"), "Error message for #{field} missing"
-      end
+      return unless value && !value.blank? && !value.to_i.between?(1, 9999)
+
+      msg = "'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999"
+      assert page.has_content?(msg), "Error message for #{field} missing"
     end
   end
 
   def verify_laboratory(patient, data)
-    if !data[0].blank? || !data[1].blank? || !data[2].blank? || !data[3].blank?
-      count = Laboratory.where(
-        patient_id: patient.id,
-        lab_type: data[0].to_s,
-        specimen_collection: data[1],
-        report: data[2],
-        result: data[3].to_s
-      ).count
-      assert_equal(1, count, "Lab result for patient: #{patient.first_name} #{patient.last_name} not found")
-    end
+    return unless !data[0].blank? || !data[1].blank? || !data[2].blank? || !data[3].blank?
+
+    count = Laboratory.where(
+      patient_id: patient.id,
+      lab_type: data[0].to_s,
+      specimen_collection: data[1],
+      report: data[2],
+      result: data[3].to_s
+    ).count
+    assert_equal(1, count, "Lab result for patient: #{patient.first_name} #{patient.last_name} not found")
   end
 
   def verify_existence(element, label, value, index)

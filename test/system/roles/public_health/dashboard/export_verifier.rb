@@ -51,11 +51,11 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   end
 
   def verify_sara_alert_format_guidance
-    xlsx = get_xlsx("Sara%20Alert%20Import%20Format.xlsx")
+    get_xlsx('Sara%20Alert%20Import%20Format.xlsx')
   end
 
   def verify_line_list_export(csv, headers, patients)
-    assert_equal(patients.size, csv.length(), "Number of patients")
+    assert_equal(patients.size, csv.length, 'Number of patients')
     headers.each_with_index do |header, col|
       assert_equal(header, csv.headers[col], "For header: #{header}")
     end
@@ -65,7 +65,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       details.keys.each_with_index do |field, col|
         if field == :name
           assert_equal(details[field][:name], csv[row][col + 1], "For field: #{field}")
-        elsif details[field] == !!details[field]
+        elsif [true, false].include?(details[field])
           assert_equal(details[field] ? 'true' : 'false', csv[row][col + 1], "For field: #{field}")
         else
           assert_equal(details[field].to_s, csv[row][col + 1].to_s, "For field: #{field}")
@@ -76,7 +76,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
   def verify_sara_alert_format_export(xlsx, patients)
     monitorees = xlsx.sheet('Monitorees')
-    assert_equal(patients.size, monitorees.last_row - 1, "Number of patients")
+    assert_equal(patients.size, monitorees.last_row - 1, 'Number of patients')
     COMPREHENSIVE_HEADERS.each_with_index do |header, col|
       assert_equal(header, monitorees.cell(1, col + 1), "For header: #{header}")
     end
@@ -87,7 +87,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         if field == :status
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field}")
         else
-          assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field}")
+          assert_equal(details[field].to_s, cell_value || '', "For field: #{field}")
         end
       end
     end
@@ -95,7 +95,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
   def verify_excel_export(xlsx, patients)
     monitorees_list = xlsx.sheet('Monitorees List')
-    assert_equal(patients.size, monitorees_list.last_row - 1, "Number of patients in Monitorees List")
+    assert_equal(patients.size, monitorees_list.last_row - 1, 'Number of patients in Monitorees List')
     MONITOREES_LIST_HEADERS.each_with_index do |header, col|
       assert_equal(header, monitorees_list.cell(1, col + 1), "For header: #{header} in Monitorees List")
     end
@@ -106,7 +106,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         if field == :status
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} in Monitorees List")
         else
-          assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field} in Monitorees List")
+          assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List")
         end
       end
     end
@@ -131,23 +131,23 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         assessment_summaries.append(assessment)
       end
     end
-    assert_equal(assessment_summaries.size, assessments.last_row - 1, "Number of assessments in Assessments")
+    assert_equal(assessment_summaries.size, assessments.last_row - 1, 'Number of assessments in Assessments')
     assessment_summaries.each_with_index do |assessment_summary, row|
       assessment_summary.each_with_index do |value, col|
         cell_value = assessments.cell(row + 2, col + 1)
-        if (value == !!value && value) || (col == 1 && value == 1)
+        if ([true, false].include?(value) && value) || (col == 1 && value == 1)
           assert_equal('true', cell_value, "For field: #{assessment_headers[col]} in Assessments")
-        elsif (value == !!value && !value) || (col == 1 && value != 1)
+        elsif ([true, false].include?(value) && !value) || (col == 1 && value != 1)
           assert_nil(cell_value, "For field: #{assessment_headers[col]} in Assessments")
         else
-          assert_equal(value.to_s, cell_value ? cell_value : '', "For field: #{assessment_headers[col]} in Assessments")
+          assert_equal(value.to_s, cell_value || '', "For field: #{assessment_headers[col]} in Assessments")
         end
       end
     end
 
     lab_results = xlsx.sheet('Lab Results')
     labs = Laboratory.where(patient_id: patient_ids)
-    assert_equal(labs.size, lab_results.last_row - 1, "Number of results in Lab Results")
+    assert_equal(labs.size, lab_results.last_row - 1, 'Number of results in Lab Results')
     lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
     lab_headers.each_with_index do |header, col|
       assert_equal(header, lab_results.cell(1, col + 1), "For header: #{header} in Lab Results")
@@ -156,13 +156,13 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       details = lab.details
       details.keys.each_with_index do |field, col|
         cell_value = lab_results.cell(row + 2, col + 1)
-        assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field} in Lab Results")
+        assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Lab Results")
       end
     end
 
     edit_histories = xlsx.sheet('Edit Histories')
     histories = History.where(patient_id: patient_ids)
-    assert_equal(histories.size, edit_histories.last_row - 1, "Number of histories in Edit Histories")
+    assert_equal(histories.size, edit_histories.last_row - 1, 'Number of histories in Edit Histories')
     history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
     history_headers.each_with_index do |header, col|
       assert_equal(header, edit_histories.cell(1, col + 1), "For header: #{header} in Edit Histories")
@@ -171,7 +171,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       details = history.details
       details.keys.each_with_index do |field, col|
         cell_value = edit_histories.cell(row + 2, col + 1)
-        assert_equal(details[field].to_s, cell_value ? cell_value : '', "For field: #{field} in Edit Histories")
+        assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Edit Histories")
       end
     end
   end
@@ -184,7 +184,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   end
 
   def get_csv(file_name_glob)
-    CSV.parse(File.read(get_file_name(file_name_glob)), :headers => true)
+    CSV.parse(File.read(get_file_name(file_name_glob)), headers: true)
   end
 
   def get_xlsx(file_name_glob)
@@ -193,8 +193,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
   def get_file_name(file_name_glob)
     Timeout.timeout(DOWNLOAD_TIMEOUT) do
-      sleep(DOWNLOAD_CHECK_INTERVAL) until Dir.glob(File.join(@@system_test_utils.get_download_path, file_name_glob)).any?
+      sleep(DOWNLOAD_CHECK_INTERVAL) until Dir.glob(File.join(@@system_test_utils.download_path, file_name_glob)).any?
     end
-    Dir.glob(File.join(@@system_test_utils.get_download_path, file_name_glob))[0]
+    Dir.glob(File.join(@@system_test_utils.download_path, file_name_glob))[0]
   end
 end

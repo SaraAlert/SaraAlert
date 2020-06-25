@@ -7,7 +7,7 @@ require_relative '../../../lib/system_test_utils'
 class AdminDashboardVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_user(user, should_exist=true)
+  def verify_user(user, should_exist = true)
     if should_exist
       assert page.has_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', user.email)
       assert page.has_content?(user.jurisdiction[:path]), @@system_test_utils.get_err_msg('User info', 'jurisdiction', user.jurisdiction[:path])
@@ -17,8 +17,8 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
       assert page.has_no_content?(user.jurisdiction[:path]), @@system_test_utils.get_err_msg('User info', 'jurisdiction', 'nonexistent')
     end
   end
-  
-  def verify_add_user(email, jurisdiction, role, submit=true)
+
+  def verify_add_user(email, jurisdiction, role, submit = true)
     if submit
       assert page.has_content?(email), @@system_test_utils.get_err_msg('New user info', 'email', email)
       assert page.has_content?(jurisdiction), @@system_test_utils.get_err_msg('New user info', 'jurisdiction', jurisdiction)
@@ -49,6 +49,8 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
 
   def verify_enable_api(email, enable)
     assert page.has_content?(enable ? 'Disable' : 'Enable'), @@system_test_utils.get_err_msg('Enable API', 'button on page', enable ? 'Disable' : 'Enable')
-    assert_equal enable, User.where(email: email).first.api_enabled, @@system_test_utils.get_err_msg('Enable API', 'value in db', User.where(email: email).first.api_enabled)
+
+    err_msg = @@system_test_utils.get_err_msg('Enable API', 'value in db', User.where(email: email).first.api_enabled)
+    assert_equal enable, User.where(email: email).first.api_enabled, err_msg
   end
 end

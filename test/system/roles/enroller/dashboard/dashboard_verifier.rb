@@ -21,32 +21,32 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
         select jur, from: 'assigned_jurisdiction'
         verify_patient_info_in_data_table(patient) if patient.jurisdiction[:path].include?(jur.split(', ').last)
 
-        unless jur == 'All'
-          select 'Exact Match', from: "scope"
-          page.all('.dataTable tbody tr').each do |row|
-            assigned_jurisdiction_cell = row.all('td')[1]
-            assert_equal(jur.split(', ').last, assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
-          end
-          select 'All', from: "scope"
+        next if jur == 'All'
+
+        select 'Exact Match', from: 'scope'
+        page.all('.dataTable tbody tr').each do |row|
+          assigned_jurisdiction_cell = row.all('td')[1]
+          assert_equal(jur.split(', ').last, assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
         end
+        select 'All', from: 'scope'
       end
       select 'All', from: 'assigned_jurisdiction'
 
       # view patient with assigned user filter
-      select patient[:assigned_user].nil? ? 'None' : patient[:assigned_user], from: "assigned_user"
+      select patient[:assigned_user].nil? ? 'None' : patient[:assigned_user], from: 'assigned_user'
       verify_patient_info_in_data_table(patient)
-      select 'All', from: "assigned_user"
+      select 'All', from: 'assigned_user'
     end
   end
-  
-  def verify_monitoree_info_on_dashboard(monitoree, is_epi=false, go_back=true)
+
+  def verify_monitoree_info_on_dashboard(monitoree, is_epi = false, go_back = true)
     displayed_name = search_for_monitoree(monitoree, is_epi)
     click_on displayed_name
     @@enroller_patient_page_verifier.verify_monitoree_info(monitoree, is_epi)
     @@system_test_utils.return_to_dashboard('exposure', is_epi) if go_back
   end
 
-  def verify_group_member_on_dashboard(existing_monitoree, new_monitoree, is_epi=false)
+  def verify_group_member_on_dashboard(existing_monitoree, new_monitoree, is_epi = false)
     displayed_name = search_for_monitoree(new_monitoree, is_epi)
     click_on displayed_name
     @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, is_epi)
@@ -55,8 +55,7 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
     @@system_test_utils.return_to_dashboard('exposure', is_epi)
   end
 
-  def verify_monitoree_info_not_on_dashboard(monitoree, is_epi=false)
-    displayed_name = @@system_test_utils.get_displayed_name(monitoree)
+  def verify_monitoree_info_not_on_dashboard(monitoree, is_epi = false)
     displayed_birthday = @@system_test_utils.format_date(monitoree['identification']['date_of_birth'])
     search_and_verify_nonexistence("#{monitoree['identification']['first_name']} #{monitoree['identification']['last_name']} #{displayed_birthday}", is_epi)
   end
@@ -97,7 +96,7 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
     assert page.has_content?(value), @@system_test_utils.get_err_msg('Patient info', field, value) unless value.nil?
   end
 
-  def verify_enrollment_analytics(jurisdiction_id)
+  def verify_enrollment_analytics
     system_stats = find('h5', text: 'System Statistics').first(:xpath, '..').all(:css, 'h1.display-1')
     your_stats = find('h5', text: 'Your Statistics').first(:xpath, '..').all(:css, 'h1.display-1')
     stats = {
@@ -112,7 +111,7 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
     }
     validate_enrollment_stats(stats)
   end
-  
+
   def validate_enrollment_stats(stats)
     assert_operator stats.fetch(:system_total_subjects), :>=, stats.fetch(:your_total_subjects)
     assert_operator stats.fetch(:system_new_subjects), :>=, stats.fetch(:your_new_subjects)

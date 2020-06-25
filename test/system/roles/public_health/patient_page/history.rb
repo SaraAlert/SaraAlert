@@ -4,9 +4,9 @@ require 'application_system_test_case'
 
 require_relative 'history_verifier'
 
-class PublicHealthPatientPageHistory < ApplicationSystemTestCase  
+class PublicHealthPatientPageHistory < ApplicationSystemTestCase
   @@public_health_patient_page_history_verifier = PublicHealthPatientPageHistoryVerifier.new(nil)
-  
+
   def add_comment(user_label, comment)
     fill_in 'comment', with: comment
     click_on 'Add Comment'

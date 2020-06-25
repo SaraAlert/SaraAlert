@@ -3,11 +3,9 @@
 require 'application_system_test_case'
 
 require_relative 'admin_test_helper'
-require_relative '../../lib/system_test_utils'
 
 class AdminTest < ApplicationSystemTestCase
   @@admin_test_helper = AdminTestHelper.new(nil)
-  @@system_test_utils = SystemTestUtils.new(nil)
 
   test 'view users' do
     @@admin_test_helper.view_users('usa_admin')

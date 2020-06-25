@@ -4,7 +4,6 @@ AllCops:
     - 'db/**/*'
     - 'bin/**/*'
     - 'config/**/*'
-    - 'test/system/**/*'
     - 'test/rake/**/*'
     - 'test/jobs/**/*'
     - 'node_modules/**/*'
@@ -33,6 +32,10 @@ Lint/RaiseException:
 Lint/StructNewOverride:
   Enabled: true
 # Very good options that are not enabled by default yet and thus produce warnings
+Style/ClassVars:
+  Enabled: true
+  Exclude: 
+    - test/system/**/*
 Style/HashEachMethods:
   Enabled: true
 Style/HashTransformKeys:

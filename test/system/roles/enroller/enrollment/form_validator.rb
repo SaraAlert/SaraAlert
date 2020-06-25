@@ -5,8 +5,8 @@ require 'application_system_test_case'
 require_relative 'form'
 require_relative '../../../lib/system_test_utils'
 
-class EnrollerFormValidator < ApplicationSystemTestCase
-  @@enroller_form = EnrollerForm.new(nil)
+class EnrollmentFormValidator < ApplicationSystemTestCase
+  @@enrollment_form = EnrollmentForm.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_enrollment_input_validation(monitoree)
@@ -31,7 +31,7 @@ class EnrollerFormValidator < ApplicationSystemTestCase
     fill_in 'date_of_birth', with: '02/31/1995'
     @@system_test_utils.go_to_next_page(false)
     verify_text_displayed('Please enter a date of birth')
-    @@enroller_form.populate_enrollment_step(:identification, identification)
+    @@enrollment_form.populate_enrollment_step(:identification, identification)
     verify_text_not_displayed('Please enter a First Name')
     verify_text_not_displayed('Please enter a Last Name')
     verify_text_not_displayed('Please enter a date of birth')
@@ -53,7 +53,7 @@ class EnrollerFormValidator < ApplicationSystemTestCase
     verify_text_not_displayed('Please enter zip code of address')
     verify_text_displayed('Please enter country of address')
     click_on 'Home Address Within USA'
-    @@enroller_form.populate_enrollment_step(:address, address)
+    @@enrollment_form.populate_enrollment_step(:address, address)
     verify_text_not_displayed('Please enter first line of address')
     verify_text_not_displayed('Please enter city of address')
     verify_text_not_displayed('Please enter state of address')
@@ -84,19 +84,19 @@ class EnrollerFormValidator < ApplicationSystemTestCase
     verify_text_not_displayed('Please provide an email')
     verify_text_displayed('Please confirm email')
     verify_text_not_displayed('Please provide a primary telephone number')
-    @@enroller_form.populate_enrollment_step(:contact_info, contact_info)
+    @@enrollment_form.populate_enrollment_step(:contact_info, contact_info)
     verify_text_not_displayed('Please provide an email')
     verify_text_not_displayed('Please confirm email')
     verify_text_not_displayed('Please provide a primary telephone number')
   end
 
   def verify_input_validation_for_arrival_info(arrival_info)
-    @@enroller_form.populate_enrollment_step(:arrival_info, arrival_info)
+    @@enrollment_form.populate_enrollment_step(:arrival_info, arrival_info)
     verify_text_not_displayed('Please enter a valid date of departure')
   end
 
   def verify_input_validation_for_additional_planned_travel(additional_planned_travel)
-    @@enroller_form.populate_enrollment_step(:additional_planned_travel, additional_planned_travel)
+    @@enrollment_form.populate_enrollment_step(:additional_planned_travel, additional_planned_travel)
     verify_text_not_displayed('Please enter a valid start date')
     verify_text_not_displayed('Please enter a valid end date')
   end
@@ -129,7 +129,7 @@ class EnrollerFormValidator < ApplicationSystemTestCase
     assert_not_equal('asdf', page.find_field('assignedUser').value)
     fill_in 'assigned_user', with: 'W(#*&R#(W&'
     assert_not_equal('W(#*&R#(W&', page.find_field('assignedUser').value)
-    @@enroller_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
+    @@enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
     verify_text_not_displayed('Please enter a last date of exposure')
     verify_text_not_displayed('Date can not be in the future')
   end
@@ -137,7 +137,7 @@ class EnrollerFormValidator < ApplicationSystemTestCase
   def verify_text_displayed(text)
     assert page.has_content?(text), "Monitoree enrollment input validation - should display error message: #{text}"
   end
-  
+
   def verify_text_not_displayed(text)
     assert page.has_no_content?(text), "Monitoree enrollment input validation - should not display error message: #{text}"
   end

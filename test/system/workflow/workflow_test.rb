@@ -18,9 +18,9 @@ require_relative '../lib/system_test_utils'
 
 class WorkflowTest < ApplicationSystemTestCase
   @@enroller_test_helper = EnrollerTestHelper.new(nil)
-  @@enroller_form = EnrollerForm.new(nil)
+  @@enrollment_form = EnrollmentForm.new(nil)
   @@enroller_dashboard_verifier = EnrollerDashboardVerifier.new(nil)
-  @@monitoree_assessment_form = MonitoreeAssessmentForm.new(nil)
+  @@assessment_form = AssessmentForm.new(nil)
   @@public_health_dashboard = PublicHealthDashboard.new(nil)
   @@public_health_dashboard_verifier = PublicHealthDashboardVerifier.new(nil)
   @@public_health_patient_page = PublicHealthPatientPage.new(nil)
@@ -31,8 +31,8 @@ class WorkflowTest < ApplicationSystemTestCase
   @@public_health_patient_page_reports_verifier = PublicHealthPatientPageReportsVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  ASSESSMENTS = @@system_test_utils.get_assessments
-  MONITOREES = @@system_test_utils.get_monitorees
+  ASSESSMENTS = @@system_test_utils.assessments
+  MONITOREES = @@system_test_utils.monitorees
 
   test 'epi enroll monitoree, complete assessment, update monitoring actions, jurisdiction, workflow' do
     # enroll monitoree, should be asymptomatic
@@ -78,7 +78,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@system_test_utils.login(epi_user_label)
     @@public_health_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
     @@public_health_patient_page_reports_verifier.verify_current_status('asymptomatic')
-    @@monitoree_assessment_form.complete_assessment(Patient.order(created_at: :desc).first, 'assessment_2')
+    @@assessment_form.complete_assessment(Patient.order(created_at: :desc).first, 'assessment_2')
     visit '/'
     @@public_health_dashboard.search_for_and_view_monitoree('symptomatic', monitoree_label)
     @@public_health_patient_page_reports_verifier.verify_current_status('symptomatic')
@@ -96,7 +96,7 @@ class WorkflowTest < ApplicationSystemTestCase
     edited_monitoree_without_propogation_label = 'monitoree_13'
     @@system_test_utils.login(enroller_user_label)
     @@enroller_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[monitoree_label], false, false)
-    @@enroller_form.edit_monitoree_info(MONITOREES[edited_monitoree_without_propogation_label])
+    @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_without_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
     new_jurisdiction = MONITOREES[edited_monitoree_without_propogation_label]['potential_exposure_info']['jurisdiction_id']
@@ -117,7 +117,7 @@ class WorkflowTest < ApplicationSystemTestCase
     edited_monitoree_with_propogation_label = 'monitoree_14'
     @@system_test_utils.login(enroller_user_label)
     @@enroller_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[monitoree_label], false, false)
-    @@enroller_form.edit_monitoree_info(MONITOREES[edited_monitoree_with_propogation_label])
+    @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_with_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
     newer_jurisdiction = MONITOREES[edited_monitoree_with_propogation_label]['potential_exposure_info']['jurisdiction_id']
@@ -148,7 +148,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@system_test_utils.login(epi_enroller_user_label)
     @@public_health_dashboard.search_for_and_view_monitoree('all', monitoree_label)
     edited_monitoree_without_propogation_label = 'monitoree_15'
-    @@enroller_form.edit_monitoree_info(MONITOREES[edited_monitoree_without_propogation_label])
+    @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_without_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
 
@@ -163,7 +163,7 @@ class WorkflowTest < ApplicationSystemTestCase
     # edit parent assigned user and propagate to group member
     edited_monitoree_with_propogation_label = 'monitoree_16'
     click_on 'Click here to view that monitoree'
-    @@enroller_form.edit_monitoree_info(MONITOREES[edited_monitoree_with_propogation_label])
+    @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_with_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
 

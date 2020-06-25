@@ -9,10 +9,10 @@ class PublicHealthPatientPageReportsVerifier < ApplicationSystemTestCase
 
   def verify_existing_reports(patient)
     assessments = Assessment.where(patient_id: patient.id)
-    assessments.each { |assessment|
+    assessments.each do |assessment|
       assert page.has_content?(assessment.who_reported), @@system_test_utils.get_err_msg('Reports', 'who reported', assessment.who_reported)
       verify_symptoms(Condition.where(assessment_id: assessment.id).joins(:symptoms))
-    }
+    end
   end
 
   def verify_new_report(assessment)
@@ -25,13 +25,13 @@ class PublicHealthPatientPageReportsVerifier < ApplicationSystemTestCase
     verify_symptoms(assessment['symptoms'])
   end
 
-  def verify_edit_report(user_label, assessment_id, assessment)
+  def verify_edit_report(user_label, assessment)
     assert page.has_content?(user_label), @@system_test_utils.get_err_msg('Reports', 'Reporter', user_label)
     verify_symptoms(assessment['symptoms'])
   end
 
   def verify_symptoms(symptoms)
-    symptoms.each { |symptom|
+    symptoms.each do |symptom|
       case symptom['type']
       when 'BoolSymptom'
         assert page.has_content?(symptom['bool_value'] ? 'Yes' : 'No'), @@system_test_utils.get_err_msg('Report', 'boolean symptom', symptom['bool_value'])
@@ -40,7 +40,7 @@ class PublicHealthPatientPageReportsVerifier < ApplicationSystemTestCase
       when 'IntegerSymptom'
         assert page.has_content?(symptom['int_value']), @@system_test_utils.get_err_msg('Report', 'int symptom', symptom['int_value'])
       end
-    }
+    end
   end
 
   def verify_workflow(workflow)
@@ -52,6 +52,7 @@ class PublicHealthPatientPageReportsVerifier < ApplicationSystemTestCase
   end
 
   def verify_pause_notifications(pause_notifications)
-    assert page.has_content?("#{pause_notifications ? 'Resume' : 'Pause'} Notifications"), @@system_test_utils.get_err_msg('Reports', 'notifications paused', pause_notifications)
+    err_msg = @@system_test_utils.get_err_msg('Reports', 'notifications paused', pause_notifications)
+    assert page.has_content?("#{pause_notifications ? 'Resume' : 'Pause'} Notifications"), err_msg
   end
 end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class EnrollerFormSteps < ApplicationSystemTestCase
+# rubocop:disable Metrics/MethodLength
+class EnrollmentFormSteps < ApplicationSystemTestCase
+  # rubocop:disable Layout/LineLength
   def steps
     {
       identification: [
@@ -101,7 +103,7 @@ class EnrollerFormSteps < ApplicationSystemTestCase
         { id: 'member_of_a_common_exposure_cohort_type', type: 'text', required: false, info_page: true },
         { id: 'jurisdiction_id', type: 'text', required: false, info_page: true },
         { id: 'update_group_member_jurisdiction_id', type: 'checkbox', required: false, info_page: false, label: 'Apply this change to the entire household that this monitoree is responsible for' },
-        { id: 'assigned_user', type: 'text', required: false, info_page: true},
+        { id: 'assigned_user', type: 'text', required: false, info_page: true },
         { id: 'update_group_member_assigned_user', type: 'checkbox', required: false, info_page: false, label: 'Apply this change to the entire household that this monitoree is responsible for' },
         { id: 'exposure_risk_assessment', type: 'select', required: false, info_page: false },
         { id: 'monitoring_plan', type: 'select', required: false, info_page: false },
@@ -109,4 +111,6 @@ class EnrollerFormSteps < ApplicationSystemTestCase
       ]
     }
   end
+  # rubocop:enable Layout/LineLength
 end
+# rubocop:enable Metrics/MethodLength

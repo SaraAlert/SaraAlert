@@ -7,8 +7,8 @@ require_relative '../../../lib/system_test_utils'
 class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  RISK_LEVELS = ['high', 'medium', 'low', 'no_identified', 'missing']
-  
+  RISK_LEVELS = %w[high medium low no_identified missing].freeze
+
   def verify_monitoree_counts(analytic_id)
     verify_monitoree_counts_by_monitoring_status(analytic_id, true)
     verify_monitoree_counts_by_age_group(analytic_id, true)
@@ -42,46 +42,49 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
     verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, 'Exposure Country')
   end
 
+  # rubocop:disable Lint/UnusedMethodArgument
   def verify_monitoree_counts_for_category_type(element, analytic_id, active_monitoring, category_type)
-    element.text.split('\n').each { |distribution_text|
+    element.text.split('\n').each do |distribution_text|
       distribution = get_distributions(distribution_text)
       # verify_counts(distribution, analytic_id, active_monitoring, category_type, distribution.fetch(:category))
       validate_counts(distribution)
       validate_percentages(distribution)
-    }
+    end
   end
+  # rubocop:enable Lint/UnusedMethodArgument
 
   def verify_counts(distribution, analytic_id, active_monitoring, category_type, category)
-    RISK_LEVELS.each { |risk_level|
+    RISK_LEVELS.each do |risk_level|
       count = distribution.fetch("#{risk_level}_count".to_sym)
       expected_count = get_expected_count(analytic_id, active_monitoring, category_type, category, risk_level)
-      if !expected_count.nil?
-        assert_equal(expected_count['total'], count, @@system_test_utils.get_err_msg('Monitoree count', "#{category_type} #{category} #{risk_level}", expected_count['total']))
+      unless expected_count.nil?
+        err_msg = @@system_test_utils.get_err_msg('Monitoree count', "#{category_type} #{category} #{risk_level}", expected_count['total'])
+        assert_equal(expected_count['total'], count, err_msg)
       end
-    }
+    end
   end
 
   def validate_counts(distribution)
     sum_of_counts = 0
-    RISK_LEVELS.each { |risk_level|
+    RISK_LEVELS.each do |risk_level|
       sum_of_counts += distribution.fetch("#{risk_level}_count".to_sym)
-    }
+    end
     assert_equal(sum_of_counts, distribution.fetch(:total_count), @@system_test_utils.get_err_msg('Monitoree count', 'sum of counts', sum_of_counts))
   end
 
   def validate_percentages(distribution)
-    if distribution.has_key?(:total_percentage)
-      RISK_LEVELS.each { |risk_level|
-        percentage = distribution.fetch("#{risk_level}_percentage".to_sym)
-        assert_operator percentage, :>=, 0, err_msg_for_distribution_percentage(distribution, risk_level)
-        assert_operator percentage, :<=, 100, err_msg_for_distribution_percentage(distribution, risk_level)
-      }
+    return unless distribution.key?(:total_percentage)
+
+    RISK_LEVELS.each do |risk_level|
+      percentage = distribution.fetch("#{risk_level}_percentage".to_sym)
+      assert_operator percentage, :>=, 0, err_msg_for_distribution_percentage(distribution, risk_level)
+      assert_operator percentage, :<=, 100, err_msg_for_distribution_percentage(distribution, risk_level)
     end
   end
 
   def get_distributions(text)
     elements = text.split(' ')
-    if ['Symptomatic', 'Non-Reporting', 'Asymptomatic'].include? elements[0]
+    if %w[Symptomatic Non-Reporting Asymptomatic].include? elements[0]
       get_distributions_with_percentages(elements)
     else
       get_distributions_without_percentages(elements)
@@ -114,20 +117,22 @@ class AnalystDashboardMonitoreeCountsVerifier < ApplicationSystemTestCase
       low_count: elements[3].to_i,
       no_identified_count: elements[4].to_i,
       missing_count: elements[5].to_i,
-      total_count: elements[6].to_i,
+      total_count: elements[6].to_i
     }
   end
 
   def get_expected_count(analytic_id, active_monitoring, category_type, category, risk_level)
-    MonitoreeCount.where(analytic_id: analytic_id, 
-                         active_monitoring: active_monitoring, 
-                         category_type: category_type, 
-                         category: category, 
+    MonitoreeCount.where(analytic_id: analytic_id,
+                         active_monitoring: active_monitoring,
+                         category_type: category_type,
+                         category: category,
                          risk_level: risk_level_label(risk_level)).first
   end
 
   def err_msg_for_distribution_percentage(distribution, risk_level)
-    @@system_test_utils.get_err_msg('Monitoree counts', "#{distribution.fetch('category'.to_sym)} #{risk_level} risk level percentage", 'less than or equal to 100')
+    @@system_test_utils.get_err_msg('Monitoree counts',
+                                    "#{distribution.fetch('category'.to_sym)} #{risk_level} risk level percentage",
+                                    'less than or equal to 100')
   end
 
   def risk_level_label(risk_level)

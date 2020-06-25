@@ -8,8 +8,8 @@ require_relative '../../../lib/system_test_utils'
 class PublicHealthDashboardVerifier < ApplicationSystemTestCase
   @@public_health_dashboard = PublicHealthDashboard.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
-  
-  def verify_patients_on_dashboard(jurisdiction_id, verify_scope=false)
+
+  def verify_patients_on_dashboard(jurisdiction_id, verify_scope = false)
     jurisdiction = Jurisdiction.find(jurisdiction_id)
     patients = jurisdiction.all_patients
     verify_workflow_count('Exposure Monitoring', patients.where(isolation: false).count)
@@ -37,7 +37,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     displayed_count = find('a', text: workflow).text.tr("#{workflow} ()", '').to_i
     assert_equal(expected_count, displayed_count, @@system_test_utils.get_err_msg('dashboard', "#{workflow} monitoring type count", expected_count))
   end
-  
+
   def verify_patients_under_tab(jurisdiction, verify_scope, tab, patients)
     @@system_test_utils.go_to_tab(tab)
     assert_equal(patients.count, patient_count_under_tab(tab), @@system_test_utils.get_err_msg('dashboard', "#{tab} tab count", patients.count))
@@ -57,39 +57,37 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
 
   def verify_patient_under_tab(jurisdiction, verify_scope, tab, patient)
     # view patient without any filters
-    if patient_count_under_tab(tab) > find('.dataTables_length').find('select', class: 'custom-select')['value'].to_i
-      fill_in 'Search:', with: patient.last_name
-    end
+    fill_in 'Search:', with: patient.last_name if patient_count_under_tab(tab) > find('.dataTables_length').find('select', class: 'custom-select')['value'].to_i
     verify_patient_info_in_data_table(patient, tab)
 
-    unless %w[transferred-in transferred-out].include?(tab)
-      # view patient with assigned jurisdiction filter
-      Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
-        select jur[:path], from: "assigned_jurisdiction_#{tab.gsub('-', '_')}_patients"      
-        verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path].include?(jur[:name])
-  
-        select 'Exact Match', from: "scope_#{tab.gsub('-', '_')}_patients"
-        if verify_scope
-          @@system_test_utils.wait_for_data_table_load_delay
-          page.all('.dataTable tbody tr').each do |row|
-            assigned_jurisdiction_cell = row.all('td')[1]
-            assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
-          end
+    return if %w[transferred-in transferred-out].include?(tab)
+
+    # view patient with assigned jurisdiction filter
+    Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
+      select jur[:path], from: "assigned_jurisdiction_#{tab.gsub('-', '_')}_patients"
+      verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path].include?(jur[:name])
+
+      select 'Exact Match', from: "scope_#{tab.gsub('-', '_')}_patients"
+      if verify_scope
+        @@system_test_utils.wait_for_data_table_load_delay
+        page.all('.dataTable tbody tr').each do |row|
+          assigned_jurisdiction_cell = row.all('td')[1]
+          assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
         end
-        verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path] == jur[:path]
-        select 'All', from: "scope_#{tab.gsub('-', '_')}_patients"
       end
-      select jurisdiction[:path], from: "assigned_jurisdiction_#{tab.gsub('-', '_')}_patients"
-  
-      # view patient with assigned user filter
-      select patient[:assigned_user].nil? ? 'None' : patient[:assigned_user], from: "assigned_user_#{tab.gsub('-', '_')}_patients"
-      verify_patient_info_in_data_table(patient, tab)
-      select 'All', from: "assigned_user_#{tab.gsub('-', '_')}_patients"
+      verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path] == jur[:path]
+      select 'All', from: "scope_#{tab.gsub('-', '_')}_patients"
     end
+    select jurisdiction[:path], from: "assigned_jurisdiction_#{tab.gsub('-', '_')}_patients"
+
+    # view patient with assigned user filter
+    select patient[:assigned_user].nil? ? 'None' : patient[:assigned_user], from: "assigned_user_#{tab.gsub('-', '_')}_patients"
+    verify_patient_info_in_data_table(patient, tab)
+    select 'All', from: "assigned_user_#{tab.gsub('-', '_')}_patients"
   end
 
   def patient_count_under_tab(tab)
-    displayed_count = find("##{tab}-tab").first(:xpath, './/span').text.to_i
+    find("##{tab}-tab").first(:xpath, './/span').text.to_i
   end
 
   def verify_patient_info_in_data_table(patient, tab)
@@ -116,10 +114,10 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
 
   def verify_monitoree_under_tab(tab, monitoree_label)
     @@system_test_utils.go_to_tab(tab)
-    search_for_and_verify_monitoree(monitoree_label, true, tab == 'Transferred Out' ? 'td' : 'a')
+    search_for_and_verify_monitoree(monitoree_label, true)
   end
 
-  def search_for_and_verify_monitoree(monitoree_label, should_exist, selector='a')
+  def search_for_and_verify_monitoree(monitoree_label, should_exist)
     @@public_health_dashboard.search_for_monitoree(monitoree_label)
     monitoree_display_name = @@system_test_utils.get_monitoree_display_name(monitoree_label)
     if should_exist

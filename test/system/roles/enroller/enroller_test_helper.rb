@@ -11,25 +11,25 @@ require_relative '../../lib/system_test_utils'
 
 class EnrollerTestHelper < ApplicationSystemTestCase
   @@enroller_dashboard_verifier = EnrollerDashboardVerifier.new(nil)
-  @@enroller_form = EnrollerForm.new(nil)
-  @@enroller_form_validator = EnrollerFormValidator.new(nil)
-  @@enroller_form_verifier = EnrollerFormVerifier.new(nil)
+  @@enrollment_form = EnrollmentForm.new(nil)
+  @@enrollment_form_validator = EnrollmentFormValidator.new(nil)
+  @@enrollment_form_verifier = EnrollmentFormVerifier.new(nil)
   @@enroller_patient_page_verifier = EnrollerPatientPageVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  MONITOREES = @@system_test_utils.get_monitorees
+  MONITOREES = @@system_test_utils.monitorees
 
   def view_enrolled_monitorees(user_label)
     @@system_test_utils.login(user_label)
     @@enroller_dashboard_verifier.verify_enrolled_monitorees(user_label)
     @@system_test_utils.logout
   end
-  
-  def enroll_monitoree(user_label, monitoree_label, is_epi=false)
+
+  def enroll_monitoree(user_label, monitoree_label, is_epi = false)
     monitoree = MONITOREES[monitoree_label]
     @@system_test_utils.login(user_label)
     click_on 'Enroll New Monitoree'
-    @@enroller_form.populate_monitoree_info(monitoree)
+    @@enrollment_form.populate_monitoree_info(monitoree)
     @@enroller_patient_page_verifier.verify_monitoree_info(monitoree, false)
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
@@ -39,17 +39,17 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def enroll_group_member(user_label, existing_monitoree_label, new_monitoree_label, is_epi=false)
+  def enroll_group_member(user_label, existing_monitoree_label, new_monitoree_label, is_epi = false)
     existing_monitoree = MONITOREES[existing_monitoree_label]
     new_monitoree = MONITOREES[new_monitoree_label]
     @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
-    @@enroller_form.populate_monitoree_info(existing_monitoree)
+    @@enrollment_form.populate_monitoree_info(existing_monitoree)
     @@enroller_patient_page_verifier.verify_monitoree_info(existing_monitoree, false)
     click_on 'Finish and Add a Household Member'
     click_on 'Continue'
     @@system_test_utils.wait_for_enrollment_submission
-    @@enroller_form.populate_monitoree_info(new_monitoree)
+    @@enrollment_form.populate_monitoree_info(new_monitoree)
     @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, false)
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
@@ -63,10 +63,10 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     monitoree = MONITOREES[monitoree_label]
     @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
-    @@enroller_form.populate_enrollment_step(:identification, monitoree['identification'])
-    @@enroller_form.populate_enrollment_step(:address, monitoree['address'], false)
+    @@enrollment_form.populate_enrollment_step(:identification, monitoree['identification'])
+    @@enrollment_form.populate_enrollment_step(:address, monitoree['address'], false)
     click_on 'Copy from Home Address'
-    @@enroller_form_verifier.verify_home_address_copied(monitoree)
+    @@enrollment_form_verifier.verify_home_address_copied(monitoree)
     @@system_test_utils.logout
   end
 
@@ -75,12 +75,12 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     new_monitoree = MONITOREES[new_monitoree_label]
     @@system_test_utils.login(user_label)
     click_on 'Enroll New Monitoree'
-    @@enroller_form.populate_monitoree_info(existing_monitoree)
+    @@enrollment_form.populate_monitoree_info(existing_monitoree)
     @@enroller_patient_page_verifier.verify_monitoree_info(existing_monitoree)
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
     @@enroller_patient_page_verifier.verify_monitoree_info(existing_monitoree)
-    @@enroller_form.edit_monitoree_info(new_monitoree)
+    @@enrollment_form.edit_monitoree_info(new_monitoree)
     @@enroller_patient_page_verifier.verify_monitoree_info(new_monitoree)
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
@@ -90,11 +90,11 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def enroll_monitoree_and_cancel(user_label, monitoree_label, is_epi=false)
+  def enroll_monitoree_and_cancel(user_label, monitoree_label, is_epi = false)
     monitoree = MONITOREES[monitoree_label]
     @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
-    @@enroller_form.populate_monitoree_info(monitoree)
+    @@enrollment_form.populate_monitoree_info(monitoree)
     click_on 'Cancel'
     @@system_test_utils.wait_for_pop_up_alert
     page.driver.browser.switch_to.alert.dismiss
@@ -109,20 +109,20 @@ class EnrollerTestHelper < ApplicationSystemTestCase
 
   def verify_form_data_after_navigation(user_label, monitoree_label)
     @@system_test_utils.login(user_label)
-    @@enroller_form_verifier.verify_form_data_after_navigation(MONITOREES[monitoree_label])
+    @@enrollment_form_verifier.verify_form_data_after_navigation(MONITOREES[monitoree_label])
     @@system_test_utils.logout
   end
 
   def verify_input_validation(user_label, monitoree_label)
     @@system_test_utils.login(user_label)
-    @@enroller_form_validator.verify_enrollment_input_validation(MONITOREES[monitoree_label])
+    @@enrollment_form_validator.verify_enrollment_input_validation(MONITOREES[monitoree_label])
     @@system_test_utils.logout
   end
 
   def view_enrollment_analytics(user_label)
-    jurisdiction_id = @@system_test_utils.login(user_label)
+    @@system_test_utils.login(user_label)
     click_on 'Analytics'
-    @@enroller_dashboard_verifier.verify_enrollment_analytics(jurisdiction_id)
+    @@enroller_dashboard_verifier.verify_enrollment_analytics
     @@system_test_utils.logout
   end
 end

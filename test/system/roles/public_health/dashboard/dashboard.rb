@@ -11,8 +11,8 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   @@public_health_import_verifier = PublicHealthMonitoringImportVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  PATIENTS = @@system_test_utils.get_patients
-  MONITOREES = @@system_test_utils.get_monitorees
+  PATIENTS = @@system_test_utils.patients
+  MONITOREES = @@system_test_utils.monitorees
 
   def search_for_and_view_patient(tab, patient_label)
     @@system_test_utils.go_to_tab(tab)
@@ -31,12 +31,12 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def export_line_list_csv(user_label, workflow, action)
-    start_export(workflow, "Line list CSV (#{workflow.to_s})", action)
+    start_export(workflow, "Line list CSV (#{workflow})", action)
     @@public_health_export_verifier.verify_line_list_csv(user_label, workflow) if action == :export
   end
 
   def export_sara_alert_format(user_label, workflow, action)
-    start_export(workflow, "Sara Alert Format (#{workflow.to_s})", action)
+    start_export(workflow, "Sara Alert Format (#{workflow})", action)
     @@public_health_export_verifier.verify_sara_alert_format(user_label, workflow) if action == :export
   end
 
@@ -67,6 +67,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     end
   end
 
+  # rubocop:disable Metrics/ParameterLists
   def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
@@ -112,6 +113,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
       @@public_health_import_verifier.verify_sara_alert_format_field_validation(jurisdiction_id, workflow, file_name)
     end
   end
+  # rubocop:enable Metrics/ParameterLists
 
   def download_sara_alert_format_guidance(workflow)
     click_on 'Isolation Monitoring' if workflow == :isolation
