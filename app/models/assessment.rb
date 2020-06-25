@@ -29,6 +29,10 @@ class Assessment < ApplicationRecord
     where('created_at <= ?', 72.hours.ago)
   }
 
+  scope :symptomatic, lambda {
+    where(symptomatic: true)
+  }
+
   def symptomatic?
     symptom_groups = []
     reported_condition.symptoms.each do |reported_symptom|

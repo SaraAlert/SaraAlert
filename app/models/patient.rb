@@ -273,11 +273,10 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .joins(:assessments)
-      .joins(:laboratories)
-      .where('laboratories.result = \'positive\' AND laboratories.report <= ?', 10.days.ago)
+      .where_assoc_exists(:laboratories, &:before_ten_days_positive)
       .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
-      .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.report')
+      .where_assoc_exists(:assessments)
+      .where_assoc_not_exists(:assessments, &:symptomatic)
       .distinct
   }
 
@@ -286,16 +285,13 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
-      .joins(:assessments)
-      .left_outer_joins(:laboratories)
+      .where_assoc_exists(:assessments)
       .where_assoc_not_exists(:assessments, &:twenty_four_hours_fever_or_fever_medication)
+      .where_assoc_count(2, :<=, :laboratories, 'result = "negative"')
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: true)
-        .joins(:assessments)
-        .left_outer_joins(:laboratories)
         .where_assoc_exists(:assessments, &:older_than_seventy_two_hours)
         .where_assoc_not_exists(:assessments, &:seventy_two_hours_fever_or_fever_medication)
         .where('symptom_onset <= ?', 10.days.ago)
@@ -304,12 +300,10 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: true)
-        .joins(:assessments)
-        .left_outer_joins(:laboratories)
-        .where('laboratories.patient_id = patients.id AND laboratories.result = \'positive\'')
         .where_assoc_exists(:laboratories, &:before_ten_days_positive)
         .where_assoc_not_exists(:laboratories, &:last_ten_days_positive)
-        .where_assoc_not_exists(:assessments, 'assessments.symptomatic = true AND assessments.created_at > laboratories.report')
+        .where_assoc_exists(:assessments)
+        .where_assoc_not_exists(:assessments, &:symptomatic)
       )
       .distinct
   }
