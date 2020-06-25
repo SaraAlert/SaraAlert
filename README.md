@@ -238,11 +238,13 @@ bundle exec rails test
 
 ### System Tests
 
-By default, `rails test` will not run system tests. To run system tests (uses Selenium):
+By default, the `rails test` command used to execute all the other tests will not run system tests. To run all the system tests:
 
 ```
 bundle exec rails test:system
 ```
+
+See [System tests documentation](test/system/README.md) for more information.
 
 ## Configuration
 
