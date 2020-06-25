@@ -166,7 +166,7 @@ class PatientTest < ActiveSupport::TestCase
     verify_patient_status_scopes(patient, :exposure_asymptomatic)
   end
 
-  test 'test based' do
+  test 'isolation test based' do
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: true)
 
@@ -192,7 +192,7 @@ class PatientTest < ActiveSupport::TestCase
     Laboratory.destroy_all
   end
 
-  test 'symp non test based' do
+  test 'isolation symp non test based' do
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 14.days.ago, symptom_onset: 12.days.ago)
 
@@ -238,7 +238,7 @@ class PatientTest < ActiveSupport::TestCase
     Assessment.destroy_all
   end
 
-  test 'asymp non test based' do
+  test 'isolation asymp non test based' do
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 14.days.ago)
 
@@ -249,10 +249,10 @@ class PatientTest < ActiveSupport::TestCase
     Assessment.destroy_all
     Laboratory.destroy_all
 
-    # meets definition: only symptomatic before positive test result but not afterwards
+    # does not meet definition: symptomatic before positive test result but not afterwards
     create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
     create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
-    verify_patient_status_scopes(patient, :isolation_asymp_non_test_based)
+    verify_patient_status_scopes(patient, :isolation_non_reporting)
     Assessment.destroy_all
     Laboratory.destroy_all
 
@@ -383,8 +383,10 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal status == :isolation_asymp_non_test_based, patients.isolation_asymp_non_test_based.exists?
     assert_equal status == :isolation_symp_non_test_based, patients.isolation_symp_non_test_based.exists?
     assert_equal status == :isolation_test_based, patients.isolation_test_based.exists?
+
     isolation_requiring_review = %i[isolation_asymp_non_test_based isolation_symp_non_test_based isolation_test_based].include?(status)
     assert_equal isolation_requiring_review, patients.isolation_requiring_review.exists?
+
     assert_equal status == :isolation_reporting, patients.isolation_reporting.exists?
     assert_equal status == :isolation_non_reporting, patients.isolation_non_reporting.exists?
 
