@@ -53,6 +53,11 @@ class User < ApplicationRecord
     elsif has_role?(:admin)
       nil
     end
+  rescue ActiveRecord::RecordNotFound => e
+    raise e unless e.message.include?('Couldn\'t find all Patients')
+
+    raise ActiveRecord::RecordNotFound,
+          'One or more of the selected Patients is in a household that spans multiple jurisidictions which you do not have access to.'
   end
 
   # Get multiple patients (that this user is allowed to get)

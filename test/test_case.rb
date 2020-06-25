@@ -20,3 +20,7 @@ class ActiveSupport::TestCase
 
   self.use_transactional_tests = true
 end
+
+class ActionController::TestCase
+  include Devise::Test::ControllerHelpers
+end
