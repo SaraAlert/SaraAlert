@@ -28,7 +28,7 @@ class Admin extends React.Component {
       return;
     }
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path.replace(/,/g, ', ')], email: row.email, role_title: row.role };
+    let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path], email: row.email, role_title: row.role };
     let send_result = axios({
       method: 'post',
       url: window.BASE_PATH + '/admin/create_user',
@@ -55,7 +55,11 @@ class Admin extends React.Component {
 
   afterSaveCell(row) {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    let submit_data = { jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path.replace(/,/g, ', ')], email: row.email, role_title: row.role };
+    let submit_data = {
+      jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path.replace(/,(?=[^\s])/g, ', ')],
+      email: row.email,
+      role_title: row.role,
+    };
     let send_result = axios({
       method: 'post',
       url: window.BASE_PATH + '/admin/edit_user',
