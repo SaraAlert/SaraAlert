@@ -6,7 +6,7 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  unless ENV['RAILS_ENABLE_TEST_LOG']
+  if ENV['APP_IN_CI']
     config.logger = Logger.new(nil)
     config.log_level = :fatal
   end
