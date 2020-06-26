@@ -250,17 +250,27 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
       p.workbook.add_worksheet(name: 'Assessments') do |sheet|
         symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
         sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
-        patients.joins(assessments: [{ reported_condition: :symptoms }])
-                .includes(assessments: [{ reported_condition: :symptoms }])
-                .find_each do |patient|
-                  patient.assessments.find_each do |assessment|
-                    assessment_summary_arr = %i[patient_id symptomatic who_reported created_at updated_at].map { |field| assessment[field] }
-                    symptoms_hash = Hash[assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }]
-                    symptoms_arr = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s || '' }
-                    row = assessment_summary_arr.concat(symptoms_arr)
-                    sheet.add_row row, { types: Array.new(row.length, :string) }
-                  end
-                end
+        patients.find_in_batches(batch_size: 500) do |patients_group|
+          assessments = Assessment.where(patient_id: patients_group.pluck(:id))
+          conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
+          symptoms = Symptom.where(condition_id: conditions.pluck(:id))
+          
+          # construct hash containing symptoms by assessment_id
+          conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, { assessment_id: assessment_id, symptoms: {} }] }]
+          symptoms.each do |symptom|
+            conditions_hash[symptom[:condition_id]][:symptoms][symptom[:label]] = symptom.value
+          end
+          assessments_hash = Hash[conditions_hash.map { |condition_id, condition| [condition[:assessment_id], condition[:symptoms]] }]
+
+          # combine symptoms with assessment summary
+          assessment_summary_arrays = assessments.order(:patient_id, :id).pluck(:id, :patient_id, :symptomatic, :who_reported, :created_at, :updated_at)
+          assessment_summary_arrays.each do |assessment_summary_array|
+            symptoms_hash = assessments_hash[assessment_summary_array[0]]
+            symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
+            row = assessment_summary_array[1..-1].concat(symptoms_array)
+            sheet.add_row row, { types: Array.new(row.length, :string) }
+          end
+        end
       end
       p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
         labs = Laboratory.where(patient_id: patients.pluck(:id))
