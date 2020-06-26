@@ -38,4 +38,14 @@ class Symptom < ApplicationRecord
                            type: type
                          })
   end
+
+  def value
+    if type == 'BoolSymptom'
+      bool_value
+    elsif type == 'IntegerSymptom'
+      int_value
+    elsif type == 'FloatSymptom'
+      float_value
+    end
+  end
 end
