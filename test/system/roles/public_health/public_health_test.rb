@@ -120,7 +120,7 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   test 'export excel all monitorees' do
     @@public_health_test_helper.export_excel_all_monitorees('locals1c1_epi', :exposure, :cancel)
-    @@public_health_test_helper.export_excel_all_monitorees('locals1c2_epi', :isolation, :export)
+    @@public_health_test_helper.export_excel_all_monitorees('state1_epi', :isolation, :export)
   end
 
   test 'export excel single monitoree' do

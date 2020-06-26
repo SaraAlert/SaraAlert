@@ -114,36 +114,31 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     patient_ids = patients.pluck(:id)
 
     assessments = xlsx.sheet('Assessments')
-    assessment_ids = Assessment.where(patient_id: patient_ids).pluck(:id)
-    condition_ids = ReportedCondition.where(assessment_id: assessment_ids).pluck(:id)
-    symptom_label_and_names = Symptom.where(condition_id: condition_ids).pluck(:label, :name).uniq
-    symptom_labels = symptom_label_and_names.collect { |s| s[0] }
-    symptom_names = symptom_label_and_names.collect { |s| s[1] }
-    patient_info_headers = %w[patient_id symptomatic who_reported created_at updated_at]
-    assessment_headers = patient_info_headers + symptom_names
-    human_readable_headers = ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels
-    human_readable_headers.each_with_index do |header, col|
+    symptom_labels = Patient.where(id: patient_ids)
+                            .joins(assessments: [{ reported_condition: :symptoms }])
+                            .select('symptoms.label')
+                            .distinct
+                            .pluck('symptoms.label')
+                            .sort
+    assessment_headers = ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
+    assessment_headers.each_with_index do |header, col|
       assert_equal(header, assessments.cell(1, col + 1), "For header: #{header} in Assessments")
     end
-    assessment_summaries = []
-    patients.each do |patient|
-      patient.assessmenmts_summary_array(patient_info_headers, symptom_names).each do |assessment|
-        assessment_summaries.append(assessment)
-      end
-    end
-    assert_equal(assessment_summaries.size, assessments.last_row - 1, 'Number of assessments in Assessments')
-    assessment_summaries.each_with_index do |assessment_summary, row|
-      assessment_summary.each_with_index do |value, col|
-        cell_value = assessments.cell(row + 2, col + 1)
-        if ([true, false].include?(value) && value) || (col == 1 && value == 1)
-          assert_equal('true', cell_value, "For field: #{assessment_headers[col]} in Assessments")
-        elsif ([true, false].include?(value) && !value) || (col == 1 && value != 1)
-          assert_nil(cell_value, "For field: #{assessment_headers[col]} in Assessments")
-        else
-          assert_equal(value.to_s, cell_value || '', "For field: #{assessment_headers[col]} in Assessments")
-        end
-      end
-    end
+    assessment_row = 0
+    patients.joins(assessments: [{ reported_condition: :symptoms }])
+            .includes(assessments: [{ reported_condition: :symptoms }])
+            .find_each do |patient|
+              patient.assessments.find_each do |assessment|
+                assessment_summary_arr = %i[patient_id symptomatic who_reported created_at updated_at].map { |field| assessment[field] }
+                symptoms_hash = Hash[assessment.reported_condition.symptoms.map { |symptom| [symptom[:label], symptom.value] }]
+                symptoms_arr = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s || '' }
+                assessment_summary_arr.concat(symptoms_arr).each_with_index do |value, col|
+                  cell_value = assessments.cell(assessment_row + 2, col + 1)
+                  assert_equal(value.to_s, cell_value || '', "For field: #{assessment_headers[col]} in Assessments")
+                end
+                assessment_row += 1
+              end
+            end
 
     lab_results = xlsx.sheet('Lab Results')
     labs = Laboratory.where(patient_id: patient_ids)
