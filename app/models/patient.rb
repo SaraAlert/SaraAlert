@@ -580,7 +580,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
     elsif preferred_contact_method&.downcase == 'telephone call' && responder.id == id
       PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
-    elsif ADMIN_OPTIONS['enable_email'] && responder.id == id && !email.blank?
+    elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && !email.blank?
       PatientMailer.assessment_email(self).deliver_later
     end
   end
