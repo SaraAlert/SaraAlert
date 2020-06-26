@@ -288,7 +288,7 @@ jobs:
           cp config/github-ci/github-database.yml config/database.yml
           mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
       - name: Run System Tests
-        run: bundle exec rake test TEST=test/system/roles/admin/admin.rb
+        run: bundle exec rake test TEST=test/system/roles/admin/admin_test.rb
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
