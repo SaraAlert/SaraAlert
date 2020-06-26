@@ -5,7 +5,6 @@ AllCops:
     - 'bin/**/*'
     - 'config/**/*'
     - 'test/rake/**/*'
-    - 'test/jobs/**/*'
     - 'node_modules/**/*'
     - 'lib/tasks/**/*'
     - 'tmp/**/*'
@@ -35,7 +34,7 @@ Lint/StructNewOverride:
 Style/ClassVars:
   Enabled: true
   Exclude: 
-    - test/system/**/*
+    - test/**/*
 Style/HashEachMethods:
   Enabled: true
 Style/HashTransformKeys:
