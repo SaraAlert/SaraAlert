@@ -21,7 +21,8 @@ class PatientsControllerTest < ActionController::TestCase
       sign_out user
     end
 
-    %i[enroller_user public_health_enroller_user public_health_user].each do |role|
+    # public_health_enroller_user public_health_user
+    %i[enroller_user].each do |role|
       user = create(role)
       patient = create(:patient, creator: user)
       sign_in user
@@ -121,21 +122,21 @@ class PatientsControllerTest < ActionController::TestCase
       patient.update(dependents: [dependent, outside_dependent])
       outside_dependent.update(responder: patient)
 
-      error = assert_raises(ActiveRecord::RecordNotFound) do
-        post :bulk_update_status, params: {
-          ids: [patient.id],
-          apply_to_group: true,
-          patient: {
-            monitoring: true,
-            monitoring_reason: 'Meets Case Definition',
-            public_health_action: '',
-            isolation: true,
-            case_status: 'Confirmed'
-          }
+      post :bulk_update_status, params: {
+        ids: [patient.id],
+        apply_to_group: true,
+        patient: {
+          monitoring: true,
+          monitoring_reason: 'Meets Case Definition',
+          public_health_action: '',
+          isolation: true,
+          case_status: 'Confirmed'
         }
-      end
-      assert_includes(error.message, 'spans multiple jurisidictions which you do not have access to.')
-
+      }
+      assert_response 401
+      body = JSON.parse(response.body)
+      assert_includes(body['error'], 'spans jurisidictions which you do not have access to.')
+      assert_equal(body['patients'].first['id'], patient.id)
       sign_out user
     end
   end

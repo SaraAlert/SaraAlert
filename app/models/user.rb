@@ -42,6 +42,14 @@ class User < ApplicationRecord
     created_patients
   end
 
+  def patients
+    return viewable_patients if has_role?(:public_health) || has_role?(:public_health_enroller)
+
+    return enrolled_patients if has_role?(:enroller)
+
+    nil
+  end
+
   # Get a patient (that this user is allowed to get)
   def get_patient(id)
     if has_role?(:enroller)
@@ -53,11 +61,6 @@ class User < ApplicationRecord
     elsif has_role?(:admin)
       nil
     end
-  rescue ActiveRecord::RecordNotFound => e
-    raise e unless e.message.include?('Couldn\'t find all Patients')
-
-    raise ActiveRecord::RecordNotFound,
-          'One or more of the selected Patients is in a household that spans multiple jurisidictions which you do not have access to.'
   end
 
   # Get multiple patients (that this user is allowed to get)

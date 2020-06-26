@@ -279,9 +279,21 @@ class PatientsController < ApplicationController
     patient_ids = params.require(:ids)
 
     # If apply to group, find dependents ids and add to id array before user accessor for validation of access
-    patient_ids = patient_ids.union(Patient.dependent_ids_for_patients(patient_ids)) if ActiveModel::Type::Boolean.new.cast(params.require(:apply_to_group))
-    # At this point, if apply_to_group was set, and there exists a patient that has dependents in a different
-    # jurisdiction - one that the user may not have access to - those patients will get filtered out.
+    if ActiveModel::Type::Boolean.new.cast(params.require(:apply_to_group))
+      dependent_ids = current_user.patients.where(responder_id: patient_ids).pluck(:id)
+      # If apply_to_group was set, and there exists a patient that has dependents in a different
+      # jurisdiction - one that the user may not have access to - those patients will get filtered out.
+      not_viewable = Patient.where(responder_id: patient_ids).pluck(:id) - dependent_ids
+
+      unless not_viewable.empty?
+        responders = Patient.find(not_viewable).map(&:responder)
+        responders.uniq
+        render json: { error: 'Selected Patients dependents are in a household that spans jurisidictions which you do not have access to.',
+                       patients: responders }, status: 401
+      end
+
+      patient_ids = patient_ids.union(dependent_ids)
+    end
     patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
