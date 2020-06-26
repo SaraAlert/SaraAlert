@@ -6,6 +6,11 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  unless ENV['RAILS_ENABLE_TEST_LOG']
+    config.logger = Logger.new(nil)
+    config.log_level = :fatal
+  end
+
   config.cache_classes = false
 
   # Do not eager load code on boot. This avoids loading your whole application
