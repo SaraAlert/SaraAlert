@@ -42,6 +42,7 @@ class PatientMailer < ApplicationMailer
     )
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
+    add_history_failed_sms(patient)
   end
 
   def enrollment_sms_text_based(patient)
@@ -61,11 +62,12 @@ class PatientMailer < ApplicationMailer
     )
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
+    add_history_failed_sms(patient)
   end
 
   # Right now the wording of this message is the same as for enrollment
   def assessment_sms_weblink(patient)
-    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     num = patient.primary_telephone
     ([patient] + patient.dependents).uniq.each do |p|
@@ -93,10 +95,11 @@ class PatientMailer < ApplicationMailer
     end
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
+    add_history_failed_sms(patient)
   end
 
   def assessment_sms_reminder(patient)
-    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
     contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
@@ -112,10 +115,11 @@ class PatientMailer < ApplicationMailer
     add_success_history(patient)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
+    add_history_failed_sms(patient)
   end
 
   def assessment_sms(patient)
-    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
@@ -150,10 +154,11 @@ class PatientMailer < ApplicationMailer
     add_success_history(patient)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
+    add_history_failed_sms(patient)
   end
 
   def assessment_voice(patient)
-    add_fail_history(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
     patient_names = ([patient] + patient.dependents).uniq.collect do |p|
@@ -188,10 +193,11 @@ class PatientMailer < ApplicationMailer
     add_success_history(patient)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
+    add_history_failed_voice(patient)
   end
 
   def assessment_email(patient)
-    add_fail_history(patient, 'email') && return if patient&.email.blank?
+    add_fail_history_blank_field(patient, 'email') && return if patient&.email.blank?
 
     @lang = patient.select_language
     # Gather patients and jurisdictions
@@ -231,12 +237,38 @@ class PatientMailer < ApplicationMailer
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
-  def add_fail_history(patient, type)
+  def add_fail_history_blank_field(patient, type)
     return if patient.nil?
 
     history = History.new
     history.created_by = 'Sara Alert System'
     comment = "Sara Alert could not send a report reminder to this monitoree via #{patient.preferred_contact_method}, because the monitoree #{type} was blank."
+    history.comment = comment
+    history.patient = patient
+    history.history_type = 'Report Reminder'
+    history.save
+    patient.update(last_assessment_reminder_sent: DateTime.now)
+  end
+
+  def add_history_failed_sms(patient)
+    return if patient.nil?
+
+    history = History.new
+    history.created_by = 'Sara Alert System'
+    comment = "Sara Alert failed to send an SMS to #{patient.primary_telephone}."
+    history.comment = comment
+    history.patient = patient
+    history.history_type = 'Report Reminder'
+    history.save
+    patient.update(last_assessment_reminder_sent: DateTime.now)
+  end
+
+  def add_history_failed_voice(patient)
+    return if patient.nil?
+
+    history = History.new
+    history.created_by = 'Sara Alert System'
+    comment = "Sara Alert failed to call monitoree at #{patient.primary_telephone}."
     history.comment = comment
     history.patient = patient
     history.history_type = 'Report Reminder'
