@@ -1,6 +1,24 @@
 <% content_for :body do %>
-  <p>Your requested export of &quot;<%= @export_type.titleize %>&quot; is now ready.</p>
-  <p>Please note that this download link is one-time use only, and is only valid for 24 hours after creation. The system will delete the export once you've downloaded it or the 24 hour period has elapsed.</p>
+  <p>
+    Your requested export of &quot;
+    <% if @export_type == 'csv_exposure' %>
+      <b>Line list CSV (exposure)</b>
+    <% elsif @export_type == 'csv_isolation' %>
+      <b>Line list CSV (isolation)</b>
+    <% elsif @export_type == 'sara_format_exposure' %>
+      <b>Sara Alert Format (exposure)</b>
+    <% elsif @export_type == 'sara_format_isolation' %>
+      <b>Sara Alert Format (isolation)</b>
+    <% elsif @export_type == 'full_history_all' %>
+      <b>Excel Export For All Monitorees</b>
+    <% elsif @export_type == 'full_history_purgeable' %>
+      <b>Excel Export For Purge-Eligible Monitorees</b>
+    <% else %>
+      <b>Default</b>
+    <% end %>
+    &quot; is now ready.
+  </p>
+  <p>Please note that this download link is one-time use only and is only valid for 24 hours. The system will delete the export once you've downloaded it or the 24 hour period has elapsed. This link will be invalid if you attempt another export of this type before retrieving the file. This link will not work if forwarded to another user. You must be logged into Sara Alert to access this file.</p>
   <%= render partial: 'main_mailer/responsive_button', locals: {link: export_download_url(lookup: @lookup) , text: 'Click here to download'} %>
 <% end %>
 
