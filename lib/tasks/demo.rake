@@ -566,7 +566,7 @@ namespace :demo do
           printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
           timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
           to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
-          patient_updates[patient_id] = { 
+          patient_updates[patient_id] = {
             jurisdiction_id: to_jurisdiction,
             assigned_user: assigned_user.nil? ? nil : assigned_users[to_jurisdiction].sample
           }

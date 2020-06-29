@@ -45,14 +45,13 @@ class Export extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            After clicking <b>Start Export</b>, Sara Alert will gather all of the monitoree data that comprises your request, and generate an export file. Sara
+            After clicking <b>Start Export</b>, Sara Alert will gather all of the monitoree data that comprises your request and generate an export file. Sara
             Alert will then send your user account an email with a one-time download link. This process may take several minutes to complete, based on the
             amount of data present.
           </p>
           <p>
-            Please note that only one of each type of download per workflow will be retained for your user account. Once you use the one-time download link in
-            the email you are sent, that export will be deleted. If you initiate a second export of the same type, any old ones will be overwritten. The
-            download link you are sent via email is only valid for 24 hours after creation.
+            NOTE: The system will store one of each type of export file. If you initiate another export of this file type, any old files will be overwritten and
+            download links that have not been accessed will be invalid.
           </p>
         </Modal.Body>
         <Modal.Footer>
