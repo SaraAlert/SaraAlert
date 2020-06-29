@@ -76,47 +76,24 @@
   <a class="btn btn-outline-primary" href="<%= public_health_isolation_url %>"><i class="fas fa-house-user"></i> Isolation Monitoring (<%= @i_all_count %>)</a>
 </div>
 
-<%= render partial: "exposure_tabs" %>
-
-<script>
-  $(document).ready(function() {
-    if (localStorage.getItem('dashboardCurrentTab') !== null) {
-      $(localStorage.getItem('dashboardCurrentTab') + '-tab').find('span').trigger('click')
-      // Load remembered tab
-      $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-      window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-      if ($('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').length === 0) {
-        // Load default tab
-        $('#patients_table_symptomatic_patients').DataTable().draw();
-        localStorage.setItem('dashboardCurrentTab', 'symptomatic_patients');
-        window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-      }
-    } else {
-      // Load default tab
-      $('#patients_table_symptomatic_patients').DataTable().draw();
-      localStorage.setItem('dashboardCurrentTab', 'symptomatic_patients');
-      window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-    }
-    $('a[data-toggle="tab"]').on('click', function(e) {
-      if ($(e.target).attr('href') === undefined) {
-        localStorage.setItem('dashboardCurrentTab', $(e.target).parent().attr('href'))
-        if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
-          $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-          window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-        }
-      } else {
-        // Changed Tab, clear datatables selection
-        if (localStorage.getItem('dashboardCurrentTab') !== $(e.target).attr('href')) {
-          current_table = $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable();
-          current_table.rows( { selected: true } ).deselect();
-        }
-        localStorage.setItem('dashboardCurrentTab', $(e.target).attr('href'))
-        if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
-          $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-          window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-        }
-      }
-    });
-    window.WORKFLOW = 'exposure';
-  });
-</script>
+<%= react_component("public_health/PatientsTable", {
+  workflow: 'exposure',
+  tabs: [
+    { name: 'symptomatic', label: 'Symptomatic', total: @symptomatic_count, variant: 'danger',
+      description: 'Monitorees who have reported symptoms, which need to be reviewed.', tooltip: 'exposure_symptomatic' },
+    { name: 'non_reporting', label: 'Non-Reporting', total: @non_reporting_count, variant: 'warning',
+      description: 'Monitorees who have failed to report in the last day, and are not symptomatic.', tooltip: 'exposure_nonReporting' },
+    { name: 'asymptomatic', label: 'Asymptomatic', total: @asymptomatic_count, variant: 'success',
+      description: 'Monitorees currently reporting no symptoms, who have reported during the last day.', tooltip: 'exposure_asymptomatic' },
+    { name: 'pui', label: 'PUI', total: @pui_count, variant: 'dark',
+      description: 'Monitorees who are currently under investigation.', tooltip: 'exposure_under_investigation' },
+    { name: 'closed', label: 'Closed', total: @closed_count, variant: 'secondary',
+      description: 'Monitorees not currently being monitored.', tooltip: 'exposure_closed' },
+    { name: 'transferred_in', label: 'Transferred In', total: @transferred_in_count, variant: 'info',
+      description: 'Monitorees that have been transferred into this jurisdiction during the last 24 hours.' },
+    { name: 'transferred_out', label: 'Transferred Out', total: @transferred_out_count, variant: 'info',
+      description: 'Monitorees that have been transferred out of this jurisdiction.' },
+    { name: 'all', label: 'All Cases', total: @all_count, variant: 'primary',
+      description: 'All Monitorees in this jurisdiction, in the Exposure workflow.' }
+  ]
+}) %>

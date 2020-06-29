@@ -76,42 +76,22 @@
   <a class="btn btn-primary" href="<%= public_health_isolation_url %>"><i class="fas fa-house-user"></i> Isolation Monitoring (<%= @all_count %>)</a>
 </div>
 
-<%= render partial: "isolation_tabs" %>
-
-<script>
-  $(document).ready(function() {
-    if (localStorage.getItem('dashboardCurrentTab') !== null) {
-      $(localStorage.getItem('dashboardCurrentTab') + '-tab').find('span').trigger('click')
-      // Load remembered tab
-      $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-      window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-      if ($('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').length === 0) {
-        // Load default tab
-        $('#patients_table_requiring_review_patients').DataTable().draw();
-        localStorage.setItem('dashboardCurrentTab', 'requiring_review_patients');
-        window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-      }
-    } else {
-      // Load default tab
-      $('#patients_table_requiring_review_patients').DataTable().draw();
-      localStorage.setItem('dashboardCurrentTab', 'requiring_review_patients');
-      window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-    }
-    $('a[data-toggle="tab"]').on('click', function(e) {
-      if ($(e.target).attr('href') === undefined) {
-        localStorage.setItem('dashboardCurrentTab', $(e.target).parent().attr('href'))
-        if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
-          $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-          window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-        }
-      } else {
-        localStorage.setItem('dashboardCurrentTab', $(e.target).attr('href'))
-        if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
-          $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-          window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-        }
-      }
-    });
-    window.WORKFLOW = 'isolation';
-  });
-</script>
+<%= react_component("public_health/PatientsTable", {
+  workflow: 'isolation',
+  tabs: [
+    { name: 'requiring_review', label: 'Records Requiring Review', total: @requiring_review_count, variant: 'danger',
+      description: 'Cases who preliminarily meet the recovery definition and require review.', tooltip: 'isolation_recordsRequiringReview' },
+    { name: 'non_reporting', label: 'Non-Reporting', total: @non_reporting_count, variant: 'warning',
+      description: 'Cases who failed to report during the last day and have not yet met recovery definition.', tooltip: 'isolation_nonReporting' },
+    { name: 'reporting', label: 'Reporting', total: @reporting_count, variant: 'success',
+      description: 'Cases who have reported in the last day and have not yet met recovery definition.', tooltip: 'isolation_reporting' },
+    { name: 'closed', label: 'Closed', total: @closed_count, variant: 'secondary',
+      description: 'Cases not currently being monitored.', tooltip: 'isolation_closed' },
+    { name: 'transferred_in', label: 'Transferred In', total: @transferred_in_count, variant: 'info',
+      description: 'Cases that have been transferred into this jurisdiction during the last 24 hours.' },
+    { name: 'transferred_out', label: 'Transferred Out', total: @transferred_out_count, variant: 'info',
+      description: 'Cases that have been transferred out of this jurisdiction.' },
+    { name: 'all', label: 'All Cases', total: @all_count, variant: 'primary',
+      description: 'All cases in this jurisdiction, in the Isolation workflow.' }
+  ]
+}) %>
