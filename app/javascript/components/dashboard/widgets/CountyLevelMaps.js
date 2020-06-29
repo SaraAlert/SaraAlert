@@ -1,8 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import reportError from '../../util/ReportError';
 import { PropTypes } from 'prop-types';
-import { stateOptions, customTerritories } from '../../data';
+import { stateOptions, insularAreas } from '../../data';
 import * as am4maps from '@amcharts/amcharts4/maps';
 import * as am4core from '@amcharts/amcharts4/core';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
@@ -10,8 +9,7 @@ import usaLow from '@amcharts/amcharts4-geodata/usaLow.js';
 import separatorLines from '../../assets/separatorLines.js';
 import usaTerritories2High from '../../assets/usaTerritories.json';
 
-// import maLow from '@amcharts/amcharts4-geodata/region/usa/maLow';
-
+const NON_ZOOMABLE_INSULAR_TERRITORIES = ['US-FM', 'US-GU', 'MH', 'US-MP', 'PW', 'US-VI'];
 am4core.useTheme(am4themes_animated);
 
 class CountyLevelMaps extends React.Component {
@@ -21,12 +19,14 @@ class CountyLevelMaps extends React.Component {
     this.territoryChart = null;
     this.usaSeries = null;
     this.usaPolygon = null;
-    this.usaSeries2 = null;
-    this.usaPolygon2 = null;
+    this.usaSeriesNotInUse = null;
+    this.usaPolygonNotInUse = null;
     this.jurisdictionSeries = null;
     this.jurisdictionPolygon = null;
     this.territorySeries = null;
     this.territoryPolygon = null;
+    this.territorySeriesNotInUse = null;
+    this.territoryPolygonNotInUse = null;
     this.heatLegend = null;
     this.territoryHeatLegend = null;
     // If multiple instances of the CLM Component exist on a page, amcharts4 cannnot find the correct
@@ -58,6 +58,7 @@ class CountyLevelMaps extends React.Component {
     this.usaSeries = this.chart.series.push(new am4maps.MapPolygonSeries());
     this.usaSeries.useGeodata = true;
     this.usaSeries.geodata = usaLow;
+    this.usaSeries.exclude = this.props.jurisdictionsNotInUse.states;
 
     this.usaPolygon = this.usaSeries.mapPolygons.template;
     this.usaPolygon.tooltipPosition = 'fixed';
@@ -65,7 +66,6 @@ class CountyLevelMaps extends React.Component {
     this.usaPolygon.nonScalingStroke = true;
     this.usaPolygon.fill = am4core.color('#3e6887');
     this.usaPolygon.propertyFields.fill = 'color';
-    this.usaSeries.exclude = this.props.statesNotInUse;
 
     this.usaSeries.heatRules.push({
       property: 'fill',
@@ -79,31 +79,22 @@ class CountyLevelMaps extends React.Component {
     });
 
     // the `2` series and polygon are for the states not in use.
-    this.usaSeries2 = this.chart.series.push(new am4maps.MapPolygonSeries());
-    this.usaSeries2.useGeodata = true;
-    this.usaSeries2.geodata = usaLow;
-    this.usaSeries2.include = this.props.statesNotInUse;
+    this.usaSeriesNotInUse = this.chart.series.push(new am4maps.MapPolygonSeries());
+    this.usaSeriesNotInUse.useGeodata = true;
+    this.usaSeriesNotInUse.geodata = usaLow;
+    this.usaSeriesNotInUse.include = this.props.jurisdictionsNotInUse.states;
+    this.usaSeriesNotInUse.tooltip.getFillFromObject = false;
+    this.usaSeriesNotInUse.tooltip.background.fill = am4core.color('#333');
 
-    this.usaPolygon2 = this.usaSeries2.mapPolygons.template;
-    this.usaPolygon2.tooltipPosition = 'fixed';
-    this.usaPolygon2.tooltipText = 'Sara Alert Not In Use';
-    this.usaPolygon2.nonScalingStroke = true;
-    this.usaPolygon2.fill = am4core.color('#a5a5a5');
-    this.usaSeries2.tooltip.getFillFromObject = false;
-    this.usaSeries2.tooltip.background.fill = am4core.color('#333');
+    this.usaPolygonNotInUse = this.usaSeriesNotInUse.mapPolygons.template;
+    this.usaPolygonNotInUse.tooltipPosition = 'fixed';
+    this.usaPolygonNotInUse.tooltipText = 'Sara Alert Not In Use';
+    this.usaPolygonNotInUse.nonScalingStroke = true;
+    this.usaPolygonNotInUse.fill = am4core.color('#a5a5a5');
 
     this.jurisdictionSeries = this.chart.series.push(new am4maps.MapPolygonSeries());
     this.jurisdictionSeries.useGeodata = true;
     this.jurisdictionSeries.hide();
-
-    this.jurisdictionSeries.geodataSource.events.on('error', ev => {
-      reportError(ev);
-    });
-
-    this.jurisdictionPolygon = this.jurisdictionSeries.mapPolygons.template;
-    this.jurisdictionPolygon.tooltipText = '{name} : {value}';
-    this.jurisdictionPolygon.nonScalingStroke = true;
-    this.jurisdictionPolygon.fill = am4core.color('#f06a6d');
     this.jurisdictionSeries.heatRules.push({
       property: 'fill',
       target: this.jurisdictionSeries.mapPolygons.template,
@@ -111,13 +102,17 @@ class CountyLevelMaps extends React.Component {
       max: am4core.color('#A62639').brighten(0.5),
     });
 
-    this.territoryChart = am4core.create(`territorydiv-${this.customID}`, am4maps.MapChart);
+    this.jurisdictionPolygon = this.jurisdictionSeries.mapPolygons.template;
+    this.jurisdictionPolygon.tooltipText = '{name} : {value}';
+    this.jurisdictionPolygon.nonScalingStroke = true;
+    this.jurisdictionPolygon.fill = am4core.color('#f06a6d');
 
+    this.territoryChart = am4core.create(`territorydiv-${this.customID}`, am4maps.MapChart);
     this.territoryChart.projection = new am4maps.projections.Miller();
-    // this.territoryChart.seriesContainer.draggable = false;
-    // this.territoryChart.seriesContainer.resizable = false;
-    // this.territoryChart.seriesContainer.wheelable = false;
-    // this.territoryChart.maxZoomLevel = 1;
+    this.territoryChart.seriesContainer.draggable = false;
+    this.territoryChart.seriesContainer.resizable = false;
+    this.territoryChart.seriesContainer.wheelable = false;
+    this.territoryChart.maxZoomLevel = 1;
 
     // It appears the separatorLines must be mounted on the chart instance (as opposed to a Series)
     this.territoryChart.geodata = separatorLines;
@@ -131,21 +126,62 @@ class CountyLevelMaps extends React.Component {
     this.territorySeries = this.territoryChart.series.push(new am4maps.MapPolygonSeries());
     this.territorySeries.useGeodata = true;
     this.territorySeries.geodata = usaTerritories2High;
-    console.log(this.territorySeries);
-    console.log('thi^^territorySeries');
-    // console.log(`dave:`)
-    // console.log(this.territoryChart.homeGeoPoint)
-    // this.territoryChart.homeGeoPoint = {
-    //   latitude: 21.5218,
-    //   longitude: 77.7812
-    // };
-    // this.territoryChart.goHome()
+    this.territorySeries.exclude = this.props.jurisdictionsNotInUse.insularAreas;
+
     this.territoryPolygon = this.territorySeries.mapPolygons.template;
     this.territoryPolygon.tooltipText = '{name}: {value}';
     this.territoryPolygon.strokeWidth = 1;
     this.territoryPolygon.stroke = am4core.color('#333');
     this.territoryPolygon.fill = am4core.color('#3e6887');
     this.territoryPolygon.propertyFields.fill = 'color';
+
+    this.territoryPolygon.adapter.add('tooltipText', (text, target) => {
+      if (NON_ZOOMABLE_INSULAR_TERRITORIES.includes(target.tooltipDataItem.dataContext.id)) {
+        return `[color:white]{name}: {value}
+          [font-style: italic; font-size: 10px;]zoom not available[/][/]`;
+      } else {
+        return '{name} : {value}';
+      }
+    });
+
+    const labelSeries = this.territoryChart.series.push(new am4maps.MapImageSeries());
+    const labelTemplate = labelSeries.mapImages.template.createChild(am4core.Label);
+    labelTemplate.horizontalCenter = 'left';
+    labelTemplate.verticalCenter = 'top';
+    labelTemplate.valign = true;
+    labelTemplate.fontSize = 14;
+    labelTemplate.fontFamily = 'Arial';
+    labelTemplate.interactionsEnabled = false;
+    labelTemplate.nonScaling = true;
+
+    this.territoryPolygon.events.on('inited', () => {
+      insularAreas.map(insularArea => {
+        const polygon = this.territorySeries.getPolygonById(insularArea.isoCode);
+        if (polygon) {
+          let label = labelSeries.mapImages.create();
+          const territoryName = polygon.dataItem.dataContext.id.split('-').pop();
+          // This next line is the hackiest line.
+          // Essentially, I know where the GEOJSON points lie for this GEOJSON file so I manually
+          // position the upper and lower labels with tried-and-tested values (22.5 and 30)
+          label.latitude = polygon.north < 25 ? 22.5 : 30;
+          label.longitude = polygon.visualLongitude - 0.5;
+          label.children.getIndex(0).text = territoryName;
+        }
+      });
+    });
+
+    this.territorySeriesNotInUse = this.territoryChart.series.push(new am4maps.MapPolygonSeries());
+    this.territorySeriesNotInUse.useGeodata = true;
+    this.territorySeriesNotInUse.geodata = usaTerritories2High;
+    this.territorySeriesNotInUse.tooltip.getFillFromObject = false;
+    this.territorySeriesNotInUse.tooltip.background.fill = am4core.color('#333');
+    this.territorySeriesNotInUse.include = this.props.jurisdictionsNotInUse.insularAreas;
+
+    this.territoryPolygonNotInUse = this.territorySeriesNotInUse.mapPolygons.template;
+    this.territoryPolygonNotInUse.tooltipPosition = 'fixed';
+    this.territoryPolygonNotInUse.tooltipText = 'Sara Alert Not In Use';
+    this.territoryPolygonNotInUse.nonScalingStroke = true;
+    this.territoryPolygonNotInUse.fill = am4core.color('#a5a5a5');
 
     this.territorySeries.heatRules.push({
       property: 'fill',
@@ -154,7 +190,7 @@ class CountyLevelMaps extends React.Component {
       max: am4core.color('#A62639').brighten(0.5),
     });
 
-    this.territorySeries.include = customTerritories.map(customTerritory => customTerritory.isoCode);
+    this.territorySeries.include = insularAreas.map(customTerritory => customTerritory.isoCode);
 
     this.territorySeries.hide();
 
@@ -173,12 +209,12 @@ class CountyLevelMaps extends React.Component {
 
   hideUSAMap = () => {
     this.usaSeries.hide();
-    this.usaSeries2.hide();
+    this.usaSeriesNotInUse.hide();
   };
 
   showUSAMap = () => {
     this.usaSeries.show();
-    this.usaSeries2.show();
+    this.usaSeriesNotInUse.show();
   };
 
   renderHeatLegend = dataSeries => {
@@ -276,7 +312,7 @@ class CountyLevelMaps extends React.Component {
     console.log('updateJurisdictionData');
     let data = [];
     if (this.props.jurisdictionToShow.category === 'fullCountry') {
-      let nonCustomJurisdictions = stateOptions.filter(jurisdiction => !_.some(customTerritories, v => v.name === jurisdiction.name));
+      let nonCustomJurisdictions = stateOptions.filter(jurisdiction => !_.some(insularAreas, v => v.name === jurisdiction.name));
       nonCustomJurisdictions.forEach(region => {
         data.push({
           id: region.isoCode,
@@ -289,7 +325,7 @@ class CountyLevelMaps extends React.Component {
       this.props.decrementSpinnerCount();
     } else if (this.props.jurisdictionToShow.category === 'territory') {
       console.log('Need to make a write code to handle TERRITORY');
-      let counties = customTerritories;
+      let counties = insularAreas;
       counties.forEach(county => {
         data.push({
           id: `${county.isoCode}`,
@@ -330,7 +366,7 @@ CountyLevelMaps.propTypes = {
   mapObject: PropTypes.object,
   handleJurisdictionChange: PropTypes.func,
   decrementSpinnerCount: PropTypes.func,
-  statesNotInUse: PropTypes.array,
+  jurisdictionsNotInUse: PropTypes.object,
 };
 
 export default CountyLevelMaps;

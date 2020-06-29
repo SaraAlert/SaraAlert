@@ -6,13 +6,16 @@ import { Row, Col, Button } from 'react-bootstrap';
 import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
-import { stateOptions } from '../../data';
+import { stateOptions, insularAreas } from '../../data';
 import CountyLevelMaps from './CountyLevelMaps';
 
 const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today
 const INITIAL_SELECTED_DATE_INDEX = 0; // Maybe at some point, we would want to show the latest day initially
 const TERRITORY_GEOJSON_FILE = 'usaTerritories.json';
-let STATES_NOT_IN_USE = [];
+let JURISDICTIONS_NOT_IN_USE = {
+  states: [],
+  insularAreas: [],
+};
 
 class GeographicSummary extends React.Component {
   constructor(props) {
@@ -24,10 +27,14 @@ class GeographicSummary extends React.Component {
       _.omit(x, 'day')
     );
 
-    let statesInUse = _.uniq(_.flatten(this.totalFullCountryDataByStateAndDay.map(x => Object.keys(_.omit(x, 'day')))));
+    let jurisdictionsInUse = _.uniq(_.flatten(this.totalFullCountryDataByStateAndDay.map(x => Object.keys(_.omit(x, 'day')))));
     stateOptions.map(state => {
-      if (!statesInUse.includes(state.name)) {
-        STATES_NOT_IN_USE.push(state.isoCode);
+      if (!jurisdictionsInUse.includes(state.name)) {
+        if (insularAreas.find(insularArea => insularArea.name === state.name)) {
+          JURISDICTIONS_NOT_IN_USE.insularAreas.push(state.isoCode);
+        } else {
+          JURISDICTIONS_NOT_IN_USE.states.push(state.isoCode);
+        }
       }
     });
 
@@ -53,7 +60,6 @@ class GeographicSummary extends React.Component {
 
     this.dateSubset = _.takeRight(this.props.stats.total_patient_count_by_state_and_day, MAX_DAYS_OF_HISTORY);
     this.dateRange = this.getDateRange();
-    console.log(this.props.stats);
   }
 
   decrementSpinnerCount = () => {
@@ -246,7 +252,7 @@ class GeographicSummary extends React.Component {
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
-                  statesNotInUse={STATES_NOT_IN_USE}
+                  jurisdictionsNotInUse={JURISDICTIONS_NOT_IN_USE}
                 />
               </Col>
               <Col md="12" className="pl-0">
@@ -257,7 +263,7 @@ class GeographicSummary extends React.Component {
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
-                  statesNotInUse={STATES_NOT_IN_USE}
+                  jurisdictionsNotInUse={JURISDICTIONS_NOT_IN_USE}
                 />
               </Col>
             </Row>
@@ -278,7 +284,7 @@ class GeographicSummary extends React.Component {
               size="md"
               className="mr-auto btn-square"
               disabled={this.state.jurisdictionToShow.category === 'territory'}
-              title="View Island Jurisdictions"
+              title="View Insular Jurisdictions"
               onClick={() => this.handleJurisdictionChange('territory')}
               style={{ cursor: this.state.jurisdictionToShow.category === 'territory' ? 'not-allowed' : 'pointer' }}>
               View Insular Areas

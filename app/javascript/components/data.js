@@ -107,7 +107,7 @@ export const stateOptions = [
   { abbrv: 'KY', isoCode: 'US-KY', mapFile: 'kyLow', name: 'Kentucky' },
   { abbrv: 'LA', isoCode: 'US-LA', mapFile: 'laLow', name: 'Louisiana' },
   { abbrv: 'ME', isoCode: 'US-ME', mapFile: 'meLow', name: 'Maine' },
-  { abbrv: 'MH', isoCode: 'US-MH', mapFile: 'usaTerritories', name: 'Marshall Islands' },
+  { abbrv: 'MH', isoCode: 'MH', mapFile: 'usaTerritories', name: 'Marshall Islands' },
   { abbrv: 'MD', isoCode: 'US-MD', mapFile: 'mdLow', name: 'Maryland' },
   { abbrv: 'MA', isoCode: 'US-MA', mapFile: 'maLow', name: 'Massachusetts' },
   { abbrv: 'MI', isoCode: 'US-MI', mapFile: 'miLow', name: 'Michigan' },
@@ -127,7 +127,7 @@ export const stateOptions = [
   { abbrv: 'OH', isoCode: 'US-OH', mapFile: 'ohLow', name: 'Ohio' },
   { abbrv: 'OK', isoCode: 'US-OK', mapFile: 'okLow', name: 'Oklahoma' },
   { abbrv: 'OR', isoCode: 'US-OR', mapFile: 'orLow', name: 'Oregon' },
-  { abbrv: 'PW', isoCode: 'US-PW', mapFile: 'usaTerritories', name: 'Palau' },
+  { abbrv: 'PW', isoCode: 'PW', mapFile: 'usaTerritories', name: 'Palau' },
   { abbrv: 'PA', isoCode: 'US-PA', mapFile: 'paLow', name: 'Pennsylvania' },
   { abbrv: 'PR', isoCode: 'US-PR', mapFile: 'usaTerritories', name: 'Puerto Rico' },
   { abbrv: 'RI', isoCode: 'US-RI', mapFile: 'riLow', name: 'Rhode Island' },
@@ -145,15 +145,16 @@ export const stateOptions = [
   { abbrv: 'WY', isoCode: 'US-WY', mapFile: 'wyLow', name: 'Wyoming' },
 ];
 
-export const customTerritories = [
-  { name: 'American Samoa', abbrv: 'AS', isoCode: 'US-AS', mapFile: 'usaTerritories' },
-  { name: 'Federated States of Micronesia', abbrv: 'FM', isoCode: 'US-FM', mapFile: 'usaTerritories' },
-  { name: 'Guam', abbrv: 'GU', isoCode: 'US-GU', mapFile: 'usaTerritories' },
-  { name: 'Marshall Islands', abbrv: 'MH', isoCode: 'MH', mapFile: 'usaTerritories' },
-  { name: 'Northern Mariana Islands', abbrv: 'MP', isoCode: 'US-MP', mapFile: 'usaTerritories' },
-  { name: 'Palau', abbrv: 'PW', isoCode: 'PW', mapFile: 'usaTerritories' },
-  { name: 'Puerto Rico', abbrv: 'PR', isoCode: 'US-PR', mapFile: 'usaTerritories' },
-  { name: 'Virgin Islands', abbrv: 'VI', isoCode: 'US-VI', mapFile: 'usaTerritories' },
+// Amcharts gets finicky with its internal map projections using certain iso codes, hence not all are `US-XX`
+export const insularAreas = [
+  { abbrv: 'AS', isoCode: 'US-AS', name: 'American Samoa', mapFile: 'usaTerritories' },
+  { abbrv: 'FM', isoCode: 'US-FM', name: 'Federated States of Micronesia', mapFile: 'usaTerritories' },
+  { abbrv: 'GU', isoCode: 'US-GU', name: 'Guam', mapFile: 'usaTerritories' },
+  { abbrv: 'MH', isoCode: 'MH', name: 'Marshall Islands', mapFile: 'usaTerritories' },
+  { abbrv: 'MP', isoCode: 'US-MP', name: 'Northern Mariana Islands', mapFile: 'usaTerritories' },
+  { abbrv: 'PW', isoCode: 'PW', name: 'Palau', mapFile: 'usaTerritories' },
+  { abbrv: 'PR', isoCode: 'US-PR', name: 'Puerto Rico', mapFile: 'usaTerritories' },
+  { abbrv: 'VI', isoCode: 'US-VI', name: 'Virgin Islands', mapFile: 'usaTerritories' },
 ];
 
 export const countryOptions = [
