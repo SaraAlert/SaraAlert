@@ -82,20 +82,24 @@ class AnalyticsController < ApplicationController
   end
 
   def epi_stats
-    # Map analytics are pulled from the root jurisdiction (will be removed and replaced by new monitoree_maps data when ready)
-    root_jurisdiction_analytics = current_user.jurisdiction.root.analytics
-    total_patient_count_by_state_and_day = []
-    symptomatic_patient_count_by_state_and_day = []
+    analytics = current_user.jurisdiction.analytics
+
+    # Retrieve map analytics from up to 14 days ago
+    maps = []
     dates = (14.days.ago.to_date..Date.today).to_a
     dates.each do |date|
       next if date.nil?
 
       # Get last saved analytic for each date
-      root_analytic = root_jurisdiction_analytics.where(created_at: date.beginning_of_day..date.end_of_day).last
-      sym_map = !root_analytic&.monitoree_state_map.nil? ? (JSON.parse root_analytic.monitoree_state_map.gsub('=>', ':').gsub('nil', '"Unknown"')) : {}
-      symptomatic_patient_count_by_state_and_day << { day: date }.merge(sym_map)
-      count_map = !root_analytic&.symptomatic_state_map.nil? ? (JSON.parse root_analytic.symptomatic_state_map.gsub('=>', ':').gsub('nil', '"Unknown"')) : {}
-      total_patient_count_by_state_and_day << { day: date }.merge(count_map)
+      analytic = analytics.where(created_at: date.beginning_of_day..date.end_of_day).last
+
+      next if analytic.nil?
+
+      if current_user.jurisdiction.root?
+        maps << { day: date, map: MonitoreeMap.where(analytic_id: analytic.id, level: 'State') }
+      else
+        maps << { day: date, map: MonitoreeMap.where(analytic_id: analytic.id) }
+      end
     end
 
     # Get analytics from most recent cache analytics job
@@ -105,10 +109,9 @@ class AnalyticsController < ApplicationController
 
     {
       last_updated_at: most_recent_analytics.updated_at,
-      symptomatic_patient_count_by_state_and_day: symptomatic_patient_count_by_state_and_day,
-      total_patient_count_by_state_and_day: total_patient_count_by_state_and_day,
       monitoree_counts: MonitoreeCount.where(analytic_id: most_recent_analytics.id),
-      monitoree_snapshots: MonitoreeSnapshot.where(analytic_id: most_recent_analytics.id)
+      monitoree_snapshots: MonitoreeSnapshot.where(analytic_id: most_recent_analytics.id),
+      monitoree_maps: maps
     }
   end
 end
