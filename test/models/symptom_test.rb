@@ -33,7 +33,9 @@ class SymptomTest < ActiveSupport::TestCase
     end
     # Invalid type field
     assert_raises(ActiveRecord::RecordInvalid) do
-      create(:symptom, type: 'Invalid')
+      symptom = build(:symptom)
+      symptom.type = 'Invalid'
+      symptom.save!
     end
   end
 

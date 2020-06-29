@@ -14,6 +14,10 @@ class FloatSymptom < Symptom
     self.float_value = value
   end
 
+  def negate
+    self.float_value = 0.0
+  end
+
   def as_json(options = {})
     super(options).merge({
                            value: float_value

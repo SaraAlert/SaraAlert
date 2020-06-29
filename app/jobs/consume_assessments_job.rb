@@ -87,7 +87,7 @@ class ConsumeAssessmentsJob < ApplicationJob
                                         threshold_condition.clone_symptoms_remove_values
                                       else
                                         # The person is not experiencing symptoms, we can infer that the bool symptoms are the opposite
-                                        # of the threshold values that represent symptomatic (most likely false)
+                                        # of the threshold values that represent symptomatic
                                         threshold_condition.clone_symptoms_negate_bool_values
                                       end
             reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])

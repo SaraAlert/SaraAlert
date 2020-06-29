@@ -7,6 +7,8 @@ FactoryBot.define do
     end
 
     after(:create) do |condition, evaluator|
+      next if condition.symptoms.length == evaluator.symptoms_count
+
       evaluator.symptoms_count.times do
         condition.symptoms << create(:symptom)
       end

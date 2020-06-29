@@ -14,6 +14,10 @@ class BoolSymptom < Symptom
     self.bool_value = value
   end
 
+  def negate
+    self.bool_value = !value
+  end
+
   def as_json(options = {})
     super(options).merge({
                            value: bool_value
