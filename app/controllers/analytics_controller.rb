@@ -25,46 +25,6 @@ class AnalyticsController < ApplicationController
     )
   end
 
-  def get_jurisdiction_data
-    # STUB ENDPOINT
-    # Currently just returns massachusetts values
-    render json:
-    {
-      "total": {
-        "Worcester": 12,
-        "Suffolk": 145,
-        "Plymouth": 14,
-        "Norfolk": 68,
-        "Nantucket": 12,
-        "Middlesex": 75,
-        "Hampshire": 13,
-        "Hampden": 11,
-        "Franklin": 9,
-        "Essex": 86,
-        "Dukes": 7,
-        "Bristol": 10,
-        "Berkshire": 1,
-        "Barnstable": 25
-      },
-      "symptomatic": {
-        "Worcester": 14,
-        "Suffolk": 98,
-        "Plymouth": 16,
-        "Norfolk": 25,
-        "Nantucket": 15,
-        "Middlesex": 56,
-        "Hampshire": 13,
-        "Hampden": 23,
-        "Franklin": 13,
-        "Essex": 87,
-        "Dukes": 23,
-        "Bristol": 12,
-        "Berkshire": 1,
-        "Barnstable": 12
-    }
-  }
-  end
-
   protected
 
 

@@ -30,8 +30,6 @@ class CountyLevelMaps extends React.Component {
     this.territoryPolygonNotInUse = null;
     this.heatLegend = null;
     this.territoryHeatLegend = null;
-    // If multiple instances of the CLM Component exist on a page, amcharts4 cannnot find the correct
-    // instance to mount the chart at. Therefore we generate custom string for each instance
     this.countiesNotFound = null;
 
     this.state = {
@@ -56,7 +54,6 @@ class CountyLevelMaps extends React.Component {
 
     this.usaPolygon = this.usaSeries.mapPolygons.template;
     this.usaPolygon.tooltipPosition = 'fixed';
-    this.usaPolygon.tooltipText = '{name}: {value}';
     this.usaPolygon.adapter.add('tooltipText', (text, target) => {
       if (!this.props.jurisdictionsPermittedToView.includes(target.tooltipDataItem.dataContext.id)) {
         return `[color:white]{name}: {value}

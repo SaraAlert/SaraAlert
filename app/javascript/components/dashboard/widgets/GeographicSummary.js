@@ -183,7 +183,6 @@ class GeographicSummary extends React.Component {
         mapObject: null,
       });
     } else if (jurisdiction === 'territory') {
-      // THIS IS TERRITORY CODE
       this.setState({ showBackButton: true, showSpinner: true });
       let mapFile = TERRITORY_GEOJSON_FILE;
       this.loadJurisdictionData(mapFile, jurisdictionData => {
@@ -281,16 +280,6 @@ class GeographicSummary extends React.Component {
               </Col>
             </Row>
           </div>
-          {/* <CountyLevelMaps
-            monitoreeInfo={this.props.stats.total_patient_count_by_state_and_day}
-            selectedDateIndex={this.state.selectedDateIndex}
-            showBackButton={this.state.showBackButton}
-          />
-          <CountyLevelMaps
-            monitoreeInfo={this.props.stats.symptomatic_patient_count_by_state_and_day}
-            selectedDateIndex={this.state.selectedDateIndex}
-            showBackButton={this.state.showBackButton}
-          /> */}
           <Row className="mx-0 map-panel-controls">
             <Button
               variant="primary"
