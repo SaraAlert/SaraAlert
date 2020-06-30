@@ -8,6 +8,7 @@ import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 import usaLow from '@amcharts/amcharts4-geodata/usaLow.js';
 import separatorLines from '../../assets/separatorLines.js';
 import usaTerritories2High from '../../assets/usaTerritories.json';
+import ReactTooltip from 'react-tooltip';
 
 const NON_ZOOMABLE_INSULAR_TERRITORIES = ['US-FM', 'US-GU', 'MH', 'US-MP', 'PW', 'US-VI'];
 am4core.useTheme(am4themes_animated);
@@ -31,23 +32,16 @@ class CountyLevelMaps extends React.Component {
     this.territoryHeatLegend = null;
     // If multiple instances of the CLM Component exist on a page, amcharts4 cannnot find the correct
     // instance to mount the chart at. Therefore we generate custom string for each instance
-    this.customID = this.makeid(10).substring(0, 6);
+    this.countiesNotFound = null;
+
     this.state = {
       showTerritory: false,
+      countiesNotFound: false,
     };
   }
 
-  makeid = length => {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < length; ++i) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-  };
-
   componentDidMount = () => {
-    this.chart = am4core.create(`chartdiv-${this.customID}`, am4maps.MapChart);
+    this.chart = am4core.create(`chartdiv-${this.props.id}`, am4maps.MapChart);
     this.chart.projection = new am4maps.projections.AlbersUsa();
     this.chart.seriesContainer.draggable = false;
     this.chart.seriesContainer.resizable = false;
@@ -63,6 +57,15 @@ class CountyLevelMaps extends React.Component {
     this.usaPolygon = this.usaSeries.mapPolygons.template;
     this.usaPolygon.tooltipPosition = 'fixed';
     this.usaPolygon.tooltipText = '{name}: {value}';
+    this.usaPolygon.adapter.add('tooltipText', (text, target) => {
+      if (!this.props.jurisdictionsPermittedToView.includes(target.tooltipDataItem.dataContext.id)) {
+        return `[color:white]{name}: {value}
+          [font-style: italic; font-size: 10px;]zoom not available[/][/]`;
+      } else {
+        return '{name} : {value}';
+      }
+    });
+
     this.usaPolygon.nonScalingStroke = true;
     this.usaPolygon.fill = am4core.color('#3e6887');
     this.usaPolygon.propertyFields.fill = 'color';
@@ -75,7 +78,9 @@ class CountyLevelMaps extends React.Component {
     });
 
     this.usaPolygon.events.on('hit', ev => {
-      this.props.handleJurisdictionChange(ev);
+      if (this.props.jurisdictionsPermittedToView.includes(ev.target.dataItem.dataContext.id)) {
+        this.props.handleJurisdictionChange(ev);
+      }
     });
 
     // the `2` series and polygon are for the states not in use.
@@ -107,7 +112,7 @@ class CountyLevelMaps extends React.Component {
     this.jurisdictionPolygon.nonScalingStroke = true;
     this.jurisdictionPolygon.fill = am4core.color('#f06a6d');
 
-    this.territoryChart = am4core.create(`territorydiv-${this.customID}`, am4maps.MapChart);
+    this.territoryChart = am4core.create(`territorydiv-${this.props.id}`, am4maps.MapChart);
     this.territoryChart.projection = new am4maps.projections.Miller();
     this.territoryChart.seriesContainer.draggable = false;
     this.territoryChart.seriesContainer.resizable = false;
@@ -250,7 +255,6 @@ class CountyLevelMaps extends React.Component {
   };
 
   componentDidUpdate = prevProps => {
-    console.log('CLM: ComponentDidUpdate');
     // The ordering of these two if statements is important
     // If a new jurisdiction is specified, then transition to the new jurisdiction
     // Else if JUST the data has updated, then just update the data
@@ -262,9 +266,8 @@ class CountyLevelMaps extends React.Component {
   };
 
   transitionJurisdiction = () => {
-    console.log(`CountyLevelMaps : transitionJurisdiction`);
     if (this.props.jurisdictionToShow.category === 'fullCountry') {
-      this.setState({ showTerritory: false }, () => {
+      this.setState({ showTerritory: false, showCountyTooltip: false }, () => {
         this.jurisdictionSeries.hide();
         this.showUSAMap();
         this.chart.maxZoomLevel = 32;
@@ -279,7 +282,7 @@ class CountyLevelMaps extends React.Component {
       this.hideUSAMap();
       if (this.territorySeries.isHidden) this.territorySeries.show();
       this.territorySeries.geodata = this.props.mapObject;
-      this.setState({ showTerritory: true }, () => {
+      this.setState({ showTerritory: true, showCountyTooltip: false }, () => {
         setTimeout(() => {
           this.updateJurisdictionData();
           this.territoryChart.goHome();
@@ -303,13 +306,10 @@ class CountyLevelMaps extends React.Component {
           this.props.decrementSpinnerCount();
         }, 1050);
       });
-    } else {
-      console.error('THIS SHOULD NEVER HAPPEN');
     }
   };
 
   updateJurisdictionData = () => {
-    console.log('updateJurisdictionData');
     let data = [];
     if (this.props.jurisdictionToShow.category === 'fullCountry') {
       let nonCustomJurisdictions = stateOptions.filter(jurisdiction => !_.some(insularAreas, v => v.name === jurisdiction.name));
@@ -317,14 +317,13 @@ class CountyLevelMaps extends React.Component {
         data.push({
           id: region.isoCode,
           map: region.mapFile,
-          value: this.props.jurisdictionData[region.name] || 0,
+          value: this.props.jurisdictionData.stateData[region.isoCode],
         });
       });
       this.usaSeries.data = data;
       this.renderHeatLegend(this.usaSeries);
       this.props.decrementSpinnerCount();
     } else if (this.props.jurisdictionToShow.category === 'territory') {
-      console.log('Need to make a write code to handle TERRITORY');
       let counties = insularAreas;
       counties.forEach(county => {
         data.push({
@@ -335,38 +334,77 @@ class CountyLevelMaps extends React.Component {
       this.territorySeries.data = data;
       this.renderHeatLegend(this.territorySeries);
     } else if (this.props.jurisdictionToShow.category === 'state') {
+      let stateIsoCode = stateOptions.find(state => state.name === this.props.jurisdictionToShow.name).isoCode;
       let counties = this.jurisdictionSeries.geodata.features;
       counties.forEach(county => {
+        let countyRef = this.props.jurisdictionData.countyData[String(stateIsoCode)].find(countyData => countyData.countyName === county.properties.name);
+        let countyValue = countyRef ? countyRef.value : 0;
         data.push({
           id: `${county.id}`,
           color: am4core.color('#3B9CD9'),
-          value: this.props.jurisdictionData[String(county?.properties?.name)] || 0,
+          value: countyValue,
         });
       });
+      const countyNames = this.jurisdictionSeries.geodata.features.map(county => county.properties.name);
+      // We want to report to the user if there were values in the DB that couldnt be matched to real counties
+      // The most believable and common instance of this will be `Unknown` which is when a county is not entered
+      // However for demo-data (from demo.rake) the counties will be randomly generated and therefore invalid (There is no Eagle Heights county in Massachusetts)
+      // By reporting this to the user in a little popup, we cover all bases
+      this.countiesNotFound = this.props.jurisdictionData.countyData[String(stateIsoCode)]
+        .map(cd => (countyNames.includes(cd.countyName) ? null : cd))
+        .filter(x => x);
+      this.setState({ showCountyTooltip: !_.isEmpty(this.countiesNotFound) });
       this.jurisdictionSeries.data = data;
       this.renderHeatLegend(this.jurisdictionSeries);
-    } else {
-      console.error('THIS SHOULD NEVER HAPPEN');
+      this.props.decrementSpinnerCount();
     }
+  };
+
+  renderCountyTooltip = () => {
+    return (
+      this.state.showCountyTooltip && (
+        <span key={this.countiesNotFound}>
+          <span data-for={`${this.props.id}`} data-tip="" className="clm-tooltip" style={{ paddingLeft: this.props.id === 1 ? '25px' : '10px' }}>
+            <i className="fas fa-exclamation-circle" style={{ fontSize: '20px' }}></i>
+          </span>
+          <ReactTooltip id={`${this.props.id}`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+            <span>
+              The following data could not be matched to any counties in this jurisdiction:
+              {this.countiesNotFound.map((county, index) => {
+                return (
+                  <div key={index}>
+                    {' '}
+                    {county.countyName} : {county.value}{' '}
+                  </div>
+                );
+              })}
+            </span>
+          </ReactTooltip>
+        </span>
+      )
+    );
   };
 
   render() {
     return (
       <div className="map-panel-contaianer">
-        <div id={`chartdiv-${this.customID}`} className={this.state.showTerritory ? 'hidden-map-container' : 'visible-map-container'}></div>
-        <div id={`territorydiv-${this.customID}`} className={this.state.showTerritory ? 'visible-map-container' : 'hidden-map-container'}></div>
+        <div id={`chartdiv-${this.props.id}`} className={this.state.showTerritory ? 'hidden-map-container' : 'visible-map-container'}></div>
+        <div id={`territorydiv-${this.props.id}`} className={this.state.showTerritory ? 'visible-map-container' : 'hidden-map-container'}></div>
+        {this.renderCountyTooltip()}
       </div>
     );
   }
 }
 
 CountyLevelMaps.propTypes = {
+  id: PropTypes.number,
   jurisdictionToShow: PropTypes.object,
   jurisdictionData: PropTypes.object,
   mapObject: PropTypes.object,
   handleJurisdictionChange: PropTypes.func,
   decrementSpinnerCount: PropTypes.func,
   jurisdictionsNotInUse: PropTypes.object,
+  jurisdictionsPermittedToView: PropTypes.array,
 };
 
 export default CountyLevelMaps;

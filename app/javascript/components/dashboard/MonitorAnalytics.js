@@ -67,7 +67,7 @@ class MonitorAnalytics extends React.Component {
           </Col>
         </Row>
         <Row className="mb-4 mx-2 px-0 pt-4">
-          <GeographicSummary stats={this.props.stats} />
+          <GeographicSummary stats={this.props.stats} current_user={this.props.current_user} />
         </Row>
         <Row className="mb-2 mx-0 px-0 pt-4 pb-2">
           <Col md="24" className="mx-2 px-0">

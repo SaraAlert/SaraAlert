@@ -6,7 +6,7 @@ import { Row, Col, Button } from 'react-bootstrap';
 import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
-import { stateOptions, insularAreas } from '../../data';
+import { stateOptions } from '../../data';
 import CountyLevelMaps from './CountyLevelMaps';
 
 const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today
@@ -20,24 +20,8 @@ let JURISDICTIONS_NOT_IN_USE = {
 class GeographicSummary extends React.Component {
   constructor(props) {
     super(props);
-    // We will load each state individually, as required, but the data for the entire country is always loaded
-    // omit `day` from these, because they index-match the `dateSubset`. Makes parsing easier later (no need to remove the `day` flag)
-    this.totalFullCountryDataByStateAndDay = _.takeRight(this.props.stats.total_patient_count_by_state_and_day, MAX_DAYS_OF_HISTORY).map(x => _.omit(x, 'day'));
-    this.symptomaticFullCountryDataByStateAndDay = _.takeRight(this.props.stats.symptomatic_patient_count_by_state_and_day, MAX_DAYS_OF_HISTORY).map(x =>
-      _.omit(x, 'day')
-    );
-
-    let jurisdictionsInUse = _.uniq(_.flatten(this.totalFullCountryDataByStateAndDay.map(x => Object.keys(_.omit(x, 'day')))));
-    stateOptions.map(state => {
-      if (!jurisdictionsInUse.includes(state.name)) {
-        if (insularAreas.find(insularArea => insularArea.name === state.name)) {
-          JURISDICTIONS_NOT_IN_USE.insularAreas.push(state.isoCode);
-        } else {
-          JURISDICTIONS_NOT_IN_USE.states.push(state.isoCode);
-        }
-      }
-    });
-
+    this.analyticsData = this.parseAnalyticsStatistics();
+    this.jurisdictionsPermittedToView = this.obtainjurisdictionsPermittedToView();
     this.state = {
       selectedDateIndex: INITIAL_SELECTED_DATE_INDEX,
       showBackButton: false,
@@ -48,8 +32,8 @@ class GeographicSummary extends React.Component {
       },
       mapObject: null,
       showSpinner: false,
-      totalJurisdictionData: this.totalFullCountryDataByStateAndDay[Number(INITIAL_SELECTED_DATE_INDEX)],
-      symptomaticJurisdictionData: this.symptomaticFullCountryDataByStateAndDay[Number(INITIAL_SELECTED_DATE_INDEX)],
+      exposureMapData: this.analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)].value,
+      isolationMapData: this.analyticsData.isolation[Number(INITIAL_SELECTED_DATE_INDEX)].value,
     };
 
     // A lot of times, the CountyLevelMaps functions will take time to render some new jurisdiction map.
@@ -58,12 +42,78 @@ class GeographicSummary extends React.Component {
     // Because calls to setState are asynchronous, this value must be on the component itself
     this.spinnerState = 0;
 
-    this.dateSubset = _.takeRight(this.props.stats.total_patient_count_by_state_and_day, MAX_DAYS_OF_HISTORY);
-    this.dateRange = this.getDateRange();
+    // this.analyticsData.exposure is the same as this.analyticsData.isolation (in terms of dates) so it doesnt matter which you use
+    this.dateSubset = this.analyticsData.exposure.map(x => x.date);
+    this.dateRange = this.analyticsData.exposure.map(x => moment(x.date).format('MM/DD'));
   }
 
+  parseAnalyticsStatistics = () => {
+    // internal function for parsing the two workflow types
+    const obtainAnalyticsValue = (values, workflowType) => {
+      let returnVal = {
+        stateData: {},
+        countyData: {},
+      };
+      stateOptions.forEach(jurisdiction => {
+        let jurisdictionValue = 0;
+        let countyList = [];
+        values.forEach(value => {
+          if (value.workflow === workflowType) {
+            if (value.level === 'State' && value.state === jurisdiction.name) {
+              jurisdictionValue = value.total;
+            }
+            if (value.level === 'County' && value.state === jurisdiction.name) {
+              countyList.push({ countyName: value.county || 'Unknown', value: value.total });
+            }
+          }
+        });
+        returnVal.stateData[jurisdiction.isoCode] = jurisdictionValue;
+        countyList.push({ countyName: 'Franklin', value: parseInt(Math.random() * 69) });
+        returnVal.countyData[jurisdiction.isoCode] = countyList;
+      });
+
+      return returnVal;
+    };
+
+    let analyticsObject = {
+      exposure: [],
+      isolation: [],
+    };
+
+    _.takeRight(
+      this.props.stats.monitoree_maps.sort((a, b) => b.day - a.day),
+      MAX_DAYS_OF_HISTORY
+    ).forEach(dayMapsPair => {
+      analyticsObject.exposure.push({ date: dayMapsPair.day, value: obtainAnalyticsValue(dayMapsPair.maps, 'Exposure') });
+      analyticsObject.isolation.push({ date: dayMapsPair.day, value: obtainAnalyticsValue(dayMapsPair.maps, 'Isolation') });
+    });
+    return analyticsObject;
+  };
+
+  obtainjurisdictionsPermittedToView = () => {
+    // This function iterates over monitoree_maps and pulls out all the state names where counties are referenced
+    // This is used to determine what the user has permission to view (as the server only provides the data they are able to view)
+    // For example, an epi in Virgina will only be served county-level data for virginia (and possibly bordering states depending on what `address_state` is set)
+    // and this epi will not be able to zoom in on Arizona's data for example
+    // The function then returns the isoCode for each state the current_user is allowed to expand
+    let dateSubset = _.takeRight(
+      this.props.stats.monitoree_maps.sort((a, b) => b.day - a.day),
+      MAX_DAYS_OF_HISTORY
+    );
+    let statesReferenced = _.uniq(
+      _.flatten(
+        dateSubset.map(x =>
+          x.maps
+            .filter(data => data.level === 'County')
+            .map(x => x.state)
+            .filter(x => x)
+        )
+      )
+    );
+    return statesReferenced.map(x => stateOptions.find(y => y.name === x).isoCode);
+  };
+
   decrementSpinnerCount = () => {
-    console.log(`decrement ${this.spinnerState}`);
     if (this.spinnerState > 0) {
       if (this.spinnerState === 1) {
         this.setState({
@@ -77,58 +127,33 @@ class GeographicSummary extends React.Component {
   };
 
   renderSpinner = () =>
-    this.state.showSpinner ? (
+    this.state.showSpinner && (
       <div className="county-maps-loading">
         <span className="fa-stack fa-2x">
           <i className="fas fa-circle fa-stack-2x" style={{ color: '#305473' }}></i>
           <i className="fas fa-spinner fa-spin fa-stack-1x fa-inverse"></i>
         </span>
       </div>
-    ) : null;
-
-  getDateRange = () => {
-    let retVal = {};
-    let dates = this.dateSubset.map(x => x.day);
-    dates.forEach((day, index) => {
-      retVal[parseInt(index)] = moment(day).format('MM/DD');
-    });
-    return retVal;
-  };
+    );
 
   handleDateRangeChange = value => {
-    if (this.state.jurisdictionToShow.category === 'fullCountry') {
-      (this.spinnerState = 2),
-        this.setState(
-          {
-            selectedDateIndex: value,
-            showSpinner: true,
-          },
-          () => {
-            // The CountyLevelMaps components hang when re-rendering, so we first want to
-            // show the spinner and update the date value to provide responsive UI
-            setTimeout(() => {
-              this.setState({
-                totalJurisdictionData: this.totalFullCountryDataByStateAndDay[Number(value)],
-                symptomaticJurisdictionData: this.symptomaticFullCountryDataByStateAndDay[Number(value)],
-              });
-            }, 25);
-          }
-        );
-    } else if (this.state.jurisdictionToShow.category === 'state') {
-      (this.spinnerState = 2),
-        this.setState(
-          {
-            selectedDateIndex: value,
-          },
-          () => {
-            console.log('I need to make a request for STATE DATA');
-          }
-        );
-    } else if (this.state.jurisdictionToShow.category === 'territory') {
-      console.log('Need to make a request for a TERRITORY DATA');
-    } else {
-      console.error('THIS SHOULD NEVER HAPPEN');
-    }
+    this.spinnerState = 2;
+    this.setState(
+      {
+        selectedDateIndex: value,
+        showSpinner: true,
+      },
+      () => {
+        // The CountyLevelMaps components hang when re-rendering, so we first want to
+        // show the spinner and update the date value to provide responsive UI
+        setTimeout(() => {
+          this.setState({
+            exposureMapData: this.analyticsData.exposure[Number(value)].value,
+            isolationMapData: this.analyticsData.isolation[Number(value)].value,
+          });
+        }, 25);
+      }
+    );
   };
 
   backToFullCountryMap = () => {
@@ -144,7 +169,6 @@ class GeographicSummary extends React.Component {
   };
 
   handleJurisdictionChange = jurisdiction => {
-    console.log(`GeographicSummary: handleJurisdictionChange`);
     this.spinnerState = 2;
     if (jurisdiction === 'USA') {
       this.setState({
@@ -154,16 +178,15 @@ class GeographicSummary extends React.Component {
           name: 'USA',
           eventValue: null,
         },
-        totalJurisdictionData: this.totalFullCountryDataByStateAndDay[this.state.selectedDateIndex],
-        symptomaticJurisdictionData: this.symptomaticFullCountryDataByStateAndDay[this.state.selectedDateIndex],
+        exposureMapData: this.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
+        isolationMapData: this.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
         mapObject: null,
       });
     } else if (jurisdiction === 'territory') {
       // THIS IS TERRITORY CODE
       this.setState({ showBackButton: true, showSpinner: true });
       let mapFile = TERRITORY_GEOJSON_FILE;
-      let jurisdictionName = 'territory';
-      this.loadJurisdictionData(mapFile, jurisdictionName, jurisdictionData => {
+      this.loadJurisdictionData(mapFile, jurisdictionData => {
         this.setState({
           showBackButton: true,
           jurisdictionToShow: {
@@ -171,16 +194,14 @@ class GeographicSummary extends React.Component {
             name: jurisdiction.name,
             eventValue: null,
           },
-          totalJurisdictionData: jurisdictionData.totalJurisdictionData,
-          symptomaticJurisdictionData: jurisdictionData.symptomaticJurisdictionData,
+          exposureMapData: this.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
+          isolationMapData: this.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
           mapObject: jurisdictionData.mapObject,
         });
       });
     } else {
-      // THIS IS STATE CODE
       this.setState({ showBackButton: true, showSpinner: true });
-      console.log(`Loading: ${jurisdiction.target.dataItem.dataContext.map} mapFile`);
-      this.loadJurisdictionData(jurisdiction.target.dataItem.dataContext.map, jurisdiction.target.dataItem.dataContext.name, jurisdictionData => {
+      this.loadJurisdictionData(jurisdiction.target.dataItem.dataContext.map, jurisdictionData => {
         this.setState({
           showBackButton: true,
           jurisdictionToShow: {
@@ -188,33 +209,21 @@ class GeographicSummary extends React.Component {
             name: jurisdiction.target.dataItem.dataContext.name,
             eventValue: jurisdiction, // this is actually an eventObject from am4Charts
           },
-          totalJurisdictionData: jurisdictionData.totalJurisdictionData,
-          symptomaticJurisdictionData: jurisdictionData.symptomaticJurisdictionData,
+          exposureMapData: this.analyticsData.exposure[Number(this.state.selectedDateIndex)].value,
+          isolationMapData: this.analyticsData.isolation[Number(this.state.selectedDateIndex)].value,
           mapObject: jurisdictionData.mapObject,
         });
       });
     }
   };
 
-  loadJurisdictionData = async (jurisdictionFileName, jurisdictionName, callback) => {
-    console.log(`GeographicSummary: loadJurisdictionData`);
-    const loadJurisdictionMapData = () => axios.get(`${window.location.origin}/county_level_maps/${jurisdictionFileName}`).then(res => res.data);
-    // IS THIS EVEN THE CORRECT WAY TO USE MULTIPLE GET Parameters? Should it be ?val1=x&val2=y
-    // TODO later
-    const loadJurisdictionMonitoreeData = () =>
-      axios.get(`${window.location.origin}/county_level_data/${jurisdictionName}/${this.state.selectedDateIndex}`).then(res => res.data);
-
-    const [jurisdictionMapData, jurisdictionMonitoreeData] = await Promise.all([loadJurisdictionMapData(), loadJurisdictionMonitoreeData()]);
-
+  loadJurisdictionData = async (jurisdictionFileName, callback) => {
     callback({
-      mapObject: jurisdictionMapData,
-      totalJurisdictionData: jurisdictionMonitoreeData.total,
-      symptomaticJurisdictionData: jurisdictionMonitoreeData.symptomatic,
+      mapObject: await axios.get(`${window.location.origin}/county_level_maps/${jurisdictionFileName}`).then(res => res.data),
     });
   };
 
   render() {
-    console.log('GeographicSummary - render');
     let backButton = this.state.showBackButton && (
       <Button variant="primary" size="md" className="ml-auto btn-square" onClick={() => this.backToFullCountryMap()}>
         <i className="fas fa-arrow-left mr-2"> </i>
@@ -225,7 +234,7 @@ class GeographicSummary extends React.Component {
       <div style={{ width: '100%' }}>
         <Row className="mb-4 mx-2 px-0">
           <Col md="24">
-            <div className="text-center display-5 mb-1 mt-1 pb-4">{moment(this.dateSubset[this.state.selectedDateIndex].day).format('MMMM DD, YYYY')}</div>
+            <div className="text-center display-5 mb-1 mt-1 pb-4">{moment(this.dateSubset[this.state.selectedDateIndex]).format('MMMM DD, YYYY')}</div>
             <div className="mx-5 mb-4 pb-2">
               <Slider
                 max={MAX_DAYS_OF_HISTORY - 1}
@@ -244,26 +253,30 @@ class GeographicSummary extends React.Component {
             {this.renderSpinner()}
             <Row>
               <Col md="12" className="pr-0">
-                <div className="map-title text-center">All Monitorees By Location Over Time</div>
+                <div className="map-title text-center">Active Records in Exposure Workflow</div>
                 <CountyLevelMaps
+                  id={1} // Some code requires a specific id (e.g. which div to mount the chart on)
                   style={{ borderRight: '1px solid #dcdcdc' }}
                   jurisdictionToShow={this.state.jurisdictionToShow}
-                  jurisdictionData={this.state.totalJurisdictionData}
+                  jurisdictionData={this.state.exposureMapData}
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
                   jurisdictionsNotInUse={JURISDICTIONS_NOT_IN_USE}
+                  jurisdictionsPermittedToView={this.jurisdictionsPermittedToView}
                 />
               </Col>
               <Col md="12" className="pl-0">
-                <div className="map-title text-center">Symptomatic Monitorees By Location Over Time</div>
+                <div className="map-title text-center">Active Records in Isolation Workflow</div>
                 <CountyLevelMaps
+                  id={2}
                   jurisdictionToShow={this.state.jurisdictionToShow}
-                  jurisdictionData={this.state.symptomaticJurisdictionData}
+                  jurisdictionData={this.state.isolationMapData}
                   mapObject={this.state.mapObject}
                   handleJurisdictionChange={this.handleJurisdictionChange}
                   decrementSpinnerCount={this.decrementSpinnerCount}
                   jurisdictionsNotInUse={JURISDICTIONS_NOT_IN_USE}
+                  jurisdictionsPermittedToView={this.jurisdictionsPermittedToView}
                 />
               </Col>
             </Row>
@@ -300,6 +313,7 @@ class GeographicSummary extends React.Component {
 
 GeographicSummary.propTypes = {
   stats: PropTypes.object,
+  current_user: PropTypes.object,
 };
 
 export default GeographicSummary;

@@ -96,9 +96,9 @@ class AnalyticsController < ApplicationController
       next if analytic.nil?
 
       if current_user.jurisdiction.root?
-        maps << { day: date, map: MonitoreeMap.where(analytic_id: analytic.id, level: 'State') }
+        maps << { day: date, maps: MonitoreeMap.where(analytic_id: analytic.id, level: 'State') }
       else
-        maps << { day: date, map: MonitoreeMap.where(analytic_id: analytic.id) }
+        maps << { day: date, maps: MonitoreeMap.where(analytic_id: analytic.id) }
       end
     end
 
