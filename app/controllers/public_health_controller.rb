@@ -2,6 +2,8 @@
 
 # PublicHealthController: handles all epi actions
 class PublicHealthController < ApplicationController
+  include PatientDetailsHelper
+
   before_action :authenticate_user!
 
   def exposure
@@ -24,8 +26,6 @@ class PublicHealthController < ApplicationController
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    puts params
-    
     # Validate workflow param
     workflow = params.permit(:workflow)[:workflow].to_sym
     redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
@@ -93,7 +93,7 @@ class PublicHealthController < ApplicationController
     paginated_patients = paginate(patients, params[:length].to_i, params[:start].to_i)
 
     # Extract only relevant fields to be displayed by workflow and tab
-    render json: extract_fields(paginated_patients, workflow, tab).merge({ total: patients.size })
+    render json: { linelist: linelist(paginated_patients, workflow, tab), total: patients.size }
   end
 
   # Get all individuals whose responder_id = id, these people are "HOH eligible"
@@ -115,7 +115,7 @@ class PublicHealthController < ApplicationController
 
   def filter(patients, search)
     return patients if search.nil? || search.blank?
-    
+
     patients.where('first_name like ?', "#{search}%").or(
       patients.where('last_name like ?', "#{search}%").or(
         patients.where('user_defined_id_statelocal like ?', "#{search}%").or(
@@ -127,7 +127,7 @@ class PublicHealthController < ApplicationController
         )
       )
     )
-  
+
     patients
   end
 
@@ -178,104 +178,87 @@ class PublicHealthController < ApplicationController
     patients.paginate(per_page: length, page: page)
   end
 
-  def extract_fields(patients, workflow, tab)
-    if workflow == :exposure
-      return exposure_fields(patients) if %i[symptomatic non_reporting asymptomatic].include?(tab)
-      return exposure_pui_fields(patients) if tab == :pui
-      return exposure_closed_fields(patients) if tab == :closed
-      return exposure_transferred_in_fields(patients) if tab == :transferred_in
-      return exposure_transferred_out_fields(patients) if tab == :transferred_out
-      return exposure_all_fields(patients) if tab == :all
-    else
-      return isolation_fields(patients) if %i[requiring_review reporting non_reporting].include?(tab)
-      return isolation_closed_fields(patients) if tab == :closed
-      return isolation_transferred_in_fields(patients) if tab == :transferred_in
-      return isolation_transferred_out_fields(patients) if tab == :transferred_out
-      return isolation_all_fields(patients) if tab == :all
+  def linelist(patients, workflow, tab)
+    # get a list of fields relevant only to this linelist
+    fields = linelist_specific_fields(workflow, tab)
+
+    # only compute statuses if necessary
+    if fields.include?(:status)
+      statuses = workflow == :exposure ? get_exposure_statuses(patients) : get_isolation_statuses(patients)
     end
+
+    # execute query
+    patients.to_a
+
+    # only retrieve jurisdiction if necessary
+    jurisdiction_names = get_jurisdiction_names(patients) if fields.include?(:jurisdiction)
+
+    # only retrieve assessments if necessary
+    latest_assessments = get_latest_assessments(patients) if fields.include?(:latest_report)
+
+    # only retrieve transfers if necessary
+    if fields.include?(:transferred_at) || fields.include?(:transferred_from) || fields.include?(:transferred_to)
+      latest_transfers = get_latest_transfers(patients)
+    end
+
+    linelist = []
+    patients.each do |patient|
+      # populate fields relevant to all linelists
+      name = if patient[:first_name].present? || patient[:last_name].present?
+               "#{patient[:last_name]}#{patient[:first_name].blank? ? '' : ', ' + patient[:first_name]}"
+             else
+               'NAME NOT PROVIDED'
+             end
+
+      details = {
+        id: patient[:id],
+        name: name,
+        state_local_id: patient[:user_defined_id_statelocal],
+        sex: patient[:sex],
+        dob: patient[:date_of_birth]&.strftime('%F')
+      }
+
+      # populate fields specific to this linelist only if relevant
+      details[:assigned_user] = patient[:assigned_user] if fields.include?(:assigned_user)
+      details[:risk_level] = patient[:exposure_risk_assessment] if fields.include?(:risk_level)
+      details[:reason_for_closure] = patient[:monitoring_reason] if fields.include?(:reason_for_closure)
+      details[:closed_at] = patient[:closed_at]&.rfc2822 if fields.include?(:closed_at)
+
+      if fields.include?(:end_of_monitoring) && patient[:last_date_of_exposure].present?
+        details[:end_of_monitoring] = (patient[:last_date_of_exposure] + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
+      elsif fields.include?(:end_of_monitoring) && patient[:created_at].present?
+        details[:end_of_monitoring] = (patient[:created_at] + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
+      end
+
+      details[:jurisdiction] = jurisdiction_names[patient[:id]] if fields.include?(:jurisdiction)
+      details[:latest_report] = latest_assessments[patient[:id]]&.rfc2822 if fields.include?(:latest_report)
+      details[:transferred_at] = latest_transfers[patient[:id]][:transferred_at]&.rfc2822 if fields.include?(:transferred_at)
+      details[:transferred_from] = latest_transfers[patient[:id]][:transferred_from] if fields.include?(:jurisdiction_from)
+      details[:transferred_to] = latest_transfers[patient[:id]][:transferred_to] if fields.include?(:jurisdiction_to)
+      details[:status] = statuses[patient[:id]] if fields.include?(:status)
+
+      linelist << details
+    end
+
+    linelist
   end
 
-  def exposure_fields(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
-                'Monitoring Plan', 'Latest Report'],
-      data: patients
-    }
-  end
+  def linelist_specific_fields(workflow, tab)
+    return %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
 
-  def exposure_pui_fields(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
-                'Latest Public Health Action', 'Latest Report'],
-      data: patients
-    }
-  end
+    if workflow == :isolation
+      return %i[jurisdiction assigned_user monitoring_plan latest_report status] if tab == :all
+      return %i[transferred_from monitoring_plan transferred_at] if tab == :transferred_in
+      return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
 
-  def exposure_closed_fields(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Eligible for Purge After', 'Reason for Closure',
-                'Closed At'],
-      data: patients
-    }
-  end
+      return %i[jurisdiction assigned_user monitoring_plan latest_report]
+    end
 
-  def exposure_transferred_in_fields(patients)
-    {
-      columns: ['Monitoree', 'From Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level', 'Monitoring Plan',
-                'Transferred At'],
-      data: patients
-    }
-  end
+    return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status] if tab == :all
+    return %i[jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report] if tab == :pui
+    return %i[transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_in
+    return %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_out
 
-  def exposure_transferred_out_fields(patients)
-    {
-      columns: ['Monitoree', 'To Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level', 'Monitoring Plan',
-                'Transferred At'],
-      data: patients
-    }
-  end
-
-  def exposure_all_fields(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
-                'Monitoring Plan', 'Latest Report', 'Status'],
-      data: patients
-    }
-  end
-
-  def isolation_fields(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report'],
-      data: patients
-    }
-  end
-
-  def isolation_closed_fields(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Eligible for Purge After', 'Reason for Closure',
-                'Closed At'],
-      data: patients
-    }
-  end
-
-  def isolation_transferred_in_fields(patients)
-    {
-      columns: ['Monitoree', 'From Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Transferred At'],
-      data: patients
-    }
-  end
-
-  def isolation_transferred_out_fields(patients)
-    {
-      columns: ['Monitoree', 'To Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Transferred At'],
-      data: patients
-    }
-  end
-
-  def isolation_all_fields(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report', 'Status'],
-      data: patients
-    }
+    %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report]
   end
 end

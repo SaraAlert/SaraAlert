@@ -63,6 +63,6 @@ class ExportController < ApplicationController
     history.patient = patients.first
     history.history_type = 'Monitoree Data Downloaded'
     history.save
-    send_data build_excel_export_for_patients(patients)
+    send_data ExportJob.build_excel_export_for_patients(patients)
   end
 end

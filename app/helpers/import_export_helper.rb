@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-# Helper methods for the import controller
+# Helper methods for the import and export controllers
 module ImportExportHelper # rubocop:todo Metrics/ModuleLength
+  include PatientDetailsHelper
+
   LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
                       'Transferred From', 'Transferred To', 'Expected Purge Date'].freeze
@@ -203,6 +205,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
     report: { label: 'Lab Report Date', checks: [:date] }
   }.freeze
+<<<<<<< HEAD
 
   def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|
@@ -567,4 +570,6 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     end
     comprehensive_details
   end
+=======
+>>>>>>> optimize patients linelist endpoint and refactor import export helper
 end

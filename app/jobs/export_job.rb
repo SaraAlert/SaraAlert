@@ -54,4 +54,96 @@ class ExportJob < ApplicationJob
     # Send an email to user
     UserMailer.download_email(user, export_type, download.lookup).deliver_later
   end
+
+  def self.csv_line_list(patients)
+    package = CSV.generate(headers: true) do |csv|
+      csv << LINELIST_HEADERS
+      patient_statuses = get_patient_statuses(patients)
+      patients.find_in_batches(batch_size: 500) do |patients_group|
+        linelists = get_linelists(patients_group, patient_statuses)
+        patients_group.each do |patient|
+          csv << linelists[patient.id].values
+        end
+      end
+    end
+    Base64.encode64(package)
+  end
+
+  def self.sara_alert_format(patients)
+    Axlsx::Package.new do |p|
+      p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
+        sheet.add_row COMPREHENSIVE_HEADERS
+        patient_statuses = get_patient_statuses(patients)
+        patients.find_in_batches(batch_size: 500) do |patients_group|
+          comprehensive_details = get_comprehensive_details(patients_group, patient_statuses)
+          patients_group.each do |patient|
+            sheet.add_row comprehensive_details[patient.id].values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
+          end
+        end
+      end
+      return Base64.encode64(p.to_stream.read)
+    end
+  end
+
+  def self.build_excel_export_for_patients(patients)
+    Axlsx::Package.new do |p|
+      p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
+        headers = MONITOREES_LIST_HEADERS
+        sheet.add_row headers
+        patient_statuses = get_patient_statuses(patients)
+        patients.find_in_batches(batch_size: 500) do |patients_group|
+          comprehensive_details = get_comprehensive_details(patients_group, patient_statuses)
+          patients_group.each do |patient|
+            sheet.add_row [patient.id] + comprehensive_details[patient.id].values, { types: Array.new(MONITOREES_LIST_HEADERS.length, :string) }
+          end
+        end
+      end
+      p.workbook.add_worksheet(name: 'Assessments') do |sheet|
+        # headers and all unique symptoms
+        symptom_labels = patients.joins(assessments: [{ reported_condition: :symptoms }]).select('symptoms.label').distinct.pluck('symptoms.label').sort
+        sheet.add_row ['Patient ID', 'Symptomatic', 'Who Reported', 'Created At', 'Updated At'] + symptom_labels.to_a.sort
+
+        # assessments sorted by patients
+        patients.find_in_batches(batch_size: 500) do |patients_group|
+          assessments = Assessment.where(patient_id: patients_group.pluck(:id))
+          conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
+          symptoms = Symptom.where(condition_id: conditions.pluck(:id))
+
+          # construct hash containing symptoms by assessment_id
+          conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
+                            .transform_values { |assessment_id| { assessment_id: assessment_id, symptoms: {} } }
+          symptoms.each do |symptom|
+            conditions_hash[symptom[:condition_id]][:symptoms][symptom[:label]] = symptom.value
+          end
+          assessments_hash = Hash[conditions_hash.map { |_, condition| [condition[:assessment_id], condition[:symptoms]] }]
+
+          # combine symptoms with assessment summary
+          assessment_summary_arrays = assessments.order(:patient_id, :id).pluck(:id, :patient_id, :symptomatic, :who_reported, :created_at, :updated_at)
+          assessment_summary_arrays.each do |assessment_summary_array|
+            symptoms_hash = assessments_hash[assessment_summary_array[0]]
+            symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
+            row = assessment_summary_array[1..-1].concat(symptoms_array)
+            sheet.add_row row, { types: Array.new(row.length, :string) }
+          end
+        end
+      end
+      p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
+        labs = Laboratory.where(patient_id: patients.pluck(:id))
+        lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
+        sheet.add_row lab_headers
+        labs.find_each(batch_size: 500) do |lab|
+          sheet.add_row lab.details.values, { types: Array.new(lab_headers.length, :string) }
+        end
+      end
+      p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
+        histories = History.where(patient_id: patients.pluck(:id))
+        history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
+        sheet.add_row history_headers
+        histories.find_each(batch_size: 500) do |history|
+          sheet.add_row history.details.values, { types: Array.new(history_headers.length, :string) }
+        end
+      end
+      return Base64.encode64(p.to_stream.read)
+    end
+  end
 end
