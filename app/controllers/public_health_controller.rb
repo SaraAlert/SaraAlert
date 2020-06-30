@@ -90,10 +90,10 @@ class PublicHealthController < ApplicationController
     patients = sort(patients, params[:order], params[:columns])
 
     # Paginate
-    patients = paginate(patients, params[:length].to_i, params[:start].to_i)
+    paginated_patients = paginate(patients, params[:length].to_i, params[:start].to_i)
 
     # Extract only relevant fields to be displayed by workflow and tab
-    render json: extract_fields(patients, workflow, tab).merge({ total: patients.size })
+    render json: extract_fields(paginated_patients, workflow, tab).merge({ total: patients.size })
   end
 
   # Get all individuals whose responder_id = id, these people are "HOH eligible"
@@ -155,7 +155,6 @@ class PublicHealthController < ApplicationController
       elsif columns[val['column']][:name] == 'end_of_monitoring' # End of Monitoring
         sorted = sorted.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction.to_s)
       elsif columns[val['column']][:name] == 'expected_purge_date' # Expected Purge Date
-        # Same as end of monitoring
         sorted = sorted.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction.to_s)
       elsif columns[val['column']][:name] == 'risk' # Risk
         sorted = sorted.order_by_risk(val['dir'] == 'asc')
@@ -181,137 +180,102 @@ class PublicHealthController < ApplicationController
 
   def extract_fields(patients, workflow, tab)
     if workflow == :exposure
-      return exposure_symptomatic(patients) if tab == :symptomatic
-      return exposure_non_reporting(patients) if tab == :non_reporting
-      return exposure_asymptomatic(patients) if tab == :asymptomatic
-      return exposure_pui(patients) if tab == :pui
-      return exposure_closed(patients) if tab == :closed
-      return exposure_transferred_in(patients) if tab == :transferred_in
-      return exposure_transferred_out(patients) if tab == :transferred_out
-      return exposure_all(patients) if tab == :all
+      return exposure_fields(patients) if %i[symptomatic non_reporting asymptomatic].include?(tab)
+      return exposure_pui_fields(patients) if tab == :pui
+      return exposure_closed_fields(patients) if tab == :closed
+      return exposure_transferred_in_fields(patients) if tab == :transferred_in
+      return exposure_transferred_out_fields(patients) if tab == :transferred_out
+      return exposure_all_fields(patients) if tab == :all
     else
-      return isolation_requiring_review(patients) if tab == :requiring_review
-      return isolation_non_reporting(patients) if tab == :non_reporting
-      return isolation_reporting(patients) if tab == :reporting
-      return isolation_closed(patients) if tab == :closed
-      return isolation_transferred_in(patients) if tab == :transferred_in
-      return isolation_transferred_out(patients) if tab == :transferred_out
-      return isolation_all(patients) if tab == :all
+      return isolation_fields(patients) if %i[requiring_review reporting non_reporting].include?(tab)
+      return isolation_closed_fields(patients) if tab == :closed
+      return isolation_transferred_in_fields(patients) if tab == :transferred_in
+      return isolation_transferred_out_fields(patients) if tab == :transferred_out
+      return isolation_all_fields(patients) if tab == :all
     end
   end
 
-  def exposure_symptomatic(patients)
+  def exposure_fields(patients)
     {
       columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                 'Monitoring Plan', 'Latest Report'],
-      data: []
+      data: patients
     }
   end
 
-  def exposure_non_reporting(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
-                'Monitoring Plan', 'Latest Report'],
-      data: []
-    }
-  end
-
-  def exposure_asymptomatic(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
-                'Monitoring Plan', 'Latest Report'],
-      data: []
-    }
-  end
-
-  def exposure_pui(patients)
+  def exposure_pui_fields(patients)
     {
       columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                 'Latest Public Health Action', 'Latest Report'],
-      data: []
+      data: patients
     }
   end
 
-  def exposure_closed(patients)
+  def exposure_closed_fields(patients)
     {
       columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Eligible for Purge After', 'Reason for Closure',
                 'Closed At'],
-      data: []
+      data: patients
     }
   end
 
-  def exposure_transferred_in(patients)
+  def exposure_transferred_in_fields(patients)
     {
       columns: ['Monitoree', 'From Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level', 'Monitoring Plan',
                 'Transferred At'],
-      data: []
+      data: patients
     }
   end
 
-  def exposure_transferred_out(patients)
+  def exposure_transferred_out_fields(patients)
     {
       columns: ['Monitoree', 'To Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level', 'Monitoring Plan',
                 'Transferred At'],
-      data: []
+      data: patients
     }
   end
 
-  def exposure_all(patients)
-    puts patients
+  def exposure_all_fields(patients)
     {
       columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                 'Monitoring Plan', 'Latest Report', 'Status'],
-      data: []
+      data: patients
     }
   end
 
-  def isolation_requiring_review(patients)
+  def isolation_fields(patients)
     {
       columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report'],
-      data: []
+      data: patients
     }
   end
 
-  def isolation_non_reporting(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report'],
-      data: []
-    }
-  end
-
-  def isolation_reporting(patients)
-    {
-      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report'],
-      data: []
-    }
-  end
-
-  def isolation_closed(patients)
+  def isolation_closed_fields(patients)
     {
       columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Eligible for Purge After', 'Reason for Closure',
                 'Closed At'],
-      data: []
+      data: patients
     }
   end
 
-  def isolation_transferred_in(patients)
+  def isolation_transferred_in_fields(patients)
     {
       columns: ['Monitoree', 'From Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Transferred At'],
-      data: []
+      data: patients
     }
   end
 
-  def isolation_transferred_out(patients)
+  def isolation_transferred_out_fields(patients)
     {
       columns: ['Monitoree', 'To Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Transferred At'],
-      data: []
+      data: patients
     }
   end
 
-  def isolation_all(patients)
+  def isolation_all_fields(patients)
     {
       columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report', 'Status'],
-      data: []
+      data: patients
     }
   end
 end

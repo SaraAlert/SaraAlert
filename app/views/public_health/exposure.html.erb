@@ -95,7 +95,7 @@
       description: 'Monitorees that have been transferred into this jurisdiction during the last 24 hours.' },
     { name: 'transferred_out', label: 'Transferred Out', variant: 'info', total: current_user.jurisdiction.transferred_out_patients.where(isolation: false).size,
       description: 'Monitorees that have been transferred out of this jurisdiction.' },
-    { name: 'all', label: 'All Cases', variant: 'primary', total: @exposure_count,
+    { name: 'all', label: 'All Monitorees', variant: 'primary', total: @exposure_count,
       description: 'All Monitorees in this jurisdiction, in the Exposure workflow.' }
   ]
 }) %>

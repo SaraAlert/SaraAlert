@@ -22,7 +22,7 @@ class PatientsTable extends React.Component {
         search: '',
         order: [],
         columns: [],
-        length: 15,
+        length: 100,
         start: 0,
       },
     };
@@ -41,9 +41,13 @@ class PatientsTable extends React.Component {
     this.setState({ tab: this.props.tabs.filter(tab => tab.name === tabName)[0] }, () => {
       localStorage.setItem(`${this.props.workflow}Tab`, tabName);
     });
-    axios.get('/public_health/patients', {
-      params: { workflow: this.props.workflow, tab: this.state.tab.name, ...this.state.filters },
-    });
+    axios
+      .get('/public_health/patients', {
+        params: { workflow: this.props.workflow, tab: tabName, ...this.state.filters },
+      })
+      .then(response => {
+        console.log(response.data);
+      });
   }
 
   render() {
