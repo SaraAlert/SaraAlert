@@ -80,7 +80,6 @@ class CountyLevelMaps extends React.Component {
       }
     });
 
-    // the `2` series and polygon are for the states not in use.
     this.usaSeriesNotInUse = this.chart.series.push(new am4maps.MapPolygonSeries());
     this.usaSeriesNotInUse.useGeodata = true;
     this.usaSeriesNotInUse.geodata = usaLow;
@@ -321,15 +320,15 @@ class CountyLevelMaps extends React.Component {
       this.renderHeatLegend(this.usaSeries);
       this.props.decrementSpinnerCount();
     } else if (this.props.jurisdictionToShow.category === 'territory') {
-      let counties = insularAreas;
-      counties.forEach(county => {
+      insularAreas.forEach(insularArea => {
         data.push({
-          id: `${county.isoCode}`,
-          value: parseInt(Math.random() * 50),
+          id: `${insularArea.isoCode}`,
+          value: this.props.jurisdictionData.stateData[String(insularArea.isoCode)],
         });
       });
       this.territorySeries.data = data;
       this.renderHeatLegend(this.territorySeries);
+      this.props.decrementSpinnerCount();
     } else if (this.props.jurisdictionToShow.category === 'state') {
       let stateIsoCode = stateOptions.find(state => state.name === this.props.jurisdictionToShow.name).isoCode;
       let counties = this.jurisdictionSeries.geodata.features;

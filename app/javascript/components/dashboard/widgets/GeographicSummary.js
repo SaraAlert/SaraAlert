@@ -68,7 +68,6 @@ class GeographicSummary extends React.Component {
           }
         });
         returnVal.stateData[jurisdiction.isoCode] = jurisdictionValue;
-        countyList.push({ countyName: 'Franklin', value: parseInt(Math.random() * 69) });
         returnVal.countyData[jurisdiction.isoCode] = countyList;
       });
 
