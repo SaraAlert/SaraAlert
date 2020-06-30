@@ -201,37 +201,62 @@ class PublicHealthController < ApplicationController
   end
 
   def exposure_symptomatic(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
+                'Monitoring Plan', 'Latest Report'],
+      data: []
+    }
   end
 
   def exposure_non_reporting(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
+                'Monitoring Plan', 'Latest Report'],
+      data: []
+    }
   end
 
   def exposure_asymptomatic(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
+                'Monitoring Plan', 'Latest Report'],
+      data: []
+    }
   end
 
   def exposure_pui(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
+                'Latest Public Health Action', 'Latest Report'],
+      data: []
+    }
   end
 
   def exposure_closed(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Eligible for Purge After', 'Reason for Closure',
+                'Closed At'],
+      data: []
+    }
   end
 
   def exposure_transferred_in(patients)
-    patients
+    {
+      columns: ['Monitoree', 'From Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level', 'Monitoring Plan',
+                'Transferred At'],
+      data: []
+    }
   end
 
   def exposure_transferred_out(patients)
-    patients
+    {
+      columns: ['Monitoree', 'To Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level', 'Monitoring Plan',
+                'Transferred At'],
+      data: []
+    }
   end
 
   def exposure_all(patients)
-    patients.left_outer_joins(:assessments)
-            .where('assessments.created_at = (SELECT MAX(assessments.created_at) FROM assessments WHERE assessments.patient_id = patients.id)')
-            .joins(:jurisdictions)
     puts patients
     {
       columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
@@ -241,30 +266,52 @@ class PublicHealthController < ApplicationController
   end
 
   def isolation_requiring_review(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report'],
+      data: []
+    }
   end
 
   def isolation_non_reporting(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report'],
+      data: []
+    }
   end
 
   def isolation_reporting(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report'],
+      data: []
+    }
   end
 
   def isolation_closed(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Eligible for Purge After', 'Reason for Closure',
+                'Closed At'],
+      data: []
+    }
   end
 
   def isolation_transferred_in(patients)
-    patients
+    {
+      columns: ['Monitoree', 'From Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Transferred At'],
+      data: []
+    }
   end
 
   def isolation_transferred_out(patients)
-    patients
+    {
+      columns: ['Monitoree', 'To Jurisdiction', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Transferred At'],
+      data: []
+    }
   end
 
   def isolation_all(patients)
-    patients
+    {
+      columns: ['Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'Monitoring Plan', 'Latest Report', 'Status'],
+      data: []
+    }
   end
 end
