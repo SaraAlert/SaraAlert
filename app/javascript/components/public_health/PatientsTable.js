@@ -1,6 +1,9 @@
 import React from 'react';
-import { Badge, Card, Nav, TabContent } from 'react-bootstrap';
+
 import { PropTypes } from 'prop-types';
+import axios from 'axios';
+import { Badge, Card, Nav, TabContent } from 'react-bootstrap';
+// import { useTable } from 'react-table';
 
 import InfoTooltip from '../util/InfoTooltip';
 
@@ -10,6 +13,18 @@ class PatientsTable extends React.Component {
     this.handleTabSelect = this.handleTabSelect.bind(this);
     this.state = {
       tab: props.tabs[0],
+      patients: [],
+      total: 0,
+      filters: {
+        jurisdiction: 'all',
+        scope: 'all',
+        user: 'all',
+        search: '',
+        order: [],
+        columns: [],
+        length: 15,
+        start: 0,
+      },
     };
   }
 
@@ -25,6 +40,9 @@ class PatientsTable extends React.Component {
   handleTabSelect(tabName) {
     this.setState({ tab: this.props.tabs.filter(tab => tab.name === tabName)[0] }, () => {
       localStorage.setItem(`${this.props.workflow}Tab`, tabName);
+    });
+    axios.get('/public_health/patients', {
+      params: { workflow: this.props.workflow, tab: this.state.tab.name, ...this.state.filters },
     });
   }
 
@@ -59,6 +77,8 @@ class PatientsTable extends React.Component {
 }
 
 PatientsTable.propTypes = {
+  assignedJurisdictions: PropTypes.object,
+  assignedUsers: PropTypes.array,
   workflow: PropTypes.oneOf(['exposure', 'isolation']),
   tabs: PropTypes.array,
 };

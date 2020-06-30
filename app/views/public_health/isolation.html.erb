@@ -72,26 +72,28 @@
 </div>
 
 <div class="btn-group mb-4 float-right mr-2" role="group">
-  <a class="btn btn-outline-primary" href="<%= public_health_url %>"><i class="fas fa-people-arrows"></i> Exposure Monitoring (<%= @e_all_count %>)</a>
-  <a class="btn btn-primary" href="<%= public_health_isolation_url %>"><i class="fas fa-house-user"></i> Isolation Monitoring (<%= @all_count %>)</a>
+  <a class="btn btn-outline-primary" href="<%= public_health_url %>"><i class="fas fa-people-arrows"></i> Exposure Monitoring (<%= @exposure_count %>)</a>
+  <a class="btn btn-primary" href="<%= public_health_isolation_url %>"><i class="fas fa-house-user"></i> Isolation Monitoring (<%= @isolation_count %>)</a>
 </div>
 
 <%= react_component("public_health/PatientsTable", {
+  assignedJurisdictions: Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }],
+  assignedUsers: current_user.jurisdiction.all_assigned_users,
   workflow: 'isolation',
   tabs: [
-    { name: 'requiring_review', label: 'Records Requiring Review', total: @requiring_review_count, variant: 'danger',
+    { name: 'requiring_review', label: 'Records Requiring Review', variant: 'danger', total: current_user.viewable_patients.isolation_requiring_review.size,
       description: 'Cases who preliminarily meet the recovery definition and require review.', tooltip: 'isolation_recordsRequiringReview' },
-    { name: 'non_reporting', label: 'Non-Reporting', total: @non_reporting_count, variant: 'warning',
+    { name: 'non_reporting', label: 'Non-Reporting', variant: 'warning', total: current_user.viewable_patients.isolation_non_reporting.size,
       description: 'Cases who failed to report during the last day and have not yet met recovery definition.', tooltip: 'isolation_nonReporting' },
-    { name: 'reporting', label: 'Reporting', total: @reporting_count, variant: 'success',
+    { name: 'reporting', label: 'Reporting', variant: 'success', total: current_user.viewable_patients.isolation_reporting.size,
       description: 'Cases who have reported in the last day and have not yet met recovery definition.', tooltip: 'isolation_reporting' },
-    { name: 'closed', label: 'Closed', total: @closed_count, variant: 'secondary',
+    { name: 'closed', label: 'Closed', variant: 'secondary', total: current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size,
       description: 'Cases not currently being monitored.', tooltip: 'isolation_closed' },
-    { name: 'transferred_in', label: 'Transferred In', total: @transferred_in_count, variant: 'info',
+    { name: 'transferred_in', label: 'Transferred In', variant: 'info', total: current_user.jurisdiction.transferred_in_patients.where(isolation: true).size,
       description: 'Cases that have been transferred into this jurisdiction during the last 24 hours.' },
-    { name: 'transferred_out', label: 'Transferred Out', total: @transferred_out_count, variant: 'info',
+    { name: 'transferred_out', label: 'Transferred Out', variant: 'info', total: current_user.jurisdiction.transferred_out_patients.where(isolation: true).size,
       description: 'Cases that have been transferred out of this jurisdiction.' },
-    { name: 'all', label: 'All Cases', total: @all_count, variant: 'primary',
+    { name: 'all', label: 'All Cases', variant: 'primary', total: @isolation_count,
       description: 'All cases in this jurisdiction, in the Isolation workflow.' }
   ]
 }) %>
