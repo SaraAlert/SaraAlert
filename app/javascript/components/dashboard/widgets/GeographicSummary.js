@@ -6,7 +6,7 @@ import { Row, Col, Button } from 'react-bootstrap';
 import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
-import { stateOptions } from '../../data';
+import { stateOptions, insularAreas } from '../../data';
 import CountyLevelMaps from './CountyLevelMaps';
 
 const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today
@@ -22,6 +22,7 @@ class GeographicSummary extends React.Component {
     super(props);
     this.analyticsData = this.parseAnalyticsStatistics();
     this.jurisdictionsPermittedToView = this.obtainjurisdictionsPermittedToView();
+    this.obtainjurisdictionsNotInUse();
     this.state = {
       selectedDateIndex: INITIAL_SELECTED_DATE_INDEX,
       showBackButton: false,
@@ -58,11 +59,10 @@ class GeographicSummary extends React.Component {
         let jurisdictionValue = 0;
         let countyList = [];
         values.forEach(value => {
-          if (value.workflow === workflowType) {
-            if (value.level === 'State' && value.state === jurisdiction.name) {
+          if (value.workflow === workflowType && value.state === jurisdiction.name) {
+            if (value.level === 'State') {
               jurisdictionValue = value.total;
-            }
-            if (value.level === 'County' && value.state === jurisdiction.name) {
+            } else if (value.level === 'County') {
               countyList.push({ countyName: value.county || 'Unknown', value: value.total });
             }
           }
@@ -70,6 +70,11 @@ class GeographicSummary extends React.Component {
         returnVal.stateData[jurisdiction.isoCode] = jurisdictionValue;
         returnVal.countyData[jurisdiction.isoCode] = countyList;
       });
+
+      let valWhereStateNull = values.find(val => val.workflow === workflowType && val.level === 'State' && val.state === null);
+      if (valWhereStateNull) {
+        returnVal.stateData['Unknown'] = valWhereStateNull.total;
+      }
 
       return returnVal;
     };
@@ -99,7 +104,7 @@ class GeographicSummary extends React.Component {
       this.props.stats.monitoree_maps.sort((a, b) => b.day - a.day),
       MAX_DAYS_OF_HISTORY
     );
-    let statesReferenced = _.uniq(
+    let statesWhereCountyReferenced = _.uniq(
       _.flatten(
         dateSubset.map(x =>
           x.maps
@@ -109,7 +114,34 @@ class GeographicSummary extends React.Component {
         )
       )
     );
-    return statesReferenced.map(x => stateOptions.find(y => y.name === x).isoCode);
+    return statesWhereCountyReferenced.map(x => stateOptions.find(y => y.name === x).isoCode);
+  };
+
+  obtainjurisdictionsNotInUse = () => {
+    // Go through all the monitoree_maps and if a state or territory is NEVER referenced then it must not be in use
+    // If it does have data, but just no county-data for it, then the current_user must just not have permission to zoom in on it
+    let dateSubset = _.takeRight(
+      this.props.stats.monitoree_maps.sort((a, b) => b.day - a.day),
+      MAX_DAYS_OF_HISTORY
+    );
+    let statesReferenced = _.uniq(
+      _.flatten(
+        dateSubset.map(x =>
+          x.maps
+            .filter(data => data.level === 'State')
+            .map(x => x.state)
+            .filter(x => x)
+        )
+      )
+    );
+    JURISDICTIONS_NOT_IN_USE.states = stateOptions
+      .map(x => (statesReferenced.includes(x.name) && !insularAreas.includes(x.name) ? null : x))
+      .filter(x => x)
+      .map(x => x.isoCode);
+    JURISDICTIONS_NOT_IN_USE.insularAreas = insularAreas
+      .map(x => (statesReferenced.includes(x.name) ? null : x))
+      .filter(x => x)
+      .map(x => x.isoCode);
   };
 
   decrementSpinnerCount = () => {

@@ -35,6 +35,8 @@ class CountyLevelMaps extends React.Component {
     this.state = {
       showTerritory: false,
       countiesNotFound: false,
+      showStateTooltip: false,
+      showCountyTooltip: false,
     };
   }
 
@@ -56,8 +58,8 @@ class CountyLevelMaps extends React.Component {
     this.usaPolygon.tooltipPosition = 'fixed';
     this.usaPolygon.adapter.add('tooltipText', (text, target) => {
       if (!this.props.jurisdictionsPermittedToView.includes(target.tooltipDataItem.dataContext.id)) {
-        return `[color:white]{name}: {value}
-          [font-style: italic; font-size: 10px;]zoom not available[/][/]`;
+        return `{name}: {value}
+          [font-style: italic; font-size: 10px;]zoom not available[/]`;
       } else {
         return '{name} : {value}';
       }
@@ -138,8 +140,8 @@ class CountyLevelMaps extends React.Component {
 
     this.territoryPolygon.adapter.add('tooltipText', (text, target) => {
       if (NON_ZOOMABLE_INSULAR_TERRITORIES.includes(target.tooltipDataItem.dataContext.id)) {
-        return `[color:white]{name}: {value}
-          [font-style: italic; font-size: 10px;]zoom not available[/][/]`;
+        return `{name}: {value}
+          [font-style: italic; font-size: 10px;]zoom not available[/]`;
       } else {
         return '{name} : {value}';
       }
@@ -155,9 +157,31 @@ class CountyLevelMaps extends React.Component {
     labelTemplate.interactionsEnabled = false;
     labelTemplate.nonScaling = true;
 
+    this.territorySeriesNotInUse = this.territoryChart.series.push(new am4maps.MapPolygonSeries());
+    this.territorySeriesNotInUse.useGeodata = true;
+    this.territorySeriesNotInUse.geodata = usaTerritories2High;
+    this.territorySeriesNotInUse.tooltip.getFillFromObject = false;
+    this.territorySeriesNotInUse.tooltip.background.fill = am4core.color('#333');
+    this.territorySeriesNotInUse.include = this.props.jurisdictionsNotInUse.insularAreas;
+
+    this.territoryPolygonNotInUse = this.territorySeriesNotInUse.mapPolygons.template;
+    this.territoryPolygonNotInUse.tooltipPosition = 'fixed';
+    this.territoryPolygonNotInUse.tooltipText = '{name} : Sara Alert Not In Use';
+    this.territoryPolygonNotInUse.nonScalingStroke = true;
+    this.territoryPolygonNotInUse.strokeWidth = 1;
+    this.territoryPolygonNotInUse.stroke = am4core.color('#333');
+    this.territoryPolygonNotInUse.fill = am4core.color('#a5a5a5');
+
+    this.territorySeries.heatRules.push({
+      property: 'fill',
+      target: this.territorySeries.mapPolygons.template,
+      min: am4core.color('#E89005').lighten(0.5),
+      max: am4core.color('#A62639').brighten(0.5),
+    });
+
     this.territoryPolygon.events.on('inited', () => {
       insularAreas.map(insularArea => {
-        const polygon = this.territorySeries.getPolygonById(insularArea.isoCode);
+        const polygon = this.territorySeries.getPolygonById(insularArea.isoCode) || this.territorySeriesNotInUse.getPolygonById(insularArea.isoCode);
         if (polygon) {
           let label = labelSeries.mapImages.create();
           const territoryName = polygon.dataItem.dataContext.id.split('-').pop();
@@ -169,26 +193,6 @@ class CountyLevelMaps extends React.Component {
           label.children.getIndex(0).text = territoryName;
         }
       });
-    });
-
-    this.territorySeriesNotInUse = this.territoryChart.series.push(new am4maps.MapPolygonSeries());
-    this.territorySeriesNotInUse.useGeodata = true;
-    this.territorySeriesNotInUse.geodata = usaTerritories2High;
-    this.territorySeriesNotInUse.tooltip.getFillFromObject = false;
-    this.territorySeriesNotInUse.tooltip.background.fill = am4core.color('#333');
-    this.territorySeriesNotInUse.include = this.props.jurisdictionsNotInUse.insularAreas;
-
-    this.territoryPolygonNotInUse = this.territorySeriesNotInUse.mapPolygons.template;
-    this.territoryPolygonNotInUse.tooltipPosition = 'fixed';
-    this.territoryPolygonNotInUse.tooltipText = 'Sara Alert Not In Use';
-    this.territoryPolygonNotInUse.nonScalingStroke = true;
-    this.territoryPolygonNotInUse.fill = am4core.color('#a5a5a5');
-
-    this.territorySeries.heatRules.push({
-      property: 'fill',
-      target: this.territorySeries.mapPolygons.template,
-      min: am4core.color('#E89005').lighten(0.5),
-      max: am4core.color('#A62639').brighten(0.5),
     });
 
     this.territorySeries.include = insularAreas.map(customTerritory => customTerritory.isoCode);
@@ -262,47 +266,48 @@ class CountyLevelMaps extends React.Component {
   };
 
   transitionJurisdiction = () => {
-    if (this.props.jurisdictionToShow.category === 'fullCountry') {
-      this.setState({ showTerritory: false, showCountyTooltip: false }, () => {
-        this.jurisdictionSeries.hide();
-        this.showUSAMap();
-        this.chart.maxZoomLevel = 32;
-        this.chart.goHome();
-        setTimeout(() => {
-          this.chart.maxZoomLevel = 1;
-          this.updateJurisdictionData();
-          this.props.decrementSpinnerCount();
-        }, 1050);
-      });
-    } else if (this.props.jurisdictionToShow.category === 'territory') {
-      this.hideUSAMap();
-      if (this.territorySeries.isHidden) this.territorySeries.show();
-      this.territorySeries.geodata = this.props.mapObject;
-      this.setState({ showTerritory: true, showCountyTooltip: false }, () => {
-        setTimeout(() => {
-          this.updateJurisdictionData();
-          this.territoryChart.goHome();
-          this.props.decrementSpinnerCount();
-        }, 1050);
-      });
-    } else if (this.props.jurisdictionToShow.category === 'state') {
-      this.setState({ showTerritory: false }, () => {
-        let ev = this.props.jurisdictionToShow.eventValue;
-        this.chart.maxZoomLevel = 32;
-        this.chart.zoomToMapObject(ev.target);
-        // Rendering the Territory Level Chart causes the UI to hang
-        // And if that hang comes during the zoom animation, it looks really choppy
-        // Delaying the render by 1.05 seconds (That's how long the zoom takes - I timed it)
-        // makes the UI feel more responsive
-        setTimeout(() => {
-          this.hideUSAMap();
-          this.jurisdictionSeries.geodata = this.props.mapObject;
-          this.jurisdictionSeries.show();
-          this.updateJurisdictionData();
-          this.props.decrementSpinnerCount();
-        }, 1050);
-      });
-    }
+    this.setState({ showCountyTooltip: false, showStateTooltip: false }, () => {
+      if (this.props.jurisdictionToShow.category === 'fullCountry') {
+        this.setState({ showTerritory: false }, () => {
+          this.jurisdictionSeries.hide();
+          this.showUSAMap();
+          this.chart.maxZoomLevel = 32;
+          this.chart.goHome();
+          setTimeout(() => {
+            this.chart.maxZoomLevel = 1;
+            this.updateJurisdictionData();
+            this.props.decrementSpinnerCount();
+          }, 1050);
+        });
+      } else if (this.props.jurisdictionToShow.category === 'territory') {
+        this.hideUSAMap();
+        if (this.territorySeries.isHidden) this.territorySeries.show();
+        this.territorySeries.geodata = this.props.mapObject;
+        this.setState({ showTerritory: true }, () => {
+          setTimeout(() => {
+            this.updateJurisdictionData();
+            this.territoryChart.goHome();
+            this.props.decrementSpinnerCount();
+          }, 1050);
+        });
+      } else if (this.props.jurisdictionToShow.category === 'state') {
+        this.setState({ showTerritory: false }, () => {
+          let ev = this.props.jurisdictionToShow.eventValue;
+          this.chart.maxZoomLevel = 32;
+          this.chart.zoomToMapObject(ev.target);
+          // Rendering the Territory Level Chart causes the UI to hang
+          // And if that hang comes during the zoom animation, it looks really choppy
+          // Delaying the render by 1.05 seconds makes the UI feel more responsive
+          setTimeout(() => {
+            this.hideUSAMap();
+            this.jurisdictionSeries.geodata = this.props.mapObject;
+            this.jurisdictionSeries.show();
+            this.updateJurisdictionData();
+            this.props.decrementSpinnerCount();
+          }, 1050);
+        });
+      }
+    });
   };
 
   updateJurisdictionData = () => {
@@ -316,6 +321,8 @@ class CountyLevelMaps extends React.Component {
           value: this.props.jurisdictionData.stateData[region.isoCode],
         });
       });
+      this.setState({ showStateTooltip: Object.prototype.hasOwnProperty.call(this.props.jurisdictionData.stateData, 'Unknown') });
+
       this.usaSeries.data = data;
       this.renderHeatLegend(this.usaSeries);
       this.props.decrementSpinnerCount();
@@ -333,7 +340,9 @@ class CountyLevelMaps extends React.Component {
       let stateIsoCode = stateOptions.find(state => state.name === this.props.jurisdictionToShow.name).isoCode;
       let counties = this.jurisdictionSeries.geodata.features;
       counties.forEach(county => {
-        let countyRef = this.props.jurisdictionData.countyData[String(stateIsoCode)].find(countyData => countyData.countyName === county.properties.name);
+        let countyRef = this.props.jurisdictionData.countyData[String(stateIsoCode)].find(
+          countyData => _.trim(countyData.countyName).toLowerCase() === _.trim(county.properties.name).toLowerCase()
+        );
         let countyValue = countyRef ? countyRef.value : 0;
         data.push({
           id: `${county.id}`,
@@ -356,24 +365,57 @@ class CountyLevelMaps extends React.Component {
     }
   };
 
+  renderStateTooltip = () => {
+    return (
+      this.state.showStateTooltip && (
+        <span>
+          <span data-for={`state-tooltip${this.props.id}`} data-tip="" className="clm-tooltip" style={{ paddingLeft: this.props.id === 1 ? '20px' : '5px' }}>
+            <i className="fas fa-exclamation-circle" style={{ fontSize: '20px' }}></i>
+          </span>
+          <ReactTooltip id={`state-tooltip${this.props.id}`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+            <span>Could not match {this.props.jurisdictionData.stateData['Unknown']} records to a specific state. REWORD THIS!!!</span>
+          </ReactTooltip>
+        </span>
+      )
+    );
+  };
+
   renderCountyTooltip = () => {
+    const NUMBER_OF_COUNTIES_TO_SHOW = 10;
+    // We can't control what users type in for COUNTY so it's possible this list could be very long
+    // Therefore only show the top NUMBER_OF_COUNTIES_TO_SHOW or so and tell the user that there are more (if that's the case)
+    const countiesToShow = _.take(this.countiesNotFound, NUMBER_OF_COUNTIES_TO_SHOW);
     return (
       this.state.showCountyTooltip && (
         <span key={this.countiesNotFound}>
-          <span data-for={`${this.props.id}`} data-tip="" className="clm-tooltip" style={{ paddingLeft: this.props.id === 1 ? '25px' : '10px' }}>
+          <span data-for={`county-tooltip-${this.props.id}`} data-tip="" className="clm-tooltip" style={{ paddingLeft: this.props.id === 1 ? '20px' : '5px' }}>
             <i className="fas fa-exclamation-circle" style={{ fontSize: '20px' }}></i>
           </span>
-          <ReactTooltip id={`${this.props.id}`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+          <ReactTooltip
+            id={`county-tooltip-${this.props.id}`}
+            multiline={true}
+            place="right"
+            type="dark"
+            effect="solid"
+            className="clm-county-tooltip-container">
             <span>
               The following data could not be matched to any counties in this jurisdiction:
-              {this.countiesNotFound.map((county, index) => {
+              {countiesToShow.map((county, index) => {
                 return (
-                  <div key={index}>
+                  <li key={index}>
                     {' '}
                     {county.countyName} : {county.value}{' '}
-                  </div>
+                  </li>
                 );
               })}
+              {this.countiesNotFound.length > NUMBER_OF_COUNTIES_TO_SHOW && (
+                <li>And {this.countiesNotFound.length - NUMBER_OF_COUNTIES_TO_SHOW} counties more...</li>
+              )}
+              {countiesToShow.find(x => x.countyName === 'Unknown') && (
+                <i>
+                  <b>Unknown</b> most likely means that the COUNTY field was left blank when enrolling a monitoree.
+                </i>
+              )}
             </span>
           </ReactTooltip>
         </span>
@@ -387,6 +429,7 @@ class CountyLevelMaps extends React.Component {
         <div id={`chartdiv-${this.props.id}`} className={this.state.showTerritory ? 'hidden-map-container' : 'visible-map-container'}></div>
         <div id={`territorydiv-${this.props.id}`} className={this.state.showTerritory ? 'visible-map-container' : 'hidden-map-container'}></div>
         {this.renderCountyTooltip()}
+        {this.renderStateTooltip()}
       </div>
     );
   }
