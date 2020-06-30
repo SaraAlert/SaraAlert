@@ -744,7 +744,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       risk_level: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       latest_report: latest_assessment&.created_at&.rfc2822 || '',
-      transferred: latest_transfer&.created_at&.rfc2822 || '',
+      transferred_at: latest_transfer&.created_at&.rfc2822 || '',
       reason_for_closure: monitoring_reason || '',
       public_health_action: public_health_action || '',
       status: status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '',

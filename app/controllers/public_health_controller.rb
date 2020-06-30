@@ -93,7 +93,7 @@ class PublicHealthController < ApplicationController
     paginated_patients = paginate(patients, params[:length].to_i, params[:start].to_i)
 
     # Extract only relevant fields to be displayed by workflow and tab
-    render json: { linelist: linelist(paginated_patients, workflow, tab), total: patients.size }
+    render json: linelist(paginated_patients, workflow, tab).merge({ total: patients.size })
   end
 
   # Get all individuals whose responder_id = id, these people are "HOH eligible"
@@ -212,35 +212,40 @@ class PublicHealthController < ApplicationController
 
       details = {
         id: patient[:id],
-        name: name,
-        state_local_id: patient[:user_defined_id_statelocal],
-        sex: patient[:sex],
-        dob: patient[:date_of_birth]&.strftime('%F')
+        name: name || '',
+        state_local_id: patient[:user_defined_id_statelocal] || '',
+        sex: patient[:sex] || '',
+        dob: patient[:date_of_birth]&.strftime('%F') || ''
       }
 
       # populate fields specific to this linelist only if relevant
-      details[:assigned_user] = patient[:assigned_user] if fields.include?(:assigned_user)
-      details[:risk_level] = patient[:exposure_risk_assessment] if fields.include?(:risk_level)
-      details[:reason_for_closure] = patient[:monitoring_reason] if fields.include?(:reason_for_closure)
-      details[:closed_at] = patient[:closed_at]&.rfc2822 if fields.include?(:closed_at)
+      details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
+      details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
+      details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
+      details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
+      details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)
 
-      if fields.include?(:end_of_monitoring) && patient[:last_date_of_exposure].present?
-        details[:end_of_monitoring] = (patient[:last_date_of_exposure] + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
-      elsif fields.include?(:end_of_monitoring) && patient[:created_at].present?
-        details[:end_of_monitoring] = (patient[:created_at] + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
+      if fields.include?(:end_of_monitoring)
+        details[:end_of_monitoring] = if patient[:last_date_of_exposure].present?
+                                        (patient[:last_date_of_exposure] + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
+                                      elsif patient[:created_at].present?
+                                        (patient[:created_at] + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
+                                      else
+                                        ''
+                                      end
       end
 
-      details[:jurisdiction] = jurisdiction_names[patient[:id]] if fields.include?(:jurisdiction)
-      details[:latest_report] = latest_assessments[patient[:id]]&.rfc2822 if fields.include?(:latest_report)
-      details[:transferred_at] = latest_transfers[patient[:id]][:transferred_at]&.rfc2822 if fields.include?(:transferred_at)
-      details[:transferred_from] = latest_transfers[patient[:id]][:transferred_from] if fields.include?(:jurisdiction_from)
-      details[:transferred_to] = latest_transfers[patient[:id]][:transferred_to] if fields.include?(:jurisdiction_to)
-      details[:status] = statuses[patient[:id]] if fields.include?(:status)
+      details[:jurisdiction] = jurisdiction_names[patient[:id]] || '' if fields.include?(:jurisdiction)
+      details[:latest_report] = latest_assessments[patient[:id]]&.rfc2822 || '' if fields.include?(:latest_report)
+      details[:transferred_at] = latest_transfers[patient[:id]][:transferred_at]&.rfc2822 || '' if fields.include?(:transferred_at)
+      details[:transferred_from] = latest_transfers[patient[:id]][:transferred_from] || '' if fields.include?(:jurisdiction_from)
+      details[:transferred_to] = latest_transfers[patient[:id]][:transferred_to] || '' if fields.include?(:jurisdiction_to)
+      details[:status] = statuses[patient[:id]] || '' if fields.include?(:status)
 
       linelist << details
     end
 
-    linelist
+    { linelist: linelist, fields: fields }
   end
 
   def linelist_specific_fields(workflow, tab)
