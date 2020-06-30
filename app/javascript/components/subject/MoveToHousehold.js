@@ -32,7 +32,11 @@ class MoveToHousehold extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({ [event.target.id]: event.target.value, updateDisabled: false });
+    let updateDisabled = true;
+    if (event.target.id == 'hoh_selection') {
+      updateDisabled = !this.state.groupMembers.map(p => p.id?.toString()).includes(event.target.value?.split('SaraID: ')[1]?.split(' ')[0]);
+    }
+    this.setState({ [event.target.id]: event.target.value, updateDisabled: updateDisabled });
   }
 
   getResponders() {
