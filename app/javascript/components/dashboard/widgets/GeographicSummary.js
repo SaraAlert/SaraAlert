@@ -21,8 +21,8 @@ class GeographicSummary extends React.Component {
   constructor(props) {
     super(props);
     this.analyticsData = this.parseAnalyticsStatistics();
-    this.jurisdictionsPermittedToView = this.obtainjurisdictionsPermittedToView();
-    this.obtainjurisdictionsNotInUse();
+    this.jurisdictionsPermittedToView = this.obtainJurisdictionsPermittedToView();
+    this.obtainJurisdictionsNotInUse();
     this.state = {
       selectedDateIndex: INITIAL_SELECTED_DATE_INDEX,
       showBackButton: false,
@@ -94,7 +94,7 @@ class GeographicSummary extends React.Component {
     return analyticsObject;
   };
 
-  obtainjurisdictionsPermittedToView = () => {
+  obtainJurisdictionsPermittedToView = () => {
     // This function iterates over monitoree_maps and pulls out all the state names where counties are referenced
     // This is used to determine what the user has permission to view (as the server only provides the data they are able to view)
     // For example, an epi in Virgina will only be served county-level data for virginia (and possibly bordering states depending on what `address_state` is set)
@@ -117,7 +117,7 @@ class GeographicSummary extends React.Component {
     return statesWhereCountyReferenced.map(x => stateOptions.find(y => y.name === x).isoCode);
   };
 
-  obtainjurisdictionsNotInUse = () => {
+  obtainJurisdictionsNotInUse = () => {
     // Go through all the monitoree_maps and if a state or territory is NEVER referenced then it must not be in use
     // If it does have data, but just no county-data for it, then the current_user must just not have permission to zoom in on it
     let dateSubset = _.takeRight(
