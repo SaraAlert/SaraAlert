@@ -12,7 +12,6 @@ class PatientsTable extends React.Component {
     super(props);
     this.handleTabSelect = this.handleTabSelect.bind(this);
     this.state = {
-      counts: {},
       tab: props.tabs[0],
       patients: [],
       total: 0,
@@ -47,9 +46,16 @@ class PatientsTable extends React.Component {
     }
 
     // fetch workflow and tab counts
-    axios.get(`/public_health/patients/counts/${this.props.workflow}`).then(response => {
-      this.setState({ counts: response.data });
-    });
+    this.props.tabs
+      .map(tab => tab.name)
+      .filter(tab => tab.name !== 'all')
+      .forEach(tab => {
+        axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
+          const count = {};
+          count[`${tab}Count`] = response.data.count;
+          this.setState(count);
+        });
+      });
   }
 
   handleTabSelect(tabName) {
@@ -120,7 +126,7 @@ class PatientsTable extends React.Component {
                   <Nav.Link eventKey={tab.name} onSelect={this.handleTabSelect}>
                     {tab.label}
                     <Badge variant={tab.variant} className="badge-larger-font ml-1">
-                      <span>{tab.name === 'all' ? this.props.count : tab.name in this.state.counts ? this.state.counts[tab.name] : ''}</span>
+                      <span>{tab.name === 'all' ? this.props.allCount : `${tab.name}Count` in this.state ? this.state[`${tab.name}Count`] : ''}</span>
                     </Badge>
                   </Nav.Link>
                 </Nav.Item>
@@ -312,7 +318,7 @@ PatientsTable.propTypes = {
   assignedJurisdictions: PropTypes.object,
   assignedUsers: PropTypes.array,
   workflow: PropTypes.oneOf(['exposure', 'isolation']),
-  count: PropTypes.number,
+  allCount: PropTypes.number,
   tabs: PropTypes.array,
 };
 

@@ -79,7 +79,7 @@
   assignedJurisdictions: Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }],
   assignedUsers: current_user.jurisdiction.all_assigned_users,
   workflow: 'isolation',
-  count: @isolation_count,
+  allCount: @isolation_count,
   tabs: [
     { name: 'requiring_review', label: 'Records Requiring Review', variant: 'danger',
       description: 'Cases who preliminarily meet the recovery definition and require review.', tooltip: 'isolation_recordsRequiringReview' },

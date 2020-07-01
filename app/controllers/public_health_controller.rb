@@ -50,7 +50,72 @@ class PublicHealthController < ApplicationController
     user = params.permit(:user)[:user]
     redirect_to(root_url) && return unless %w[all none].include?(user) || user.to_i.between?(1, 9999)
 
-    # Filter by workflow and tab
+    # Get patients by workflow and tab
+    patients = patients_by_type(workflow, tab)
+
+    # Filter by assigned jurisdiction
+    unless jurisdiction == 'all'
+      jur_id = jurisdiction.to_i
+      patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
+    end
+
+    # Filter by assigned user
+    patients = patients.where(assigned_user: user == 'none' ? nil : user.to_i) unless user == 'all'
+
+    # Filter by search text
+    patients = search(patients, params[:search])
+
+    # Sort
+    patients = sort(patients, params[:order], params[:columns])
+
+    # Paginate
+    paginated_patients = patients.paginate(per_page: params[:entries]&.to_i || 15, page: params[:page]&.to_i || 1)
+
+    # Extract only relevant fields to be displayed by workflow and tab
+    render json: linelist(paginated_patients, workflow, tab).merge({ total: patients.size })
+  end
+
+  # Get counts for patients under the given workflow and tab
+  def patient_counts
+    # Restrict access to public health only
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+
+    # Validate workflow param
+    workflow = params.permit(:workflow)[:workflow].to_sym
+    redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
+
+    # Validate tab param
+    tab = params.permit(:tab)[:tab].to_sym
+    if workflow == :exposure
+      redirect_to(root_url) && return unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
+    else
+      redirect_to(root_url) && return unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
+    end
+
+    # Get patients by workflow and tab
+    patients = patients_by_type(workflow, tab)
+
+    render json: { count: patients.size }
+  end
+
+  # Get all individuals whose responder_id = id, these people are "HOH eligible"
+  def self_reporting
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    patients = if current_user.has_role?(:enroller)
+                 current_user.enrolled_patients.where('patients.responder_id = patients.id')
+               else
+                 current_user.viewable_patients.where('patients.responder_id = patients.id')
+               end
+    patients = patients.pluck(:id, :first_name, :last_name, :age, :user_defined_id_statelocal).map do |p|
+      { id: p[0], first_name: p[1], last_name: p[2], age: p[3], state_id: p[4] }
+    end
+    render json: { self_reporting: patients.to_json }
+  end
+
+  protected
+
+  def patients_by_type(workflow, tab)
     if tab == :transferred_in
       patients = current_user.jurisdiction.transferred_in_patients.where(isolation: workflow == :isolation)
     elsif tab == :transferred_out
@@ -74,77 +139,10 @@ class PublicHealthController < ApplicationController
       patients = patients.monitoring_closed_without_purged if tab == :closed
     end
 
-    # Filter by assigned jurisdiction
-    unless jurisdiction == 'all'
-      jur_id = jurisdiction.to_i
-      patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
-    end
-
-    # Filter by assigned user
-    patients = patients.where(assigned_user: user == 'none' ? nil : user.to_i) unless user == 'all'
-
-    # Filter by search text
-    patients = filter(patients, params[:search])
-
-    # Sort
-    patients = sort(patients, params[:order], params[:columns])
-
-    # Paginate
-    paginated_patients = patients.paginate(per_page: params[:entries]&.to_i || 15, page: params[:page]&.to_i || 1)
-
-    # Extract only relevant fields to be displayed by workflow and tab
-    render json: linelist(paginated_patients, workflow, tab).merge({ total: patients.size })
+    patients
   end
 
-  # Get counts for patients under the exposure workflow
-  def exposure_counts
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: {
-      symptomatic: current_user.viewable_patients.exposure_symptomatic.size,
-      non_reporting: current_user.viewable_patients.exposure_non_reporting.size,
-      asymptomatic: current_user.viewable_patients.exposure_asymptomatic.size,
-      pui: current_user.viewable_patients.exposure_under_investigation.size,
-      closed: current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size,
-      transferred_in: current_user.jurisdiction.transferred_in_patients.where(isolation: false).size,
-      transferred_out: current_user.jurisdiction.transferred_out_patients.where(isolation: false).size,
-    }
-  end
-
-  # Get counts for patients under the isolation workflow
-  def isolation_counts
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    render json: {
-      requiring_review: current_user.viewable_patients.isolation_requiring_review.size,
-      non_reporting: current_user.viewable_patients.isolation_non_reporting.size,
-      reporting: current_user.viewable_patients.isolation_reporting.size,
-      closed: current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size,
-      transferred_in: current_user.jurisdiction.transferred_in_patients.where(isolation: true).size,
-      transferred_out: current_user.jurisdiction.transferred_out_patients.where(isolation: true).size,
-    }
-  end
-
-  # Get all individuals whose responder_id = id, these people are "HOH eligible"
-  def self_reporting
-    redirect_to(root_url) && return unless current_user.can_edit_patient?
-
-    patients = if current_user.has_role?(:enroller)
-                 current_user.enrolled_patients.where('patients.responder_id = patients.id')
-               else
-                 current_user.viewable_patients.where('patients.responder_id = patients.id')
-               end
-    patients = patients.pluck(:id, :first_name, :last_name, :age, :user_defined_id_statelocal).map do |p|
-      { id: p[0], first_name: p[1], last_name: p[2], age: p[3], state_id: p[4] }
-    end
-    render json: { self_reporting: patients.to_json }
-  end
-
-  protected
-
-  def filter(patients, search)
+  def search(patients, search)
     return patients if search.nil? || search.blank?
 
     patients.where('first_name like ?', "#{search}%").or(

@@ -79,7 +79,7 @@
   assignedJurisdictions: Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }],
   assignedUsers: current_user.jurisdiction.all_assigned_users,
   workflow: 'exposure',
-  count: @exposure_count,
+  allCount: @exposure_count,
   tabs: [
     { name: 'symptomatic', label: 'Symptomatic', variant: 'danger',
       description: 'Monitorees who have reported symptoms, which need to be reviewed.', tooltip: 'exposure_symptomatic' },
