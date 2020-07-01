@@ -10,7 +10,9 @@ import separatorLines from '../../assets/separatorLines.js';
 import usaTerritories2High from '../../assets/usaTerritories.json';
 import ReactTooltip from 'react-tooltip';
 
-const NON_ZOOMABLE_INSULAR_TERRITORIES = ['US-FM', 'US-GU', 'MH', 'US-MP', 'PW', 'US-VI'];
+// There are no GEOJSON files provided by AMCHARTS for these Territories
+// (It does have files for `US-PR` and `US-AS` but those aren't implemented yet)
+const NON_ZOOMABLE_INSULAR_TERRITORIES = ['US-PR', 'US-AS', 'US-FM', 'US-GU', 'MH', 'US-MP', 'PW', 'US-VI'];
 am4core.useTheme(am4themes_animated);
 
 class CountyLevelMaps extends React.Component {
@@ -57,11 +59,11 @@ class CountyLevelMaps extends React.Component {
     this.usaPolygon = this.usaSeries.mapPolygons.template;
     this.usaPolygon.tooltipPosition = 'fixed';
     this.usaPolygon.adapter.add('tooltipText', (text, target) => {
-      if (!this.props.jurisdictionsPermittedToView.includes(target.tooltipDataItem.dataContext.id)) {
+      if (this.props.jurisdictionsPermittedToView.includes(target.tooltipDataItem.dataContext.id)) {
+        return '{name} : {value}';
+      } else {
         return `{name}: {value}
           [font-style: italic; font-size: 10px;]zoom not available[/]`;
-      } else {
-        return '{name} : {value}';
       }
     });
 
@@ -372,8 +374,9 @@ class CountyLevelMaps extends React.Component {
           <span data-for={`state-tooltip${this.props.id}`} data-tip="" className="clm-tooltip" style={{ paddingLeft: this.props.id === 1 ? '20px' : '5px' }}>
             <i className="fas fa-exclamation-circle" style={{ fontSize: '20px' }}></i>
           </span>
-          <ReactTooltip id={`state-tooltip${this.props.id}`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
-            <span>Could not match {this.props.jurisdictionData.stateData['Unknown']} records to a specific state. REWORD THIS!!!</span>
+          <ReactTooltip id={`state-tooltip-${this.props.id}`} multiline={true} place="right" type="dark" effect="solid" className="clm-tooltip-container">
+            <span>Could not match {this.props.jurisdictionData.stateData['Unknown']} records to a specific state.</span>
+            <div>This most likely means Home Address State was left blank.</div>
           </ReactTooltip>
         </span>
       )
@@ -391,13 +394,7 @@ class CountyLevelMaps extends React.Component {
           <span data-for={`county-tooltip-${this.props.id}`} data-tip="" className="clm-tooltip" style={{ paddingLeft: this.props.id === 1 ? '20px' : '5px' }}>
             <i className="fas fa-exclamation-circle" style={{ fontSize: '20px' }}></i>
           </span>
-          <ReactTooltip
-            id={`county-tooltip-${this.props.id}`}
-            multiline={true}
-            place="right"
-            type="dark"
-            effect="solid"
-            className="clm-county-tooltip-container">
+          <ReactTooltip id={`county-tooltip-${this.props.id}`} multiline={true} place="right" type="dark" effect="solid" className="clm-tooltip-container">
             <span>
               The following data could not be matched to any counties in this jurisdiction:
               {countiesToShow.map((county, index) => {

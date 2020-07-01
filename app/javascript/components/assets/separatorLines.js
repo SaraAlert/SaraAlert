@@ -1,7 +1,7 @@
 const map = {
   // This is used by AMCharts to draw separatorLines for the Territory Map.
   // The actual data will be served from the server, but the lines must be there on initialization
-  // (as far as i can tell anyway)
+  // (as far as I can tell anyway)
   type: 'FeatureCollection',
   features: [
     {

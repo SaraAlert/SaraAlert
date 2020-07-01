@@ -24,8 +24,6 @@
   top: 50%;
 }
 
-
-
 .map-panel-contaianer {
   border-right: 1px solid #dcdcdc;
 }
@@ -69,4 +67,8 @@
   top: 40px;
   left: 0px;
   z-index: 100000;
+}
+
+.clm-tooltip-container {
+  width: 450px;
 }
