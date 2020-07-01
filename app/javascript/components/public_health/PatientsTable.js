@@ -1,8 +1,8 @@
 import React from 'react';
-
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
-import { Badge, Card, Col, Form, InputGroup, Nav, Table, TabContent } from 'react-bootstrap';
+import moment from 'moment-timezone';
+import { Badge, Card, Col, Form, InputGroup, Nav, Pagination, Spinner, Table, TabContent } from 'react-bootstrap';
 // import { useTable } from 'react-table';
 
 import InfoTooltip from '../util/InfoTooltip';
@@ -19,23 +19,25 @@ class PatientsTable extends React.Component {
         jurisdiction: 'all',
         scope: 'all',
         user: 'all',
+        entries: 15,
+        page: 0,
         search: '',
         order: [],
         columns: [],
-        length: 15,
-        start: 0,
       },
       table: {
         fields: [],
-        data: [],
+        linelist: [],
+        total: 0,
       },
-      options: {
-        numEntries: [10, 15, 25, 50, 100],
-      },
+      loading: false,
+      cancelToken: axios.CancelToken.source(),
     };
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
+    // load saved tab from local storage if present
     const savedTabName = localStorage.getItem(`${this.props.workflow}Tab`);
     if (savedTabName === null || !this.props.tabs.map(tab => tab.name).includes(savedTabName)) {
       localStorage.setItem(`${this.props.workflow}Tab`, this.props.tabs[0].name);
@@ -45,21 +47,60 @@ class PatientsTable extends React.Component {
   }
 
   handleTabSelect(tabName) {
-    this.setState({ tab: this.props.tabs.filter(tab => tab.name === tabName)[0] }, () => {
-      localStorage.setItem(`${this.props.workflow}Tab`, tabName);
-    });
+    // cancel any previous unfinished requests to prevent race condition inconsistencies
+    this.state.cancelToken.cancel();
+
+    // reset page to 1, but keep all the other filters
+    const filters = { ...this.state.filters, page: 1 };
+    this.setState(
+      {
+        tab: this.props.tabs.filter(tab => tab.name === tabName)[0],
+        filters: filters,
+        loading: true,
+        cancelToken: axios.CancelToken.source(),
+      },
+      this.fetchData
+    );
+
+    // save current tab to local storage
+    localStorage.setItem(`${this.props.workflow}Tab`, tabName);
+  }
+
+  handleChange(event) {
+    const filters = this.state.filters;
+    if (event.target.name === 'jurisdiction') {
+      filters.jurisdiction = event.target.value;
+    } else if (event.target.name === 'scope') {
+      filters.scope = event.target.value;
+    } else if (event.target.name === 'user') {
+      filters.user = event.target.value;
+    } else if (event.target.name === 'entries') {
+      filters.entries = event.target.value;
+    } else if (event.target.name === 'search') {
+      filters.search = event.target.value;
+    }
+    this.setState({ filters }, this.fetchData);
+  }
+
+  fetchData() {
     axios
       .get('/public_health/patients', {
-        params: { workflow: this.props.workflow, tab: tabName, ...this.state.filters },
+        params: { workflow: this.props.workflow, tab: this.state.tab.name, ...this.state.filters },
+        cancelToken: this.state.cancelToken.token,
+      })
+      .catch(error => {
+        if (!axios.isCancel(error)) {
+          this.setState({ table: { fields: [], linelist: [], total: 0 }, loading: false });
+        }
       })
       .then(response => {
-        this.setState({
-          table: {
-            fields: response.data.fields,
-            data: response.data.linelist,
-          },
-        });
+        this.setState({ table: response.data, loading: false });
       });
+  }
+
+  formatTimestamp(timestamp) {
+    const ts = moment.tz(timestamp, 'UTC');
+    return ts.isValid() ? ts.tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm z') : '';
   }
 
   render() {
@@ -93,7 +134,7 @@ class PatientsTable extends React.Component {
                       <InputGroup.Prepend>
                         <InputGroup.Text>Jurisdiction</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control as="select" size="sm">
+                      <Form.Control as="select" size="sm" name="jurisdiction" value={this.state.filters.jurisdiction} onChange={this.handleChange}>
                         {Object.keys(this.props.assignedJurisdictions).map(jur_id => {
                           return (
                             <option key={jur_id} value={jur_id}>
@@ -106,7 +147,7 @@ class PatientsTable extends React.Component {
                   </Col>
                   <Col lg={3} md={4} sm={6} className="mt-1">
                     <InputGroup size="sm">
-                      <Form.Control as="select" size="sm">
+                      <Form.Control as="select" size="sm" name="scope" value={this.state.filters.scope} onChange={this.handleChange}>
                         <option value="all">All</option>
                         <option value="exact">Exact Match</option>
                       </Form.Control>
@@ -117,7 +158,7 @@ class PatientsTable extends React.Component {
                       <InputGroup.Prepend>
                         <InputGroup.Text>Assigned User</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control as="select" size="sm">
+                      <Form.Control as="select" size="sm" name="user" value={this.state.filters.user} onChange={this.handleChange}>
                         <option value="all">All</option>
                         <option value="none">None</option>
                         {this.props.assignedUsers.map(user => {
@@ -130,14 +171,13 @@ class PatientsTable extends React.Component {
                       </Form.Control>
                     </InputGroup>
                   </Col>
-
                   <Col lg={5} md={6} className="mt-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
                         <InputGroup.Text>Show</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control as="select" size="sm">
-                        {this.state.options.numEntries.map(num => {
+                      <Form.Control as="select" size="sm" name="entries" value={this.state.filters.entries} onChange={this.handleChange}>
+                        {[10, 15, 25, 50, 100].map(num => {
                           return (
                             <option key={num} value={num}>
                               {num}
@@ -155,61 +195,103 @@ class PatientsTable extends React.Component {
                       <InputGroup.Prepend>
                         <InputGroup.Text>Search</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control size="sm"></Form.Control>
+                      <Form.Control size="sm" name="search" value={this.state.filters.search} onChange={this.handleChange}></Form.Control>
                     </InputGroup>
                   </Col>
                 </Form.Row>
               </Form>
-              <Table striped bordered hover size="sm">
-                <thead>
-                  <tr>
-                    <th>Monitoree</th>
-                    {this.state.table.fields.includes('jurisdiction') && <th>Jurisdiction</th>}
-                    {this.state.table.fields.includes('transferred_from') && <th>From Jurisdiction</th>}
-                    {this.state.table.fields.includes('transferred_to') && <th>To Jurisdiction</th>}
-                    {this.state.table.fields.includes('assigned_user') && <th>Assigned User</th>}
-                    <th>State/Local ID</th>
-                    <th>Sex</th>
-                    <th>Date of Birth</th>
-                    {this.state.table.fields.includes('end_of_monitoring') && <th>End of Monitoring</th>}
-                    {this.state.table.fields.includes('risk_level') && <th>Risk Level</th>}
-                    {this.state.table.fields.includes('monitoring_plan') && <th>Monitoring Plan</th>}
-                    {this.state.table.fields.includes('public_health_action') && <th>Latest Public Health Action</th>}
-                    {this.state.table.fields.includes('expected_purge_date') && <th>Eligible For Purge After</th>}
-                    {this.state.table.fields.includes('reason_for_closure') && <th>Reason for Closure</th>}
-                    {this.state.table.fields.includes('closed_at') && <th>Closed At</th>}
-                    {this.state.table.fields.includes('transferred_at') && <th>Transferred At</th>}
-                    {this.state.table.fields.includes('latest_report') && <th>Latest Report</th>}
-                    {this.state.table.fields.includes('status') && <th>Status</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.table.data.map(patient => {
-                    return (
-                      <tr key={patient.id}>
-                        {'name' in patient && <td>{patient.name}</td>}
-                        {'jurisdiction' in patient && <td>{patient.jurisdiction}</td>}
-                        {'transferred_from' in patient && <td>{patient.transferred_from}</td>}
-                        {'transferred_to' in patient && <td>{patient.transferred_to}</td>}
-                        {'assigned_user' in patient && <td>{patient.assigned_user}</td>}
-                        {'state_local_id' in patient && <td>{patient.state_local_id}</td>}
-                        {'sex' in patient && <td>{patient.sex}</td>}
-                        {'dob' in patient && <td>{patient.dob}</td>}
-                        {'end_of_monitoring' in patient && <td>{patient.end_of_monitoring}</td>}
-                        {'risk_level' in patient && <td>{patient.risk_level}</td>}
-                        {'monitoring_plan' in patient && <td>{patient.monitoring_plan}</td>}
-                        {'public_health_action' in patient && <td>{patient.public_health_action}</td>}
-                        {'expected_purge_date' in patient && <td>{patient.expected_purge_date}</td>}
-                        {'reason_for_closure' in patient && <td>{patient.reason_for_closure}</td>}
-                        {'closed_at' in patient && <td>{patient.closed_at}</td>}
-                        {'transferred_at' in patient && <td>{patient.transferred_at}</td>}
-                        {'latest_report' in patient && <td>{patient.latest_report}</td>}
-                        {'status' in patient && <td>{patient.status}</td>}
+              {this.state.loading ? (
+                <div className="text-center mt-4">
+                  <Spinner animation="border" size="lg" />
+                </div>
+              ) : (
+                <React.Fragment>
+                  <Table striped bordered hover size="sm" className="mb-2">
+                    <thead>
+                      <tr>
+                        <th>Monitoree</th>
+                        {this.state.table.fields.includes('jurisdiction') && <th>Jurisdiction</th>}
+                        {this.state.table.fields.includes('transferred_from') && <th>From Jurisdiction</th>}
+                        {this.state.table.fields.includes('transferred_to') && <th>To Jurisdiction</th>}
+                        {this.state.table.fields.includes('assigned_user') && <th>Assigned User</th>}
+                        <th>State/Local ID</th>
+                        <th>Sex</th>
+                        <th>Date of Birth</th>
+                        {this.state.table.fields.includes('end_of_monitoring') && <th>End of Monitoring</th>}
+                        {this.state.table.fields.includes('risk_level') && <th>Risk Level</th>}
+                        {this.state.table.fields.includes('monitoring_plan') && <th>Monitoring Plan</th>}
+                        {this.state.table.fields.includes('public_health_action') && <th>Latest Public Health Action</th>}
+                        {this.state.table.fields.includes('expected_purge_date') && (
+                          <th>
+                            Eligible For Purge After <InfoTooltip tooltipTextKey="purgeDate" location="right"></InfoTooltip>
+                          </th>
+                        )}
+                        {this.state.table.fields.includes('reason_for_closure') && <th>Reason for Closure</th>}
+                        {this.state.table.fields.includes('closed_at') && <th>Closed At</th>}
+                        {this.state.table.fields.includes('transferred_at') && <th>Transferred At</th>}
+                        {this.state.table.fields.includes('latest_report') && <th>Latest Report</th>}
+                        {this.state.table.fields.includes('status') && <th>Status</th>}
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+                    </thead>
+                    <tbody>
+                      {this.state.table.linelist.length === 0 && (
+                        <tr className="odd">
+                          <td colSpan={this.state.table.fields.length} className="text-center">
+                            No data available in table
+                          </td>
+                        </tr>
+                      )}
+                      {this.state.table.linelist.map(patient => {
+                        return (
+                          <tr key={patient.id}>
+                            {'name' in patient && (
+                              <td>
+                                <a href={`/patients/${patient.id}`}>{patient.name}</a>
+                              </td>
+                            )}
+                            {'jurisdiction' in patient && <td>{patient.jurisdiction}</td>}
+                            {'transferred_from' in patient && <td>{patient.transferred_from}</td>}
+                            {'transferred_to' in patient && <td>{patient.transferred_to}</td>}
+                            {'assigned_user' in patient && <td>{patient.assigned_user}</td>}
+                            {'state_local_id' in patient && <td>{patient.state_local_id}</td>}
+                            {'sex' in patient && <td>{patient.sex}</td>}
+                            {'dob' in patient && <td>{patient.dob}</td>}
+                            {'end_of_monitoring' in patient && <td>{patient.end_of_monitoring}</td>}
+                            {'risk_level' in patient && <td>{patient.risk_level}</td>}
+                            {'monitoring_plan' in patient && <td>{patient.monitoring_plan}</td>}
+                            {'public_health_action' in patient && <td>{patient.public_health_action}</td>}
+                            {'expected_purge_date' in patient && <td>{this.formatTimestamp(patient.expected_purge_date)}</td>}
+                            {'reason_for_closure' in patient && <td>{patient.reason_for_closure}</td>}
+                            {'closed_at' in patient && <td>{this.formatTimestamp(patient.closed_at)}</td>}
+                            {'transferred_at' in patient && <td>{this.formatTimestamp(patient.transferred_at)}</td>}
+                            {'latest_report' in patient && <td>{this.formatTimestamp(patient.latest_report)}</td>}
+                            {'status' in patient && <td>{patient.status}</td>}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                  <div className="d-flex">
+                    <div className="d-block mr-auto py-1" style={{ height: '38px' }}>
+                      <span className="align-middle">
+                        {`Displaying ${this.state.table.linelist.length} out of ${this.state.table.total} `}
+                        {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'}
+                      </span>
+                    </div>
+                    <Pagination className="mb-0">
+                      <Pagination.Item>Previous</Pagination.Item>
+                      <Pagination.Item>1</Pagination.Item>
+                      <Pagination.Ellipsis />
+                      <Pagination.Item>a</Pagination.Item>
+                      <Pagination.Item>b</Pagination.Item>
+                      <Pagination.Item>c</Pagination.Item>
+                      <Pagination.Ellipsis />
+                      <Pagination.Item>{Math.floor(this.state.table.total / this.state.filters.entries)}</Pagination.Item>
+                      <Pagination.Next>Next</Pagination.Next>
+                    </Pagination>
+                  </div>
+                </React.Fragment>
+              )}
             </Card.Body>
           </Card>
         </TabContent>

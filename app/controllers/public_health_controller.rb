@@ -90,7 +90,7 @@ class PublicHealthController < ApplicationController
     patients = sort(patients, params[:order], params[:columns])
 
     # Paginate
-    paginated_patients = paginate(patients, params[:length].to_i, params[:start].to_i)
+    paginated_patients = patients.paginate(per_page: params[:entries]&.to_i || 15, page: params[:page]&.to_i || 1)
 
     # Extract only relevant fields to be displayed by workflow and tab
     render json: linelist(paginated_patients, workflow, tab).merge({ total: patients.size })
@@ -173,11 +173,6 @@ class PublicHealthController < ApplicationController
     sorted
   end
 
-  def paginate(patients, length, start)
-    page = start.zero? ? 1 : (start / length) + 1
-    patients.paginate(per_page: length, page: page)
-  end
-
   def linelist(patients, workflow, tab)
     # get a list of fields relevant only to this linelist
     fields = linelist_specific_fields(workflow, tab)
@@ -189,6 +184,8 @@ class PublicHealthController < ApplicationController
 
     # execute query
     patients.to_a
+
+    puts patients
 
     # only retrieve jurisdiction if necessary
     jurisdiction_names = get_jurisdiction_names(patients) if fields.include?(:jurisdiction)
@@ -222,6 +219,7 @@ class PublicHealthController < ApplicationController
       details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
       details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
       details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
+      details[:expected_purge_date] = (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || '' if fields.include?(:expected_purge_date)
       details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
       details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)
 
@@ -245,7 +243,7 @@ class PublicHealthController < ApplicationController
       linelist << details
     end
 
-    { linelist: linelist, fields: fields }
+    { linelist: linelist, fields: %i[name state_local_id sex dob].concat(fields) }
   end
 
   def linelist_specific_fields(workflow, tab)
