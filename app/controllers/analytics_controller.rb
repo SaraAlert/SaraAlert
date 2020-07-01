@@ -18,11 +18,15 @@ class AnalyticsController < ApplicationController
   end
 
   def get_geo_json
-    send_file(
-      "#{Rails.root}/public/CountyLevelMaps/#{params[:mapFile]}.json",
-      filename: "#{params[:mapFile]}.json",
-      type: 'application/json'
-    )
+    allMapFileNames = ['al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'dc', 'fl', 'ga', 'hi', 'id', 'il', 'in', 'ia', 'ks', 'ky', 'la', 'me', 'md', 'ma', 'mi', 'mn', 'ms', 'mo', 'mt', 'ne', 'nv', 'nh', 'nj', 'nm', 'ny', 'nc', 'nd', 'oh', 'ok', 'or', 'pa', 'ri', 'sc', 'sd', 'tn', 'tx', 'usaTerritories', 'ut', 'vt', 'va', 'wa', 'wv', 'wi', 'wy']
+    mapFileName = "#{params[:mapFile]}"
+    if allMapFileNames.include? mapFileName
+      send_file(
+        "#{Rails.root}/public/CountyLevelMaps/#{mapFileName}.json",
+        filename: "#{mapFileName}.json",
+        type: 'application/json'
+      )
+    end
   end
 
   protected
