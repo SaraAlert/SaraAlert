@@ -92,10 +92,12 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
-  get '/public_health/patients/self_reporting', to: 'public_health#self_reporting', as: :self_reporting
-  get '/public_health/patients', to: 'public_health#patients', as: :public_health_patients
   get '/public_health', to: 'public_health#exposure', as: :public_health
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
+  get '/public_health/patients', to: 'public_health#patients', as: :public_health_patients
+  get '/public_health/patients/counts/exposure', to: 'public_health#exposure_counts', as: :public_health_exposure_counts
+  get '/public_health/patients/counts/isolation', to: 'public_health#isolation_counts', as: :public_health_isolation_counts
+  get '/public_health/patients/self_reporting', to: 'public_health#self_reporting', as: :self_reporting
 
   get '/analytics', to: 'analytics#index', as: :analytics
   get '/county_level_maps/:mapFile', to: 'analytics#clm_geo_json'

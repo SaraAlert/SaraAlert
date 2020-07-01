@@ -96,6 +96,37 @@ class PublicHealthController < ApplicationController
     render json: linelist(paginated_patients, workflow, tab).merge({ total: patients.size })
   end
 
+  # Get counts for patients under the exposure workflow
+  def exposure_counts
+    # Restrict access to public health only
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+
+    render json: {
+      symptomatic: current_user.viewable_patients.exposure_symptomatic.size,
+      non_reporting: current_user.viewable_patients.exposure_non_reporting.size,
+      asymptomatic: current_user.viewable_patients.exposure_asymptomatic.size,
+      pui: current_user.viewable_patients.exposure_under_investigation.size,
+      closed: current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size,
+      transferred_in: current_user.jurisdiction.transferred_in_patients.where(isolation: false).size,
+      transferred_out: current_user.jurisdiction.transferred_out_patients.where(isolation: false).size,
+    }
+  end
+
+  # Get counts for patients under the isolation workflow
+  def isolation_counts
+    # Restrict access to public health only
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+
+    render json: {
+      requiring_review: current_user.viewable_patients.isolation_requiring_review.size,
+      non_reporting: current_user.viewable_patients.isolation_non_reporting.size,
+      reporting: current_user.viewable_patients.isolation_reporting.size,
+      closed: current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size,
+      transferred_in: current_user.jurisdiction.transferred_in_patients.where(isolation: true).size,
+      transferred_out: current_user.jurisdiction.transferred_out_patients.where(isolation: true).size,
+    }
+  end
+
   # Get all individuals whose responder_id = id, these people are "HOH eligible"
   def self_reporting
     redirect_to(root_url) && return unless current_user.can_edit_patient?
