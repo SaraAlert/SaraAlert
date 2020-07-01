@@ -2,7 +2,7 @@ import React from 'react';
 
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
-import { Badge, Card, Nav, Table, TabContent } from 'react-bootstrap';
+import { Badge, Card, Col, Form, InputGroup, Nav, Table, TabContent } from 'react-bootstrap';
 // import { useTable } from 'react-table';
 
 import InfoTooltip from '../util/InfoTooltip';
@@ -28,6 +28,9 @@ class PatientsTable extends React.Component {
       table: {
         fields: [],
         data: [],
+      },
+      options: {
+        numEntries: [10, 15, 25, 50, 100],
       },
     };
   }
@@ -78,12 +81,86 @@ class PatientsTable extends React.Component {
         </Nav>
         <TabContent>
           <Card>
-            <div className="lead px-4 pt-4 pb-3 mb-2">
-              {this.state.tab.description} You are currently in the <u>{this.props.workflow}</u> workflow.
-              {this.state.tab.tooltip && <InfoTooltip tooltipTextKey={this.state.tab.tooltip} location="right"></InfoTooltip>}
-            </div>
-            <div className="ml-2 mr-2 pl-2 pr-2">
-              <Table striped bordered hover>
+            <Card.Body className="pl-4 pr-4">
+              <div className="lead mt-1 mb-3">
+                {this.state.tab.description} You are currently in the <u>{this.props.workflow}</u> workflow.
+                {this.state.tab.tooltip && <InfoTooltip tooltipTextKey={this.state.tab.tooltip} location="right"></InfoTooltip>}
+              </div>
+              <Form className="mb-2">
+                <Form.Row className="align-items-center">
+                  <Col lg={16} md={14} sm={18} className="mt-1">
+                    <InputGroup size="sm">
+                      <InputGroup.Prepend>
+                        <InputGroup.Text>Jurisdiction</InputGroup.Text>
+                      </InputGroup.Prepend>
+                      <Form.Control as="select" size="sm">
+                        {Object.keys(this.props.assignedJurisdictions).map(jur_id => {
+                          return (
+                            <option key={jur_id} value={jur_id}>
+                              {this.props.assignedJurisdictions[parseInt(jur_id)]}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
+                    </InputGroup>
+                  </Col>
+                  <Col lg={3} md={4} sm={6} className="mt-1">
+                    <InputGroup size="sm">
+                      <Form.Control as="select" size="sm">
+                        <option value="all">All</option>
+                        <option value="exact">Exact Match</option>
+                      </Form.Control>
+                    </InputGroup>
+                  </Col>
+                  <Col lg={5} md={6} className="mt-1">
+                    <InputGroup size="sm">
+                      <InputGroup.Prepend>
+                        <InputGroup.Text>Assigned User</InputGroup.Text>
+                      </InputGroup.Prepend>
+                      <Form.Control as="select" size="sm">
+                        <option value="all">All</option>
+                        <option value="none">None</option>
+                        {this.props.assignedUsers.map(user => {
+                          return (
+                            <option key={user} value={user}>
+                              {user}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
+                    </InputGroup>
+                  </Col>
+
+                  <Col lg={5} md={6} className="mt-1">
+                    <InputGroup size="sm">
+                      <InputGroup.Prepend>
+                        <InputGroup.Text>Show</InputGroup.Text>
+                      </InputGroup.Prepend>
+                      <Form.Control as="select" size="sm">
+                        {this.state.options.numEntries.map(num => {
+                          return (
+                            <option key={num} value={num}>
+                              {num}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
+                      <InputGroup.Append>
+                        <InputGroup.Text>entries</InputGroup.Text>
+                      </InputGroup.Append>
+                    </InputGroup>
+                  </Col>
+                  <Col lg={19} md={18} className="mt-1">
+                    <InputGroup size="sm">
+                      <InputGroup.Prepend>
+                        <InputGroup.Text>Search</InputGroup.Text>
+                      </InputGroup.Prepend>
+                      <Form.Control size="sm"></Form.Control>
+                    </InputGroup>
+                  </Col>
+                </Form.Row>
+              </Form>
+              <Table striped bordered hover size="sm">
                 <thead>
                   <tr>
                     <th>Monitoree</th>
@@ -133,7 +210,7 @@ class PatientsTable extends React.Component {
                   })}
                 </tbody>
               </Table>
-            </div>
+            </Card.Body>
           </Card>
         </TabContent>
       </div>
