@@ -18,19 +18,17 @@ class AnalyticsController < ApplicationController
   end
 
   def clm_geo_json
-    all_map_files = %w(al ak az ar ca co ct de dc fl ga hi id il in ia ks ky la me md ma mi mn ms mo mt ne nv nh nj nm ny nc nd oh ok or pa ri sc sd tn tx usaTerritories ut vt va wa wv wi wy)
-    map_file_name = "#{params[:mapFile]}"
-    if all_map_files.include? map_file_name
-      send_file(
-        "#{Rails.root}/public/CountyLevelMaps/#{map_file_name}.json",
-        filename: "#{map_file_name}.json",
-        type: 'application/json'
-      )
-    end
+    all_map_files = %w[al ak az ar ca co ct de dc fl ga hi id il in ia ks ky la
+                       me md ma mi mn ms mo mt ne nv nh nj nm ny nc nd oh ok or
+                       pa ri sc sd tn tx usaTerritories ut vt va wa wv wi wy]
+    map_file_name = params[:mapFile].to_s
+
+    return unless all_map_files.include? map_file_name
+
+    send_file("#{Rails.root}/public/CountyLevelMaps/#{map_file_name}.json", filename: "#{map_file_name}.json", type: 'application/json')
   end
 
   protected
-
 
   def enroller_stats
     {
@@ -59,11 +57,11 @@ class AnalyticsController < ApplicationController
 
       next if analytic.nil?
 
-      if current_user.jurisdiction.root?
-        maps << { day: date, maps: MonitoreeMap.where(analytic_id: analytic.id, level: 'State') }
-      else
-        maps << { day: date, maps: MonitoreeMap.where(analytic_id: analytic.id) }
-      end
+      maps << if current_user.jurisdiction.root?
+                { day: date, maps: MonitoreeMap.where(analytic_id: analytic.id, level: 'State') }
+              else
+                { day: date, maps: MonitoreeMap.where(analytic_id: analytic.id) }
+              end
     end
 
     # Get analytics from most recent cache analytics job
