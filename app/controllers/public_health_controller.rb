@@ -214,8 +214,6 @@ class PublicHealthController < ApplicationController
     # execute query
     patients.to_a
 
-    puts patients
-
     # only retrieve jurisdiction if necessary
     jurisdiction_names = get_jurisdiction_names(patients) if fields.include?(:jurisdiction)
 
@@ -248,6 +246,7 @@ class PublicHealthController < ApplicationController
       details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
       details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
       details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
+      details[:public_health_action] = patient[:public_health_action] || '' if fields.include?(:public_health_action)
       details[:expected_purge_date] = (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || '' if fields.include?(:expected_purge_date)
       details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
       details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)

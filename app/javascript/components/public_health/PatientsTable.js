@@ -59,22 +59,7 @@ class PatientsTable extends React.Component {
   }
 
   handleTabSelect(tabName) {
-    // cancel any previous unfinished requests to prevent race condition inconsistencies
-    this.state.cancelToken.cancel();
-
-    // reset page to 1, but keep all the other filters
-    const filters = { ...this.state.filters, page: 1 };
-    this.setState(
-      {
-        tab: this.props.tabs.filter(tab => tab.name === tabName)[0],
-        filters: filters,
-        loading: true,
-        cancelToken: axios.CancelToken.source(),
-      },
-      this.fetchData
-    );
-
-    // save current tab to local storage
+    this.setState({ tab: this.props.tabs.filter(tab => tab.name === tabName)[0] }, this.fetchData);
     localStorage.setItem(`${this.props.workflow}Tab`, tabName);
   }
 
@@ -94,20 +79,42 @@ class PatientsTable extends React.Component {
     this.setState({ filters }, this.fetchData);
   }
 
+  handleKeyPress(event) {
+    if (event.which === 13) {
+      event.preventDefault();
+    }
+  }
+
   fetchData() {
-    axios
-      .get('/public_health/patients', {
-        params: { workflow: this.props.workflow, tab: this.state.tab.name, ...this.state.filters },
-        cancelToken: this.state.cancelToken.token,
-      })
-      .catch(error => {
-        if (!axios.isCancel(error)) {
-          this.setState({ table: { fields: [], linelist: [], total: 0 }, loading: false });
-        }
-      })
-      .then(response => {
-        this.setState({ table: response.data, loading: false });
-      });
+    // cancel any previous unfinished requests to prevent race condition inconsistencies
+    this.state.cancelToken.cancel();
+
+    // reset page to 1, but keep all the other filters
+    const filters = { ...this.state.filters, page: 1 };
+    this.setState(
+      {
+        filters: filters,
+        loading: true,
+        cancelToken: axios.CancelToken.source(),
+      },
+      () => {
+        axios
+          .get('/public_health/patients', {
+            params: { workflow: this.props.workflow, tab: this.state.tab.name, ...this.state.filters },
+            cancelToken: this.state.cancelToken.token,
+          })
+          .catch(error => {
+            if (!axios.isCancel(error)) {
+              this.setState({ table: { fields: [], linelist: [], total: 0 }, loading: false });
+            }
+          })
+          .then(response => {
+            if ('data' in response) {
+              this.setState({ table: response.data, loading: false });
+            }
+          });
+      }
+    );
   }
 
   formatTimestamp(timestamp) {
@@ -208,7 +215,14 @@ class PatientsTable extends React.Component {
                         <InputGroup.Prepend>
                           <InputGroup.Text>Search</InputGroup.Text>
                         </InputGroup.Prepend>
-                        <Form.Control size="sm" name="search" value={this.state.filters.search} onChange={this.handleChange}></Form.Control>
+                        <Form.Control
+                          autoComplete="off"
+                          size="sm"
+                          name="search"
+                          value={this.state.filters.search}
+                          onChange={this.handleChange}
+                          onKeyPress={this.handleKeyPress}
+                        />
                       </InputGroup>
                     </Col>
                   </Form.Row>
