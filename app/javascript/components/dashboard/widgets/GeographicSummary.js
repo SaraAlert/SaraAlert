@@ -333,7 +333,6 @@ class GeographicSummary extends React.Component {
 
 GeographicSummary.propTypes = {
   stats: PropTypes.object,
-  current_user: PropTypes.object,
 };
 
 export default GeographicSummary;
