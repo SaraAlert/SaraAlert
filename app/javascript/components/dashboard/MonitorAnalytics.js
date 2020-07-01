@@ -5,6 +5,7 @@ import RiskStratificationTable from './widgets/RiskStratificationTable';
 import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
 import RiskFactors from './widgets/RiskFactors';
+import reportError from '../util/ReportError';
 import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
 import moment from 'moment-timezone';
 import GeographicSummary from './widgets/GeographicSummary';
@@ -23,8 +24,6 @@ class MonitorAnalytics extends React.Component {
   }
 
   exportAsPNG() {
-    // The two datatables in the cdc-maps cause the export to fail
-    // remove them before the export then reload the page so that they come back
     if (window.document.documentMode) {
       alert(
         'Analytics export is not availale using the Internet Explorer web browser. Please use an alternative browser or a local image capture application instead.'
@@ -38,16 +37,16 @@ class MonitorAnalytics extends React.Component {
             var img = new Image();
             img.src = dataUrl;
             let link = document.createElement('a');
-            let jurisdiction = this.props.current_user.jurisdiction_path.join('_');
+            let email = this.props.current_user.email;
             let currentDate = moment().format('YYYY_MM_DD');
-            let imageName = `SaraAlert_${jurisdiction}_${currentDate}.png`;
+            let imageName = `SaraAlert_Analytics_${email}_${currentDate}.png`;
             link.download = imageName;
             link.href = dataUrl;
             link.click();
           }
         })
-        .catch(function(error) {
-          console.error(error);
+        .catch(error => {
+          reportError(error);
         });
     }
   }
