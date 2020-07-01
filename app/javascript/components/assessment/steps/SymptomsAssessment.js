@@ -50,8 +50,7 @@ class SymptomsAssessment extends React.Component {
         disabled={boolSymptomsSelected}
         label={
           <div>
-            {/* <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b> */}
-            <i>I am not experiencing any symptoms</i>
+            <i>{this.props.translations[this.props.lang]['no-symptoms']}</i>
           </div>
         }
         className="pb-2"
