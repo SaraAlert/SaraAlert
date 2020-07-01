@@ -33,17 +33,15 @@ class MonitorAnalytics extends React.Component {
       domtoimage
         .toPng(node)
         .then(dataUrl => {
-          if (confirm("Are you sure you'd like to download a screenshot of this page?")) {
-            var img = new Image();
-            img.src = dataUrl;
-            let link = document.createElement('a');
-            let email = this.props.current_user.email;
-            let currentDate = moment().format('YYYY_MM_DD');
-            let imageName = `SaraAlert_Analytics_${email}_${currentDate}.png`;
-            link.download = imageName;
-            link.href = dataUrl;
-            link.click();
-          }
+          let img = new Image();
+          img.src = dataUrl;
+          let link = document.createElement('a');
+          let email = this.props.current_user.email;
+          let currentDate = moment().format('YYYY_MM_DD');
+          let imageName = `SaraAlert_Analytics_${email}_${currentDate}.png`;
+          link.download = imageName;
+          link.href = dataUrl;
+          link.click();
         })
         .catch(error => {
           reportError(error);
