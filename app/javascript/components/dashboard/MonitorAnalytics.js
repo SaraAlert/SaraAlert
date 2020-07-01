@@ -30,25 +30,23 @@ class MonitorAnalytics extends React.Component {
         'Analytics export is not availale using the Internet Explorer web browser. Please use an alternative browser or a local image capture application instead.'
       );
     } else {
-      document.getElementsByClassName('data-table')[0].remove();
-      document.getElementsByClassName('data-table')[0].remove();
       var node = document.getElementById('sara-alert-body');
       domtoimage
         .toPng(node)
         .then(dataUrl => {
-          var img = new Image();
-          img.src = dataUrl;
-          let link = document.createElement('a');
-          let email = this.props.current_user.email;
-          let currentDate = moment().format('YYYY_MM_DD');
-          let imageName = `SaraAlert_Analytics_${email}_${currentDate}.png`;
-          link.download = imageName;
-          link.href = dataUrl;
-          link.click();
-          location.reload();
+          if (confirm("Are you sure you'd like to download a screenshot of this page?")) {
+            var img = new Image();
+            img.src = dataUrl;
+            let link = document.createElement('a');
+            let jurisdiction = this.props.current_user.jurisdiction_path.join('_');
+            let currentDate = moment().format('YYYY_MM_DD');
+            let imageName = `SaraAlert_${jurisdiction}_${currentDate}.png`;
+            link.download = imageName;
+            link.href = dataUrl;
+            link.click();
+          }
         })
-        .catch(error => {
-          alert('An error occured. Please refresh the page.');
+        .catch(function(error) {
           console.error(error);
         });
     }
@@ -65,9 +63,6 @@ class MonitorAnalytics extends React.Component {
               <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
             </Button>
           </Col>
-        </Row>
-        <Row className="mb-4 mx-2 px-0 pt-4">
-          <GeographicSummary stats={this.props.stats} />
         </Row>
         <Row className="mb-2 mx-0 px-0 pt-4 pb-2">
           <Col md="24" className="mx-2 px-0">
@@ -95,13 +90,13 @@ class MonitorAnalytics extends React.Component {
             {/* <span className="float-right display-6">
               View Overall
               <Switch
-                className="ml-2"
-                onChange={this.toggleBetweenActiveAndTotal}
-                onColor="#82A0E4"
-                height={18}
-                width={40}
-                uncheckedIcon={false}
-                checked={this.state.viewTotal}
+              className="ml-2"
+              onChange={this.toggleBetweenActiveAndTotal}
+              onColor="#82A0E4"
+              height={18}
+              width={40}
+              uncheckedIcon={false}
+              checked={this.state.viewTotal}
               />
             </span> */}
           </Col>
@@ -114,10 +109,13 @@ class MonitorAnalytics extends React.Component {
             <RiskFactors stats={this.props.stats} viewTotal={this.state.viewTotal} />
           </Col>
         </Row>
-        <Row className="mb-4 mx-2 px-0">
+        <Row className="mb-1 mx-2 px-0">
           <Col md="24" className="mx-0 px-0">
             <MonitoreesByDateOfExposure stats={this.props.stats} />
           </Col>
+        </Row>
+        <Row className="mb-5 pb-3 mx-2 px-0 pt-4">
+          <GeographicSummary stats={this.props.stats} />
         </Row>
       </React.Fragment>
     );
