@@ -371,12 +371,14 @@ class CountyLevelMaps extends React.Component {
     return (
       this.state.showStateTooltip && (
         <span>
-          <span data-for={`state-tooltip${this.props.id}`} data-tip="" className="clm-tooltip" style={{ paddingLeft: this.props.id === 1 ? '20px' : '5px' }}>
+          <span data-for={`state-tooltip-${this.props.id}`} data-tip="" className="clm-tooltip" style={{ paddingLeft: this.props.id === 1 ? '20px' : '5px' }}>
             <i className="fas fa-exclamation-circle" style={{ fontSize: '20px' }}></i>
           </span>
           <ReactTooltip id={`state-tooltip-${this.props.id}`} multiline={true} place="right" type="dark" effect="solid" className="clm-tooltip-container">
-            <span>Could not match {this.props.jurisdictionData.stateData['Unknown']} records to a specific state.</span>
-            <div>This most likely means Home Address State was left blank.</div>
+            <span>Could not map {this.props.jurisdictionData.stateData['Unknown']} records to a specific state</span>
+            <div>
+              This most likely means <b></b>Home Address State was left blank
+            </div>
           </ReactTooltip>
         </span>
       )
@@ -396,7 +398,7 @@ class CountyLevelMaps extends React.Component {
           </span>
           <ReactTooltip id={`county-tooltip-${this.props.id}`} multiline={true} place="right" type="dark" effect="solid" className="clm-tooltip-container">
             <span>
-              The following data could not be matched to any counties in this jurisdiction:
+              Could not map the following data to any counties in this jurisdiction:
               {countiesToShow.map((county, index) => {
                 return (
                   <li key={index}>
@@ -410,7 +412,7 @@ class CountyLevelMaps extends React.Component {
               )}
               {countiesToShow.find(x => x.countyName === 'Unknown') && (
                 <i>
-                  <b>Unknown</b> most likely means that the COUNTY field was left blank when enrolling a monitoree.
+                  <b>Unknown</b> most likely means that <b>County</b> is missing
                 </i>
               )}
             </span>
