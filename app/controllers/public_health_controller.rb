@@ -264,8 +264,8 @@ class PublicHealthController < ApplicationController
       details[:jurisdiction] = jurisdiction_names[patient[:id]] || '' if fields.include?(:jurisdiction)
       details[:latest_report] = latest_assessments[patient[:id]]&.rfc2822 || '' if fields.include?(:latest_report)
       details[:transferred_at] = latest_transfers[patient[:id]][:transferred_at]&.rfc2822 || '' if fields.include?(:transferred_at)
-      details[:transferred_from] = latest_transfers[patient[:id]][:transferred_from] || '' if fields.include?(:jurisdiction_from)
-      details[:transferred_to] = latest_transfers[patient[:id]][:transferred_to] || '' if fields.include?(:jurisdiction_to)
+      details[:transferred_from] = latest_transfers[patient[:id]][:transferred_from] || '' if fields.include?(:transferred_from)
+      details[:transferred_to] = latest_transfers[patient[:id]][:transferred_to] || '' if fields.include?(:transferred_to)
       details[:status] = statuses[patient[:id]] || '' if fields.include?(:status)
 
       linelist << details
