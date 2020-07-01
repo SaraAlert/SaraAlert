@@ -166,5 +166,12 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@public_health_dashboard.download_sara_alert_format_guidance(workflow)
     @@system_test_utils.logout
   end
+
+  def bulk_edit_case_status(user_label, patient_labels, workflow, tab, case_status, next_step, apply_to_group = false)
+    @@system_test_utils.login(user_label)
+    @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
+    @@public_health_dashboard.actions_update_case_status(workflow, case_status, next_step, apply_to_group)
+    @@system_test_utils.logout
+  end
   # rubocop:enable Metrics/ParameterLists
 end
