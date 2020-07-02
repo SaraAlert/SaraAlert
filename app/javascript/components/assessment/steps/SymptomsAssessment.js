@@ -5,8 +5,10 @@ import { PropTypes } from 'prop-types';
 class SymptomsAssessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState } };
+    this.state = { ...this.props, current: { ...this.props.currentState }, noSymptomsCheckbox: false, selectedBoolSymptomCount: 0 };
     this.handleChange = this.handleChange.bind(this);
+    this.handleNoSymptomChange = this.handleNoSymptomChange.bind(this);
+    this.updateBoolSymptomCount = this.updateBoolSymptomCount.bind(this);
     this.navigate = this.navigate.bind(this);
   }
 
@@ -18,21 +20,56 @@ class SymptomsAssessment extends React.Component {
     this.setState({ current: { ...current } }, () => {
       this.props.setAssessmentState({ ...this.state.current });
     });
+    this.updateBoolSymptomCount();
+  }
+
+  handleNoSymptomChange(event) {
+    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    this.setState({ noSymptomsCheckbox: value });
+  }
+
+  updateBoolSymptomCount() {
+    let trueBoolSymptoms = this.state.current.symptoms.filter(s => {
+      return s.type === 'BoolSymptom' && s.value;
+    });
+    this.setState({ selectedBoolSymptomCount: trueBoolSymptoms.length });
   }
 
   navigate() {
     this.props.submit();
   }
 
+  noSymptom() {
+    let noSymptomsChecked = this.state.noSymptomsCheckbox;
+    let boolSymptomsSelected = this.state.selectedBoolSymptomCount > 0 ? true : false;
+
+    return (
+      <Form.Check
+        type="checkbox"
+        checked={noSymptomsChecked}
+        disabled={boolSymptomsSelected}
+        label={
+          <div>
+            <i>{this.props.translations[this.props.lang]['no-symptoms']}</i>
+          </div>
+        }
+        className="pb-2"
+        onChange={this.handleNoSymptomChange}></Form.Check>
+    );
+  }
+
   boolSymptom = symp => {
     // null bool values will default to false
     symp.value = symp.value === true;
+    let noSymptomsChecked = this.state.noSymptomsCheckbox;
+
     return (
       <Form.Check
         type="checkbox"
         id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         checked={symp.value === true || false}
+        disabled={noSymptomsChecked}
         label={
           <div>
             <b>{this.props.translations[this.props.lang]['symptoms'][symp.name]['name']}</b>{' '}
@@ -84,6 +121,7 @@ class SymptomsAssessment extends React.Component {
                     return x.type === 'BoolSymptom';
                   })
                   .map(symp => this.boolSymptom(symp))}
+                {this.noSymptom()}
                 {this.state.current.symptoms
                   .filter(x => {
                     return x.type === 'FloatSymptom';
