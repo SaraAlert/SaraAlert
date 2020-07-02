@@ -598,7 +598,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   def select_language
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(primary_language)&.dig(:code)&.to_sym || :en
-    lang = :en unless %i[en es es-PR].include?(lang)
+    lang = :en unless %i[en es es-PR so fr].include?(lang)
     lang
   end
 
