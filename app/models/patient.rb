@@ -96,6 +96,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where(purged: false)
       .where.not(id: Patient.unscoped.isolation_requiring_review)
       .where.not(id: Patient.unscoped.exposure_under_investigation)
+      .where.not(id: Patient.unscoped.isolation_non_reporting_max)
       .left_outer_joins(:assessments)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
       .or(
@@ -105,6 +106,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
           .where(purged: false)
           .where.not(id: Patient.unscoped.isolation_requiring_review)
           .where.not(id: Patient.unscoped.exposure_under_investigation)
+          .where.not(id: Patient.unscoped.isolation_non_reporting_max)
           .left_outer_joins(:assessments)
           .where(assessments: { patient_id: nil })
       )
@@ -343,6 +345,17 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
          .where(purged: false)
          .where(isolation: true)
          .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+         .distinct
+  }
+
+  # Individuals not meeting review and are not reporting for a while (isolation workflow only)
+  scope :isolation_non_reporting_max, lambda {
+    where.not(id: Patient.unscoped.isolation_requiring_review)
+         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+         .where(monitoring: true)
+         .where(purged: false)
+         .where(isolation: true)
+         .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['isolation_non_reporting_max_days'].days.ago])
          .distinct
   }
 
