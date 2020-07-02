@@ -7,16 +7,13 @@ class PurgeJob < ApplicationJob
   def perform(*_args)
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
-    from = ENV['TWILLIO_SENDING_NUMBER']
     Patient.purge_eligible.find_each(batch_size: 5000) do |monitoree|
       next if monitoree.dependents.where.not(id: monitoree.id).where(monitoring: true).count.positive?
 
       # Delete Twilio data
       client = Twilio::REST::Client.new(account_sid, auth_token)
       messages = client.messages.list(to: Phonelib.parse(patient.primary_telephone, 'US').full_e164)
-      messages.each do |record|
-        record.delete
-      end
+      messages.each(&:delete)
 
       # Whitelist attributes to keep
       attributes = Patient.new.attributes.keys
