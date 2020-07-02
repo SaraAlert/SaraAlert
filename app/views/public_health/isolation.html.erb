@@ -1,6 +1,5 @@
 <% content_for :assets do %>
   <%= javascript_pack_tag "moment" %>
-  <%= javascript_pack_tag "reacttable" %>
 <% end %>
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Isolation Dashboard", href: nil} ] } %>
 
@@ -80,20 +79,20 @@
   assignedUsers: current_user.jurisdiction.all_assigned_users,
   workflow: 'isolation',
   allCount: @isolation_count,
-  tabs: [
-    { name: 'requiring_review', label: 'Records Requiring Review', variant: 'danger',
-      description: 'Cases who preliminarily meet the recovery definition and require review.', tooltip: 'isolation_recordsRequiringReview' },
-    { name: 'non_reporting', label: 'Non-Reporting', variant: 'warning',
-      description: 'Cases who failed to report during the last day and have not yet met recovery definition.', tooltip: 'isolation_nonReporting' },
-    { name: 'reporting', label: 'Reporting', variant: 'success',
-      description: 'Cases who have reported in the last day and have not yet met recovery definition.', tooltip: 'isolation_reporting' },
-    { name: 'closed', label: 'Closed', variant: 'secondary',
-      description: 'Cases not currently being monitored.', tooltip: 'isolation_closed' },
-    { name: 'transferred_in', label: 'Transferred In', variant: 'info',
+  tabs: {
+    requiring_review: { label: 'Records Requiring Review', variant: 'danger', tooltip: 'isolation_recordsRequiringReview',
+      description: 'Cases who preliminarily meet the recovery definition and require review.' },
+    non_reporting: { label: 'Non-Reporting', variant: 'warning', tooltip: 'isolation_nonReporting',
+      description: 'Cases who failed to report during the last day and have not yet met recovery definition.' },
+    reporting: { label: 'Reporting', variant: 'success', tooltip: 'isolation_reporting',
+      description: 'Cases who have reported in the last day and have not yet met recovery definition.' },
+    closed: { label: 'Closed', variant: 'secondary', tooltip: 'isolation_closed',
+      description: 'Cases not currently being monitored.' },
+    transferred_in: { label: 'Transferred In', variant: 'info',
       description: 'Cases that have been transferred into this jurisdiction during the last 24 hours.' },
-    { name: 'transferred_out', label: 'Transferred Out', variant: 'info',
+    transferred_out: { label: 'Transferred Out', variant: 'info',
       description: 'Cases that have been transferred out of this jurisdiction.' },
-    { name: 'all', label: 'All Cases', variant: 'primary',
+    all: { label: 'All Cases', variant: 'primary',
       description: 'All cases in this jurisdiction, in the Isolation workflow.' }
-  ]
+  }
 }) %>

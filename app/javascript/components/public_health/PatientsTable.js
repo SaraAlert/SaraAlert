@@ -1,9 +1,10 @@
 import React from 'react';
+
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import { Badge, Card, Col, Form, InputGroup, Nav, Pagination, Spinner, Table, TabContent } from 'react-bootstrap';
-// import { useTable } from 'react-table';
+import { Badge, Card, Col, Form, InputGroup, Nav, Spinner, Table, TabContent } from 'react-bootstrap';
+import Pagination from 'react-js-pagination';
 
 import InfoTooltip from '../util/InfoTooltip';
 
@@ -12,10 +13,8 @@ class PatientsTable extends React.Component {
     super(props);
     this.handleTabSelect = this.handleTabSelect.bind(this);
     this.state = {
-      tab: props.tabs[0],
-      patients: [],
-      total: 0,
-      filters: {
+      query: {
+        tab: Object.keys(props.tabs)[0],
         jurisdiction: 'all',
         scope: 'all',
         user: 'all',
@@ -25,7 +24,7 @@ class PatientsTable extends React.Component {
         order: [],
         columns: [],
       },
-      table: {
+      patients: {
         fields: [],
         linelist: [],
         total: 0,
@@ -34,21 +33,22 @@ class PatientsTable extends React.Component {
       cancelToken: axios.CancelToken.source(),
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
   }
 
   componentDidMount() {
     // load saved tab from local storage if present
-    const savedTabName = localStorage.getItem(`${this.props.workflow}Tab`);
-    if (savedTabName === null || !this.props.tabs.map(tab => tab.name).includes(savedTabName)) {
-      localStorage.setItem(`${this.props.workflow}Tab`, this.props.tabs[0].name);
-    } else {
-      this.handleTabSelect(savedTabName);
+    let tab = localStorage.getItem(`${this.props.workflow}Tab`);
+    if (tab === null || !(tab in this.props.tabs)) {
+      tab = this.state.query.tab;
+      localStorage.setItem(`${this.props.workflow}Tab`, tab);
     }
 
+    this.handleTabSelect(tab);
+
     // fetch workflow and tab counts
-    this.props.tabs
-      .map(tab => tab.name)
-      .filter(tab => tab.name !== 'all')
+    Object.keys(this.props.tabs)
+      .filter(tab => tab !== 'all')
       .forEach(tab => {
         axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
           const count = {};
@@ -58,63 +58,67 @@ class PatientsTable extends React.Component {
       });
   }
 
-  handleTabSelect(tabName) {
-    this.setState({ tab: this.props.tabs.filter(tab => tab.name === tabName)[0] }, this.fetchData);
-    localStorage.setItem(`${this.props.workflow}Tab`, tabName);
+  handleTabSelect(tab) {
+    const query = this.state.query;
+    query.tab = tab;
+    query.page = 1;
+    this.updateTable(query);
+    localStorage.setItem(`${this.props.workflow}Tab`, tab);
   }
 
   handleChange(event) {
-    const filters = this.state.filters;
+    const query = this.state.query;
     if (event.target.name === 'jurisdiction') {
-      filters.jurisdiction = event.target.value;
+      query.jurisdiction = event.target.value;
     } else if (event.target.name === 'scope') {
-      filters.scope = event.target.value;
+      query.scope = event.target.value;
     } else if (event.target.name === 'user') {
-      filters.user = event.target.value;
+      query.user = event.target.value;
     } else if (event.target.name === 'entries') {
-      filters.entries = event.target.value;
+      query.entries = parseInt(event.target.value);
     } else if (event.target.name === 'search') {
-      filters.search = event.target.value;
+      query.search = event.target.value;
     }
-    this.setState({ filters }, this.fetchData);
+    query.page = 1;
+    this.updateTable(query);
+  }
+
+  handlePageChange(page) {
+    const query = this.state.query;
+    query.page = page;
+    this.updateTable(query);
+  }
+
+  updateTable(query) {
+    // cancel any previous unfinished requests to prevent race condition inconsistencies
+    this.state.cancelToken.cancel();
+
+    // generate new cancel token for this request
+    const cancelToken = axios.CancelToken.source();
+
+    this.setState({ query, cancelToken, loading: true }, () => {
+      axios
+        .get('/public_health/patients', {
+          params: { workflow: this.props.workflow, ...query },
+          cancelToken: this.state.cancelToken.token,
+        })
+        .catch(error => {
+          if (!axios.isCancel(error)) {
+            this.setState({ patients: { fields: [], linelist: [], total: 0 }, loading: false });
+          }
+        })
+        .then(response => {
+          if (response && response.data) {
+            this.setState({ patients: response.data, loading: false });
+          }
+        });
+    });
   }
 
   handleKeyPress(event) {
     if (event.which === 13) {
       event.preventDefault();
     }
-  }
-
-  fetchData() {
-    // cancel any previous unfinished requests to prevent race condition inconsistencies
-    this.state.cancelToken.cancel();
-
-    // reset page to 1, but keep all the other filters
-    const filters = { ...this.state.filters, page: 1 };
-    this.setState(
-      {
-        filters: filters,
-        loading: true,
-        cancelToken: axios.CancelToken.source(),
-      },
-      () => {
-        axios
-          .get('/public_health/patients', {
-            params: { workflow: this.props.workflow, tab: this.state.tab.name, ...this.state.filters },
-            cancelToken: this.state.cancelToken.token,
-          })
-          .catch(error => {
-            if (!axios.isCancel(error)) {
-              this.setState({ table: { fields: [], linelist: [], total: 0 }, loading: false });
-            }
-          })
-          .then(response => {
-            if ('data' in response) {
-              this.setState({ table: response.data, loading: false });
-            }
-          });
-      }
-    );
   }
 
   formatTimestamp(timestamp) {
@@ -125,14 +129,14 @@ class PatientsTable extends React.Component {
   render() {
     return (
       <div className="mx-2 pb-4">
-        <Nav variant="tabs" activeKey={this.state.tab.name}>
-          {this.props.tabs.map(tab => {
+        <Nav variant="tabs" activeKey={this.state.query.tab}>
+          {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (
-              <Nav.Item key={tab.name} className={tab.name === 'all' ? 'ml-auto' : ''}>
-                <Nav.Link eventKey={tab.name} onSelect={this.handleTabSelect}>
-                  {tab.label}
-                  <Badge variant={tab.variant} className="badge-larger-font ml-1">
-                    <span>{tab.name === 'all' ? this.props.allCount : `${tab.name}Count` in this.state ? this.state[`${tab.name}Count`] : ''}</span>
+              <Nav.Item key={tab} className={tab === 'all' ? 'ml-auto' : ''}>
+                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect}>
+                  {tabProps.label}
+                  <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
+                    <span>{tab === 'all' ? this.props.allCount : `${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
                   </Badge>
                 </Nav.Link>
               </Nav.Item>
@@ -143,17 +147,19 @@ class PatientsTable extends React.Component {
           <Card>
             <Card.Body className="pl-4 pr-4">
               <div className="lead mt-1 mb-3">
-                {this.state.tab.description} You are currently in the <u>{this.props.workflow}</u> workflow.
-                {this.state.tab.tooltip && <InfoTooltip tooltipTextKey={this.state.tab.tooltip} location="right"></InfoTooltip>}
+                {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u> workflow.
+                {this.props.tabs[this.state.query.tab].tooltip && (
+                  <InfoTooltip tooltipTextKey={this.props.tabs[this.state.query.tab].tooltip} location="right"></InfoTooltip>
+                )}
               </div>
               <Form className="my-1">
                 <Form.Row className="align-items-center">
-                  <Col lg={16} md={14} sm={18} className="mb-1">
+                  <Col lg={16} md={14} sm={18} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
                         <InputGroup.Text>Jurisdiction</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control as="select" size="sm" name="jurisdiction" value={this.state.filters.jurisdiction} onChange={this.handleChange}>
+                      <Form.Control as="select" size="sm" name="jurisdiction" value={this.state.query.jurisdiction} onChange={this.handleChange}>
                         {Object.keys(this.props.assignedJurisdictions).map(jur_id => {
                           return (
                             <option key={jur_id} value={jur_id}>
@@ -164,20 +170,20 @@ class PatientsTable extends React.Component {
                       </Form.Control>
                     </InputGroup>
                   </Col>
-                  <Col lg={3} md={4} sm={6} className="mb-1">
+                  <Col lg={3} md={4} sm={6} className="my-1">
                     <InputGroup size="sm">
-                      <Form.Control as="select" size="sm" name="scope" value={this.state.filters.scope} onChange={this.handleChange}>
+                      <Form.Control as="select" size="sm" name="scope" value={this.state.query.scope} onChange={this.handleChange}>
                         <option value="all">All</option>
                         <option value="exact">Exact Match</option>
                       </Form.Control>
                     </InputGroup>
                   </Col>
-                  <Col lg={5} md={6} className="mb-1">
+                  <Col lg={5} md={6} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
                         <InputGroup.Text>Assigned User</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control as="select" size="sm" name="user" value={this.state.filters.user} onChange={this.handleChange}>
+                      <Form.Control as="select" size="sm" name="user" value={this.state.query.user} onChange={this.handleChange}>
                         <option value="all">All</option>
                         <option value="none">None</option>
                         {this.props.assignedUsers.map(user => {
@@ -190,12 +196,12 @@ class PatientsTable extends React.Component {
                       </Form.Control>
                     </InputGroup>
                   </Col>
-                  <Col lg={5} md={6} className="mb-1">
+                  <Col lg={5} md={6} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
                         <InputGroup.Text>Show</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control as="select" size="sm" name="entries" value={this.state.filters.entries} onChange={this.handleChange}>
+                      <Form.Control as="select" size="sm" name="entries" value={this.state.query.entries} onChange={this.handleChange}>
                         {[10, 15, 25, 50, 100].map(num => {
                           return (
                             <option key={num} value={num}>
@@ -209,7 +215,7 @@ class PatientsTable extends React.Component {
                       </InputGroup.Append>
                     </InputGroup>
                   </Col>
-                  <Col lg={19} md={18} className="mb-1">
+                  <Col lg={19} md={18} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
                         <InputGroup.Text>Search</InputGroup.Text>
@@ -218,7 +224,7 @@ class PatientsTable extends React.Component {
                         autoComplete="off"
                         size="sm"
                         name="search"
-                        value={this.state.filters.search}
+                        value={this.state.query.search}
                         onChange={this.handleChange}
                         onKeyPress={this.handleKeyPress}
                       />
@@ -234,39 +240,39 @@ class PatientsTable extends React.Component {
               <Table striped bordered hover size="sm" className="mb-2">
                 <thead>
                   <tr>
-                    {this.state.table.fields.includes('name') && <th>Monitoree</th>}
-                    {this.state.table.fields.includes('jurisdiction') && <th>Jurisdiction</th>}
-                    {this.state.table.fields.includes('transferred_from') && <th>From Jurisdiction</th>}
-                    {this.state.table.fields.includes('transferred_to') && <th>To Jurisdiction</th>}
-                    {this.state.table.fields.includes('assigned_user') && <th>Assigned User</th>}
-                    {this.state.table.fields.includes('state_local_id') && <th>State/Local ID</th>}
-                    {this.state.table.fields.includes('sex') && <th>Sex</th>}
-                    {this.state.table.fields.includes('dob') && <th>Date of Birth</th>}
-                    {this.state.table.fields.includes('end_of_monitoring') && <th>End of Monitoring</th>}
-                    {this.state.table.fields.includes('risk_level') && <th>Risk Level</th>}
-                    {this.state.table.fields.includes('monitoring_plan') && <th>Monitoring Plan</th>}
-                    {this.state.table.fields.includes('public_health_action') && <th>Latest Public Health Action</th>}
-                    {this.state.table.fields.includes('expected_purge_date') && (
+                    {this.state.patients.fields.includes('name') && <th>Monitoree</th>}
+                    {this.state.patients.fields.includes('jurisdiction') && <th>Jurisdiction</th>}
+                    {this.state.patients.fields.includes('transferred_from') && <th>From Jurisdiction</th>}
+                    {this.state.patients.fields.includes('transferred_to') && <th>To Jurisdiction</th>}
+                    {this.state.patients.fields.includes('assigned_user') && <th>Assigned User</th>}
+                    {this.state.patients.fields.includes('state_local_id') && <th>State/Local ID</th>}
+                    {this.state.patients.fields.includes('sex') && <th>Sex</th>}
+                    {this.state.patients.fields.includes('dob') && <th>Date of Birth</th>}
+                    {this.state.patients.fields.includes('end_of_monitoring') && <th>End of Monitoring</th>}
+                    {this.state.patients.fields.includes('risk_level') && <th>Risk Level</th>}
+                    {this.state.patients.fields.includes('monitoring_plan') && <th>Monitoring Plan</th>}
+                    {this.state.patients.fields.includes('public_health_action') && <th>Latest Public Health Action</th>}
+                    {this.state.patients.fields.includes('expected_purge_date') && (
                       <th>
                         Eligible For Purge After <InfoTooltip tooltipTextKey="purgeDate" location="right"></InfoTooltip>
                       </th>
                     )}
-                    {this.state.table.fields.includes('reason_for_closure') && <th>Reason for Closure</th>}
-                    {this.state.table.fields.includes('closed_at') && <th>Closed At</th>}
-                    {this.state.table.fields.includes('transferred_at') && <th>Transferred At</th>}
-                    {this.state.table.fields.includes('latest_report') && <th>Latest Report</th>}
-                    {this.state.table.fields.includes('status') && <th>Status</th>}
+                    {this.state.patients.fields.includes('reason_for_closure') && <th>Reason for Closure</th>}
+                    {this.state.patients.fields.includes('closed_at') && <th>Closed At</th>}
+                    {this.state.patients.fields.includes('transferred_at') && <th>Transferred At</th>}
+                    {this.state.patients.fields.includes('latest_report') && <th>Latest Report</th>}
+                    {this.state.patients.fields.includes('status') && <th>Status</th>}
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.table.linelist.length === 0 && this.state.table.fields.length > 0 && (
+                  {this.state.patients.linelist.length === 0 && this.state.patients.fields.length > 0 && (
                     <tr className="odd">
-                      <td colSpan={this.state.table.fields.length} className="text-center">
+                      <td colSpan={this.state.patients.fields.length} className="text-center">
                         No data available in table
                       </td>
                     </tr>
                   )}
-                  {this.state.table.linelist.map(patient => {
+                  {this.state.patients.linelist.map(patient => {
                     return (
                       <tr key={patient.id}>
                         {'name' in patient && (
@@ -299,11 +305,23 @@ class PatientsTable extends React.Component {
               <div className="d-flex">
                 <div className="d-block mr-auto py-1" style={{ height: '38px' }}>
                   <span className="align-middle">
-                    {`Displaying ${this.state.table.linelist.length} out of ${this.state.table.total} `}
+                    {`Displaying ${this.state.patients.linelist.length} out of ${this.state.patients.total} `}
                     {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'}
                   </span>
                 </div>
-                <Pagination className="mb-0">
+
+                <Pagination
+                  totalItemsCount={this.state.patients.total}
+                  onChange={this.handlePageChange}
+                  activePage={this.state.query.page}
+                  itemsCountPerPage={this.state.query.entries}
+                  pageRangeDisplayed={5}
+                  prevPageText="Previous"
+                  nextPageText="Next"
+                  className="mb-0"
+                />
+
+                {/* <Pagination className="mb-0">
                   <Pagination.Item>Previous</Pagination.Item>
                   <Pagination.Item>1</Pagination.Item>
                   <Pagination.Ellipsis />
@@ -311,9 +329,9 @@ class PatientsTable extends React.Component {
                   <Pagination.Item>b</Pagination.Item>
                   <Pagination.Item>c</Pagination.Item>
                   <Pagination.Ellipsis />
-                  <Pagination.Item>{Math.floor(this.state.table.total / this.state.filters.entries)}</Pagination.Item>
+                  <Pagination.Item>{Math.floor(this.state.patients.total / this.state.query.entries)}</Pagination.Item>
                   <Pagination.Next>Next</Pagination.Next>
-                </Pagination>
+                </Pagination> */}
               </div>
             </Card.Body>
           </Card>
@@ -328,7 +346,7 @@ PatientsTable.propTypes = {
   assignedUsers: PropTypes.array,
   workflow: PropTypes.oneOf(['exposure', 'isolation']),
   allCount: PropTypes.number,
-  tabs: PropTypes.array,
+  tabs: PropTypes.object,
 };
 
 export default PatientsTable;

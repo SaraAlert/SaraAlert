@@ -1,6 +1,5 @@
 <% content_for :assets do %>
   <%= javascript_pack_tag "moment" %>
-  <%= javascript_pack_tag "reacttable" %>
 <% end %>
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Exposure Dashboard", href: nil} ] } %>
 
@@ -80,22 +79,22 @@
   assignedUsers: current_user.jurisdiction.all_assigned_users,
   workflow: 'exposure',
   allCount: @exposure_count,
-  tabs: [
-    { name: 'symptomatic', label: 'Symptomatic', variant: 'danger',
-      description: 'Monitorees who have reported symptoms, which need to be reviewed.', tooltip: 'exposure_symptomatic' },
-    { name: 'non_reporting', label: 'Non-Reporting', variant: 'warning',
-      description: 'Monitorees who have failed to report in the last day, and are not symptomatic.', tooltip: 'exposure_nonReporting' },
-    { name: 'asymptomatic', label: 'Asymptomatic', variant: 'success',
-      description: 'Monitorees currently reporting no symptoms, who have reported during the last day.', tooltip: 'exposure_asymptomatic' },
-    { name: 'pui', label: 'PUI', variant: 'dark',
-      description: 'Monitorees who are currently under investigation.', tooltip: 'exposure_under_investigation' },
-    { name: 'closed', label: 'Closed', variant: 'secondary',
-      description: 'Monitorees not currently being monitored.', tooltip: 'exposure_closed' },
-    { name: 'transferred_in', label: 'Transferred In', variant: 'info',
+  tabs: {
+    symptomatic: { label: 'Symptomatic', variant: 'danger', tooltip: 'exposure_symptomatic',
+      description: 'Monitorees who have reported symptoms, which need to be reviewed.' },
+    non_reporting: { label: 'Non-Reporting', variant: 'warning', tooltip: 'exposure_nonReporting',
+      description: 'Monitorees who have failed to report in the last day, and are not symptomatic.' },
+    asymptomatic: { label: 'Asymptomatic', variant: 'success', tooltip: 'exposure_asymptomatic',
+      description: 'Monitorees currently reporting no symptoms, who have reported during the last day.' },
+    pui: { label: 'PUI', variant: 'dark', tooltip: 'exposure_under_investigation',
+      description: 'Monitorees who are currently under investigation.' },
+    closed: { label: 'Closed', variant: 'secondary', tooltip: 'exposure_closed',
+      description: 'Monitorees not currently being monitored.' },
+    transferred_in: { label: 'Transferred In', variant: 'info',
       description: 'Monitorees that have been transferred into this jurisdiction during the last 24 hours.' },
-    { name: 'transferred_out', label: 'Transferred Out', variant: 'info',
+    transferred_out: { label: 'Transferred Out', variant: 'info',
       description: 'Monitorees that have been transferred out of this jurisdiction.' },
-    { name: 'all', label: 'All Monitorees', variant: 'primary',
+    all: { label: 'All Monitorees', variant: 'primary',
       description: 'All Monitorees in this jurisdiction, in the Exposure workflow.' }
-  ]
+  }
 }) %>
