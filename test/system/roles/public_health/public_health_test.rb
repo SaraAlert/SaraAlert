@@ -245,11 +245,16 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'bulk edit from exposure to isolation' do
-    @@public_health_test_helper.bulk_edit_case_status('state1_epi', ['patient_1', 'patient_2'], :exposure, 'non-reporting', 'Confirmed', 'Continue Monitoring in Isolation Workflow')
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi',
+                                                      %w[patient_1 patient_2],
+                                                      :exposure,
+                                                      'non-reporting',
+                                                      'Confirmed',
+                                                      'Continue Monitoring in Isolation Workflow')
   end
 
   test 'bulk edit from isolation to exposure' do
-    @@public_health_test_helper.bulk_edit_case_status('state1_epi', ['patient_45', 'patient_47'], :isolation, 'non-reporting', 'Unknown', false)
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_45 patient_47], :isolation, 'non-reporting', 'Unknown', false)
   end
 
   # test 'bulk edit from exposure to isolation with household' do
