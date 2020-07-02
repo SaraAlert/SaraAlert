@@ -82,7 +82,7 @@ so:
         daily2-s: ' Qofkani ma '
         daily3: 'wax ka mid ah astaamaha soo socda: '
         daily4: ' Ku jawaab "Haa" ama "Maya"'
-        try-again: "Waan ka xumahay, maan fahmin. Ku jawaab "Haa" ama "Maya""
+        try-again: "Waan ka xumahay, maan fahmin. Ku jawaab \"Haa\" ama \"Maya\""
         thanks: 'Waad ku mahadsan tahay dhammaystirka warbixin maalmeedkaaga!'
       weblink:
         intro1: 'Tani waa warbixinta maalinlaha ah ee Sara Alert ee loogu talagalay'

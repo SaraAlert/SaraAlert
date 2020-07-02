@@ -70,8 +70,8 @@ fr:
         subject: 'Rapport d’Alerte Sara complété'
         header: 'Rapport d’Alerte Sara complété'
         dear: 'Cher/Chère'
-        thank-you: 'Votre surveillance d’Alerte Sara est maintenant terminée ! Merci pour votre participation.'
-        footer: 'Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales.'
+        thank-you: "Votre surveillance d’Alerte Sara est maintenant terminée ! Merci pour votre participation."
+        footer: "Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales."
     sms:
       prompt:
         intro1: 'Bienvenue sur le système d’Alerte Sara, nous vous enverrons vos rapports quotidiens pour'
@@ -82,15 +82,15 @@ fr:
         daily2-s: ' Cette personne est-elle '
         daily3: ' y en a-t-il qui présentent un des symptômes suivants: '
         daily4: ' Veuillez répondre par "Oui" ou par "Non"'
-        try-again: "Je suis désolé, je n'ai pas compris. Veuillez répondre par "Oui" ou par "Non""
-        thanks: 'Merci d'avoir rempli votre rapport quotidien!'
+        try-again: "Je suis désolé, je n'ai pas compris. Veuillez répondre par \"Oui\" ou par \"Non\""
+        thanks: "Merci d'avoir rempli votre rapport quotidien!"
       weblink:
         intro1: 'Ceci est un système d’Alerte Sara, veuillez compléter le rapport pour'
         intro2: 'à'
     phone:
       intro: "Bonjour, voici Sara, l'assistante de santé publique automatisée qui demande votre rapport quotidien."
       try-again: "Je suis désolé, je n'ai pas compris. Essayons encore."
-      thanks: 'Merci d'avoir rempli votre rapport quotidien! Au revoir.'
+      thanks: "Merci d'avoir rempli votre rapport quotidien! Au revoir."
       age: 'âge'
       daily1: ' Il s’agit d’un rapport d’alerte Sara quotidien destiné aux: '
       daily2-p: ' Parmi ces personnes '
