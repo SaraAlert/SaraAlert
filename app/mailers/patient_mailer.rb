@@ -145,7 +145,9 @@ class PatientMailer < ApplicationMailer
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
     params = { prompt: contents, patient_submission_token: patient.submission_token,
-               threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase }
+               threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
+               try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
+               thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
     client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
       from: from,
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
@@ -185,7 +187,10 @@ class PatientMailer < ApplicationMailer
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
     params = { prompt: contents, patient_submission_token: patient.submission_token,
-               threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.split('-').first.upcase }
+               threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.split('-').first.upcase,
+               intro: I18n.t('assessments.phone.intro', locale: lang),
+               try_again: I18n.t('assessments.phone.try-again', locale: lang),
+               thanks: I18n.t('assessments.phone.thanks', locale: lang) }
     client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
       from: from,
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,

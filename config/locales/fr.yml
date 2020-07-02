@@ -82,11 +82,16 @@ fr:
         daily2-s: ' Cette personne est-elle '
         daily3: ' y en a-t-il qui présentent un des symptômes suivants: '
         daily4: ' Veuillez répondre par "Oui" ou par "Non"'
+        try-again: "Je suis désolé, je n'ai pas compris. Veuillez répondre par "Oui" ou par "Non""
+        thanks: 'Merci d'avoir rempli votre rapport quotidien!'
       weblink:
         intro1: 'Ceci est un système d’Alerte Sara, veuillez compléter le rapport pour'
         intro2: 'à'
     phone:
-      age: ''
+      intro: "Bonjour, voici Sara, l'assistante de santé publique automatisée qui demande votre rapport quotidien."
+      try-again: "Je suis désolé, je n'ai pas compris. Essayons encore."
+      thanks: 'Merci d'avoir rempli votre rapport quotidien! Au revoir.'
+      age: 'âge'
       daily1: ' Il s’agit d’un rapport d’alerte Sara quotidien destiné aux: '
       daily2-p: ' Parmi ces personnes '
       daily2-s: ' Cette personne est-elle '
