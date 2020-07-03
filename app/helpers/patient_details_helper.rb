@@ -70,6 +70,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def get_exposure_statuses(patients)
+    patients = Patient.where(id: patients.pluck(:id))
     statuses = {
       closed: patients.monitoring_closed.pluck(:id),
       purged: patients.purged.pluck(:id),
@@ -88,6 +89,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def get_isolation_statuses(patients)
+    patients = Patient.where(id: patients.pluck(:id))
     statuses = {
       closed: patients.monitoring_closed.pluck(:id),
       purged: patients.purged.pluck(:id),

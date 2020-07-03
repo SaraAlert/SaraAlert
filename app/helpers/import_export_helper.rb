@@ -206,6 +206,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     report: { label: 'Lab Report Date', checks: [:date] }
   }.freeze
 <<<<<<< HEAD
+<<<<<<< HEAD
 
   def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|
@@ -570,6 +571,4 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     end
     comprehensive_details
   end
-=======
->>>>>>> optimize patients linelist endpoint and refactor import export helper
 end

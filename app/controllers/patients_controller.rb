@@ -71,22 +71,6 @@ class PatientsController < ApplicationController
     @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
-  # Get group number suggestions
-  def assigned_users
-    render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient?
-
-    jurisdiction_id = params.require(:jurisdiction_id).to_i
-
-    render status: 400 unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
-
-    scope = params.permit(:scope)[:scope].to_sym
-    render status: 400 unless %i[all immediate].include?(scope)
-
-    assigned_users = scope == :all ? Jurisdiction.find(jurisdiction_id).all_assigned_users : Jurisdiction.find(jurisdiction_id).assigned_users
-
-    render json: { assignedUsers: assigned_users }
-  end
-
   # This follows 'new', this will receive the subject details and save a new subject
   # to the database.
   def create

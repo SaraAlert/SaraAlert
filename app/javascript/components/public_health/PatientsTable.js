@@ -13,6 +13,8 @@ class PatientsTable extends React.Component {
     super(props);
     this.handleTabSelect = this.handleTabSelect.bind(this);
     this.state = {
+      jurisdictionPaths: {},
+      assignedUsers: [],
       query: {
         tab: Object.keys(props.tabs)[0],
         jurisdiction: 'all',
@@ -32,6 +34,7 @@ class PatientsTable extends React.Component {
       loading: false,
       cancelToken: axios.CancelToken.source(),
     };
+    this.state.jurisdictionPaths[this.props.jurisdiction.id] = this.props.jurisdiction.path;
     this.handleChange = this.handleChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
   }
@@ -47,15 +50,19 @@ class PatientsTable extends React.Component {
     this.handleTabSelect(tab);
 
     // fetch workflow and tab counts
-    Object.keys(this.props.tabs)
-      .filter(tab => tab !== 'all')
-      .forEach(tab => {
-        axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
-          const count = {};
-          count[`${tab}Count`] = response.data.count;
-          this.setState(count);
-        });
+    Object.keys(this.props.tabs).forEach(tab => {
+      axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
+        const count = {};
+        count[`${tab}Count`] = response.data.count;
+        this.setState(count);
       });
+    });
+
+    // fetch list of jurisdiction paths
+    this.updateJurisdictionPaths();
+
+    // fetch list of assigned users
+    this.updateAssignedUsers(this.props.jurisdiction.id, this.state.query.scope);
   }
 
   handleTabSelect(tab) {
@@ -70,8 +77,10 @@ class PatientsTable extends React.Component {
     const query = this.state.query;
     if (event.target.name === 'jurisdiction') {
       query.jurisdiction = event.target.value;
+      this.updateAssignedUsers(event.target.value, this.state.query.scope);
     } else if (event.target.name === 'scope') {
       query.scope = event.target.value;
+      this.updateAssignedUsers(this.state.query.jurisdiction, event.target.value);
     } else if (event.target.name === 'user') {
       query.user = event.target.value;
     } else if (event.target.name === 'entries') {
@@ -115,6 +124,18 @@ class PatientsTable extends React.Component {
     });
   }
 
+  updateJurisdictionPaths() {
+    axios.get('/jurisdictions/paths').then(response => {
+      this.setState({ jurisdictionPaths: response.data.jurisdictionPaths });
+    });
+  }
+
+  updateAssignedUsers(jurisdiction_id, scope) {
+    axios.get(`/jurisdictions/${jurisdiction_id}/assigned_users/${scope}`).then(response => {
+      this.setState({ assignedUsers: response.data.assignedUsers });
+    });
+  }
+
   handleKeyPress(event) {
     if (event.which === 13) {
       event.preventDefault();
@@ -136,7 +157,7 @@ class PatientsTable extends React.Component {
                 <Nav.Link eventKey={tab} onSelect={this.handleTabSelect}>
                   {tabProps.label}
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
-                    <span>{tab === 'all' ? this.props.allCount : `${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
+                    <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
                   </Badge>
                 </Nav.Link>
               </Nav.Item>
@@ -160,10 +181,10 @@ class PatientsTable extends React.Component {
                         <InputGroup.Text>Jurisdiction</InputGroup.Text>
                       </InputGroup.Prepend>
                       <Form.Control as="select" size="sm" name="jurisdiction" value={this.state.query.jurisdiction} onChange={this.handleChange}>
-                        {Object.keys(this.props.assignedJurisdictions).map(jur_id => {
+                        {Object.keys(this.state.jurisdictionPaths).map(jur_id => {
                           return (
                             <option key={jur_id} value={jur_id}>
-                              {this.props.assignedJurisdictions[parseInt(jur_id)]}
+                              {this.state.jurisdictionPaths[parseInt(jur_id)]}
                             </option>
                           );
                         })}
@@ -186,7 +207,7 @@ class PatientsTable extends React.Component {
                       <Form.Control as="select" size="sm" name="user" value={this.state.query.user} onChange={this.handleChange}>
                         <option value="all">All</option>
                         <option value="none">None</option>
-                        {this.props.assignedUsers.map(user => {
+                        {this.state.assignedUsers.map(user => {
                           return (
                             <option key={user} value={user}>
                               {user}
@@ -342,10 +363,11 @@ class PatientsTable extends React.Component {
 }
 
 PatientsTable.propTypes = {
-  assignedJurisdictions: PropTypes.object,
-  assignedUsers: PropTypes.array,
+  jurisdiction: PropTypes.exact({
+    id: PropTypes.number,
+    path: PropTypes.string,
+  }),
   workflow: PropTypes.oneOf(['exposure', 'isolation']),
-  allCount: PropTypes.number,
   tabs: PropTypes.object,
 };
 

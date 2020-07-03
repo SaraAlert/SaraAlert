@@ -9,17 +9,11 @@ class PublicHealthController < ApplicationController
   def exposure
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    @exposure_count = current_user.viewable_patients.where(isolation: false).where(purged: false).size
-    @isolation_count = current_user.viewable_patients.where(isolation: true).where(purged: false).size
   end
 
   def isolation
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    @exposure_count = current_user.viewable_patients.where(isolation: false).where(purged: false).size
-    @isolation_count = current_user.viewable_patients.where(isolation: true).where(purged: false).size
   end
 
   def patients
@@ -66,13 +60,24 @@ class PublicHealthController < ApplicationController
     patients = search(patients, params[:search])
 
     # Sort
-    patients = sort(patients, params[:order], params[:columns])
+    sorted_patients = sort(patients, params[:order], params[:columns])
 
     # Paginate
-    paginated_patients = patients.paginate(per_page: params[:entries]&.to_i || 15, page: params[:page]&.to_i || 1)
+    paginated_patients = sorted_patients.paginate(per_page: params[:entries]&.to_i || 15, page: params[:page]&.to_i || 1)
 
     # Extract only relevant fields to be displayed by workflow and tab
-    render json: linelist(paginated_patients, workflow, tab).merge({ total: patients.size })
+    render json: linelist(paginated_patients.to_a, workflow, tab).merge({ total: patients.size })
+  end
+
+  # Get patient counts by workflow
+  def workflow_counts
+    # Restrict access to public health only
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+
+    render json: {
+      exposure: current_user.viewable_patients.where(isolation: false).where(purged: false).size,
+      isolation: current_user.viewable_patients.where(isolation: true).where(purged: false).size
+    }
   end
 
   # Get counts for patients under the given workflow and tab
@@ -210,9 +215,6 @@ class PublicHealthController < ApplicationController
     if fields.include?(:status)
       statuses = workflow == :exposure ? get_exposure_statuses(patients) : get_isolation_statuses(patients)
     end
-
-    # execute query
-    patients.to_a
 
     # only retrieve jurisdiction if necessary
     jurisdiction_names = get_jurisdiction_names(patients) if fields.include?(:jurisdiction)

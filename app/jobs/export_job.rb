@@ -55,7 +55,7 @@ class ExportJob < ApplicationJob
     UserMailer.download_email(user, export_type, download.lookup).deliver_later
   end
 
-  def self.csv_line_list(patients)
+  def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|
       csv << LINELIST_HEADERS
       patient_statuses = get_patient_statuses(patients)
@@ -69,7 +69,7 @@ class ExportJob < ApplicationJob
     Base64.encode64(package)
   end
 
-  def self.sara_alert_format(patients)
+  def sara_alert_format(patients)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
         sheet.add_row COMPREHENSIVE_HEADERS
@@ -85,7 +85,7 @@ class ExportJob < ApplicationJob
     end
   end
 
-  def self.build_excel_export_for_patients(patients)
+  def build_excel_export_for_patients(patients)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
         headers = MONITOREES_LIST_HEADERS
