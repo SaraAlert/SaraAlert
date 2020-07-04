@@ -820,7 +820,7 @@ The API supports creating new monitorees.
 
 Along with supporting the US Core extensions for race, ethnicity, and birthsex, Sara Alert includes four additional extensions for things specific to the Sara Alert workflows.
 
-Use `http://saraalert.org/StructureDefinition/preferred-contact-method` for specifying the monitorees Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, and `SMS Text-message`).
+Use `http://saraalert.org/StructureDefinition/preferred-contact-method` for specifying the monitorees Sara Alert preferred contact method (options are: `E-mailed Web Link`, `SMS Texted Weblink`, `Telephone call`, `SMS Text-message`, `Opt-out`, and `Unknown`).
 
 ```json
 {
