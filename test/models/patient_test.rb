@@ -172,8 +172,8 @@ class PatientTest < ActiveSupport::TestCase
 
     # meets definition: has at least 1 assessment and 2 negative test results
     create(:assessment, patient: patient, created_at: 50.days.ago)
-    create(:laboratory, patient: patient, result: 'negative', report: 50.days.ago)
-    create(:laboratory, patient: patient, result: 'negative', report: 50.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', specimen_collection: 50.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', specimen_collection: 50.days.ago)
     verify_patient_status_scopes(patient, :isolation_test_based)
     Assessment.destroy_all
     Laboratory.destroy_all
@@ -243,7 +243,7 @@ class PatientTest < ActiveSupport::TestCase
     patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 14.days.ago)
 
     # meets definition: asymptomatic after positive test result
-    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 15.days.ago)
     create(:assessment, patient: patient, symptomatic: false, created_at: 8.days.ago)
     verify_patient_status_scopes(patient, :isolation_asymp_non_test_based)
     Assessment.destroy_all
@@ -251,62 +251,62 @@ class PatientTest < ActiveSupport::TestCase
 
     # does not meet definition: symptomatic before positive test result but not afterwards
     create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
-    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 11.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Assessment.destroy_all
     Laboratory.destroy_all
 
     # does not meet defiition: has positive test result less than 10 days ago
-    create(:laboratory, patient: patient, result: 'positive', report: 8.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 8.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Laboratory.destroy_all
 
     # does not meet defiition: has positive test result more than 10 days ago, but also has positive test result less than 10 days ago
-    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
-    create(:laboratory, patient: patient, result: 'positive', report: 9.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 9.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Laboratory.destroy_all
 
     # does not meet defiition: has negative test result more than 10 days ago, but also has positive test result less than 10 days ago
-    create(:laboratory, patient: patient, result: 'negative', report: 11.days.ago)
-    create(:laboratory, patient: patient, result: 'positive', report: 9.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', specimen_collection: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 9.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Laboratory.destroy_all
 
     # does not meet defiition: has positive test result more than 10 days ago, but also has positive test result less than 10 days ago
-    create(:laboratory, patient: patient, result: 'positive', report: 11.days.ago)
-    create(:laboratory, patient: patient, result: 'negative', report: 9.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 11.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', specimen_collection: 9.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Laboratory.destroy_all
 
     # does not meet definition: symptomatic after positive test result
-    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 15.days.ago)
     create(:assessment, patient: patient, symptomatic: true, created_at: 8.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Assessment.destroy_all
     Laboratory.destroy_all
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
-    create(:laboratory, patient: patient, result: 'positive', report: 13.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 13.days.ago)
     create(:assessment, patient: patient, symptomatic: true, created_at: 12.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Assessment.destroy_all
     Laboratory.destroy_all
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
-    create(:laboratory, patient: patient, result: 'positive', report: 12.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 12.days.ago)
     create(:assessment, patient: patient, symptomatic: true, created_at: 6.days.ago)
     create(:assessment, patient: patient, symptomatic: false, created_at: 5.days.ago)
-    create(:laboratory, patient: patient, result: 'negative', report: 3.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', specimen_collection: 3.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Assessment.destroy_all
     Laboratory.destroy_all
 
     # does not meet definition: symptomatic after positive test result even though symptomatic more than 10 days ago
-    create(:laboratory, patient: patient, result: 'positive', report: 15.days.ago)
+    create(:laboratory, patient: patient, result: 'positive', specimen_collection: 15.days.ago)
     create(:assessment, patient: patient, symptomatic: true, created_at: 14.days.ago)
     create(:assessment, patient: patient, symptomatic: false, created_at: 13.days.ago)
-    create(:laboratory, patient: patient, result: 'negative', report: 12.days.ago)
+    create(:laboratory, patient: patient, result: 'negative', specimen_collection: 12.days.ago)
     verify_patient_status_scopes(patient, :isolation_non_reporting)
     Assessment.destroy_all
     Laboratory.destroy_all
