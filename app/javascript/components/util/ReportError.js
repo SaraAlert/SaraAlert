@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/browser';
 
 export default function reportError(error, reportToSentry = true) {
   let httpStatus = null;
-  let errorExplanationString = 'There was an problem with your request. ';
+  let errorExplanationString = 'There was a problem with your request. ';
 
   if (error === undefined) {
     return;

@@ -2,6 +2,8 @@
   "name": "sara_alert",
   "private": true,
   "dependencies": {
+    "@amcharts/amcharts4": "^4.9.23",
+    "@amcharts/amcharts4-geodata": "^4.1.15",
     "@babel/preset-react": "^7.8.3",
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@rails/actioncable": "^6.0.0",
