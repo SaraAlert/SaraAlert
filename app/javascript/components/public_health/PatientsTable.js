@@ -35,17 +35,14 @@ class PatientsTable extends React.Component {
         order: [],
         columns: [],
       },
-      patients: {
-        fields: [],
-        linelist: [],
-        total: 0,
-      },
+      selectedPatients: [],
       loading: false,
       cancelToken: axios.CancelToken.source(),
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
     this.handleChange = this.handleChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
+    this.handleSelectAllPatients = this.handleSelectAllPatients.bind(this);
   }
 
   componentDidMount() {
@@ -129,6 +126,17 @@ class PatientsTable extends React.Component {
     this.updateTable({ ...query, page: page });
   }
 
+  handleSelectAllPatients() {
+    const selectedPatients = this.state.selectedPatients;
+    this.setState({ selectedPatients: selectedPatients.fill(selectedPatients.includes(false)) });
+  }
+
+  handleSelectPatient(index) {
+    const selectedPatients = this.state.selectedPatients;
+    selectedPatients[parseInt(index)] = !selectedPatients[parseInt(index)];
+    this.setState({ selectedPatients });
+  }
+
   handleKeyPress(event) {
     if (event.which === 13) {
       event.preventDefault();
@@ -142,6 +150,11 @@ class PatientsTable extends React.Component {
     // generate new cancel token for this request
     const cancelToken = axios.CancelToken.source();
 
+    // remove jurisdiction and assigned user filters if tab is transferred out
+    if (query.tab === 'transferred_out') {
+      (query.jurisdiction = this.props.jurisdiction.id), (query.scope = 'all'), (query.assignedUser = 'all');
+    }
+
     this.setState({ query, cancelToken, loading: true }, () => {
       axios
         .get('/public_health/patients', {
@@ -154,10 +167,10 @@ class PatientsTable extends React.Component {
           }
         })
         .then(response => {
-          if (response && response.data && response.data.fields && response.data.linelist && response.data.total) {
-            this.setState({ patients: response.data, loading: false });
+          if (response && response.data) {
+            this.setState({ patients: response.data, selectedPatients: Array(response.data.linelist.length).fill(false), loading: false });
           } else {
-            this.setState({ loading: false });
+            this.setState({ selectedPatients: [], loading: false });
           }
         });
     });
@@ -208,82 +221,86 @@ class PatientsTable extends React.Component {
               </div>
               <Form className="my-1">
                 <Form.Row className="align-items-center">
-                  <Col lg={17} md={15} className="my-1">
-                    <InputGroup size="sm">
-                      <InputGroup.Prepend>
-                        <InputGroup.Text className="rounded-0">Jurisdiction</InputGroup.Text>
-                      </InputGroup.Prepend>
-                      <Form.Control
-                        type="text"
-                        autoComplete="off"
-                        name="jurisdictionPath"
-                        list="jurisdictionPaths"
-                        value={this.state.form.jurisdictionPath}
-                        onChange={this.handleChange}
-                      />
-                      <datalist id="jurisdictionPaths">
-                        {Object.entries(this.state.jurisdictionPaths).map(([id, path]) => {
-                          return (
-                            <option value={path} key={id}>
-                              {path}
-                            </option>
-                          );
-                        })}
-                      </datalist>
-                      <Button
-                        size="sm"
-                        variant={this.state.query.scope === 'all' ? 'secondary' : 'outline-secondary'}
-                        style={{ outline: 'none', boxShadow: 'none' }}
-                        onClick={() => this.handleScopeChange('all')}>
-                        All
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={this.state.query.scope === 'exact' ? 'secondary' : 'outline-secondary'}
-                        style={{ outline: 'none', boxShadow: 'none' }}
-                        onClick={() => this.handleScopeChange('exact')}>
-                        Exact
-                      </Button>
-                    </InputGroup>
-                  </Col>
-                  <Col lg={7} md={9} className="my-1">
-                    <InputGroup size="sm">
-                      <InputGroup.Prepend>
-                        <InputGroup.Text className="rounded-0">Assigned User</InputGroup.Text>
-                      </InputGroup.Prepend>
-                      <Form.Control
-                        type="text"
-                        autoComplete="off"
-                        name="assignedUser"
-                        list="assignedUsers"
-                        value={this.state.form.assignedUser}
-                        onChange={this.handleChange}
-                      />
-                      <datalist id="assignedUsers">
-                        {this.state.assignedUsers.map(num => {
-                          return (
-                            <option value={num} key={num}>
-                              {num}
-                            </option>
-                          );
-                        })}
-                      </datalist>
-                      <Button
-                        size="sm"
-                        variant={this.state.query.user === 'all' ? 'secondary' : 'outline-secondary'}
-                        style={{ outline: 'none', boxShadow: 'none' }}
-                        onClick={() => this.handleUserChange('all')}>
-                        All
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={this.state.query.user === 'none' ? 'secondary' : 'outline-secondary'}
-                        style={{ outline: 'none', boxShadow: 'none' }}
-                        onClick={() => this.handleUserChange('none')}>
-                        None
-                      </Button>
-                    </InputGroup>
-                  </Col>
+                  {this.state.query.tab !== 'transferred_out' && (
+                    <React.Fragment>
+                      <Col lg={17} md={15} className="my-1">
+                        <InputGroup size="sm">
+                          <InputGroup.Prepend>
+                            <InputGroup.Text className="rounded-0">Jurisdiction</InputGroup.Text>
+                          </InputGroup.Prepend>
+                          <Form.Control
+                            type="text"
+                            autoComplete="off"
+                            name="jurisdictionPath"
+                            list="jurisdictionPaths"
+                            value={this.state.form.jurisdictionPath}
+                            onChange={this.handleChange}
+                          />
+                          <datalist id="jurisdictionPaths">
+                            {Object.entries(this.state.jurisdictionPaths).map(([id, path]) => {
+                              return (
+                                <option value={path} key={id}>
+                                  {path}
+                                </option>
+                              );
+                            })}
+                          </datalist>
+                          <Button
+                            size="sm"
+                            variant={this.state.query.scope === 'all' ? 'primary' : 'outline-secondary'}
+                            style={{ outline: 'none', boxShadow: 'none' }}
+                            onClick={() => this.handleScopeChange('all')}>
+                            All
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={this.state.query.scope === 'exact' ? 'primary' : 'outline-secondary'}
+                            style={{ outline: 'none', boxShadow: 'none' }}
+                            onClick={() => this.handleScopeChange('exact')}>
+                            Exact
+                          </Button>
+                        </InputGroup>
+                      </Col>
+                      <Col lg={7} md={9} className="my-1">
+                        <InputGroup size="sm">
+                          <InputGroup.Prepend>
+                            <InputGroup.Text className="rounded-0">Assigned User</InputGroup.Text>
+                          </InputGroup.Prepend>
+                          <Form.Control
+                            type="text"
+                            autoComplete="off"
+                            name="assignedUser"
+                            list="assignedUsers"
+                            value={this.state.form.assignedUser}
+                            onChange={this.handleChange}
+                          />
+                          <datalist id="assignedUsers">
+                            {this.state.assignedUsers.map(num => {
+                              return (
+                                <option value={num} key={num}>
+                                  {num}
+                                </option>
+                              );
+                            })}
+                          </datalist>
+                          <Button
+                            size="sm"
+                            variant={this.state.query.user === 'all' ? 'primary' : 'outline-secondary'}
+                            style={{ outline: 'none', boxShadow: 'none' }}
+                            onClick={() => this.handleUserChange('all')}>
+                            All
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={this.state.query.user === 'none' ? 'primary' : 'outline-secondary'}
+                            style={{ outline: 'none', boxShadow: 'none' }}
+                            onClick={() => this.handleUserChange('none')}>
+                            None
+                          </Button>
+                        </InputGroup>
+                      </Col>
+                    </React.Fragment>
+                  )}
                   <Col lg={4} md={5} sm={6} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
@@ -313,15 +330,21 @@ class PatientsTable extends React.Component {
                         onChange={this.handleChange}
                         onKeyPress={this.handleKeyPress}
                       />
-                      <DropdownButton
-                        as={ButtonGroup}
-                        size="sm"
-                        variant="secondary"
-                        title="Actions"
-                        className="ml-2"
-                        style={{ outline: 'none', boxShadow: 'none' }}>
-                        <Dropdown.Item>Case Status</Dropdown.Item>
-                      </DropdownButton>
+                      {this.state.query !== 'transferred_out' && (
+                        <DropdownButton
+                          as={ButtonGroup}
+                          size="sm"
+                          variant="primary"
+                          title="Actions"
+                          className="ml-2"
+                          disabled={!this.state.selectedPatients.includes(true)}>
+                          <Dropdown.Item>Update Assigned User</Dropdown.Item>
+                          <Dropdown.Item>Update Case Status</Dropdown.Item>
+                          <Dropdown.Item>Update Monitoring Plan</Dropdown.Item>
+                          <Dropdown.Item>Pause/Resume Notifications</Dropdown.Item>
+                          <Dropdown.Item>Close Records</Dropdown.Item>
+                        </DropdownButton>
+                      )}
                     </InputGroup>
                   </Col>
                 </Form.Row>
@@ -331,89 +354,117 @@ class PatientsTable extends React.Component {
                   <Spinner variant="secondary" animation="border" size="lg" />
                 </div>
               )}
-              <Table striped bordered hover size="sm" className="mb-2">
-                <thead>
-                  <tr>
-                    {this.state.patients.fields.includes('name') && <th>Monitoree</th>}
-                    {this.state.patients.fields.includes('jurisdiction') && <th>Jurisdiction</th>}
-                    {this.state.patients.fields.includes('transferred_from') && <th>From Jurisdiction</th>}
-                    {this.state.patients.fields.includes('transferred_to') && <th>To Jurisdiction</th>}
-                    {this.state.patients.fields.includes('assigned_user') && <th>Assigned User</th>}
-                    {this.state.patients.fields.includes('state_local_id') && <th>State/Local ID</th>}
-                    {this.state.patients.fields.includes('sex') && <th>Sex</th>}
-                    {this.state.patients.fields.includes('dob') && <th>Date of Birth</th>}
-                    {this.state.patients.fields.includes('end_of_monitoring') && <th>End of Monitoring</th>}
-                    {this.state.patients.fields.includes('risk_level') && <th>Risk Level</th>}
-                    {this.state.patients.fields.includes('monitoring_plan') && <th>Monitoring Plan</th>}
-                    {this.state.patients.fields.includes('public_health_action') && <th>Latest Public Health Action</th>}
-                    {this.state.patients.fields.includes('expected_purge_date') && (
-                      <th>
-                        Eligible For Purge After <InfoTooltip tooltipTextKey="purgeDate" location="right"></InfoTooltip>
-                      </th>
-                    )}
-                    {this.state.patients.fields.includes('reason_for_closure') && <th>Reason for Closure</th>}
-                    {this.state.patients.fields.includes('closed_at') && <th>Closed At</th>}
-                    {this.state.patients.fields.includes('transferred_at') && <th>Transferred At</th>}
-                    {this.state.patients.fields.includes('latest_report') && <th>Latest Report</th>}
-                    {this.state.patients.fields.includes('status') && <th>Status</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.patients.linelist.length === 0 && this.state.patients.fields.length > 0 && (
-                    <tr className="odd">
-                      <td colSpan={this.state.patients.fields.length} className="text-center">
-                        No data available in table
-                      </td>
-                    </tr>
-                  )}
-                  {this.state.patients.linelist.map(patient => {
-                    return (
-                      <tr key={patient.id}>
-                        {'name' in patient && (
-                          <td>
-                            <a href={`/patients/${patient.id}`}>{patient.name}</a>
-                          </td>
+              {this.state.patients && (
+                <React.Fragment>
+                  <Table striped bordered hover size="sm" className="mb-2">
+                    <thead>
+                      <tr>
+                        {this.state.patients.fields.includes('name') && <th>Monitoree</th>}
+                        {this.state.patients.fields.includes('jurisdiction') && <th>Jurisdiction</th>}
+                        {this.state.patients.fields.includes('transferred_from') && <th>From Jurisdiction</th>}
+                        {this.state.patients.fields.includes('transferred_to') && <th>To Jurisdiction</th>}
+                        {this.state.patients.fields.includes('assigned_user') && <th>Assigned User</th>}
+                        {this.state.patients.fields.includes('state_local_id') && <th>State/Local ID</th>}
+                        {this.state.patients.fields.includes('sex') && <th>Sex</th>}
+                        {this.state.patients.fields.includes('dob') && <th>Date of Birth</th>}
+                        {this.state.patients.fields.includes('end_of_monitoring') && <th>End of Monitoring</th>}
+                        {this.state.patients.fields.includes('risk_level') && <th>Risk Level</th>}
+                        {this.state.patients.fields.includes('monitoring_plan') && <th>Monitoring Plan</th>}
+                        {this.state.patients.fields.includes('public_health_action') && <th>Latest Public Health Action</th>}
+                        {this.state.patients.fields.includes('expected_purge_date') && (
+                          <th>
+                            Eligible For Purge After <InfoTooltip tooltipTextKey="purgeDate" location="right"></InfoTooltip>
+                          </th>
                         )}
-                        {'jurisdiction' in patient && <td>{patient.jurisdiction}</td>}
-                        {'transferred_from' in patient && <td>{patient.transferred_from}</td>}
-                        {'transferred_to' in patient && <td>{patient.transferred_to}</td>}
-                        {'assigned_user' in patient && <td>{patient.assigned_user}</td>}
-                        {'state_local_id' in patient && <td>{patient.state_local_id}</td>}
-                        {'sex' in patient && <td>{patient.sex}</td>}
-                        {'dob' in patient && <td>{patient.dob}</td>}
-                        {'end_of_monitoring' in patient && <td>{patient.end_of_monitoring}</td>}
-                        {'risk_level' in patient && <td>{patient.risk_level}</td>}
-                        {'monitoring_plan' in patient && <td>{patient.monitoring_plan}</td>}
-                        {'public_health_action' in patient && <td>{patient.public_health_action}</td>}
-                        {'expected_purge_date' in patient && <td>{this.formatTimestamp(patient.expected_purge_date)}</td>}
-                        {'reason_for_closure' in patient && <td>{patient.reason_for_closure}</td>}
-                        {'closed_at' in patient && <td>{this.formatTimestamp(patient.closed_at)}</td>}
-                        {'transferred_at' in patient && <td>{this.formatTimestamp(patient.transferred_at)}</td>}
-                        {'latest_report' in patient && <td>{this.formatTimestamp(patient.latest_report)}</td>}
-                        {'status' in patient && <td>{patient.status}</td>}
+                        {this.state.patients.fields.includes('reason_for_closure') && <th>Reason for Closure</th>}
+                        {this.state.patients.fields.includes('closed_at') && <th>Closed At</th>}
+                        {this.state.patients.fields.includes('transferred_at') && <th>Transferred At</th>}
+                        {this.state.patients.fields.includes('latest_report') && <th>Latest Report</th>}
+                        {this.state.patients.fields.includes('status') && <th>Status</th>}
+                        {this.state.patients.fields.includes('name') && this.state.query.tab !== 'transferred_out' && (
+                          <th onClick={this.handleSelectAllPatients}>
+                            <Form.Check
+                              type="checkbox"
+                              className="text-center"
+                              checked={this.state.selectedPatients.length > 0 && !this.state.selectedPatients.includes(false)}
+                              onChange={() => {}}
+                            />
+                          </th>
+                        )}
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-              <div className="d-flex">
-                <div className="d-block mr-auto py-1" style={{ height: '38px' }}>
-                  <span className="align-middle">
-                    {`Displaying ${this.state.patients.linelist.length} out of ${this.state.patients.total} `}
-                    {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'}
-                  </span>
-                </div>
-                <Pagination
-                  totalItemsCount={this.state.patients.total}
-                  onChange={this.handlePageChange}
-                  activePage={this.state.query.page}
-                  itemsCountPerPage={this.state.query.entries}
-                  pageRangeDisplayed={5}
-                  prevPageText="Previous"
-                  nextPageText="Next"
-                  className="mb-0"
-                />
-              </div>
+                    </thead>
+                    <tbody>
+                      {this.state.patients.linelist.length === 0 && this.state.patients.fields.length > 0 && (
+                        <tr className="odd">
+                          <td colSpan={this.state.patients.fields.length + 1} className="text-center">
+                            No data available in table
+                          </td>
+                        </tr>
+                      )}
+                      {this.state.patients.linelist.map((patient, index) => {
+                        return (
+                          <tr key={patient.id}>
+                            {'name' in patient && (
+                              <td>
+                                {this.state.query.tab === 'transferred_out' ? (
+                                  <span>{patient.name}</span>
+                                ) : (
+                                  <a href={`/patients/${patient.id}`}>{patient.name}</a>
+                                )}
+                              </td>
+                            )}
+                            {'jurisdiction' in patient && <td>{patient.jurisdiction}</td>}
+                            {'transferred_from' in patient && <td>{patient.transferred_from}</td>}
+                            {'transferred_to' in patient && <td>{patient.transferred_to}</td>}
+                            {'assigned_user' in patient && <td>{patient.assigned_user}</td>}
+                            {'state_local_id' in patient && <td>{patient.state_local_id}</td>}
+                            {'sex' in patient && <td>{patient.sex}</td>}
+                            {'dob' in patient && <td>{patient.dob}</td>}
+                            {'end_of_monitoring' in patient && <td>{patient.end_of_monitoring}</td>}
+                            {'risk_level' in patient && <td>{patient.risk_level}</td>}
+                            {'monitoring_plan' in patient && <td>{patient.monitoring_plan}</td>}
+                            {'public_health_action' in patient && <td>{patient.public_health_action}</td>}
+                            {'expected_purge_date' in patient && <td>{this.formatTimestamp(patient.expected_purge_date)}</td>}
+                            {'reason_for_closure' in patient && <td>{patient.reason_for_closure}</td>}
+                            {'closed_at' in patient && <td>{this.formatTimestamp(patient.closed_at)}</td>}
+                            {'transferred_at' in patient && <td>{this.formatTimestamp(patient.transferred_at)}</td>}
+                            {'latest_report' in patient && <td>{this.formatTimestamp(patient.latest_report)}</td>}
+                            {'status' in patient && <td>{patient.status}</td>}
+                            {'id' in patient && this.state.query.tab !== 'transferred_out' && (
+                              <td onClick={() => this.handleSelectPatient(index)}>
+                                <Form.Check
+                                  type="checkbox"
+                                  className="text-center"
+                                  checked={this.state.selectedPatients[parseInt(index)]}
+                                  onChange={() => {}}
+                                />
+                              </td>
+                            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                  <div className="d-flex">
+                    <div className="d-block mr-auto py-1" style={{ height: '38px' }}>
+                      <span className="align-middle">
+                        {`Displaying ${this.state.patients.linelist.length} out of ${this.state.patients.total} `}
+                        {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'}
+                      </span>
+                    </div>
+                    <Pagination
+                      totalItemsCount={this.state.patients.total}
+                      onChange={this.handlePageChange}
+                      activePage={this.state.query.page}
+                      itemsCountPerPage={this.state.query.entries}
+                      pageRangeDisplayed={5}
+                      prevPageText="Previous"
+                      nextPageText="Next"
+                      className="mb-0"
+                    />
+                  </div>
+                </React.Fragment>
+              )}
             </Card.Body>
           </Card>
         </TabContent>
