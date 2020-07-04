@@ -82,10 +82,15 @@ es:
         daily2-s: ' ¿Está usted '
         daily3: 'sintiendo uno o mas de los siguientes síntomas hoy?: '
         daily4: ' Responda con "Sí" o "No"'
+        try-again: "Lo siento, no entendí. Responda con \"Sí\" o \"No\""
+        thanks: '¡Gracias por completar su informe diario!'
       weblink:
         intro1: 'Este es el sistema Sara Alert. Favor de completar el reporte de'
         intro2: 'en este enlace.'
     phone:
+      intro: 'Hola, soy Sara, la asistente de salud pública automatizada que solicita su informe diario.'
+      try-again: "Lo siento, no entendí. Intentemoslo de nuevo."
+      thanks: '¡Gracias por completar su informe diario! Adiós.'
       age: 'años'
       daily1: ' Este es el informe diario de Sara Alert para: '
       daily2-p: ' ¿Esta alguna de estas personas '

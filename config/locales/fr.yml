@@ -1,0 +1,99 @@
+fr:
+  assessments:
+    symptoms:
+      cough:
+        name: 'Toux'
+        notes: ''
+      difficulty-breathing:
+        name: 'Difficultés respiratoires'
+        notes: ''
+      fever:
+        name: 'Fièvre'
+        notes: 'Sensation de fébrilité ou température mesurée supérieure ou égale à 38 °C (100,4 °F)'
+      used-a-fever-reducer:
+        name: 'Utilisation d’un agent pour diminuer la fièvre'
+        notes: 'Avez-vous utilisé un médicament pour diminuer la fièvre au cours des dernières 24 heures?'
+      chills:
+        name: 'Frissons'
+        notes: ''
+      repeated-shaking-with-chills:
+        name: 'Tremblements répétés accompagnés de frissons'
+        notes: ''
+      muscle-pain:
+        name: 'Douleurs musculaires'
+        notes: ''
+      headache:
+        name: 'Maux de tête'
+        notes: ''
+      sore-throat:
+        name: 'Maux de gorge'
+        notes: ''
+      new-loss-of-taste-or-smell:
+        name: "Une nouvelle perte de goût ou de l'odorat"
+        notes: ''
+      pulse-ox:
+        name: 'd’oxymétrie de pouls'
+        notes: 'Saisissez votre mesure d’oxymétrie de pouls la plus faible au cours des dernières 24 heures'
+      no-symptoms: 'aucun symptôme'
+    threshold-op:
+      less-than: 'moins que'
+      less-than-or-equal: 'inférieur ou égal à'
+      greater-than: 'plus grand que'
+      greater-than-or-equal: 'Plus grand ou égal à'
+      equal: 'égal à'
+      not-equal: 'pas égal à'
+    web:
+      title: 'Rapport quotidien'
+      bool-title: 'Veuillez sélectionner tous les symptômes que vous présentez.'
+      submit: 'Envoyer'
+      thank-you: 'Merci d’avoir complété votre rapport quotidien !'
+      instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.'
+      instruction2: 'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please call your medical provider or local health department. Avoid close contact with other people and stay at home.'
+      instruction3: 'If you are experiencing a medical emergency, please call 911 and let them know you are being monitored by the health department.'
+    email:
+      reminder:
+        subject: 'Rappel de rapport d’Alerte Sara'
+        header: 'Rappel de rapport d’Alerte Sara'
+        dear: 'Cher/Chère'
+        thank-you: 'Merci de participer au programme de surveillance d’Alerte Sara. Veuillez remplir votre rapport quotidien en utilisant le lien ci-dessous.'
+        report: 'Rappel de rapport d’Alerte Sara'
+        footer: 'Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales.'
+      enrollment:
+        subject: 'Recrutement pour alerte Sara'
+        header: 'Bienvenue sur le système d’Alerte Sara'
+        dear: 'Cher/Chère'
+        info1: 'Vous avez été recruté(e) dans le système de surveillance d’Alerte Sara. Nous vous demandons de fournir des rapports quotidiens sur votre état. Veuillez cliquer sur le bouton ci-dessous et suivre les instructions qui s’affichent à l’écran.'
+        info2: 'Vous recevrez un rappel similaire tous les jours jusqu’à ce que votre période de surveillance soit terminée. Si vous avez des questions, veuillez contacter le professionnel de santé qui vous a recruté(e).'
+        report: 'Rapport quotidien'
+        footer: 'Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales.'
+      closed:
+        subject: 'Rapport d’Alerte Sara complété'
+        header: 'Rapport d’Alerte Sara complété'
+        dear: 'Cher/Chère'
+        thank-you: "Votre surveillance d’Alerte Sara est maintenant terminée ! Merci pour votre participation."
+        footer: "Ne répondez pas à cet e-mail, ne le transférez pas et ne partagez pas ce lien avec quiconque. Ce message a été généré automatiquement par le système d’Alerte Sara ; il est unique et n’est destiné qu’à vous. Si vous souhaitez cesser de recevoir ces notifications ou si vous pensez qu’il s’agit d’une erreur, veuillez contacter les autorités sanitaires locales."
+    sms:
+      prompt:
+        intro1: 'Bienvenue sur le système d’Alerte Sara, nous vous enverrons vos rapports quotidiens pour'
+        intro2: 'à ce numéro de téléphone.'
+        reminder: 'Ceci est un rappel du système d’Alerte Sara vous rappelant que vous devez répondre à nos messages de rapport quotidien.'
+        daily1: 'Il s’agit d’un rapport d’alerte Sara quotidien destiné aux: '
+        daily2-p: ' Parmi ces personnes '
+        daily2-s: ' Cette personne est-elle '
+        daily3: ' y en a-t-il qui présentent un des symptômes suivants: '
+        daily4: ' Veuillez répondre par "Oui" ou par "Non"'
+        try-again: "Je suis désolé, je n'ai pas compris. Veuillez répondre par \"Oui\" ou par \"Non\""
+        thanks: "Merci d'avoir rempli votre rapport quotidien!"
+      weblink:
+        intro1: 'Ceci est un système d’Alerte Sara, veuillez compléter le rapport pour'
+        intro2: 'à'
+    phone:
+      intro: "Bonjour, voici Sara, l'assistante de santé publique automatisée qui demande votre rapport quotidien."
+      try-again: "Je suis désolé, je n'ai pas compris. Essayons encore."
+      thanks: "Merci d'avoir rempli votre rapport quotidien! Au revoir."
+      age: 'âge'
+      daily1: ' Il s’agit d’un rapport d’alerte Sara quotidien destiné aux: '
+      daily2-p: ' Parmi ces personnes '
+      daily2-s: ' Cette personne est-elle '
+      daily3: ' y en a-t-il qui présentent un des symptômes suivants '
+      daily4: ' Veuillez répondre par "Oui" ou par "Non"'

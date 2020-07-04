@@ -1,0 +1,99 @@
+so:
+  assessments:
+    symptoms:
+      cough:
+        name: 'Qufac'
+        notes: ''
+      difficulty-breathing:
+        name: 'Neef-qabasho'
+        notes: ''
+      fever:
+        name: 'Qandho'
+        notes: 'Dareemida xummad ama xaraarad cabbirkeedu yahay ama ka sareysa 100.4°F/38°C'
+      used-a-fever-reducer:
+        name: 'Isticmaalay Xanuun-baa’bi’iye'
+        notes: '24-kii saac ee la soo dhaafay, ma isticmaashay wax daawo ah oo qanshada baa’bi’isa?'
+      chills:
+        name: 'Qarqaryo'
+        notes: ''
+      repeated-shaking-with-chills:
+        name: 'Gariir wata Qarqaryo oo soo noqnoqda'
+        notes: ''
+      muscle-pain:
+        name: 'Murqo-xanuun'
+        notes: ''
+      headache:
+        name: 'Madax-xanuun'
+        notes: ''
+      sore-throat:
+        name: 'Cune-xanuun'
+        notes: ''
+      new-loss-of-taste-or-smell:
+        name: 'Luminta cusub ee dhadhanka ama urta'
+        notes: ''
+      pulse-ox:
+        name: 'Aksijiinta Dhiiggaaga'
+        notes: 'Geli cabbirka aksijiinta dhiiggaaga ee ugu hooseeya ee la qaaday 24-kii saac ee la soo dhaafay'
+      no-symptoms: 'Astaamo ma laha'
+    threshold-op:
+      less-than: 'Ka yar'
+      less-than-or-equal: 'Kayar ama Sinnaansho'
+      greater-than: 'Ka Weyn'
+      greater-than-or-equal: 'Ka Weyn ama Ka siman tahay'
+      equal: 'Loo siman yahay'
+      not-equal: 'Lama sinna'
+    web:
+      title: 'Warbixinta Maalinlaha ah'
+      bool-title: 'Fadlan xulo dhammaan astaamaha aad dareemayso.'
+      submit: 'Gudbi'
+      thank-you: 'Waad ku mahadsantahay bogida warbixintaada maalinlaha ah!'
+      instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.'
+      instruction2: 'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please call your medical provider or local health department. Avoid close contact with other people and stay at home.'
+      instruction3: 'If you are experiencing a medical emergency, please call 911 and let them know you are being monitored by the health department.'
+    email:
+      reminder:
+        subject: 'Xusuusiyaha Sara Alert ee Warbixinta'
+        header: 'Kani waa nidaamka Sara Alert oo ku xusuusinayo inaad fadlan jawaab ka bixiso fariimahayaga warbixinta maalinlaha ah.'
+        dear: 'Gacaliye/Gacaliso'
+        thank-you: 'Waad ku mahadsantahay ka qeyb qaadashada barnaamijka la socoshada Sara Alert. Fadlan buuxi warbixintaada maalinlaha ah adoo adeegsanaya xiriiriyaha hoose.'
+        report: 'Warbixinta Maalinlaha ah'
+        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka.'
+      enrollment:
+        subject: 'Diiwaangelinta Sara Alert'
+        header: 'Ku soo dhowow nidaamka Sara Alert!'
+        dear: 'Gacaliye/Gacaliso'
+        info1: 'Waa lagaa diiwaangeliyay nidaamka la socoshada Sara Alert. Waxaan kaa codsanaynaa inaad bixiso warbixinnada maalinlaha ah ee xaaladaada. Si fudud u guji badhanka hoose oo raac tallaabooyinka shaashada ku yaala.'
+        info2: 'Waxaad heli doontaa xusuusin la mid ah maalin kasta ilaa muddada la socoshadaada ka dhammaato. Haddii aad qabtid wax su’aalo ah, fadlan la xiriir xirfadlaha daryeelka caafimaadka kaasoo kaa caawiyay in lagu diiwaangeliyo.'
+        report: 'Warbixinta Maalinlaha'
+        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka.'
+      closed:
+        subject: 'Warbixintu Sara Alert way dhammaystiran tahay'
+        header: 'Warbixintu Sara Alert way dhammaystiran tahay!'
+        dear: 'Gacaliye/Gacaliso'
+        thank-you: 'La socoshadaada Sara Alert hadda waa la dhammeystiray! Waad ku mahadsantahay ka qeyb qaadashadaada.'
+        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka.'
+    sms:
+      prompt:
+        intro1: 'Ku soo dhowow nidaamka Sara Alert, waxaan ku soo diri doonnaa warbixinadaada maalinlaha ah ee loogu talagalay'
+        intro2: 'lambarkan telefoon.'
+        reminder: 'Kani waa nidaamka Sara Alert oo ku xusuusinayo inaad fadlan jawaab ka bixiso fariimahayaga warbixinta maalinlaha ah.'
+        daily1: 'Tani waa warbixinta maalinlaha ah ee Sara Alert ee loogu talagalay: '
+        daily2-p: ' Miyuu mid ka mid ah dadkani '
+        daily2-s: ' Qofkani ma '
+        daily3: 'wax ka mid ah astaamaha soo socda: '
+        daily4: ' Ku jawaab "Haa" ama "Maya"'
+        try-again: "Waan ka xumahay, maan fahmin. Ku jawaab \"Haa\" ama \"Maya\""
+        thanks: 'Waad ku mahadsan tahay dhammaystirka warbixin maalmeedkaaga!'
+      weblink:
+        intro1: 'Tani waa warbixinta maalinlaha ah ee Sara Alert ee loogu talagalay'
+        intro2: 'Fadlan buuxi warbixintaada maalinlaha ah adoo adeegsanaya xiriiriyaha hoose.'
+    phone:
+      intro: 'Waa salaaman tahay Sara Alert oo ugu yeeraysa warbixintaada maalinlaha ah.'
+      try-again: "Waan ka xumahay, maan fahmin. Aan isku dayno markale."
+      thanks: 'Waad ku mahadsan tahay dhammaystirka warbixin maalmeedkaaga! Nabad galyo'
+      age: ''
+      daily1: ' Tani waa warbixinta maalinlaha ah ee Sara Alert ee loogu talagalay: '
+      daily2-p: ' Miyuu mid ka mid ah dadkani '
+      daily2-s: ' Qofkani ma '
+      daily3: ' wax ka mid ah astaamaha soo socda '
+      daily4: ' Ku jawaab "Haa" ama "Maya"'
