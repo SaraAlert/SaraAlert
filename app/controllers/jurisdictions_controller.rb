@@ -20,7 +20,7 @@ class JurisdictionsController < ApplicationController
     render status: 400 unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
 
     scope = params.permit(:scope)[:scope].to_sym
-    render status: 400 unless %i[all immediate].include?(scope)
+    render status: 400 unless %i[all exact].include?(scope)
 
     assigned_users = scope == :all ? Jurisdiction.find(jurisdiction_id).all_assigned_users : Jurisdiction.find(jurisdiction_id).assigned_users
 

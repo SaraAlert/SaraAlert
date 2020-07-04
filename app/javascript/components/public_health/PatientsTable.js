@@ -3,7 +3,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import { Badge, Card, Col, Form, InputGroup, Nav, Spinner, Table, TabContent } from 'react-bootstrap';
+import { Badge, Button, ButtonGroup, Card, Col, Dropdown, DropdownButton, Form, InputGroup, Nav, Spinner, Table, TabContent } from 'react-bootstrap';
 import Pagination from 'react-js-pagination';
 
 import InfoTooltip from '../util/InfoTooltip';
@@ -15,9 +15,18 @@ class PatientsTable extends React.Component {
     this.state = {
       jurisdictionPaths: {},
       assignedUsers: [],
+      config: {
+        options: {
+          entries: [10, 15, 25, 50, 100],
+        },
+      },
+      form: {
+        jurisdictionPath: props.jurisdiction.path,
+        assignedUser: '',
+      },
       query: {
         tab: Object.keys(props.tabs)[0],
-        jurisdiction: 'all',
+        jurisdiction: props.jurisdiction.id,
         scope: 'all',
         user: 'all',
         entries: 15,
@@ -34,7 +43,7 @@ class PatientsTable extends React.Component {
       loading: false,
       cancelToken: axios.CancelToken.source(),
     };
-    this.state.jurisdictionPaths[this.props.jurisdiction.id] = this.props.jurisdiction.path;
+    this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
     this.handleChange = this.handleChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
   }
@@ -47,6 +56,7 @@ class PatientsTable extends React.Component {
       localStorage.setItem(`${this.props.workflow}Tab`, tab);
     }
 
+    // select tab and fetch patients
     this.handleTabSelect(tab);
 
     // fetch workflow and tab counts
@@ -74,28 +84,55 @@ class PatientsTable extends React.Component {
   }
 
   handleChange(event) {
+    const form = this.state.form;
     const query = this.state.query;
-    if (event.target.name === 'jurisdiction') {
-      query.jurisdiction = event.target.value;
-      this.updateAssignedUsers(event.target.value, this.state.query.scope);
-    } else if (event.target.name === 'scope') {
-      query.scope = event.target.value;
-      this.updateAssignedUsers(this.state.query.jurisdiction, event.target.value);
-    } else if (event.target.name === 'user') {
-      query.user = event.target.value;
+    if (event.target.name === 'jurisdictionPath') {
+      this.setState({ form: { ...form, jurisdictionPath: event.target.value } });
+      const jurisdictionId = Object.keys(this.state.jurisdictionPaths).find(id => this.state.jurisdictionPaths[parseInt(id)] === event.target.value);
+      if (jurisdictionId) {
+        this.updateTable({ ...query, jurisdiction: jurisdictionId, page: 1 });
+        this.updateAssignedUsers(jurisdictionId, this.state.query.scope);
+      }
+    } else if (event.target.name === 'assignedUser') {
+      if (event.target.value === '') {
+        this.setState({ form: { ...form, assignedUser: event.target.value } });
+        this.updateTable({ ...query, user: 'all', page: 1 });
+      } else if (!isNaN(event.target.value) && parseInt(event.target.value) <= 9999) {
+        this.setState({ form: { ...form, assignedUser: event.target.value } });
+        this.updateTable({ ...query, user: event.target.value, page: 1 });
+      }
     } else if (event.target.name === 'entries') {
-      query.entries = parseInt(event.target.value);
+      this.updateTable({ ...query, entries: parseInt(event.target.value), page: 1 });
     } else if (event.target.name === 'search') {
-      query.search = event.target.value;
+      this.updateTable({ ...query, search: event.target.value, page: 1 });
     }
-    query.page = 1;
-    this.updateTable(query);
+  }
+
+  handleScopeChange(scope) {
+    if (scope !== this.state.query.scope) {
+      const query = this.state.query;
+      this.updateTable({ ...query, scope, page: 1 });
+    }
+  }
+
+  handleUserChange(user) {
+    if (user !== this.state.query.user) {
+      const form = this.state.form;
+      const query = this.state.query;
+      this.setState({ form: { ...form, assignedUser: '' } });
+      this.updateTable({ ...query, user, page: 1 });
+    }
   }
 
   handlePageChange(page) {
     const query = this.state.query;
-    query.page = page;
-    this.updateTable(query);
+    this.updateTable({ ...query, page: page });
+  }
+
+  handleKeyPress(event) {
+    if (event.which === 13) {
+      event.preventDefault();
+    }
   }
 
   updateTable(query) {
@@ -117,8 +154,10 @@ class PatientsTable extends React.Component {
           }
         })
         .then(response => {
-          if (response && response.data) {
+          if (response && response.data && response.data.fields && response.data.linelist && response.data.total) {
             this.setState({ patients: response.data, loading: false });
+          } else {
+            this.setState({ loading: false });
           }
         });
     });
@@ -134,12 +173,6 @@ class PatientsTable extends React.Component {
     axios.get(`/jurisdictions/${jurisdiction_id}/assigned_users/${scope}`).then(response => {
       this.setState({ assignedUsers: response.data.assignedUsers });
     });
-  }
-
-  handleKeyPress(event) {
-    if (event.which === 13) {
-      event.preventDefault();
-    }
   }
 
   formatTimestamp(timestamp) {
@@ -175,55 +208,89 @@ class PatientsTable extends React.Component {
               </div>
               <Form className="my-1">
                 <Form.Row className="align-items-center">
-                  <Col lg={16} md={14} sm={18} className="my-1">
+                  <Col lg={17} md={15} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
-                        <InputGroup.Text>Jurisdiction</InputGroup.Text>
+                        <InputGroup.Text className="rounded-0">Jurisdiction</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control as="select" size="sm" name="jurisdiction" value={this.state.query.jurisdiction} onChange={this.handleChange}>
-                        {Object.keys(this.state.jurisdictionPaths).map(jur_id => {
+                      <Form.Control
+                        type="text"
+                        autoComplete="off"
+                        name="jurisdictionPath"
+                        list="jurisdictionPaths"
+                        value={this.state.form.jurisdictionPath}
+                        onChange={this.handleChange}
+                      />
+                      <datalist id="jurisdictionPaths">
+                        {Object.entries(this.state.jurisdictionPaths).map(([id, path]) => {
                           return (
-                            <option key={jur_id} value={jur_id}>
-                              {this.state.jurisdictionPaths[parseInt(jur_id)]}
+                            <option value={path} key={id}>
+                              {path}
                             </option>
                           );
                         })}
-                      </Form.Control>
+                      </datalist>
+                      <Button
+                        size="sm"
+                        variant={this.state.query.scope === 'all' ? 'secondary' : 'outline-secondary'}
+                        style={{ outline: 'none', boxShadow: 'none' }}
+                        onClick={() => this.handleScopeChange('all')}>
+                        All
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={this.state.query.scope === 'exact' ? 'secondary' : 'outline-secondary'}
+                        style={{ outline: 'none', boxShadow: 'none' }}
+                        onClick={() => this.handleScopeChange('exact')}>
+                        Exact
+                      </Button>
                     </InputGroup>
                   </Col>
-                  <Col lg={3} md={4} sm={6} className="my-1">
-                    <InputGroup size="sm">
-                      <Form.Control as="select" size="sm" name="scope" value={this.state.query.scope} onChange={this.handleChange}>
-                        <option value="all">All</option>
-                        <option value="exact">Exact Match</option>
-                      </Form.Control>
-                    </InputGroup>
-                  </Col>
-                  <Col lg={5} md={6} className="my-1">
+                  <Col lg={7} md={9} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
-                        <InputGroup.Text>Assigned User</InputGroup.Text>
+                        <InputGroup.Text className="rounded-0">Assigned User</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control as="select" size="sm" name="user" value={this.state.query.user} onChange={this.handleChange}>
-                        <option value="all">All</option>
-                        <option value="none">None</option>
-                        {this.state.assignedUsers.map(user => {
+                      <Form.Control
+                        type="text"
+                        autoComplete="off"
+                        name="assignedUser"
+                        list="assignedUsers"
+                        value={this.state.form.assignedUser}
+                        onChange={this.handleChange}
+                      />
+                      <datalist id="assignedUsers">
+                        {this.state.assignedUsers.map(num => {
                           return (
-                            <option key={user} value={user}>
-                              {user}
+                            <option value={num} key={num}>
+                              {num}
                             </option>
                           );
                         })}
-                      </Form.Control>
+                      </datalist>
+                      <Button
+                        size="sm"
+                        variant={this.state.query.user === 'all' ? 'secondary' : 'outline-secondary'}
+                        style={{ outline: 'none', boxShadow: 'none' }}
+                        onClick={() => this.handleUserChange('all')}>
+                        All
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={this.state.query.user === 'none' ? 'secondary' : 'outline-secondary'}
+                        style={{ outline: 'none', boxShadow: 'none' }}
+                        onClick={() => this.handleUserChange('none')}>
+                        None
+                      </Button>
                     </InputGroup>
                   </Col>
-                  <Col lg={5} md={6} className="my-1">
+                  <Col lg={4} md={5} sm={6} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
-                        <InputGroup.Text>Show</InputGroup.Text>
+                        <InputGroup.Text className="rounded-0">Show</InputGroup.Text>
                       </InputGroup.Prepend>
                       <Form.Control as="select" size="sm" name="entries" value={this.state.query.entries} onChange={this.handleChange}>
-                        {[10, 15, 25, 50, 100].map(num => {
+                        {this.state.config.options.entries.map(num => {
                           return (
                             <option key={num} value={num}>
                               {num}
@@ -231,15 +298,12 @@ class PatientsTable extends React.Component {
                           );
                         })}
                       </Form.Control>
-                      <InputGroup.Append>
-                        <InputGroup.Text>entries</InputGroup.Text>
-                      </InputGroup.Append>
                     </InputGroup>
                   </Col>
-                  <Col lg={19} md={18} className="my-1">
+                  <Col lg={20} md={19} sm={18} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
-                        <InputGroup.Text>Search</InputGroup.Text>
+                        <InputGroup.Text className="rounded-0">Search</InputGroup.Text>
                       </InputGroup.Prepend>
                       <Form.Control
                         autoComplete="off"
@@ -249,6 +313,15 @@ class PatientsTable extends React.Component {
                         onChange={this.handleChange}
                         onKeyPress={this.handleKeyPress}
                       />
+                      <DropdownButton
+                        as={ButtonGroup}
+                        size="sm"
+                        variant="secondary"
+                        title="Actions"
+                        className="ml-2"
+                        style={{ outline: 'none', boxShadow: 'none' }}>
+                        <Dropdown.Item>Case Status</Dropdown.Item>
+                      </DropdownButton>
                     </InputGroup>
                   </Col>
                 </Form.Row>
@@ -330,7 +403,6 @@ class PatientsTable extends React.Component {
                     {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'}
                   </span>
                 </div>
-
                 <Pagination
                   totalItemsCount={this.state.patients.total}
                   onChange={this.handlePageChange}
@@ -341,18 +413,6 @@ class PatientsTable extends React.Component {
                   nextPageText="Next"
                   className="mb-0"
                 />
-
-                {/* <Pagination className="mb-0">
-                  <Pagination.Item>Previous</Pagination.Item>
-                  <Pagination.Item>1</Pagination.Item>
-                  <Pagination.Ellipsis />
-                  <Pagination.Item>a</Pagination.Item>
-                  <Pagination.Item>b</Pagination.Item>
-                  <Pagination.Item>c</Pagination.Item>
-                  <Pagination.Ellipsis />
-                  <Pagination.Item>{Math.floor(this.state.patients.total / this.state.query.entries)}</Pagination.Item>
-                  <Pagination.Next>Next</Pagination.Next>
-                </Pagination> */}
               </div>
             </Card.Body>
           </Card>
