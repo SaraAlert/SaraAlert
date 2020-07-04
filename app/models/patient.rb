@@ -63,21 +63,46 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     transfers.order(created_at: :desc).first
   end
 
-  # Patients who are eligible for reminders
-  scope :reminder_eligible, lambda {
-    where(pause_notifications: false)
+  # Patients who are eligible for reminders (exposure)
+  scope :reminder_eligible_exposure, lambda {
+    where(isolation: false)
+      .where(pause_notifications: false)
       .where(monitoring: true)
       .where(purged: false)
-      .where.not(id: Patient.unscoped.isolation_requiring_review)
       .where.not(id: Patient.unscoped.exposure_under_investigation)
+      .where('last_date_of_exposure >= ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago)
       .left_outer_joins(:assessments)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
       .or(
-        where(pause_notifications: false)
+        where(isolation: false)
+          .where(pause_notifications: false)
+          .where(monitoring: true)
+          .where(purged: false)
+          .where.not(id: Patient.unscoped.exposure_under_investigation)
+          .where('last_date_of_exposure >= ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago)
+          .left_outer_joins(:assessments)
+          .where(assessments: { patient_id: nil })
+      )
+      .distinct
+  }
+
+  # Patients who are eligible for reminders (isolation)
+  scope :reminder_eligible_isolation, lambda {
+    where(isolation: true)
+      .where(pause_notifications: false)
+      .where(monitoring: true)
+      .where(purged: false)
+      .where.not(id: Patient.unscoped.isolation_requiring_review)
+      .where.not(id: Patient.unscoped.isolation_non_reporting_max)
+      .left_outer_joins(:assessments)
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
+      .or(
+        where(isolation: true)
+          .where(pause_notifications: false)
           .where(monitoring: true)
           .where(purged: false)
           .where.not(id: Patient.unscoped.isolation_requiring_review)
-          .where.not(id: Patient.unscoped.exposure_under_investigation)
+          .where.not(id: Patient.unscoped.isolation_non_reporting_max)
           .left_outer_joins(:assessments)
           .where(assessments: { patient_id: nil })
       )
@@ -316,6 +341,17 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
          .where(purged: false)
          .where(isolation: true)
          .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+         .distinct
+  }
+
+  # Individuals not meeting review and are not reporting for a while (isolation workflow only)
+  scope :isolation_non_reporting_max, lambda {
+    where.not(id: Patient.unscoped.isolation_requiring_review)
+         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+         .where(monitoring: true)
+         .where(purged: false)
+         .where(isolation: true)
+         .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['isolation_non_reporting_max_days'].days.ago])
          .distinct
   }
 
