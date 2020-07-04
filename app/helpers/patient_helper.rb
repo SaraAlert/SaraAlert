@@ -110,7 +110,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Helper to understand an extension for preferred contact method
   def self.from_preferred_contact_method_extension(patient)
     pcm = patient&.extension&.select { |e| e.url.include?('preferred-contact-method') }&.first&.valueString
-    pcm = nil unless ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include?(pcm)
+    pcm = nil unless ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'].include?(pcm)
     pcm
   end
 

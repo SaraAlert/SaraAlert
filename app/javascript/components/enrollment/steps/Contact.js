@@ -139,6 +139,8 @@ class Contact extends React.Component {
                     <option>SMS Texted Weblink</option>
                     <option>Telephone call</option>
                     <option>SMS Text-message</option>
+                    <option>Opt-out</option>
+                    <option>Unknown</option>
                   </Form.Control>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['preferred_contact_method']}

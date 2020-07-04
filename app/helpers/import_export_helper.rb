@@ -146,7 +146,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
 
   VALID_ENUMS = {
     ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino'],
-    preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'],
+    preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
     preferred_contact_time: %w[Morning Afternoon Evening],
