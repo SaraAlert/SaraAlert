@@ -12,6 +12,7 @@ import {
   Dropdown,
   DropdownButton,
   Form,
+  FormCheck,
   InputGroup,
   Nav,
   OverlayTrigger,
@@ -218,28 +219,29 @@ class PatientsTable extends React.Component {
     return (
       <React.Fragment>
         {this.state.patients.fields.includes(field) && (
-          <th>
+          <th
+            onClick={() => {
+              if (sortable) this.handleSort(field, this.state.query.order === field && this.state.query.direction === 'asc' ? 'desc' : 'asc');
+            }}
+            className={sortable ? 'pr-3' : ''}
+            style={{ cursor: sortable ? 'pointer' : 'default' }}>
             {sortable && (
-              <React.Fragment>
-                {this.state.query.order !== field && (
-                  <a onClick={() => this.handleSort(field, 'asc')}>
-                    <i className="fas fa-sort float-right my-1 text-secondary"></i>
-                  </a>
-                )}
+              <div style={{ position: 'relative' }}>
+                <i className="fas fa-sort float-right my-1" style={{ color: '#b8b8b8', position: 'absolute', right: '-12px' }}></i>
                 {this.state.query.order === field && this.state.query.direction === 'asc' && (
-                  <a onClick={() => this.handleSort(field, 'desc')}>
-                    <i className="fas fa-sort-up float-right my-1"></i>
-                  </a>
+                  <span>
+                    <i className="fas fa-sort-up float-right my-1" style={{ position: 'absolute', right: '-12px' }}></i>
+                  </span>
                 )}
                 {this.state.query.order === field && this.state.query.direction === 'desc' && (
-                  <a onClick={() => this.handleSort('', '')}>
-                    <i className="fas fa-sort-down float-right my-1"></i>
-                  </a>
+                  <span>
+                    <i className="fas fa-sort-down float-right my-1" style={{ position: 'absolute', right: '-12px' }}></i>
+                  </span>
                 )}
-              </React.Fragment>
+              </div>
             )}
             <span>{label}</span>
-            {tooltip && <InfoTooltip tooltipTextKey={tooltip} location="right" className="ml-1"></InfoTooltip>}
+            {tooltip && <InfoTooltip tooltipTextKey={tooltip} location="right"></InfoTooltip>}
           </th>
         )}
       </React.Fragment>
@@ -383,7 +385,9 @@ class PatientsTable extends React.Component {
                   <Col lg={20} md={19} sm={18} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
-                        <InputGroup.Text className="rounded-0">Search</InputGroup.Text>
+                        <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
+                          <InputGroup.Text className="rounded-0">Search</InputGroup.Text>
+                        </OverlayTrigger>
                       </InputGroup.Prepend>
                       <Form.Control
                         autoComplete="off"
@@ -441,13 +445,14 @@ class PatientsTable extends React.Component {
                         {this.renderTableHeader('latest_report', 'Latest Report', true, null)}
                         {this.renderTableHeader('status', 'Status', false, null)}
                         {this.state.patients.fields.includes('name') && this.state.query.tab !== 'transferred_out' && (
-                          <th onClick={this.handleSelectAllPatients}>
+                          <th style={{ cursor: 'pointer' }} onClick={this.handleSelectAllPatients}>
                             <Form.Check
                               type="checkbox"
-                              className="text-center"
+                              className="text-center ml-0"
                               checked={this.state.selectedPatients.length > 0 && !this.state.selectedPatients.includes(false)}
-                              onChange={() => {}}
-                            />
+                              onChange={() => {}}>
+                              <FormCheck.Input type="checkbox" className="position-static" style={{ cursor: 'pointer' }} />
+                            </Form.Check>
                           </th>
                         )}
                       </tr>
@@ -490,13 +495,15 @@ class PatientsTable extends React.Component {
                             {'latest_report' in patient && <td>{this.formatTimestamp(patient.latest_report)}</td>}
                             {'status' in patient && <td>{patient.status}</td>}
                             {'id' in patient && this.state.query.tab !== 'transferred_out' && (
-                              <td onClick={() => this.handleSelectPatient(index)}>
+                              <td style={{ cursor: 'pointer' }} onClick={() => this.handleSelectPatient(index)}>
                                 <Form.Check
                                   type="checkbox"
-                                  className="text-center"
+                                  className="text-center ml-0"
+                                  style={{ cursor: 'pointer' }}
                                   checked={this.state.selectedPatients[parseInt(index)]}
-                                  onChange={() => {}}
-                                />
+                                  onChange={() => {}}>
+                                  <FormCheck.Input type="checkbox" className="position-static" style={{ cursor: 'pointer' }} />
+                                </Form.Check>
                               </td>
                             )}
                           </tr>

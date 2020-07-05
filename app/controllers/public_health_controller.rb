@@ -174,8 +174,6 @@ class PublicHealthController < ApplicationController
         )
       )
     )
-
-    patients
   end
 
   def sort(patients, order, direction)
