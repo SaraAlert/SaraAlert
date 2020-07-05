@@ -306,11 +306,11 @@ class PatientsController < ApplicationController
   def update_fields(patient, params)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
-    if diff_state.nil?
-      params_to_update = status_fields
-    else
-      params_to_update = status_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
-    end
+    params_to_update = if diff_state.nil?
+                         status_fields
+                       else
+                         status_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
+                       end
     if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
       patient.closed_at = DateTime.now
     end
