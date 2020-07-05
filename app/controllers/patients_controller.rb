@@ -292,7 +292,7 @@ class PatientsController < ApplicationController
     patient.update(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
                                                    :exposure_risk_assessment, :public_health_action,
                                                    :isolation, :pause_notifications, :symptom_onset,
-                                                   :case_status, :assigned_user))
+                                                   :case_status, :assigned_user, :last_date_of_exposure))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
