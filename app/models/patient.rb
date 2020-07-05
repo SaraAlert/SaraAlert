@@ -67,7 +67,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   scope :reminder_eligible_exposure, lambda {
     where(isolation: false)
       .where(pause_notifications: false)
-      .where(monitoring: true)
+      .where('patients.id = patients.responder_id')
       .where(purged: false)
       .where.not(id: Patient.unscoped.exposure_under_investigation)
       .where('last_date_of_exposure >= ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago)
@@ -76,7 +76,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .or(
         where(isolation: false)
           .where(pause_notifications: false)
-          .where(monitoring: true)
+          .where('patients.id = patients.responder_id')
           .where(purged: false)
           .where.not(id: Patient.unscoped.exposure_under_investigation)
           .where('last_date_of_exposure >= ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago)
@@ -90,7 +90,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   scope :reminder_eligible_isolation, lambda {
     where(isolation: true)
       .where(pause_notifications: false)
-      .where(monitoring: true)
+      .where('patients.id = patients.responder_id')
       .where(purged: false)
       .where.not(id: Patient.unscoped.isolation_requiring_review)
       .where.not(id: Patient.unscoped.isolation_non_reporting_max)
@@ -99,7 +99,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .or(
         where(isolation: true)
           .where(pause_notifications: false)
-          .where(monitoring: true)
+          .where('patients.id = patients.responder_id')
           .where(purged: false)
           .where.not(id: Patient.unscoped.isolation_requiring_review)
           .where.not(id: Patient.unscoped.isolation_non_reporting_max)
@@ -580,6 +580,9 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     # Do not allow messages to go to household members
     return unless responder.id == id
 
+    # Return if closed, UNLESS there are still group members who need to be reported on
+    return unless monitoring || dependents.where(monitoring: true).count.positive?
+
     # If force is set, the preferred contact time will be ignored
     unless force
       hour = Time.now.getlocal(address_timezone_offset).hour
@@ -619,6 +622,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && email.present?
       PatientMailer.assessment_email(self).deliver_later
     end
+
+    update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def calc_current_age

@@ -27,11 +27,16 @@ class LastDateExposure extends React.Component {
   }
 
   toggleExposureDateModal() {
-    this.setState({ showExposureDateModal: !this.state.showExposureDateModal });
+    this.setState({ showExposureDateModal: !this.state.showExposureDateModal, apply_to_group: false, apply_to_group_cm_only: false });
   }
 
   toggleContinuousMonitoringModal() {
-    this.setState({ showContinuousMonitoringModal: !this.state.showContinuousMonitoringModal, continuous_exposure: !this.state.continuous_exposure });
+    this.setState({
+      showContinuousMonitoringModal: !this.state.showContinuousMonitoringModal,
+      continuous_exposure: !this.state.continuous_exposure,
+      apply_to_group: false,
+      apply_to_group_cm_only: false,
+    });
   }
 
   handleChange(event) {
