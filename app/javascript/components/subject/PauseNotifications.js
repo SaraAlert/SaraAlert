@@ -22,6 +22,7 @@ class PauseNotifications extends React.Component {
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           comment: false,
           pause_notifications: !this.props.patient.pause_notifications,
+          diffState: ['pause_notifications'],
         })
         .then(() => {
           axios
