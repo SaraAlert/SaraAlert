@@ -138,6 +138,7 @@ class MonitoringStatus extends React.Component {
         showMonitoringStatusModal: true,
         message: 'monitoring status to "' + event.target.value + '".',
         message_warning: event.target.value === 'Not Monitoring' ? 'This record will be moved to the closed line list.' : '',
+        monitoring: event.target.value === 'Actively Monitoring' ? true : false,
         monitoring_status: event?.target?.value ? event.target.value : '',
         monitoring_status_options:
           event.target.value === 'Not Monitoring'
