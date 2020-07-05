@@ -44,6 +44,11 @@ class PublicHealthController < ApplicationController
     user = params.permit(:user)[:user]
     redirect_to(root_url) && return unless %w[all none].include?(user) || user.to_i.between?(1, 9999)
 
+    # Validate pagination params
+    entries = params[:entries]&.to_i || 15
+    page = params[:page]&.to_i || 0
+    redirect_to(root_url) && return unless entries >= 0 && page >= 0
+
     # Get patients by workflow and tab
     patients = patients_by_type(workflow, tab)
 
@@ -63,7 +68,7 @@ class PublicHealthController < ApplicationController
     sorted_patients = sort(patients, params[:order], params[:columns])
 
     # Paginate
-    paginated_patients = sorted_patients.paginate(per_page: params[:entries]&.to_i || 15, page: params[:page]&.to_i || 1)
+    paginated_patients = sorted_patients.paginate(per_page: entries, page: page + 1)
 
     # Extract only relevant fields to be displayed by workflow and tab
     render json: linelist(paginated_patients.to_a, workflow, tab).merge({ total: patients.size })

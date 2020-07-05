@@ -32,7 +32,7 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'update monitoring status' do
-    @@public_health_test_helper.update_monitoring_status('state1_epi', 'patient_2', 'non-reporting', 'closed',
+    @@public_health_test_helper.update_monitoring_status('state1_epi', 'patient_2', 'non_reporting', 'closed',
                                                          'Not Monitoring', 'Completed Monitoring', 'details')
     @@public_health_test_helper.update_monitoring_status('state1_epi', 'patient_5', 'closed', 'all',
                                                          'Actively Monitoring', nil, 'notes')
@@ -87,8 +87,8 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'pause notifications' do
-    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_2', 'non-reporting')
-    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_2', 'non-reporting')
+    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_2', 'non_reporting')
+    @@public_health_test_helper.pause_notifications('state1_epi', 'patient_2', 'non_reporting')
   end
 
   test 'add comment' do

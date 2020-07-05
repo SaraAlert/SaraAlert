@@ -3,8 +3,24 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import { Badge, Button, ButtonGroup, Card, Col, Dropdown, DropdownButton, Form, InputGroup, Nav, Spinner, Table, TabContent } from 'react-bootstrap';
-import Pagination from 'react-js-pagination';
+import {
+  Badge,
+  Button,
+  ButtonGroup,
+  Card,
+  Col,
+  Dropdown,
+  DropdownButton,
+  Form,
+  InputGroup,
+  Nav,
+  OverlayTrigger,
+  Spinner,
+  Table,
+  TabContent,
+  Tooltip,
+} from 'react-bootstrap';
+import ReactPaginate from 'react-paginate';
 
 import InfoTooltip from '../util/InfoTooltip';
 
@@ -75,7 +91,7 @@ class PatientsTable extends React.Component {
   handleTabSelect(tab) {
     const query = this.state.query;
     query.tab = tab;
-    query.page = 1;
+    query.page = 0;
     this.updateTable(query);
     localStorage.setItem(`${this.props.workflow}Tab`, tab);
   }
@@ -87,28 +103,28 @@ class PatientsTable extends React.Component {
       this.setState({ form: { ...form, jurisdictionPath: event.target.value } });
       const jurisdictionId = Object.keys(this.state.jurisdictionPaths).find(id => this.state.jurisdictionPaths[parseInt(id)] === event.target.value);
       if (jurisdictionId) {
-        this.updateTable({ ...query, jurisdiction: jurisdictionId, page: 1 });
+        this.updateTable({ ...query, jurisdiction: jurisdictionId, page: 0 });
         this.updateAssignedUsers(jurisdictionId, this.state.query.scope);
       }
     } else if (event.target.name === 'assignedUser') {
       if (event.target.value === '') {
         this.setState({ form: { ...form, assignedUser: event.target.value } });
-        this.updateTable({ ...query, user: 'all', page: 1 });
+        this.updateTable({ ...query, user: 'all', page: 0 });
       } else if (!isNaN(event.target.value) && parseInt(event.target.value) <= 9999) {
         this.setState({ form: { ...form, assignedUser: event.target.value } });
-        this.updateTable({ ...query, user: event.target.value, page: 1 });
+        this.updateTable({ ...query, user: event.target.value, page: 0 });
       }
     } else if (event.target.name === 'entries') {
-      this.updateTable({ ...query, entries: parseInt(event.target.value), page: 1 });
+      this.updateTable({ ...query, entries: parseInt(event.target.value), page: 0 });
     } else if (event.target.name === 'search') {
-      this.updateTable({ ...query, search: event.target.value, page: 1 });
+      this.updateTable({ ...query, search: event.target.value, page: 0 });
     }
   }
 
   handleScopeChange(scope) {
     if (scope !== this.state.query.scope) {
       const query = this.state.query;
-      this.updateTable({ ...query, scope, page: 1 });
+      this.updateTable({ ...query, scope, page: 0 });
     }
   }
 
@@ -117,13 +133,13 @@ class PatientsTable extends React.Component {
       const form = this.state.form;
       const query = this.state.query;
       this.setState({ form: { ...form, assignedUser: '' } });
-      this.updateTable({ ...query, user, page: 1 });
+      this.updateTable({ ...query, user, page: 0 });
     }
   }
 
   handlePageChange(page) {
     const query = this.state.query;
-    this.updateTable({ ...query, page: page });
+    this.updateTable({ ...query, page: page.selected });
   }
 
   handleSelectAllPatients() {
@@ -200,7 +216,7 @@ class PatientsTable extends React.Component {
           {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (
               <Nav.Item key={tab} className={tab === 'all' ? 'ml-auto' : ''}>
-                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect}>
+                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
                   {tabProps.label}
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
                     <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
@@ -245,20 +261,24 @@ class PatientsTable extends React.Component {
                               );
                             })}
                           </datalist>
-                          <Button
-                            size="sm"
-                            variant={this.state.query.scope === 'all' ? 'primary' : 'outline-secondary'}
-                            style={{ outline: 'none', boxShadow: 'none' }}
-                            onClick={() => this.handleScopeChange('all')}>
-                            All
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant={this.state.query.scope === 'exact' ? 'primary' : 'outline-secondary'}
-                            style={{ outline: 'none', boxShadow: 'none' }}
-                            onClick={() => this.handleScopeChange('exact')}>
-                            Exact
-                          </Button>
+                          <OverlayTrigger overlay={<Tooltip>Include Sub-Jurisdictions</Tooltip>}>
+                            <Button
+                              size="sm"
+                              variant={this.state.query.scope === 'all' ? 'primary' : 'outline-secondary'}
+                              style={{ outline: 'none', boxShadow: 'none' }}
+                              onClick={() => this.handleScopeChange('all')}>
+                              All
+                            </Button>
+                          </OverlayTrigger>
+                          <OverlayTrigger overlay={<Tooltip>Exclude Sub-Jurisdictions</Tooltip>}>
+                            <Button
+                              size="sm"
+                              variant={this.state.query.scope === 'exact' ? 'primary' : 'outline-secondary'}
+                              style={{ outline: 'none', boxShadow: 'none' }}
+                              onClick={() => this.handleScopeChange('exact')}>
+                              Exact
+                            </Button>
+                          </OverlayTrigger>
                         </InputGroup>
                       </Col>
                       <Col lg={7} md={9} className="my-1">
@@ -283,20 +303,26 @@ class PatientsTable extends React.Component {
                               );
                             })}
                           </datalist>
-                          <Button
-                            size="sm"
-                            variant={this.state.query.user === 'all' ? 'primary' : 'outline-secondary'}
-                            style={{ outline: 'none', boxShadow: 'none' }}
-                            onClick={() => this.handleUserChange('all')}>
-                            All
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant={this.state.query.user === 'none' ? 'primary' : 'outline-secondary'}
-                            style={{ outline: 'none', boxShadow: 'none' }}
-                            onClick={() => this.handleUserChange('none')}>
-                            None
-                          </Button>
+                          <OverlayTrigger
+                            overlay={<Tooltip>Search for {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'} with any or no assigned user</Tooltip>}>
+                            <Button
+                              size="sm"
+                              variant={this.state.query.user === 'all' ? 'primary' : 'outline-secondary'}
+                              style={{ outline: 'none', boxShadow: 'none' }}
+                              onClick={() => this.handleUserChange('all')}>
+                              All
+                            </Button>
+                          </OverlayTrigger>
+                          <OverlayTrigger
+                            overlay={<Tooltip>Search for {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'} with no assigned user</Tooltip>}>
+                            <Button
+                              size="sm"
+                              variant={this.state.query.user === 'none' ? 'primary' : 'outline-secondary'}
+                              style={{ outline: 'none', boxShadow: 'none' }}
+                              onClick={() => this.handleUserChange('none')}>
+                              None
+                            </Button>
+                          </OverlayTrigger>
                         </InputGroup>
                       </Col>
                     </React.Fragment>
@@ -452,15 +478,29 @@ class PatientsTable extends React.Component {
                         {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'}
                       </span>
                     </div>
-                    <Pagination
-                      totalItemsCount={this.state.patients.total}
-                      onChange={this.handlePageChange}
-                      activePage={this.state.query.page}
-                      itemsCountPerPage={this.state.query.entries}
-                      pageRangeDisplayed={5}
-                      prevPageText="Previous"
-                      nextPageText="Next"
-                      className="mb-0"
+                    <ReactPaginate
+                      pageCount={Math.ceil(this.state.patients.total / this.state.query.entries)}
+                      pageRangeDisplayed={4}
+                      marginPagesDisplayed={1}
+                      initialPage={this.state.query.page}
+                      onPageChange={this.handlePageChange}
+                      previousLabel="Previous"
+                      nextLabel="Next"
+                      breakLabel="..."
+                      containerClassName="pagination mb-0"
+                      activeClassName="active"
+                      disabledClassName="disabled"
+                      pageClassName="paginate_button page-item"
+                      previousClassName="paginate_button page-item"
+                      nextClassName="paginate_button page-item"
+                      breakClassName="paginate_button page-item"
+                      pageLinkClassName="page-link text-primary"
+                      previousLinkClassName={this.state.query.page === 0 ? 'page-link' : 'page-link text-primary'}
+                      nextLinkClassName={
+                        this.state.query.page === Math.ceil(this.state.patients.total / this.state.query.entries) - 1 ? 'page-link' : 'page-link text-primary'
+                      }
+                      activeLinkClassName="page-link text-light"
+                      breakLinkClassName="page-link text-primary"
                     />
                   </div>
                 </React.Fragment>

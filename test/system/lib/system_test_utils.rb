@@ -49,7 +49,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def go_to_tab(tab)
-    find("##{tab}-tab").click
+    find("##{tab}_tab").click
   end
 
   def go_to_next_page(wait = true)
