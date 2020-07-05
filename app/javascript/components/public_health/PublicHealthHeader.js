@@ -79,7 +79,7 @@ class PublicHealthHeader extends React.Component {
             </Button>
           )}
           {this.props.abilities.enrollment && (
-            <Button variant="primary" className="ml-2 mb-4" href="/patients/new">
+            <Button variant="primary" className="ml-2 mb-4" href={this.props.workflow === 'exposure' ? '/patients/new' : '/patients/new?isolation=true'}>
               <i className="fas fa-plus-square"></i> Enroll New Monitoree
             </Button>
           )}
