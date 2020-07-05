@@ -16,18 +16,18 @@ class PublicHealthDashboard < ApplicationSystemTestCase
 
   def search_for_and_view_patient(tab, patient_label)
     @@system_test_utils.go_to_tab(tab)
-    fill_in 'Search:', with: PATIENTS[patient_label]['last_name']
+    fill_in 'Search', with: PATIENTS[patient_label]['last_name']
     click_on @@system_test_utils.get_patient_display_name(patient_label)
   end
 
   def search_for_and_view_monitoree(tab, monitoree_label)
     @@system_test_utils.go_to_tab(tab)
-    fill_in 'Search:', with: MONITOREES[monitoree_label]['identification']['last_name']
+    fill_in 'Search', with: MONITOREES[monitoree_label]['identification']['last_name']
     click_on @@system_test_utils.get_monitoree_display_name(monitoree_label)
   end
 
   def search_for_monitoree(monitoree_label)
-    fill_in 'Search:', with: MONITOREES[monitoree_label]['identification']['last_name']
+    fill_in 'Search', with: MONITOREES[monitoree_label]['identification']['last_name']
   end
 
   def export_line_list_csv(user_label, workflow, action)

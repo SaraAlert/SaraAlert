@@ -48,7 +48,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
   end
 
   def verify_jurisdiction_options_under_tab(jurisdiction, tab)
-    return if %w[transferred-in transferred-out].include?(tab)
+    return if %w[transferred_in transferred_out].include?(tab)
 
     sub_jurisdictions = Jurisdiction.find(jurisdiction.subtree_ids).sort
     assert_equal(sub_jurisdictions.pluck(:id), page.all("select#assigned_jurisdiction_#{tab.gsub('-', '_')}_patients option").map(&:value).map(&:to_i))
@@ -57,10 +57,10 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
 
   def verify_patient_under_tab(jurisdiction, verify_scope, tab, patient)
     # view patient without any filters
-    fill_in 'Search:', with: patient.last_name if patient_count_under_tab(tab) > find('.dataTables_length').find('select', class: 'custom-select')['value'].to_i
+    fill_in 'Search', with: patient.last_name if patient_count_under_tab(tab) > find('.dataTables_length').find('select', class: 'custom-select')['value'].to_i
     verify_patient_info_in_data_table(patient, tab)
 
-    return if %w[transferred-in transferred-out].include?(tab)
+    return if %w[transferred_in transferred_out].include?(tab)
 
     # view patient with assigned jurisdiction filter
     Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
@@ -87,7 +87,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
   end
 
   def patient_count_under_tab(tab)
-    find("##{tab}-tab").first(:xpath, './/span').text.to_i
+    find("##{tab}_tab").first(:xpath, './/span').text.to_i
   end
 
   def verify_patient_info_in_data_table(patient, tab)
@@ -97,10 +97,10 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     verify_patient_field_in_data_table('sex', patient.sex)
     verify_patient_field_in_data_table('date of birth', patient.date_of_birth)
     verify_patient_field_in_data_table('monitoring plan', patient.monitoring_plan)
-    if tab == 'transferred-in'
+    if tab == 'transferred_in'
       from_jurisdiction = Transfer.where(patient_id: patient.id, to_jurisdiction: patient.jurisdiction.id).order(created_at: :desc).first.from_jurisdiction
       verify_patient_field_in_data_table('from jurisdiction', from_jurisdiction[:path])
-    elsif tab == 'transferred-out'
+    elsif tab == 'transferred_out'
       verify_patient_field_in_data_table('to jurisdiction', patient.jurisdiction[:path])
     else
       verify_patient_field_in_data_table('assigned jurisdiction', patient.jurisdiction[:name])

@@ -48,8 +48,8 @@ class PatientsTable extends React.Component {
         entries: 15,
         page: 0,
         search: '',
-        order: [],
-        columns: [],
+        order: '',
+        direction: '',
       },
       selectedPatients: [],
       loading: false,
@@ -57,7 +57,7 @@ class PatientsTable extends React.Component {
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
     this.handleChange = this.handleChange.bind(this);
-    this.handlePageChange = this.handlePageChange.bind(this);
+    this.handlePagination = this.handlePagination.bind(this);
     this.handleSelectAllPatients = this.handleSelectAllPatients.bind(this);
   }
 
@@ -137,9 +137,14 @@ class PatientsTable extends React.Component {
     }
   }
 
-  handlePageChange(page) {
+  handlePagination(page) {
     const query = this.state.query;
     this.updateTable({ ...query, page: page.selected });
+  }
+
+  handleSort(field, direction) {
+    const query = this.state.query;
+    this.updateTable({ ...query, order: field, direction, page: 0 });
   }
 
   handleSelectAllPatients() {
@@ -207,6 +212,38 @@ class PatientsTable extends React.Component {
   formatTimestamp(timestamp) {
     const ts = moment.tz(timestamp, 'UTC');
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm z') : '';
+  }
+
+  renderTableHeader(field, label, sortable, tooltip) {
+    return (
+      <React.Fragment>
+        {this.state.patients.fields.includes(field) && (
+          <th>
+            {sortable && (
+              <React.Fragment>
+                {this.state.query.order !== field && (
+                  <a onClick={() => this.handleSort(field, 'asc')}>
+                    <i className="fas fa-sort float-right my-1 text-secondary"></i>
+                  </a>
+                )}
+                {this.state.query.order === field && this.state.query.direction === 'asc' && (
+                  <a onClick={() => this.handleSort(field, 'desc')}>
+                    <i className="fas fa-sort-up float-right my-1"></i>
+                  </a>
+                )}
+                {this.state.query.order === field && this.state.query.direction === 'desc' && (
+                  <a onClick={() => this.handleSort('', '')}>
+                    <i className="fas fa-sort-down float-right my-1"></i>
+                  </a>
+                )}
+              </React.Fragment>
+            )}
+            <span>{label}</span>
+            {tooltip && <InfoTooltip tooltipTextKey={tooltip} location="right" className="ml-1"></InfoTooltip>}
+          </th>
+        )}
+      </React.Fragment>
+    );
   }
 
   render() {
@@ -385,28 +422,24 @@ class PatientsTable extends React.Component {
                   <Table striped bordered hover size="sm" className="mb-2">
                     <thead>
                       <tr>
-                        {this.state.patients.fields.includes('name') && <th>Monitoree</th>}
-                        {this.state.patients.fields.includes('jurisdiction') && <th>Jurisdiction</th>}
-                        {this.state.patients.fields.includes('transferred_from') && <th>From Jurisdiction</th>}
-                        {this.state.patients.fields.includes('transferred_to') && <th>To Jurisdiction</th>}
-                        {this.state.patients.fields.includes('assigned_user') && <th>Assigned User</th>}
-                        {this.state.patients.fields.includes('state_local_id') && <th>State/Local ID</th>}
-                        {this.state.patients.fields.includes('sex') && <th>Sex</th>}
-                        {this.state.patients.fields.includes('dob') && <th>Date of Birth</th>}
-                        {this.state.patients.fields.includes('end_of_monitoring') && <th>End of Monitoring</th>}
-                        {this.state.patients.fields.includes('risk_level') && <th>Risk Level</th>}
-                        {this.state.patients.fields.includes('monitoring_plan') && <th>Monitoring Plan</th>}
-                        {this.state.patients.fields.includes('public_health_action') && <th>Latest Public Health Action</th>}
-                        {this.state.patients.fields.includes('expected_purge_date') && (
-                          <th>
-                            Eligible For Purge After <InfoTooltip tooltipTextKey="purgeDate" location="right"></InfoTooltip>
-                          </th>
-                        )}
-                        {this.state.patients.fields.includes('reason_for_closure') && <th>Reason for Closure</th>}
-                        {this.state.patients.fields.includes('closed_at') && <th>Closed At</th>}
-                        {this.state.patients.fields.includes('transferred_at') && <th>Transferred At</th>}
-                        {this.state.patients.fields.includes('latest_report') && <th>Latest Report</th>}
-                        {this.state.patients.fields.includes('status') && <th>Status</th>}
+                        {this.renderTableHeader('name', 'Monitoree', true, null)}
+                        {this.renderTableHeader('jurisdiction', 'Jurisdiction', true, null)}
+                        {this.renderTableHeader('transferred_from', 'From Jurisdiction', true, null)}
+                        {this.renderTableHeader('transferred_to', 'To Jurisdiction', true, null)}
+                        {this.renderTableHeader('assigned_user', 'Assigned User', true, null)}
+                        {this.renderTableHeader('state_local_id', 'State/Local ID', true, null)}
+                        {this.renderTableHeader('sex', 'Sex', true, null)}
+                        {this.renderTableHeader('dob', 'Date of Birth', true, null)}
+                        {this.renderTableHeader('end_of_monitoring', 'End of Monitoring', true, null)}
+                        {this.renderTableHeader('risk_level', 'Risk Level', true, null)}
+                        {this.renderTableHeader('monitoring_plan', 'Monitoring Plan', true, null)}
+                        {this.renderTableHeader('public_health_action', 'Latest Public Health Action', true, null)}
+                        {this.renderTableHeader('expected_purge_date', 'Eligible For Purge After', true, 'purgeDate')}
+                        {this.renderTableHeader('reason_for_closure', 'Reason for Closure', true, null)}
+                        {this.renderTableHeader('closed_at', 'Closed At', true, null)}
+                        {this.renderTableHeader('transferred_at', 'Transferred At', true, null)}
+                        {this.renderTableHeader('latest_report', 'Latest Report', true, null)}
+                        {this.renderTableHeader('status', 'Status', false, null)}
                         {this.state.patients.fields.includes('name') && this.state.query.tab !== 'transferred_out' && (
                           <th onClick={this.handleSelectAllPatients}>
                             <Form.Check
@@ -483,7 +516,7 @@ class PatientsTable extends React.Component {
                       pageRangeDisplayed={4}
                       marginPagesDisplayed={1}
                       initialPage={this.state.query.page}
-                      onPageChange={this.handlePageChange}
+                      onPageChange={this.handlePagination}
                       previousLabel="Previous"
                       nextLabel="Next"
                       breakLabel="..."

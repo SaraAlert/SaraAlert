@@ -44,10 +44,18 @@ class PublicHealthController < ApplicationController
     user = params.permit(:user)[:user]
     redirect_to(root_url) && return unless %w[all none].include?(user) || user.to_i.between?(1, 9999)
 
+    # Validate search param
+    search = params.permit(:search)[:search]
+
     # Validate pagination params
-    entries = params[:entries]&.to_i || 15
-    page = params[:page]&.to_i || 0
+    entries = params.permit(:entries)[:entries]&.to_i || 15
+    page = params.permit(:page)[:page]&.to_i || 0
     redirect_to(root_url) && return unless entries >= 0 && page >= 0
+
+    # Validate sort params
+    order = params.permit(:order)[:order]
+    direction = params.permit(:direction)[:direction]
+    redirect_to(root_url) && return unless ['', 'asc', 'desc'].include?(direction)
 
     # Get patients by workflow and tab
     patients = patients_by_type(workflow, tab)
@@ -62,10 +70,10 @@ class PublicHealthController < ApplicationController
     patients = patients.where(assigned_user: user == 'none' ? nil : user.to_i) unless user == 'all'
 
     # Filter by search text
-    patients = search(patients, params[:search])
+    patients = search(patients, search)
 
     # Sort
-    sorted_patients = sort(patients, params[:order], params[:columns])
+    sorted_patients = sort(patients, order, direction)
 
     # Paginate
     paginated_patients = sorted_patients.paginate(per_page: entries, page: page + 1)
@@ -170,46 +178,55 @@ class PublicHealthController < ApplicationController
     patients
   end
 
-  def sort(patients, order, columns)
-    return patients if order.nil? || order.empty?
+  def sort(patients, order, direction)
+    return patients if order.nil? || order.empty? || direction.nil? || direction.blank?
 
-    sorted = patients
-    order.each do |_num, val|
-      next if columns.nil? || val.nil? || val['column'].blank? || columns[val['column']].nil?
-      next if columns[val['column']][:name].blank?
+    # Satisfy brakeman with additional sanitation logic
+    direction = direction == 'asc' ? 'asc' : 'desc'
 
-      direction = val['dir'] == 'asc' ? :asc : :desc
-      if columns[val['column']][:name] == 'name' # Name
-        sorted = sorted.order(last_name: direction).order(first_name: direction)
-      elsif columns[val['column']][:name] == 'jurisdiction' # Jurisdiction
-        sorted = sorted.includes(:jurisdiction).order('jurisdictions.name ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'assigned_user' # Assigned User
-        sorted = sorted.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'state_local_id' # State/Local ID
-        sorted = sorted.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'sex' # Sex
-        sorted = sorted.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'dob' # DOB
-        sorted = sorted.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'end_of_monitoring' # End of Monitoring
-        sorted = sorted.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'expected_purge_date' # Expected Purge Date
-        sorted = sorted.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'risk' # Risk
-        sorted = sorted.order_by_risk(val['dir'] == 'asc')
-      elsif columns[val['column']][:name] == 'monitoring_plan' # Monitoring Plan
-        sorted = sorted.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'monitoring_reason' # Reason
-        sorted = sorted.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'public_health_action' # PHA
-        sorted = sorted.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'latest_report' # Latest Report
-        sorted = sorted.left_outer_joins(:assessments).order('assessments.created_at ' + direction.to_s)
-      elsif columns[val['column']][:name] == 'closed_at' # Closed At
-        sorted = sorted.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + direction.to_s)
-      end
+    if order == 'name'
+      patients = patients.order(last_name: direction).order(first_name: direction)
+    elsif order == 'jurisdiction'
+      patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + direction)
+    elsif order == 'transferred_from'
+      patients = patients.joins(:transfers)
+                         .joins('INNER JOIN jurisdictions ON transfers.from_jurisdiction_id = jurisdictions.id')
+                         .order('jurisdictions.path ' + direction)
+    elsif order == 'transferred_to'
+      patients = patients.joins(:transfers)
+                         .joins('INNER JOIN jurisdictions ON transfers.to_jurisdiction_id = jurisdictions.id')
+                         .order('jurisdictions.path ' + direction)
+    elsif order == 'assigned_user'
+      patients = patients.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + direction)
+    elsif order == 'state_local_id'
+      patients = patients.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + direction)
+    elsif order == 'sex'
+      patients = patients.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + direction)
+    elsif order == 'dob'
+      patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + direction)
+    elsif order == 'end_of_monitoring'
+      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction)
+    elsif order == 'risk_level'
+      patients = patients.order_by_risk(direction == 'asc')
+    elsif order == 'monitoring_plan'
+      patients = patients.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + direction)
+    elsif order == 'public_health_action'
+      patients = patients.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + direction)
+    elsif order == 'expected_purge_date'
+      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction)
+    elsif order == 'reason_for_closure'
+      patients = patients.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + direction)
+    elsif order == 'closed_at'
+      patients = patients.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + direction)
+    elsif order == 'transferred_at'
+      patients = patients.left_outer_joins(:transfers)
+                         .order('transfers.created_at ' + direction)
+    elsif order == 'latest_report'
+      patients = patients.left_outer_joins(:assessments)
+                         .order('CASE WHEN assessments.created_at IS NULL THEN 1 ELSE 0 END, assessments.created_at ' + direction)
     end
-    sorted
+
+    patients
   end
 
   def linelist(patients, workflow, tab)
