@@ -11,6 +11,10 @@
     <%= link_to '<i class="fas fa-chart-pie"></i> Analytics'.html_safe, {controller: "analytics", action: "index"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
   <% end %>
 
+  <% if current_user.can_create_patient? %>
+    <%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new", isolation: true}, class: "btn btn-primary btn-square ml-2 mb-4" %>
+  <% end %>
+
   <% if current_user.can_export? %>
     <%= react_component("export/Export", { authenticity_token: form_authenticity_token, workflow: 'isolation' } ) %>
   <% end %>

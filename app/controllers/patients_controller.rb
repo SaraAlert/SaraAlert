@@ -30,7 +30,7 @@ class PatientsController < ApplicationController
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
-    @patient = Patient.new(jurisdiction_id: current_user.jurisdiction_id)
+    @patient = Patient.new(jurisdiction_id: current_user.jurisdiction_id, isolation: params.permit(:isolation)[:isolation] == 'true')
   end
 
   # Similar to 'new', except used for creating a new group member

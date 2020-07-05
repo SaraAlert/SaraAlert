@@ -114,7 +114,7 @@ class GeographicSummary extends React.Component {
         )
       )
     );
-    return statesWhereCountyReferenced.map(x => stateOptions.find(y => y.name === x).isoCode);
+    return statesWhereCountyReferenced.map(x => stateOptions.find(y => y.name?.toLowerCase() === x?.toLowerCase())?.isoCode);
   };
 
   obtainJurisdictionsNotInUse = () => {

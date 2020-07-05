@@ -23,6 +23,10 @@ class Exposure extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
     this.validate = this.validate.bind(this);
+    this.isolationFields = this.isolationFields.bind(this);
+    this.expsoureFields = this.exposureFields.bind(this);
+    this.getSchema = this.getSchema.bind(this);
+    this.schema = this.getSchema(this.props.currentState.isolation);
   }
 
   handleChange(event) {
@@ -76,7 +80,7 @@ class Exposure extends React.Component {
 
   validate(callback) {
     let self = this;
-    schema
+    this.getSchema(this.props.currentState.isolation)
       .validate({ ...this.state.current.patient }, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
@@ -110,218 +114,305 @@ class Exposure extends React.Component {
       });
   }
 
+  isolationFields() {
+    return (
+      <React.Fragment>
+        <Form.Row>
+          <Form.Group as={Col} md="7" controlId="symptom_onset">
+            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['symptom_onset']}
+              size="lg"
+              type="date"
+              className="form-square"
+              value={this.state.current.patient.symptom_onset || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['symptom_onset']}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="8" controlId="case_status">
+            <Form.Label className="nav-input-label">CASE STATUS{this.schema?.fields?.case_status?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['case_status']}
+              as="select"
+              size="lg"
+              className="form-square"
+              onChange={this.handleChange}
+              value={this.state.current.patient.case_status || ''}>
+              <option></option>
+              <option>Confirmed</option>
+              <option>Probable</option>
+              <option>Suspect</option>
+              <option>Unknown</option>
+              <option>Not a Case</option>
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['case_status']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-2">
+            <Form.Label className="nav-input-label">NOTES{this.schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['exposure_notes']}
+              as="textarea"
+              rows="5"
+              size="lg"
+              className="form-square"
+              placeholder="enter additional information about case"
+              value={this.state.current.patient.exposure_notes || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['exposure_notes']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+      </React.Fragment>
+    );
+  }
+
+  exposureFields() {
+    return (
+      <React.Fragment>
+        <Form.Row>
+          <Form.Group as={Col} md="7" controlId="last_date_of_exposure">
+            <Form.Label className="nav-input-label">
+              LAST DATE OF EXPOSURE{this.schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
+              <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
+            </Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['last_date_of_exposure']}
+              size="lg"
+              type="date"
+              className="form-square"
+              value={this.state.current.patient.last_date_of_exposure || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['last_date_of_exposure']}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="10" controlId="potential_exposure_location">
+            <Form.Label className="nav-input-label">
+              EXPOSURE LOCATION{this.schema?.fields?.potential_exposure_location?._exclusive?.required && ' *'}
+            </Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['potential_exposure_location']}
+              size="lg"
+              className="form-square"
+              value={this.state.current.patient.potential_exposure_location || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['potential_exposure_location']}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="7" controlId="potential_exposure_country">
+            <Form.Label className="nav-input-label">EXPOSURE COUNTRY{this.schema?.fields?.potential_exposure_country?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['potential_exposure_country']}
+              as="select"
+              size="lg"
+              className="form-square"
+              value={this.state.current.patient.potential_exposure_country || ''}
+              onChange={this.handleChange}>
+              <option></option>
+              {countryOptions.map((country, index) => (
+                <option key={`country-${index}`}>{country}</option>
+              ))}
+            </Form.Control>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['potential_exposure_country']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPERATE MULTIPLE SPECIFIED VALUES)</Form.Label>
+        <Form.Row>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
+            <Form.Check
+              type="switch"
+              id="contact_of_known_case"
+              label="CLOSE CONTACT WITH A KNOWN CASE"
+              checked={this.state.current.patient.contact_of_known_case === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+            <Form.Control
+              size="sm"
+              className="form-square"
+              id="contact_of_known_case_id"
+              placeholder="enter case ID"
+              value={this.state.current.patient.contact_of_known_case_id || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['contact_of_known_case_id']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
+            <Form.Check
+              className="pt-2 my-auto"
+              type="switch"
+              id="travel_to_affected_country_or_area"
+              label="TRAVEL FROM AFFECTED COUNTRY OR AREA"
+              checked={this.state.current.patient.travel_to_affected_country_or_area === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
+            <Form.Check
+              className="pt-2 my-auto"
+              type="switch"
+              id="was_in_health_care_facility_with_known_cases"
+              label="WAS IN HEALTH CARE FACILITY WITH KNOWN CASES"
+              checked={this.state.current.patient.was_in_health_care_facility_with_known_cases === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+            <Form.Control
+              size="sm"
+              className="form-square"
+              id="was_in_health_care_facility_with_known_cases_facility_name"
+              placeholder="enter facility name"
+              value={this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['was_in_health_care_facility_with_known_cases_facility_name']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
+            <Form.Check
+              className="pt-2 my-auto"
+              type="switch"
+              id="laboratory_personnel"
+              label="LABORATORY PERSONNEL"
+              checked={this.state.current.patient.laboratory_personnel === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+            <Form.Control
+              size="sm"
+              className="form-square"
+              id="laboratory_personnel_facility_name"
+              placeholder="enter facility name"
+              value={this.state.current.patient.laboratory_personnel_facility_name || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['laboratory_personnel_facility_name']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
+            <Form.Check
+              className="pt-2 my-auto"
+              type="switch"
+              id="healthcare_personnel"
+              label="HEALTHCARE PERSONNEL"
+              checked={this.state.current.patient.healthcare_personnel === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+            <Form.Control
+              size="sm"
+              className="form-square"
+              id="healthcare_personnel_facility_name"
+              placeholder="enter facility name"
+              value={this.state.current.patient.healthcare_personnel_facility_name || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['healthcare_personnel_facility_name']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
+            <Form.Check
+              className="pt-2 my-auto"
+              type="switch"
+              id="crew_on_passenger_or_cargo_flight"
+              label="CREW ON PASSENGER OR CARGO FLIGHT"
+              checked={this.state.current.patient.crew_on_passenger_or_cargo_flight === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
+            <Form.Check
+              type="switch"
+              id="member_of_a_common_exposure_cohort"
+              label="MEMBER OF A COMMON EXPOSURE COHORT"
+              checked={this.state.current.patient.member_of_a_common_exposure_cohort === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
+            <Form.Control
+              size="sm"
+              className="form-square"
+              id="member_of_a_common_exposure_cohort_type"
+              placeholder="enter description"
+              value={this.state.current.patient.member_of_a_common_exposure_cohort_type || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['member_of_a_common_exposure_cohort_type']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-4">
+            <Form.Label className="nav-input-label">NOTES{this.schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Control
+              isInvalid={this.state.errors['exposure_notes']}
+              as="textarea"
+              rows="5"
+              size="lg"
+              className="form-square"
+              placeholder="enter additional information about monitoree’s potential exposure"
+              value={this.state.current.patient.exposure_notes || ''}
+              onChange={this.handleChange}
+            />
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['exposure_notes']}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Form.Row>
+      </React.Fragment>
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Monitoree Potential Exposure Information</Card.Header>
+          {!this.props.currentState.isolation && <Card.Header as="h5">Monitoree Potential Exposure Information</Card.Header>}
+          {this.props.currentState.isolation && <Card.Header as="h5">Monitoree Case Information</Card.Header>}
           <Card.Body>
             <Form>
-              <Form.Row>
-                <Form.Group as={Col} md="7" controlId="last_date_of_exposure">
-                  <Form.Label className="nav-input-label">
-                    LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
-                    <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
-                  </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['last_date_of_exposure']}
-                    size="lg"
-                    type="date"
-                    className="form-square"
-                    value={this.state.current.patient.last_date_of_exposure || ''}
-                    onChange={this.handleChange}
-                  />
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['last_date_of_exposure']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group as={Col} md="10" controlId="potential_exposure_location">
-                  <Form.Label className="nav-input-label">
-                    EXPOSURE LOCATION{schema?.fields?.potential_exposure_location?._exclusive?.required && ' *'}
-                  </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['potential_exposure_location']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.potential_exposure_location || ''}
-                    onChange={this.handleChange}
-                  />
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['potential_exposure_location']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group as={Col} md="7" controlId="potential_exposure_country">
-                  <Form.Label className="nav-input-label">
-                    EXPOSURE COUNTRY{schema?.fields?.potential_exposure_country?._exclusive?.required && ' *'}
-                  </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['potential_exposure_country']}
-                    as="select"
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.potential_exposure_country || ''}
-                    onChange={this.handleChange}>
-                    <option></option>
-                    {countryOptions.map((country, index) => (
-                      <option key={`country-${index}`}>{country}</option>
-                    ))}
-                  </Form.Control>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['potential_exposure_country']}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Form.Row>
               <Form.Row className="pt-2 pb-4 h-100">
                 <Form.Group as={Col} className="my-auto">
-                  <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPERATE MULTIPLE SPECIFIED VALUES)</Form.Label>
-                  <Form.Row>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-                      <Form.Check
-                        type="switch"
-                        id="contact_of_known_case"
-                        label="CLOSE CONTACT WITH A KNOWN CASE"
-                        checked={this.state.current.patient.contact_of_known_case === true || false}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
-                      <Form.Control
-                        size="sm"
-                        className="form-square"
-                        id="contact_of_known_case_id"
-                        placeholder="enter case ID"
-                        value={this.state.current.patient.contact_of_known_case_id || ''}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['contact_of_known_case_id']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-                      <Form.Check
-                        className="pt-2 my-auto"
-                        type="switch"
-                        id="travel_to_affected_country_or_area"
-                        label="TRAVEL FROM AFFECTED COUNTRY OR AREA"
-                        checked={this.state.current.patient.travel_to_affected_country_or_area === true || false}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-                      <Form.Check
-                        className="pt-2 my-auto"
-                        type="switch"
-                        id="was_in_health_care_facility_with_known_cases"
-                        label="WAS IN HEALTH CARE FACILITY WITH KNOWN CASES"
-                        checked={this.state.current.patient.was_in_health_care_facility_with_known_cases === true || false}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
-                      <Form.Control
-                        size="sm"
-                        className="form-square"
-                        id="was_in_health_care_facility_with_known_cases_facility_name"
-                        placeholder="enter facility name"
-                        value={this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name || ''}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['was_in_health_care_facility_with_known_cases_facility_name']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-                      <Form.Check
-                        className="pt-2 my-auto"
-                        type="switch"
-                        id="laboratory_personnel"
-                        label="LABORATORY PERSONNEL"
-                        checked={this.state.current.patient.laboratory_personnel === true || false}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
-                      <Form.Control
-                        size="sm"
-                        className="form-square"
-                        id="laboratory_personnel_facility_name"
-                        placeholder="enter facility name"
-                        value={this.state.current.patient.laboratory_personnel_facility_name || ''}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['laboratory_personnel_facility_name']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-                      <Form.Check
-                        className="pt-2 my-auto"
-                        type="switch"
-                        id="healthcare_personnel"
-                        label="HEALTHCARE PERSONNEL"
-                        checked={this.state.current.patient.healthcare_personnel === true || false}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
-                      <Form.Control
-                        size="sm"
-                        className="form-square"
-                        id="healthcare_personnel_facility_name"
-                        placeholder="enter facility name"
-                        value={this.state.current.patient.healthcare_personnel_facility_name || ''}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['healthcare_personnel_facility_name']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-                      <Form.Check
-                        className="pt-2 my-auto"
-                        type="switch"
-                        id="crew_on_passenger_or_cargo_flight"
-                        label="CREW ON PASSENGER OR CARGO FLIGHT"
-                        checked={this.state.current.patient.crew_on_passenger_or_cargo_flight === true || false}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
-                      <Form.Check
-                        type="switch"
-                        id="member_of_a_common_exposure_cohort"
-                        label="MEMBER OF A COMMON EXPOSURE COHORT"
-                        checked={this.state.current.patient.member_of_a_common_exposure_cohort === true || false}
-                        onChange={this.handleChange}
-                      />
-                    </Form.Group>
-                    <Form.Group as={Col} md="auto" className="mb-0 my-auto ml-4">
-                      <Form.Control
-                        size="sm"
-                        className="form-square"
-                        id="member_of_a_common_exposure_cohort_type"
-                        placeholder="enter description"
-                        value={this.state.current.patient.member_of_a_common_exposure_cohort_type || ''}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['member_of_a_common_exposure_cohort_type']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Form.Row>
-                  <Form.Row className="pt-4 g-border-bottom-2" />
+                  {!this.props.currentState.isolation && this.exposureFields()}
+                  {this.props.currentState.isolation && this.isolationFields()}
+                  <Form.Row className="pt-2 g-border-bottom-2" />
                   <Form.Row className="pt-2">
                     <Form.Group as={Col}>
                       <Form.Label className="nav-input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
@@ -329,7 +420,9 @@ class Exposure extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md="18" controlId="jurisdiction_id" className="pt-2">
-                      <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="nav-input-label">
+                        ASSIGNED JURISDICTION{this.schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}
+                      </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
@@ -370,7 +463,7 @@ class Exposure extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} md="6" controlId="assigned_user" className="pt-2">
                       <Form.Label className="nav-input-label">
-                        ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
+                        ASSIGNED USER{this.schema?.fields?.assigned_user?._exclusive?.required && ' *'}
                         <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
                       </Form.Label>
                       <Form.Control
@@ -414,7 +507,7 @@ class Exposure extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="pt-2">
                       <Form.Label className="nav-input-label">
-                        EXPOSURE RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
+                        RISK ASSESSMENT{this.schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['exposure_risk_assessment']}
@@ -434,7 +527,7 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} md="16" controlId="monitoring_plan" className="pt-2">
-                      <Form.Label className="nav-input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="nav-input-label">MONITORING PLAN{this.schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitoring_plan']}
                         as="select"
@@ -450,22 +543,6 @@ class Exposure extends React.Component {
                       </Form.Control>
                       <Form.Control.Feedback className="d-block" type="invalid">
                         {this.state.errors['monitoring_plan']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-2">
-                      <Form.Label className="nav-input-label">EXPOSURE NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['exposure_notes']}
-                        as="textarea"
-                        rows="5"
-                        size="lg"
-                        className="form-square"
-                        placeholder="enter additional information about monitoree’s potential exposure"
-                        value={this.state.current.patient.exposure_notes || ''}
-                        onChange={this.handleChange}
-                      />
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['exposure_notes']}
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
@@ -492,69 +569,80 @@ class Exposure extends React.Component {
       </React.Fragment>
     );
   }
-}
 
-const schema = yup.object().shape({
-  last_date_of_exposure: yup
-    .date('Date must correspond to the "mm/dd/yyyy" format.')
-    .max(new Date(), 'Date can not be in the future.')
-    .required('Please enter a last date of exposure.')
-    .nullable(),
-  potential_exposure_location: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  potential_exposure_country: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  contact_of_known_case: yup.boolean().nullable(),
-  contact_of_known_case_id: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  healthcare_personnel_facility_name: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  laboratory_personnel_facility_name: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  was_in_health_care_facility_with_known_cases_facility_name: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  member_of_a_common_exposure_cohort_type: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  travel_to_affected_country_or_area: yup.boolean().nullable(),
-  was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
-  crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),
-  laboratory_personnel: yup.boolean().nullable(),
-  healthcare_personnel: yup.boolean().nullable(),
-  exposure_risk_assessment: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  monitoring_plan: yup
-    .string()
-    .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
-  jurisdiction_id: yup
-    .number()
-    .positive('Please enter a valid jurisdiction.')
-    .required(),
-  assigned_user: yup
-    .number()
-    .positive('Please enter a valid assigned user')
-    .nullable(),
-  exposure_notes: yup
-    .string()
-    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
-    .nullable(),
-});
+  getSchema(isolation) {
+    let schema = {
+      potential_exposure_location: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      potential_exposure_country: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      contact_of_known_case: yup.boolean().nullable(),
+      contact_of_known_case_id: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      healthcare_personnel_facility_name: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      laboratory_personnel_facility_name: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      was_in_health_care_facility_with_known_cases_facility_name: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      member_of_a_common_exposure_cohort_type: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      travel_to_affected_country_or_area: yup.boolean().nullable(),
+      was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
+      crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),
+      laboratory_personnel: yup.boolean().nullable(),
+      healthcare_personnel: yup.boolean().nullable(),
+      exposure_risk_assessment: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      monitoring_plan: yup
+        .string()
+        .max(200, 'Max length exceeded, please limit to 200 characters.')
+        .nullable(),
+      jurisdiction_id: yup
+        .number()
+        .positive('Please enter a valid jurisdiction.')
+        .required(),
+      assigned_user: yup
+        .number()
+        .positive('Please enter a valid assigned user')
+        .nullable(),
+      exposure_notes: yup
+        .string()
+        .max(2000, 'Max length exceeded, please limit to 2000 characters.')
+        .nullable(),
+    };
+    if (isolation) {
+      schema['symptom_onset'] = yup
+        .date('Date must correspond to the "mm/dd/yyyy" format.')
+        .max(new Date(), 'Date can not be in the future.')
+        .required('Please enter a symptom onset date.')
+        .nullable();
+    } else {
+      schema['last_date_of_exposure'] = yup
+        .date('Date must correspond to the "mm/dd/yyyy" format.')
+        .max(new Date(), 'Date can not be in the future.')
+        .required('Please enter a last date of exposure.')
+        .nullable();
+    }
+    return yup.object().shape(schema);
+  }
+}
 
 Exposure.propTypes = {
   currentState: PropTypes.object,
