@@ -19,7 +19,13 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return if @patient.nil?
 
     @jurisdiction_path = @patient.jurisdiction_path
+
+    # Group members if this is HOH
     @group_members = @patient.dependents.where.not(id: @patient.id)
+
+    # All group members regardless if this is not HOH
+    @all_group_members = ([@patient] + current_user.get_patient(@patient.responder_id).dependents).uniq
+
     @translations = Assessment.new.translations
 
     # If we failed to find a subject given the id, redirect to index
@@ -30,7 +36,7 @@ class PatientsController < ApplicationController
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
-    @patient = Patient.new(jurisdiction_id: current_user.jurisdiction_id)
+    @patient = Patient.new(jurisdiction_id: current_user.jurisdiction_id, isolation: params.permit(:isolation)[:isolation] == 'true')
   end
 
   # Similar to 'new', except used for creating a new group member
@@ -274,7 +280,17 @@ class PatientsController < ApplicationController
 
     # Do we need to propagate to household?
     if params.permit(:apply_to_group)[:apply_to_group]
-      patient.dependents.where.not(id: patient.id).each do |member|
+      current_user.get_patient(patient.responder_id).dependents.each do |member|
+        update_fields(member, params)
+        next unless params[:comment]
+
+        update_history(member, params)
+      end
+    end
+
+    # Do we need to propagate to household where continuous_monitoring is true?
+    if params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only]
+      ([patient] + current_user.get_patient(patient.responder_id).dependents.where(continuous_exposure: true)).uniq.each do |member|
         update_fields(member, params)
         next unless params[:comment]
 
@@ -288,11 +304,17 @@ class PatientsController < ApplicationController
   end
 
   def update_fields(patient, params)
-    patient.closed_at = DateTime.now if params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
-    patient.update(params.require(:patient).permit(:monitoring, :monitoring_reason, :monitoring_plan,
-                                                   :exposure_risk_assessment, :public_health_action,
-                                                   :isolation, :pause_notifications, :symptom_onset,
-                                                   :case_status, :assigned_user))
+    # Figure out what exactly changed, and limit update to only those fields
+    diff_state = params[:diffState]&.map(&:to_sym)
+    params_to_update = if diff_state.nil?
+                         status_fields
+                       else
+                         status_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
+                       end
+    if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
+      patient.closed_at = DateTime.now
+    end
+    patient.update(params.require(:patient).permit(params_to_update))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
@@ -552,6 +574,26 @@ class PatientsController < ApplicationController
       isolation
       jurisdiction_id
       assigned_user
+      symptom_onset
+      case_status
+    ]
+  end
+
+  # Fields used for updating monitoree state
+  def status_fields
+    %i[
+      monitoring
+      monitoring_reason
+      monitoring_plan
+      exposure_risk_assessment
+      public_health_action
+      isolation
+      pause_notifications
+      symptom_onset
+      case_status
+      assigned_user
+      last_date_of_exposure
+      continuous_exposure
     ]
   end
 end

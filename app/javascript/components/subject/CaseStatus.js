@@ -4,6 +4,7 @@ import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import reportError from '../util/ReportError';
 import InfoTooltip from '../util/InfoTooltip';
+import _ from 'lodash';
 
 class CaseStatus extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class CaseStatus extends React.Component {
       apply_to_group: false,
       loading: false,
     };
+    this.origState = Object.assign({}, this.state);
     this.toggleCaseStatusModal = this.toggleCaseStatusModal.bind(this);
     this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -70,6 +72,7 @@ class CaseStatus extends React.Component {
   }
 
   submit() {
+    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -85,6 +88,7 @@ class CaseStatus extends React.Component {
             this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status == 'Not a Case'
               ? 'None'
               : this.state.public_health_action,
+          diffState: diffState,
         })
         .then(() => {
           location.reload(true);

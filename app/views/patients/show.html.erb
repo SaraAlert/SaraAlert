@@ -113,9 +113,15 @@
           <% end -%>
         </tbody>
       </table>
-      <div class="pb-1">
-        <%= react_component("subject/SymptomOnset", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
-      </div>
+      <% if @patient.isolation %>
+        <div class="pb-1">
+          <%= react_component("subject/SymptomOnset", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+        </div>
+      <% else %>
+        <div class="pb-1">
+          <%= react_component("subject/LastDateExposure", { authenticity_token: form_authenticity_token, patient: @patient, has_group_members: @all_group_members.count > 1 } ) %>
+        </div>
+      <% end %>
     </div>
   </div>
   <% @patient.assessments.order('created_at').each do |assessment| -%>

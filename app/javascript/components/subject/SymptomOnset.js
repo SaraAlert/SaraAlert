@@ -34,6 +34,7 @@ class SymptomOnset extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           symptom_onset: this.state.symptom_onset,
+          diffState: ['symptom_onset'],
         })
         .then(() => {
           location.reload(true);

@@ -28,6 +28,7 @@ class Enrollment extends React.Component {
       enrollmentState: {
         patient: pickBy(this.props.patient, identity),
         propagatedFields: {},
+        isolation: !!this.props.patient.isolation,
       },
     };
     this.setEnrollmentState = debounce(this.setEnrollmentState.bind(this), 1000);
@@ -50,6 +51,7 @@ class Enrollment extends React.Component {
       enrollmentState: {
         patient: { ...currentEnrollmentState.patient, ...enrollmentState.patient },
         propagatedFields: { ...currentEnrollmentState.propagatedFields, ...enrollmentState.propagatedFields },
+        isolation: !!this.props.patient.isolation,
       },
     });
   }

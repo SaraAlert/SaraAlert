@@ -5,6 +5,7 @@ import axios from 'axios';
 import CaseStatus from './CaseStatus';
 import reportError from '../util/ReportError';
 import InfoTooltip from '../util/InfoTooltip';
+import _ from 'lodash';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -38,6 +39,7 @@ class MonitoringStatus extends React.Component {
       pause_notifications: props.patient.pause_notifications,
       loading: false,
     };
+    this.origState = Object.assign({}, this.state);
     this.handleChange = this.handleChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.submit = this.submit.bind(this);
@@ -136,6 +138,7 @@ class MonitoringStatus extends React.Component {
         showMonitoringStatusModal: true,
         message: 'monitoring status to "' + event.target.value + '".',
         message_warning: event.target.value === 'Not Monitoring' ? 'This record will be moved to the closed line list.' : '',
+        monitoring: event.target.value === 'Actively Monitoring' ? true : false,
         monitoring_status: event?.target?.value ? event.target.value : '',
         monitoring_status_options:
           event.target.value === 'Not Monitoring'
@@ -256,6 +259,7 @@ class MonitoringStatus extends React.Component {
   }
 
   submit() {
+    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -276,6 +280,7 @@ class MonitoringStatus extends React.Component {
           apply_to_group: this.state.apply_to_group,
           isolation: this.state.isolation,
           pause_notifications: this.state.pause_notifications,
+          diffState: diffState,
         })
         .then(() => {
           location.reload(true);

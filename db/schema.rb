@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_19_192502) do
+ActiveRecord::Schema.define(version: 2020_07_05_074127) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -296,6 +296,7 @@ ActiveRecord::Schema.define(version: 2020_06_19_192502) do
     t.date "symptom_onset"
     t.string "case_status"
     t.integer "assigned_user"
+    t.boolean "continuous_exposure", default: false
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"

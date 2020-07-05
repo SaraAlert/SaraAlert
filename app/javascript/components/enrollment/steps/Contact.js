@@ -88,6 +88,28 @@ class Contact extends React.Component {
             .required('Please indicate a preferred reporting method.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
+      } else {
+        schema = yup.object().shape({
+          primary_telephone: yup
+            .string()
+            .phone()
+            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          secondary_telephone: yup
+            .string()
+            .phone()
+            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+          secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
+          email: yup
+            .string()
+            .email('Please enter a valid email.')
+            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+          confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+          preferred_contact_method: yup
+            .string()
+            .required('Please indicate a preferred reporting method.')
+            .max(200, 'Max length exceeded, please limit to 200 characters.'),
+        });
       }
       this.setState({ errors: {} });
     }
@@ -146,45 +168,47 @@ class Contact extends React.Component {
                     {this.state.errors['preferred_contact_method']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                {this.state.current.patient.preferred_contact_method !== 'E-mailed Web Link' && (
-                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
-                    <Form.Label className="nav-input-label">
-                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
-                      <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
-                    </Form.Label>
-                    <Form.Control
-                      isInvalid={this.state.errors['preferred_contact_time']}
-                      as="select"
-                      size="lg"
-                      className="form-square"
-                      value={this.state.current.patient.preferred_contact_time || ''}
-                      onChange={this.handleChange}>
-                      <option></option>
-                      <option>Morning</option>
-                      <option>Afternoon</option>
-                      <option>Evening</option>
-                    </Form.Control>
-                    <Form.Row className="pt-2">
-                      <Form.Group as={Col} md="auto">
-                        Morning:
-                        <br />
-                        Afternoon:
-                        <br />
-                        Evening:
-                      </Form.Group>
-                      <Form.Group as={Col} md="auto">
-                        <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
-                        <br />
-                        <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
-                        <br />
-                        <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
-                      </Form.Group>
-                    </Form.Row>
-                    <Form.Control.Feedback className="d-block" type="invalid">
-                      {this.state.errors['preferred_contact_time']}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                )}
+                {this.state.current.patient.preferred_contact_method !== 'E-mailed Web Link' &&
+                  this.state.current.patient.preferred_contact_method !== 'Opt-out' &&
+                  this.state.current.patient.preferred_contact_method !== 'Unknown' && (
+                    <Form.Group as={Col} md="8" controlId="preferred_contact_time">
+                      <Form.Label className="nav-input-label">
+                        PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
+                        <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
+                      </Form.Label>
+                      <Form.Control
+                        isInvalid={this.state.errors['preferred_contact_time']}
+                        as="select"
+                        size="lg"
+                        className="form-square"
+                        value={this.state.current.patient.preferred_contact_time || ''}
+                        onChange={this.handleChange}>
+                        <option></option>
+                        <option>Morning</option>
+                        <option>Afternoon</option>
+                        <option>Evening</option>
+                      </Form.Control>
+                      <Form.Row className="pt-2">
+                        <Form.Group as={Col} md="auto">
+                          Morning:
+                          <br />
+                          Afternoon:
+                          <br />
+                          Evening:
+                        </Form.Group>
+                        <Form.Group as={Col} md="auto">
+                          <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
+                          <br />
+                          <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
+                          <br />
+                          <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
+                        </Form.Group>
+                      </Form.Row>
+                      <Form.Control.Feedback className="d-block" type="invalid">
+                        {this.state.errors['preferred_contact_time']}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  )}
               </Form.Row>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="11" controlId="primary_telephone">

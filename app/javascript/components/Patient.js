@@ -330,7 +330,8 @@ class Patient extends React.Component {
                   <Col>
                     <div className="float-left">
                       <h5>
-                        <u>Potential Exposure Information</u>
+                        {!this.props.details.isolation && <u>Potential Exposure Information</u>}
+                        {this.props.details.isolation && <u>Case Information</u>}
                       </h5>
                     </div>
                     <div className="float-right">
@@ -344,60 +345,72 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col className="text-truncate">
-                    <h6>LAST EXPOSURE</h6>
-                    <span className="font-weight-light">
-                      {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
-                      {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
-                    </span>
-                    <br />
-                    <span className="font-weight-light">{`${this.props.details.last_date_of_exposure ? this.props.details.last_date_of_exposure : ''}`}</span>
-                    <br />
-                    <span className="font-weight-light text-danger">
-                      {this.props.details.contact_of_known_case
-                        ? 'CLOSE CONTACT WITH A KNOWN CASE: ' + (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '')
-                        : ''}
-                      {this.props.details.contact_of_known_case ? <br /> : ''}
-                    </span>
-                    <span className="font-weight-light text-danger">
-                      {this.props.details.member_of_a_common_exposure_cohort
-                        ? 'MEMBER OF A COMMON EXPOSURE COHORT: ' +
-                          (this.props.details.member_of_a_common_exposure_cohort_type ? this.props.details.member_of_a_common_exposure_cohort_type : '')
-                        : ''}
-                      {this.props.details.member_of_a_common_exposure_cohort ? <br /> : ''}
-                    </span>
-                    <span className="font-weight-light text-danger">
-                      {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL FROM AFFECTED COUNTRY OR AREA' : ''}
-                      {this.props.details.travel_to_affected_country_or_area ? <br /> : ''}
-                    </span>
-                    <span className="font-weight-light text-danger">
-                      {this.props.details.was_in_health_care_facility_with_known_cases
-                        ? 'WAS IN HEALTH CARE FACILITY WITH KNOWN CASES: ' +
-                          (this.props.details.was_in_health_care_facility_with_known_cases_facility_name
-                            ? this.props.details.was_in_health_care_facility_with_known_cases_facility_name
-                            : '')
-                        : ''}
-                      {this.props.details.was_in_health_care_facility_with_known_cases ? <br /> : ''}
-                    </span>
-                    <span className="font-weight-light text-danger">
-                      {this.props.details.laboratory_personnel
-                        ? 'LABORATORY PERSONNEL: ' +
-                          (this.props.details.laboratory_personnel_facility_name ? this.props.details.laboratory_personnel_facility_name : '')
-                        : ''}
-                      {this.props.details.laboratory_personnel ? <br /> : ''}
-                    </span>
-                    <span className="font-weight-light text-danger">
-                      {this.props.details.healthcare_personnel
-                        ? 'HEALTHCARE PERSONNEL: ' +
-                          (this.props.details.healthcare_personnel_facility_name ? this.props.details.healthcare_personnel_facility_name : '')
-                        : ''}
-                      {this.props.details.healthcare_personnel ? <br /> : ''}
-                    </span>
-                    <span className="font-weight-light text-danger">
-                      {this.props.details.crew_on_passenger_or_cargo_flight ? 'CREW ON PASSENGER OR CARGO FLIGHT' : ''}
-                      {this.props.details.crew_on_passenger_or_cargo_flight ? <br /> : ''}
-                    </span>
-                  </Col>
+                  {!this.props.details.isolation && (
+                    <Col className="text-truncate">
+                      <h6>LAST EXPOSURE</h6>
+                      <span className="font-weight-light">
+                        {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
+                        {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
+                      </span>
+                      <br />
+                      <span className="font-weight-light">{`${this.props.details.last_date_of_exposure ? this.props.details.last_date_of_exposure : ''}`}</span>
+                      <br />
+                      <span className="font-weight-light text-danger">
+                        {this.props.details.contact_of_known_case
+                          ? 'CLOSE CONTACT WITH A KNOWN CASE: ' +
+                            (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '')
+                          : ''}
+                        {this.props.details.contact_of_known_case ? <br /> : ''}
+                      </span>
+                      <span className="font-weight-light text-danger">
+                        {this.props.details.member_of_a_common_exposure_cohort
+                          ? 'MEMBER OF A COMMON EXPOSURE COHORT: ' +
+                            (this.props.details.member_of_a_common_exposure_cohort_type ? this.props.details.member_of_a_common_exposure_cohort_type : '')
+                          : ''}
+                        {this.props.details.member_of_a_common_exposure_cohort ? <br /> : ''}
+                      </span>
+                      <span className="font-weight-light text-danger">
+                        {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL FROM AFFECTED COUNTRY OR AREA' : ''}
+                        {this.props.details.travel_to_affected_country_or_area ? <br /> : ''}
+                      </span>
+                      <span className="font-weight-light text-danger">
+                        {this.props.details.was_in_health_care_facility_with_known_cases
+                          ? 'WAS IN HEALTH CARE FACILITY WITH KNOWN CASES: ' +
+                            (this.props.details.was_in_health_care_facility_with_known_cases_facility_name
+                              ? this.props.details.was_in_health_care_facility_with_known_cases_facility_name
+                              : '')
+                          : ''}
+                        {this.props.details.was_in_health_care_facility_with_known_cases ? <br /> : ''}
+                      </span>
+                      <span className="font-weight-light text-danger">
+                        {this.props.details.laboratory_personnel
+                          ? 'LABORATORY PERSONNEL: ' +
+                            (this.props.details.laboratory_personnel_facility_name ? this.props.details.laboratory_personnel_facility_name : '')
+                          : ''}
+                        {this.props.details.laboratory_personnel ? <br /> : ''}
+                      </span>
+                      <span className="font-weight-light text-danger">
+                        {this.props.details.healthcare_personnel
+                          ? 'HEALTHCARE PERSONNEL: ' +
+                            (this.props.details.healthcare_personnel_facility_name ? this.props.details.healthcare_personnel_facility_name : '')
+                          : ''}
+                        {this.props.details.healthcare_personnel ? <br /> : ''}
+                      </span>
+                      <span className="font-weight-light text-danger">
+                        {this.props.details.crew_on_passenger_or_cargo_flight ? 'CREW ON PASSENGER OR CARGO FLIGHT' : ''}
+                        {this.props.details.crew_on_passenger_or_cargo_flight ? <br /> : ''}
+                      </span>
+                    </Col>
+                  )}
+                  {this.props.details.isolation && (
+                    <Col className="text-truncate">
+                      <span className="font-weight-light">
+                        {`${this.props.details.symptom_onset ? `Symptom Onset: ${this.props.details.symptom_onset}` : ''}`}
+                      </span>
+                      <br />
+                      <span className="font-weight-light">{`${this.props.details.case_status ? `Case Status: ${this.props.details.case_status}` : ''}`}</span>
+                    </Col>
+                  )}
                 </Row>
               </Col>
             </Row>
