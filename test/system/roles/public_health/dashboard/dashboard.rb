@@ -160,9 +160,9 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     select(case_status, from: 'case_status')
     if workflow != :isolation && %w[Confirmed Probable].include?(case_status)
       select(next_step, from: 'confirmed')
-    elsif apply_to_group
-      find_by_id('apply_to_group', { visible: :all }).check
     end
+
+    find_by_id('apply_to_group', { visible: :all }).check if apply_to_group
     click_on 'Submit'
     go_to_other(workflow)
   end
