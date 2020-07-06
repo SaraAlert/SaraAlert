@@ -254,7 +254,7 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'bulk edit case status from isolation to exposure' do
-    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_45 patient_47], :isolation, 'non-reporting', 'Unknown')
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_45 patient_47], :isolation, 'non-reporting', 'Unknown', nil, false)
   end
 
   test 'bulk edit case status from exposure to isolation with household' do
