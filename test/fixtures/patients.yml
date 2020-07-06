@@ -956,7 +956,7 @@ patient_52:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "<%= 11.days.ago &>"
+  last_date_of_exposure: "<%= 11.days.ago %>"
 patient_53:
   id: 53
   created_at: "<%= 10.days.ago %>"
@@ -980,7 +980,7 @@ patient_53:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "<%= 11.days.ago &>"
+  last_date_of_exposure: "<%= 11.days.ago %>"
 patient_54:
   id: 54
   created_at: "<%= 6.days.ago %>"
@@ -1004,7 +1004,7 @@ patient_54:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "<%= 8.days.ago &>"
+  last_date_of_exposure: "<%= 8.days.ago %>"
 patient_55:
   id: 55
   created_at: "<%= 4.days.ago %>"
@@ -1028,4 +1028,4 @@ patient_55:
   primary_telephone_type: "Plain Cell"
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
-  last_date_of_exposure: "<%= 4.days.ago &>"
+  last_date_of_exposure: "<%= 4.days.ago %>"

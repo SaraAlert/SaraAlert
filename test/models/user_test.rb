@@ -48,40 +48,40 @@ class UserTest < ActiveSupport::TestCase
     admin = create(:admin_user)
     # User with no role and no patients in the jurisdiction
     user = create(:user, jurisdiction: @jurisdiction)
-    assert_nil user.get_patient(1)
+    assert_nil user.get_patients(1)
 
     # User with patients but no role
     user_with_patients = create(:user, created_patients_count: rand(100), jurisdiction: @jurisdiction)
     patient = user_with_patients.enrolled_patients.first
-    assert_nil user_with_patients.get_patient(patient.id)
+    assert_nil user_with_patients.get_patients(patient.id)
 
     # Enroller with no patients
     user.add_role(:enroller)
     error = assert_raises(ActiveRecord::RecordNotFound) do
-      user.get_patient(patient.id)
+      user.get_patients(patient.id)
     end
     assert_includes(error.message, "Couldn't find Patient with 'id'=#{patient.id}")
     user.remove_role(:enroller)
 
     # Enroller with patients
     user_with_patients.add_role(:enroller)
-    assert_equal patient, user_with_patients.get_patient(patient.id)
+    assert_equal patient, user_with_patients.get_patients(patient.id)
     user_with_patients.remove_role(:enroller)
 
     # Public health with no patients, but in the jurisdiction
     user.add_role(:public_health)
-    assert_equal patient, user.get_patient(patient.id)
+    assert_equal patient, user.get_patients(patient.id)
     user.remove_role(:public_health)
 
     # Public health with patients and in the jurisdiction
     user_with_patients.add_role(:public_health)
-    assert_equal patient, user_with_patients.get_patient(patient.id)
+    assert_equal patient, user_with_patients.get_patients(patient.id)
     user_with_patients.remove_role(:public_health)
 
     # Public health outisde of jurisdiction
     user_outside_jurisdiction.add_role(:public_health)
     error = assert_raises(ActiveRecord::RecordNotFound) do
-      user_outside_jurisdiction.get_patient(patient.id)
+      user_outside_jurisdiction.get_patients(patient.id)
     end
     assert_includes(error.message, "Couldn't find Patient with 'id'=#{patient.id}")
 
@@ -89,27 +89,27 @@ class UserTest < ActiveSupport::TestCase
 
     # Public health enroller with no patients (|| viewable_patients.find)
     user.add_role(:public_health_enroller)
-    assert_equal patient, user.get_patient(patient.id)
+    assert_equal patient, user.get_patients(patient.id)
     user.remove_role(:public_health_enroller)
 
     # Public health enroller with patients (enrolled_patients.find)
     user_with_patients.add_role(:public_health_enroller)
-    assert_equal patient, user_with_patients.get_patient(patient.id)
+    assert_equal patient, user_with_patients.get_patients(patient.id)
     user_with_patients.remove_role(:public_health_enroller)
 
     # Public health enroller outside of jurisdiction
     user_outside_jurisdiction.add_role(:public_health_enroller)
     error = assert_raises(ActiveRecord::RecordNotFound) do
-      user_outside_jurisdiction.get_patient(patient.id)
+      user_outside_jurisdiction.get_patients(patient.id)
     end
     assert_includes(error.message, "Couldn't find Patient with 'id'=#{patient.id}")
     user_outside_jurisdiction.remove_role(:public_health_enroller)
 
     # Admin outside of jurisdiction
-    assert_nil admin.get_patient(patient.id)
+    assert_nil admin.get_patients(patient.id)
     # Admin inside jurisdiction
     admin.update(jurisdiction: @jurisdiction)
-    assert_nil admin.get_patient(patient.id)
+    assert_nil admin.get_patients(patient.id)
   end
 
   test 'jurisdiction path' do

@@ -53,11 +53,11 @@ class User < ApplicationRecord
   # Get a patient (that this user is allowed to get)
   def get_patient(id)
     if has_role?(:enroller)
-      enrolled_patients.find(id)
+      enrolled_patients.find_by_id(id)
     elsif has_role?(:public_health)
-      viewable_patients.find(id)
+      viewable_patients.find_by_id(id)
     elsif has_role?(:public_health_enroller)
-      viewable_patients.find(id)
+      viewable_patients.find_by_id(id)
     elsif has_role?(:admin)
       nil
     end
@@ -65,7 +65,15 @@ class User < ApplicationRecord
 
   # Get multiple patients (that this user is allowed to get)
   def get_patients(ids)
-    get_patient(ids)
+    if has_role?(:enroller)
+      enrolled_patients.find(ids)
+    elsif has_role?(:public_health)
+      viewable_patients.find(ids)
+    elsif has_role?(:public_health_enroller)
+      viewable_patients.find(ids)
+    elsif has_role?(:admin)
+      nil
+    end
   end
 
   # Allow information on the user's jurisdiction to be displayed
