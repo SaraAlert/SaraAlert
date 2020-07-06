@@ -171,7 +171,7 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
     @@public_health_dashboard.actions_update_case_status(workflow, case_status, next_step, apply_to_group)
-    patient_labels.each { |label| @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label) }
+    patient_labels.each { |label| @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, apply_to_group) }
     @@system_test_utils.logout
   end
   # rubocop:enable Metrics/ParameterLists

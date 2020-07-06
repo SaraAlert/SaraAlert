@@ -127,7 +127,9 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     end
   end
 
-  def search_for_and_verify_patient_monitoring_actions(patient_label)
+  def search_for_and_verify_patient_monitoring_actions(patient_label, apply_to_group)
+    return if patient_label.nil?
+
     @@public_health_dashboard.search_for_and_view_patient('all', patient_label)
     monitoree = Patient.find(@@system_test_utils.patients[patient_label]['id'])
     monitoring_status = monitoree.monitoring ? 'Actively Monitoring' : 'Not Monitoring'
@@ -140,5 +142,11 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     assert page.has_field?('assignedUser', with: monitoree.assigned_user.to_s)
     assert page.has_field?('jurisdictionId', with: monitoree.jurisdiction.jurisdiction_path_string)
     @@system_test_utils.return_to_dashboard(nil)
+    return unless apply_to_group
+
+    monitoree.dependents.each do |dependent|
+      label = "patient_#{dependent.id}"
+      search_for_and_verify_patient_monitoring_actions(label, false)
+    end
   end
 end
