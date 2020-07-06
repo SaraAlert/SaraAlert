@@ -178,6 +178,7 @@ class CaseStatus extends React.Component {
           {this.state.confirmed === 'Continue Monitoring in Isolation Workflow' && (
             <p className="pt-4">The selected cases will be moved to the isolation workflow.</p>
           )}
+          {this.renderApplyToGroup()}
         </div>
       );
     }
@@ -221,16 +222,22 @@ class CaseStatus extends React.Component {
     return (
       <div>
         {follow_up_text}
-        <Form.Group className="mt-2">
-          <Form.Check
-            type="switch"
-            id="apply_to_group"
-            label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
-            onChange={this.handleChange}
-            checked={this.state.apply_to_group === true || false}
-          />
-        </Form.Group>
+        {this.renderApplyToGroup()}
       </div>
+    );
+  }
+
+  renderApplyToGroup() {
+    return (
+      <Form.Group className="mt-2">
+        <Form.Check
+          type="switch"
+          id="apply_to_group"
+          label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
+          onChange={this.handleChange}
+          checked={this.state.apply_to_group === true || false}
+        />
+      </Form.Group>
     );
   }
 
