@@ -53,7 +53,6 @@ class PublicHealthHeader extends React.Component {
   }
 
   renderImportModal() {
-    console.log(this.state);
     return (
       <Modal
         dialogClassName="modal-import"

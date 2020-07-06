@@ -110,7 +110,7 @@ class Import extends React.Component {
   handleConfirm = async confirmText => {
     this.setState({ acceptedAllStarted: true }, async () => {
       let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
-      let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} detected duplicate monitorees` : undefined;
+      let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} potential duplicate monitorees` : undefined;
       if (await confirmDialog(confirmText, { title: 'Import Monitorees', extraOption: duplicatePrompt, extraOptionChange: this.handleExtraOptionToggle })) {
         this.importAll();
       } else {
@@ -142,14 +142,13 @@ class Import extends React.Component {
         })}
         {this.state.errors.length == 0 && (
           <div className="mx-3 mt-1 mb-2">
-            {this.state.phased.length > 0 && <ProgressBar animated striped now={Math.round((this.state.progress + 1 / this.state.phased.length) * 100)} />}
             <h5>
               Please review the monitoree records that are about to be imported. You can individually accept or reject each record below. You can also choose to
               import all unique records or all records (including duplicates) by clicking the &quot;Import All&quot; button.
             </h5>
             <Button
               variant="primary"
-              className="btn-lg my-2"
+              className="btn-lg mt-2"
               onClick={() =>
                 this.handleConfirm(
                   `This will import all records listed below that you did not manually accept or reject. If potential duplicates have been detected, check the box if you would like to import them.`
@@ -158,9 +157,12 @@ class Import extends React.Component {
               Import All
             </Button>
             {this.state.acceptedAllStarted && (
-              <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.stopImport('Stop Import')}>
+              <Button variant="primary" className="btn-lg mt-2 ml-2" onClick={() => this.stopImport('Stop Import')}>
                 Stop Import
               </Button>
+            )}
+            {this.state.phased.length > 0 && (
+              <ProgressBar animated striped className="my-3" now={Math.round((this.state.progress + 1 / this.state.phased.length) * 100)} />
             )}
             {this.state.patients.map((patient, index) => {
               return (

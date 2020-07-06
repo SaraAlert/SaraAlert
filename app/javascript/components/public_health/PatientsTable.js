@@ -12,7 +12,6 @@ import {
   Dropdown,
   DropdownButton,
   Form,
-  FormCheck,
   InputGroup,
   Nav,
   OverlayTrigger,
@@ -450,9 +449,8 @@ class PatientsTable extends React.Component {
                               type="checkbox"
                               className="text-center ml-0"
                               checked={this.state.selectedPatients.length > 0 && !this.state.selectedPatients.includes(false)}
-                              onChange={() => {}}>
-                              <FormCheck.Input type="checkbox" className="position-static" style={{ cursor: 'pointer' }} />
-                            </Form.Check>
+                              onChange={() => {}}
+                            />
                           </th>
                         )}
                       </tr>
@@ -501,9 +499,8 @@ class PatientsTable extends React.Component {
                                   className="text-center ml-0"
                                   style={{ cursor: 'pointer' }}
                                   checked={this.state.selectedPatients[parseInt(index)]}
-                                  onChange={() => {}}>
-                                  <FormCheck.Input type="checkbox" className="position-static" style={{ cursor: 'pointer' }} />
-                                </Form.Check>
+                                  onChange={() => {}}
+                                />
                               </td>
                             )}
                           </tr>

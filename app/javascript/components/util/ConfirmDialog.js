@@ -6,15 +6,13 @@ import { confirmable, createConfirmation } from 'react-confirm';
 class Confirmation extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      extraOptionValue: false,
-    };
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(event) {
-    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    this.props.extraOptionChange(value);
+    if (event.target.name === 'extraOption') {
+      this.props.extraOptionChange(event.target.checked);
+    }
   }
 
   render() {
@@ -38,14 +36,14 @@ class Confirmation extends React.Component {
         onHide={() => proceed(false)}
         backdrop={enableEscape ? true : 'static'}
         keyboard={enableEscape}>
-        <Modal.Header>
+        <Modal.Header closeButton>
           <Modal.Title>{title || 'Confirm'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p className="mb-0">{confirmation}</p>
           {additionalNote && <p className="mb-0 mt-4">{additionalNote}</p>}
+          {extraOption && <Form.Check type="checkbox" name="extraOption" label={extraOption} className="mt-4" onChange={this.handleChange} />}
         </Modal.Body>
-        {extraOption && <Form.Check type="checkbox" label={extraOption} className="mx-3" onChange={this.handleChange}></Form.Check>}
         <Modal.Footer>
           <Button onClick={() => proceed(false)}>{cancelLabel}</Button>
           <Button className="button-l" onClick={() => proceed(true)}>
