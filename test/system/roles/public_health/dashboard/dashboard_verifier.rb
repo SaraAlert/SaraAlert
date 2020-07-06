@@ -71,7 +71,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
       if verify_scope
         @@system_test_utils.wait_for_data_table_load_delay
         page.all('.dataTable tbody tr').each do |row|
-          assigned_jurisdiction_cell = row.all('td')[1]
+          assigned_jurisdiction_cell = row.all('td')[2]
           assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
         end
       end
