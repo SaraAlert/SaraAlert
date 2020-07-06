@@ -10,7 +10,7 @@ import { stateOptions, insularAreas } from '../../data';
 import CountyLevelMaps from './CountyLevelMaps';
 
 const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today
-const INITIAL_SELECTED_DATE_INDEX = 0; // Maybe at some point, we would want to show the latest day initially
+const INITIAL_SELECTED_DATE_INDEX = 9;
 const TERRITORY_GEOJSON_FILE = 'usaTerritories.json';
 let JURISDICTIONS_NOT_IN_USE = {
   states: [],
@@ -278,6 +278,7 @@ class GeographicSummary extends React.Component {
               <Slider
                 max={MAX_DAYS_OF_HISTORY - 1}
                 marks={this.dateRange}
+                defaultValue={INITIAL_SELECTED_DATE_INDEX}
                 railStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 trackStyle={{ backgroundColor: '#666', height: '3px', borderRadius: '10px' }}
                 handleStyle={{ borderColor: '#595959', backgroundColor: 'white' }}
