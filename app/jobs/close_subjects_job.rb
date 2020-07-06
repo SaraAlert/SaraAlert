@@ -10,7 +10,7 @@ class CloseSubjectsJob < ApplicationJob
     # Closable if:
     #   - Subject's last exposure (or created_at) + <monitoring_period_days> has passed
     #     AND
-    #   - Subject's last assessment was not symptomatic
+    #   - Subject is not symptomatic
     #     AND
     #   - Subject's last assessment was completed within the <reporting_period_minutes>
 
