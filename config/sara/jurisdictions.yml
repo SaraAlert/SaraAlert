@@ -1,4 +1,4 @@
-# For usage instructions see config/sara/README.md
+# For usage instructions see /config/sara/README.md
 'USA':
     symptoms:
         # Key is the symptom name as it will appear to the user
