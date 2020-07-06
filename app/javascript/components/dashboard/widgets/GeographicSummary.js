@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import { PropTypes } from 'prop-types';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Button, Col, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
@@ -33,6 +33,7 @@ class GeographicSummary extends React.Component {
       },
       mapObject: null,
       showSpinner: false,
+      viewMapTable: false,
       exposureMapData: this.analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)].value,
       isolationMapData: this.analyticsData.isolation[Number(INITIAL_SELECTED_DATE_INDEX)].value,
     };
@@ -199,6 +200,14 @@ class GeographicSummary extends React.Component {
     );
   };
 
+  showMapTable = () => {
+    this.setState({ viewMapTable: !this.state.viewMapTable }, () => {
+      setTimeout(() => {
+        window.scrollBy(0, 150);
+      }, 250);
+    });
+  };
+
   handleJurisdictionChange = jurisdiction => {
     this.spinnerState = 2;
     if (jurisdiction === 'USA') {
@@ -325,6 +334,44 @@ class GeographicSummary extends React.Component {
             </Button>
             {backButton}
           </Row>
+          <div className="mb-4">
+            <Button
+              variant="primary"
+              size="md"
+              className="mr-auto btn-square mt-2"
+              title={this.state.viewMapTable ? 'Collapse Tabular View of Map Data' : 'Expand Map Data in Tabular Form'}
+              onClick={() => this.showMapTable()}>
+              {this.state.viewMapTable ? 'Collapse Tabular View of Map Data' : 'Expand Map Data in Tabular Form'}
+              <i className="fas fa-table ml-2"> </i>
+            </Button>
+            {this.state.viewMapTable && (
+              <Table striped hover className="border">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Exposure Workflow</th>
+                    <th>Isolation Workflow</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stateOptions.map((jurisdiction, jurisdictionIndex) => (
+                    <tr key={jurisdictionIndex}>
+                      <td className="font-weight-bold">{jurisdiction.name}</td>
+                      <td>{this.state.exposureMapData.stateData[jurisdiction.isoCode]}</td>
+                      <td>{this.state.isolationMapData.stateData[jurisdiction.isoCode]}</td>
+                    </tr>
+                  ))}
+                  {Object.prototype.hasOwnProperty.call(this.state.isolationMapData.stateData, 'Unknown') && (
+                    <tr>
+                      <td className="font-weight-bold">Unknown</td>
+                      <td>{this.state.exposureMapData.stateData['Unknown']}</td>
+                      <td>{this.state.isolationMapData.stateData['Unknown']}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            )}
+          </div>
         </div>
       </div>
     );
