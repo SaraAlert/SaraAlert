@@ -19,7 +19,7 @@ class Confirmation extends React.Component {
 
   render() {
     const {
-      okLabbel = 'OK',
+      okLabel = 'OK',
       cancelLabel = 'Cancel',
       title,
       confirmation,
@@ -49,7 +49,7 @@ class Confirmation extends React.Component {
         <Modal.Footer>
           <Button onClick={() => proceed(false)}>{cancelLabel}</Button>
           <Button className="button-l" onClick={() => proceed(true)}>
-            {okLabbel}
+            {okLabel}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -58,7 +58,7 @@ class Confirmation extends React.Component {
 }
 
 Confirmation.propTypes = {
-  okLabbel: PropTypes.string,
+  okLabel: PropTypes.string,
   cancelLabel: PropTypes.string,
   title: PropTypes.string,
   confirmation: PropTypes.string,

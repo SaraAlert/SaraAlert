@@ -13,10 +13,6 @@ class ImportController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_import?
   end
 
-  def error
-    @error_msg = params[:error_details]
-  end
-
   def download_guidance
     send_file(
       "#{Rails.root}/public/Sara%20Alert%20Import%20Format.xlsx",
@@ -117,6 +113,8 @@ class ImportController < ApplicationController
       # This is a catch all for any other unexpected error
       @errors << "Unexpected Error: '#{e&.message}' Please make sure that .xlsx import file is formatted in accordance with the formatting guidance."
     end
+
+    render json: { patients: @patients, errors: @errors }
   end
 
   def lab_result(data, row_ind)

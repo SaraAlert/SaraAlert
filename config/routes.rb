@@ -66,7 +66,6 @@ Rails.application.routes.draw do
 
   post '/import/:workflow/:format', to: 'import#import'
   get '/import/download_guidance', to: 'import#download_guidance'
-  get '/import/error', to: 'import#error'
 
   get '/patients/:id/household_removeable', to: 'patients#household_removeable'
   post '/patients/bulk_edit/status', to: 'patients#bulk_update_status'

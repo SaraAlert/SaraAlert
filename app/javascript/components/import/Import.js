@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Row, Col, Alert } from 'react-bootstrap';
+import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import confirmDialog from '../util/ConfirmDialog';
@@ -86,12 +86,18 @@ class Import extends React.Component {
     this.setState({ importDuplicates: value });
   }
 
-  stopImport = async () => {
+  stopImport = async buttonText => {
     this.setState({ isPaused: true }, async () => {
-      let confirmText = `This will stop the creation of new records from the list below. Records that were imported prior to clicking “Stop Import” will not be deleted from the system.`;
-      if (await confirmDialog(confirmText, { title: 'Stop Import Process' })) {
+      const confirmText = 'You are about to stop the import process. Are you sure you want to do this?';
+      const options = {
+        title: 'Stop Import',
+        okLabel: 'Proceed to Stop',
+        cancelLabel: 'Continue to Import',
+        additionalNote: `Records imported prior to clicking “${buttonText}” will not be deleted from the system.`,
+      };
+      if (await confirmDialog(confirmText, options)) {
         this.setState({ isPaused: false });
-        location.href = '/';
+        location.href = this.props.workflow === 'exposure' ? '/public_health' : '/public_health/isolation';
       } else {
         this.setState({ isPaused: false });
         if (this.state.acceptedAllStarted) {
@@ -120,7 +126,7 @@ class Import extends React.Component {
     return (
       <React.Fragment>
         {this.state.errors.length != 0 && (
-          <div className="m-4">
+          <div className="mx-3 mt-1 mb-2">
             <h5>The following errors were found in your import file, please fix them and then try re-importing.</h5>
           </div>
         )}
@@ -135,18 +141,8 @@ class Import extends React.Component {
           );
         })}
         {this.state.errors.length == 0 && (
-          <div className="m-4">
-            {this.state.phased.length > 0 && (
-              <div className="progress mb-3">
-                <div
-                  className="progress-bar progress-bar-striped progress-bar-animated"
-                  role="progressbar"
-                  aria-valuenow={this.state.progress}
-                  style={{ width: Math.round((this.state.progress + 1 / this.state.phased.length) * 100) + '%' }}
-                  aria-valuemin="0"
-                  aria-valuemax={this.state.phased.length}></div>
-              </div>
-            )}
+          <div className="mx-3 mt-1 mb-2">
+            {this.state.phased.length > 0 && <ProgressBar animated striped now={Math.round((this.state.progress + 1 / this.state.phased.length) * 100)} />}
             <h5>
               Please review the monitoree records that are about to be imported. You can individually accept or reject each record below. You can also choose to
               import all unique records or all records (including duplicates) by clicking the &quot;Import All&quot; button.
@@ -162,7 +158,7 @@ class Import extends React.Component {
               Import All
             </Button>
             {this.state.acceptedAllStarted && (
-              <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.stopImport()}>
+              <Button variant="primary" className="btn-lg my-2 ml-2" onClick={() => this.stopImport('Stop Import')}>
                 Stop Import
               </Button>
             )}
@@ -237,7 +233,7 @@ class Import extends React.Component {
                     <React.Fragment>
                       <Button
                         variant="danger"
-                        className="my-2 ml-3 float-right"
+                        className="mt-2 ml-3 float-right"
                         onClick={() => {
                           this.rejectSub(index);
                         }}>
@@ -245,7 +241,7 @@ class Import extends React.Component {
                       </Button>
                       <Button
                         variant="primary"
-                        className="my-2 float-right"
+                        className="mt-2 float-right"
                         onClick={() => {
                           this.importSub(index, true);
                         }}>
@@ -264,6 +260,7 @@ class Import extends React.Component {
 }
 
 Import.propTypes = {
+  workflow: PropTypes.string,
   patients: PropTypes.array,
   errors: PropTypes.array,
   authenticity_token: PropTypes.string,
