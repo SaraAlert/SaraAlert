@@ -163,7 +163,7 @@ class PatientMailer < ApplicationMailer
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
-    lang = :en % i[so].include?(lang) # Some languages are not supported via voice
+    lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
     patient_names = ([patient] + patient.dependents.where(monitoring: true)).uniq.collect do |p|
       "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
     end

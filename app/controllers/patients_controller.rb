@@ -24,7 +24,8 @@ class PatientsController < ApplicationController
     @group_members = @patient.dependents.where.not(id: @patient.id)
 
     # All group members regardless if this is not HOH
-    @all_group_members = ([@patient] + current_user.get_patient(@patient.responder_id).dependents).uniq
+    dependents = current_user.get_patient(@patient.responder_id)&.dependents
+    @all_group_members = ([@patient] + (dependents.nil? ? [] : dependents)).uniq
 
     @translations = Assessment.new.translations
 
