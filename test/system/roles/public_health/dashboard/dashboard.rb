@@ -142,4 +142,31 @@ class PublicHealthDashboard < ApplicationSystemTestCase
       end
     end
   end
+
+  def select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
+    click_on 'Isolation Monitoring' if workflow == :isolation
+    @@system_test_utils.go_to_tab(tab)
+    @@system_test_utils.go_to_tab(tab)
+    patient_labels.each { |patient| check_patient(patient) }
+  end
+
+  def check_patient(patient_label)
+    find_by_id(PATIENTS[patient_label]['id'].to_s).find(class: 'select-checkbox').set(true)
+  end
+
+  def actions_update_case_status(workflow, case_status, next_step, apply_to_group)
+    click_on 'Actions'
+    click_on 'Update Case Status'
+    select(case_status, from: 'case_status')
+    select(next_step, from: 'confirmed') if workflow != :isolation && %w[Confirmed Probable].include?(case_status)
+    find_by_id('apply_to_group', { visible: :all }).check({ allow_label_click: true }) if apply_to_group
+    click_on 'Submit'
+    go_to_other(workflow)
+  end
+
+  def go_to_other(workflow)
+    click_on 'Isolation Monitoring' if workflow == :exposure
+
+    click_on 'Exposure Monitoring' if workflow == :isolation
+  end
 end

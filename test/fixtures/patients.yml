@@ -933,3 +933,99 @@ patient_51:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   last_date_of_exposure: "<%= 12.days.ago %>"
+patient_52:
+  id: 52
+  created_at: "<%= 10.days.ago %>"
+  updated_at: "<%= 10.days.ago %>"
+  responder_id: 52
+  creator_id: 1
+  jurisdiction_id: 2
+  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  monitoring: true
+  isolation: false
+  first_name: "Kathlyn81"
+  middle_name: "Lane00"
+  last_name: "Stehr98"
+  sex: "Female"
+  date_of_birth: "<%= 35.years.ago %>"
+  address_line_1: "1000 Micah Summit"
+  address_city: "Port Madalene"
+  address_state: "New Mexico"
+  address_zip: "69857"
+  primary_telephone: "(555) 555-1234"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 11.days.ago %>"
+patient_53:
+  id: 53
+  created_at: "<%= 10.days.ago %>"
+  updated_at: "<%= 10.days.ago %>"
+  responder_id: 52
+  creator_id: 1
+  jurisdiction_id: 2
+  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  monitoring: true
+  isolation: false
+  first_name: "Dietrich18"
+  middle_name: "Ava95"
+  last_name: "Stehr98"
+  sex: "Male"
+  date_of_birth: "<%= 25.years.ago %>"
+  address_line_1: "1000 Micah Summit"
+  address_city: "Port Madalene"
+  address_state: "New Mexico"
+  address_zip: "69857"
+  primary_telephone: "(555) 555-1234"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 11.days.ago %>"
+patient_54:
+  id: 54
+  created_at: "<%= 6.days.ago %>"
+  updated_at: "<%= 6.days.ago %>"
+  responder_id: 54
+  creator_id: 1
+  jurisdiction_id: 2
+  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  monitoring: true
+  isolation: true
+  first_name: "Curtis44"
+  middle_name: "Kevin79"
+  last_name: "Gusikowski64"
+  sex: "Female"
+  date_of_birth: "<%= 35.years.ago %>"
+  address_line_1: "664 Ashley Station"
+  address_city: "Kemmerside"
+  address_state: "Utah"
+  address_zip: "28817-1621"
+  primary_telephone: "(555) 555-1234"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 8.days.ago %>"
+patient_55:
+  id: 55
+  created_at: "<%= 4.days.ago %>"
+  updated_at: "<%= 4.days.ago %>"
+  responder_id: 54
+  creator_id: 1
+  jurisdiction_id: 2
+  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  monitoring: true
+  isolation: true
+  first_name: "Cartwright70"
+  middle_name: "Patrice81"
+  last_name: "Lindgren51"
+  sex: "Female"
+  date_of_birth: "<%= 45.years.ago %>"
+  address_line_1: "664 Ashley Station"
+  address_city: "Kemmerside"
+  address_state: "Utah"
+  address_zip: "28817-1621"
+  primary_telephone: "(555) 555-1234"
+  primary_telephone_type: "Plain Cell"
+  preferred_contact_method: "Telephone call"
+  source_of_report: "CDC"
+  last_date_of_exposure: "<%= 4.days.ago %>"

@@ -42,6 +42,14 @@ class User < ApplicationRecord
     created_patients
   end
 
+  def patients
+    return viewable_patients if has_role?(:public_health) || has_role?(:public_health_enroller)
+
+    return enrolled_patients if has_role?(:enroller)
+
+    nil
+  end
+
   # Get a patient (that this user is allowed to get)
   def get_patient(id)
     if has_role?(:enroller)
@@ -50,6 +58,19 @@ class User < ApplicationRecord
       viewable_patients.find_by_id(id)
     elsif has_role?(:public_health_enroller)
       viewable_patients.find_by_id(id)
+    elsif has_role?(:admin)
+      nil
+    end
+  end
+
+  # Get multiple patients (that this user is allowed to get)
+  def get_patients(ids)
+    if has_role?(:enroller)
+      enrolled_patients.find(ids)
+    elsif has_role?(:public_health)
+      viewable_patients.find(ids)
+    elsif has_role?(:public_health_enroller)
+      viewable_patients.find(ids)
     elsif has_role?(:admin)
       nil
     end

@@ -49,7 +49,10 @@ export default function reportError(error, reportToSentry = true) {
     }
   }
 
-  ReactDOM.render(<ToastContainer closeOnClick pauseOnVisibilityChange draggable pauseOnHover />, document.getElementById('toast-mount-point'));
+  ReactDOM.render(
+    <ToastContainer enableMultiContainer containerId={'errors'} closeOnClick pauseOnVisibilityChange draggable pauseOnHover />,
+    document.getElementById('toast-mount-point')
+  );
 
   console.error(error);
 
@@ -62,5 +65,6 @@ export default function reportError(error, reportToSentry = true) {
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
+    containerId: 'errors',
   });
 }

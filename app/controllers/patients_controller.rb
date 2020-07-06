@@ -272,6 +272,37 @@ class PatientsController < ApplicationController
     current_user_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
   end
 
+  def bulk_update_status
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    # Nothing to do in this function if there isn't a list of patient ids.
+    patient_ids = params.require(:ids)
+
+    # If apply to group, find dependents ids and add to id array before user accessor for validation of access
+    if ActiveModel::Type::Boolean.new.cast(params.require(:apply_to_group))
+      dependent_ids = current_user.patients.where(responder_id: patient_ids).pluck(:id)
+      # If apply_to_group was set, and there exists a patient that has dependents in a different
+      # jurisdiction - one that the user may not have access to - those patients will get filtered out.
+      not_viewable = Patient.where(responder_id: patient_ids).pluck(:id) - dependent_ids
+
+      unless not_viewable.empty?
+        responders = Patient.find(not_viewable).map(&:responder)
+        responders.uniq
+        render json: { error: 'Selected Patients dependents are in a household that spans jurisidictions which you do not have access to.',
+                       patients: responders }, status: 401
+      end
+
+      patient_ids = patient_ids.union(dependent_ids)
+    end
+    patients = current_user.get_patients(patient_ids)
+
+    patients.each do |patient|
+      # Also updates jurisdiction if required
+      update_fields(patient, params)
+      update_history(patient, params)
+    end
+  end
+
   # Updates to workflow/tracking status for a subject
   def update_status
     redirect_to(root_url) && return unless current_user.can_edit_patient?

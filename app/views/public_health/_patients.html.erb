@@ -1,4 +1,8 @@
 <div class="px-4">
+
+  <%# Modals %>
+  <%= react_component("bulk_edit/CaseStatus", { authenticity_token: form_authenticity_token}) %>
+
   <% unless type == 'transferred_out_patients' %>
     <div class="row">
       <div class="col-sm-24 col-md-16 col-lg-18">
@@ -27,10 +31,14 @@
       </div>
     </div>
   <% end %>
+
   <table id="patients_table_<%= type %>" class="table table-sm table-striped table-bordered table-hover" style="width:100%">
     <thead>
       <tr>
         <% if isolation %>
+          <% unless type == 'transferred_out_patients' %>
+            <th class="DataTable-table-header"></th>
+          <% end %>
           <th class="DataTable-table-header">Monitoree</th>
           <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
           <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Assigned User</th> <% end %>
@@ -47,6 +55,9 @@
           <th class="DataTable-table-header"><% if type.include? 'transferred' %>Transferred At<% elsif type == 'closed_patients' %>Closed At<% else %>Latest Report<% end %></th>
           <% if type == 'all_patients' %><th class="DataTable-table-header">Status</th><% end %>
         <% else %>
+          <% unless type == 'transferred_out_patients' %>
+            <th class="DataTable-table-header"></th>
+          <% end %>
           <th class="DataTable-table-header">Monitoree</th>
           <th class="DataTable-table-header"><% if type == 'transferred_in_patients' %>From Jurisdiction<% elsif type == 'transferred_out_patients' %>To Jurisdiction<% else %>Jurisdiction<% end %></th>
           <% if type != 'transferred_in_patients' && type != 'transferred_out_patients' %><th class="DataTable-table-header">Assigned User</th> <% end %>
@@ -65,6 +76,8 @@
 </div>
 <script>
   $(document).ready(function() {
+    var caseStatusModal = document.getElementById("caseStatusModal");
+
     <% if type == 'transferred_out_patients' %>
       const route = '/public_health/patients/<% if isolation %>isolation<% else %>exposure<% end %>/<%= type %>/all/all/all';
     <% else %>
@@ -83,6 +96,36 @@
           }
         });
       },
+      <% unless type == 'transferred_out_patients' %>
+        buttons: [
+          {
+            extend: 'collection',
+            text: 'Actions',
+            autoClose: true,
+            className: 'dt-button',
+            enabled: false,
+            buttons: [
+              {
+                text: 'Update Case Status',
+                action: function ( e, dt, node, config ) {
+                  let selectedPatients = table.rows({ selected: true }).data().toArray();
+                  window.bulkEditCaseStatusComponent.activate(selectedPatients);
+                }
+              },
+              
+            ]
+        }
+        ],
+        order: [[ 1, 'asc' ]],
+        selectAll: "Select all items",
+        selectNone: "Select none",
+        select: {
+          style:    'multi+shift',
+          selector: 'td:first-child',
+          info: true
+        },
+      <% end %>
+      info: true,
       "serverSide": true,
       "deferLoading": 0, // Conditionally load tables (when tab is pressed)
       "ajax": route,
@@ -90,7 +133,19 @@
       "pageLength": 15,
       'processing': true,
       "language": { processing: '<i class="fas fa-cog fa-spin fa-2x"></i>'},
+      rowId: function(a) {
+        return a.id;
+      },
       "columns": [
+        <% unless type == 'transferred_out_patients' %>
+          {
+            targets: 0,
+            data: null,
+            defaultContent: '',
+            orderable: false,
+            className: 'select-checkbox'
+          },
+        <% end %>
         <% if isolation %>
           {
             "data": "linelist.name",
@@ -160,7 +215,7 @@
           <% if type == 'all_patients' %>,{ "data": "linelist.status", "orderable": false, render: $.fn.dataTable.render.text() }<% end %>
         <% end %>
       ],
-      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>"
+      "dom": "<'row'<'col-sm-24 col-md-4 my-auto'l><'col-sm-24 col-md-8 my-auto'i><'col-sm-24 col-md-12 my-auto'f>>" <% unless type == 'transferred_out_patients' %> + "<'row'<'col-sm-24 col-md-24'B>>" <% end %> + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'><'col-sm-24 col-md-14'p>>",
     });
 
     $(document).on('change', 'select#assigned_jurisdiction_<%= type %>', function(event) {
@@ -205,5 +260,36 @@
         }
       });
     }
+
+    <% unless type == 'transferred_out_patients' %>
+
+      table.buttons().container()
+          .appendTo( '#patients_table_<%= type %>_wrapper .row .col-md-24:eq(0)' );
+
+      table.on('select deselect', function () {
+          var selectedRows = table.rows( { selected: true } ).count();
+          table.button( 0 ).enable( selectedRows > 0 );
+      });
+
+      table.on("click", "th.select-checkbox", function() {
+        if ($("th.select-checkbox").hasClass("selected")) {
+          table.rows().deselect();
+          $("th.select-checkbox").removeClass("selected");
+        } else {
+          table.rows().select();
+          $("th.select-checkbox").addClass("selected");
+        }
+      }).on("select deselect", function() {
+        ("Some selection or deselection going on")
+        if (table.rows({
+          selected: true
+        }).count() !== table.rows().count()) {
+          $("th.select-checkbox").removeClass("selected");
+        } else {
+          $("th.select-checkbox").addClass("selected");
+        }
+      });
+
+    <% end %>
   });
 </script>

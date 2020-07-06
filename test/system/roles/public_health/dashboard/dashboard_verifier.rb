@@ -71,7 +71,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
       if verify_scope
         @@system_test_utils.wait_for_data_table_load_delay
         page.all('.dataTable tbody tr').each do |row|
-          assigned_jurisdiction_cell = row.all('td')[1]
+          assigned_jurisdiction_cell = row.all('td')[tab == 'transferred-out' ? 1 : 2]
           assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
         end
       end
@@ -124,6 +124,29 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
       assert page.has_content?(monitoree_display_name), @@system_test_utils.get_err_msg('Dashboard', 'monitoree name', monitoree_display_name)
     else
       assert page.has_no_content?(monitoree_display_name), @@system_test_utils.get_err_msg('Dashboard', 'monitoree name', monitoree_display_name)
+    end
+  end
+
+  def search_for_and_verify_patient_monitoring_actions(patient_label, apply_to_group)
+    return if patient_label.nil?
+
+    @@public_health_dashboard.search_for_and_view_patient('all', patient_label)
+    monitoree = Patient.find(@@system_test_utils.patients[patient_label]['id'])
+    monitoring_status = monitoree.monitoring ? 'Actively Monitoring' : 'Not Monitoring'
+    public_health_action = monitoree.public_health_action == '' ? 'None' : monitoree.public_health_action
+    assert page.has_select?('monitoring_status', selected: monitoring_status)
+    assert page.has_select?('exposure_risk_assessment', selected: monitoree.exposure_risk_assessment.to_s)
+    assert page.has_select?('monitoring_plan', selected: monitoree.monitoring_plan.to_s)
+    assert page.has_select?('case_status', selected: monitoree.case_status.to_s)
+    assert page.has_select?('public_health_action', selected: public_health_action)
+    assert page.has_field?('assignedUser', with: monitoree.assigned_user.to_s)
+    assert page.has_field?('jurisdictionId', with: monitoree.jurisdiction.jurisdiction_path_string)
+    @@system_test_utils.return_to_dashboard(nil)
+    return unless apply_to_group
+
+    monitoree.dependents.each do |dependent|
+      label = "patient_#{dependent.id}"
+      search_for_and_verify_patient_monitoring_actions(label, false)
     end
   end
 end

@@ -244,6 +244,33 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_test_helper.import_sara_alert_format('locals2c4_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :invalid_fields, [])
   end
 
+  test 'bulk edit case status from exposure to isolation' do
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi',
+                                                      %w[patient_1 patient_2],
+                                                      :exposure,
+                                                      'non-reporting',
+                                                      'Confirmed',
+                                                      'Continue Monitoring in Isolation Workflow')
+  end
+
+  test 'bulk edit case status from isolation to exposure' do
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_45 patient_47], :isolation, 'non-reporting', 'Unknown', nil, false)
+  end
+
+  test 'bulk edit case status from exposure to isolation with household' do
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi',
+                                                      %w[patient_52],
+                                                      :exposure,
+                                                      'non-reporting',
+                                                      'Confirmed',
+                                                      'Continue Monitoring in Isolation Workflow',
+                                                      true)
+  end
+
+  test 'bulk edit case status from isolation to exposure with household' do
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_54], :isolation, 'non-reporting', 'Unknown', nil, true)
+  end
+
   # TODO: Re-enable when migrating away from GitHub LFS
   # test 'download sara alert format guidance from exposure workflow' do
   #   @@public_health_test_helper.download_sara_alert_format_guidance('state1_epi', :exposure)

@@ -105,6 +105,11 @@
           window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
         }
       } else {
+        // Changed Tab, clear datatables selection
+        if (localStorage.getItem('dashboardCurrentTab') !== $(e.target).attr('href')) {
+          current_table = $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable();
+          current_table.rows( { selected: true } ).deselect();
+        }
         localStorage.setItem('dashboardCurrentTab', $(e.target).attr('href'))
         if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
           $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();

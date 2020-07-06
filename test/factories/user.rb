@@ -6,6 +6,8 @@ FactoryBot.define do
     # Guarantee an upper, lower, and symbol
     password { Faker::Internet.password(min_length: 10, max_length: 125, mix_case: true, special_characters: true) + 'aB!' }
     jurisdiction { create(:jurisdiction) }
+    authy_enabled { false }
+    authy_enforced { false }
 
     transient do
       created_patients_count { 0 }
