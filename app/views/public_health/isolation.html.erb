@@ -3,7 +3,7 @@
 <% end %>
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Isolation Dashboard", href: nil} ] } %>
 
-<%= react_component("public_health/PublicHealthHeader", {
+<%= react_component("publicHealth/PublicHealthHeader", {
   authenticity_token: form_authenticity_token,
   workflow: 'isolation',
   abilities: {
@@ -14,7 +14,7 @@
   }
 }) %>
 
-<%= react_component("public_health/PatientsTable", {
+<%= react_component("publicHealth/PatientsTable", {
   jurisdiction: {
     id: current_user.jurisdiction_id,
     path: current_user.jurisdiction[:path]

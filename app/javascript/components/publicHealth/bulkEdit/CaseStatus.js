@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
-import reportError from '../util/ReportError';
+import reportError from '../../util/ReportError';
 
 class CaseStatus extends React.Component {
   constructor(props) {
@@ -26,8 +26,6 @@ class CaseStatus extends React.Component {
     this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.toggleCaseStatusModal = this.toggleCaseStatusModal.bind(this);
-
-    window.bulkEditCaseStatusComponent = this;
   }
 
   clearState() {

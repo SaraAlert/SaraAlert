@@ -5,8 +5,8 @@ import axios from 'axios';
 import { Button, ButtonGroup, Dropdown, DropdownButton, Form, Modal, ProgressBar } from 'react-bootstrap';
 import confirmDialog from '../util/ConfirmDialog';
 
-import Export from '../export/Export';
-import Import from '../import/Import';
+import Export from './Export';
+import Import from './Import';
 
 class PublicHealthHeader extends React.Component {
   constructor(props) {
