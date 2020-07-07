@@ -230,6 +230,19 @@ class Exposure extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
+        <Form.Row>
+          <Form.Group>
+            <Form.Check
+              size="lg"
+              label="CONTINUOUS EXPOSURE"
+              type="switch"
+              id="continuous_exposure"
+              className="ml-1"
+              checked={this.state.current.patient.continuous_exposure === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+        </Form.Row>
         <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPERATE MULTIPLE SPECIFIED VALUES)</Form.Label>
         <Form.Row>
           <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">

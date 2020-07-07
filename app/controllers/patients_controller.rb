@@ -536,6 +536,7 @@ class PatientsController < ApplicationController
       assigned_user
       symptom_onset
       case_status
+      continuous_exposure
     ]
   end
 
@@ -612,6 +613,7 @@ class PatientsController < ApplicationController
       assigned_user
       symptom_onset
       case_status
+      continuous_exposure
     ]
   end
 
