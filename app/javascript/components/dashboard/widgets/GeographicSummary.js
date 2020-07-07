@@ -23,30 +23,36 @@ class GeographicSummary extends React.Component {
     this.analyticsData = this.parseAnalyticsStatistics();
     this.jurisdictionsPermittedToView = this.obtainJurisdictionsPermittedToView();
     this.obtainJurisdictionsNotInUse();
-    this.state = {
-      selectedDateIndex: INITIAL_SELECTED_DATE_INDEX,
-      showBackButton: false,
-      jurisdictionToShow: {
-        category: 'fullCountry',
-        name: 'USA',
-        eventValue: null,
-      },
-      mapObject: null,
-      showSpinner: false,
-      viewMapTable: false,
-      exposureMapData: this.analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)].value,
-      isolationMapData: this.analyticsData.isolation[Number(INITIAL_SELECTED_DATE_INDEX)].value,
-    };
+    if (this.analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)]) {
+      this.state = {
+        selectedDateIndex: INITIAL_SELECTED_DATE_INDEX,
+        showBackButton: false,
+        jurisdictionToShow: {
+          category: 'fullCountry',
+          name: 'USA',
+          eventValue: null,
+        },
+        mapObject: null,
+        showSpinner: false,
+        viewMapTable: false,
+        exposureMapData: this.analyticsData.exposure[Number(INITIAL_SELECTED_DATE_INDEX)].value,
+        isolationMapData: this.analyticsData.isolation[Number(INITIAL_SELECTED_DATE_INDEX)].value,
+      };
 
-    // A lot of times, the CountyLevelMaps functions will take time to render some new jurisdiction map.
-    // We want the Spinner to spin until they report back that they're done. Therefore, we set spinnerState to 2
-    // and subtract 1 every time they report back. When they each report back, 2 - 1 - 1 = 0 then we set `showSpinner` to false
-    // Because calls to setState are asynchronous, this value must be on the component itself
-    this.spinnerState = 0;
+      // A lot of times, the CountyLevelMaps functions will take time to render some new jurisdiction map.
+      // We want the Spinner to spin until they report back that they're done. Therefore, we set spinnerState to 2
+      // and subtract 1 every time they report back. When they each report back, 2 - 1 - 1 = 0 then we set `showSpinner` to false
+      // Because calls to setState are asynchronous, this value must be on the component itself
+      this.spinnerState = 0;
 
-    // this.analyticsData.exposure is the same as this.analyticsData.isolation (in terms of dates) so it doesnt matter which you use
-    this.dateSubset = this.analyticsData.exposure.map(x => x.date);
-    this.dateRange = this.analyticsData.exposure.map(x => moment(x.date).format('MM/DD'));
+      // this.analyticsData.exposure is the same as this.analyticsData.isolation (in terms of dates) so it doesnt matter which you use
+      this.dateSubset = this.analyticsData.exposure.map(x => x.date);
+      this.dateRange = this.analyticsData.exposure.map(x => moment(x.date).format('MM/DD'));
+    } else {
+      this.state = {
+        hasError: true,
+      };
+    }
   }
 
   parseAnalyticsStatistics = () => {
@@ -263,6 +269,13 @@ class GeographicSummary extends React.Component {
   };
 
   render() {
+    if (this.state.hasError) {
+      return (
+        <div className="text-center mt-4" style={{ width: '100%' }}>
+          <h5>No Geographic Analytics Data could be shown</h5>
+        </div>
+      );
+    }
     let backButton = this.state.showBackButton && (
       <Button variant="primary" size="md" className="ml-auto btn-square" onClick={() => this.backToFullCountryMap()}>
         <i className="fas fa-arrow-left mr-2"> </i>
