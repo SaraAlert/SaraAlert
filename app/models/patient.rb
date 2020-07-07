@@ -735,7 +735,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       state_local_id: user_defined_id_statelocal || '',
       sex: sex || '',
       dob: date_of_birth&.strftime('%F') || '',
-      end_of_monitoring: end_of_monitoring || '',
+      end_of_monitoring: (continuous_exposure ? 'Continuous Exposure' : end_of_monitoring) || '',
       risk_level: exposure_risk_assessment || '',
       monitoring_plan: monitoring_plan || '',
       latest_report: latest_assessment&.created_at&.rfc2822 || '',
