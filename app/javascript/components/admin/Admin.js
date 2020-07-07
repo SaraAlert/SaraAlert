@@ -12,12 +12,6 @@ import { CSVLink } from 'react-csv';
 class Admin extends React.Component {
   constructor(props) {
     super(props);
-    var dataLen = props.data.length;
-    for (var i = 0; i < dataLen; i++) {
-      if (Array.isArray(props.data[parseInt(i)]['jurisdiction_path'])) {
-        props.data[parseInt(i)]['jurisdiction_path'] = props.data[parseInt(i)]['jurisdiction_path'].join(', ');
-      }
-    }
     this.onAddRow = this.onAddRow.bind(this);
     this.afterSaveCell = this.afterSaveCell.bind(this);
   }
@@ -29,7 +23,7 @@ class Admin extends React.Component {
     }
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     let submit_data = {
-      jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path.replace(/,(?=[^\s])/g, ', ')],
+      jurisdiction: row.jurisdiction_path,
       email: row.email,
       role_title: row.role,
     };
@@ -60,7 +54,7 @@ class Admin extends React.Component {
   afterSaveCell(row) {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     let submit_data = {
-      jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path.replace(/,(?=[^\s])/g, ', ')],
+      jurisdiction: row.jurisdiction_path,
       email: row.email,
       role_title: row.role,
     };
@@ -419,7 +413,7 @@ class Admin extends React.Component {
           <TableHeaderColumn
             dataField="jurisdiction_path"
             dataSort={true}
-            editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths).map(p => p.replace(/, /g, ',')) } }}>
+            editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths) } }}>
             Jurisdiction
           </TableHeaderColumn>
           <TableHeaderColumn dataField="role" dataSort={true} editable={{ type: 'select', options: { values: this.props.role_types } }}>
