@@ -34,7 +34,7 @@ en:
       pulse-ox:
         name: 'Pulse Ox'
         notes: 'What was your lowest oxygen level in the past 24 hours?'
-    no-symptoms: 'I am not experiencing any symptoms'
+      no-symptoms: 'I am not experiencing any symptoms'
     threshold-op:
       less-than: 'Less Than'
       less-than-or-equal: 'Less Than Or Equal to'
