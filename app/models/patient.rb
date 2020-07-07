@@ -202,51 +202,17 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
 
   # Any individual who has any assessments still considered symptomatic (exposure workflow only)
   scope :exposure_symptomatic, lambda {
-    where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: false)
-      .where(public_health_action: 'None')
-      .where_assoc_exists(:assessments, symptomatic: true)
-      .distinct
+    where(isolation: false).symptomatic
   }
 
   # Non reporting asymptomatic individuals (exposure workflow only)
   scope :exposure_non_reporting, lambda {
-    where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: false)
-      .where(public_health_action: 'None')
-      .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
-      .where_assoc_not_exists(:assessments, symptomatic: true)
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: false)
-        .where(public_health_action: 'None')
-        .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-        .where_assoc_not_exists(:assessments)
-      )
-      .distinct
+    where(isolation: false).non_reporting
   }
 
   # Individuals who have reported recently and are not symptomatic (exposure workflow only)
   scope :exposure_asymptomatic, lambda {
-    where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: false)
-      .where(public_health_action: 'None')
-      .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
-      .where_assoc_not_exists(:assessments, symptomatic: true)
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: false)
-        .where(public_health_action: 'None')
-        .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-        .where_assoc_not_exists(:assessments)
-      )
-      .distinct
+    where(isolation: false).asymptomatic
   }
 
   # Any individual who is currently under investigation (exposure workflow only)
@@ -268,25 +234,6 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .distinct
   }
 
-  scope :isolation_not_test_based, lambda {
-    where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: true)
-      .where_assoc_not_exists(:assessments)
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: true)
-        .where_assoc_exists(:assessments, &:twenty_four_hours_fever_or_fever_medication)
-      )
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: true)
-        .where_assoc_count(2, :>, :laboratories, 'result = "negative"')
-      )
-  }
-
   # Individuals that meet the symptomatic non test based review requirement (isolation workflow only)
   scope :isolation_symp_non_test_based, lambda {
     where(monitoring: true)
@@ -297,32 +244,6 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where('symptom_onset <= ?', 10.days.ago)
       .distinct
   }
-
-  scope :isolation_not_symp_non_test_based, lambda {
-    where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: true)
-      .where_assoc_not_exists(:assessments, &:older_than_seventy_two_hours)
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: true)
-        .where_assoc_exists(:assessments, &:seventy_two_hours_fever_or_fever_medication)
-      )
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: true)
-        .where('symptom_onset > ?', 10.days.ago)
-      )
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: true)
-        .where(symptom_onset: nil)
-      )
-  }
-
   # Individuals that meet the asymptomatic recovery definition (isolation workflow only)
   scope :isolation_asymp_non_test_based, lambda {
     where(monitoring: true)
@@ -333,31 +254,6 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where_assoc_exists(:assessments)
       .where_assoc_not_exists(:assessments, &:symptomatic)
       .distinct
-  }
-
-  scope :isolation_not_asymp_non_test_based, lambda {
-    where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: true)
-      .where_assoc_not_exists(:laboratories, &:before_ten_days_positive)
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: true)
-        .where_assoc_exists(:laboratories, &:last_ten_days_positive)
-      )
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: true)
-        .where_assoc_not_exists(:assessments)
-      )
-      .or(
-        where(monitoring: true)
-        .where(purged: false)
-        .where(isolation: true)
-        .where_assoc_exists(:assessments, &:symptomatic)
-      )
   }
 
   # Individuals in the isolation workflow that require review (isolation workflow only)
@@ -388,51 +284,44 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .distinct
   }
 
-  scope :isolation_not_requiring_review, lambda {
-    isolation_not_test_based
-      .isolation_not_symp_non_test_based
-      .isolation_not_asymp_non_test_based
-      .distinct
-  }
-
   # Individuals not meeting review and are not reporting (isolation workflow only)
   scope :isolation_non_reporting, lambda {
-    isolation_not_requiring_review
-      .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: true)
-      .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
-      .distinct
+    where.not(id: Patient.unscoped.isolation_requiring_review)
+         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+         .where(monitoring: true)
+         .where(purged: false)
+         .where(isolation: true)
+         .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+         .distinct
   }
 
   # Individuals not meeting review and are not reporting for a while (isolation workflow only)
   scope :isolation_non_reporting_max, lambda {
-    isolation_not_requiring_review
-      .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: true)
-      .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['isolation_non_reporting_max_days'].days.ago])
-      .distinct
+    where.not(id: Patient.unscoped.isolation_requiring_review)
+         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+         .where(monitoring: true)
+         .where(purged: false)
+         .where(isolation: true)
+         .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['isolation_non_reporting_max_days'].days.ago])
+         .distinct
   }
 
   # Individuals not meeting review but are reporting (isolation workflow only)
   scope :isolation_reporting, lambda {
-    isolation_not_requiring_review
-      .where(monitoring: true)
-      .where(purged: false)
-      .where(isolation: true)
-      .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
-      .or(
-        isolation_not_requiring_review
-          .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-          .where(monitoring: true)
-          .where(purged: false)
-          .where(isolation: true)
-          .where_assoc_not_exists(:assessments)
-      )
-      .distinct
+    where.not(id: Patient.unscoped.isolation_requiring_review)
+         .where(monitoring: true)
+         .where(purged: false)
+         .where(isolation: true)
+         .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+         .or(
+           where.not(id: Patient.unscoped.isolation_requiring_review)
+           .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+           .where(monitoring: true)
+           .where(purged: false)
+           .where(isolation: true)
+           .where_assoc_not_exists(:assessments)
+         )
+         .distinct
   }
 
   # All individuals currently being monitored if true, all individuals otherwise
