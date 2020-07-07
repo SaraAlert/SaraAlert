@@ -78,7 +78,7 @@ class User < ApplicationRecord
 
   # Allow information on the user's jurisdiction to be displayed
   def jurisdiction_path
-    jurisdiction&.path&.map(&:name)
+    jurisdiction&.jurisdiction_path_string
   end
 
   # Override as_json to include jurisdiction_path
