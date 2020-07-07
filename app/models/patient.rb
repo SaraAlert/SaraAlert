@@ -70,7 +70,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where('patients.id = patients.responder_id')
       .where(purged: false)
       .where.not(id: Patient.unscoped.exposure_under_investigation)
-      .where('last_date_of_exposure >= ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago)
+      .where('last_date_of_exposure >= ? OR continuous_exposure = ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago, true)
       .left_outer_joins(:assessments)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
       .or(
@@ -79,7 +79,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
           .where('patients.id = patients.responder_id')
           .where(purged: false)
           .where.not(id: Patient.unscoped.exposure_under_investigation)
-          .where('last_date_of_exposure >= ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago)
+          .where('last_date_of_exposure >= ? OR continuous_exposure = ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago, true)
           .left_outer_joins(:assessments)
           .where(assessments: { patient_id: nil })
       )
@@ -549,7 +549,6 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     return if !symptom_onset.nil? && !assessment.nil? && symptom_onset < assessment.created_at
 
     update(symptom_onset: assessment&.created_at&.to_date) unless assessment.nil?
-    save
   end
 
   # Send initial enrollment notification via patient's preferred contact method
