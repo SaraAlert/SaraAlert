@@ -1,39 +1,15 @@
 analytic_for_jurisdiction_1:
   id: 1
   jurisdiction_id: 1
-  monitorees_count: 2019
-  symptomatic_monitorees_count: 1151
-  asymptomatic_monitorees_count: 841
-  confirmed_cases_count: 0
-  closed_cases_count: 0
-  open_cases_count: 0
-  total_reports_count: 0
-  non_reporting_monitorees_count: 0
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
 analytic_for_jurisdiction_2:
   id: 2
   jurisdiction_id: 2
-  monitorees_count: 921
-  symptomatic_monitorees_count: 281
-  asymptomatic_monitorees_count: 483
-  confirmed_cases_count: 51
-  closed_cases_count: 82
-  open_cases_count: 28
-  total_reports_count: 19
-  non_reporting_monitorees_count: 20
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
 analytic_for_jurisdiction_4:
   id: 3
   jurisdiction_id: 4
-  monitorees_count: 392
-  symptomatic_monitorees_count: 112
-  asymptomatic_monitorees_count: 83
-  confirmed_cases_count: 12
-  closed_cases_count: 31
-  open_cases_count: 15
-  total_reports_count: 8
-  non_reporting_monitorees_count: 11
   created_at: <%= 1.minute.ago %>
   updated_at: <%= 1.minute.ago %>
