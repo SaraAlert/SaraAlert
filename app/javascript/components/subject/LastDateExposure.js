@@ -52,9 +52,10 @@ class LastDateExposure extends React.Component {
     });
   }
 
-  submit() {
+  submit(isLDE) {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
-    this.setState({ loading: true }, () => {
+    diffState.push('continuous_exposure'); // Since exposure date updates change CE, always make sure this gets changed
+    this.setState({ loading: true, continuous_exposure: diffState.includes('last_date_of_exposure') || isLDE ? false : this.state.continuous_exposure }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
@@ -126,9 +127,16 @@ class LastDateExposure extends React.Component {
     return (
       <React.Fragment>
         {this.state.showExposureDateModal &&
-          this.createModal('Last Date of Exposure', 'Are you sure you want to modify the last date of exposure?', this.toggleExposureDateModal, this.submit)}
+          this.createModal(
+            'Last Date of Exposure',
+            'Are you sure you want to modify the last date of exposure? This will reset the continuous monitoring status for this monitoree.',
+            this.toggleExposureDateModal,
+            () => this.submit(true)
+          )}
         {this.state.showContinuousMonitoringModal &&
-          this.createModal('Continuous Exposure', 'Are you sure you want to modify continuous monitoring?', this.toggleContinuousMonitoringModal, this.submit)}
+          this.createModal('Continuous Exposure', 'Are you sure you want to modify continuous monitoring?', this.toggleContinuousMonitoringModal, () =>
+            this.submit(false)
+          )}
         <Row>
           <Form.Group as={Col} md="6">
             <Form.Label className="nav-input-label">
@@ -147,11 +155,6 @@ class LastDateExposure extends React.Component {
           <Form.Group as={Col} md="18" className="align-self-end pl-0">
             <Button className="btn-lg" onClick={() => this.toggleExposureDateModal()}>
               <i className="fas fa-temperature-high"></i> Update
-              {this.state.loading && (
-                <React.Fragment>
-                  &nbsp;<span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                </React.Fragment>
-              )}
             </Button>
           </Form.Group>
         </Row>
@@ -163,7 +166,7 @@ class LastDateExposure extends React.Component {
               type="switch"
               id="continuous_exposure"
               checked={this.state.continuous_exposure === true || false}
-              onClick={() => this.toggleContinuousMonitoringModal()}
+              onChange={() => this.toggleContinuousMonitoringModal()}
             />
           </Form.Group>
         </Row>
