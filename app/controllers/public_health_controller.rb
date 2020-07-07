@@ -79,7 +79,7 @@ class PublicHealthController < ApplicationController
     paginated_patients = sorted_patients.paginate(per_page: entries, page: page + 1)
 
     # Extract only relevant fields to be displayed by workflow and tab
-    render json: linelist(paginated_patients.to_a, workflow, tab).merge({ total: patients.size })
+    render json: linelist(paginated_patients, workflow, tab).merge({ total: patients.size })
   end
 
   # Get patient counts by workflow
@@ -228,6 +228,9 @@ class PublicHealthController < ApplicationController
   end
 
   def linelist(patients, workflow, tab)
+    # execute query
+    patients.to_a
+
     # get a list of fields relevant only to this linelist
     fields = linelist_specific_fields(workflow, tab)
 

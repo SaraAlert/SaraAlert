@@ -161,8 +161,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(public_health_action: 'None')
-      .left_outer_joins(:assessments)
-      .where('assessments.symptomatic = ?', true)
+      .where_assoc_exists(:assessments, symptomatic: true)
       .distinct
   }
 
@@ -171,18 +170,15 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(public_health_action: 'None')
-      .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
       .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .where_assoc_not_exists(:assessments, symptomatic: true)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(public_health_action: 'None')
-        .left_outer_joins(:assessments)
-        .where(assessments: { patient_id: nil })
         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where_assoc_not_exists(:assessments)
       )
       .distinct
   }
@@ -192,17 +188,14 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(public_health_action: 'None')
-      .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
-      .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .where_assoc_not_exists(:assessments, symptomatic: true)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(public_health_action: 'None')
-        .left_outer_joins(:assessments)
-        .where(assessments: { patient_id: nil })
         .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where_assoc_not_exists(:assessments)
       )
       .distinct
   }
@@ -213,8 +206,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where(purged: false)
       .where(isolation: false)
       .where(public_health_action: 'None')
-      .left_outer_joins(:assessments)
-      .where('assessments.symptomatic = ?', true)
+      .where_assoc_exists(:assessments, symptomatic: true)
       .distinct
   }
 
@@ -224,19 +216,16 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where(purged: false)
       .where(isolation: false)
       .where(public_health_action: 'None')
-      .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
       .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-      .where_assoc_not_exists(:assessments, symptomatic: true)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .where_assoc_not_exists(:assessments, symptomatic: true)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: false)
         .where(public_health_action: 'None')
-        .left_outer_joins(:assessments)
-        .where(assessments: { patient_id: nil })
         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where_assoc_not_exists(:assessments)
       )
       .distinct
   }
@@ -247,8 +236,6 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where(purged: false)
       .where(isolation: false)
       .where(public_health_action: 'None')
-      .left_outer_joins(:assessments)
-      .where('assessments.patient_id = patients.id')
       .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
       .where_assoc_not_exists(:assessments, symptomatic: true)
       .or(
@@ -256,9 +243,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
         .where(purged: false)
         .where(isolation: false)
         .where(public_health_action: 'None')
-        .left_outer_joins(:assessments)
-        .where(assessments: { patient_id: nil })
         .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+        .where_assoc_not_exists(:assessments)
       )
       .distinct
   }
@@ -412,43 +398,41 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   # Individuals not meeting review and are not reporting (isolation workflow only)
   scope :isolation_non_reporting, lambda {
     isolation_not_requiring_review
-         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-         .where(monitoring: true)
-         .where(purged: false)
-         .where(isolation: true)
-         .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
-         .distinct
+      .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+      .where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .distinct
   }
 
   # Individuals not meeting review and are not reporting for a while (isolation workflow only)
   scope :isolation_non_reporting_max, lambda {
     isolation_not_requiring_review
-         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-         .where(monitoring: true)
-         .where(purged: false)
-         .where(isolation: true)
-         .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['isolation_non_reporting_max_days'].days.ago])
-         .distinct
+      .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+      .where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
+      .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['isolation_non_reporting_max_days'].days.ago])
+      .distinct
   }
 
   # Individuals not meeting review but are reporting (isolation workflow only)
   scope :isolation_reporting, lambda {
     isolation_not_requiring_review
-         .where(monitoring: true)
-         .where(purged: false)
-         .where(isolation: true)
-         .left_outer_joins(:assessments)
-         .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
-         .or(
-          isolation_not_requiring_review
-             .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-             .where(monitoring: true)
-             .where(purged: false)
-             .where(isolation: true)
-             .left_outer_joins(:assessments)
-             .where(assessments: { patient_id: nil })
-         )
-         .distinct
+      .where(monitoring: true)
+      .where(purged: false)
+      .where(isolation: true)
+      .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
+      .or(
+        isolation_not_requiring_review
+          .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
+          .where(monitoring: true)
+          .where(purged: false)
+          .where(isolation: true)
+          .where_assoc_not_exists(:assessments)
+      )
+      .distinct
   }
 
   # All individuals currently being monitored if true, all individuals otherwise
