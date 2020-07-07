@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_05_074127) do
+ActiveRecord::Schema.define(version: 2020_07_07_152446) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -22,8 +22,6 @@ ActiveRecord::Schema.define(version: 2020_07_05_074127) do
     t.integer "open_cases_count"
     t.integer "total_reports_count"
     t.integer "non_reporting_monitorees_count"
-    t.text "monitoree_state_map"
-    t.text "symptomatic_state_map"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
