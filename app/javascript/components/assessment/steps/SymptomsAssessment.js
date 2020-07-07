@@ -25,7 +25,18 @@ class SymptomsAssessment extends React.Component {
 
   handleNoSymptomChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    this.setState({ noSymptomsCheckbox: value });
+    this.setState({ noSymptomsCheckbox: value }, () => {
+      // Make sure pre-selected options are cleared
+      if (this.state.noSymptomsCheckbox) {
+        let current = { ...this.state.current };
+        for (const symptom in current?.symptoms) {
+          if (current?.symptoms[parseInt(symptom)]?.type == 'BoolSymptom') {
+            current.symptoms[parseInt(symptom)].value = false;
+          }
+        }
+        this.setState({ current: current });
+      }
+    });
   }
 
   updateBoolSymptomCount() {
@@ -50,7 +61,7 @@ class SymptomsAssessment extends React.Component {
         disabled={boolSymptomsSelected}
         label={
           <div>
-            <i>{this.props.translations[this.props.lang]['no-symptoms']}</i>
+            <i>{this.props.translations[this.props.lang]['symptoms']['no-symptoms']}</i>
           </div>
         }
         className="pb-2"
