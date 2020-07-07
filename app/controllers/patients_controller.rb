@@ -324,6 +324,10 @@ class PatientsController < ApplicationController
     if params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only]
       ([patient] + current_user.get_patient(patient.responder_id).dependents.where(continuous_exposure: true)).uniq.each do |member|
         update_fields(member, params)
+        if params[:apply_to_group_cm_only_date].present?
+          lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
+          member.update(last_date_of_exposure: lde_date)
+        end
         next unless params[:comment]
 
         update_history(member, params)
