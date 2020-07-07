@@ -78,7 +78,6 @@ class User < ApplicationRecord
 
   # Allow information on the user's jurisdiction to be displayed
   def jurisdiction_path
-    puts "jurisdiction!!!!!!!!!!!!: #{jurisdiction.inspect}"
     jurisdiction&.path&.map(&:name)
   end
 

@@ -23,7 +23,7 @@ class Admin extends React.Component {
     }
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     let submit_data = {
-      jurisdiction: this.props.jurisdiction_mapping[row.jurisdiction_path],
+      jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path],
       email: row.email,
       role_title: row.role,
     };
@@ -54,7 +54,7 @@ class Admin extends React.Component {
   afterSaveCell(row) {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     let submit_data = {
-      jurisdiction: this.props.jurisdiction_mapping[row.jurisdiction_path],
+      jurisdiction: this.props.jurisdiction_paths[row.jurisdiction_path],
       email: row.email,
       role_title: row.role,
     };
@@ -413,7 +413,7 @@ class Admin extends React.Component {
           <TableHeaderColumn
             dataField="jurisdiction_path"
             dataSort={true}
-            editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_mapping) } }}>
+            editable={{ type: 'select', options: { values: Object.keys(this.props.jurisdiction_paths) } }}>
             Jurisdiction
           </TableHeaderColumn>
           <TableHeaderColumn dataField="role" dataSort={true} editable={{ type: 'select', options: { values: this.props.role_types } }}>
@@ -444,7 +444,7 @@ class Admin extends React.Component {
             <br />
             Users: {this.props.data?.length || 0}
             <br />
-            Jurisdictions: {Object.keys(this.props.jurisdiction_mapping)?.length || 0}
+            Jurisdictions: {Object.keys(this.props.jurisdiction_paths)?.length || 0}
           </div>
         )}
       </div>
@@ -455,7 +455,7 @@ class Admin extends React.Component {
 Admin.propTypes = {
   data: PropTypes.array,
   authenticity_token: PropTypes.string,
-  jurisdiction_mapping: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
   role_types: PropTypes.array,
   is_usa_admin: PropTypes.bool,
 };
