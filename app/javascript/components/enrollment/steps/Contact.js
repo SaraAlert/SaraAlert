@@ -156,59 +156,58 @@ class Contact extends React.Component {
                     className="form-square"
                     value={this.state.current.patient.preferred_contact_method || ''}
                     onChange={this.handleChange}>
-                    <option></option>
+                    <option>Unknown</option>
                     <option>E-mailed Web Link</option>
                     <option>SMS Texted Weblink</option>
                     <option>Telephone call</option>
                     <option>SMS Text-message</option>
                     <option>Opt-out</option>
-                    <option>Unknown</option>
                   </Form.Control>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['preferred_contact_method']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                {this.state.current.patient.preferred_contact_method !== 'E-mailed Web Link' &&
-                  this.state.current.patient.preferred_contact_method !== 'Opt-out' &&
-                  this.state.current.patient.preferred_contact_method !== 'Unknown' && (
-                    <Form.Group as={Col} md="8" controlId="preferred_contact_time">
-                      <Form.Label className="nav-input-label">
-                        PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
-                        <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
-                      </Form.Label>
-                      <Form.Control
-                        isInvalid={this.state.errors['preferred_contact_time']}
-                        as="select"
-                        size="lg"
-                        className="form-square"
-                        value={this.state.current.patient.preferred_contact_time || ''}
-                        onChange={this.handleChange}>
-                        <option></option>
-                        <option>Morning</option>
-                        <option>Afternoon</option>
-                        <option>Evening</option>
-                      </Form.Control>
-                      <Form.Row className="pt-2">
-                        <Form.Group as={Col} md="auto">
-                          Morning:
-                          <br />
-                          Afternoon:
-                          <br />
-                          Evening:
-                        </Form.Group>
-                        <Form.Group as={Col} md="auto">
-                          <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
-                          <br />
-                          <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
-                          <br />
-                          <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
-                        </Form.Group>
-                      </Form.Row>
-                      <Form.Control.Feedback className="d-block" type="invalid">
-                        {this.state.errors['preferred_contact_time']}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  )}
+                {(this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' ||
+                  this.state.current.patient.preferred_contact_method === 'Telephone call' ||
+                  this.state.current.patient.preferred_contact_method === 'SMS Text-message') && (
+                  <Form.Group as={Col} md="8" controlId="preferred_contact_time">
+                    <Form.Label className="nav-input-label">
+                      PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
+                      <InfoTooltip tooltipTextKey="preferredContactTime" location="right"></InfoTooltip>
+                    </Form.Label>
+                    <Form.Control
+                      isInvalid={this.state.errors['preferred_contact_time']}
+                      as="select"
+                      size="lg"
+                      className="form-square"
+                      value={this.state.current.patient.preferred_contact_time || ''}
+                      onChange={this.handleChange}>
+                      <option></option>
+                      <option>Morning</option>
+                      <option>Afternoon</option>
+                      <option>Evening</option>
+                    </Form.Control>
+                    <Form.Row className="pt-2">
+                      <Form.Group as={Col} md="auto">
+                        Morning:
+                        <br />
+                        Afternoon:
+                        <br />
+                        Evening:
+                      </Form.Group>
+                      <Form.Group as={Col} md="auto">
+                        <span className="font-weight-light">Between 8:00 and 12:00 in monitoree&apos;s timezone</span>
+                        <br />
+                        <span className="font-weight-light">Between 12:00 and 16:00 in monitoree&apos;s timezone</span>
+                        <br />
+                        <span className="font-weight-light">Between 16:00 and 20:00 in monitoree&apos;s timezone</span>
+                      </Form.Group>
+                    </Form.Row>
+                    <Form.Control.Feedback className="d-block" type="invalid">
+                      {this.state.errors['preferred_contact_time']}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                )}
               </Form.Row>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="11" controlId="primary_telephone">
