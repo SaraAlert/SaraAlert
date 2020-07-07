@@ -20,6 +20,7 @@ class MonitorAnalytics extends React.Component {
     this.state = {
       checked: false,
       viewTotal: false,
+      hasErrors: !this.props.stats,
     };
   }
 
@@ -52,70 +53,79 @@ class MonitorAnalytics extends React.Component {
   toggleBetweenActiveAndTotal = viewTotal => this.setState({ viewTotal });
 
   render() {
-    return (
-      <React.Fragment>
-        <Row className="mb-2 mx-0 px-0 pt-2">
-          <Col md="24" className="mx-2 px-0">
-            <Button variant="primary" className="btn-square" onClick={this.exportAsPNG}>
-              <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
-            </Button>
-          </Col>
-        </Row>
-        <Row className="mb-2 mx-0 px-0 pt-4 pb-2">
-          <Col md="24" className="mx-2 px-0">
-            <p className="display-6">
-              <i className="fas fa-info-circle mr-1"></i> Analytics are generated using data from both exposure and isolation workflows. Last Updated At{' '}
-              {moment
-                .tz(this.props.stats.last_updated_at, 'UTC')
-                .tz(moment.tz.guess())
-                .format('YYYY-MM-DD HH:mm z')}
-              .
-            </p>
-          </Col>
-        </Row>
-        <Row className="mb-4 mx-2 px-0">
-          <Col md="14" className="ml-0 pl-0">
-            <RiskStratificationTable stats={this.props.stats} />
-          </Col>
-          <Col md="10" className="mr-0 pr-0">
-            <MonitoreeFlow stats={this.props.stats} />
-          </Col>
-        </Row>
-        <Row className="mb-4 mx-2 px-0 pt-4">
-          <Col md="24" className="mx-0 px-0">
-            <span className="display-5">Epidemiological Summary</span>
-            {/* <span className="float-right display-6">
-              View Overall
-              <Switch
-              className="ml-2"
-              onChange={this.toggleBetweenActiveAndTotal}
-              onColor="#82A0E4"
-              height={18}
-              width={40}
-              uncheckedIcon={false}
-              checked={this.state.viewTotal}
-              />
-            </span> */}
-          </Col>
-        </Row>
-        <Row className="mb-4 mx-2 px-0">
-          <Col md="12" className="ml-0 pl-0">
-            <Demographics stats={this.props.stats} viewTotal={this.state.viewTotal} />
-          </Col>
-          <Col md="12" className="mr-0 pr-0">
-            <RiskFactors stats={this.props.stats} viewTotal={this.state.viewTotal} />
-          </Col>
-        </Row>
-        <Row className="mb-1 mx-2 px-0">
-          <Col md="24" className="mx-0 px-0">
-            <MonitoreesByDateOfExposure stats={this.props.stats} />
-          </Col>
-        </Row>
-        <Row className="mb-5 pb-3 mx-2 px-0 pt-4">
-          <GeographicSummary stats={this.props.stats} />
-        </Row>
-      </React.Fragment>
-    );
+    if (this.state.hasErrors) {
+      return (
+        <div className="text-center mt-4" style={{ width: '100%' }}>
+          <h5>We are still crunching the latest numbers.</h5>
+          <h5>Please check back later...</h5>
+        </div>
+      );
+    } else {
+      return (
+        <React.Fragment>
+          <Row className="mb-2 mx-0 px-0 pt-2">
+            <Col md="24" className="mx-2 px-0">
+              <Button variant="primary" className="btn-square" onClick={this.exportAsPNG}>
+                <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
+              </Button>
+            </Col>
+          </Row>
+          <Row className="mb-2 mx-0 px-0 pt-4 pb-2">
+            <Col md="24" className="mx-2 px-0">
+              <p className="display-6">
+                <i className="fas fa-info-circle mr-1"></i> Analytics are generated using data from both exposure and isolation workflows. Last Updated At{' '}
+                {moment
+                  .tz(this.props.stats.last_updated_at, 'UTC')
+                  .tz(moment.tz.guess())
+                  .format('YYYY-MM-DD HH:mm z')}
+                .
+              </p>
+            </Col>
+          </Row>
+          <Row className="mb-4 mx-2 px-0">
+            <Col md="14" className="ml-0 pl-0">
+              <RiskStratificationTable stats={this.props.stats} />
+            </Col>
+            <Col md="10" className="mr-0 pr-0">
+              <MonitoreeFlow stats={this.props.stats} />
+            </Col>
+          </Row>
+          <Row className="mb-4 mx-2 px-0 pt-4">
+            <Col md="24" className="mx-0 px-0">
+              <span className="display-5">Epidemiological Summary</span>
+              {/* <span className="float-right display-6">
+                View Overall
+                <Switch
+                className="ml-2"
+                onChange={this.toggleBetweenActiveAndTotal}
+                onColor="#82A0E4"
+                height={18}
+                width={40}
+                uncheckedIcon={false}
+                checked={this.state.viewTotal}
+                />
+              </span> */}
+            </Col>
+          </Row>
+          <Row className="mb-4 mx-2 px-0">
+            <Col md="12" className="ml-0 pl-0">
+              <Demographics stats={this.props.stats} viewTotal={this.state.viewTotal} />
+            </Col>
+            <Col md="12" className="mr-0 pr-0">
+              <RiskFactors stats={this.props.stats} viewTotal={this.state.viewTotal} />
+            </Col>
+          </Row>
+          <Row className="mb-1 mx-2 px-0">
+            <Col md="24" className="mx-0 px-0">
+              <MonitoreesByDateOfExposure stats={this.props.stats} />
+            </Col>
+          </Row>
+          <Row className="mb-5 pb-3 mx-2 px-0 pt-4">
+            <GeographicSummary stats={this.props.stats} />
+          </Row>
+        </React.Fragment>
+      );
+    }
   }
 }
 
