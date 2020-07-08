@@ -1,7 +1,7 @@
 Addresses SARAALERT-###
 
 # Feature Description
-Write out a concise summary of this MR.
+Write out a concise summary of this pull request.
 
 # Demo
 Insert a demo video or photo(s) if relevant to this feature.
