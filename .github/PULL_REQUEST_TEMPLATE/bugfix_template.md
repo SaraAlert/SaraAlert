@@ -9,7 +9,7 @@ Insert description of behavior caused by bug.
 3. Etc.
 
 # Solution
-Insert description of how this bug is fixed in this PR.
+Insert description of how this bug is fixed in this pull request.
 
 # Important Changes
 `example_file.js`
