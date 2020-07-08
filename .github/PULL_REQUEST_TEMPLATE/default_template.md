@@ -1,7 +1,7 @@
 Addresses SARAALERT-###
 
 # Summary
-Write out a concise summary of this MR.
+Write out a concise summary of this pull request.
 
 # Important Changes
 `example_file.js`
