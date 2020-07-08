@@ -9,6 +9,7 @@ if (!!window.SENTRY_URL) {
     dsn: window.SENTRY_URL,
     release: window.SARA_VERSION
   });
+  Sentry.setUser({'id': window.USER_ID, 'username': window.USER_EMAIL});
 }
 
 // Rails
