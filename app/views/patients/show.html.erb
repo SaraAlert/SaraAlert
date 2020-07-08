@@ -17,9 +17,11 @@
       current_user: current_user,
       authenticity_token: form_authenticity_token,
       has_group_members: @group_members.exists?,
+      in_a_group: @all_group_members.count > 1,
       patient: @patient,
       jurisdictionPaths: Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}],
-      assignedUsers: @patient.jurisdiction.assigned_users
+      assignedUsers: @patient.jurisdiction.assigned_users,
+      isolation: @patient.isolation
       }) %>
   </div>
 <% end %>

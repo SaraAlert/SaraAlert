@@ -34,7 +34,7 @@ es:
       pulse-ox:
         name: 'oxímetro de pulso'
         notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
-    no-symptoms: 'No tengo ningún síntoma.'
+      no-symptoms: 'No tengo ningún síntoma.'
     threshold-op:
       less-than: 'Menos que'
       less-than-or-equal: 'Menor o igual a'

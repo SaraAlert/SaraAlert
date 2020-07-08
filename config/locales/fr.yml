@@ -34,7 +34,7 @@ fr:
       pulse-ox:
         name: 'd’oxymétrie de pouls'
         notes: 'Saisissez votre mesure d’oxymétrie de pouls la plus faible au cours des dernières 24 heures'
-      no-symptoms: 'aucun symptôme'
+      no-symptoms: 'Aucun symptôme'
     threshold-op:
       less-than: 'moins que'
       less-than-or-equal: 'inférieur ou égal à'

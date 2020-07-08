@@ -6,6 +6,7 @@ import CaseStatus from './CaseStatus';
 import reportError from '../util/ReportError';
 import InfoTooltip from '../util/InfoTooltip';
 import _ from 'lodash';
+import moment from 'moment';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -38,6 +39,8 @@ class MonitoringStatus extends React.Component {
       isolation_status: props.patient.isolation ? 'Isolation' : 'Exposure',
       pause_notifications: props.patient.pause_notifications,
       loading: false,
+      apply_to_group_cm_only: false,
+      apply_to_group_cm_only_date: moment(new Date()).format('YYYY-MM-DD'),
     };
     this.origState = Object.assign({}, this.state);
     this.handleChange = this.handleChange.bind(this);
@@ -281,6 +284,8 @@ class MonitoringStatus extends React.Component {
           isolation: this.state.isolation,
           pause_notifications: this.state.pause_notifications,
           diffState: diffState,
+          apply_to_group_cm_only: this.state.apply_to_group_cm_only,
+          apply_to_group_cm_only_date: this.state.apply_to_group_cm_only_date,
         })
         .then(() => {
           location.reload(true);
@@ -314,6 +319,29 @@ class MonitoringStatus extends React.Component {
                   </option>
                 ))}
               </Form.Control>
+            </Form.Group>
+          )}
+          {this.props.isolation && this.state.monitoring_status_options && this.props.in_a_group && (
+            <Form.Group>
+              <Form.Check
+                type="switch"
+                id="apply_to_group_cm_only"
+                label="If this monitoree's household has any active members in the exposure workflow that have continuous exposure on, update their last date of exposure"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group_cm_only === true || false}
+              />
+            </Form.Group>
+          )}
+          {this.props.isolation && this.state.monitoring_status_options && this.props.in_a_group && this.state.apply_to_group_cm_only && (
+            <Form.Group>
+              <Form.Control
+                size="lg"
+                id="apply_to_group_cm_only_date"
+                type="date"
+                className="form-square"
+                value={this.state.apply_to_group_cm_only_date || ''}
+                onChange={this.handleChange}
+              />
             </Form.Group>
           )}
           <Form.Group>
@@ -536,6 +564,8 @@ MonitoringStatus.propTypes = {
   jurisdictionPaths: PropTypes.object,
   assignedUsers: PropTypes.array,
   has_group_members: PropTypes.bool,
+  in_a_group: PropTypes.bool,
+  isolation: PropTypes.bool,
 };
 
 export default MonitoringStatus;

@@ -368,7 +368,7 @@ class PatientTest < ActiveSupport::TestCase
     Assessment.destroy_all
   end
 
-  test 'exposure send report' do
+  test 'exposure send report without continuous exposure' do
     # patient was created more than 24 hours ago
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 4.days.ago, last_date_of_exposure: 5.days.ago)
@@ -379,10 +379,29 @@ class PatientTest < ActiveSupport::TestCase
     assert_not Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
   end
 
-  test 'exposure dont send report' do
+  test 'exposure dont send report without continuous exposure' do
     # patient was created more than 24 hours ago
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 2.days.ago, last_date_of_exposure: 20.days.ago)
+
+    assert Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
+  end
+
+  test 'exposure send report with continuous exposure' do
+    # patient was created more than 24 hours ago
+    Patient.destroy_all
+    patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 4.days.ago, continuous_exposure: true)
+
+    # patient has symptomatic assessment more than 1 day ago but less than 7 days ago
+    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
+
+    assert_not Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
+  end
+
+  test 'exposure dont send report with continuous exposure' do
+    # patient was created more than 24 hours ago
+    Patient.destroy_all
+    patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 2.days.ago, continuous_exposure: false)
 
     assert Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
   end
