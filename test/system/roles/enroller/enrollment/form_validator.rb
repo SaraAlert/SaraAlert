@@ -62,8 +62,6 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
   end
 
   def verify_input_validation_for_contact_info(contact_info)
-    @@system_test_utils.go_to_next_page
-    verify_text_displayed('Please indicate a preferred reporting method')
     select 'Telephone call', from: 'preferred_contact_method'
     click_on 'Next'
     verify_text_not_displayed('Please provide an email')
