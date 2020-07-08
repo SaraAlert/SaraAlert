@@ -58,9 +58,14 @@ class Breadcrumb extends React.Component {
                         href="#"
                         onClick={() => {
                           if (this.renderWorkflowName(crumb['value']).includes('Isolation')) {
+                            // Public Health "Return to Isolation Dashboard"
                             location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health/isolation');
                           } else if (this.renderWorkflowName(crumb['value']).includes('Exposure')) {
+                            // Public Health "Return to Exposure Dashboard"
                             location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health');
+                          } else if (this.renderWorkflowName(crumb['value']).includes('Dashboard')) {
+                            // Enroller "Return to Dashboard"
+                            location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/patients');
                           } else {
                             this.goBack(this.props.crumbs.length - (index + 1));
                           }
