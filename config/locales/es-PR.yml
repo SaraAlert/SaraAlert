@@ -47,7 +47,7 @@ es-PR:
       bool-title: 'Por favor, seleccione los síntomas que está sintiendo actualmente.'
       submit: 'Enviar'
       thank-you: '"¡Gracias por completar su informe diario!'
-      instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones proveídas por su departamento de salud local.'
+      instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones provistas por su departamento de salud local.'
       instruction2: 'Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa por favor.'
       instruction3: 'Si tiene una emergencia médica, por favor llame al 911 e infórmeles que el departamento de salud lo está monitoreando.'
     email:
