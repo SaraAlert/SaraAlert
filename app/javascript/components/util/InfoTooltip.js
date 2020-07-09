@@ -89,7 +89,7 @@ const TOOLTIP_TEXT = {
   ),
 
   asymptomaticNonTestBased: (
-    <div>At least 10 days have passed since the report date of a positive laboratory test and the monitoree has never reported symptoms.</div>
+    <div>At least 10 days have passed since the specimen collection date of a positive laboratory test and the monitoree has never reported symptoms.</div>
   ),
 
   testBased: (
