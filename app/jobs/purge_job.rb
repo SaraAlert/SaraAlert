@@ -26,9 +26,5 @@ class PurgeJob < ApplicationJob
       monitoree.histories.destroy_all
     end
     Download.where('created_at < ?', 24.hours.ago).destroy_all
-    MonitoreeCount.where('created_at < ?', 1.month.ago).destroy_all
-    MonitoreeSnapshot.where('created_at < ?', 1.month.ago).destroy_all
-    MonitoreeMap.where('created_at < ?', 1.month.ago).destroy_all
-    Analytic.where('created_at < ?', 1.month.ago).destroy_all
   end
 end
