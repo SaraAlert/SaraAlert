@@ -145,13 +145,17 @@ namespace :demo do
   task populate: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
+    # Remove analytics that are created in admin:import_or_update_jurisdictions task
+    Analytic.delete_all
+
     days = (ENV['DAYS'] || 14).to_i
     num_patients_today = (ENV['COUNT'] || 25).to_i
     cache_analytics = (ENV['SKIP_ANALYTICS'] != 'true')
 
     jurisdictions = Jurisdiction.all
     assigned_users = Hash[jurisdictions.pluck(:id).map {|id| [id, (1..9999).to_a.sample(10)]}]
-    Analytic.delete_all
+
+    counties = YAML.safe_load(File.read("#{__dir__}/../assets/counties.yml"))
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
@@ -162,7 +166,7 @@ namespace :demo do
       days_ago = days - day
 
       # Populate patients, assessments, laboratories, transfers, histories, analytics
-      demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, cache_analytics)
+      demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, cache_analytics, counties)
 
       # Cases increase 10-20% every day
       num_patients_today += (num_patients_today * (0.1 + (rand / 10))).round
@@ -181,12 +185,14 @@ namespace :demo do
     jurisdictions = Jurisdiction.all
     assigned_users = Hash[jurisdictions.map {|jur| [jur[:id], jur.assigned_users]}]
 
+    counties = YAML.safe_load(File.read("#{__dir__}/../assets/counties.yml"))
+
     printf("Simulating today\n")
 
-    demo_populate_day(Date.today, num_patients_today, 0, jurisdictions, assigned_users, cache_analytics)
+    demo_populate_day(Date.today, num_patients_today, 0, jurisdictions, assigned_users, cache_analytics, counties)
   end
 
-  def demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, cache_analytics)
+  def demo_populate_day(today, num_patients_today, days_ago, jurisdictions, assigned_users, cache_analytics, counties)
     # Transactions speeds things up a bit
     ActiveRecord::Base.transaction do
       # Patients created before today
@@ -196,7 +202,7 @@ namespace :demo do
       histories = []
 
       # Create patients
-      patient_histories = demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users)
+      patient_histories = demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, counties)
       histories = histories.concat(patient_histories)
 
       # Create assessments
@@ -219,7 +225,7 @@ namespace :demo do
     end
   end
 
-  def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users)
+  def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, counties)
     territory_names = ['American Samoa',
       'District of Columbia',
       'Federated States of Micronesia',
@@ -268,10 +274,12 @@ namespace :demo do
       if rand < 0.8
         patient[:address_line_1] = Faker::Address.street_address if rand < 0.95
         patient[:address_city] = Faker::Address.city if rand < 0.95
-        patient[:address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)] if rand < 0.95
+        patient[:address_state] = rand < 0.9 ? counties.keys.sample : territory_names[rand(territory_names.count)] if rand < 0.95
         patient[:address_line_2] = Faker::Address.secondary_address if rand < 0.4
         patient[:address_zip] = Faker::Address.zip_code if rand < 0.95
-        patient[:address_county] = Faker::Address.community if rand < 0.7
+        if rand < 0.85 && counties.key?(patient[:address_state])
+          patient[:address_county] = rand < 0.95 ? counties[patient[:address_state]].sample : Faker::Address.community
+        end
         if rand < 0.7
           patient[:monitored_address_line_1] = patient[:address_line_1]
           patient[:monitored_address_city] = patient[:address_city]
@@ -282,10 +290,12 @@ namespace :demo do
         else
           patient[:monitored_address_line_1] = Faker::Address.street_address if rand < 0.95
           patient[:monitored_address_city] = Faker::Address.city if rand < 0.95
-          patient[:monitored_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)] if rand < 0.95
+          patient[:monitored_address_state] = rand < 0.9 ? counties.keys.sample : territory_names[rand(territory_names.count)] if rand < 0.95
           patient[:monitored_address_line_2] = Faker::Address.secondary_address if rand < 0.4
           patient[:monitored_address_zip] = Faker::Address.zip_code if rand < 0.95
-          patient[:monitored_address_county] = Faker::Address.community if rand < 0.7
+          if rand < 0.85 && counties.key?(patient[:monitored_address_state])
+            patient[:monitored_address_county] = rand < 0.95 ? counties[patient[:monitored_address_state]].sample : Faker::Address.community
+          end
         end
       else
         patient[:foreign_address_line_1] = Faker::Address.street_address if rand < 0.95
@@ -294,21 +304,14 @@ namespace :demo do
         patient[:foreign_address_line_2] = Faker::Address.secondary_address if rand < 0.4
         patient[:foreign_address_zip] = Faker::Address.zip_code if rand < 0.95
         patient[:foreign_address_line_3] = Faker::Address.secondary_address if patient[:foreign_address_line2] && rand < 0.3
-        patient[:foreign_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)] if rand < 0.95
-        if rand < 0.6
-          patient[:foreign_monitored_address_line_1] = patient[:foreign_address_line_1]
-          patient[:foreign_monitored_address_city] = patient[:foreign_address_city]
-          patient[:foreign_monitored_address_state] = patient[:foreign_address_state]
-          patient[:foreign_monitored_address_line_2] = patient[:foreign_address_line_2]
-          patient[:foreign_monitored_address_zip] = patient[:foreign_address_zip]
-          patient[:foreign_monitored_address_county] = Faker::Nation.capital_city if rand < 0.6
-        else
-          patient[:foreign_monitored_address_line_1] = Faker::Address.street_address if rand < 0.95
-          patient[:foreign_monitored_address_city] = Faker::Nation.capital_city if rand < 0.95
-          patient[:foreign_monitored_address_state] = rand < 0.7 ? Faker::Address.state : territory_names[rand(territory_names.count)] if rand < 0.95
-          patient[:foreign_monitored_address_line_2] = Faker::Address.secondary_address if rand < 0.4
-          patient[:foreign_monitored_address_zip] = Faker::Address.zip_code if rand < 0.95
-          patient[:foreign_monitored_address_county] = Faker::Address.community if rand < 0.7
+        patient[:foreign_address_state] = Faker::Address.community if rand < 0.7
+        patient[:foreign_monitored_address_line_1] = Faker::Address.street_address if rand < 0.95
+        patient[:foreign_monitored_address_city] = Faker::Nation.capital_city if rand < 0.95
+        patient[:foreign_monitored_address_state] = rand < 0.9 ? counties.keys.sample : territory_names[rand(territory_names.count)] if rand < 0.95
+        patient[:foreign_monitored_address_line_2] = Faker::Address.secondary_address if rand < 0.4
+        patient[:foreign_monitored_address_zip] = Faker::Address.zip_code if rand < 0.95
+        if rand < 0.85 && counties.key?(patient[:foreign_monitored_address_state])
+          patient[:foreign_monitored_address_county] = rand < 0.95 ? counties[patient[:foreign_monitored_address_state]].sample : Faker::Address.community
         end
       end
 
