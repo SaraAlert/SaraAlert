@@ -100,4 +100,8 @@ Rails.application.routes.draw do
   get '/analytics', to: 'analytics#index', as: :analytics
   get '/county_level_maps/:mapFile', to: 'analytics#clm_geo_json'
 
+  # Errors
+  get '/404', to: 'errors#not_found'
+  get '/422', to: 'errors#unprocessable'
+  get '/500', to: 'errors#internal_server_error'
 end
