@@ -13,20 +13,20 @@ class AdminTest < ApplicationSystemTestCase
   end
 
   test 'add users with different jurisdictions and roles' do
-    @@admin_test_helper.add_user('usa_admin', 'locals1c1_enroller2@example.com', 'USA,State 1,County 1', 'enroller')
-    @@admin_test_helper.add_user('usa_admin', 'state1_enroller2@example.com', 'USA,State 1', 'enroller')
+    @@admin_test_helper.add_user('usa_admin', 'locals1c1_enroller2@example.com', 'USA, State 1, County 1', 'enroller')
+    @@admin_test_helper.add_user('usa_admin', 'state1_enroller2@example.com', 'USA, State 1', 'enroller')
     @@admin_test_helper.add_user('usa_admin', 'usa_enroller2@example.com', 'USA', 'enroller')
-    @@admin_test_helper.add_user('usa_admin', 'locals1c2_epi2@example.com', 'USA,State 1,County 2', 'public_health')
-    @@admin_test_helper.add_user('usa_admin', 'state1_epi2@example.com', 'USA,State 1', 'public_health')
+    @@admin_test_helper.add_user('usa_admin', 'locals1c2_epi2@example.com', 'USA, State 1, County 2', 'public_health')
+    @@admin_test_helper.add_user('usa_admin', 'state1_epi2@example.com', 'USA, State 1', 'public_health')
     @@admin_test_helper.add_user('usa_admin', 'usa_epi2@example.com', 'USA', 'public_health')
-    @@admin_test_helper.add_user('usa_admin', 'locals2c3_epi_enroller2@example.com', 'USA,State 2,County 3', 'public_health_enroller')
-    @@admin_test_helper.add_user('usa_admin', 'state1_epi_enroller2@example.com', 'USA,State 1', 'public_health_enroller')
+    @@admin_test_helper.add_user('usa_admin', 'locals2c3_epi_enroller2@example.com', 'USA, State 2, County 3', 'public_health_enroller')
+    @@admin_test_helper.add_user('usa_admin', 'state1_epi_enroller2@example.com', 'USA, State 1', 'public_health_enroller')
     @@admin_test_helper.add_user('usa_admin', 'usa_epi_enroller2@example.com', 'USA', 'public_health_enroller')
-    @@admin_test_helper.add_user('usa_admin', 'locals1c1_admin2@example.com', 'USA,State 1,County 1', 'admin')
-    @@admin_test_helper.add_user('usa_admin', 'state2_admin2@example.com', 'USA,State 2', 'admin')
+    @@admin_test_helper.add_user('usa_admin', 'locals1c1_admin2@example.com', 'USA, State 1, County 1', 'admin')
+    @@admin_test_helper.add_user('usa_admin', 'state2_admin2@example.com', 'USA, State 2', 'admin')
     @@admin_test_helper.add_user('usa_admin', 'usa_admin2@example.com', 'USA', 'admin')
-    @@admin_test_helper.add_user('usa_admin', 'locals2c4_analyst2@example.com', 'USA,State 2,County 4', 'analyst')
-    @@admin_test_helper.add_user('usa_admin', 'state1_analyst2@example.com', 'USA,State 1', 'analyst')
+    @@admin_test_helper.add_user('usa_admin', 'locals2c4_analyst2@example.com', 'USA, State 2, County 4', 'analyst')
+    @@admin_test_helper.add_user('usa_admin', 'state1_analyst2@example.com', 'USA, State 1', 'analyst')
     @@admin_test_helper.add_user('usa_admin', 'usa_analyst2@example.com', 'USA', 'analyst')
   end
 
@@ -35,7 +35,7 @@ class AdminTest < ApplicationSystemTestCase
   end
 
   test 'should display error message if user is added with email of an existing user' do
-    @@admin_test_helper.add_existing_user('usa_admin', 'locals1c1_enroller@example.com', 'USA,State 1,County 1', 'enroller')
+    @@admin_test_helper.add_existing_user('usa_admin', 'locals1c1_enroller@example.com', 'USA, State 1, County 1', 'enroller')
   end
 
   test 'lock user' do
