@@ -9,9 +9,9 @@
 <% end %>
 
 <% if current_user.has_role?(:enroller) %>
-  <%= react_component("dashboard/EnrollerAnalytics", { current_user: current_user, stats: @stats }) %>
+  <%= react_component("analytics/EnrollerAnalytics", { current_user: current_user, stats: @stats }) %>
 <% end %>
 
 <% if current_user.has_role?(:public_health) || current_user.has_role?(:public_health_enroller) || current_user.has_role?(:analyst) %>
-  <%= react_component("dashboard/MonitorAnalytics", { current_user: current_user, stats: @stats }) %>
+  <%= react_component("analytics/MonitorAnalytics", { current_user: current_user, stats: @stats }) %>
 <% end %>

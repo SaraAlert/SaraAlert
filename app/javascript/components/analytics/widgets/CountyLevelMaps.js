@@ -355,7 +355,7 @@ class CountyLevelMaps extends React.Component {
       const countyNames = this.jurisdictionSeries.geodata.features.map(county => county.properties.name);
       // We want to report to the user if there were values in the DB that couldnt be matched to real counties
       // The most believable and common instance of this will be `Unknown` which is when a county is not entered
-      // However for demo-data (from demo.rake) the counties will be randomly generated and therefore invalid (There is no Eagle Heights county in Massachusetts)
+      // However, the county field for patients is not validated so it is possible for unknown county names to be present in the data
       // By reporting this to the user in a little popup, we cover all bases
       this.countiesNotFound = this.props.jurisdictionData.countyData[String(stateIsoCode)]
         .map(cd => (countyNames.includes(cd.countyName) ? null : cd))
