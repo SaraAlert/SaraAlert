@@ -45,16 +45,12 @@ class PatientsControllerTest < ActionController::TestCase
       not_found_id = Patient.last.id + 1
 
       # If apply_to_group is true: Patient.dependent_ids_for_patients
-      error = assert_raises(ActiveRecord::RecordNotFound) do
-        post :bulk_update_status, params: { ids: [not_found_id], apply_to_group: true }
-      end
-      assert_includes(error.message, "Couldn't find Patient with 'id'=#{not_found_id}")
+      post :bulk_update_status, params: { ids: [not_found_id], apply_to_group: true }
+      assert_redirected_to('/errors#not_found')
 
       # If apply_to_group is false: current_user.get_patients
-      error = assert_raises(ActiveRecord::RecordNotFound) do
-        post :bulk_update_status, params: { ids: [not_found_id], apply_to_group: false }
-      end
-      assert_includes(error.message, "Couldn't find Patient with 'id'=#{not_found_id}")
+      post :bulk_update_status, params: { ids: [not_found_id], apply_to_group: false }
+      assert_redirected_to('/errors#not_found')
 
       # Normal operation
       post :bulk_update_status, params: {
