@@ -196,7 +196,7 @@ namespace :demo do
     # Transactions speeds things up a bit
     ActiveRecord::Base.transaction do
       # Patients created before today
-      existing_patients = Patient.where('created_at < ?', today)
+      existing_patients = Patient.monitoring_open.where('created_at < ?', today)
 
       # Histories to be created today
       histories = []
