@@ -141,7 +141,7 @@ namespace :demo do
     printf("\n")
   end
 
-  desc 'Add lots of data to the database to provide some idea of basic scaling issues'
+  desc 'Add synthetic patient/monitoree data to the database for an initial time period in days'
   task populate: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
@@ -155,7 +155,7 @@ namespace :demo do
     jurisdictions = Jurisdiction.all
     assigned_users = Hash[jurisdictions.pluck(:id).map {|id| [id, (1..9999).to_a.sample(10)]}]
 
-    counties = YAML.safe_load(File.read("#{__dir__}/../assets/counties.yml"))
+    counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
 
     days.times do |day|
       today = Date.today - (days - (day + 1)).days
@@ -175,7 +175,7 @@ namespace :demo do
     end
   end
 
-  desc 'Add lots of data to the database to provide some idea of basic scaling issues'
+  desc 'Add synthetic patient/monitoree data to the database for a single day (today)'
   task update: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development' || ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK']
 
@@ -185,7 +185,7 @@ namespace :demo do
     jurisdictions = Jurisdiction.all
     assigned_users = Hash[jurisdictions.map {|jur| [jur[:id], jur.assigned_users]}]
 
-    counties = YAML.safe_load(File.read("#{__dir__}/../assets/counties.yml"))
+    counties = YAML.safe_load(File.read(Rails.root.join('lib', 'assets', 'counties.yml')))
 
     printf("Simulating today\n")
 
@@ -212,7 +212,7 @@ namespace :demo do
       # Create laboratories
       laboratory_histories = demo_populate_laboratories(today, days_ago, existing_patients)
       histories = histories.concat(laboratory_histories)
-      
+
       # Create transfers
       transfer_histories = demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
       histories = histories.concat(transfer_histories)
