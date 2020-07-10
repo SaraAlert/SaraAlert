@@ -340,7 +340,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
          .where(monitoring: true)
          .where(purged: false)
          .where(isolation: true)
-         .where_assoc_not_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+         .where_assoc_not_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
          .distinct
   }
 
@@ -362,7 +362,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
          .where(purged: false)
          .where(isolation: true)
          .left_outer_joins(:assessments)
-         .where_assoc_exists(:assessments, ['created_at >= ?', 24.hours.ago])
+         .where_assoc_exists(:assessments, ['created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago])
          .or(
            where.not(id: Patient.unscoped.isolation_requiring_review)
              .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
