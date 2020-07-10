@@ -230,11 +230,19 @@ class CountyLevelMaps extends React.Component {
     heatLegendReference.series = dataSeries;
     heatLegendReference.align = 'right';
     heatLegendReference.valign = 'bottom';
-    heatLegendReference.width = am4core.percent(25);
-    heatLegendReference.marginRight = am4core.percent(4);
-    heatLegendReference.background.fill = am4core.color('#3c5bdc');
+    heatLegendReference.marginRight = '7px';
+    heatLegendReference.background.fill = am4core.color('#fff');
     heatLegendReference.background.fillOpacity = 0.05;
-    heatLegendReference.padding(5, 5, 5, 5);
+    // For Insular Areas, we still want a Horizontal Legend, but for the 50-states we want a vertical legend
+    // so it doesnt sit over and obstruct Florida
+    if (this.props.jurisdictionToShow.category === 'territory') {
+      heatLegendReference.width = am4core.percent(25);
+      heatLegendReference.padding(5, 5, 5, 5);
+    } else {
+      heatLegendReference.width = '50px';
+      heatLegendReference.padding(10, 10, 10, 0);
+      heatLegendReference.orientation = 'vertical';
+    }
 
     let minRange = heatLegendReference.valueAxis.axisRanges.create();
     minRange.label.horizontalCenter = 'left';
