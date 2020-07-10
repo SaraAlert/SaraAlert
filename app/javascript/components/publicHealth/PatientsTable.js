@@ -76,7 +76,7 @@ class PatientsTable extends React.Component {
     Object.keys(this.props.tabs).forEach(tab => {
       axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
         const count = {};
-        count[`${tab}Count`] = response.data.count;
+        count[`${tab}Count`] = response.data.total;
         this.setState(count);
       });
     });
@@ -173,7 +173,9 @@ class PatientsTable extends React.Component {
 
     // remove jurisdiction and assigned user filters if tab is transferred out
     if (query.tab === 'transferred_out') {
-      (query.jurisdiction = this.props.jurisdiction.id), (query.scope = 'all'), (query.assignedUser = 'all');
+      query.jurisdiction = this.props.jurisdiction.id;
+      query.scope = 'all';
+      query.user = 'all';
     }
 
     this.setState({ query, cancelToken, loading: true }, () => {

@@ -13,25 +13,27 @@ class Assessment < ApplicationRecord
   has_one :reported_condition, class_name: 'ReportedCondition'
   belongs_to :patient
 
-  scope :twenty_four_hours_fever_or_fever_medication, lambda {
-    where('created_at >= ?', 24.hours.ago).where_assoc_exists(:reported_condition, &:fever_or_fever_medication)
-  }
+  after_save :update_patient_linelist_after_save
+  before_destroy :update_patient_linelist_before_destroy
 
-  scope :seventy_two_hours_fever_or_fever_medication, lambda {
-    where('created_at >= ?', 72.hours.ago).where_assoc_exists(:reported_condition, &:fever_or_fever_medication)
-  }
+  def update_patient_linelist_after_save
+    patient.symptomatic = patient.assessments.where(symptomatic: true).exists?
+    patient.latest_assessment_at = patient.assessments.maximum(:created_at)
+    patient.latest_fever_or_fever_reducer_at = patient.assessments
+                                                      .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
+                                                      .maximum(:created_at)
+    patient.save
+  end
 
-  scope :ten_days_symptomatic, lambda {
-    where('created_at >= ?', 10.days.ago).where(symptomatic: true)
-  }
-
-  scope :older_than_seventy_two_hours, lambda {
-    where('created_at <= ?', 72.hours.ago)
-  }
-
-  scope :symptomatic, lambda {
-    where(symptomatic: true)
-  }
+  def update_patient_linelist_before_destroy
+    patient.symptomatic = patient.assessments.where.not(id: id).where(symptomatic: true).exists?
+    patient.latest_assessment_at = patient.assessments.where.not(id: id).maximum(:created_at)
+    patient.latest_fever_or_fever_reducer_at = patient.assessments
+                                                      .where.not(id: id)
+                                                      .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
+                                                      .maximum(:created_at)
+    patient.save
+  end
 
   def symptomatic?
     symptom_groups = []
@@ -39,7 +41,7 @@ class Assessment < ApplicationRecord
       threshold_symptom = get_threshold_symptom(reported_symptom.name)
       # Group represents how many have to be true in that group to be considered as symptomatic
       symptom_group_index = threshold_symptom&.group || 1
-      # -1 to convert to 0-based ie: index 0 requires atleast 1 true, index 1 requires atleast 2 true...
+      # -1 to convert to 0-based ie: index 0 requires at least 1 true, index 1 requires at least 2 true...
       symptom_group_index -= 1
       symptom_passes = symptom_passes_threshold(reported_symptom.name, threshold_symptom)
       symptom_groups[symptom_group_index] = 0 if symptom_groups[symptom_group_index].nil?

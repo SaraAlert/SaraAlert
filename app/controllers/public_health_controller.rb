@@ -63,7 +63,7 @@ class PublicHealthController < ApplicationController
     patients = patients_by_type(workflow, tab)
 
     # Filter by assigned jurisdiction
-    unless jurisdiction == 'all' || tab == :transferred_out
+    unless jurisdiction == 'all' || jurisdiction.to_i == current_user.jurisdiction_id || tab == :transferred_out
       jur_id = jurisdiction.to_i
       patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
     end
@@ -81,7 +81,7 @@ class PublicHealthController < ApplicationController
     patients = patients.paginate(per_page: entries, page: page + 1)
 
     # Extract only relevant fields to be displayed by workflow and tab
-    render json: linelist(patients, workflow, tab).merge({ total: patients.total_entries })
+    render json: linelist(patients, workflow, tab)
   end
 
   # Get patient counts by workflow
@@ -117,7 +117,7 @@ class PublicHealthController < ApplicationController
     # Get patients by workflow and tab
     patients = patients_by_type(workflow, tab)
 
-    render json: { count: patients.size }
+    render json: { total: patients.size }
   end
 
   # Get all individuals whose responder_id = id, these people are "HOH eligible"
@@ -184,75 +184,67 @@ class PublicHealthController < ApplicationController
     return patients if order.nil? || order.empty? || direction.nil? || direction.blank?
 
     # Satisfy brakeman with additional sanitation logic
-    direction = direction == 'asc' ? 'asc' : 'desc'
+    dir = direction == 'asc' ? 'asc' : 'desc'
 
     if order == 'name'
-      patients = patients.order(last_name: direction).order(first_name: direction)
+      patients = patients.order(last_name: dir).order(first_name: dir)
     elsif order == 'jurisdiction'
-      patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + direction)
+      patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + dir)
     elsif order == 'transferred_from'
-      patients = patients.joins(:transfers)
-                         .joins('INNER JOIN jurisdictions ON transfers.from_jurisdiction_id = jurisdictions.id')
-                         .order('jurisdictions.path ' + direction)
+      patients = patients.joins('INNER JOIN jurisdictions ON jurisdictions.id = patients.latest_transfer_from').order('jurisdictions.path ' + dir)
     elsif order == 'transferred_to'
-      patients = patients.joins(:transfers)
-                         .joins('INNER JOIN jurisdictions ON transfers.to_jurisdiction_id = jurisdictions.id')
-                         .order('jurisdictions.path ' + direction)
+      patients = patients.includes(:jurisdiction).order('jurisdictions.path ' + dir)
     elsif order == 'assigned_user'
-      patients = patients.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + direction)
+      patients = patients.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + dir)
     elsif order == 'state_local_id'
-      patients = patients.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + direction)
+      patients = patients.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + dir)
     elsif order == 'sex'
-      patients = patients.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + direction)
+      patients = patients.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + dir)
     elsif order == 'dob'
-      patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + direction)
+      patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir)
     elsif order == 'end_of_monitoring'
-      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction)
+      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
     elsif order == 'risk_level'
-      patients = patients.order_by_risk(direction == 'asc')
+      patients = patients.order_by_risk(dir == 'asc')
     elsif order == 'monitoring_plan'
-      patients = patients.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + direction)
+      patients = patients.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + dir)
     elsif order == 'public_health_action'
-      patients = patients.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + direction)
+      patients = patients.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir)
     elsif order == 'expected_purge_date'
-      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction)
+      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
     elsif order == 'reason_for_closure'
-      patients = patients.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + direction)
+      patients = patients.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + dir)
     elsif order == 'closed_at'
-      patients = patients.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + direction)
+      patients = patients.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + dir)
     elsif order == 'transferred_at'
-      patients = patients.left_outer_joins(:transfers)
-                         .order('transfers.created_at ' + direction)
+      patients = patients.order('CASE WHEN latest_transfer_at IS NULL THEN 1 ELSE 0 END, latest_transfer_at ' + dir)
     elsif order == 'latest_report'
-      patients = patients.left_outer_joins(:assessments)
-                         .order('CASE WHEN assessments.created_at IS NULL THEN 1 ELSE 0 END, assessments.created_at ' + direction)
+      patients = patients.order('CASE WHEN latest_assessment_at IS NULL THEN 1 ELSE 0 END, latest_assessment_at ' + dir)
     end
 
     patients
   end
 
   def linelist(patients, workflow, tab)
-    # execute query
-    patients.to_a
-
     # get a list of fields relevant only to this linelist
     fields = linelist_specific_fields(workflow, tab)
 
-    # only compute statuses if necessary
-    if fields.include?(:status)
-      statuses = workflow == :exposure ? get_exposure_statuses(patients) : get_isolation_statuses(patients)
-    end
+    # retrieve proper jurisdiction
+    patients = if tab == :transferred_in
+                 patients.joins('INNER JOIN jurisdictions ON jurisdictions.id = patients.latest_transfer_from')
+               else
+                 patients.joins(:jurisdiction)
+               end
 
-    # only retrieve jurisdiction if necessary
-    jurisdiction_names = get_jurisdiction_names(patients) if fields.include?(:jurisdiction)
+    # only select patient fields necessary to generate linelists
+    patients = patients.select('patients.id, patients.first_name, patients.last_name, patients.user_defined_id_statelocal, patients.sex, '\
+                               'patients.date_of_birth, patients.assigned_user, patients.exposure_risk_assessment, patients.monitoring_plan, '\
+                               'patients.public_health_action, patients.monitoring_reason, patients.closed_at, patients.last_date_of_exposure, '\
+                               'patients.created_at, patients.updated_at, patients.latest_assessment_at, patients.latest_transfer_at, '\
+                               'jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path')
 
-    # only retrieve assessments if necessary
-    latest_assessments = get_latest_assessments(patients) if fields.include?(:latest_report)
-
-    # only retrieve transfers if necessary
-    if fields.include?(:transferred_at) || fields.include?(:transferred_from) || fields.include?(:transferred_to)
-      latest_transfers = get_latest_transfers(patients)
-    end
+    # execute query and get total count
+    total = patients.total_entries
 
     linelist = []
     patients.each do |patient|
@@ -290,17 +282,17 @@ class PublicHealthController < ApplicationController
                                       end
       end
 
-      details[:jurisdiction] = jurisdiction_names[patient[:id]] || '' if fields.include?(:jurisdiction)
-      details[:latest_report] = latest_assessments[patient[:id]]&.rfc2822 || '' if fields.include?(:latest_report)
-      details[:transferred_at] = latest_transfers[patient[:id]][:transferred_at]&.rfc2822 || '' if fields.include?(:transferred_at)
-      details[:transferred_from] = latest_transfers[patient[:id]][:transferred_from] || '' if fields.include?(:transferred_from)
-      details[:transferred_to] = latest_transfers[patient[:id]][:transferred_to] || '' if fields.include?(:transferred_to)
-      details[:status] = statuses[patient[:id]] || '' if fields.include?(:status)
+      details[:jurisdiction] = patient[:jurisdiction_name] || '' if fields.include?(:jurisdiction)
+      details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
+      details[:transferred_at] = patient[:latest_transfer_at]&.rfc2822 || '' if fields.include?(:transferred_at)
+      details[:transferred_from] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_from)
+      details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
+      details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
 
       linelist << details
     end
 
-    { linelist: linelist, fields: %i[name state_local_id sex dob].concat(fields) }
+    { linelist: linelist, fields: %i[name state_local_id sex dob].concat(fields), total: total }
   end
 
   def linelist_specific_fields(workflow, tab)

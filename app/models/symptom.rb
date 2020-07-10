@@ -17,7 +17,7 @@ class Symptom < ApplicationRecord
 
   validates :type, inclusion: valid_types, presence: true
 
-  scope :fever_or_fever_medication, lambda {
+  scope :fever_or_fever_reducer, lambda {
     where(['(name = ? OR name = ?) AND bool_value = ?', 'fever', 'used-a-fever-reducer', true])
   }
 

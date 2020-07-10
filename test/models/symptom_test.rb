@@ -39,16 +39,16 @@ class SymptomTest < ActiveSupport::TestCase
     end
   end
 
-  test 'symptom fever or fever medication' do
-    assert_difference('Symptom.fever_or_fever_medication.size', 1) do
+  test 'symptom fever or fever reducer' do
+    assert_difference('Symptom.fever_or_fever_reducer.size', 1) do
       create(:bool_symptom, bool_value: true, name: 'fever')
     end
 
-    assert_difference('Symptom.fever_or_fever_medication.size', 1) do
+    assert_difference('Symptom.fever_or_fever_reducer.size', 1) do
       create(:bool_symptom, bool_value: true, name: 'used-a-fever-reducer')
     end
 
-    assert_no_difference('Symptom.fever_or_fever_medication.size') do
+    assert_no_difference('Symptom.fever_or_fever_reducer.size') do
       create(:bool_symptom, bool_value: false, name: 'fever')
       create(:bool_symptom, bool_value: true, name: 'not fever')
     end
