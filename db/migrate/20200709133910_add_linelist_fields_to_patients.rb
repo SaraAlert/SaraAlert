@@ -1,35 +1,11 @@
 class AddLinelistFieldsToPatients < ActiveRecord::Migration[6.0]
   def up
-    add_column :patients, :symptomatic, :boolean, default: false
-    add_column :patients, :earliest_assessment_at, :datetime, index: true
     add_column :patients, :latest_assessment_at, :datetime, index: true
     add_column :patients, :latest_fever_or_fever_reducer_at, :datetime, index: true
     add_column :patients, :latest_positive_lab_at, :date, index: true
     add_column :patients, :negative_lab_count, :integer, default: 0, index: true
     add_column :patients, :latest_transfer_at, :datetime, index: true
     add_column :patients, :latest_transfer_from, :integer, index: true
-
-    # populate :symptomatic
-    execute <<-SQL.squish
-      UPDATE patients
-      INNER JOIN (
-        SELECT DISTINCT patient_id
-        FROM assessments
-        WHERE symptomatic = true
-      ) t ON patients.id = t.patient_id
-      SET patients.symptomatic = true
-    SQL
-
-    # populate :earliest_assessment_at
-    execute <<-SQL.squish
-      UPDATE patients
-      INNER JOIN (
-        SELECT patient_id, MIN(created_at) AS earliest_assessment_at
-        FROM assessments
-        GROUP BY patient_id
-      ) t ON patients.id = t.patient_id
-      SET patients.earliest_assessment_at = t.earliest_assessment_at  
-    SQL
 
     # populate :latest_assessment_at
     execute <<-SQL.squish
@@ -98,8 +74,6 @@ class AddLinelistFieldsToPatients < ActiveRecord::Migration[6.0]
   end
 
   def down
-    remove_column :patients, :symptomatic, :boolean
-    remove_column :patients, :earliest_assessment_at, :datetime
     remove_column :patients, :latest_assessment_at, :datetime
     remove_column :patients, :latest_fever_or_fever_reducer_at
     remove_column :patients, :latest_positive_lab_at, :date

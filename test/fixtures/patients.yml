@@ -50,7 +50,6 @@ patient_1:
   potential_exposure_country: "Malaysia"
   travel_to_affected_country_or_area: true
   symptom_onset: "<%= 5.days.ago %>"
-  symptomatic: false
   latest_assessment_at: "<%= 36.days.ago %>"
   latest_positive_lab_at: "<%= 5.days.ago %>"
   negative_lab_count: 1
@@ -100,7 +99,6 @@ patient_2:
   potential_exposure_country: "United States Minor Outlying Islands"
   was_in_health_care_facility_with_known_cases: true
   pause_notifications: true
-  symptomatic: false
   latest_assessment_at: "<%= 36.days.ago %>"
 patient_3:
   id: 3
@@ -124,7 +122,7 @@ patient_3:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   last_date_of_exposure: "<%= 47.days.ago %>"
-  symptomatic: true
+  symptom_onset: "<%= 23.days.ago %>"
   latest_assessment_at: "<%= 23.days.ago %>"
   latest_transfer_at: <%= 4.hours.ago %>
   latest_transfer_from: 4
@@ -151,7 +149,6 @@ patient_4:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   last_date_of_exposure: "<%= 27.days.ago %>"
-  symptomatic: false
   latest_assessment_at: "<%= 6.hours.ago %>"
   latest_transfer_at: <%= 10.hours.ago %>
   latest_transfer_from: 2
@@ -181,7 +178,7 @@ patient_5:
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 66.days.ago %>"
   pause_notifications: true
-  symptomatic: true
+  symptom_onset: "<%= 24.days.ago %>"
   latest_assessment_at: "<%= 24.days.ago %>"
 patient_6:
   id: 6
@@ -208,7 +205,6 @@ patient_6:
   exposure_risk_assessment: 'Low'
   last_date_of_exposure: "<%= 22.days.ago %>"
   public_health_action: 'Recommended medical evaluation of symptoms'
-  symptomatic: false
   latest_transfer_at: <%= 7.days.ago %>
   latest_transfer_from: 5
 patient_7:
@@ -237,7 +233,6 @@ patient_7:
   exposure_risk_assessment: 'Medium'
   last_date_of_exposure: "<%= 83.days.ago %>"
   public_health_action: 'Recommended medical evaluation of symptoms'
-  symptomatic: false
 patient_8:
   id: 8
   created_at: "<%= 17.days.ago %>"
@@ -265,7 +260,6 @@ patient_8:
   last_date_of_exposure: "<%= 41.days.ago %>"
   public_health_action: 'Recommended medical evaluation of symptoms'
   pause_notifications: true
-  symptomatic: false
   latest_assessment_at: "<%= 5.hours.ago %>"
   latest_transfer_at: <%= 7.days.ago %>
   latest_transfer_from: 2
@@ -296,7 +290,7 @@ patient_9:
   last_date_of_exposure: "<%= 41.days.ago %>"
   public_health_action: 'Recommended medical evaluation of symptoms'
   pause_notifications: true
-  symptomatic: true
+  symptom_onset: "<%= 24.days.ago %>"
   latest_assessment_at: "<%= 10.hours.ago %>"
 patient_10:
   id: 10
@@ -323,7 +317,6 @@ patient_10:
   exposure_risk_assessment: 'No Identified Risk'
   last_date_of_exposure: "<%= 22.days.ago %>"
   public_health_action: 'Recommended medical evaluation of symptoms'
-  symptomatic: false
   latest_assessment_at: "<%= 18.hours.ago %>"
 patient_11:
   id: 11
@@ -945,7 +938,7 @@ patient_50:
   preferred_contact_method: "Telephone call"
   source_of_report: "CDC"
   last_date_of_exposure: "<%= 12.days.ago %>"
-  symptomatic: true
+  symptom_onset: "<%= 1.hour.ago %>"
   latest_assessment_at: "<%= 1.hour.ago %>"
   latest_fever_or_fever_reducer_at: "<%= 1.hour.ago %>"
 patient_51:

@@ -287,8 +287,6 @@ ActiveRecord::Schema.define(version: 2020_07_09_133910) do
     t.string "case_status"
     t.integer "assigned_user"
     t.boolean "continuous_exposure", default: false
-    t.boolean "symptomatic", default: false
-    t.datetime "earliest_assessment_at"
     t.datetime "latest_assessment_at"
     t.datetime "latest_fever_or_fever_reducer_at"
     t.date "latest_positive_lab_at"

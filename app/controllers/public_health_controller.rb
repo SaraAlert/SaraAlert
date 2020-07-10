@@ -63,7 +63,7 @@ class PublicHealthController < ApplicationController
     patients = patients_by_type(workflow, tab)
 
     # Filter by assigned jurisdiction
-    unless jurisdiction == 'all' || jurisdiction.to_i == current_user.jurisdiction_id || tab == :transferred_out
+    unless jurisdiction == 'all' || tab == :transferred_out
       jur_id = jurisdiction.to_i
       patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
     end

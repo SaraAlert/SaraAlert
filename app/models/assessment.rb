@@ -17,7 +17,7 @@ class Assessment < ApplicationRecord
   before_destroy :update_patient_linelist_before_destroy
 
   def update_patient_linelist_after_save
-    patient.symptomatic = patient.assessments.where(symptomatic: true).exists?
+    patient.symptom_onset = patient.assessments.where(symptomatic: true).minimum(:created_at)
     patient.latest_assessment_at = patient.assessments.maximum(:created_at)
     patient.latest_fever_or_fever_reducer_at = patient.assessments
                                                       .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
@@ -26,7 +26,7 @@ class Assessment < ApplicationRecord
   end
 
   def update_patient_linelist_before_destroy
-    patient.symptomatic = patient.assessments.where.not(id: id).where(symptomatic: true).exists?
+    patient.symptom_onset = patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at)
     patient.latest_assessment_at = patient.assessments.where.not(id: id).maximum(:created_at)
     patient.latest_fever_or_fever_reducer_at = patient.assessments
                                                       .where.not(id: id)

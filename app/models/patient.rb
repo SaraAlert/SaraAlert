@@ -161,7 +161,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(public_health_action: 'None')
-      .where(symptomatic: true)
+      .where.not(symptom_onset: nil)
       .distinct
   }
 
@@ -170,13 +170,13 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(public_health_action: 'None')
-      .where(symptomatic: false)
+      .where(symptom_onset: nil)
       .where('latest_assessment_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(public_health_action: 'None')
-        .where(symptomatic: false)
+        .where(symptom_onset: nil)
         .where('patients.created_at >= ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       )
       .distinct
@@ -187,14 +187,14 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(public_health_action: 'None')
-      .where(symptomatic: false)
+      .where(symptom_onset: nil)
       .where(latest_assessment_at: nil)
       .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(public_health_action: 'None')
-        .where(symptomatic: false)
+        .where(symptom_onset: nil)
         .where('latest_assessment_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
       )
@@ -229,7 +229,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .where(symptomatic: false)
+      .where(symptom_onset: nil)
       .where.not(latest_assessment_at: nil)
       .where('latest_positive_lab_at < ?', 10.days.ago)
       .distinct
@@ -240,16 +240,14 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     where(monitoring: true)
       .where(purged: false)
       .where(isolation: true)
-      .where('earliest_assessment_at < ?', 72.hours.ago)
-      .where(latest_fever_or_fever_reducer_at: nil)
       .where('symptom_onset <= ?', 10.days.ago)
+      .where(latest_fever_or_fever_reducer_at: nil)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: true)
-        .where('earliest_assessment_at < ?', 72.hours.ago)
-        .where('latest_fever_or_fever_reducer_at < ?', 72.hours.ago)
         .where('symptom_onset <= ?', 10.days.ago)
+        .where('latest_fever_or_fever_reducer_at < ?', 72.hours.ago)
       )
       .distinct
   }
@@ -494,16 +492,16 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
 
     unless isolation
       return :exposure_under_investigation if public_health_action != 'None'
-      return :exposure_symptomatic if symptomatic
+      return :exposure_symptomatic unless symptom_onset.nil?
       return :exposure_asymptomatic if (!latest_assessment_at.nil? && latest_assessment_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago) ||
                                        (!created_at.nil? && created_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
 
       return :exposure_non_reporting
     end
 
-    return :isolation_asymp_non_test_based if !latest_assessment_at.nil? && !latest_positive_lab_at.nil? && latest_positive_lab_at < 10.days.ago && !symptomatic
-    return :isolation_symp_non_test_based if !earliest_assessment_at.nil? && earliest_assessment_at < 72.hours.ago &&
-                                             (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 72.hours.ago) &&
+    return :isolation_asymp_non_test_based if !latest_assessment_at.nil? && !latest_positive_lab_at.nil? && latest_positive_lab_at < 10.days.ago &&
+                                              symptom_onset.nil?
+    return :isolation_symp_non_test_based if (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 72.hours.ago) &&
                                              !symptom_onset.nil? && symptom_onset <= 10.days.ago
     return :isolation_test_based if !latest_assessment_at.nil? && (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 24.hours.ago) &&
                                     negative_lab_count >= 2
