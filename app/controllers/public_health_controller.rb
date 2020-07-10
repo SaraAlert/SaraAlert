@@ -2,8 +2,6 @@
 
 # PublicHealthController: handles all epi actions
 class PublicHealthController < ApplicationController
-  include PatientDetailsHelper
-
   before_action :authenticate_user!
 
   def exposure

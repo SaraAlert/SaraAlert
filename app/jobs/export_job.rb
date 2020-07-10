@@ -58,9 +58,9 @@ class ExportJob < ApplicationJob
   def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|
       csv << LINELIST_HEADERS
-      patient_statuses = get_patient_statuses(patients)
+      statuses = patient_statuses(patients)
       patients.find_in_batches(batch_size: 500) do |patients_group|
-        linelists = get_linelists(patients_group, patient_statuses)
+        linelists = linelists_for_export(patients_group, statuses)
         patients_group.each do |patient|
           csv << linelists[patient.id].values
         end
@@ -73,9 +73,9 @@ class ExportJob < ApplicationJob
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
         sheet.add_row COMPREHENSIVE_HEADERS
-        patient_statuses = get_patient_statuses(patients)
+        statuses = patient_statuses(patients)
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = get_comprehensive_details(patients_group, patient_statuses)
+          comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
           patients_group.each do |patient|
             sheet.add_row comprehensive_details[patient.id].values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
           end
@@ -90,9 +90,9 @@ class ExportJob < ApplicationJob
       p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
         headers = MONITOREES_LIST_HEADERS
         sheet.add_row headers
-        patient_statuses = get_patient_statuses(patients)
+        statuses = patient_statuses(patients)
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = get_comprehensive_details(patients_group, patient_statuses)
+          comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
           patients_group.each do |patient|
             sheet.add_row [patient.id] + comprehensive_details[patient.id].values, { types: Array.new(MONITOREES_LIST_HEADERS.length, :string) }
           end
