@@ -19,5 +19,6 @@ module SARAAlert
     end
     # Setup which 3rd party queing system to use
     config.active_job.queue_adapter = :sidekiq
+    config.exceptions_app = self.routes
   end
 end
