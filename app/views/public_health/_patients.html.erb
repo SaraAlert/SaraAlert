@@ -2,6 +2,7 @@
 
   <%# Modals %>
   <%= react_component("bulk_edit/CaseStatus", { authenticity_token: form_authenticity_token}) %>
+  <%= react_component("bulk_edit/Close", { authenticity_token: form_authenticity_token}) %>
 
   <% unless type == 'transferred_out_patients' %>
     <div class="row">
@@ -112,7 +113,13 @@
                   window.bulkEditCaseStatusComponent.activate(selectedPatients);
                 }
               },
-              
+              {
+                text: 'Close',
+                action: function ( e, dt, node, config ) {
+                  let selectedPatients = table.rows({ selected: true }).data().toArray();
+                  window.bulkCloseComponent.activate(selectedPatients);
+                }
+              },
             ]
         }
         ],
