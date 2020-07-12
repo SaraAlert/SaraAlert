@@ -10,10 +10,12 @@ class PurgeJob < ApplicationJob
     Patient.purge_eligible.find_each(batch_size: 5000) do |monitoree|
       next if monitoree.dependents.where.not(id: monitoree.id).where(monitoring: true).count.positive?
 
-      # Delete Twilio data
-      client = Twilio::REST::Client.new(account_sid, auth_token)
-      messages = client.messages.list(to: Phonelib.parse(patient.primary_telephone, 'US').full_e164)
-      messages.each(&:delete)
+      # Delete Twilio data if this is the last instance of this phone number
+      if monitoree.primary_telephone.present? && Patient.where(primary_telephone: monitoree.primary_telephone).count == 1
+        client = Twilio::REST::Client.new(account_sid, auth_token)
+        messages = client.messages.list(to: Phonelib.parse(.primary_telephone, 'US').full_e164)
+        messages.each(&:delete)
+      end
 
       # Whitelist attributes to keep
       attributes = Patient.new.attributes.keys
