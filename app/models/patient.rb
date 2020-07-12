@@ -586,9 +586,9 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     unless force
       hour = Time.now.getlocal(address_timezone_offset).hour
       # These are the hours that we consider to be morning, afternoon and evening
-      morning = (8..12)
-      afternoon = (12..16)
-      evening = (16..20)
+      morning = (8..11)
+      afternoon = (12..15)
+      evening = (16..19)
       if preferred_contact_time == 'Morning'
         return unless morning.include? hour
       elsif preferred_contact_time == 'Afternoon'
