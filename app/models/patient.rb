@@ -445,6 +445,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
 
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
+    return 'Continuous Exposure' if continuous_exposure
     return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
     return (created_at + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end

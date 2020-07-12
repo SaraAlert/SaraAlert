@@ -4,12 +4,10 @@ import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import reportError from '../../util/ReportError';
 
-class CaseStatus extends React.Component {
+class UpdateCaseStatus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
-      patients: [],
       case_status: '',
       message: '',
       confirmed: '',
@@ -25,26 +23,6 @@ class CaseStatus extends React.Component {
     };
     this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.toggleCaseStatusModal = this.toggleCaseStatusModal.bind(this);
-  }
-
-  clearState() {
-    this.setState({
-      showModal: false,
-      patients: [],
-      case_status: '',
-      message: '',
-      confirmed: '',
-      isolation: undefined,
-      initial_case_status: undefined,
-      initial_isolation: undefined,
-      initial_monitoring: undefined,
-      apply_to_group: false,
-      monitoring: false,
-      monitoring_reason: '',
-      public_health_action: '',
-      loading: false,
-    });
   }
 
   activate(patients) {
@@ -52,21 +30,7 @@ class CaseStatus extends React.Component {
       return;
     }
 
-    this.clearState();
-
     this.getCommonAttributes(patients);
-
-    this.setState({
-      showModal: true,
-      patients: patients,
-    });
-  }
-
-  toggleCaseStatusModal() {
-    let current = this.state.showModal;
-    this.setState({
-      showModal: !current,
-    });
   }
 
   getCommonAttributes(patients) {
@@ -95,7 +59,7 @@ class CaseStatus extends React.Component {
 
   handleChange(event) {
     event.persist();
-    this.setState({ [event.target.id]: event.target.type === 'checkbox' ? event.target.checked : event.target.value, showModal: true }, () => {
+    this.setState({ [event.target.id]: event.target.type === 'checkbox' ? event.target.checked : event.target.value }, () => {
       if (event.target.id === 'confirmed') {
         if (event.target.value === 'End Monitoring') {
           this.setState({
@@ -130,7 +94,7 @@ class CaseStatus extends React.Component {
   }
 
   submit() {
-    let idArray = this.state.patients.map(x => x['id']);
+    let idArray = this.props.patients.map(x => x['id']);
 
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -239,12 +203,9 @@ class CaseStatus extends React.Component {
     );
   }
 
-  createModal(title, toggle, submit) {
+  render() {
     return (
-      <Modal size="lg" show centered>
-        <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
+      <React.Fragment>
         <Modal.Body>
           <p>Please select the desired case status to be assigned to all selected patients:</p>
           <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
@@ -259,9 +220,12 @@ class CaseStatus extends React.Component {
           {this.state.case_status !== '' && this.renderFollowUp()}
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={this.props.close}>
+            Cancel
+          </Button>
           <Button
             variant="primary btn-square"
-            onClick={submit}
+            onClick={this.submit}
             disabled={
               ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') &&
                 !this.state.initial_isolation &&
@@ -278,21 +242,16 @@ class CaseStatus extends React.Component {
             )}
             Submit
           </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
-          </Button>
         </Modal.Footer>
-      </Modal>
+      </React.Fragment>
     );
-  }
-
-  render() {
-    return <React.Fragment>{this.state.showModal && this.createModal('Case Status', this.toggleCaseStatusModal, this.submit)}</React.Fragment>;
   }
 }
 
-CaseStatus.propTypes = {
+UpdateCaseStatus.propTypes = {
   authenticity_token: PropTypes.string,
+  patients: PropTypes.array,
+  close: PropTypes.function,
 };
 
-export default CaseStatus;
+export default UpdateCaseStatus;

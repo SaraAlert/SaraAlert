@@ -250,27 +250,27 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_test_helper.bulk_edit_case_status('state1_epi',
                                                       %w[patient_1 patient_2],
                                                       :exposure,
-                                                      'non-reporting',
+                                                      'all',
                                                       'Confirmed',
                                                       'Continue Monitoring in Isolation Workflow')
   end
 
   test 'bulk edit case status from isolation to exposure' do
-    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_45 patient_47], :isolation, 'non-reporting', 'Unknown', nil, false)
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_45 patient_47], :isolation, 'all', 'Unknown', nil, false)
   end
 
   test 'bulk edit case status from exposure to isolation with household' do
     @@public_health_test_helper.bulk_edit_case_status('state1_epi',
                                                       %w[patient_52],
                                                       :exposure,
-                                                      'non-reporting',
+                                                      'all',
                                                       'Confirmed',
                                                       'Continue Monitoring in Isolation Workflow',
                                                       true)
   end
 
   test 'bulk edit case status from isolation to exposure with household' do
-    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_54], :isolation, 'non-reporting', 'Unknown', nil, true)
+    @@public_health_test_helper.bulk_edit_case_status('state1_epi', %w[patient_54], :isolation, 'all', 'Unknown', nil, true)
   end
 
   # TODO: Re-enable when migrating away from GitHub LFS

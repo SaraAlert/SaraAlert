@@ -12,8 +12,8 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
   def verify_patients_on_dashboard(jurisdiction_id, verify_scope = false)
     jurisdiction = Jurisdiction.find(jurisdiction_id)
     patients = jurisdiction.all_patients
-    verify_workflow_count('Exposure Monitoring', patients.where(isolation: false).count)
-    verify_workflow_count('Isolation Monitoring', patients.where(isolation: true).count)
+    verify_workflow_count('exposure', patients.where(isolation: false).count)
+    verify_workflow_count('isolation', patients.where(isolation: true).count)
     verify_patients_under_tab(jurisdiction, verify_scope, 'symptomatic', patients.exposure_symptomatic)
     verify_patients_under_tab(jurisdiction, verify_scope, 'non_reporting', patients.exposure_non_reporting)
     verify_patients_under_tab(jurisdiction, verify_scope, 'asymptomatic', patients.exposure_asymptomatic)
@@ -23,8 +23,9 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     verify_patients_under_tab(jurisdiction, false, 'transferred_out', jurisdiction.transferred_out_patients.where(isolation: false))
     verify_patients_under_tab(jurisdiction, verify_scope, 'all', patients.where(isolation: false))
     @@system_test_utils.go_to_workflow('isolation')
-    verify_workflow_count('Exposure Monitoring', patients.where(isolation: false).count)
-    verify_workflow_count('Isolation Monitoring', patients.where(isolation: true).count)
+    @@system_test_utils.wait_for_page_count_load_delay
+    verify_workflow_count('exposure', patients.where(isolation: false).count)
+    verify_workflow_count('isolation', patients.where(isolation: true).count)
     verify_patients_under_tab(jurisdiction, verify_scope, 'requiring_review', patients.isolation_requiring_review)
     verify_patients_under_tab(jurisdiction, verify_scope, 'non_reporting', patients.isolation_non_reporting)
     verify_patients_under_tab(jurisdiction, verify_scope, 'reporting', patients.isolation_reporting)
@@ -34,56 +35,50 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
   end
 
   def verify_workflow_count(workflow, expected_count)
-    displayed_count = find('a', text: workflow).text.tr("#{workflow} ()", '').to_i
+    displayed_count = find_by_id("#{workflow}Count").text.tr('()', '').to_i
     assert_equal(expected_count, displayed_count, @@system_test_utils.get_err_msg('dashboard', "#{workflow} monitoring type count", expected_count))
   end
 
   def verify_patients_under_tab(jurisdiction, verify_scope, tab, patients)
     @@system_test_utils.go_to_tab(tab)
     assert_equal(patients.count, patient_count_under_tab(tab), @@system_test_utils.get_err_msg('dashboard', "#{tab} tab count", patients.count))
-    verify_jurisdiction_options_under_tab(jurisdiction, tab)
     patients.each do |patient|
       verify_patient_under_tab(jurisdiction, verify_scope, tab, patient)
     end
   end
 
-  def verify_jurisdiction_options_under_tab(jurisdiction, tab)
-    return if %w[transferred_in transferred_out].include?(tab)
-
-    sub_jurisdictions = Jurisdiction.find(jurisdiction.subtree_ids).sort
-    assert_equal(sub_jurisdictions.pluck(:id), page.all("select#assigned_jurisdiction_#{tab.gsub('-', '_')}_patients option").map(&:value).map(&:to_i))
-    assert_equal(sub_jurisdictions.pluck(:path), page.all("select#assigned_jurisdiction_#{tab.gsub('-', '_')}_patients option").map(&:text))
-  end
-
   def verify_patient_under_tab(jurisdiction, verify_scope, tab, patient)
     # view patient without any filters
-    fill_in 'Search', with: patient.last_name if patient_count_under_tab(tab) > find('.dataTables_length').find('select', class: 'custom-select')['value'].to_i
+    fill_in 'search', with: patient.last_name if patient_count_under_tab(tab) > find_field('entries')['value'].to_i
     verify_patient_info_in_data_table(patient, tab)
 
     return if %w[transferred_in transferred_out].include?(tab)
 
     # view patient with assigned jurisdiction filter
     Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
-      select jur[:path], from: "assigned_jurisdiction_#{tab.gsub('-', '_')}_patients"
+      fill_in 'jurisdictionPath', with: jur[:path]
       verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path].include?(jur[:name])
 
-      select 'Exact Match', from: "scope_#{tab.gsub('-', '_')}_patients"
+      find_by_id('exactJurisdiction').click
       if verify_scope
-        @@system_test_utils.wait_for_data_table_load_delay
         page.all('.dataTable tbody tr').each do |row|
-          assigned_jurisdiction_cell = row.all('td')[tab == 'transferred-out' ? 1 : 2]
+          assigned_jurisdiction_cell = row.all('td')[tab == 'transferred_out' ? 1 : 2]
           assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
         end
       end
       verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path] == jur[:path]
-      select 'All', from: "scope_#{tab.gsub('-', '_')}_patients"
+      find_by_id('allJurisdictions').click
     end
-    select jurisdiction[:path], from: "assigned_jurisdiction_#{tab.gsub('-', '_')}_patients"
+    fill_in 'jurisdictionPath', with: jurisdiction[:path]
 
     # view patient with assigned user filter
-    select patient[:assigned_user].nil? ? 'None' : patient[:assigned_user], from: "assigned_user_#{tab.gsub('-', '_')}_patients"
+    if patient[:assigned_user].nil?
+      find_by_id('noAssignedUser').click
+    else
+      fill_in 'assignedUser', with: patient[:assigned_user]
+    end
     verify_patient_info_in_data_table(patient, tab)
-    select 'All', from: "assigned_user_#{tab.gsub('-', '_')}_patients"
+    find_by_id('allAssignedUsers').click
   end
 
   def patient_count_under_tab(tab)

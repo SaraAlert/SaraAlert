@@ -16,18 +16,18 @@ class PublicHealthDashboard < ApplicationSystemTestCase
 
   def search_for_and_view_patient(tab, patient_label)
     @@system_test_utils.go_to_tab(tab)
-    fill_in 'Search', with: PATIENTS[patient_label]['last_name']
+    fill_in 'search', with: PATIENTS[patient_label]['last_name']
     click_on @@system_test_utils.get_patient_display_name(patient_label)
   end
 
   def search_for_and_view_monitoree(tab, monitoree_label)
     @@system_test_utils.go_to_tab(tab)
-    fill_in 'Search', with: MONITOREES[monitoree_label]['identification']['last_name']
+    fill_in 'search', with: MONITOREES[monitoree_label]['identification']['last_name']
     click_on @@system_test_utils.get_monitoree_display_name(monitoree_label)
   end
 
   def search_for_monitoree(monitoree_label)
-    fill_in 'Search', with: MONITOREES[monitoree_label]['identification']['last_name']
+    fill_in 'search', with: MONITOREES[monitoree_label]['identification']['last_name']
   end
 
   def export_line_list_csv(user_label, workflow, action)
@@ -72,7 +72,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
     find('a', text: 'Epi-X').click
-    attach_file('file', file_fixture(file_name))
+    page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
       @@public_health_import_verifier.verify_epi_x_import_page(jurisdiction_id, file_name)
@@ -80,14 +80,19 @@ class PublicHealthDashboard < ApplicationSystemTestCase
       @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     elsif validity == :invalid_file
       assert_content('Please make sure that your import file is a .xlsx file.')
+      find('.modal-header').find('.close').click
     elsif validity == :invalid_format
       assert_content('Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.')
+      find('.modal-header').find('.close').click
     elsif validity == :invalid_headers
       assert_content('Please make sure to use the latest Epi-X format.')
+      find('.modal-header').find('.close').click
     elsif validity == :invalid_monitorees
       assert_content('File must contain at least one monitoree to import')
+      find('.modal-header').find('.close').click
     elsif validity == :invalid_fields
       @@public_health_import_verifier.verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
+      find('.modal-header').find('.close').click
     end
   end
 
@@ -95,7 +100,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
     find('a', text: 'Sara Alert Format').click
-    attach_file('file', file_fixture(file_name))
+    page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
       @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction_id, file_name)
@@ -103,14 +108,19 @@ class PublicHealthDashboard < ApplicationSystemTestCase
       @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     elsif validity == :invalid_file
       assert_content('Please make sure that your import file is a .xlsx file.')
+      find('.modal-header').find('.close').click
     elsif validity == :invalid_format
       assert_content('Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.')
+      find('.modal-header').find('.close').click
     elsif validity == :invalid_headers
       assert_content('Please make sure to use the latest format specified by the Sara Alert Format guidance doc.')
+      find('.modal-header').find('.close').click
     elsif validity == :invalid_monitorees
       assert_content('File must contain at least one monitoree to import')
+      find('.modal-header').find('.close').click
     elsif validity == :invalid_fields
       @@public_health_import_verifier.verify_sara_alert_format_field_validation(jurisdiction_id, workflow, file_name)
+      find('.modal-header').find('.close').click
     end
   end
   # rubocop:enable Metrics/ParameterLists
@@ -129,10 +139,10 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def select_monitorees_to_import(rejects, accept_duplicates)
     if rejects.nil?
       click_on 'Import All'
-      find(:css, '.form-check-input').set(true) if accept_duplicates
+      find(:css, '.confirm-dialog').find(:css, '.form-check-input').set(true) if accept_duplicates
       click_on 'OK'
     else
-      page.all('div.card-body').each_with_index do |card, index|
+      find('.modal-body').all('div.card-body').each_with_index do |card, index|
         if rejects.include?(index)
           card.find('button', text: 'Reject').click
         else
@@ -151,7 +161,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def check_patient(patient_label)
-    find_by_id(PATIENTS[patient_label]['id'].to_s).find(class: 'select-checkbox').set(true)
+    find_by_id("patient#{PATIENTS[patient_label]['id']}").find(class: 'form-check-input').click
   end
 
   def actions_update_case_status(workflow, case_status, next_step, apply_to_group)

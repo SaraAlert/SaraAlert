@@ -207,9 +207,9 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
   def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|
       csv << LINELIST_HEADERS
-      patient_statuses = get_patient_statuses(patients)
+      statuses = patient_statuses(patients)
       patients.find_in_batches(batch_size: 500) do |patients_group|
-        linelists = get_linelists(patients_group, patient_statuses)
+        linelists = linelists_for_export(patients_group, statuses)
         patients_group.each do |patient|
           csv << linelists[patient.id].values
         end
@@ -222,9 +222,9 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
         sheet.add_row COMPREHENSIVE_HEADERS
-        patient_statuses = get_patient_statuses(patients)
+        statuses = patient_statuses(patients)
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = get_comprehensive_details(patients_group, patient_statuses)
+          comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
           patients_group.each do |patient|
             sheet.add_row comprehensive_details[patient.id].values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
           end
@@ -234,14 +234,14 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  def build_excel_export_for_patients(patients)
+  def excel_export(patients)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
         headers = MONITOREES_LIST_HEADERS
         sheet.add_row headers
-        patient_statuses = get_patient_statuses(patients)
+        statuses = patient_statuses(patients)
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = get_comprehensive_details(patients_group, patient_statuses)
+          comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
           patients_group.each do |patient|
             sheet.add_row [patient.id] + comprehensive_details[patient.id].values, { types: Array.new(MONITOREES_LIST_HEADERS.length, :string) }
           end
@@ -298,14 +298,6 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     end
   end
 
-  def get_comprehensive_details(patients, patient_statuses)
-    comprehensive_details = get_incomplete_comprehensive_details(patients)
-    patients_jurisdiction_paths = get_jurisdiction_paths(patients)
-    patients_labs = get_latest_labs(patients)
-    patients.each do |patient|
-      comprehensive_details[patient.id][:jurisdiction_path] = patients_jurisdiction_paths[patient.id]
-      comprehensive_details[patient.id][:status] = patient_statuses[patient.id]
-
   # Patient fields relevant to linelist export
   def linelists_for_export(patients, statuses)
     linelists = incomplete_linelists_for_export(patients)
@@ -316,7 +308,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
       linelists[patient.id][:status] = statuses[patient.id]&.gsub('exposure ', '')&.gsub('isolation ', '')
       next unless patients_transfers[patient.id]
 
-      linelists[patient.id][:transferred_at] = patients_transfers[patient.id][:transferred_at]&.rfc2822
+      linelists[patient.id][:transferred_at] = patients_transfers[patient.id][:transferred_at]
       linelists[patient.id][:transferred_from] = patients_transfers[patient.id][:transferred_from]
       linelists[patient.id][:transferred_to] = patients_transfers[patient.id][:transferred_to]
     end
@@ -348,26 +340,6 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     comprehensive_details
   end
 
-  def get_linelists(patients, patient_statuses)
-    linelists = get_incomplete_linelists(patients)
-    patients_jurisdiction_names = get_jurisdiction_names(patients)
-    patients_assessments = get_latest_assessments(patients)
-    patients_end_of_monitorings = get_end_of_monitorings(patients)
-    patients_transfers = get_latest_transfers(patients)
-    patients.each do |patient|
-      linelists[patient.id][:jurisdiction] = patients_jurisdiction_names[patient.id]
-      linelists[patient.id][:status] = patient_statuses[patient.id]&.gsub('exposure ', '')&.gsub('isolation ', '')
-      linelists[patient.id][:latest_report] = patients_assessments[patient.id]&.rfc2822
-      linelists[patient.id][:end_of_monitoring] = patients_end_of_monitorings[patient.id]
-      next unless patients_transfers[patient.id]
-
-      linelists[patient.id][:transferred] = patients_transfers[patient.id][:transferred]
-      linelists[patient.id][:transferred_from] = patients_transfers[patient.id][:transferred_from]
-      linelists[patient.id][:transferred_to] = patients_transfers[patient.id][:transferred_to]
-    end
-    linelists
-  end
-
   # Status of each patient (faster to do this in bulk than individually for exports)
   def patient_statuses(patients)
     tabs = {
@@ -383,19 +355,19 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
       isolation_non_reporting: patients.isolation_non_reporting.pluck(:id),
       isolation_reporting: patients.isolation_reporting.pluck(:id)
     }
-    patient_statuses = {}
-    statuses.each do |status, patient_ids|
+    statuses = {}
+    tabs.each do |tab, patient_ids|
       patient_ids.each do |patient_id|
-        patient_statuses[patient_id] = status&.to_s&.humanize&.downcase
+        statuses[patient_id] = tab&.to_s&.humanize&.downcase
       end
     end
-    patient_statuses
+    statuses
   end
 
   # Latest transfer of each patient
   def latest_transfers(patients)
-    latest_transfers = Transfer.where(patient_id: patients.pluck(:id)).group(:patient_id).maximum(:created_at)
-    transfers = Transfer.where(patient_id: latest_transfers.keys, created_at: latest_transfers.values)
+    latest_transfers = patients.pluck(:id, :latest_transfer_at)
+    transfers = Transfer.where(patient_id: latest_transfers.map { |lt| lt[0] }, created_at: latest_transfers.map { |lt| lt[1] })
     jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
     Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)
@@ -467,8 +439,8 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
         end_of_monitoring: patient.end_of_monitoring,
         risk_level: patient[:exposure_risk_assessment] || '',
         monitoring_plan: patient[:monitoring_plan] || '',
-        latest_report: patient[:latest_report],
-        transferred: '',
+        latest_report: patient[:latest_assessment_at]&.rfc2822,
+        transferred_at: '',
         reason_for_closure: patient[:monitoring_reason] || '',
         public_health_action: patient[:public_health_action] || '',
         status: '',

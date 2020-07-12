@@ -70,14 +70,14 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
 
   def search_and_verify_existence(query, displayed_name, displayed_birthday, is_epi)
     click_on 'Asymptomatic' if is_epi
-    fill_in 'Search', with: query
+    fill_in is_epi ? 'search' : 'Search', with: query
     assert page.has_content?(displayed_name), @@system_test_utils.get_err_msg('Dashboard', 'name', displayed_name)
     assert page.has_content?(displayed_birthday), @@system_test_utils.get_err_msg('Dashboard', 'birthday', displayed_birthday)
   end
 
   def search_and_verify_nonexistence(query, is_epi)
     click_on 'Asymptomatic' if is_epi
-    fill_in 'Search', with: query
+    fill_in is_epi ? 'search' : 'Search', with: query
     assert page.has_content?('No matching records found'), @@system_test_utils.get_err_msg('Dashboard', 'monitoree', 'non-existent')
   end
 

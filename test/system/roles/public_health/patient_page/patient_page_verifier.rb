@@ -10,7 +10,7 @@ class PublicHealthPatientPageVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_patient_details_and_reports(patient, workflow)
-    fill_in 'Search', with: patient.last_name
+    fill_in 'search', with: patient.last_name
     click_on "#{patient.last_name}, #{patient.first_name}"
     verify_patient_details(patient)
     @@public_health_patient_page_reports_verifier.verify_workflow(workflow)

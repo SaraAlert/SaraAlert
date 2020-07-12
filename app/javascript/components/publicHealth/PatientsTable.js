@@ -13,6 +13,7 @@ import {
   DropdownButton,
   Form,
   InputGroup,
+  Modal,
   Nav,
   OverlayTrigger,
   Spinner,
@@ -23,6 +24,7 @@ import {
 import ReactPaginate from 'react-paginate';
 
 import InfoTooltip from '../util/InfoTooltip';
+import UpdateCaseStatus from './actions/UpdateCaseStatus';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -51,9 +53,10 @@ class PatientsTable extends React.Component {
         order: '',
         direction: '',
       },
-      selectedPatients: [],
       loading: false,
       cancelToken: axios.CancelToken.source(),
+      selectedPatients: [],
+      actions: ['Update Case Status'],
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
     this.handleChange = this.handleChange.bind(this);
@@ -303,6 +306,7 @@ class PatientsTable extends React.Component {
                           </datalist>
                           <OverlayTrigger overlay={<Tooltip>Include Sub-Jurisdictions</Tooltip>}>
                             <Button
+                              id="allJurisdictions"
                               size="sm"
                               variant={this.state.query.scope === 'all' ? 'primary' : 'outline-secondary'}
                               style={{ outline: 'none', boxShadow: 'none' }}
@@ -312,6 +316,7 @@ class PatientsTable extends React.Component {
                           </OverlayTrigger>
                           <OverlayTrigger overlay={<Tooltip>Exclude Sub-Jurisdictions</Tooltip>}>
                             <Button
+                              id="exactJurisdiction"
                               size="sm"
                               variant={this.state.query.scope === 'exact' ? 'primary' : 'outline-secondary'}
                               style={{ outline: 'none', boxShadow: 'none' }}
@@ -346,6 +351,7 @@ class PatientsTable extends React.Component {
                           <OverlayTrigger
                             overlay={<Tooltip>Search for {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'} with any or no assigned user</Tooltip>}>
                             <Button
+                              id="allAssignedUsers"
                               size="sm"
                               variant={this.state.query.user === 'all' ? 'primary' : 'outline-secondary'}
                               style={{ outline: 'none', boxShadow: 'none' }}
@@ -356,6 +362,7 @@ class PatientsTable extends React.Component {
                           <OverlayTrigger
                             overlay={<Tooltip>Search for {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'} with no assigned user</Tooltip>}>
                             <Button
+                              id="noAssignedUser"
                               size="sm"
                               variant={this.state.query.user === 'none' ? 'primary' : 'outline-secondary'}
                               style={{ outline: 'none', boxShadow: 'none' }}
@@ -406,11 +413,13 @@ class PatientsTable extends React.Component {
                           title="Actions"
                           className="ml-2"
                           disabled={!this.state.selectedPatients.includes(true)}>
-                          <Dropdown.Item>Update Assigned User</Dropdown.Item>
-                          <Dropdown.Item>Update Case Status</Dropdown.Item>
-                          <Dropdown.Item>Update Monitoring Plan</Dropdown.Item>
-                          <Dropdown.Item>Pause/Resume Notifications</Dropdown.Item>
-                          <Dropdown.Item>Close Records</Dropdown.Item>
+                          {this.state.actions.map(action => {
+                            return (
+                              <Dropdown.Item key={action} onClick={() => this.setState({ action })}>
+                                {action}
+                              </Dropdown.Item>
+                            );
+                          })}
                         </DropdownButton>
                       )}
                     </InputGroup>
@@ -467,7 +476,7 @@ class PatientsTable extends React.Component {
                       )}
                       {this.state.patients.linelist.map((patient, index) => {
                         return (
-                          <tr key={patient.id}>
+                          <tr key={patient.id} id={`patient${patient.id}`}>
                             {'name' in patient && (
                               <td>
                                 {this.state.query.tab === 'transferred_out' ? (
@@ -547,12 +556,25 @@ class PatientsTable extends React.Component {
             </Card.Body>
           </Card>
         </TabContent>
+        <Modal size="lg" centered show={this.state.action !== undefined} onHide={() => this.setState({ action: undefined })}>
+          <Modal.Header closeButton>
+            <Modal.Title>{this.state.action}</Modal.Title>
+          </Modal.Header>
+          {this.state.action === 'Update Case Status' && (
+            <UpdateCaseStatus
+              authenticity_token={this.props.authenticity_token}
+              patients={this.state.patients.linelist.filter((_, index) => this.state.selectedPatients[parseInt(index)])}
+              close={() => this.setState({ action: undefined })}
+            />
+          )}
+        </Modal>
       </div>
     );
   }
 }
 
 PatientsTable.propTypes = {
+  authenticity_token: PropTypes.string,
   jurisdiction: PropTypes.exact({
     id: PropTypes.number,
     path: PropTypes.string,

@@ -152,7 +152,16 @@ class PublicHealthHeader extends React.Component {
           )}
           {this.props.abilities.enrollment && (
             <Button variant="primary" className="ml-2 mb-4" href={this.props.workflow === 'exposure' ? '/patients/new' : '/patients/new?isolation=true'}>
-              <i className="fas fa-plus-square"></i> Enroll New Monitoree
+              {this.props.workflow === 'exposure' && (
+                <span>
+                  <i className="fas fa-plus-square"></i> Enroll New Monitoree
+                </span>
+              )}
+              {this.props.workflow === 'isolation' && (
+                <span>
+                  <i className="fas fa-plus-square"></i> Enroll New Case
+                </span>
+              )}
             </Button>
           )}
           {this.props.abilities.export && <Export authenticity_token={this.props.authenticity_token} workflow={this.props.workflow}></Export>}
@@ -174,10 +183,12 @@ class PublicHealthHeader extends React.Component {
 
         <ButtonGroup className="float-right mb-4 mr-2">
           <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href="/public_health">
-            <i className="fas fa-people-arrows"></i> Exposure Monitoring {this.state.counts.exposure && <span>({this.state.counts.exposure})</span>}
+            <i className="fas fa-people-arrows"></i> Exposure Monitoring{' '}
+            {this.state.counts.exposure !== null && <span id="exposureCount">({this.state.counts.exposure})</span>}
           </Button>
           <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href="/public_health/isolation">
-            <i className="fas fa-house-user"></i> Isolation Monitoring {this.state.counts.isolation && <span>({this.state.counts.isolation})</span>}
+            <i className="fas fa-house-user"></i> Isolation Monitoring{' '}
+            {this.state.counts.isolation !== null && <span id="isolationCount">({this.state.counts.isolation})</span>}
           </Button>
         </ButtonGroup>
 

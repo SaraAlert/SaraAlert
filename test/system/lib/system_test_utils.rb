@@ -18,8 +18,8 @@ class SystemTestUtils < ApplicationSystemTestCase
   MODAL_ANIMATION_DELAY = 0.5 # wait for modal to load
   ACCEPT_REJECT_DELAY = 0.01 # wait for UI to update after accepting or rejecting monitoree on import
   DB_WRITE_DELAY = 1.5 # wait for DB write to finish
-  DATA_TABLE_LOAD_DELAY = 0.5 # wait for table data to load
   EXPORT_DELAY = 0.5 # wait for export job to finish running
+  PAGE_COUNT_LOAD_DELAY = 0.5 # wait for exposure and isolation counts to load
 
   def login(user_label)
     visit '/'
@@ -139,12 +139,12 @@ class SystemTestUtils < ApplicationSystemTestCase
     sleep(DB_WRITE_DELAY)
   end
 
-  def wait_for_data_table_load_delay
-    sleep(DATA_TABLE_LOAD_DELAY)
-  end
-
   def wait_for_export_delay
     sleep(EXPORT_DELAY)
+  end
+
+  def wait_for_page_count_load_delay
+    sleep(PAGE_COUNT_LOAD_DELAY)
   end
 
   def assessments

@@ -15,6 +15,7 @@
 }) %>
 
 <%= react_component("publicHealth/PatientsTable", {
+  authenticity_token: form_authenticity_token,
   jurisdiction: {
     id: current_user.jurisdiction_id,
     path: current_user.jurisdiction[:path]

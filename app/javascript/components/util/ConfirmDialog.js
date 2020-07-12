@@ -29,7 +29,7 @@ class Confirmation extends React.Component {
     } = this.props;
     return (
       <Modal
-        className="static-modal-container"
+        className="static-modal-container confirm-dialog"
         size="lg"
         show={show}
         centered
