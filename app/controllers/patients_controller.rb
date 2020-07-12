@@ -326,7 +326,7 @@ class PatientsController < ApplicationController
         update_fields(member, params)
         if params[:apply_to_group_cm_only_date].present?
           lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
-          member.update(last_date_of_exposure: lde_date)
+          member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
         end
         next unless params[:comment]
 

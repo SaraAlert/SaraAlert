@@ -144,9 +144,6 @@ class Exposure extends React.Component {
               <option></option>
               <option>Confirmed</option>
               <option>Probable</option>
-              <option>Suspect</option>
-              <option>Unknown</option>
-              <option>Not a Case</option>
             </Form.Control>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['case_status']}

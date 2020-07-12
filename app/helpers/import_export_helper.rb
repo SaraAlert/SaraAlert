@@ -387,7 +387,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
     end_of_monitorings = {}
     patients.each do |patient|
       start = patient[:last_date_of_exposure].present? ? patient[:last_date_of_exposure] : patient[:created_at]
-      end_of_monitorings[patient.id] = (start + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
+      end_of_monitorings[patient.id] = patient.continuous_exposure ? 'Continuous Exposure' : (start + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
     end
     end_of_monitorings
   end

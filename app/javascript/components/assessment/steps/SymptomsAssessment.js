@@ -61,7 +61,7 @@ class SymptomsAssessment extends React.Component {
         disabled={boolSymptomsSelected}
         label={
           <div>
-            <i>{this.props.translations[this.props.lang]['symptoms']['no-symptoms']}</i>
+            <b>{this.props.translations[this.props.lang]['symptoms']['no-symptoms']}</b>
           </div>
         }
         className="pb-2"
@@ -130,6 +130,9 @@ class SymptomsAssessment extends React.Component {
                 {this.state.current.symptoms
                   .filter(x => {
                     return x.type === 'BoolSymptom';
+                  })
+                  .sort((a, b) => {
+                    return a?.name?.localeCompare(b?.name);
                   })
                   .map(symp => this.boolSymptom(symp))}
                 {this.noSymptom()}

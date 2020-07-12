@@ -247,6 +247,8 @@ class Identification extends React.Component {
                     <option value="English">English*</option>
                     <option value="Spanish">Spanish*</option>
                     <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)*</option>
+                    <option value="French">French*</option>
+                    <option value="Somali">Somali*</option>
                     <option value="Arabic">Arabic</option>
                     <option value="Bengali">Bengali</option>
                     <option value="Czech">Czech</option>
@@ -254,7 +256,6 @@ class Identification extends React.Component {
                     <option value="German">German</option>
                     <option value="Greek">Greek</option>
                     <option value="Finnish">Finnish</option>
-                    <option value="French">French</option>
                     <option value="Frysian">Frysian</option>
                     <option value="Hindi">Hindi</option>
                     <option value="Croatian">Croatian</option>
@@ -273,7 +274,6 @@ class Identification extends React.Component {
                     <option value="Chinese">Chinese</option>
                     <option value="Vietnamese">Vietnamese</option>
                     <option value="Tagalog">Tagalog</option>
-                    <option value="Somali">Somali</option>
                     <option value="Nepali">Nepali</option>
                     <option value="Swahili">Swahili</option>
                     <option value="Burmese">Burmese</option>
