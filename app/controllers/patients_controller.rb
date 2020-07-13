@@ -135,12 +135,7 @@ class PatientsController < ApplicationController
       patient.send_enrollment_notification
 
       # Create a history for the enrollment
-      history = History.new
-      history.created_by = current_user.email
-      history.comment = 'User enrolled monitoree.'
-      history.patient = patient
-      history.history_type = 'Enrollment'
-      history.save
+      History.enrollment(patient: patient, created_by: current_user.email)
 
       # Create laboratories for patient if included in import
       unless params.dig(:patient, :laboratories).nil?
@@ -181,16 +176,12 @@ class PatientsController < ApplicationController
     # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user, update history and propagate
     if content[:jurisdiction_id] && content[:jurisdiction_id] != patient.jurisdiction_id
       if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id].to_i)
-        history = History.new
-        history.created_by = current_user.email
         old_jurisdiction = patient.jurisdiction[:path]
         new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id])[:path]
-        history.comment = "User changed jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
-        history.patient = patient
-        history.history_type = 'Monitoring Change'
-        history.save
         transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
         transfer.save!
+        comment = "User changed jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
+        history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
         if propagated_fields.include?('jurisdiction_id')
           group_members = patient.dependents.where.not(id: patient.id)
           group_members.update(jurisdiction_id: content[:jurisdiction_id])
@@ -210,14 +201,10 @@ class PatientsController < ApplicationController
 
     # If the assigned user is updated, update history and propagate
     if content[:assigned_user] && content[:assigned_user] != patient.assigned_user
-      history = History.new
-      history.created_by = current_user.email
       old_assigned_user = patient.assigned_user || ''
       new_assigned_user = content[:assigned_user] || ''
-      history.comment = "User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"."
-      history.patient = patient
-      history.history_type = 'Monitoring Change'
-      history.save
+      comment = "User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"."
+      history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
       if propagated_fields.include?('assigned_user')
         group_members = patient.dependents.where.not(id: patient.id)
         group_members.update(assigned_user: content[:assigned_user])
@@ -350,15 +337,10 @@ class PatientsController < ApplicationController
   end
 
   def update_history(patient, params)
-    history = History.new
-    history.created_by = current_user.email
     comment = 'User changed '
     comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-    history.comment = comment
-    history.patient = patient
-    history.history_type = 'Monitoring Change'
-    history.save
+    History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
   end
 
   def clear_assessments
@@ -369,14 +351,9 @@ class PatientsController < ApplicationController
       assessment.symptomatic = false
       assessment.save!
     end
-    history = History.new
-    history.created_by = current_user.email
     comment = 'User reviewed all reports.'
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-    history.comment = comment
-    history.patient = patient
-    history.history_type = 'Reports Reviewed'
-    history.save
+    History.reports_reviewed(patient: patient, created_by: current_user.email, comment: comment)
   end
 
   def clear_assessment
@@ -388,14 +365,9 @@ class PatientsController < ApplicationController
     assessment.symptomatic = false
     assessment.save!
 
-    history = History.new
-    history.created_by = current_user.email
     comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ').'
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-    history.comment = comment
-    history.patient = patient
-    history.history_type = 'Report Reviewed'
-    history.save
+    History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
   end
 
   # A patient is eligible to be removed from a household if their responder doesn't have the same contact
@@ -422,12 +394,7 @@ class PatientsController < ApplicationController
 
     patient.send_assessment(true)
 
-    history = History.new
-    history.created_by = current_user.email
-    history.comment = 'User sent a report reminder to the monitoree.'
-    history.patient = patient
-    history.history_type = 'Report Reminder'
-    history.save
+    History.report_reminder(patient: patient, created_by: current_user)
   end
 
   # Parameters allowed for saving to database

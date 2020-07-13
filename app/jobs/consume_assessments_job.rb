@@ -26,46 +26,46 @@ class ConsumeAssessmentsJob < ApplicationJob
         if message['response_status'] == 'no_answer_voice'
           # If nobody answered, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
-          history = History.new
-          history.created_by = 'Sara Alert System'
-          comment = "Sara Alert called this monitoree's primary telephone number #{patient.primary_telephone} and nobody answered the phone."
-          history.comment = comment
-          history.patient = patient
-          history.history_type = 'Contact Attempt'
-          history.save
+          History.contact_attempt(patient: patient, comment: "Sara Alert called this monitoree's primary telephone \
+                                                              number #{patient.primary_telephone} and nobody answered the phone.")
+          unless patient.dependents.blank?
+            create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert called this monitoree's head \
+                                                                              of household and nobody answered the phone.")
+          end
+
           next
         elsif message['response_status'] == 'no_answer_sms'
           # No need to wipe out last_assessment_reminder_sent so that another sms will be sent because the sms studio flow is kept open for 18hrs
-          history = History.new
-          history.created_by = 'Sara Alert System'
-          comment = "Sara Alert texted this monitoree's primary telephone number #{patient.primary_telephone} "
-          comment += 'during their preferred contact time, but did not receive a response.'
-          history.comment = comment
-          history.patient = patient
-          history.history_type = 'Contact Attempt'
-          history.save
+          History.contact_attempt(patient: patient, comment: "Sara Alert texted this monitoree's primary telephone \
+                                                             number #{patient.primary_telephone} during their preferred \
+                                                             contact time, but did not receive a response.")
+          unless patient.dependents.blank?
+            create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert texted this monitoree's head of \
+                                                                              household and did not receive a response.")
+          end
+
           next
         elsif message['response_status'] == 'error_voice'
           # If there was an error in completeing the call, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
-          history = History.new
-          history.created_by = 'Sara Alert System'
-          comment = "Sara Alert was unable to complete a call to this monitoree's primary telephone number #{patient.primary_telephone}."
-          history.comment = comment
-          history.patient = patient
-          history.history_type = 'Contact Attempt'
-          history.save
+          History.contact_attempt(patient: patient, comment: "Sara Alert was unable to complete a call to this \
+                                                              monitoree's primary telephone number #{patient.primary_telephone}.")
+          unless patient.dependents.blank?
+            create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert was unable to complete a call \
+                                                                              to this monitoree's head of household.")
+          end
+
           next
         elsif message['response_status'] == 'error_sms'
           # If there was an error sending an SMS, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
-          history = History.new
-          history.created_by = 'Sara Alert System'
-          comment = "Sara Alert was unable to send an SMS to this monitoree's primary telephone number #{patient.primary_telephone}."
-          history.comment = comment
-          history.patient = patient
-          history.history_type = 'Contact Attempt'
-          history.save
+          History.contact_attempt(patient: patient, comment: "Sara Alert was unable to send an SMS to this monitoree's \
+                                                             primary telephone number #{patient.primary_telephone}.")
+          unless patient.dependents.blank?
+            create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert was unable to send an SMS to \
+                                                                              this moonitoree's head of household.")
+          end
+
           next
         end
 
@@ -111,5 +111,20 @@ class ConsumeAssessmentsJob < ApplicationJob
     puts "ConsumeAssessmentsJob: Redis::ConnectionError (#{e}), retrying..."
     sleep(1)
     retry
+  end
+
+  private
+
+  # Use the import method here to generate less SQL statements for a bulk insert of
+  # dependent histories instead of 1 staement per dependent.
+  def create_contact_attempt_history_for_dependents(dependents, comment)
+    histories = []
+    dependents.each do |dependent|
+      histories << History.new(patient: dependent,
+                               created_by: 'Sara Alert System',
+                               comment: comment,
+                               history_type: 'Contact Attempt')
+    end
+    History.import! histories
   end
 end

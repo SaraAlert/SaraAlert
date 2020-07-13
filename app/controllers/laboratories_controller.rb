@@ -13,11 +13,9 @@ class LaboratoriesController < ApplicationController
                          result: params.permit(:result)[:result])
     lab.patient_id = params.permit(:patient_id)[:patient_id]
     lab.save
-    history = History.new(comment: 'User added a new lab result (ID: ' + lab.id.to_s + ').')
-    history.created_by = current_user.email
-    history.patient_id = params.permit(:patient_id)[:patient_id]
-    history.history_type = 'Lab Result'
-    history.save
+    History.lab_result(patient: params.permit(:patient_id)[:patient_id],
+                       created_by: current_user.email,
+                       comment: "User added a new lab result (ID: #{lab.id}).")
   end
 
   # Update an existing lab result
@@ -29,10 +27,8 @@ class LaboratoriesController < ApplicationController
                report: params.permit(:report)[:report],
                result: params.permit(:result)[:result])
     lab.save
-    history = History.new(comment: 'User edited a lab result (ID: ' + lab.id.to_s + ').')
-    history.created_by = current_user.email
-    history.patient_id = params.permit(:patient_id)[:patient_id]
-    history.history_type = 'Lab Result Edit'
-    history.save
+    History.lab_result_edit(patient: params.permit(:patient_id)[:patient_id],
+                            created_by: current_user.email,
+                            comment: "User edited a lab result (ID: #{lab.id}).")
   end
 end
