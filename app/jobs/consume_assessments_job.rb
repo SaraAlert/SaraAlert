@@ -38,7 +38,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           # No need to wipe out last_assessment_reminder_sent so that another sms will be sent because the sms studio flow is kept open for 18hrs
           history = History.new
           history.created_by = 'Sara Alert System'
-          comment = "Sara Alert texted this monitoree's primary telephone number #{patient.primary_telephone} and did not receive a response."
+          comment = "Sara Alert texted this monitoree's primary telephone number #{patient.primary_telephone} during their preferred contact time, but did not receive a response."
           history.comment = comment
           history.patient = patient
           history.history_type = 'Contact Attempt'

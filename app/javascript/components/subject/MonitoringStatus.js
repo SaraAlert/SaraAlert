@@ -326,7 +326,7 @@ class MonitoringStatus extends React.Component {
               <Form.Check
                 type="switch"
                 id="apply_to_group_cm_only"
-                label="If this monitoree's household has any active members in the exposure workflow that have continuous exposure on, update their last date of exposure"
+                label='Update Last Date of Exposure for all household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group_cm_only === true || false}
               />
@@ -334,6 +334,7 @@ class MonitoringStatus extends React.Component {
           )}
           {this.props.isolation && this.state.monitoring_status_options && this.props.in_a_group && this.state.apply_to_group_cm_only && (
             <Form.Group>
+              <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
               <Form.Control
                 size="lg"
                 id="apply_to_group_cm_only_date"

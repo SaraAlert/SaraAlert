@@ -25,7 +25,9 @@ class Close extends React.Component {
 
   componentDidUpdate() {
     if (this.state.showConfirm) {
-      this.handleSubmit('You are about to close out the selected monitoree records. Are you sure?');
+      this.handleSubmit(
+        'You are about to change the Monitoring Status of the selected records from "Actively Monitoring" to "Not Monitoring". These records will be moved to the closed line list and the reason for closure will be blank'
+      );
     }
   }
 

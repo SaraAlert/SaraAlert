@@ -87,7 +87,7 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="switch"
                 id="apply_to_group"
-                label="Apply to all active members in this reporting group within the exposure workflow"
+                label='Update Last Date of Exposure for all household members whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group === true || false}
               />
@@ -99,7 +99,7 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="switch"
                 id="apply_to_group_cm_only"
-                label="Apply to all active members in this reporting group within the exposure workflow who have continuous exposure enabled"
+                label='Update Last Date of Exposure only for household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group_cm_only === true || false}
               />
