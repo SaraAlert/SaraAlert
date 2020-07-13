@@ -13,8 +13,10 @@ class PurgeJob < ApplicationJob
       # Delete Twilio data if this is the last instance of this phone number
       if monitoree.primary_telephone.present? && Patient.where(primary_telephone: monitoree.primary_telephone).count == 1
         client = Twilio::REST::Client.new(account_sid, auth_token)
-        messages = client.messages.list(to: Phonelib.parse(.primary_telephone, 'US').full_e164)
+        messages = client.messages.list(to: Phonelib.parse(monitoree.primary_telephone, 'US').full_e164)
         messages.each(&:delete)
+        calls = client.calls.list(to: Phonelib.parse(monitoree.primary_telephone, 'US').full_e164)
+        calls.each(&:delete)
       end
 
       # Whitelist attributes to keep
