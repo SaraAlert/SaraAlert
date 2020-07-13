@@ -27,8 +27,7 @@ class SystemTestUtils < ApplicationSystemTestCase
     fill_in 'user_email', with: USERS[user_label]['email']
     fill_in 'user_password', with: USER_PASSWORD
     click_on 'login'
-    jurisdiction_id = verify_user_jurisdiction(user_label)
-    jurisdiction_id
+    verify_user_jurisdiction(user_label)
   end
 
   def logout
