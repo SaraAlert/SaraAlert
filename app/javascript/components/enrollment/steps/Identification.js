@@ -72,6 +72,47 @@ class Identification extends React.Component {
       });
   }
 
+  renderLanguageDropdown(value) {
+    return (
+      <Form.Control size="lg" className="form-square" value={value} onChange={this.handleChange} as="select">
+        <option></option>
+        <option value="English">English</option>
+        <option value="Spanish">Spanish</option>
+        <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)</option>
+        <option value="French">French</option>
+        <option value="Somali">*Somali</option>
+        <option value="Arabic">*Arabic</option>
+        <option value="Bengali">*Bengali</option>
+        <option value="Czech">*Czech</option>
+        <option value="Danish">*Danish</option>
+        <option value="German">*German</option>
+        <option value="Greek">*Greek</option>
+        <option value="Finnish">*Finnish</option>
+        <option value="Frysian">*Frysian</option>
+        <option value="Hindi">*Hindi</option>
+        <option value="Croatian">*Croatian</option>
+        <option value="Italian">*Italian</option>
+        <option value="Japanese">*Japanese</option>
+        <option value="Korean">*Korean</option>
+        <option value="Dutch">*Dutch</option>
+        <option value="Norwegian">*Norwegian</option>
+        <option value="Punjabi">*Punjabi</option>
+        <option value="Polish">*Polish</option>
+        <option value="Portuguese">*Portuguese</option>
+        <option value="Russian">*Russian</option>
+        <option value="Serbian">*Serbian</option>
+        <option value="Swedish">*Swedish</option>
+        <option value="Telegu">*Telegu</option>
+        <option value="Chinese">*Chinese</option>
+        <option value="Vietnamese">*Vietnamese</option>
+        <option value="Tagalog">*Tagalog</option>
+        <option value="Nepali">*Nepali</option>
+        <option value="Swahili">*Swahili</option>
+        <option value="Burmese">*Burmese</option>
+      </Form.Control>
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -227,112 +268,18 @@ class Identification extends React.Component {
                 <div className="nav-input-label">LANGUAGE</div>
               </Form.Row>
               <Form.Row className="pb-3 pt-1 ml-0">
-                Primary Language is used to determine the translations for what the monitoree sees/hears. Currently supported languages are indicated by a * in
-                the below list. When a primary contact method is selected for a language that is not supported, Sara Alert will default to English.
+                Primary Language is used to determine the translations for what the monitoree sees/hears. Languages that are not fully supported are indicated
+                by a * in the below list. When a primary contact method is selected for a language that is not supported, Sara Alert will default to English.
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="primary_language">
                   <Form.Label className="nav-input-label">PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['primary_language']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.primary_language || ''}
-                    onChange={this.handleChange}
-                    as="input"
-                    list="languages"
-                  />
-                  <datalist id="languages">
-                    <option></option>
-                    <option value="English">English*</option>
-                    <option value="Spanish">Spanish*</option>
-                    <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)*</option>
-                    <option value="French">French*</option>
-                    <option value="Somali">Somali*</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Bengali">Bengali</option>
-                    <option value="Czech">Czech</option>
-                    <option value="Danish">Danish</option>
-                    <option value="German">German</option>
-                    <option value="Greek">Greek</option>
-                    <option value="Finnish">Finnish</option>
-                    <option value="Frysian">Frysian</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Croatian">Croatian</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Korean">Korean</option>
-                    <option value="Dutch">Dutch</option>
-                    <option value="Norwegian">Norwegian</option>
-                    <option value="Punjabi">Punjabi</option>
-                    <option value="Polish">Polish</option>
-                    <option value="Portuguese">Portuguese</option>
-                    <option value="Russian">Russian</option>
-                    <option value="Serbian">Serbian</option>
-                    <option value="Swedish">Swedish</option>
-                    <option value="Telegu">Telegu</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Vietnamese">Vietnamese</option>
-                    <option value="Tagalog">Tagalog</option>
-                    <option value="Nepali">Nepali</option>
-                    <option value="Swahili">Swahili</option>
-                    <option value="Burmese">Burmese</option>
-                  </datalist>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['primary_language']}
-                  </Form.Control.Feedback>
+                  {this.renderLanguageDropdown(this.state.current.patient.primary_language || '')}
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language">
                   <Form.Label className="nav-input-label">SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['secondary_language']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.secondary_language || ''}
-                    onChange={this.handleChange}
-                    as="input"
-                    list="languages"
-                  />
-                  <datalist id="languages">
-                    <option></option>
-                    <option value="English">English</option>
-                    <option value="Spanish">Spanish</option>
-                    <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Bengali">Bengali</option>
-                    <option value="Czech">Czech</option>
-                    <option value="Danish">Danish</option>
-                    <option value="German">German</option>
-                    <option value="Greek">Greek</option>
-                    <option value="Finnish">Finnish</option>
-                    <option value="French">French</option>
-                    <option value="Frysian">Frysian</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Croatian">Croatian</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Korean">Korean</option>
-                    <option value="Dutch">Dutch</option>
-                    <option value="Norwegian">Norwegian</option>
-                    <option value="Punjabi">Punjabi</option>
-                    <option value="Polish">Polish</option>
-                    <option value="Portuguese">Portuguese</option>
-                    <option value="Russian">Russian</option>
-                    <option value="Serbian">Serbian</option>
-                    <option value="Swedish">Swedish</option>
-                    <option value="Telegu">Telegu</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Vietnamese">Vietnamese</option>
-                    <option value="Tagalog">Tagalog</option>
-                    <option value="Somali">Somali</option>
-                    <option value="Nepali">Nepali</option>
-                    <option value="Swahili">Swahili</option>
-                    <option value="Burmese">Burmese</option>
-                  </datalist>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['secondary_language']}
-                  </Form.Control.Feedback>
+                  {this.renderLanguageDropdown(this.state.current.patient.secondary_language || '')}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
