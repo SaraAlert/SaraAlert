@@ -400,7 +400,6 @@ DEPENDENCIES
   rolify
   roo
   rubocop
-  rubyzip
   sara-schema
   sass-rails (>= 6)
   sassc (~> 2.3.0)
