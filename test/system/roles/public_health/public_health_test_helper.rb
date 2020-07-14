@@ -167,11 +167,31 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def bulk_edit_case_status(user_label, patient_labels, workflow, tab, case_status, next_step, apply_to_group = false)
+  def bulk_edit_update_case_status(user_label, patient_labels, workflow, tab, case_status, next_step, apply_to_group = false)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
-    @@public_health_dashboard.actions_update_case_status(workflow, case_status, next_step, apply_to_group)
-    patient_labels.each { |label| @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, apply_to_group) }
+    @@public_health_dashboard.bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_group)
+    assertions = {
+      case_status: case_status,
+      isolation: %w[Confirmed Probable].include?(case_status) && next_step == 'Continue Monitoring in Isolation Workflow',
+      monitoring: next_step != 'End Monitoring'
+    }
+    patient_labels.each do |label|
+      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions, apply_to_group)
+    end
+    @@system_test_utils.logout
+  end
+
+  def bulk_edit_close_records(user_label, patient_labels, workflow, tab, apply_to_group = false)
+    @@system_test_utils.login(user_label)
+    @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
+    @@public_health_dashboard.bulk_edit_close_records(apply_to_group)
+    assertions = {
+      monitoring: false
+    }
+    patient_labels.each do |label|
+      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions, apply_to_group)
+    end
     @@system_test_utils.logout
   end
   # rubocop:enable Metrics/ParameterLists

@@ -122,26 +122,29 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     end
   end
 
-  def search_for_and_verify_patient_monitoring_actions(patient_label, apply_to_group)
+  def search_for_and_verify_patient_monitoring_actions(patient_label, assertions, apply_to_group)
     return if patient_label.nil?
 
     @@public_health_dashboard.search_for_and_view_patient('all', patient_label)
-    monitoree = Patient.find(@@system_test_utils.patients[patient_label]['id'])
-    monitoring_status = monitoree.monitoring ? 'Actively Monitoring' : 'Not Monitoring'
-    public_health_action = monitoree.public_health_action == '' ? 'None' : monitoree.public_health_action
+    patient = Patient.find(@@system_test_utils.patients[patient_label]['id'])
+    assertions.each do |field, value|
+      assert_equal value, patient[field], @@system_test_utils.get_err_msg('Bulk edit', field, value)
+    end
+    monitoring_status = patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring'
+    public_health_action = patient.public_health_action == '' ? 'None' : patient.public_health_action
     assert page.has_select?('monitoring_status', selected: monitoring_status)
-    assert page.has_select?('exposure_risk_assessment', selected: monitoree.exposure_risk_assessment.to_s)
-    assert page.has_select?('monitoring_plan', selected: monitoree.monitoring_plan.to_s)
-    assert page.has_select?('case_status', selected: monitoree.case_status.to_s)
+    assert page.has_select?('exposure_risk_assessment', selected: patient.exposure_risk_assessment.to_s)
+    assert page.has_select?('monitoring_plan', selected: patient.monitoring_plan.to_s)
+    assert page.has_select?('case_status', selected: patient.case_status.to_s)
     assert page.has_select?('public_health_action', selected: public_health_action)
-    assert page.has_field?('assignedUser', with: monitoree.assigned_user.to_s)
-    assert page.has_field?('jurisdictionId', with: monitoree.jurisdiction.jurisdiction_path_string)
+    assert page.has_field?('assignedUser', with: patient.assigned_user.to_s)
+    assert page.has_field?('jurisdictionId', with: patient.jurisdiction.jurisdiction_path_string)
     @@system_test_utils.return_to_dashboard(nil)
     return unless apply_to_group
 
-    monitoree.dependents.each do |dependent|
+    patient.dependents.each do |dependent|
       label = "patient_#{dependent.id}"
-      search_for_and_verify_patient_monitoring_actions(label, false)
+      search_for_and_verify_patient_monitoring_actions(label, assertions, false)
     end
   end
 end

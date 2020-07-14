@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import reportError from '../../util/ReportError';
@@ -8,10 +8,17 @@ class CloseRecords extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      applyToGroup: false,
       loading: false,
-      message: 'monitoring status to "Not Monitoring".',
     };
+    this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
+  }
+
+  handleChange(event) {
+    if (event.target.type === 'checkbox') {
+      this.setState({ [event.target.id]: event.target.checked });
+    }
   }
 
   submit() {
@@ -23,10 +30,9 @@ class CloseRecords extends React.Component {
         .post(window.BASE_PATH + '/patients/bulk_edit/status', {
           ids: idArray,
           comment: true,
-          message: this.state.message,
+          message: 'monitoring status to "Not Monitoring".',
           monitoring: false,
-          apply_to_group: false,
-          diffState: ['monitoring'],
+          apply_to_group: this.state.applyToGroup,
         })
         .then(() => {
           location.href = window.BASE_PATH;
@@ -43,7 +49,16 @@ class CloseRecords extends React.Component {
       <React.Fragment>
         <Modal.Body>
           <p>You are about to change the Monitoring Status of the selected records from &quot;Actively Monitoring&quot; to &quot;Not Monitoring&quot;.</p>
-          <p className="mb-0">These records will be moved to the closed line list and the reason for closure will be blank.</p>
+          <p>These records will be moved to the closed line list and the reason for closure will be blank.</p>
+          <Form.Group className="my-2">
+            <Form.Check
+              type="switch"
+              id="applyToGroup"
+              label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
+              checked={this.state.applyToGroup === true || false}
+              onChange={this.handleChange}
+            />
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary btn-square" onClick={this.props.close}>
