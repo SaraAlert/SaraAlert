@@ -459,7 +459,28 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: github-artifacts
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: github-artifacts
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Install Bundler
+        run: gem install bundler
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Collate coverage
+        run: |
+          bundle exec rake coverage:report
+        env:
+          APP_IN_CI: true
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov/SaraAlert.lcov
 

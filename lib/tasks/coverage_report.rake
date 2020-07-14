@@ -51,8 +51,29 @@ end
 namespace :coverage do
   desc 'Generate a GitHub Actions compatible report'
   task :report do
+    raise 'This task is only for use in a CI/CD testing environment' unless ENV['APP_IN_CI']
+
     require 'simplecov'
     require 'simplecov-lcov'
+    require 'zip'
+
+    # Expect a folder full of artifacts downloaded from GitHub actions within the
+    # 'github-artifacts' folder. This filename is set in within the action itself
+    coverage_artifacts = Dir[Rails.root.join('github-artifacts', '*')]
+
+    report = {}
+
+    coverage_artifacts.each do |coverage_artifact|
+      Zip::File.open(coverage_artifact) do |zip_file|
+        zip_file.each do |entry|
+          report.merge!(JSON.parse(entry.get_input_stream.read))
+        end
+      end
+    end
+
+    FileUtils.mkdir_p(Rails.root.join('coverage'))
+    File.write(Rails.root.join('coverage', '.resultset.json'), report.to_json.gsub(',', ",\n"))
+
     SimpleCov.collate(Dir['coverage/.resultset.json'], 'rails') do
       SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
       formatter SimpleCov::Formatter::MultiFormatter.new([
