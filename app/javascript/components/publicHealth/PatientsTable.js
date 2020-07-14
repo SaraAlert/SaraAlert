@@ -24,6 +24,7 @@ import {
 import ReactPaginate from 'react-paginate';
 
 import InfoTooltip from '../util/InfoTooltip';
+import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 
 class PatientsTable extends React.Component {
@@ -56,7 +57,7 @@ class PatientsTable extends React.Component {
       loading: false,
       cancelToken: axios.CancelToken.source(),
       selectedPatients: [],
-      actions: ['Update Case Status'],
+      actions: ['Close Records', 'Update Case Status'],
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
     this.handleChange = this.handleChange.bind(this);
@@ -259,7 +260,7 @@ class PatientsTable extends React.Component {
           {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (
               <Nav.Item key={tab} className={tab === 'all' ? 'ml-auto' : ''}>
-                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
+                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`} style={{ padding: '0.5rem 0.75rem' }}>
                   {tabProps.label}
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
                     <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
@@ -560,6 +561,13 @@ class PatientsTable extends React.Component {
           <Modal.Header closeButton>
             <Modal.Title>{this.state.action}</Modal.Title>
           </Modal.Header>
+          {this.state.action === 'Close Records' && (
+            <CloseRecords
+              authenticity_token={this.props.authenticity_token}
+              patients={this.state.patients.linelist.filter((_, index) => this.state.selectedPatients[parseInt(index)])}
+              close={() => this.setState({ action: undefined })}
+            />
+          )}
           {this.state.action === 'Update Case Status' && (
             <UpdateCaseStatus
               authenticity_token={this.props.authenticity_token}

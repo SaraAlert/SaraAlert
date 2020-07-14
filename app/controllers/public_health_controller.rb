@@ -144,13 +144,13 @@ class PublicHealthController < ApplicationController
       patients = current_user.viewable_patients
 
       if workflow == :exposure
-        patients = patients.where(isolation: false)
+        patients = patients.where(isolation: false, purged: false)
         patients = patients.exposure_symptomatic if tab == :symptomatic
         patients = patients.exposure_non_reporting if tab == :non_reporting
         patients = patients.exposure_asymptomatic if tab == :asymptomatic
         patients = patients.exposure_under_investigation if tab == :pui
       else
-        patients = patients.where(isolation: true)
+        patients = patients.where(isolation: true, purged: false)
         patients = patients.isolation_requiring_review if tab == :requiring_review
         patients = patients.isolation_non_reporting if tab == :non_reporting
         patients = patients.isolation_reporting if tab == :reporting

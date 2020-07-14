@@ -25,18 +25,14 @@ class UpdateCaseStatus extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  activate(patients) {
-    if (!patients || !patients.length) {
-      return;
-    }
-
-    this.getCommonAttributes(patients);
+  componentDidMount() {
+    this.getCommonAttributes();
   }
 
-  getCommonAttributes(patients) {
-    const distinctCaseStatus = [...new Set(patients.map(x => x.case_status))];
-    const distinctIsolation = [...new Set(patients.map(x => x.isolation))];
-    const distinctMonitoring = [...new Set(patients.map(x => x.monitoring))];
+  getCommonAttributes() {
+    const distinctCaseStatus = [...new Set(this.props.patients.map(x => x.case_status))];
+    const distinctIsolation = [...new Set(this.props.patients.map(x => x.isolation))];
+    const distinctMonitoring = [...new Set(this.props.patients.map(x => x.monitoring))];
 
     var state_updates = {};
     if (distinctCaseStatus.length === 1 && distinctCaseStatus[0] !== null) {
@@ -251,7 +247,7 @@ class UpdateCaseStatus extends React.Component {
 UpdateCaseStatus.propTypes = {
   authenticity_token: PropTypes.string,
   patients: PropTypes.array,
-  close: PropTypes.function,
+  close: PropTypes.func,
 };
 
 export default UpdateCaseStatus;

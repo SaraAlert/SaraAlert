@@ -132,12 +132,9 @@ class Import extends React.Component {
         )}
         {this.state.errors.map((error, index) => {
           return (
-            <div className="alert alert-dismissible fade show alert-danger mt-3 mx-3" role="alert" key={`error${index}`}>
+            <Alert key={index} variant="danger" className="mt-3 mx-3">
               {error}
-              <button type="button" className="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+            </Alert>
           );
         })}
         {this.state.errors.length == 0 && (
