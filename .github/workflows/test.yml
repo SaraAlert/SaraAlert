@@ -452,7 +452,7 @@ jobs:
           path: tmp/screenshots/
   compile-test-coverage:
     name: Display Test Coverage Results
-    needs: [test-system-workflow, test-system-monitoree, test-model-controller, test-system-public-health, test-system-enroller, test-system-analyst, test-system-admin]
+    needs: [test-system-workflow, test-system-monitoree, test-model-controller, test-system-analyst, test-system-admin]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
