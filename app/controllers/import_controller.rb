@@ -83,7 +83,6 @@ class ImportController < ApplicationController
 
         begin
           # Run validations on fields that have restrictions conditional on other fields
-          validate_address(patient, row_ind)
           validate_required_primary_contact(patient, row_ind)
 
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
@@ -268,13 +267,6 @@ class ImportController < ApplicationController
     return value.to_i if value.to_i.between?(1, 9999)
 
     raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999", row_ind)
-  end
-
-  def validate_address(patient, row_ind)
-    return if (patient[:address_line_1] && patient[:address_city] && patient[:address_state] && patient[:address_zip]) ||
-              (patient[:foreign_address_city] && patient[:foreign_address_country])
-
-    raise ValidationError.new('Either an address (line 1, city, state, zip) or foreign address (city, country) must be provided', row_ind)
   end
 
   def validate_required_primary_contact(patient, row_ind)
