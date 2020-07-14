@@ -55,11 +55,10 @@ namespace :coverage do
 
     require 'simplecov'
     require 'simplecov-lcov'
-    require 'zip'
 
     # Expect a folder full of artifacts downloaded from GitHub actions within the
     # 'github-artifacts' folder. This filename is set in within the action itself
-    SimpleCov.collate(Dir['github-artifacts/**/*'], 'rails') do
+    SimpleCov.collate(Dir['github-artifacts/**/coverage-*'], 'rails') do
       SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
       formatter SimpleCov::Formatter::MultiFormatter.new([
                                                            SimpleCov::Formatter::LcovFormatter,
