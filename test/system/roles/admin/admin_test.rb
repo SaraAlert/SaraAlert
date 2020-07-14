@@ -2,6 +2,8 @@
 
 require 'application_system_test_case'
 
+SimpleCov.command_name 'SystemTestCaseAdmin'
+
 require_relative 'admin_test_helper'
 
 class AdminTest < ApplicationSystemTestCase

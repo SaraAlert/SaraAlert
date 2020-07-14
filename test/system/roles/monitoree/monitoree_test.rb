@@ -2,6 +2,8 @@
 
 require 'application_system_test_case'
 
+SimpleCov.command_name 'SystemTestCaseMonitoree'
+
 require_relative 'assessment/form'
 require_relative '../../lib/system_test_utils'
 

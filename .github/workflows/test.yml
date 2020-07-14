@@ -61,6 +61,11 @@ jobs:
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-tests
+          path: coverage/.resultset.json
   test-system-public-health:
     runs-on: ubuntu-latest
     services:
@@ -115,6 +120,11 @@ jobs:
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-public_health
+          path: coverage/.resultset.json
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
@@ -175,6 +185,11 @@ jobs:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
       - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-enroller
+          path: coverage/.resultset.json
+      - uses: actions/upload-artifact@v1
         if: failure()
         with:
           name: screenshots
@@ -233,6 +248,11 @@ jobs:
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-analyst
+          path: coverage/.resultset.json
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
@@ -293,6 +313,11 @@ jobs:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
       - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-admin
+          path: coverage/.resultset.json
+      - uses: actions/upload-artifact@v1
         if: failure()
         with:
           name: screenshots
@@ -352,6 +377,11 @@ jobs:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
       - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-monitoree
+          path: coverage/.resultset.json
+      - uses: actions/upload-artifact@v1
         if: failure()
         with:
           name: screenshots
@@ -410,6 +440,11 @@ jobs:
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-workflow
+          path: coverage/.resultset.json
       - uses: actions/upload-artifact@v1
         if: failure()
         with:

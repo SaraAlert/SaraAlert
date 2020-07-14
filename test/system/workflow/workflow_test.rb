@@ -2,6 +2,8 @@
 
 require 'application_system_test_case'
 
+SimpleCov.command_name 'SystemTestCaseWorkflow'
+
 require_relative '../roles/enroller/enroller_test_helper'
 require_relative '../roles/enroller/enrollment/form'
 require_relative '../roles/enroller/dashboard/dashboard_verifier'
