@@ -59,19 +59,7 @@ namespace :coverage do
 
     # Expect a folder full of artifacts downloaded from GitHub actions within the
     # 'github-artifacts' folder. This filename is set in within the action itself
-    # coverage_artifacts = Dir[Rails.root.join('github-artifacts', '*')]
-
-    # FileUtils.mkdir_p(Rails.root.join('coverage'))
-    # coverage_artifacts.each_with_index do |coverage_artifact, idx|
-    #   Zip::File.open(coverage_artifact) do |zip_file|
-    #     zip_file.each_with_index do |entry, jdx|
-    #       # Write all the artifacts out because SimpleCov#collate expects files to parse
-    #       entry.extract(Rails.root.join('coverage', ".resultset#{idx}#{jdx}.json"))
-    #     end
-    #   end
-    # end
-
-    SimpleCov.collate(Dir['github-artifacts/**/.resultset*.json'], 'rails') do
+    SimpleCov.collate(Dir['github-artifacts/**/*'], 'rails') do
       SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
       formatter SimpleCov::Formatter::MultiFormatter.new([
                                                            SimpleCov::Formatter::LcovFormatter,
