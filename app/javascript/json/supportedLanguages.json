@@ -1,0 +1,7 @@
+{"languages":[
+    {"name":"English","supported":{"sms":true,"email":true,"phone":true}},
+    {"name":"Spanish","supported":{"sms":true,"email":true,"phone":true}},
+    {"name":"Spanish (Puerto Rican)","supported":{"sms":true,"email":true,"phone":true}},
+    {"name":"French","supported":{"sms":true,"email":true,"phone":true}},
+    {"name":"Somali","supported":{"sms":true,"email":true,"phone":false}},
+]}

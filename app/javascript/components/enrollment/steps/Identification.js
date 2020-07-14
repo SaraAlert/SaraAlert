@@ -3,14 +3,21 @@ import { Card, Button, Form, Col } from 'react-bootstrap';
 import moment from 'moment-timezone';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
+import languages from '../../../json/supportedLanguages.json';
 
 class Identification extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, supportedLanguages: [] };
     this.handleChange = this.handleChange.bind(this);
     this.validate = this.validate.bind(this);
+    // this.supportedLanguages = null;
   }
+
+  componentDidMount = () => {
+    console.log(languages);
+    this.setState({ supportedLanguages: languages });
+  };
 
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -73,44 +80,66 @@ class Identification extends React.Component {
   }
 
   renderLanguageDropdown(value) {
+    console.log(this.state.supportedLanguages);
+    // let languages = this.supportedLanguages
+    // if (this.supportedLanguages) {
     return (
       <Form.Control size="lg" className="form-square" value={value} onChange={this.handleChange} as="select">
         <option></option>
-        <option value="English">English</option>
-        <option value="Spanish">Spanish</option>
-        <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)</option>
-        <option value="French">French</option>
-        <option value="Somali">*Somali</option>
-        <option value="Arabic">*Arabic</option>
-        <option value="Bengali">*Bengali</option>
-        <option value="Czech">*Czech</option>
-        <option value="Danish">*Danish</option>
-        <option value="German">*German</option>
-        <option value="Greek">*Greek</option>
-        <option value="Finnish">*Finnish</option>
-        <option value="Frysian">*Frysian</option>
-        <option value="Hindi">*Hindi</option>
-        <option value="Croatian">*Croatian</option>
-        <option value="Italian">*Italian</option>
-        <option value="Japanese">*Japanese</option>
-        <option value="Korean">*Korean</option>
-        <option value="Dutch">*Dutch</option>
-        <option value="Norwegian">*Norwegian</option>
-        <option value="Punjabi">*Punjabi</option>
-        <option value="Polish">*Polish</option>
-        <option value="Portuguese">*Portuguese</option>
-        <option value="Russian">*Russian</option>
-        <option value="Serbian">*Serbian</option>
-        <option value="Swedish">*Swedish</option>
-        <option value="Telegu">*Telegu</option>
-        <option value="Chinese">*Chinese</option>
-        <option value="Vietnamese">*Vietnamese</option>
-        <option value="Tagalog">*Tagalog</option>
-        <option value="Nepali">*Nepali</option>
-        <option value="Swahili">*Swahili</option>
-        <option value="Burmese">*Burmese</option>
+        {/* {this.state.supportedLanguages.map((language, languageIndex) => (
+          <option>Sarah</option>
+          // <tr key={jurisdictionIndex}>
+          //   <td className="font-weight-bold">{jurisdiction.name}</td>
+          //   <td>{this.state.exposureMapData.stateData[jurisdiction.isoCode]}</td>
+          //   <td>{this.state.isolationMapData.stateData[jurisdiction.isoCode]}</td>
+          // </tr>
+        ))} */}
       </Form.Control>
     );
+    // }
+
+    // return (
+    //   <Form.Control size="lg" className="form-square" value={value} onChange={this.handleChange} as="select">
+    //     <option></option>
+    //     <option value="English">English</option>
+    //     <option value="Spanish">Spanish</option>
+    //     <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)</option>
+    //     <option value="French">French</option>
+    //     <option value="Somali">*Somali</option>
+    //     <option value="Arabic">*Arabic</option>
+    //     <option value="Bengali">*Bengali</option>
+    //     <option value="Czech">*Czech</option>
+    //     <option value="Danish">*Danish</option>
+    //     <option value="German">*German</option>
+    //     <option value="Greek">*Greek</option>
+    //     <option value="Finnish">*Finnish</option>
+    //     <option value="Frysian">*Frysian</option>
+    //     <option value="Hindi">*Hindi</option>
+    //     <option value="Croatian">*Croatian</option>
+    //     <option value="Italian">*Italian</option>
+    //     <option value="Japanese">*Japanese</option>
+    //     <option value="Korean">*Korean</option>
+    //     <option value="Dutch">*Dutch</option>
+    //     <option value="Norwegian">*Norwegian</option>
+    //     <option value="Punjabi">*Punjabi</option>
+    //     <option value="Polish">*Polish</option>
+    //     <option value="Portuguese">*Portuguese</option>
+    //     <option value="Russian">*Russian</option>
+    //     <option value="Serbian">*Serbian</option>
+    //     <option value="Swedish">*Swedish</option>
+    //     <option value="Telegu">*Telegu</option>
+    //     <option value="Chinese">*Chinese</option>
+    //     <option value="Vietnamese">*Vietnamese</option>
+    //     <option value="Tagalog">*Tagalog</option>
+    //     <option value="Nepali">*Nepali</option>
+    //     <option value="Swahili">*Swahili</option>
+    //     <option value="Burmese">*Burmese</option>
+    //   </Form.Control>
+    // );
+  }
+
+  renderLanguageSupportMessage() {
+    return <div>insert message here</div>;
   }
 
   render() {
@@ -281,6 +310,10 @@ class Identification extends React.Component {
                   <Form.Label className="nav-input-label">SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}</Form.Label>
                   {this.renderLanguageDropdown(this.state.current.patient.secondary_language || '')}
                 </Form.Group>
+              </Form.Row>
+              <Form.Row className="pb-3 pt-1 ml-0">
+                <Form.Group>{this.renderLanguageSupportMessage()}</Form.Group>
+                <Form.Group>{this.renderLanguageSupportMessage()}</Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
                 <Form.Group as={Col}>
