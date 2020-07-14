@@ -193,7 +193,7 @@ class ImportController < ApplicationController
 
     unless value.match(/\d{4}-\d{2}-\d{2}/)
       err_msg = "'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"
-      if value.match(%r{\d{2}\/\d{2}\/\d{4}})
+      if value.match(%r{\d{2}/\d{2}/\d{4}})
         raise ValidationError.new("#{err_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead", row_ind)
       end
 

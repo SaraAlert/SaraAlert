@@ -195,7 +195,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:date) && !value.instance_of?(Date) && !value.match(/\d{4}-\d{2}-\d{2}/)
         generic_msg = "'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"
-        if value.match(%r{\d{2}\/\d{2}\/\d{4}})
+        if value.match(%r{\d{2}/\d{2}/\d{4}})
           specific_msg = "#{generic_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead"
           assert page.has_content?(specific_msg), "Error message for #{field} missing"
         else

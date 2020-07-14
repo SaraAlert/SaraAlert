@@ -273,7 +273,7 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
             next if symptoms_hash.nil?
 
             symptoms_array = symptom_labels.map { |symptom_label| symptoms_hash[symptom_label].to_s }
-            row = assessment_summary_array[1..-1].concat(symptoms_array)
+            row = assessment_summary_array[1..].concat(symptoms_array)
             sheet.add_row row, { types: Array.new(row.length, :string) }
           end
         end
