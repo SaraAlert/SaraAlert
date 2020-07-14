@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
-import { Button, Modal, InputGroup, FormControl, Form } from 'react-bootstrap';
+import { Button, Modal, InputGroup, FormControl, Form, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 
 class UserModal extends React.Component {
   constructor(props) {
@@ -71,6 +71,22 @@ class UserModal extends React.Component {
                 return <option key={index}>{role}</option>;
               })}
             </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Status</Form.Label>
+            <ToggleButtonGroup type="radio" name="statusToggleGroup" defaultValue={this.props.initialUserData.is_locked ? true : false}>
+              {[
+                { name: 'Locked', value: true },
+                { name: 'Unlocked', value: false },
+              ].map((option, index) => {
+                const iconClassName = option.value ? 'fas fa-lock' : 'fas fa-unlock-alt';
+                return (
+                  <ToggleButton key={index} value={option.value}>
+                    <i className={iconClassName}></i>&nbsp;{option.name}
+                  </ToggleButton>
+                );
+              })}
+            </ToggleButtonGroup>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
