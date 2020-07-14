@@ -73,17 +73,13 @@ class Identification extends React.Component {
       });
   }
 
-  renderLanguageDropdown(value) {
-    let languages = supportedLanguages.languages;
+  renderLanguageOption(language, languageIndex) {
+    let fullySupported = language.supported.sms && language.supported.email && language.supported.phone;
+    let languageText = fullySupported ? language.name : language.name + '*';
     return (
-      <Form.Control size="lg" className="form-square" value={value} onChange={this.handleChange} as="select">
-        <option></option>
-        {languages.map((language, languageIndex) => (
-          <option key={languageIndex} value={language.name}>
-            {language.name}
-          </option>
-        ))}
-      </Form.Control>
+      <option key={languageIndex} value={language.name}>
+        {languageText}
+      </option>
     );
   }
 
@@ -252,12 +248,28 @@ class Identification extends React.Component {
               <Form.Row>
                 <Form.Group as={Col} controlId="primary_language">
                   <Form.Label className="nav-input-label">PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}</Form.Label>
-                  {this.renderLanguageDropdown(this.state.current.patient.primary_language || '')}
+                  <Form.Control
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.patient.primary_language || ''}
+                    onChange={this.handleChange}
+                    as="select">
+                    <option></option>
+                    {supportedLanguages.languages.map((language, languageIndex) => this.renderLanguageOption(language, languageIndex))}
+                  </Form.Control>
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language">
                   <Form.Label className="nav-input-label">SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}</Form.Label>
-                  {this.renderLanguageDropdown(this.state.current.patient.secondary_language || '')}
+                  <Form.Control
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.patient.secondary_language || ''}
+                    onChange={this.handleChange}
+                    as="select">
+                    <option></option>
+                    {supportedLanguages.languages.map((language, languageIndex) => this.renderLanguageOption(language, languageIndex))}
+                  </Form.Control>
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pb-3 pt-1 ml-0">
