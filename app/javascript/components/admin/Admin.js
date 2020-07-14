@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { Button, Table } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import UserModal from './UserModal';
+import axios from 'axios';
+import { CSVLink } from 'react-csv';
 
 class Admin extends React.Component {
   constructor(props) {
@@ -11,54 +13,204 @@ class Admin extends React.Component {
       dataColumns: {
         id: { name: 'Id', dataField: 'id' },
         email: { name: 'email', dataField: 'email' },
-        jurisdiction: { name: 'Jurisdiction', dataField: 'jurisdiction_path' },
+        jurisdictionPath: { name: 'Jurisdiction', dataField: 'jurisdiction_path' },
         role: { name: 'Role', dataField: 'role' },
-        status: { name: 'Status', dataField: 'locked' },
-        twoFactorAuthEnabled: { name: '2FA Enabled', dataField: 'configured_2fa' },
+        isLocked: { name: 'Status', dataField: 'is_locked', options: { true: 'Locked', false: 'Unlocked' } },
+        is2faEnabled: { name: '2FA Enabled', dataField: 'is_2fa_enabled', options: { true: 'Yes', false: 'No' } },
+        isApiEnabled: { name: 'API Enabled', dataField: 'api_enabled', options: { true: 'Yes', false: 'No' } },
       },
+      showEditUserModal: false,
+      showAddUserModal: false,
+      editRow: null,
       selectedRows: [],
-      showUserModal: false,
+      selectAll: false,
     };
   }
 
-  handleAddUsersClick = () => {
-    //TODO: handle single or bulk adding of users by showing appropriate modal
-  };
-
-  handleEditClick = () => {
-    // Show user Modal
+  handleAddUserClick = () => {
+    // Show edit user Modal
     this.setState({
-      showUserModal: true,
+      showAddUserModal: true,
+      editRow: null,
     });
   };
 
-  handleSave = () => {
-    //TODO: MAKE AXIOS CALL
+  handleEditClick = row => {
+    // Show edit user Modal
+    this.setState({
+      showEditUserModal: true,
+      editRow: row,
+    });
+  };
+
+  handleActionClick = () => {
+    console.log('action button clicked');
+  };
+
+  handleSave = (isNewUser, formData) => {
+    console.log('is new user?:', isNewUser);
+    this.handleModalClose();
+    console.log('form data:', formData);
+
+    if (isNewUser) {
+      this.handleAddNewUser(formData);
+    } else {
+      this.handleEditUser(formData);
+    }
+  };
+
+  handleAddUser = data => {
+    const path = 'create_user';
+
+    const dataToSend = {
+      email: data.email,
+      jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
+      role_title: data.role,
+    };
+
+    const handleSuccess = response => {
+      console.log('Response:', response);
+    };
+
+    const handleError = error => {
+      console.log('Error:', error);
+      alert('Error adding new user. New user not saved.');
+    };
+
+    this.axiosPostRequest(path, dataToSend, handleSuccess, handleError);
+  };
+
+  handleEditUser = data => {
+    const path = 'edit_user';
+    const dataToSend = {
+      email: data.email,
+      jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
+      role_title: data.role,
+    };
+
+    const handleSuccess = response => {
+      console.log('Response:', response);
+    };
+
+    const handleError = error => {
+      console.log('Error:', error);
+      alert('Error editing new user. Changes not saved.');
+    };
+
+    this.axiosPostRequest(path, dataToSend, handleSuccess, handleError);
+  };
+
+  handleModalClose = () => {
+    this.setState({
+      showEditUserModal: false,
+      showAddUserModal: false,
+      editRow: null,
+    });
+  };
+
+  handleDeleteUser = row => {
+    console.log(row);
+    //TODO
+  };
+
+  handleResetPassword = row => {
+    console.log(row);
+    //TODO
+  };
+
+  handleReset2Fa = row => {
+    console.log(row);
+    //TODO
+  };
+
+  axiosPostRequest = (path, data, handleSuccess, handleError) => {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios({
+      method: 'post',
+      url: window.BASE_PATH + '/admin/' + path,
+      data: data,
+    })
+      .then(handleSuccess)
+      .catch(handleError);
+  };
+
+  handleImportClick = () => {
+    //TODO: import and read csv
+  };
+
+  getCSVData = () => {
+    // NOTE: react-csv has a bug where false values don't show up in the downloaded CSV
+    // This has been addressed and recently merged: https://github.com/react-csv/react-csv/pull/193
+    // Once this gets released and we update our version this code won't be necessary.
+    return this.props.data.map(userData => {
+      return {
+        ...userData,
+        api_enabled: userData.api_enabled.toString(),
+        is_2fa_enabled: userData.is_2fa_enabled.toString(),
+        is_locked: userData.is_locked.toString(),
+      };
+    });
+  };
+
+  handleCheckboxChange = (e, row) => {
+    const checked = e.target.checked;
+    if (checked && !this.state.selectedRows.includes(row)) {
+      this.setState(prevState => ({
+        selectedRows: [...prevState.selectedRows, row],
+      }));
+    } else {
+      this.setState(prevState => {
+        const newArr = [...prevState.selectedRows];
+        const index = newArr.indexOf(row);
+        newArr.splice(index, 1);
+        return {
+          selectedRows: newArr,
+        };
+      });
+    }
+  };
+
+  toggleSelectAll = () => {
+    this.setState(prevState => {
+      const selectAll = !prevState.selectAll;
+      const selectedRows = selectAll ? [...Array(this.props.data.length).keys()] : [];
+      return {
+        selectAll,
+        selectedRows,
+      };
+    });
   };
 
   render() {
+    const showModal = this.state.showEditUserModal || this.state.showAddUserModal;
     return (
       <div>
-        <UserModal
-          show={this.state.showUserModal}
-          onSave={this.handleSave}
-          onClose={() => this.setState({ showUserModal: false })}
-          title="Edit User"
-          jurisdictionPaths={Object.keys(this.props.jurisdiction_paths)}
-          roles={this.props.role_types}
-          userData={{ jurisdiction: 'USA', role: 'analyst', status: 0 }}
-        />
+        {showModal && (
+          <UserModal
+            show={showModal}
+            onSave={formData => this.handleSave(this.showAddUserModal, formData)}
+            onClose={this.handleModalClose}
+            title={this.state.showEditUserModal ? 'Edit User' : 'Add User'}
+            jurisdictionPaths={Object.keys(this.props.jurisdiction_paths)}
+            roles={this.props.role_types}
+            initialUserData={this.state.editRow === null ? {} : this.props.data[this.state.editRow]}
+          />
+        )}
 
         <div className="d-flex justify-content-between">
           <div className="mb-1">
-            <Button className="mx-1" size="lg" onClick={this.handleAddUsersClick}>
+            <Button className="mx-1" size="lg" onClick={this.handleAddUserClick}>
               <i className="fas fa-plus-circle"></i>
-              &nbsp;Add User(s)
+              &nbsp;Add User
             </Button>
-            <Button variant="secondary" className="m-1" size="lg">
+            <Button className="mx-1" size="lg" onClick={this.handleImportClick}>
+              <i className="fas fa-upload"></i>
+              &nbsp;Import Users from CSV
+            </Button>
+            <CSVLink data={this.getCSVData()} className="btn btn-secondary btn-lg mx-1" filename={'sara-accounts.csv'}>
               <i className="fas fa-download"></i>
               &nbsp;Export to CSV
-            </Button>
+            </CSVLink>
           </div>
           <div className="mb-1 align-self-center">
             <span className="mr-2">
@@ -69,20 +221,19 @@ class Admin extends React.Component {
         </div>
 
         {this.state.selectedRows.length > 0 && (
-          <div>
-            <Button variant="secondary" size="sm">
-              <i className="fas fa-trash"></i>
-              Delete
+          <div className="mb-1">
+            {this.state.selectedRows.length} Selected
+            <Button variant="danger" className="mx-1" size="sm">
+              <i className="fas fa-trash"></i>&nbsp;Delete
             </Button>
-            <Button variant="secondary" size="sm">
-              <i className="fas fa-envelope"></i>
-              Send Email
+            <Button variant="secondary" className="mx-1" size="sm">
+              Reset password
             </Button>
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" className="mx-1" size="sm">
               Reset 2FA
             </Button>
-            <Button variant="secondary" size="sm">
-              Reset Password
+            <Button variant="secondary" className="mx-1" size="sm">
+              <i className="fas fa-envelope"></i>&nbsp;Send Email
             </Button>
           </div>
         )}
@@ -91,7 +242,7 @@ class Admin extends React.Component {
           <thead>
             <tr>
               <th>
-                <input type="checkbox"></input>
+                <input type="checkbox" onClick={this.toggleSelectAll}></input>
               </th>
               {Object.values(this.state.dataColumns).map((col, index) => {
                 return <th key={index}>{col.name}</th>;
@@ -100,17 +251,22 @@ class Admin extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.data.map(userData => {
+            {this.props.data.map((userData, row) => {
               return (
                 <tr key={userData.id}>
                   <td>
-                    <input type="checkbox"></input>
+                    <input
+                      type="checkbox"
+                      checked={this.state.selectAll || this.state.selectedRows.includes(row)}
+                      onChange={e => this.handleCheckboxChange(e, row)}></input>
                   </td>
                   {Object.values(this.state.dataColumns).map((col, index) => {
-                    return <td key={index}>{userData[col.dataField]}</td>;
+                    // If this column has value options, use the data value as a key to those options
+                    const value = col.options ? col.options[userData[col.dataField]] : userData[col.dataField];
+                    return <td key={index}>{value}</td>;
                   })}
                   <td>
-                    <div className="float-left edit-button" onClick={() => this.handleEditClick()}>
+                    <div className="float-left edit-button" onClick={() => this.handleEditClick(row)}>
                       <i className="fas fa-edit"></i>
                     </div>
                   </td>

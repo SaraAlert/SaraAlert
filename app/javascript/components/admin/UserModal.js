@@ -1,24 +1,29 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
-import { Button, Modal, InputGroup, FormControl, Form, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Button, Modal, InputGroup, FormControl, Form } from 'react-bootstrap';
 
 class UserModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: {
-        email: '',
-        jurisdiction: '',
-        role: '',
-        status: 0,
-        twoFactorAuthEnabled: false,
-      },
-      statusOptions: [
-        { name: 'Locked', value: 1 },
-        { name: 'Unlocked', value: 0 },
-      ],
+      email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
+      jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
+      role: this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0],
     };
   }
+
+  handleEmailChange = e => {
+    this.setState({ email: e.target.value });
+  };
+
+  handleJurisdictionChange = e => {
+    this.setState({ jurisdictionPath: e.target.value });
+  };
+
+  handleRoleChange = e => {
+    this.setState({ role: e.target.value });
+  };
+
   render() {
     return (
       <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
@@ -35,52 +40,44 @@ class UserModal extends React.Component {
                     <i className="fas fa-envelope"></i>
                   </InputGroup.Text>
                 </InputGroup.Prepend>
-                <FormControl placeholder="Enter email address" aria-label="Enter email address" aria-describedby="email-addon" />
+                <FormControl
+                  defaultValue={this.props.initialUserData.email ? this.props.initialUserData.email : ''}
+                  placeholder="Enter email address"
+                  aria-label="Enter email address"
+                  aria-describedby="email-addon"
+                  onChange={this.handleEmailChange}
+                />
               </InputGroup>
             </Form.Group>
             <Form.Group>
               <Form.Label>Jurisdiction</Form.Label>
-              <Form.Control as="select">
+              <Form.Control
+                as="select"
+                onChange={this.handleJurisdictionChange}
+                defaultValue={this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0]}>
                 {this.props.jurisdictionPaths.map((path, index) => {
-                  const isSelected = path.toLowerCase() === this.props.userData.jurisdiction.toLowerCase();
-                  return (
-                    <option selected={isSelected} key={index}>
-                      {path}
-                    </option>
-                  );
+                  return <option key={index}>{path}</option>;
                 })}
               </Form.Control>
             </Form.Group>
           </Form>
           <Form.Group>
             <Form.Label>Role</Form.Label>
-            <Form.Control as="select">
+            <Form.Control
+              as="select"
+              onChange={this.handleRoleChange}
+              defaultValue={this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0]}>
               {this.props.roles.map((role, index) => {
-                const isSelected = role.toLowerCase() === this.props.userData.role.toLowerCase();
-                return (
-                  <option selected={isSelected} key={index}>
-                    {role}
-                  </option>
-                );
+                return <option key={index}>{role}</option>;
               })}
             </Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Status</Form.Label>
-            <ToggleButtonGroup type="radio" name="statusToggleGroup" defaultValue={this.props.userData.status}>
-              {this.state.statusOptions.map((option, index) => (
-                <ToggleButton key={index} value={option.value}>
-                  {option.name}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={this.props.onClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={this.props.onSave}>
+          <Button variant="primary" onClick={() => this.props.onSave(this.state)}>
             Save
           </Button>
         </Modal.Footer>
@@ -96,7 +93,7 @@ UserModal.propTypes = {
   title: PropTypes.string,
   jurisdictionPaths: PropTypes.array,
   roles: PropTypes.array,
-  userData: PropTypes.object,
+  initialUserData: PropTypes.object,
 };
 
 export default UserModal;
