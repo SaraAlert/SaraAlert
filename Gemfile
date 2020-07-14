@@ -115,6 +115,7 @@ group :test do
   gem 'simplecov'
   gem 'simplecov-lcov'
   gem 'webdrivers'
+  gem 'rubyzip'
 end
 
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
