@@ -232,7 +232,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def assessment_email(patient)
-    if patient&.primary_telephone.blank?
+    if patient&.email.blank?
       History.report_reminder(patient: patient,
                               comment: "Sara Alert could not send a report reminder to this monitoree via \
                                        #{patient.preferred_contact_method}, because the monitoree email was blank.")
