@@ -108,8 +108,8 @@ monitoree_3:
     address_zip: "43058"
   contact_info:
     preferred_contact_method: "E-mailed Web Link"
-    email: "edda@example.com"
-    confirm_email: "edda@example.com"
+    email: "monitoree_3@example.com"
+    confirm_email: "monitoree_3@example.com"
   potential_exposure_info:
     last_date_of_exposure: "12/30/2019"
 monitoree_4:

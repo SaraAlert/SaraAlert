@@ -55,12 +55,13 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
 
     # add PUI, should be listed under PUI tab
-    @@public_health_patient_page_actions.update_latest_public_health_action(epi_enroller_user_label, 'Recommended medical evaluation of symptoms', 'reason')
+    @@public_health_patient_page_actions.update_latest_public_health_action(epi_enroller_user_label, monitoree_label,
+                                                                            'Recommended medical evaluation of symptoms', 'reason')
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_dashboard.search_for_and_view_monitoree('pui', monitoree_label)
 
     # update assigned jurisdiction, should be transferred out of old jurisdiction and transferred into new one
-    @@public_health_patient_page_actions.update_assigned_jurisdiction(epi_enroller_user_label, 'USA, State 2', 'reason', true, false)
+    @@public_health_patient_page_actions.update_assigned_jurisdiction(epi_enroller_user_label, monitoree_label, 'USA, State 2', 'reason', true, false)
     @@public_health_dashboard_verifier.verify_monitoree_under_tab('transferred-out', monitoree_label)
     @@system_test_utils.logout
     @@system_test_utils.login('state2_epi')
