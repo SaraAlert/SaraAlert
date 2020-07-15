@@ -410,10 +410,6 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   end
   # rubocop:enable Metrics/ParameterLists
 
-  def get_absolute_date(relative_date)
-    eval(relative_date.tr('<%=  =>', '')) # rubocop:todo Security/Eval
-  end
-
   def days_ago(num_days)
     num_days.days.ago.strftime('%F')
   end

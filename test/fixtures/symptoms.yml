@@ -1,704 +1,704 @@
 jurisdiction_1_threshold_condition_fever_symptom:
   id: 1
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 1
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 jurisdiction_1_threshold_condition_cough_symptom:
   id: 2
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 1
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 jurisdiction_1_threshold_condition_difficulty_breathing_symptom:
   id: 3
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 1
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 
 threshold_condition_1_fever_symptom:
   id: 4
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 8
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_1_cough_symptom:
   id: 5
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 8
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_1_difficulty_breathing_symptom:
   id: 6
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 8
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_2_fever_symptom:
   id: 10
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 10
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_2_cough_symptom:
   id: 11
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 10
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_2_difficulty_breathing_symptom:
   id: 12
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 10
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_3_fever_symptom:
   id: 16
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 12
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_3_cough_symptom:
   id: 17
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 12
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_3_difficulty_breathing_symptom:
   id: 18
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 12
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_4_fever_symptom:
   id: 22
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 14
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_4_cough_symptom:
   id: 23
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 14
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_4_difficulty_breathing_symptom:
   id: 24
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 14
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_5_fever_symptom:
   id: 28
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 16
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_5_cough_symptom:
   id: 29
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 16
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_5_difficulty_breathing_symptom:
   id: 30
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 16
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_6_fever_symptom:
   id: 55
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 25
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_6_cough_symptom:
   id: 56
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 25
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_6_difficulty_breathing_symptom:
   id: 57
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 25
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_7_fever_symptom:
   id: 112
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 44
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_7_cough_symptom:
   id: 113
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 44
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 threshold_condition_7_difficulty_breathing_symptom:
   id: 114
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 44
-  type: "BoolSymptom"
-  created_at: "<%= 50.days.ago %>"
-  updated_at: "<%= 50.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 50.days.ago %>
+  updated_at: <%= 50.days.ago %>
 
 patient_1_assessment_1_fever:
   id: 10011
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1001
-  type: "BoolSymptom"
-  created_at: "<%= 38.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 38.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_1_assessment_1_cough:
   id: 10012
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1001
-  type: "BoolSymptom"
-  created_at: "<%= 38.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 38.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_1_assessment_1_difficulty_breathing:
   id: 10013
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1001
-  type: "BoolSymptom"
-  created_at: "<%= 38.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 38.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_1_assessment_2_fever:
   id: 10021
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1002
-  type: "BoolSymptom"
-  created_at: "<%= 36.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_1_assessment_2_cough:
   id: 10022
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1002
-  type: "BoolSymptom"
-  created_at: "<%= 36.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_1_assessment_2_difficulty_breathing:
   id: 10023
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1002
-  type: "BoolSymptom"
-  created_at: "<%= 36.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_2_assessment_1_fever:
   id: 10031
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1003
-  type: "BoolSymptom"
-  created_at: "<%= 38.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 38.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_2_assessment_1_cough:
   id: 10032
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1003
-  type: "BoolSymptom"
-  created_at: "<%= 38.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 38.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_2_assessment_1_difficulty_breathing:
   id: 10033
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1003
-  type: "BoolSymptom"
-  created_at: "<%= 38.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 38.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_2_assessment_2_fever:
   id: 10041
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1004
-  type: "BoolSymptom"
-  created_at: "<%= 36.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_2_assessment_2_cough:
   id: 10042
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1004
-  type: "BoolSymptom"
-  created_at: "<%= 36.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_2_assessment_2_difficulty_breathing:
   id: 10043
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1004
-  type: "BoolSymptom"
-  created_at: "<%= 36.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
 patient_3_assessment_1_fever:
   id: 10051
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1005
-  type: "BoolSymptom"
-  created_at: "<%= 23.days.ago %>"
-  updated_at: "<%= 23.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 23.days.ago %>
+  updated_at: <%= 23.days.ago %>
 patient_3_assessment_1_cough:
   id: 10052
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 1005
-  type: "BoolSymptom"
-  created_at: "<%= 23.days.ago %>"
-  updated_at: "<%= 23.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 23.days.ago %>
+  updated_at: <%= 23.days.ago %>
 patient_3_assessment_1_difficulty_breathing:
   id: 10053
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1005
-  type: "BoolSymptom"
-  created_at: "<%= 23.days.ago %>"
-  updated_at: "<%= 23.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 23.days.ago %>
+  updated_at: <%= 23.days.ago %>
 patient_3_assessment_2_fever:
   id: 10061
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1006
-  type: "BoolSymptom"
-  created_at: "<%= 23.days.ago %>"
-  updated_at: "<%= 23.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 23.days.ago %>
+  updated_at: <%= 23.days.ago %>
 patient_3_assessment_2_cough:
   id: 10062
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: true
   condition_id: 1006
-  type: "BoolSymptom"
-  created_at: "<%= 23.days.ago %>"
-  updated_at: "<%= 23.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 23.days.ago %>
+  updated_at: <%= 23.days.ago %>
 patient_3_assessment_2_difficulty_breathing:
   id: 10063
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 1006
-  type: "BoolSymptom"
-  created_at: "<%= 23.days.ago %>"
-  updated_at: "<%= 23.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 23.days.ago %>
+  updated_at: <%= 23.days.ago %>
 patient_4_assessment_1_fever:
   id: 10071
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1007
-  type: "BoolSymptom"
-  created_at: "<%= 6.hours.ago %>"
-  updated_at: "<%= 6.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 6.hours.ago %>
+  updated_at: <%= 6.hours.ago %>
 patient_4_assessment_1_cough:
   id: 10072
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1007
-  type: "BoolSymptom"
-  created_at: "<%= 6.hours.ago %>"
-  updated_at: "<%= 6.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 6.hours.ago %>
+  updated_at: <%= 6.hours.ago %>
 patient_4_assessment_1_difficulty_breathing:
   id: 10073
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1007
-  type: "BoolSymptom"
-  created_at: "<%= 6.hours.ago %>"
-  updated_at: "<%= 6.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 6.hours.ago %>
+  updated_at: <%= 6.hours.ago %>
 patient_5_assessment_1_fever:
   id: 10081
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1008
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_5_assessment_1_cough:
   id: 10082
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1008
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_5_assessment_1_difficulty_breathing:
   id: 10083
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 1008
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_8_assessment_1_fever:
   id: 10091
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1009
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_8_assessment_1_cough:
   id: 10092
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1009
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_8_assessment_1_difficulty_breathing:
   id: 10093
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1009
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_8_assessment_2_fever:
   id: 10101
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1010
-  type: "BoolSymptom"
-  created_at: "<%= 5.hours.ago %>"
-  updated_at: "<%= 5.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 5.hours.ago %>
+  updated_at: <%= 5.hours.ago %>
 patient_8_assessment_2_cough:
   id: 10102
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1010
-  type: "BoolSymptom"
-  created_at: "<%= 5.hours.ago %>"
-  updated_at: "<%= 5.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 5.hours.ago %>
+  updated_at: <%= 5.hours.ago %>
 patient_8_assessment_2_difficulty_breathing:
   id: 10103
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1010
-  type: "BoolSymptom"
-  created_at: "<%= 5.hours.ago %>"
-  updated_at: "<%= 5.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 5.hours.ago %>
+  updated_at: <%= 5.hours.ago %>
 patient_9_assessment_1_fever:
   id: 10111
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1011
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_9_assessment_1_cough:
   id: 10112
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1011
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_9_assessment_1_difficulty_breathing:
   id: 10113
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1011
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_9_assessment_2_fever:
   id: 10121
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1012
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_9_assessment_2_cough:
   id: 10122
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1012
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_9_assessment_2_difficulty_breathing:
   id: 10123
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 1012
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_9_assessment_3_fever:
   id: 10131
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1013
-  type: "BoolSymptom"
-  created_at: "<%= 22.days.ago %>"
-  updated_at: "<%= 22.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 22.days.ago %>
+  updated_at: <%= 22.days.ago %>
 patient_9_assessment_3_cough:
   id: 10132
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1013
-  type: "BoolSymptom"
-  created_at: "<%= 22.days.ago %>"
-  updated_at: "<%= 22.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 22.days.ago %>
+  updated_at: <%= 22.days.ago %>
 patient_9_assessment_3_difficulty_breathing:
   id: 10133
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: true
   condition_id: 1013
-  type: "BoolSymptom"
-  created_at: "<%= 22.days.ago %>"
-  updated_at: "<%= 22.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 22.days.ago %>
+  updated_at: <%= 22.days.ago %>
 patient_9_assessment_4_fever:
   id: 10141
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1014
-  type: "BoolSymptom"
-  created_at: "<%= 10.hours.ago %>"
-  updated_at: "<%= 10.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 10.hours.ago %>
+  updated_at: <%= 10.hours.ago %>
 patient_9_assessment_4_cough:
   id: 10142
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1014
-  type: "BoolSymptom"
-  created_at: "<%= 10.hours.ago %>"
-  updated_at: "<%= 10.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 10.hours.ago %>
+  updated_at: <%= 10.hours.ago %>
 patient_9_assessment_4_difficulty_breathing:
   id: 10143
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1014
-  type: "BoolSymptom"
-  created_at: "<%= 10.hours.ago %>"
-  updated_at: "<%= 10.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 10.hours.ago %>
+  updated_at: <%= 10.hours.ago %>
 patient_10_assessment_1_fever:
   id: 10151
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1015
-  type: "BoolSymptom"
-  created_at: "<%= 26.days.ago %>"
-  updated_at: "<%= 26.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 26.days.ago %>
+  updated_at: <%= 26.days.ago %>
 patient_10_assessment_1_cough:
   id: 10152
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1015
-  type: "BoolSymptom"
-  created_at: "<%= 26.days.ago %>"
-  updated_at: "<%= 26.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 26.days.ago %>
+  updated_at: <%= 26.days.ago %>
 patient_10_assessment_1_difficulty_breathing:
   id: 10153
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1015
-  type: "BoolSymptom"
-  created_at: "<%= 26.days.ago %>"
-  updated_at: "<%= 26.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 26.days.ago %>
+  updated_at: <%= 26.days.ago %>
 patient_10_assessment_2_fever:
   id: 10161
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1016
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_10_assessment_2_cough:
   id: 10162
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1016
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_10_assessment_2_difficulty_breathing:
   id: 10163
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1016
-  type: "BoolSymptom"
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
 patient_10_assessment_3_fever:
   id: 10171
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: false
   condition_id: 1017
-  type: "BoolSymptom"
-  created_at: "<%= 18.hours.ago %>"
-  updated_at: "<%= 18.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 18.hours.ago %>
+  updated_at: <%= 18.hours.ago %>
 patient_10_assessment_3_cough:
   id: 10172
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1017
-  type: "BoolSymptom"
-  created_at: "<%= 18.hours.ago %>"
-  updated_at: "<%= 18.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 18.hours.ago %>
+  updated_at: <%= 18.hours.ago %>
 patient_10_assessment_3_difficulty_breathing:
   id: 10173
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1017
-  type: "BoolSymptom"
-  created_at: "<%= 18.hours.ago %>"
-  updated_at: "<%= 18.hours.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 18.hours.ago %>
+  updated_at: <%= 18.hours.ago %>
 patient_50_assessment_3_fever:
   id: 10181
-  name: "fever"
-  label: "Fever"
+  name: 'fever'
+  label: 'Fever'
   bool_value: true
   condition_id: 1018
-  type: "BoolSymptom"
-  created_at: "<%= 1.hour.ago %>"
-  updated_at: "<%= 1.hour.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 1.hour.ago %>
+  updated_at: <%= 1.hour.ago %>
 patient_50_assessment_3_cough:
   id: 10182
-  name: "cough"
-  label: "Cough"
+  name: 'cough'
+  label: 'Cough'
   bool_value: false
   condition_id: 1018
-  type: "BoolSymptom"
-  created_at: "<%= 1.hour.ago %>"
-  updated_at: "<%= 1.hour.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 1.hour.ago %>
+  updated_at: <%= 1.hour.ago %>
 patient_50_assessment_3_difficulty_breathing:
   id: 10183
-  name: "difficulty-breathing"
-  label: "Difficulty Breathing"
+  name: 'difficulty-breathing'
+  label: 'Difficulty Breathing'
   bool_value: false
   condition_id: 1018
-  type: "BoolSymptom"
-  created_at: "<%= 1.hour.ago %>"
-  updated_at: "<%= 1.hour.ago %>"
+  type: 'BoolSymptom'
+  created_at: <%= 1.hour.ago %>
+  updated_at: <%= 1.hour.ago %>
