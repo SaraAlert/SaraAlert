@@ -83,8 +83,31 @@ class Identification extends React.Component {
     );
   }
 
-  renderLanguageSupportMessage() {
-    return <div>insert message here</div>;
+  renderLanguageSupportMessage(selectedLanguageType) {
+    let selectedLanguage = selectedLanguageType === 'primary' ? this.state.current.patient.primary_language : this.state.current.patient.secondary_language;
+
+    if (selectedLanguage) {
+      let languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
+      let sms = languageJson.supported.sms;
+      let email = languageJson.supported.email;
+      let phone = languageJson.supported.phone;
+
+      if (!sms && !email && !phone) {
+        return <i>* {languageJson.name} is not currently supported by SaraAlert.</i>;
+      } else if (!sms && !email && phone) {
+        return <i>* {languageJson.name} for e-mailed web link and SMS texted Weblink is not currently supported by SaraAlert.</i>;
+      } else if (!sms && email && !phone) {
+        return <i>* {languageJson.name} for telephone call and SMS texted Weblink is not currently supported by SaraAlert.</i>;
+      } else if (!sms && email && phone) {
+        return <i>* {languageJson.name} for SMS texted Weblink is not currently supported by SaraAlert.</i>;
+      } else if (sms && !email && !phone) {
+        return <i>* {languageJson.name} for telephone call and e-mailed web link is not currently supported by SaraAlert.</i>;
+      } else if (sms && !email && phone) {
+        return <i>* {languageJson.name} for e-mailed web link is not currently supported by SaraAlert.</i>;
+      } else if (sms && email && !phone) {
+        return <i>* {languageJson.name} for telephone call is not currently supported by SaraAlert.</i>;
+      }
+    }
   }
 
   render() {
@@ -272,9 +295,14 @@ class Identification extends React.Component {
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pb-3 pt-1 ml-0">
-                <Form.Group>{this.renderLanguageSupportMessage()}</Form.Group>
-                <Form.Group>{this.renderLanguageSupportMessage()}</Form.Group>
+              <Form.Row>
+                <Form.Group as={Col} controlId="secondary_language_support_message">
+                  {this.renderLanguageSupportMessage('primary')}
+                </Form.Group>
+                <Form.Group as={Col} md="1"></Form.Group>
+                <Form.Group as={Col} controlId="secondary_language_support_message">
+                  {this.renderLanguageSupportMessage('secondary')}
+                </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
                 <Form.Group as={Col}>
