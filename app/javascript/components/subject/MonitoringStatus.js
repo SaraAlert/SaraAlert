@@ -362,6 +362,9 @@ class MonitoringStatus extends React.Component {
           )}
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           {this.state.monitoring_reasons && !this.state.monitoring_reason ? (
             <Button variant="primary btn-square" disabled>
               Submit
@@ -376,9 +379,6 @@ class MonitoringStatus extends React.Component {
               Submit
             </Button>
           )}
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
-          </Button>
         </Modal.Footer>
       </Modal>
     );

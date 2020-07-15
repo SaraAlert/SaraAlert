@@ -57,15 +57,15 @@ class Export extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button
             variant="primary btn-square"
             onClick={() => {
               submit(endpoint);
             }}>
             Start Export
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>

@@ -45,7 +45,9 @@ class Confirmation extends React.Component {
           {extraOption && <Form.Check type="checkbox" name="extraOption" label={extraOption} className="mt-4" onChange={this.handleChange} />}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => proceed(false)}>{cancelLabel}</Button>
+          <Button variant="secondary" onClick={() => proceed(false)}>
+            {cancelLabel}
+          </Button>
           <Button className="button-l" onClick={() => proceed(true)}>
             {okLabel}
           </Button>

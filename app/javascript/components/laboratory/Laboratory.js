@@ -104,11 +104,11 @@ class Laboratory extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
-            Create
-          </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
+          </Button>
+          <Button variant="primary btn-square" onClick={submit}>
+            Create
           </Button>
         </Modal.Footer>
       </Modal>

@@ -59,6 +59,9 @@ class AddReportingNote extends React.Component {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
@@ -66,9 +69,6 @@ class AddReportingNote extends React.Component {
               </React.Fragment>
             )}
             Submit
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>
