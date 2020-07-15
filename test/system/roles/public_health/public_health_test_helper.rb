@@ -32,10 +32,10 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   end
 
   # rubocop:disable Metrics/ParameterLists
-  def update_monitoring_status(user_label, patient_label, old_tab, new_tab, monitoring_status, status_change_reason, reasoning)
+  def update_monitoring_status(user_label, patient_label, old_tab, new_tab, monitoring_status, monitoring_reason, reasoning)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(old_tab, patient_label)
-    @@public_health_patient_page_actions.update_monitoring_status(user_label, monitoring_status, status_change_reason, reasoning)
+    @@public_health_patient_page_actions.update_monitoring_status(user_label, patient_label, monitoring_status, monitoring_reason, reasoning)
     @@system_test_utils.return_to_dashboard(nil)
     @@public_health_dashboard.search_for_and_view_patient(new_tab, patient_label)
     @@system_test_utils.logout
@@ -44,35 +44,35 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   def update_exposure_risk_assessment(user_label, patient_label, tab, exposure_risk_assessment, reasoning)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_actions.update_exposure_risk_assessment(user_label, exposure_risk_assessment, reasoning)
+    @@public_health_patient_page_actions.update_exposure_risk_assessment(user_label, patient_label, exposure_risk_assessment, reasoning)
     @@system_test_utils.logout
   end
 
   def update_monitoring_plan(user_label, patient_label, tab, monitoring_plan, reasoning)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_actions.update_monitoring_plan(user_label, monitoring_plan, reasoning)
+    @@public_health_patient_page_actions.update_monitoring_plan(user_label, patient_label, monitoring_plan, reasoning)
     @@system_test_utils.logout
   end
 
   def update_latest_public_health_action(user_label, patient_label, tab, latest_public_health_action, reasoning)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_actions.update_latest_public_health_action(user_label, latest_public_health_action, reasoning)
+    @@public_health_patient_page_actions.update_latest_public_health_action(user_label, patient_label, latest_public_health_action, reasoning)
     @@system_test_utils.logout
   end
 
   def update_assigned_jurisdiction(user_label, patient_label, tab, jurisdiction, reasoning, valid_jurisdiction = true, under_hierarchy = true)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_actions.update_assigned_jurisdiction(user_label, jurisdiction, reasoning, valid_jurisdiction, under_hierarchy)
+    @@public_health_patient_page_actions.update_assigned_jurisdiction(user_label, patient_label, jurisdiction, reasoning, valid_jurisdiction, under_hierarchy)
     @@system_test_utils.logout
   end
 
   def update_assigned_user(user_label, patient_label, tab, assigned_user, reasoning, valid_assigned_user = true, changed = true)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_actions.update_assigned_user(user_label, assigned_user, reasoning, valid_assigned_user, changed)
+    @@public_health_patient_page_actions.update_assigned_user(user_label, patient_label, assigned_user, reasoning, valid_assigned_user, changed)
     @@system_test_utils.logout
   end
 
