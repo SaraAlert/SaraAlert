@@ -79,6 +79,15 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  endOfMonitoring: (
+    <div>
+      Calculated by the system based on Last Date of Exposure
+      <div>
+        <i>Only relevent for Exposure Workflow</i>
+      </div>
+    </div>
+  ),
+
   // REQUIRES REVIEW RECOVERY LOGIC
   symptomaticNonTestBased: (
     <div>
