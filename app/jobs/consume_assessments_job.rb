@@ -116,7 +116,7 @@ class ConsumeAssessmentsJob < ApplicationJob
   private
 
   # Use the import method here to generate less SQL statements for a bulk insert of
-  # dependent histories instead of 1 staement per dependent.
+  # dependent histories instead of 1 statement per dependent.
   def create_contact_attempt_history_for_dependents(dependents, comment)
     histories = []
     dependents.each do |dependent|
