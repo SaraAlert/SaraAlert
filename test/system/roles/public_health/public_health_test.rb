@@ -34,6 +34,8 @@ class PublicHealthTest < ApplicationSystemTestCase
   test 'update monitoring status' do
     @@public_health_test_helper.update_monitoring_status('state1_epi', 'patient_2', 'non-reporting', 'closed',
                                                          'Not Monitoring', 'Completed Monitoring', 'details')
+    @@public_health_test_helper.update_monitoring_status('state1_epi', 'patient_5', 'closed', 'all',
+                                                         'Actively Monitoring', nil, 'notes')
   end
 
   test 'update exposure risk assessment' do

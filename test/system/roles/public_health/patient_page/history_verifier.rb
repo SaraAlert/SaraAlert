@@ -9,8 +9,8 @@ class PublicHealthPatientPageHistoryVerifier < ApplicationSystemTestCase
 
   USERS = @@system_test_utils.users
 
-  def verify_monitoring_status(user_label, monitoring_status, status_change_reason, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed monitoring status', monitoring_status, status_change_reason, reasoning])
+  def verify_monitoring_status(user_label, monitoring_status, monitoring_reason, reasoning)
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed monitoring status', monitoring_status, monitoring_reason, reasoning])
   end
 
   def verify_exposure_risk_assessment(user_label, exposure_risk_assessment, reasoning)
@@ -69,7 +69,7 @@ class PublicHealthPatientPageHistoryVerifier < ApplicationSystemTestCase
     assert page.has_content?(USERS[user_label]['email']), @@system_test_utils.get_err_msg("History #{event_type}", 'user email', USERS[user_label]['email'])
     assert page.has_content?(event_type), @@system_test_utils.get_err_msg("History #{event_type}", 'event type', event_type)
     contents.each do |content|
-      assert page.has_content?(content), @@system_test_utils.get_err_msg("History #{event_type}", 'content', content)
+      assert page.has_content?(content), @@system_test_utils.get_err_msg("History #{event_type}", 'content', content) unless content.nil?
     end
   end
 end

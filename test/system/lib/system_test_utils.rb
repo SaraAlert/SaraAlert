@@ -84,6 +84,10 @@ class SystemTestUtils < ApplicationSystemTestCase
     "#{patient_label}_assessment_#{assessment_label}"
   end
 
+  def get_patient_by_label(patient_label)
+    Patient.where(id: PATIENTS[patient_label]['id']).first
+  end
+
   def get_patient_display_name(patient_label)
     "#{PATIENTS[patient_label]['last_name']}, #{PATIENTS[patient_label]['first_name']}"
   end
