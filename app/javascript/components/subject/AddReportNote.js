@@ -48,7 +48,7 @@ class AddReportingNote extends React.Component {
 
   createModal(title, toggle, submit, id) {
     return (
-      <Modal size="lg" show centered>
+      <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
