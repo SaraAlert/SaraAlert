@@ -83,9 +83,7 @@ class Identification extends React.Component {
     );
   }
 
-  renderLanguageSupportMessage(selectedLanguageType) {
-    let selectedLanguage = selectedLanguageType === 'primary' ? this.state.current.patient.primary_language : this.state.current.patient.secondary_language;
-
+  renderLanguageSupportMessage(selectedLanguage) {
     if (selectedLanguage) {
       let languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
       let sms = languageJson.supported.sms;
@@ -297,11 +295,11 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="secondary_language_support_message">
-                  {this.renderLanguageSupportMessage('primary')}
+                  {this.renderLanguageSupportMessage(this.state.current.patient.primary_language)}
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language_support_message">
-                  {this.renderLanguageSupportMessage('secondary')}
+                  {this.renderLanguageSupportMessage(this.state.current.patient.secondary_language)}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
