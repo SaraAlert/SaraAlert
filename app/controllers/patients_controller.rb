@@ -295,6 +295,7 @@ class PatientsController < ApplicationController
 
     # Do we need to propagate to household where continuous_monitoring is true?
     if params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only]
+      # Scope lookup
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
         update_fields(member, params)
         if params[:apply_to_group_cm_only_date].present?
