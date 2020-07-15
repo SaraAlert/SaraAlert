@@ -15,15 +15,52 @@ class JurisdictionsController < ApplicationController
   def assigned_users
     render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient? || current_user.can_view_public_health_dashboard?
 
-    jurisdiction_id = params.require(:jurisdiction_id).to_i
+    permitted_params = params.permit(:jurisdiction_id, :scope, :workflow, :tab)
 
+    # Validate jurisdiction_id param
+    jurisdiction_id = permitted_params[:jurisdiction_id].to_i
     render status: 400 unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
+    jurisdiction = Jurisdiction.find(jurisdiction_id)
 
-    scope = params.permit(:scope)[:scope].to_sym
+    # Validate scope param
+    scope = permitted_params[:scope].to_sym
     render status: 400 unless %i[all exact].include?(scope)
 
-    assigned_users = scope == :all ? Jurisdiction.find(jurisdiction_id).all_assigned_users : Jurisdiction.find(jurisdiction_id).assigned_users
+    # Validate workflow param
+    workflow = permitted_params[:workflow].to_sym unless permitted_params[:workflow].nil?
+    render status: 400 if workflow && !%i[exposure isolation].include?(workflow)
 
-    render json: { assignedUsers: assigned_users }
+    # Validate tab param
+    tab = permitted_params[:tab].to_sym unless permitted_params[:tab].nil?
+    render status: 400 if tab && workflow.nil?
+    render status: 400 if workflow == 'exposure' && !%i[all symptomatic non_reporting asymptomatic pui closed transferred_in].include?(tab)
+    render status: 400 if workflow == 'isolation' && !%i[all requiring_review non_reporting reporting closed transferred_in].include?(tab)
+
+    # Start by getting all or immediate patients from jurisdiction
+    patients = scope == :all ? jurisdiction.all_patients : jurisdiction.immediate_patients
+
+    # Filter by workflow and tab
+    if workflow == :exposure
+      patients = patients.where(isolation: false, purged: false)
+      patients = patients.exposure_symptomatic if tab == :symptomatic
+      patients = patients.exposure_non_reporting if tab == :non_reporting
+      patients = patients.exposure_asymptomatic if tab == :asymptomatic
+      patients = patients.exposure_under_investigation if tab == :pui
+    end
+
+    if workflow == :isolation
+      patients = patients.where(isolation: true, purged: false)
+      patients = patients.isolation_requiring_review if tab == :requiring_review
+      patients = patients.isolation_non_reporting if tab == :non_reporting
+      patients = patients.isolation_reporting if tab == :reporting
+    end
+
+    patients = patients.monitoring_closed_without_purged if tab == :closed
+
+    if tab == :transferred_in
+      patients = scope == :all ? jurisdiction.transferred_in_patients : jurisdiction.transferred_in_patients.where(jurisdiction_id: jurisdiction_id)
+    end
+
+    render json: { assignedUsers: patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort }
   end
 end

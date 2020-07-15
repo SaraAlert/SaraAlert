@@ -143,19 +143,26 @@ class Import extends React.Component {
               Please review the monitoree records that are about to be imported. You can individually accept or reject each record below. You can also choose to
               import all unique records or all records (including duplicates) by clicking the &quot;Import All&quot; button.
             </h5>
-            <Button
-              variant="primary"
-              className="btn-lg mt-2"
-              onClick={() =>
-                this.handleConfirm(
-                  `This will import all records listed below that you did not manually accept or reject. If potential duplicates have been detected, check the box if you would like to import them.`
-                )
-              }>
-              Import All
-            </Button>
+            {this.state.acceptedAllStarted ? (
+              <Button variant="primary" className="btn-lg mt-2" disabled="true">
+                <i className="fas fa-upload"></i> Import All
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                className="btn-lg mt-2"
+                onClick={() =>
+                  this.handleConfirm(
+                    `This will import all records listed below that you did not manually accept or reject. If potential duplicates have been detected, check the box if you would like to import them.`
+                  )
+                }>
+                <i className="fas fa-upload"></i> Import All
+              </Button>
+            )}
+
             {this.state.acceptedAllStarted && (
-              <Button variant="primary" className="btn-lg mt-2 ml-2" onClick={() => this.stopImport('Stop Import')}>
-                Stop Import
+              <Button variant="danger" className="btn-lg mt-2 ml-2" onClick={() => this.stopImport('Stop Import')}>
+                <i className="fas fa-hand-paper"></i> Stop Import
               </Button>
             )}
             {this.state.phased.length > 0 && (
@@ -231,20 +238,20 @@ class Import extends React.Component {
                   {!(this.state.accepted.includes(index) || this.state.rejected.includes(index)) && (
                     <React.Fragment>
                       <Button
-                        variant="danger"
-                        className="mt-2 ml-3 float-right"
-                        onClick={() => {
-                          this.rejectSub(index);
-                        }}>
-                        Reject
-                      </Button>
-                      <Button
                         variant="primary"
-                        className="mt-2 float-right"
+                        className="mt-2 ml-3 float-right"
                         onClick={() => {
                           this.importSub(index, true);
                         }}>
-                        Accept
+                        <i className="fas fa-check"></i> Accept
+                      </Button>
+                      <Button
+                        variant="danger"
+                        className="mt-2 float-right"
+                        onClick={() => {
+                          this.rejectSub(index);
+                        }}>
+                        <i className="fas fa-times"></i> Reject
                       </Button>
                     </React.Fragment>
                   )}

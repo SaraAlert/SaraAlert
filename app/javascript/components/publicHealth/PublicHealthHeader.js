@@ -132,7 +132,7 @@ class PublicHealthHeader extends React.Component {
               <Form.File.Input onChange={event => this.selectFileForUpload(event, this.state.importType)}></Form.File.Input>
             </Form.File>
             <Button className="float-right ml-auto" disabled={!this.state.file} onClick={this.uploadFile}>
-              Upload
+              <i className="fas fa-upload"></i> Upload
             </Button>
           </Form>
           {this.state.uploading && <ProgressBar animated striped now={100} className="mt-3" />}
@@ -184,11 +184,11 @@ class PublicHealthHeader extends React.Component {
         <ButtonGroup className="float-right mb-4 mr-2">
           <Button variant={this.props.workflow === 'exposure' ? 'primary' : 'outline-primary'} href="/public_health">
             <i className="fas fa-people-arrows"></i> Exposure Monitoring{' '}
-            {this.state.counts.exposure !== null && <span id="exposureCount">({this.state.counts.exposure})</span>}
+            {this.state.counts.exposure !== undefined && <span id="exposureCount">({this.state.counts.exposure})</span>}
           </Button>
           <Button variant={this.props.workflow === 'isolation' ? 'primary' : 'outline-primary'} href="/public_health/isolation">
             <i className="fas fa-house-user"></i> Isolation Monitoring{' '}
-            {this.state.counts.isolation !== null && <span id="isolationCount">({this.state.counts.isolation})</span>}
+            {this.state.counts.isolation !== undefined && <span id="isolationCount">({this.state.counts.isolation})</span>}
           </Button>
         </ButtonGroup>
 

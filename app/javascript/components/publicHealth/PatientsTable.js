@@ -57,7 +57,6 @@ class PatientsTable extends React.Component {
       loading: false,
       cancelToken: axios.CancelToken.source(),
       selectedPatients: [],
-      actions: ['Close Records', 'Update Case Status'],
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
     this.handleChange = this.handleChange.bind(this);
@@ -87,9 +86,6 @@ class PatientsTable extends React.Component {
 
     // fetch list of jurisdiction paths
     this.updateJurisdictionPaths();
-
-    // fetch list of assigned users
-    this.updateAssignedUsers(this.props.jurisdiction.id, this.state.query.scope);
   }
 
   handleTabSelect(tab) {
@@ -97,6 +93,7 @@ class PatientsTable extends React.Component {
     query.tab = tab;
     query.page = 0;
     this.updateTable(query);
+    this.updateAssignedUsers(this.props.jurisdiction.id, this.state.query.scope);
     localStorage.setItem(`${this.props.workflow}Tab`, tab);
   }
 
@@ -114,7 +111,7 @@ class PatientsTable extends React.Component {
       if (event.target.value === '') {
         this.setState({ form: { ...form, assignedUser: event.target.value } });
         this.updateTable({ ...query, user: 'all', page: 0 });
-      } else if (!isNaN(event.target.value) && parseInt(event.target.value) <= 9999) {
+      } else if (!isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999) {
         this.setState({ form: { ...form, assignedUser: event.target.value } });
         this.updateTable({ ...query, user: event.target.value, page: 0 });
       }
@@ -194,7 +191,7 @@ class PatientsTable extends React.Component {
           }
         })
         .then(response => {
-          if (response && response.data) {
+          if (response && response.data && response.data.linelist) {
             this.setState({ patients: response.data, selectedPatients: Array(response.data.linelist.length).fill(false), loading: false });
           } else {
             this.setState({ selectedPatients: [], loading: false });
@@ -210,9 +207,18 @@ class PatientsTable extends React.Component {
   }
 
   updateAssignedUsers(jurisdiction_id, scope) {
-    axios.get(`/jurisdictions/${jurisdiction_id}/assigned_users/${scope}`).then(response => {
-      this.setState({ assignedUsers: response.data.assignedUsers });
-    });
+    axios
+      .get('/jurisdictions/assigned_users', {
+        params: {
+          jurisdiction_id,
+          scope,
+          workflow: this.props.workflow,
+          tab: this.state.query.tab,
+        },
+      })
+      .then(response => {
+        this.setState({ assignedUsers: response.data.assignedUsers });
+      });
   }
 
   formatTimestamp(timestamp) {
@@ -260,7 +266,7 @@ class PatientsTable extends React.Component {
           {Object.entries(this.props.tabs).map(([tab, tabProps]) => {
             return (
               <Nav.Item key={tab} className={tab === 'all' ? 'ml-auto' : ''}>
-                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`} style={{ padding: '0.5rem 0.75rem' }}>
+                <Nav.Link eventKey={tab} onSelect={this.handleTabSelect} id={`${tab}_tab`}>
                   {tabProps.label}
                   <Badge variant={tabProps.variant} className="badge-larger-font ml-1">
                     <span>{`${tab}Count` in this.state ? this.state[`${tab}Count`] : ''}</span>
@@ -286,7 +292,10 @@ class PatientsTable extends React.Component {
                       <Col lg={17} md={15} className="my-1">
                         <InputGroup size="sm">
                           <InputGroup.Prepend>
-                            <InputGroup.Text className="rounded-0">Jurisdiction</InputGroup.Text>
+                            <InputGroup.Text className="rounded-0">
+                              <i className="fas fa-map-marked-alt"></i>
+                              <span className="ml-1">Jurisdiction</span>
+                            </InputGroup.Text>
                           </InputGroup.Prepend>
                           <Form.Control
                             type="text"
@@ -330,7 +339,10 @@ class PatientsTable extends React.Component {
                       <Col lg={7} md={9} className="my-1">
                         <InputGroup size="sm">
                           <InputGroup.Prepend>
-                            <InputGroup.Text className="rounded-0">Assigned User</InputGroup.Text>
+                            <InputGroup.Text className="rounded-0">
+                              <i className="fas fa-users"></i>
+                              <span className="ml-1">Assigned User</span>
+                            </InputGroup.Text>
                           </InputGroup.Prepend>
                           <Form.Control
                             type="text"
@@ -378,7 +390,10 @@ class PatientsTable extends React.Component {
                   <Col lg={4} md={5} sm={6} className="my-1">
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
-                        <InputGroup.Text className="rounded-0">Show</InputGroup.Text>
+                        <InputGroup.Text className="rounded-0">
+                          <i className="fas fa-list"></i>
+                          <span className="ml-1">Show</span>
+                        </InputGroup.Text>
                       </InputGroup.Prepend>
                       <Form.Control as="select" size="sm" name="entries" value={this.state.query.entries} onChange={this.handleChange}>
                         {this.state.config.options.entries.map(num => {
@@ -395,7 +410,10 @@ class PatientsTable extends React.Component {
                     <InputGroup size="sm">
                       <InputGroup.Prepend>
                         <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
-                          <InputGroup.Text className="rounded-0">Search</InputGroup.Text>
+                          <InputGroup.Text className="rounded-0">
+                            <i className="fas fa-search"></i>
+                            <span className="ml-1">Search</span>
+                          </InputGroup.Text>
                         </OverlayTrigger>
                       </InputGroup.Prepend>
                       <Form.Control
@@ -411,16 +429,21 @@ class PatientsTable extends React.Component {
                           as={ButtonGroup}
                           size="sm"
                           variant="primary"
-                          title="Actions"
+                          title={
+                            <React.Fragment>
+                              <i className="fas fa-tools"></i> Actions{' '}
+                            </React.Fragment>
+                          }
                           className="ml-2"
                           disabled={!this.state.selectedPatients.includes(true)}>
-                          {this.state.actions.map(action => {
-                            return (
-                              <Dropdown.Item key={action} onClick={() => this.setState({ action })}>
-                                {action}
-                              </Dropdown.Item>
-                            );
-                          })}
+                          <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Close Records' })}>
+                            <i className="fas fa-window-close text-center" style={{ width: '1em' }}></i>
+                            <span className="ml-2">Close Records</span>
+                          </Dropdown.Item>
+                          <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Case Status' })}>
+                            <i className="fas fa-clipboard-list text-center" style={{ width: '1em' }}></i>
+                            <span className="ml-2">Update Case Status</span>
+                          </Dropdown.Item>
                         </DropdownButton>
                       )}
                     </InputGroup>
