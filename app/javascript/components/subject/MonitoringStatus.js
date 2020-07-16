@@ -275,7 +275,7 @@ class MonitoringStatus extends React.Component {
           message: this.state.message,
           reasoning:
             (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
-              ? this.state.monitoring_reason + (this.state.reasoning ? ', ' : '')
+              ? this.state.monitoring_reason + (this.state.reasoning !== '' ? ', ' : '')
               : '') + this.state.reasoning,
           monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_reason : null,
           jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdiction_path),

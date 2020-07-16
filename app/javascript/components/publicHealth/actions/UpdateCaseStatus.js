@@ -8,16 +8,16 @@ class UpdateCaseStatus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      caseStatus: '',
+      case_status: '',
       message: '',
-      followUp: '',
+      follow_up: '',
       isolation: undefined,
       initialCaseStatus: undefined,
       initialIsolation: undefined,
       initialMonitoring: undefined,
-      applyToGroup: false,
+      apply_to_group: false,
       monitoring: false,
-      monitoringReason: '',
+      monitoring_reason: '',
       loading: false,
     };
     this.handleChange = this.handleChange.bind(this);
@@ -51,25 +51,25 @@ class UpdateCaseStatus extends React.Component {
   handleChange(event) {
     event.persist();
     this.setState({ [event.target.id]: event.target.type === 'checkbox' ? event.target.checked : event.target.value }, () => {
-      if (event.target.id === 'followUp') {
+      if (event.target.id === 'follow_up') {
         if (event.target.value === 'End Monitoring') {
           this.setState({
             monitoring: false,
             isolation: undefined, // Make sure not to alter the existing isolation
-            monitoringReason: 'Meets Case Definition',
-            message: 'case status to "' + this.state.caseStatus + '", and chose to "' + event.target.value + '".',
+            monitoring_reason: 'Meets Case Definition',
+            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
         if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
           this.setState({
             monitoring: true,
             isolation: true,
-            monitoringReason: 'Meets Case Definition',
-            message: 'case status to "' + this.state.caseStatus + '", and chose to "' + event.target.value + '".',
+            monitoring_reason: 'Meets Case Definition',
+            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
       } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
-        this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.caseStatus + '".' });
+        this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
       }
 
       // If in isolation the follow up will not be displayed, ensure changed properties do not carry over
@@ -77,8 +77,8 @@ class UpdateCaseStatus extends React.Component {
         this.setState({
           monitoring: this.state.initialMonitoring,
           isolation: this.state.initialIsolation,
-          monitoringReason: 'Meets Case Definition',
-          message: 'case status to "' + this.state.caseStatus + '", and chose to "' + event.target.value + '".',
+          monitoring_reason: 'Meets Case Definition',
+          message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
         });
       }
     });
@@ -94,11 +94,11 @@ class UpdateCaseStatus extends React.Component {
           ids: idArray,
           comment: true,
           message: this.state.message,
-          case_status: this.state.caseStatus,
+          case_status: this.state.case_status,
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
-          monitoring_reason: this.state.monitoringReason,
-          apply_to_group: this.state.applyToGroup,
+          monitoring_reason: this.state.monitoring_reason,
+          apply_to_group: this.state.apply_to_group,
         })
         .then(() => {
           location.href = window.BASE_PATH;
@@ -115,7 +115,7 @@ class UpdateCaseStatus extends React.Component {
       <React.Fragment>
         <Modal.Body>
           <p>Please select the desired case status to be assigned to all selected patients:</p>
-          <Form.Control as="select" className="form-control-lg mb-3" id="caseStatus" onChange={this.handleChange} value={this.state.caseStatus}>
+          <Form.Control as="select" className="form-control-lg mb-3" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
             <option></option>
             <option>Confirmed</option>
             <option>Probable</option>
@@ -123,30 +123,30 @@ class UpdateCaseStatus extends React.Component {
             <option>Unknown</option>
             <option>Not a Case</option>
           </Form.Control>
-          {this.state.caseStatus !== '' && (
+          {this.state.case_status !== '' && (
             <React.Fragment>
-              {['Confirmed', 'Probable'].includes(this.state.caseStatus) && !this.state.initialIsolation && (
+              {['Confirmed', 'Probable'].includes(this.state.case_status) && !this.state.initialIsolation && (
                 <React.Fragment>
                   <p>Please select what you would like to do:</p>
-                  <Form.Control as="select" className="form-control-lg mb-3" id="followUp" onChange={this.handleChange} value={this.state.followUp}>
+                  <Form.Control as="select" className="form-control-lg mb-3" id="follow_up" onChange={this.handleChange} value={this.state.follow_up}>
                     <option></option>
                     <option>End Monitoring</option>
                     <option>Continue Monitoring in Isolation Workflow</option>
                   </Form.Control>
                 </React.Fragment>
               )}
-              {['Confirmed', 'Probable'].includes(this.state.caseStatus) ? (
+              {['Confirmed', 'Probable'].includes(this.state.case_status) ? (
                 <React.Fragment>
-                  {this.state.followUp === 'Continue Monitoring in Isolation Workflow' && [undefined, false].includes(this.state.initialIsolation) && (
+                  {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && [undefined, false].includes(this.state.initialIsolation) && (
                     <p>
                       The selected monitorees will be moved to the isolation workflow and placed in the requiring review, non-reporting, or reporting line list
                       as appropriate.
                     </p>
                   )}
-                  {this.state.followUp === 'Continue Monitoring in Isolation Workflow' && this.state.initialIsolation === true && (
+                  {this.state.follow_up === 'Continue Monitoring in Isolation Workflow' && this.state.initialIsolation === true && (
                     <p>The selected monitorees will remain in the isolation workflow.</p>
                   )}
-                  {this.state.followUp === 'End Monitoring' && (
+                  {this.state.follow_up === 'End Monitoring' && (
                     <p>The selected monitorees will be moved into the &quot;Closed&quot; line list, and will no longer be monitored.</p>
                   )}
                 </React.Fragment>
@@ -164,9 +164,9 @@ class UpdateCaseStatus extends React.Component {
               <Form.Group className="my-2">
                 <Form.Check
                   type="switch"
-                  id="applyToGroup"
+                  id="apply_to_group"
                   label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
-                  checked={this.state.applyToGroup === true || false}
+                  checked={this.state.apply_to_group === true || false}
                   onChange={this.handleChange}
                 />
               </Form.Group>
@@ -181,11 +181,11 @@ class UpdateCaseStatus extends React.Component {
             variant="primary btn-square"
             onClick={this.submit}
             disabled={
-              ((this.state.caseStatus === 'Confirmed' || this.state.caseStatus === 'Probable') &&
+              ((this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') &&
                 !this.state.initialIsolation &&
                 this.state.confirmed === '') ||
               this.state.loading ||
-              (this.state.initialCaseStatus === this.state.caseStatus && // checks if no changes have been made
+              (this.state.initialCaseStatus === this.state.case_status && // checks if no changes have been made
                 this.state.initialIsolation === this.state.isolation &&
                 this.state.initialMonitoring === this.state.monitoring)
             }>

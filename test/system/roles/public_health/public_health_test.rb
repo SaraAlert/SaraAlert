@@ -62,19 +62,19 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'bulk edit close records from exposure workflow' do
-    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_1 patient_2], :exposure, 'all', false)
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_1 patient_2], :exposure, 'all', '', '', false)
   end
 
   test 'bulk edit close records from isolation workflow' do
-    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_45 patient_47], :isolation, 'all', false)
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_45 patient_47], :isolation, 'all', 'Completed Monitoring', 'reasoning', false)
   end
 
   test 'bulk edit close records from exposure workflow with household' do
-    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_52], :exposure, 'all', true)
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_52], :exposure, 'all', 'Duplicate', '', true)
   end
 
   test 'bulk edit close records from isolation workflow with household' do
-    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_54], :isolation, 'all', true)
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_54], :isolation, 'all', '', 'details', true)
   end
 
   ## Patient page

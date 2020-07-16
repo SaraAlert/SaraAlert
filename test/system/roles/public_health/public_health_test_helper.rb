@@ -182,13 +182,11 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def bulk_edit_close_records(user_label, patient_labels, workflow, tab, apply_to_group = false)
+  def bulk_edit_close_records(user_label, patient_labels, workflow, tab, monitoring_reason, reasoning, apply_to_group = false)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
-    @@public_health_dashboard.bulk_edit_close_records(apply_to_group)
-    assertions = {
-      monitoring: false
-    }
+    @@public_health_dashboard.bulk_edit_close_records(monitoring_reason, reasoning, apply_to_group)
+    assertions = { monitoring: false, monitoring_reason: monitoring_reason }
     patient_labels.each do |label|
       @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions, apply_to_group)
     end
