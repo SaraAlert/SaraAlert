@@ -54,7 +54,6 @@ class Identification extends React.Component {
   }
 
   handleLanguageChange(event) {
-    console.log(event);
     let value = event.value;
     let current = this.state.current;
     let modified = this.state.modified;
@@ -68,7 +67,6 @@ class Identification extends React.Component {
         self.props.setEnrollmentState({ ...self.state.modified });
       }
     );
-    console.log(this.state.current);
   }
 
   validate(callback) {
@@ -102,15 +100,8 @@ class Identification extends React.Component {
     return langOptions;
   }
 
-  renderLanguageOption(language, languageIndex) {
-    let fullySupported = language.supported.sms && language.supported.email && language.supported.phone;
-    let languageText = fullySupported ? language.name : language.name + '!';
-    //  + '*';
-    return (
-      <option key={languageIndex} value={language.name}>
-        {languageText}
-      </option>
-    );
+  getLanguageValue(language, languageType) {
+    return this.getLanguageOptions(languageType).filter(lang => lang.value === language);
   }
 
   renderLanguageSupportMessage(selectedLanguage) {
@@ -329,7 +320,7 @@ class Identification extends React.Component {
                   <Form.Label className="nav-input-label">PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}</Form.Label>
                   <Select
                     name="primary_language"
-                    value={this.state.current.patient.primary_language || ''}
+                    value={this.getLanguageValue(this.state.current.patient.primary_language, 'primary_language')}
                     options={this.getLanguageOptions('primary_language')}
                     onChange={this.handleLanguageChange}
                     placeholder=""
@@ -338,31 +329,21 @@ class Identification extends React.Component {
                       borderRadius: 0,
                     })}
                   />
-
-                  {/* <Form.Control
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.primary_language || ''}
-                    onChange={this.handleChange}
-                    as="input"
-                    list="languages" />
-                    <datalist id="languages">
-                      <option></option>
-                      {supportedLanguages.languages.map((language, languageIndex) => this.renderLanguageOption(language, languageIndex))}
-                    </datalist> */}
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language">
                   <Form.Label className="nav-input-label">SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.secondary_language || ''}
-                    onChange={this.handleChange}
-                    as="select">
-                    <option></option>
-                    {supportedLanguages.languages.map((language, languageIndex) => this.renderLanguageOption(language, languageIndex))}
-                  </Form.Control>
+                  <Select
+                    name="secondary_language"
+                    value={this.getLanguageValue(this.state.current.patient.secondary_language, 'secondary_language')}
+                    options={this.getLanguageOptions('secondary_language')}
+                    onChange={this.handleLanguageChange}
+                    placeholder=""
+                    theme={theme => ({
+                      ...theme,
+                      borderRadius: 0,
+                    })}
+                  />
                 </Form.Group>
               </Form.Row>
               <Form.Row>
