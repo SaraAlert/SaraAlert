@@ -3,6 +3,7 @@ import { Card, Button, Form, Col } from 'react-bootstrap';
 import moment from 'moment-timezone';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
+import Select from 'react-select';
 import supportedLanguages from '../../../json/supportedLanguages.json';
 
 class Identification extends React.Component {
@@ -10,6 +11,7 @@ class Identification extends React.Component {
     super(props);
     this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
     this.handleChange = this.handleChange.bind(this);
+    this.handleLanguageChange = this.handleLanguageChange.bind(this);
     this.validate = this.validate.bind(this);
   }
 
@@ -51,6 +53,24 @@ class Identification extends React.Component {
     );
   }
 
+  handleLanguageChange(event) {
+    console.log(event);
+    let value = event.value;
+    let current = this.state.current;
+    let modified = this.state.modified;
+    let self = this;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [event.type]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [event.type]: value } },
+      },
+      () => {
+        self.props.setEnrollmentState({ ...self.state.modified });
+      }
+    );
+    console.log(this.state.current);
+  }
+
   validate(callback) {
     let self = this;
     schema
@@ -73,9 +93,19 @@ class Identification extends React.Component {
       });
   }
 
+  getLanguageOptions(languageType) {
+    const langOptions = supportedLanguages.languages.map(function(lang) {
+      let fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
+      let langLabel = fullySupported ? lang.name : lang.name + '*';
+      return { value: lang.name, label: langLabel, type: languageType };
+    });
+    return langOptions;
+  }
+
   renderLanguageOption(language, languageIndex) {
     let fullySupported = language.supported.sms && language.supported.email && language.supported.phone;
-    let languageText = fullySupported ? language.name : language.name + '*';
+    let languageText = fullySupported ? language.name : language.name + '!';
+    //  + '*';
     return (
       <option key={languageIndex} value={language.name}>
         {languageText}
@@ -297,15 +327,29 @@ class Identification extends React.Component {
               <Form.Row>
                 <Form.Group as={Col} controlId="primary_language">
                   <Form.Label className="nav-input-label">PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
+                  <Select
+                    name="primary_language"
+                    value={this.state.current.patient.primary_language || ''}
+                    options={this.getLanguageOptions('primary_language')}
+                    onChange={this.handleLanguageChange}
+                    placeholder=""
+                    theme={theme => ({
+                      ...theme,
+                      borderRadius: 0,
+                    })}
+                  />
+
+                  {/* <Form.Control
                     size="lg"
                     className="form-square"
                     value={this.state.current.patient.primary_language || ''}
                     onChange={this.handleChange}
-                    as="select">
-                    <option></option>
-                    {supportedLanguages.languages.map((language, languageIndex) => this.renderLanguageOption(language, languageIndex))}
-                  </Form.Control>
+                    as="input"
+                    list="languages" />
+                    <datalist id="languages">
+                      <option></option>
+                      {supportedLanguages.languages.map((language, languageIndex) => this.renderLanguageOption(language, languageIndex))}
+                    </datalist> */}
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language">
