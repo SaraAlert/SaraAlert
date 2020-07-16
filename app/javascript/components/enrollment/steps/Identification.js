@@ -119,26 +119,26 @@ class Identification extends React.Component {
           message += ' is not currently supported by Sara Alert.';
           if (languageType === 'primary') message += ' Any messages sent to this monitoree will be in English.';
         } else if (!sms && !email && phone) {
-          message += ' is not currently supported for email or SMS texted weblink.';
+          message += ' is supported for the telephone call method only.';
           if (languageType === 'primary')
-            message += ' If email or SMS texted weblink is selected as the preferred reporting method, the web link will be in English.';
+            message += ' If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
         } else if (!sms && email && !phone) {
-          message += ' is not currently supported for telephone call and SMS texted weblink.';
+          message += ' is supported for the email weblink method only.';
           if (languageType === 'primary')
-            message += ' If telephone call or SMS texted weblink is selected as the preferred reporting method, the contact will be in English.';
+            message += ' If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
         } else if (!sms && email && phone) {
-          message += ' is not currently supported for SMS texted weblink.';
+          message += ' is supported for telephone call and email reporting methods only.';
           if (languageType === 'primary') message += ' If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
         } else if (sms && !email && !phone) {
-          message += ' is not currently supported for telephone call and e-mailed weblink.';
+          message += ' is supported for the SMS text weblink method only.';
           if (languageType === 'primary')
-            message += ' If telephone call or e-mailed weblink is selected as the preferred reporting method, the contact will be in English.';
+            message += ' If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
         } else if (sms && !email && phone) {
-          message += ' is not currently supported for e-mailed weblink.';
-          if (languageType === 'primary') message += ' If e-mailed weblink is selected as the preferred reporting method, the email will be in English.';
+          message += ' is supported for telephone call and SMS text reporting methods only.';
+          if (languageType === 'primary') message += ' If email is selected as the preferred reporting method, the email will be in English.';
         } else if (sms && email && !phone) {
-          message += ' is not currently supported for telephone calls.';
-          if (languageType === 'primary') message += ' If telelphone call is selected as the preferred reporting method, the call will be in English.';
+          message += ' is supported for email and SMS text reporting methods only.';
+          if (languageType === 'primary') message += ' If telephone call is selected as the preferred reporting method, the call will be in English.';
         }
         return (
           <i>
