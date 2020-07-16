@@ -305,7 +305,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row className="pb-3 pt-1 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
-                <Form.Group as={Col} controlId="primary_language">
+                <Form.Group as={Col} controlId="primary_language" id="primary_language_wrapper">
                   <Form.Label className="nav-input-label">
                     PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="primaryLanguage" location="right"></InfoTooltip>
@@ -323,7 +323,7 @@ class Identification extends React.Component {
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} controlId="secondary_language">
+                <Form.Group as={Col} controlId="secondary_language" id="secondary_language_wrapper">
                   <Form.Label className="nav-input-label">
                     SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}
                     <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
