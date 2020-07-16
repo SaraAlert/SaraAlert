@@ -235,52 +235,36 @@ class PublicHealthController < ApplicationController
                                'patients.date_of_birth, patients.assigned_user, patients.exposure_risk_assessment, patients.monitoring_plan, '\
                                'patients.public_health_action, patients.monitoring_reason, patients.closed_at, patients.last_date_of_exposure, '\
                                'patients.created_at, patients.updated_at, patients.latest_assessment_at, patients.latest_transfer_at, '\
-                               'jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path')
+                               'patients.continuous_exposure, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path')
 
     # execute query and get total count
     total = patients.total_entries
 
     linelist = []
     patients.each do |patient|
-      # populate fields relevant to all linelists
-      name = if patient[:first_name].present? || patient[:last_name].present?
-               "#{patient[:last_name]}#{patient[:first_name].blank? ? '' : ', ' + patient[:first_name]}"
-             else
-               'NAME NOT PROVIDED'
-             end
-
+      # populate fields common to all linelists
       details = {
         id: patient[:id],
-        name: name || '',
+        name: patient.displayed_name,
         state_local_id: patient[:user_defined_id_statelocal] || '',
         sex: patient[:sex] || '',
         dob: patient[:date_of_birth]&.strftime('%F') || ''
       }
 
       # populate fields specific to this linelist only if relevant
+      details[:jurisdiction] = patient[:jurisdiction_name] || '' if fields.include?(:jurisdiction)
+      details[:transferred_from] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_from)
+      details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
       details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
+      details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
       details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
       details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
       details[:public_health_action] = patient[:public_health_action] || '' if fields.include?(:public_health_action)
-      details[:expected_purge_date] = (patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || '' if fields.include?(:expected_purge_date)
+      details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
       details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
       details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)
-
-      if fields.include?(:end_of_monitoring)
-        details[:end_of_monitoring] = if patient[:last_date_of_exposure].present?
-                                        (patient[:last_date_of_exposure] + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
-                                      elsif patient[:created_at].present?
-                                        (patient[:created_at] + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
-                                      else
-                                        ''
-                                      end
-      end
-
-      details[:jurisdiction] = patient[:jurisdiction_name] || '' if fields.include?(:jurisdiction)
-      details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
       details[:transferred_at] = patient[:latest_transfer_at]&.rfc2822 || '' if fields.include?(:transferred_at)
-      details[:transferred_from] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_from)
-      details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
+      details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
       details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
 
       linelist << details

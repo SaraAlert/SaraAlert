@@ -19,6 +19,7 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   @@public_health_patient_page = PublicHealthPatientPage.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
+  # rubocop:disable Metrics/ParameterLists
   def verify_patients_on_dashboard(user_label, verify_scope = false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id, verify_scope)
@@ -31,7 +32,6 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  # rubocop:disable Metrics/ParameterLists
   def update_monitoring_status(user_label, patient_label, old_tab, new_tab, monitoring_status, monitoring_reason, reasoning)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(old_tab, patient_label)

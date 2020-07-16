@@ -12,26 +12,26 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
   def verify_patients_on_dashboard(jurisdiction_id, verify_scope = false)
     jurisdiction = Jurisdiction.find(jurisdiction_id)
     patients = jurisdiction.all_patients
-    verify_workflow_count('exposure', patients.where(isolation: false).count)
-    verify_workflow_count('isolation', patients.where(isolation: true).count)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'symptomatic', patients.exposure_symptomatic)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'non_reporting', patients.exposure_non_reporting)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'asymptomatic', patients.exposure_asymptomatic)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'pui', patients.exposure_under_investigation)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'closed', patients.monitoring_closed_without_purged.where(isolation: false))
-    verify_patients_under_tab(jurisdiction, false, 'transferred_in', jurisdiction.transferred_in_patients.where(isolation: false))
-    verify_patients_under_tab(jurisdiction, false, 'transferred_out', jurisdiction.transferred_out_patients.where(isolation: false))
-    verify_patients_under_tab(jurisdiction, verify_scope, 'all', patients.where(isolation: false))
+    verify_workflow_count(:exposure, patients.where(isolation: false).count)
+    verify_workflow_count(:isolation, patients.where(isolation: true).count)
+    verify_patients_under_tab(jurisdiction, verify_scope, :exposure, :symptomatic, patients.exposure_symptomatic)
+    verify_patients_under_tab(jurisdiction, verify_scope, :exposure, :non_reporting, patients.exposure_non_reporting)
+    verify_patients_under_tab(jurisdiction, verify_scope, :exposure, :asymptomatic, patients.exposure_asymptomatic)
+    verify_patients_under_tab(jurisdiction, verify_scope, :exposure, :pui, patients.exposure_under_investigation)
+    verify_patients_under_tab(jurisdiction, verify_scope, :exposure, :closed, patients.monitoring_closed_without_purged.where(isolation: false))
+    verify_patients_under_tab(jurisdiction, false, :exposure, :transferred_in, jurisdiction.transferred_in_patients.where(isolation: false))
+    verify_patients_under_tab(jurisdiction, false, :exposure, :transferred_out, jurisdiction.transferred_out_patients.where(isolation: false))
+    verify_patients_under_tab(jurisdiction, verify_scope, :exposure, :all, patients.where(isolation: false))
     @@system_test_utils.go_to_workflow('isolation')
-    @@system_test_utils.wait_for_page_count_load_delay
-    verify_workflow_count('exposure', patients.where(isolation: false).count)
-    verify_workflow_count('isolation', patients.where(isolation: true).count)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'requiring_review', patients.isolation_requiring_review)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'non_reporting', patients.isolation_non_reporting)
-    verify_patients_under_tab(jurisdiction, verify_scope, 'reporting', patients.isolation_reporting)
-    verify_patients_under_tab(jurisdiction, false, 'transferred_in', jurisdiction.transferred_in_patients.where(isolation: true))
-    verify_patients_under_tab(jurisdiction, false, 'transferred_out', jurisdiction.transferred_out_patients.where(isolation: true))
-    verify_patients_under_tab(jurisdiction, verify_scope, 'all', patients.where(isolation: true))
+    sleep(0.5) # wait for page count to load
+    verify_workflow_count(:exposure, patients.where(isolation: false).count)
+    verify_workflow_count(:isolation, patients.where(isolation: true).count)
+    verify_patients_under_tab(jurisdiction, verify_scope, :isolation, :requiring_review, patients.isolation_requiring_review)
+    verify_patients_under_tab(jurisdiction, verify_scope, :isolation, :non_reporting, patients.isolation_non_reporting)
+    verify_patients_under_tab(jurisdiction, verify_scope, :isolation, :reporting, patients.isolation_reporting)
+    verify_patients_under_tab(jurisdiction, false, :isolation, :transferred_in, jurisdiction.transferred_in_patients.where(isolation: true))
+    verify_patients_under_tab(jurisdiction, false, :isolation, :transferred_out, jurisdiction.transferred_out_patients.where(isolation: true))
+    verify_patients_under_tab(jurisdiction, verify_scope, :isolation, :all, patients.where(isolation: true))
   end
 
   def verify_workflow_count(workflow, expected_count)
@@ -39,34 +39,35 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     assert_equal(expected_count, displayed_count, @@system_test_utils.get_err_msg('dashboard', "#{workflow} monitoring type count", expected_count))
   end
 
-  def verify_patients_under_tab(jurisdiction, verify_scope, tab, patients)
+  def verify_patients_under_tab(jurisdiction, verify_scope, workflow, tab, patients)
     @@system_test_utils.go_to_tab(tab)
     assert_equal(patients.count, patient_count_under_tab(tab), @@system_test_utils.get_err_msg('dashboard', "#{tab} tab count", patients.count))
     patients.each do |patient|
-      verify_patient_under_tab(jurisdiction, verify_scope, tab, patient)
+      verify_patient_under_tab(jurisdiction, verify_scope, workflow, tab, patient)
     end
   end
 
-  def verify_patient_under_tab(jurisdiction, verify_scope, tab, patient)
+  def verify_patient_under_tab(jurisdiction, verify_scope, workflow, tab, patient)
     # view patient without any filters
     fill_in 'search', with: patient.last_name if patient_count_under_tab(tab) > find_field('entries')['value'].to_i
-    verify_patient_info_in_data_table(patient, tab)
+    verify_patient_info(patient, workflow, tab)
 
-    return if %w[transferred_in transferred_out].include?(tab)
+    return if %i[transferred_in transferred_out].include?(tab)
 
     # view patient with assigned jurisdiction filter
     Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
       fill_in 'jurisdictionPath', with: jur[:path]
-      verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path].include?(jur[:name])
+      verify_patient_info(patient, workflow, tab) if patient.jurisdiction[:path].include?(jur[:name])
 
       find_by_id('exactJurisdiction').click
-      if verify_scope
-        page.all('.dataTable tbody tr').each do |row|
-          assigned_jurisdiction_cell = row.all('td')[tab == 'transferred_out' ? 1 : 2]
+      sleep(0.1) # wait for data to load
+      if verify_scope && tab == :all
+        page.all('tbody tr').each do |row|
+          assigned_jurisdiction_cell = row.all('td')[1]
           assert_equal(jur[:name], assigned_jurisdiction_cell.text) unless assigned_jurisdiction_cell.nil?
         end
       end
-      verify_patient_info_in_data_table(patient, tab) if patient.jurisdiction[:path] == jur[:path]
+      verify_patient_info(patient, workflow, tab) if patient.jurisdiction[:path] == jur[:path]
       find_by_id('allJurisdictions').click
     end
     fill_in 'jurisdictionPath', with: jurisdiction[:path]
@@ -77,7 +78,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     else
       fill_in 'assignedUser', with: patient[:assigned_user]
     end
-    verify_patient_info_in_data_table(patient, tab)
+    verify_patient_info(patient, workflow, tab)
     find_by_id('allAssignedUsers').click
   end
 
@@ -85,26 +86,29 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     find("##{tab}_tab").first(:xpath, './/span').text.to_i
   end
 
-  def verify_patient_info_in_data_table(patient, tab)
-    verify_patient_field_in_data_table('first name', patient.first_name)
-    verify_patient_field_in_data_table('last name', patient.last_name)
-    verify_patient_field_in_data_table('state/local id', patient.user_defined_id_statelocal)
-    verify_patient_field_in_data_table('sex', patient.sex)
-    verify_patient_field_in_data_table('date of birth', patient.date_of_birth)
-    verify_patient_field_in_data_table('monitoring plan', patient.monitoring_plan)
-    if tab == 'transferred_in'
-      from_jurisdiction = Transfer.where(patient_id: patient.id, to_jurisdiction: patient.jurisdiction.id).order(created_at: :desc).first.from_jurisdiction
-      verify_patient_field_in_data_table('from jurisdiction', from_jurisdiction[:path])
-    elsif tab == 'transferred_out'
-      verify_patient_field_in_data_table('to jurisdiction', patient.jurisdiction[:path])
-    else
-      verify_patient_field_in_data_table('assigned jurisdiction', patient.jurisdiction[:name])
-      verify_patient_field_in_data_table('assigned user', patient.assigned_user)
-    end
+  def verify_patient_info(patient, workflow, tab)
+    verify_patient_field('name', patient.displayed_name)
+    verify_patient_field('assigned jurisdiction', patient.jurisdiction[:name]) unless %i[transferred_in transferred_out].include?(tab)
+    verify_patient_field('from jurisdiction', Jurisdiction.find(patient[:transferred_from]))[:path] if tab == :transferred_in && patient[:transferred_from]
+    verify_patient_field('to jurisdiction', patient.jurisdiction[:path]) if tab == :transferred_out
+    verify_patient_field('assigned user', patient[:assigned_user]) unless %i[transferred_in transferred_out].include?(tab)
+    verify_patient_field('state/local id', patient[:user_defined_id_statelocal])
+    verify_patient_field('sex', patient[:sex])
+    verify_patient_field('date of birth', patient[:date_of_birth])
+    verify_patient_field('end of monitoring', patient.end_of_monitoring) unless workflow == :isolation || tab == :closed
+    verify_patient_field('risk level', patient[:exposure_risk_assessment]) unless workflow == :isolation || tab == :closed
+    verify_patient_field('monitoring plan', patient[:monitoring_plan]) unless %i[closed pui].include?(tab)
+    verify_patient_field('public health action', patient[:public_health_action]) if tab == :pui
+    # verify_patient_field('expected purge date', patient.expected_purge_date) if tab == :closed # local timezone
+    verify_patient_field('reason for closure', patient[:monitoring_reason]) if tab == :closed
+    # verify_patient_field('closed at', patient[:closed_at]) if tab == :closed # local timezone
+    # verify_patient_field('transferred at', patient[:latest_transfer_at]) if %i[transferred_in transferred_out].include?(tab) # local timezone
+    # verify_patient_field('latest report', patient[:latest_assessment_at]) unless %i[transferred_in transferred_out].include?(tab) # local timezone
+    verify_patient_field('status', patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '')) if tab == :all
   end
 
-  def verify_patient_field_in_data_table(field, value)
-    assert page.has_content?(value), @@system_test_utils.get_err_msg('Patient info', field, value) unless value.nil?
+  def verify_patient_field(field, value)
+    assert page.find('tbody').has_content?(value), @@system_test_utils.get_err_msg('Patient info', field, value) unless value.nil?
   end
 
   def verify_monitoree_under_tab(tab, monitoree_label)

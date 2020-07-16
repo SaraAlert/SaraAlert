@@ -170,7 +170,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   end
 
   def download_file(current_user, export_type)
-    @@system_test_utils.wait_for_export_delay
+    sleep(0.5) # wait for export and download to complete
     download = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).first
     visit "/export/download/#{download.lookup}"
     download.filename

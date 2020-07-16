@@ -97,7 +97,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
-    @@system_test_utils.wait_for_db_write_delay
+    sleep(2) # wait for db write
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
@@ -134,7 +134,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
-    @@system_test_utils.wait_for_db_write_delay
+    sleep(2) # wait for db write
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)

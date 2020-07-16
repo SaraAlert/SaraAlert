@@ -438,6 +438,11 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     responder_id == id
   end
 
+  # Patient name to be displayed in linelist
+  def displayed_name
+    first_name.present? || last_name.present? ? "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}" : 'NAME NOT PROVIDED'
+  end
+
   # Allow information on the monitoree's jurisdiction to be displayed
   def jurisdiction_path
     jurisdiction&.path&.map(&:name)
@@ -448,6 +453,11 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
     return 'Continuous Exposure' if continuous_exposure
     return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
     return (created_at + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
+  end
+
+  # Date when patient is expected to be purged
+  def expected_purge_date
+    (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822
   end
 
   # Send initial enrollment notification via patient's preferred contact method

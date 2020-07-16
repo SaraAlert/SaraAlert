@@ -148,7 +148,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
         else
           card.find('button', text: 'Accept').click
         end
-        @@system_test_utils.wait_for_accept_reject
+        sleep(0.01) # wait for UI to update after accepting or rejecting monitoree
       end
     end
   end
