@@ -91,19 +91,47 @@ class Identification extends React.Component {
       let phone = languageJson.supported.phone;
 
       if (!sms && !email && !phone) {
-        return <i>* {languageJson.name} is not currently supported by SaraAlert.</i>;
+        return (
+          <i>
+            <b>* Warning:</b> {languageJson.name} is not currently supported by SaraAlert.
+          </i>
+        );
       } else if (!sms && !email && phone) {
-        return <i>* {languageJson.name} for e-mailed web link and SMS texted Weblink is not currently supported by SaraAlert.</i>;
+        return (
+          <i>
+            <b>* Warning:</b> {languageJson.name} for e-mailed web link and SMS texted Weblink is not currently supported by SaraAlert.
+          </i>
+        );
       } else if (!sms && email && !phone) {
-        return <i>* {languageJson.name} for telephone call and SMS texted Weblink is not currently supported by SaraAlert.</i>;
+        return (
+          <i>
+            <b>* Warning:</b> {languageJson.name} for telephone call and SMS texted Weblink is not currently supported by SaraAlert.
+          </i>
+        );
       } else if (!sms && email && phone) {
-        return <i>* {languageJson.name} for SMS texted Weblink is not currently supported by SaraAlert.</i>;
+        return (
+          <i>
+            <b>* Warning:</b> {languageJson.name} for SMS texted Weblink is not currently supported by SaraAlert.
+          </i>
+        );
       } else if (sms && !email && !phone) {
-        return <i>* {languageJson.name} for telephone call and e-mailed web link is not currently supported by SaraAlert.</i>;
+        return (
+          <i>
+            <b>* Warning:</b> {languageJson.name} for telephone call and e-mailed web link is not currently supported by SaraAlert.
+          </i>
+        );
       } else if (sms && !email && phone) {
-        return <i>* {languageJson.name} for e-mailed web link is not currently supported by SaraAlert.</i>;
+        return (
+          <i>
+            <b>* Warning:</b> {languageJson.name} for e-mailed web link is not currently supported by SaraAlert.
+          </i>
+        );
       } else if (sms && email && !phone) {
-        return <i>* {languageJson.name} for telephone call is not currently supported by SaraAlert.</i>;
+        return (
+          <i>
+            <b>* Warning:</b> {languageJson.name} for telephone call is not currently supported by SaraAlert.
+          </i>
+        );
       }
     }
   }
@@ -264,7 +292,7 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row className="pb-3 pt-1 ml-0">
                 Primary Language is used to determine the translations for what the monitoree sees/hears. Languages that are not fully supported are indicated
-                by a * in the below list. When a primary contact method is selected for a language that is not supported, Sara Alert will default to English.
+                by a (*) in the below list. When a primary contact method is selected for a language that is not supported, Sara Alert will default to English.
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="primary_language">
