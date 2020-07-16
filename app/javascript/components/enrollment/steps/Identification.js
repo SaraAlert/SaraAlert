@@ -104,53 +104,44 @@ class Identification extends React.Component {
     return this.getLanguageOptions(languageType).filter(lang => lang.value === language);
   }
 
-  renderLanguageSupportMessage(selectedLanguage) {
+  renderLanguageSupportMessage(selectedLanguage, languageType) {
     if (selectedLanguage) {
       let languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
       let sms = languageJson.supported.sms;
       let email = languageJson.supported.email;
       let phone = languageJson.supported.phone;
+      let fullySupported = sms && email && phone;
 
-      if (!sms && !email && !phone) {
+      if (!fullySupported) {
+        let message = languageJson.name;
+        if (!sms && !email && !phone) {
+          message += ' is not currently supported by Sara Alert.';
+          if (languageType === 'primary') message += ' Any messages sent to this monitoree will be in English.';
+        } else if (!sms && !email && phone) {
+          message += ' is not currently supported for email or SMS texted weblink.';
+          if (languageType === 'primary')
+            message += ' If email or SMS texted weblink is selected as the preferred reporting method, the web link will be in English.';
+        } else if (!sms && email && !phone) {
+          message += ' is not currently supported for telephone call and SMS texted weblink.';
+          if (languageType === 'primary')
+            message += ' If telephone call or SMS texted weblink is selected as the preferred reporting method, the contact will be in English.';
+        } else if (!sms && email && phone) {
+          message += ' is not currently supported for SMS texted weblink.';
+          if (languageType === 'primary') message += ' If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
+        } else if (sms && !email && !phone) {
+          message += ' is not currently supported for telephone call and e-mailed weblink.';
+          if (languageType === 'primary')
+            message += ' If telephone call or e-mailed weblink is selected as the preferred reporting method, the contact will be in English.';
+        } else if (sms && !email && phone) {
+          message += ' is not currently supported for e-mailed weblink.';
+          if (languageType === 'primary') message += ' If e-mailed weblink is selected as the preferred reporting method, the email will be in English.';
+        } else if (sms && email && !phone) {
+          message += ' is not currently supported for telephone calls.';
+          if (languageType === 'primary') message += ' If telelphone call is selected as the preferred reporting method, the call will be in English.';
+        }
         return (
           <i>
-            <b>* Warning:</b> {languageJson.name} is not currently supported by SaraAlert.
-          </i>
-        );
-      } else if (!sms && !email && phone) {
-        return (
-          <i>
-            <b>* Warning:</b> {languageJson.name} for e-mailed web link and SMS texted Weblink is not currently supported by SaraAlert.
-          </i>
-        );
-      } else if (!sms && email && !phone) {
-        return (
-          <i>
-            <b>* Warning:</b> {languageJson.name} for telephone call and SMS texted Weblink is not currently supported by SaraAlert.
-          </i>
-        );
-      } else if (!sms && email && phone) {
-        return (
-          <i>
-            <b>* Warning:</b> {languageJson.name} for SMS texted Weblink is not currently supported by SaraAlert.
-          </i>
-        );
-      } else if (sms && !email && !phone) {
-        return (
-          <i>
-            <b>* Warning:</b> {languageJson.name} for telephone call and e-mailed web link is not currently supported by SaraAlert.
-          </i>
-        );
-      } else if (sms && !email && phone) {
-        return (
-          <i>
-            <b>* Warning:</b> {languageJson.name} for e-mailed web link is not currently supported by SaraAlert.
-          </i>
-        );
-      } else if (sms && email && !phone) {
-        return (
-          <i>
-            <b>* Warning:</b> {languageJson.name} for telephone call is not currently supported by SaraAlert.
+            <b>* Warning:</b> {message}
           </i>
         );
       }
@@ -311,10 +302,7 @@ class Identification extends React.Component {
               <Form.Row className="pt-3 ml-0">
                 <div className="nav-input-label">LANGUAGE</div>
               </Form.Row>
-              <Form.Row className="pb-3 pt-1 ml-0">
-                Primary Language is used to determine the translations for what the monitoree sees/hears. Languages that are not fully supported are indicated
-                by a (*) in the below list. When a primary contact method is selected for a language that is not supported, Sara Alert will default to English.
-              </Form.Row>
+              <Form.Row className="pb-3 pt-1 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="primary_language">
                   <Form.Label className="nav-input-label">PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}</Form.Label>
@@ -348,11 +336,11 @@ class Identification extends React.Component {
               </Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="secondary_language_support_message">
-                  {this.renderLanguageSupportMessage(this.state.current.patient.primary_language)}
+                  {this.renderLanguageSupportMessage(this.state.current.patient.primary_language, 'primary')}
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language_support_message">
-                  {this.renderLanguageSupportMessage(this.state.current.patient.secondary_language)}
+                  {this.renderLanguageSupportMessage(this.state.current.patient.secondary_language, 'secondary')}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">
