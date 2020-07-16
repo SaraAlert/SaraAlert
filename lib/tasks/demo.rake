@@ -219,10 +219,16 @@ namespace :demo do
 
       # Create histories
       demo_populate_histories(histories)
-
-      # Cache analytics
-      demo_cache_analytics(today, cache_analytics)
     end
+
+    # Needs to be in a separate transaction
+    ActiveRecord::Base.transaction do
+      # Update linelist fields
+      demo_populate_linelists
+    end
+
+    # Cache analytics
+    demo_cache_analytics(today, cache_analytics)
   end
 
   def demo_populate_patients(today, num_patients_today, days_ago, jurisdictions, assigned_users, counties)
@@ -661,6 +667,73 @@ namespace :demo do
     printf("Writing histories...")
     History.import! histories
     printf(" done.\n")
+  end
+
+  def demo_populate_linelists
+    # populate :latest_assessment_at
+    ActiveRecord::Base.connection.execute <<-SQL.squish
+      UPDATE patients
+      INNER JOIN (
+        SELECT patient_id, MAX(created_at) AS latest_assessment_at
+        FROM assessments
+        GROUP BY patient_id
+      ) t ON patients.id = t.patient_id
+      SET patients.latest_assessment_at = t.latest_assessment_at
+    SQL
+
+    # populate :latest_fever_or_fever_reducer_at
+    ActiveRecord::Base.connection.execute <<-SQL.squish
+      UPDATE patients
+      INNER JOIN (
+        SELECT assessments.patient_id, MAX(assessments.created_at) AS latest_fever_or_fever_reducer_at
+        FROM assessments
+        INNER JOIN conditions ON assessments.id = conditions.assessment_id
+        INNER JOIN symptoms ON conditions.id = symptoms.condition_id
+        WHERE (symptoms.name = 'fever' OR symptoms.name = 'used-a-fever-reducer') AND symptoms.bool_value = true
+        GROUP BY assessments.patient_id
+      ) t ON patients.id = t.patient_id
+      SET patients.latest_fever_or_fever_reducer_at = t.latest_fever_or_fever_reducer_at
+    SQL
+
+    # populate :latest_positive_lab_at
+    ActiveRecord::Base.connection.execute <<-SQL.squish
+      UPDATE patients
+      INNER JOIN (
+        SELECT patient_id, MAX(specimen_collection) AS latest_positive_lab_at
+        FROM laboratories
+        WHERE result = 'positive'
+        GROUP BY patient_id
+      ) t ON patients.id = t.patient_id
+      SET patients.latest_positive_lab_at = t.latest_positive_lab_at
+    SQL
+
+    # populate :negative_lab_count
+    ActiveRecord::Base.connection.execute <<-SQL.squish
+      UPDATE patients
+      INNER JOIN (
+        SELECT patient_id, COUNT(*) AS negative_lab_count
+        FROM laboratories
+        WHERE result = 'negative'
+        GROUP BY patient_id
+      ) t ON patients.id = t.patient_id
+      SET patients.negative_lab_count = t.negative_lab_count
+    SQL
+
+    # populate :latest_transfer_at and :latest_transfer_from
+    ActiveRecord::Base.connection.execute <<-SQL.squish
+      UPDATE patients
+      INNER JOIN (
+        SELECT transfers.patient_id, transfers.from_jurisdiction_id AS transferred_from, latest_transfers.transferred_at
+        FROM transfers
+        INNER JOIN (
+          SELECT patient_id, MAX(created_at) AS transferred_at
+          FROM transfers
+          GROUP BY patient_id
+        ) latest_transfers ON transfers.patient_id = latest_transfers.patient_id
+          AND transfers.created_at = latest_transfers.transferred_at
+      ) t ON patients.id = t.patient_id
+      SET patients.latest_transfer_from = t.transferred_from, patients.latest_transfer_at = t.transferred_at
+    SQL
   end
 
   def demo_cache_analytics(today, cache_analytics)
