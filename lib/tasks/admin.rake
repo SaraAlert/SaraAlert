@@ -108,7 +108,10 @@ namespace :admin do
     # Parse and add symptoms list to jurisdiction if included
     jur_symps = nil
     if jur_values != nil
-      jur_symps = jur_values['symptoms']
+      jur_symps = jur_values['symptoms'] 
+      jurisdiction.email = jur_values['email'] || ''
+      jurisdiction.phone = jur_values['phone'] || ''
+      jurisdiction.webpage = jur_values['webpage'] || ''
     end
     threshold_condition_symptoms = []
     if jur_symps != nil
@@ -120,6 +123,7 @@ namespace :admin do
 
     threshold_condition = ThresholdCondition.create(symptoms: threshold_condition_symptoms)
     jurisdiction.threshold_conditions.push(threshold_condition)
+  
     jurisdiction.save
 
 

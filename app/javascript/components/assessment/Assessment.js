@@ -161,6 +161,7 @@ class Assessment extends React.Component {
               currentState={this.state.assessmentState}
               translations={this.props.translations}
               lang={this.props.lang || 'en'}
+              contact_info={this.props.contact_info || {}}
             />
           </Carousel.Item>
         </Carousel>
@@ -171,6 +172,7 @@ class Assessment extends React.Component {
 
 Assessment.propTypes = {
   translations: PropTypes.object,
+  contact_info: PropTypes.object,
   lang: PropTypes.string,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
