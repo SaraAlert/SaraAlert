@@ -47,6 +47,7 @@ class Exposure extends React.Component {
               scope: 'exact',
             },
           })
+          .catch(() => {})
           .then(response => {
             if (response?.data?.assignedUsers) {
               this.setState({ assignedUsers: response.data.assignedUsers });

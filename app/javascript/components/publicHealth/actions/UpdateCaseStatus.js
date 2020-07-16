@@ -165,7 +165,7 @@ class UpdateCaseStatus extends React.Component {
                 <Form.Check
                   type="switch"
                   id="apply_to_group"
-                  label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
+                  label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
                   checked={this.state.apply_to_group === true || false}
                   onChange={this.handleChange}
                 />

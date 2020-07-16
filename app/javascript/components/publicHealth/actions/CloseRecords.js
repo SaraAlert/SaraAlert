@@ -73,7 +73,7 @@ class CloseRecords extends React.Component {
             <span>
               You are about to change the Monitoring Status of the selected records from &quot;Actively Monitoring&quot; to &quot;Not Monitoring&quot;.
             </span>
-            {this.state.monitoring_reason === '' && <span> These records will be moved to the closed line list and the reason for closure will be blank</span>}
+            {this.state.monitoring_reason === '' && <span> These records will be moved to the closed line list and the reason for closure will be blank.</span>}
           </p>
           <Form.Group>
             <Form.Label>Please select reason for status change:</Form.Label>
@@ -94,7 +94,7 @@ class CloseRecords extends React.Component {
             <Form.Check
               type="switch"
               id="apply_to_group"
-              label="Apply this change to the entire household that these monitorees are responsible for, if it applies"
+              label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
               checked={this.state.apply_to_group === true || false}
               onChange={this.handleChange}
             />

@@ -180,39 +180,40 @@ class PublicHealthController < ApplicationController
     # Satisfy brakeman with additional sanitation logic
     dir = direction == 'asc' ? 'asc' : 'desc'
 
-    if order == 'name'
+    case order
+    when 'name'
       patients = patients.order(last_name: dir).order(first_name: dir)
-    elsif order == 'jurisdiction'
+    when 'jurisdiction'
       patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + dir)
-    elsif order == 'transferred_from'
+    when 'transferred_from'
       patients = patients.joins('INNER JOIN jurisdictions ON jurisdictions.id = patients.latest_transfer_from').order('jurisdictions.path ' + dir)
-    elsif order == 'transferred_to'
+    when 'transferred_to'
       patients = patients.includes(:jurisdiction).order('jurisdictions.path ' + dir)
-    elsif order == 'assigned_user'
+    when 'assigned_user'
       patients = patients.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + dir)
-    elsif order == 'state_local_id'
+    when 'state_local_id'
       patients = patients.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + dir)
-    elsif order == 'sex'
+    when 'sex'
       patients = patients.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + dir)
-    elsif order == 'dob'
+    when 'dob'
       patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir)
-    elsif order == 'end_of_monitoring'
+    when 'end_of_monitoring'
       patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
-    elsif order == 'risk_level'
+    when 'risk_level'
       patients = patients.order_by_risk(dir == 'asc')
-    elsif order == 'monitoring_plan'
+    when 'monitoring_plan'
       patients = patients.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + dir)
-    elsif order == 'public_health_action'
+    when 'public_health_action'
       patients = patients.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir)
-    elsif order == 'expected_purge_date'
+    when 'expected_purge_date'
       patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
-    elsif order == 'reason_for_closure'
+    when 'reason_for_closure'
       patients = patients.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + dir)
-    elsif order == 'closed_at'
+    when 'closed_at'
       patients = patients.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + dir)
-    elsif order == 'transferred_at'
+    when 'transferred_at'
       patients = patients.order('CASE WHEN latest_transfer_at IS NULL THEN 1 ELSE 0 END, latest_transfer_at ' + dir)
-    elsif order == 'latest_report'
+    when 'latest_report'
       patients = patients.order('CASE WHEN latest_assessment_at IS NULL THEN 1 ELSE 0 END, latest_assessment_at ' + dir)
     end
 
