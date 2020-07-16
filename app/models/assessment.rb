@@ -17,20 +17,22 @@ class Assessment < ApplicationRecord
   before_destroy :update_patient_linelist_before_destroy
 
   def update_patient_linelist_after_save
-    patient.symptom_onset = patient.assessments.where(symptomatic: true).minimum(:created_at)
-    patient.latest_assessment_at = patient.assessments.maximum(:created_at)
-    patient.save
+    patient.update(
+      symptom_onset: patient.assessments.where(symptomatic: true).minimum(:created_at),
+      latest_assessment_at: patient.assessments.maximum(:created_at)
+    )
   end
 
   def update_patient_linelist_before_destroy
-    patient.symptom_onset = patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at)
-    patient.latest_assessment_at = patient.assessments.where.not(id: id).maximum(:created_at)
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
-    patient.latest_fever_or_fever_reducer_at = patient.assessments
-                                                      .where.not(id: id)
-                                                      .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
-                                                      .maximum(:created_at)
-    patient.save
+    patient.update(
+      symptom_onset: patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at),
+      latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
+      latest_fever_or_fever_reducer_at: patient.assessments
+                                               .where.not(id: id)
+                                               .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
+                                               .maximum(:created_at)
+    )
   end
 
   def symptomatic?

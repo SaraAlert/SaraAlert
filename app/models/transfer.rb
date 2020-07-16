@@ -13,17 +13,19 @@ class Transfer < ApplicationRecord
   def update_patient_linelist_after_save
     latest_transfer_at = patient.transfers.maximum(:created_at)
     latest_transfer = patient.transfers.where(created_at: latest_transfer_at).first
-    patient.latest_transfer_at = latest_transfer&.created_at
-    patient.latest_transfer_from = latest_transfer&.from_jurisdiction_id
-    patient.save
+    patient.update(
+      latest_transfer_at: latest_transfer&.created_at,
+      latest_transfer_from: latest_transfer&.from_jurisdiction_id
+    )
   end
 
   def update_patient_linelist_before_destroy
     latest_transfer_at = patient.transfers.where.not(id: id).maximum(:created_at)
     latest_transfer = patient.transfers.where.not(id: id).where(created_at: latest_transfer_at).first
-    patient.latest_transfer_at = latest_transfer&.created_at
-    patient.latest_transfer_from = latest_transfer&.from_jurisdiction_id
-    patient.save
+    patient.update(
+      latest_transfer_at: latest_transfer&.created_at,
+      latest_transfer_from: latest_transfer&.from_jurisdiction_id
+    )
   end
 
   def from_path

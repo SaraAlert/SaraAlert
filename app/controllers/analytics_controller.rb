@@ -67,7 +67,7 @@ class AnalyticsController < ApplicationController
     # Get analytics from most recent cache analytics job
     most_recent_analytics = current_user.jurisdiction.analytics.last
 
-    return nil if most_recent_analytics.nil?
+    return {} if most_recent_analytics.nil?
 
     {
       last_updated_at: most_recent_analytics.updated_at,

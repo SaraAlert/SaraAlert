@@ -20,7 +20,7 @@ class MonitorAnalytics extends React.Component {
     this.state = {
       checked: false,
       viewTotal: false,
-      hasErrors: !this.props.stats,
+      hasErrors: !this.props.stats || Object.entries(this.props.stats).length === 0,
     };
   }
 

@@ -48,7 +48,7 @@ class PatientsTable extends React.Component {
         jurisdiction: props.jurisdiction.id,
         scope: 'all',
         user: 'all',
-        entries: 15,
+        entries: 25,
         page: 0,
         search: '',
         order: '',
@@ -126,6 +126,7 @@ class PatientsTable extends React.Component {
     if (scope !== this.state.query.scope) {
       const query = this.state.query;
       this.updateTable({ ...query, scope, page: 0 });
+      this.updateAssignedUsers(this.props.jurisdiction.id, scope);
     }
   }
 

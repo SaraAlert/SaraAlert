@@ -18,14 +18,12 @@ class PublicHealthController < ApplicationController
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction)
-
     # Validate workflow param
-    workflow = permitted_params[:workflow].to_sym
+    workflow = params.require(:workflow).to_sym
     redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
 
     # Validate tab param
-    tab = permitted_params[:tab].to_sym
+    tab = params.require(:tab).to_sym
     if workflow == :exposure
       redirect_to(root_url) && return unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     else
@@ -33,28 +31,28 @@ class PublicHealthController < ApplicationController
     end
 
     # Validate jurisdiction param
-    jurisdiction = permitted_params[:jurisdiction]
+    jurisdiction = params.permit(:jurisdiction)[:jurisdiction]
     redirect_to(root_url) && return unless jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(jurisdiction.to_i)
 
     # Validate scope param
-    scope = permitted_params[:scope].to_sym
+    scope = params.permit(:scope)[:scope]&.to_sym
     redirect_to(root_url) && return unless %i[all exact].include?(scope)
 
     # Validate user param
-    user = permitted_params[:user]
+    user = params.permit(:user)[:user]
     redirect_to(root_url) && return unless %w[all none].include?(user) || user.to_i.between?(1, 9999)
 
     # Validate search param
-    search = permitted_params[:search]
+    search = params.permit(:search)[:search]
 
     # Validate pagination params
-    entries = permitted_params[:entries]&.to_i || 15
-    page = permitted_params[:page]&.to_i || 0
+    entries = params.permit(:entries)[:entries]&.to_i || 15
+    page = params.permit(:page)[:page]&.to_i || 0
     redirect_to(root_url) && return unless entries >= 0 && page >= 0
 
     # Validate sort params
-    order = permitted_params[:order]
-    direction = permitted_params[:direction]
+    order = params.permit(:order)[:order]
+    direction = params.permit(:direction)[:direction]
     redirect_to(root_url) && return unless ['', 'asc', 'desc'].include?(direction)
 
     # Get patients by workflow and tab
@@ -70,7 +68,7 @@ class PublicHealthController < ApplicationController
     patients = patients.where(assigned_user: user == 'none' ? nil : user.to_i) unless user == 'all'
 
     # Filter by search text
-    patients = search(patients, search)
+    patients = filter(patients, search)
 
     # Sort
     patients = sort(patients, order, direction)
@@ -98,14 +96,12 @@ class PublicHealthController < ApplicationController
     # Restrict access to public health only
     redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
 
-    permitted_params = params.permit(:workflow, :tab)
-
     # Validate workflow param
-    workflow = permitted_params[:workflow].to_sym
+    workflow = params.require(:workflow).to_sym
     redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
 
     # Validate tab param
-    tab = permitted_params[:tab].to_sym
+    tab = params.require(:tab).to_sym
     if workflow == :exposure
       redirect_to(root_url) && return unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     else
@@ -162,7 +158,7 @@ class PublicHealthController < ApplicationController
     patients
   end
 
-  def search(patients, search)
+  def filter(patients, search)
     return patients if search.nil? || search.blank?
 
     patients.where('first_name like ?', "#{search}%").or(

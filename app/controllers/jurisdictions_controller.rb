@@ -15,23 +15,21 @@ class JurisdictionsController < ApplicationController
   def assigned_users
     render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient? || current_user.can_view_public_health_dashboard?
 
-    permitted_params = params.permit(:jurisdiction_id, :scope, :workflow, :tab)
-
     # Validate jurisdiction_id param
-    jurisdiction_id = permitted_params[:jurisdiction_id].to_i
+    jurisdiction_id = params.require(:jurisdiction_id).to_i
     render status: 400 unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
-    jurisdiction = Jurisdiction.find(jurisdiction_id)
+    jurisdiction = current_user.jurisdiction.subtree.find(jurisdiction_id)
 
     # Validate scope param
-    scope = permitted_params[:scope].to_sym
+    scope = params.require(:scope).to_sym
     render status: 400 unless %i[all exact].include?(scope)
 
     # Validate workflow param
-    workflow = permitted_params[:workflow].to_sym unless permitted_params[:workflow].nil?
+    workflow = params.permit(:workflow)[:workflow].to_sym unless params.permit(:workflow)[:workflow].nil?
     render status: 400 if workflow && !%i[exposure isolation].include?(workflow)
 
     # Validate tab param
-    tab = permitted_params[:tab].to_sym unless permitted_params[:tab].nil?
+    tab = params.permit(:tab)[:tab].to_sym unless params.permit(:tab)[:tab].nil?
     render status: 400 if tab && workflow.nil?
     render status: 400 if workflow == 'exposure' && !%i[all symptomatic non_reporting asymptomatic pui closed transferred_in].include?(tab)
     render status: 400 if workflow == 'isolation' && !%i[all requiring_review non_reporting reporting closed transferred_in].include?(tab)
