@@ -14,6 +14,20 @@ const TOOLTIP_TEXT = {
 
   lastDateOfExposure: <div> Used by the system to automatically calculate the monitoring period. </div>,
 
+  primaryLanguage: (
+    <div>
+      <i>Primary Language</i> is used to determine the translations for what the monitoree sees/hears. If a language is not fully supported, a warning to users
+      will appear.
+    </div>
+  ),
+
+  secondaryLanguage: (
+    <div>
+      <i>Secondary Language</i> is not used to determine which language the system sends messages to the monitoree in. Information in this field can be used to
+      inform interpretation needs.
+    </div>
+  ),
+
   // MONITORING ACTIONS
   monitoringStatus: (
     <div>

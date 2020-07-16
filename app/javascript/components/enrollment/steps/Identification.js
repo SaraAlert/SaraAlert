@@ -4,6 +4,7 @@ import moment from 'moment-timezone';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
 import Select from 'react-select';
+import InfoTooltip from '../../util/InfoTooltip';
 import supportedLanguages from '../../../json/supportedLanguages.json';
 
 class Identification extends React.Component {
@@ -305,7 +306,10 @@ class Identification extends React.Component {
               <Form.Row className="pb-3 pt-1 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="primary_language">
-                  <Form.Label className="nav-input-label">PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}
+                    <InfoTooltip tooltipTextKey="primaryLanguage" location="right"></InfoTooltip>
+                  </Form.Label>
                   <Select
                     name="primary_language"
                     value={this.getLanguageValue(this.state.current.patient.primary_language, 'primary_language')}
@@ -320,7 +324,10 @@ class Identification extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language">
-                  <Form.Label className="nav-input-label">SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="nav-input-label">
+                    SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}
+                    <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
+                  </Form.Label>
                   <Select
                     name="secondary_language"
                     value={this.getLanguageValue(this.state.current.patient.secondary_language, 'secondary_language')}
