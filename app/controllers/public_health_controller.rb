@@ -3,21 +3,9 @@
 # PublicHealthController: handles all epi actions
 class PublicHealthController < ApplicationController
   before_action :authenticate_user!
-
-  def exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-  end
-
-  def isolation
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-  end
+  before_action :authenticate_user_role
 
   def patients
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
     # Validate workflow param
     workflow = params.require(:workflow).to_sym
     redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
@@ -82,9 +70,6 @@ class PublicHealthController < ApplicationController
 
   # Get patient counts by workflow
   def workflow_counts
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
     render json: {
       exposure: current_user.viewable_patients.where(isolation: false).where(purged: false).size,
       isolation: current_user.viewable_patients.where(isolation: true).where(purged: false).size
@@ -93,9 +78,6 @@ class PublicHealthController < ApplicationController
 
   # Get counts for patients under the given workflow and tab
   def patient_counts
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
     # Validate workflow param
     workflow = params.require(:workflow).to_sym
     redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
@@ -132,28 +114,25 @@ class PublicHealthController < ApplicationController
   protected
 
   def patients_by_type(workflow, tab)
-    if tab == :transferred_in
-      patients = current_user.jurisdiction.transferred_in_patients.where(isolation: workflow == :isolation)
-    elsif tab == :transferred_out
-      patients = current_user.jurisdiction.transferred_out_patients.where(isolation: workflow == :isolation)
+    return current_user.jurisdiction.transferred_in_patients.where(isolation: workflow == :isolation) if tab == :transferred_in
+    return current_user.jurisdiction.transferred_out_patients.where(isolation: workflow == :isolation) if tab == :transferred_out
+
+    patients = current_user.viewable_patients
+
+    if workflow == :exposure
+      patients = patients.where(isolation: false, purged: false)
+      return patients.exposure_symptomatic if tab == :symptomatic
+      return patients.exposure_non_reporting if tab == :non_reporting
+      return patients.exposure_asymptomatic if tab == :asymptomatic
+      return patients.exposure_under_investigation if tab == :pui
     else
-      patients = current_user.viewable_patients
-
-      if workflow == :exposure
-        patients = patients.where(isolation: false, purged: false)
-        patients = patients.exposure_symptomatic if tab == :symptomatic
-        patients = patients.exposure_non_reporting if tab == :non_reporting
-        patients = patients.exposure_asymptomatic if tab == :asymptomatic
-        patients = patients.exposure_under_investigation if tab == :pui
-      else
-        patients = patients.where(isolation: true, purged: false)
-        patients = patients.isolation_requiring_review if tab == :requiring_review
-        patients = patients.isolation_non_reporting if tab == :non_reporting
-        patients = patients.isolation_reporting if tab == :reporting
-      end
-
-      patients = patients.monitoring_closed_without_purged if tab == :closed
+      patients = patients.where(isolation: true, purged: false)
+      return patients.isolation_requiring_review if tab == :requiring_review
+      return patients.isolation_non_reporting if tab == :non_reporting
+      return patients.isolation_reporting if tab == :reporting
     end
+
+    return patients.monitoring_closed_without_purged if tab == :closed
 
     patients
   end
@@ -291,5 +270,12 @@ class PublicHealthController < ApplicationController
     return %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_out
 
     %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report]
+  end
+
+  private
+
+  def authenticate_user_role
+    # Restrict access to public health only
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
   end
 end

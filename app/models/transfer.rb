@@ -10,24 +10,6 @@ class Transfer < ApplicationRecord
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
 
-  def update_patient_linelist_after_save
-    latest_transfer_at = patient.transfers.maximum(:created_at)
-    latest_transfer = patient.transfers.where(created_at: latest_transfer_at).first
-    patient.update(
-      latest_transfer_at: latest_transfer&.created_at,
-      latest_transfer_from: latest_transfer&.from_jurisdiction_id
-    )
-  end
-
-  def update_patient_linelist_before_destroy
-    latest_transfer_at = patient.transfers.where.not(id: id).maximum(:created_at)
-    latest_transfer = patient.transfers.where.not(id: id).where(created_at: latest_transfer_at).first
-    patient.update(
-      latest_transfer_at: latest_transfer&.created_at,
-      latest_transfer_from: latest_transfer&.from_jurisdiction_id
-    )
-  end
-
   def from_path
     return 'Unknown Jurisdiction' if from_jurisdiction.blank?
 
@@ -63,4 +45,24 @@ class Transfer < ApplicationRecord
       none
     end
   }
+
+  private
+
+  def update_patient_linelist_after_save
+    latest_transfer_at = patient.transfers.maximum(:created_at)
+    latest_transfer = patient.transfers.where(created_at: latest_transfer_at).first
+    patient.update(
+      latest_transfer_at: latest_transfer&.created_at,
+      latest_transfer_from: latest_transfer&.from_jurisdiction_id
+    )
+  end
+
+  def update_patient_linelist_before_destroy
+    latest_transfer_at = patient.transfers.where.not(id: id).maximum(:created_at)
+    latest_transfer = patient.transfers.where.not(id: id).where(created_at: latest_transfer_at).first
+    patient.update(
+      latest_transfer_at: latest_transfer&.created_at,
+      latest_transfer_from: latest_transfer&.from_jurisdiction_id
+    )
+  end
 end

@@ -20,30 +20,6 @@ class Symptom < ApplicationRecord
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
 
-  def update_patient_linelist_after_save
-    patient = Patient.joins(assessments: :reported_condition).where('conditions.id = ?', condition_id).first
-    return unless patient
-
-    patient.update(
-      latest_fever_or_fever_reducer_at: patient.assessments
-                                               .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
-                                               .maximum(:created_at)
-    )
-  end
-
-  def update_patient_linelist_before_destroy
-    patient = Patient.joins(assessments: :reported_condition).where('conditions.id = ?', condition_id).first
-    return unless patient
-
-    patient.update(
-      latest_fever_or_fever_reducer_at: Assessment.joins(:reported_condition)
-                                                  .where(id: patient.assessments)
-                                                  .where.not('conditions.id = ?', condition_id)
-                                                  .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
-                                                  .maximum(:created_at)
-    )
-  end
-
   scope :fever_or_fever_reducer, lambda {
     where(['(name = ? OR name = ?) AND bool_value = ?', 'fever', 'used-a-fever-reducer', true])
   }
@@ -74,5 +50,31 @@ class Symptom < ApplicationRecord
     elsif type == 'FloatSymptom'
       float_value
     end
+  end
+
+  private
+
+  def update_patient_linelist_after_save
+    patient = Patient.joins(assessments: :reported_condition).where('conditions.id = ?', condition_id).first
+    return unless patient
+
+    patient.update(
+      latest_fever_or_fever_reducer_at: patient.assessments
+                                              .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
+                                              .maximum(:created_at)
+    )
+  end
+
+  def update_patient_linelist_before_destroy
+    patient = Patient.joins(assessments: :reported_condition).where('conditions.id = ?', condition_id).first
+    return unless patient
+
+    patient.update(
+      latest_fever_or_fever_reducer_at: Assessment.joins(:reported_condition)
+                                                  .where(id: patient.assessments)
+                                                  .where.not('conditions.id = ?', condition_id)
+                                                  .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
+                                                  .maximum(:created_at)
+    )
   end
 end

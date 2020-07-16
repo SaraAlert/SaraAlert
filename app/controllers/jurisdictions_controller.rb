@@ -3,18 +3,15 @@
 # JurisdictionsController: handles all subject actions
 class JurisdictionsController < ApplicationController
   before_action :authenticate_user!
+  before_action :authenticate_user_role
 
   # Get jurisdiction ids and paths of viewable jurisdictions
   def jurisdiction_paths
-    render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient? || current_user.can_view_public_health_dashboard?
-
     render json: { jurisdictionPaths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }] }
   end
 
   # Get list of assigned users unique to jurisdiction
-  def assigned_users
-    render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient? || current_user.can_view_public_health_dashboard?
-
+  def assigned_users_for_viewable_patients
     # Validate jurisdiction_id param
     jurisdiction_id = params.require(:jurisdiction_id).to_i
     render status: 400 unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
@@ -60,5 +57,11 @@ class JurisdictionsController < ApplicationController
     end
 
     render json: { assignedUsers: patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort }
+  end
+
+  private
+
+  def authenticate_user_role
+    render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient? || current_user.can_view_public_health_dashboard?
   end
 end

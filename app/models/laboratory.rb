@@ -9,20 +9,6 @@ class Laboratory < ApplicationRecord
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
 
-  def update_patient_linelist_after_save
-    patient.update(
-      latest_positive_lab_at: patient.laboratories.where(result: 'positive').maximum(:specimen_collection),
-      negative_lab_count: patient.laboratories.where(result: 'negative').size
-    )
-  end
-
-  def update_patient_linelist_before_destroy
-    patient.update(
-      latest_positive_lab_at: patient.laboratories.where.not(id: id).where(result: 'positive').maximum(:specimen_collection),
-      negative_lab_count: patient.laboratories.where.not(id: id).where(result: 'negative').size
-    )
-  end
-
   # Returns a representative FHIR::Observation for an instance of a Sara Alert Laboratory.
   # https://www.hl7.org/fhir/observation.html
   def as_fhir
@@ -47,5 +33,21 @@ class Laboratory < ApplicationRecord
       lab_created_at: created_at || '',
       lab_updated_at: updated_at || ''
     }
+  end
+
+  private
+
+  def update_patient_linelist_after_save
+    patient.update(
+      latest_positive_lab_at: patient.laboratories.where(result: 'positive').maximum(:specimen_collection),
+      negative_lab_count: patient.laboratories.where(result: 'negative').size
+    )
+  end
+
+  def update_patient_linelist_before_destroy
+    patient.update(
+      latest_positive_lab_at: patient.laboratories.where.not(id: id).where(result: 'positive').maximum(:specimen_collection),
+      negative_lab_count: patient.laboratories.where.not(id: id).where(result: 'negative').size
+    )
   end
 end

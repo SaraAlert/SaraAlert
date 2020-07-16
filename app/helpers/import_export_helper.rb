@@ -308,9 +308,9 @@ module ImportExportHelper # rubocop:todo Metrics/ModuleLength
       linelists[patient.id][:status] = statuses[patient.id]&.gsub('exposure ', '')&.gsub('isolation ', '')
       next unless patients_transfers[patient.id]
 
-      linelists[patient.id][:transferred_at] = patients_transfers[patient.id][:transferred_at]
-      linelists[patient.id][:transferred_from] = patients_transfers[patient.id][:transferred_from]
-      linelists[patient.id][:transferred_to] = patients_transfers[patient.id][:transferred_to]
+      %i[transferred_at transferred_from transferred_to].each do |transfer_field|
+        linelists[patient.id][transfer_field] = patients_transfers[patient.id][transfer_field]
+      end
     end
     linelists
   end
