@@ -308,11 +308,13 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
     patient = current_user.get_patient(params.permit(:id)[:id])
+    redirect_to(root_url) && return if patient.nil?
+
     update_fields(patient, params)
 
     # Do we need to propagate to household?
     if params.permit(:apply_to_group)[:apply_to_group]
-      current_user.get_patient(patient.responder_id).dependents.each do |member|
+      current_user.get_patient(patient.responder_id)&.dependents&.each do |member|
         update_fields(member, params)
         next unless params[:comment]
 
@@ -322,7 +324,7 @@ class PatientsController < ApplicationController
 
     # Do we need to propagate to household where continuous_monitoring is true?
     if params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only]
-      ([patient] + current_user.get_patient(patient.responder_id).dependents.where(continuous_exposure: true)).uniq.each do |member|
+      ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
         update_fields(member, params)
         if params[:apply_to_group_cm_only_date].present?
           lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
@@ -418,6 +420,8 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
     patient = current_user.get_patient(params.permit(:id)[:id])
+    redirect_to(root_url) && return if patient.nil?
+
     duplicate_contact = false
     duplicate_contact = patient[:primary_telephone] == patient.responder[:primary_telephone] unless patient[:primary_telephone].blank?
     duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email].blank?
