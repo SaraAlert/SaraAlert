@@ -447,7 +447,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where('sex = ?', sex)
       .where('date_of_birth = ?', date_of_birth)
       .or(
-        where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.strip)
+        where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
       )
   end
 
