@@ -36,17 +36,33 @@ class AssessmentCompleted extends React.Component {
               <br />• {this.props.translations[this.props.lang]['web']['instruction3']}
               <br />
               <br />
-              {this.props.translations[this.props.lang]['web']['instruction4']}
-              <br />
-              <br />
-              <i class="fa fa-envelope" aria-hidden="true"></i> {this.props.translations[this.props.lang]['web']['email']}:{' '}
-              <a href={'mailto:' + this.props.contact_info.email}> {this.props.contact_info.email}</a>
-              <br />
-              <i class="fa fa-phone" aria-hidden="true"></i> {this.props.translations[this.props.lang]['web']['phone']}:{' '}
-              <a href={'tel:' + this.props.contact_info.phone}> {this.props.contact_info.phone}</a>
-              <br />
-              <i class="fa fa-desktop" aria-hidden="true"></i> {this.props.translations[this.props.lang]['web']['webpage']}:{' '}
-              <a href={'//' + this.props.contact_info.webpage}> {this.props.contact_info.webpage}</a>
+              {(this.props.contact_info.email || this.props.contact_info.phone || this.props.contact_info.webpage) && (
+                <React.Fragment>
+                  {this.props.translations[this.props.lang]['web']['instruction4']}
+                  <br />
+                </React.Fragment>
+              )}
+              {this.props.contact_info.email && (
+                <React.Fragment>
+                  <br />
+                  <i className="fa fa-envelope" aria-hidden="true"></i> {this.props.translations[this.props.lang]['web']['email']}:{' '}
+                  <a href={'mailto:' + this.props.contact_info.email}> {this.props.contact_info.email}</a>
+                </React.Fragment>
+              )}
+              {this.props.contact_info.phone && (
+                <React.Fragment>
+                  <br />
+                  <i className="fa fa-phone" aria-hidden="true"></i> {this.props.translations[this.props.lang]['web']['phone']}:{' '}
+                  <a href={'tel:' + this.props.contact_info.phone}> {this.props.contact_info.phone}</a>
+                </React.Fragment>
+              )}
+              {this.props.contact_info.webpage && (
+                <React.Fragment>
+                  <br />
+                  <i className="fa fa-desktop" aria-hidden="true"></i> {this.props.translations[this.props.lang]['web']['webpage']}:{' '}
+                  <a href={'//' + this.props.contact_info.webpage}> {this.props.contact_info.webpage}</a>
+                </React.Fragment>
+              )}
             </Form.Label>
             <br />
             <Form.Label className="fas fa-check fa-10x text-center pt-2"> </Form.Label>
