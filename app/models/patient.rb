@@ -447,7 +447,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where('sex = ?', sex)
       .where('date_of_birth = ?', date_of_birth)
       .or(
-        where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.strip)
+        where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
       )
   end
 
@@ -553,6 +553,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
 
   # Send initial enrollment notification via patient's preferred contact method
   def send_enrollment_notification
+    return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
+
     if email.present? && preferred_contact_method == 'E-mailed Web Link'
       # deliver_later forces the use of ActiveJob
       # sidekiq and redis should be running for this to work
@@ -572,6 +574,8 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   end
 
   def send_assessment(force = false)
+    return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
+
     unless last_assessment_reminder_sent.nil?
       return if last_assessment_reminder_sent > 12.hours.ago
     end

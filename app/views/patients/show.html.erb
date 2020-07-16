@@ -165,11 +165,11 @@
         <tbody>
           <% @patient.laboratories.order('created_at').each do |lab| -%>
             <tr>
-              <td><%= lab.id %></th>
-              <td><%= lab.lab_type %></th>
-              <td><%= lab.specimen_collection %></th>
-              <td><%= lab.report %></th>
-              <td><%= lab.result %></th>
+              <td><%= lab.id %></td>
+              <td><%= lab.lab_type %></td>
+              <td><%= lab.specimen_collection %></td>
+              <td><%= lab.report %></td>
+              <td><%= lab.result %></td>
               <td>
                 <div class="btn-group btn-group-sm" role="group">
                   <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: lab } ) %>
