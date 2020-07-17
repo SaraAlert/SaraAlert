@@ -31,7 +31,7 @@
     "js-file-download": "^0.4.11",
     "jw-react-pagination": "^1.1.0",
     "local-time": "^2.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.31",
     "popper.js": "^1.16.1",
