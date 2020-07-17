@@ -208,21 +208,22 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
       .where(monitoring: true)
       .where(purged: false)
       .where.not(public_health_action: 'None')
+      .distinct
   }
 
   # Any individual who has any assessments still considered symptomatic (exposure workflow only)
   scope :exposure_symptomatic, lambda {
-    where(isolation: false).symptomatic
+    where(isolation: false).symptomatic.distinct
   }
 
   # Non reporting asymptomatic individuals (exposure workflow only)
   scope :exposure_non_reporting, lambda {
-    where(isolation: false).non_reporting
+    where(isolation: false).non_reporting.distinct
   }
 
   # Individuals who have reported recently and are not symptomatic (exposure workflow only)
   scope :exposure_asymptomatic, lambda {
-    where(isolation: false).asymptomatic
+    where(isolation: false).asymptomatic.distinct
   }
 
   # Individuals that meet the asymptomatic recovery definition (isolation workflow only)

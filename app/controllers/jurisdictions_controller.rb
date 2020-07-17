@@ -12,24 +12,27 @@ class JurisdictionsController < ApplicationController
 
   # Get list of assigned users unique to jurisdiction
   def assigned_users_for_viewable_patients
+    permitted_params = params.permit(:jurisdiction_id, :scope, :workflow, :tab)
+
     # Validate jurisdiction_id param
-    jurisdiction_id = params.require(:jurisdiction_id).to_i
-    render status: 400 unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
+    jurisdiction_id = permitted_params.require(:jurisdiction_id).to_i
+    return head :bad_request unless current_user.jurisdiction.subtree_ids.include?(jurisdiction_id)
+
     jurisdiction = current_user.jurisdiction.subtree.find(jurisdiction_id)
 
     # Validate scope param
-    scope = params.require(:scope).to_sym
-    render status: 400 unless %i[all exact].include?(scope)
+    scope = permitted_params.require(:scope).to_sym
+    return head :bad_request unless %i[all exact].include?(scope)
 
     # Validate workflow param
-    workflow = params.permit(:workflow)[:workflow].to_sym unless params.permit(:workflow)[:workflow].nil?
-    render status: 400 if workflow && !%i[exposure isolation].include?(workflow)
+    workflow = permitted_params[:workflow].to_sym unless permitted_params[:workflow].nil?
+    return head :bad_request unless workflow.nil? || %i[exposure isolation].include?(workflow)
 
     # Validate tab param
-    tab = params.permit(:tab)[:tab].to_sym unless params.permit(:tab)[:tab].nil?
-    render status: 400 if tab && workflow.nil?
-    render status: 400 if workflow == 'exposure' && !%i[all symptomatic non_reporting asymptomatic pui closed transferred_in].include?(tab)
-    render status: 400 if workflow == 'isolation' && !%i[all requiring_review non_reporting reporting closed transferred_in].include?(tab)
+    tab = permitted_params[:tab].to_sym unless params.permit(:tab)[:tab].nil?
+    return head :bad_request if tab && workflow.nil? ||
+                                workflow == :exposure && !%i[all symptomatic non_reporting asymptomatic pui closed transferred_in].include?(tab) ||
+                                workflow == :isolation && !%i[all requiring_review non_reporting reporting closed transferred_in].include?(tab)
 
     # Start by getting all or immediate patients from jurisdiction
     patients = scope == :all ? jurisdiction.all_patients : jurisdiction.immediate_patients
@@ -53,7 +56,8 @@ class JurisdictionsController < ApplicationController
     patients = patients.monitoring_closed_without_purged if tab == :closed
 
     if tab == :transferred_in
-      patients = scope == :all ? jurisdiction.transferred_in_patients : jurisdiction.transferred_in_patients.where(jurisdiction_id: jurisdiction_id)
+      patients = jurisdiction.transferred_in_patients.where(isolation: workflow == :isolation)
+      patients = patients.where(jurisdiction_id: jurisdiction_id) if scope == :exact
     end
 
     render json: { assignedUsers: patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort }
@@ -62,6 +66,6 @@ class JurisdictionsController < ApplicationController
   private
 
   def authenticate_user_role
-    render status: 403 unless current_user.can_create_patient? || current_user.can_edit_patient? || current_user.can_view_public_health_dashboard?
+    return head :unauthorized unless current_user.can_create_patient? || current_user.can_edit_patient? || current_user.can_view_public_health_dashboard?
   end
 end

@@ -93,7 +93,7 @@ class PatientsTable extends React.Component {
     query.tab = tab;
     query.page = 0;
     this.updateTable(query);
-    this.updateAssignedUsers(this.props.jurisdiction.id, this.state.query.scope);
+    this.updateAssignedUsers(this.props.jurisdiction.id, this.state.query.scope, this.props.workflow, tab);
     localStorage.setItem(`${this.props.workflow}Tab`, tab);
   }
 
@@ -105,7 +105,7 @@ class PatientsTable extends React.Component {
       const jurisdictionId = Object.keys(this.state.jurisdictionPaths).find(id => this.state.jurisdictionPaths[parseInt(id)] === event.target.value);
       if (jurisdictionId) {
         this.updateTable({ ...query, jurisdiction: jurisdictionId, page: 0 });
-        this.updateAssignedUsers(jurisdictionId, this.state.query.scope);
+        this.updateAssignedUsers(jurisdictionId, this.state.query.scope, this.props.workflow, this.state.query.tab);
       }
     } else if (event.target.name === 'assignedUser') {
       if (event.target.value === '') {
@@ -126,7 +126,7 @@ class PatientsTable extends React.Component {
     if (scope !== this.state.query.scope) {
       const query = this.state.query;
       this.updateTable({ ...query, scope, page: 0 });
-      this.updateAssignedUsers(this.props.jurisdiction.id, scope);
+      this.updateAssignedUsers(this.props.jurisdiction.id, scope, this.props.workflow, this.state.query.tab);
     }
   }
 
@@ -207,19 +207,21 @@ class PatientsTable extends React.Component {
     });
   }
 
-  updateAssignedUsers(jurisdiction_id, scope) {
-    axios
-      .get('/jurisdictions/assigned_users', {
-        params: {
-          jurisdiction_id,
-          scope,
-          workflow: this.props.workflow,
-          tab: this.state.query.tab,
-        },
-      })
-      .then(response => {
-        this.setState({ assignedUsers: response.data.assignedUsers });
-      });
+  updateAssignedUsers(jurisdiction_id, scope, workflow, tab) {
+    if (tab !== 'transferred_out') {
+      axios
+        .get('/jurisdictions/assigned_users', {
+          params: {
+            jurisdiction_id,
+            scope,
+            workflow: workflow,
+            tab: tab,
+          },
+        })
+        .then(response => {
+          this.setState({ assignedUsers: response.data.assignedUsers });
+        });
+    }
   }
 
   formatTimestamp(timestamp) {
