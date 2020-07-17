@@ -13,6 +13,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         # message = SaraSchema::Validator.validate(:assessment, JSON.parse(msg))
         message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
                                          'patient_submission_token', 'experiencing_symptoms', 'response_status')
+
         next if message.nil?
 
         patient = Patient.find_by(submission_token: message['patient_submission_token'])
@@ -23,13 +24,16 @@ class ConsumeAssessmentsJob < ApplicationJob
           next if patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago
         end
 
+        # Get list of dependents excluding the patient itself.
+        dependents = patient.dependents.where.not(id: patient.id)
+
         if message['response_status'] == 'no_answer_voice'
           # If nobody answered, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert called this monitoree's primary telephone \
                                                               number #{patient.primary_telephone} and nobody answered the phone.")
-          unless patient.dependents.blank?
-            create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert called this monitoree's head \
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "Sara Alert called this monitoree's head \
                                                                               of household and nobody answered the phone.")
           end
 
@@ -39,8 +43,8 @@ class ConsumeAssessmentsJob < ApplicationJob
           History.contact_attempt(patient: patient, comment: "Sara Alert texted this monitoree's primary telephone \
                                                              number #{patient.primary_telephone} during their preferred \
                                                              contact time, but did not receive a response.")
-          unless patient.dependents.blank?
-            create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert texted this monitoree's head of \
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "Sara Alert texted this monitoree's head of \
                                                                               household and did not receive a response.")
           end
 
@@ -50,8 +54,8 @@ class ConsumeAssessmentsJob < ApplicationJob
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert was unable to complete a call to this \
                                                               monitoree's primary telephone number #{patient.primary_telephone}.")
-          unless patient.dependents.blank?
-            create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert was unable to complete a call \
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "Sara Alert was unable to complete a call \
                                                                               to this monitoree's head of household.")
           end
 
@@ -61,8 +65,8 @@ class ConsumeAssessmentsJob < ApplicationJob
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert was unable to send an SMS to this monitoree's \
                                                              primary telephone number #{patient.primary_telephone}.")
-          unless patient.dependents.blank?
-            create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert was unable to send an SMS to \
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "Sara Alert was unable to send an SMS to \
                                                                               this monitoree's head of household.")
           end
 
