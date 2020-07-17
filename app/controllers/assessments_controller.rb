@@ -126,8 +126,6 @@ class AssessmentsController < ApplicationController
     # Attempt to save and continue; else if failed redirect to index
     return unless assessment.save
 
-    patient.refresh_symptom_onset(assessment.id)
-
     comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
     comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
     History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
