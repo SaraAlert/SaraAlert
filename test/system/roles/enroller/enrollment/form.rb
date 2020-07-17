@@ -38,7 +38,11 @@ class EnrollmentForm < ApplicationSystemTestCase
         elsif field[:type] == 'select'
           select data[field[:id]], from: field[:id]
         elsif field[:type] == 'checkbox' || field[:type] == 'race' || field[:type] == 'risk factor'
-          find('label', text: field[:label]).click
+          page.find('label', text: field[:label]).click
+        elsif field[:type] == 'language'
+          input_element = page.find_by_id("#{field[:id]}_wrapper").first(:xpath, './/div//div//div//div//div//input')
+          input_element.set data[field[:id]]
+          input_element.send_keys :enter
         end
         jurisdiction_change = true if field[:id] == 'jurisdiction_id'
       end
