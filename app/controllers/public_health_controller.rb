@@ -6,54 +6,61 @@ class PublicHealthController < ApplicationController
   before_action :authenticate_user_role
 
   def patients
+    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction)
+
     # Validate workflow param
-    workflow = params.require(:workflow).to_sym
-    redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
+    workflow = permitted_params.require(:workflow).to_sym
+    return head :bad_request unless %i[exposure isolation].include?(workflow)
 
     # Validate tab param
-    tab = params.require(:tab).to_sym
+    tab = permitted_params.require(:tab).to_sym
     if workflow == :exposure
-      redirect_to(root_url) && return unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
+      return head :bad_request unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     else
-      redirect_to(root_url) && return unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
+      return head :bad_request unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
     end
 
     # Validate jurisdiction param
-    jurisdiction = params.permit(:jurisdiction)[:jurisdiction]
-    redirect_to(root_url) && return unless jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(jurisdiction.to_i)
+    jurisdiction = permitted_params[:jurisdiction]
+    return head :bad_request unless jurisdiction.nil? || jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(jurisdiction.to_i)
 
     # Validate scope param
-    scope = params.permit(:scope)[:scope]&.to_sym
-    redirect_to(root_url) && return unless %i[all exact].include?(scope)
+    scope = permitted_params[:scope]&.to_sym
+    return head :bad_request unless scope.nil? || %i[all exact].include?(scope)
 
     # Validate user param
-    user = params.permit(:user)[:user]
-    redirect_to(root_url) && return unless %w[all none].include?(user) || user.to_i.between?(1, 9999)
+    user = permitted_params[:user]
+    return head :bad_request unless user.nil? || %w[all none].include?(user) || user.to_i.between?(1, 9999)
 
     # Validate search param
-    search = params.permit(:search)[:search]
+    search = permitted_params[:search]
 
     # Validate pagination params
-    entries = params.permit(:entries)[:entries]&.to_i || 15
-    page = params.permit(:page)[:page]&.to_i || 0
-    redirect_to(root_url) && return unless entries >= 0 && page >= 0
+    entries = permitted_params[:entries]&.to_i || 25
+    page = permitted_params[:page]&.to_i || 0
+    return head :bad_request unless entries >= 0 && page >= 0
 
     # Validate sort params
-    order = params.permit(:order)[:order]
-    direction = params.permit(:direction)[:direction]
-    redirect_to(root_url) && return unless ['', 'asc', 'desc'].include?(direction)
+    order = permitted_params[:order]
+    return head :bad_request unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user state_local_id sex dob
+                                                                     end_of_monitoring risk_level monitoring_plan public_health_action expected_purge_date
+                                                                     reason_for_closure closed_at transferred_at latest_report].include?(order)
+
+    direction = permitted_params[:direction]
+    return head :bad_request unless direction.nil? || direction.blank? || %w[asc desc].include?(direction)
+    return head :bad_request unless (!order.blank? && !direction.blank?) || (order.blank? && direction.blank?)
 
     # Get patients by workflow and tab
     patients = patients_by_type(workflow, tab)
 
     # Filter by assigned jurisdiction
-    unless jurisdiction == 'all' || tab == :transferred_out
+    unless jurisdiction.nil? || jurisdiction == 'all' || tab == :transferred_out
       jur_id = jurisdiction.to_i
       patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
     end
 
     # Filter by assigned user
-    patients = patients.where(assigned_user: user == 'none' ? nil : user.to_i) unless user == 'all'
+    patients = patients.where(assigned_user: user == 'none' ? nil : user.to_i) unless user.nil? || user == 'all'
 
     # Filter by search text
     patients = filter(patients, search)
@@ -71,23 +78,23 @@ class PublicHealthController < ApplicationController
   # Get patient counts by workflow
   def workflow_counts
     render json: {
-      exposure: current_user.viewable_patients.where(isolation: false).where(purged: false).size,
-      isolation: current_user.viewable_patients.where(isolation: true).where(purged: false).size
+      exposure: current_user.viewable_patients.where(isolation: false, purged: false).size,
+      isolation: current_user.viewable_patients.where(isolation: true, purged: false).size
     }
   end
 
   # Get counts for patients under the given workflow and tab
-  def patient_counts
+  def tab_counts
     # Validate workflow param
     workflow = params.require(:workflow).to_sym
-    redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
+    return head :bad_request unless %i[exposure isolation].include?(workflow)
 
     # Validate tab param
     tab = params.require(:tab).to_sym
     if workflow == :exposure
-      redirect_to(root_url) && return unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
+      return head :bad_request unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     else
-      redirect_to(root_url) && return unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
+      return head :bad_request unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
     end
 
     # Get patients by workflow and tab
@@ -114,27 +121,21 @@ class PublicHealthController < ApplicationController
   protected
 
   def patients_by_type(workflow, tab)
+    return current_user.viewable_patients.where(isolation: workflow == :isolation, purged: false) if tab == :all
+    return current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: workflow == :isolation) if tab == :closed
     return current_user.jurisdiction.transferred_in_patients.where(isolation: workflow == :isolation) if tab == :transferred_in
     return current_user.jurisdiction.transferred_out_patients.where(isolation: workflow == :isolation) if tab == :transferred_out
 
-    patients = current_user.viewable_patients
-
     if workflow == :exposure
-      patients = patients.where(isolation: false, purged: false)
-      return patients.exposure_symptomatic if tab == :symptomatic
-      return patients.exposure_non_reporting if tab == :non_reporting
-      return patients.exposure_asymptomatic if tab == :asymptomatic
-      return patients.exposure_under_investigation if tab == :pui
+      return current_user.viewable_patients.exposure_symptomatic if tab == :symptomatic
+      return current_user.viewable_patients.exposure_non_reporting if tab == :non_reporting
+      return current_user.viewable_patients.exposure_asymptomatic if tab == :asymptomatic
+      return current_user.viewable_patients.exposure_under_investigation if tab == :pui
     else
-      patients = patients.where(isolation: true, purged: false)
-      return patients.isolation_requiring_review if tab == :requiring_review
-      return patients.isolation_non_reporting if tab == :non_reporting
-      return patients.isolation_reporting if tab == :reporting
+      return current_user.viewable_patients.isolation_requiring_review if tab == :requiring_review
+      return current_user.viewable_patients.isolation_non_reporting if tab == :non_reporting
+      return current_user.viewable_patients.isolation_reporting if tab == :reporting
     end
-
-    return patients.monitoring_closed_without_purged if tab == :closed
-
-    patients
   end
 
   def filter(patients, search)
