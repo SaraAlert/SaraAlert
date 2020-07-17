@@ -58,16 +58,16 @@ class Jurisdiction < ApplicationRecord
   # This will return the first available contact info (email, phone, and/or webpage)
   # discovered along this jurisdiction's path
   def contact_info
-    contact_info = {email: '', phone: '', webpage: ''}
+    contact_info = { email: '', phone: '', webpage: '' }
     # Iterate over path in reverse so that we will be starting _at_ the current jurisdiction
-    path&.reverse&.each { |jur| 
-      if (!(jur.phone.blank? && jur.email.blank? && jur.webpage.blank?))
+    path&.reverse&.each do |jur|
+      unless jur.phone.blank? && jur.email.blank? && jur.webpage.blank?
         contact_info[:email] = jur.email || ''
         contact_info[:phone] = jur.phone || ''
         contact_info[:webpage] = jur.webpage || ''
         break
       end
-    }
+    end
     contact_info
   end
 

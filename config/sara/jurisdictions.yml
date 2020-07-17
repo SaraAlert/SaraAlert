@@ -73,6 +73,7 @@
             phone: '+13455555555'
             webpage: 'www.example.com'
             email: 'contact@example.com'
+            message: 'This Is a Custom Jurisdiction Message'
             symptoms:
                 'Pulse Ox':
                     value: 90
