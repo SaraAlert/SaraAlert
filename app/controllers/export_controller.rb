@@ -57,6 +57,6 @@ class ExportController < ApplicationController
     return if patients.empty?
 
     History.monitoree_data_downloaded(patient: patients.first, created_by: current_user.email)
-    send_data build_excel_export_for_patients(patients)
+    send_data excel_export(patients)
   end
 end
