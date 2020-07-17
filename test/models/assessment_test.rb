@@ -9,12 +9,7 @@ class AssessmentTest < ActiveSupport::TestCase
   def teardown; end
 
   test 'update patient linelist' do
-    # Create new patient and verify default linelist values
     patient = create(:patient)
-    assert_nil patient.symptom_onset
-    assert_nil patient.latest_assessment_at
-    assert_nil patient.latest_fever_or_fever_reducer_at
-    assert_empty patient.assessments
 
     # Create assessment 1 as asymptomatic
     timestamp_1 = 5.days.ago

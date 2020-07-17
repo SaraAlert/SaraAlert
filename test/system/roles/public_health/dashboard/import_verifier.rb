@@ -6,7 +6,7 @@ require 'roo'
 require_relative '../../../lib/system_test_utils'
 
 class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
-  include ImportExportHelper
+  include ImportExport
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)

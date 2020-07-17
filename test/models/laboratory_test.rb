@@ -16,11 +16,7 @@ class LaboratoryTest < ActiveSupport::TestCase
   end
 
   test 'update patient linelist' do
-    # Create new patient and verify default linelist values
     patient = create(:patient)
-    assert_nil patient.latest_positive_lab_at
-    assert patient.negative_lab_count.zero?
-    assert_empty patient.laboratories
 
     # Create laboratory 1 as indeterminate
     laboratory_1 = create(:laboratory, patient: patient, result: 'indeterminate')

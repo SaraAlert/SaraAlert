@@ -4,7 +4,7 @@ require 'roo'
 
 # ImportController: for importing subjects from other formats
 class ImportController < ApplicationController
-  include ImportExportHelper
+  include ImportExport
   include PatientHelper
 
   before_action :authenticate_user!

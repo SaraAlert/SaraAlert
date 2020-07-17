@@ -6,7 +6,7 @@ require 'roo'
 require_relative '../../../lib/system_test_utils'
 
 class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
-  include ImportExportHelper
+  include ImportExport
   @@system_test_utils = SystemTestUtils.new(nil)
 
   DOWNLOAD_TIMEOUT = 10

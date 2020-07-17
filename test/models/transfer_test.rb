@@ -40,12 +40,8 @@ class TransferTest < ActiveSupport::TestCase
   end
 
   test 'update patient linelist' do
-    # Create new patient and verify default linelist values
     jur_1 = create(:jurisdiction)
     patient = create(:patient, jurisdiction: jur_1)
-    assert_nil patient.latest_transfer_at
-    assert_nil patient.latest_transfer_from
-    assert_empty patient.transfers
 
     # Create transfer 1
     timestamp_1 = 5.days.ago

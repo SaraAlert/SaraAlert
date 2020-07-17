@@ -8,7 +8,17 @@ class PatientTest < ActiveSupport::TestCase
   def teardown; end
 
   test 'create patient' do
-    assert create(:patient)
+    assert patient = create(:patient)
+    assert_nil patient.symptom_onset
+    assert_nil patient.latest_assessment_at
+    assert_nil patient.latest_fever_or_fever_reducer_at
+    assert_empty patient.assessments
+    assert_nil patient.latest_positive_lab_at
+    assert patient.negative_lab_count.zero?
+    assert_empty patient.laboratories
+    assert_nil patient.latest_transfer_at
+    assert_nil patient.latest_transfer_from
+    assert_empty patient.transfers
   end
 
   test 'monitoring open' do

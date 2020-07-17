@@ -7,7 +7,7 @@ class PublicHealthControllerTest < ActionController::TestCase
 
   def teardown; end
 
-  test 'patients' do
+  test 'patients authorization' do
     get :patients
     assert_redirected_to(new_user_session_path)
 
@@ -39,7 +39,9 @@ class PublicHealthControllerTest < ActionController::TestCase
         sign_out user
       end
     end
+  end
 
+  test 'patients param validation' do
     user = create(:public_health_user)
 
     user.update(jurisdiction: Jurisdiction.first)
@@ -97,8 +99,11 @@ class PublicHealthControllerTest < ActionController::TestCase
     assert_response :bad_request
 
     sign_out user
+  end
 
+  test 'patients by workflow and tab' do
     Jurisdiction.where(path: ['USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
+      user = create(:public_health_user)
       user.update(jurisdiction: user_jur)
       sign_in user
 
@@ -211,6 +216,113 @@ class PublicHealthControllerTest < ActionController::TestCase
 
       sign_out user
     end
+  end
+
+  test 'patients by jurisdiction and assigned user' do
+    user = create(:public_health_user)
+    user.update(jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
+    sign_in user
+
+    jur = Jurisdiction.where(path: 'USA, State 1, County 1').first
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', jurisdiction: jur[:id], scope: 'all' }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert jur.subtree.pluck(:name).include?(patient['jurisdiction'])
+    end
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', jurisdiction: jur[:id], scope: 'exact' }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert_equal jur[:name], patient['jurisdiction']
+    end
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', user: 'none' }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert patient['assigned_user'].blank?
+    end
+
+    assigned_user = user.viewable_patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).first
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', user: assigned_user }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert_equal assigned_user, patient['assigned_user']
+    end
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', jurisdiction: jur[:id], scope: 'all', user: 'none' }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert jur.subtree.pluck(:name).include?(patient['jurisdiction'])
+      assert patient['assigned_user'].blank?
+    end
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', jurisdiction: jur[:id], scope: 'exact', user: 'none' }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert_equal jur[:name], patient['jurisdiction']
+      assert patient['assigned_user'].blank?
+    end
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', jurisdiction: jur[:id], scope: 'all', user: assigned_user }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert jur.subtree.pluck(:name).include?(patient['jurisdiction'])
+      assert_equal assigned_user, patient['assigned_user']
+    end
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', jurisdiction: jur[:id], scope: 'exact', user: assigned_user }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert_equal jur[:name], patient['jurisdiction']
+      assert_equal assigned_user, patient['assigned_user']
+    end
+
+    sign_out user
+  end
+
+  test 'patients filtering' do
+    user = create(:public_health_user)
+    user.update(jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
+    sign_in user
+
+    filtered_patient = user.viewable_patients.where(isolation: false, purged: false).first
+    get :patients, params: { workflow: 'exposure', tab: 'all', search: filtered_patient[:first_name] }
+    JSON.parse(response.body)['linelist'].each do |patient|
+      assert patient['name'].include?(filtered_patient[:first_name])
+    end
+
+    sign_out user
+  end
+
+  test 'patients sorting' do
+    user = create(:public_health_user)
+    user.update(jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
+    sign_in user
+
+    order = 'name'
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', order: order, direction: 'asc' }
+    patient_ids = user.viewable_patients.where(isolation: false, purged: false).order(:last_name, :first_name).pluck(:id)
+    assert_equal patient_ids, (JSON.parse(response.body)['linelist'].map { |patient| patient['id'] })
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', order: order, direction: 'desc' }
+    patient_ids = user.viewable_patients.where(isolation: false, purged: false).order(last_name: :desc, first_name: :desc).pluck(:id)
+    assert_equal patient_ids, (JSON.parse(response.body)['linelist'].map { |patient| patient['id'] })
+
+    sign_out user
+  end
+
+  test 'patients pagination' do
+    user = create(:public_health_user)
+    user.update(jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
+    sign_in user
+
+    entries = 5
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', entries: entries, page: 0 }
+    page_0 = JSON.parse(response.body)
+    assert_equal entries, page_0['linelist'].size
+    assert_not_equal entries, page_0['total']
+
+    get :patients, params: { workflow: 'exposure', tab: 'all', entries: entries, page: 1 }
+    page_1 = JSON.parse(response.body)
+    assert_not_equal page_0, page_1
+
+    sign_out user
   end
 
   test 'workflow counts' do

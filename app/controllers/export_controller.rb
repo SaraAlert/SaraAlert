@@ -4,7 +4,7 @@ require 'axlsx'
 
 # ExportController: for exporting subjects
 class ExportController < ApplicationController
-  include ImportExportHelper
+  include ImportExport
 
   before_action :authenticate_user!
 

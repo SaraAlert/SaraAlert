@@ -3,7 +3,7 @@
 # ExportJob: prepare an export for a user
 class ExportJob < ApplicationJob
   queue_as :default
-  include ImportExportHelper
+  include ImportExport
 
   def perform(user_id, export_type)
     user = User.find_by(id: user_id)

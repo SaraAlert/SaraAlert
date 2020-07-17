@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Helper methods for the import and export controllers
-module ImportExportHelper # rubocop:todo Metrics/ModuleLength
+module ImportExport # rubocop:todo Metrics/ModuleLength
   LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
                       'Transferred From', 'Transferred To', 'Expected Purge Date'].freeze
