@@ -10,7 +10,13 @@ import supportedLanguages from '../../../json/supportedLanguages.json';
 class Identification extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
+    this.state = {
+      ...this.props,
+      current: { ...this.props.currentState },
+      errors: {},
+      modified: {},
+      languageOptions: this.getLanguageOptions(),
+    };
     this.handleChange = this.handleChange.bind(this);
     this.handleLanguageChange = this.handleLanguageChange.bind(this);
     this.validate = this.validate.bind(this);
@@ -54,15 +60,15 @@ class Identification extends React.Component {
     );
   }
 
-  handleLanguageChange(event) {
-    let value = event.value;
-    let current = this.state.current;
-    let modified = this.state.modified;
-    let self = this;
+  handleLanguageChange(languageType, event) {
+    const value = event.value;
+    const current = this.state.current;
+    const modified = this.state.modified;
+    const self = this;
     this.setState(
       {
-        current: { ...current, patient: { ...current.patient, [event.type]: value } },
-        modified: { ...modified, patient: { ...modified.patient, [event.type]: value } },
+        current: { ...current, patient: { ...current.patient, [languageType]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [languageType]: value } },
       },
       () => {
         self.props.setEnrollmentState({ ...self.state.modified });
@@ -92,53 +98,64 @@ class Identification extends React.Component {
       });
   }
 
-  getLanguageOptions(languageType) {
-    const langOptions = supportedLanguages.languages.map(function(lang) {
-      let fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
-      let langLabel = fullySupported ? lang.name : lang.name + '*';
-      return { value: lang.name, label: langLabel, type: languageType };
+  getLanguageOptions() {
+    const langOptions = supportedLanguages.languages.map(lang => {
+      const fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
+      const langLabel = fullySupported ? lang.name : lang.name + '*';
+      return { value: lang.name, label: langLabel };
     });
     return langOptions;
   }
 
-  getLanguageValue(language, languageType) {
-    return this.getLanguageOptions(languageType).filter(lang => lang.value === language);
+  getLanguageValue(language) {
+    return this.state.languageOptions.find(lang => lang.value === language);
   }
 
   renderLanguageSupportMessage(selectedLanguage, languageType) {
     if (selectedLanguage) {
-      let languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
-      let sms = languageJson.supported.sms;
-      let email = languageJson.supported.email;
-      let phone = languageJson.supported.phone;
-      let fullySupported = sms && email && phone;
+      const languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
+      const sms = languageJson.supported.sms;
+      const email = languageJson.supported.email;
+      const phone = languageJson.supported.phone;
+      const fullySupported = sms && email && phone;
 
       if (!fullySupported) {
         let message = languageJson.name;
         if (!sms && !email && !phone) {
           message += ' is not currently supported by Sara Alert.';
-          if (languageType === 'primary') message += ' Any messages sent to this monitoree will be in English.';
+          if (languageType === 'primary') {
+            message += ' Any messages sent to this monitoree will be in English.';
+          }
         } else if (!sms && !email && phone) {
           message += ' is supported for the telephone call method only.';
-          if (languageType === 'primary')
+          if (languageType === 'primary') {
             message += ' If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
+          }
         } else if (!sms && email && !phone) {
           message += ' is supported for the email weblink method only.';
-          if (languageType === 'primary')
+          if (languageType === 'primary') {
             message += ' If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
+          }
         } else if (!sms && email && phone) {
           message += ' is supported for telephone call and email reporting methods only.';
-          if (languageType === 'primary') message += ' If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
+          if (languageType === 'primary') {
+            message += ' If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
+          }
         } else if (sms && !email && !phone) {
           message += ' is supported for the SMS text weblink method only.';
-          if (languageType === 'primary')
+          if (languageType === 'primary') {
             message += ' If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
+          }
         } else if (sms && !email && phone) {
           message += ' is supported for telephone call and SMS text reporting methods only.';
-          if (languageType === 'primary') message += ' If email is selected as the preferred reporting method, the email will be in English.';
+          if (languageType === 'primary') {
+            message += ' If email is selected as the preferred reporting method, the email will be in English.';
+          }
         } else if (sms && email && !phone) {
           message += ' is supported for email and SMS text reporting methods only.';
-          if (languageType === 'primary') message += ' If telephone call is selected as the preferred reporting method, the call will be in English.';
+          if (languageType === 'primary') {
+            message += ' If telephone call is selected as the preferred reporting method, the call will be in English.';
+          }
         }
         return (
           <i>
@@ -312,9 +329,9 @@ class Identification extends React.Component {
                   </Form.Label>
                   <Select
                     name="primary_language"
-                    value={this.getLanguageValue(this.state.current.patient.primary_language, 'primary_language')}
-                    options={this.getLanguageOptions('primary_language')}
-                    onChange={this.handleLanguageChange}
+                    value={this.getLanguageValue(this.state.current.patient.primary_language)}
+                    options={this.state.languageOptions}
+                    onChange={e => this.handleLanguageChange('primary_language', e)}
                     placeholder=""
                     theme={theme => ({
                       ...theme,
@@ -330,9 +347,9 @@ class Identification extends React.Component {
                   </Form.Label>
                   <Select
                     name="secondary_language"
-                    value={this.getLanguageValue(this.state.current.patient.secondary_language, 'secondary_language')}
-                    options={this.getLanguageOptions('secondary_language')}
-                    onChange={this.handleLanguageChange}
+                    value={this.getLanguageValue(this.state.current.patient.secondary_language)}
+                    options={this.state.languageOptions}
+                    onChange={e => this.handleLanguageChange('secondary_language', e)}
                     placeholder=""
                     theme={theme => ({
                       ...theme,
