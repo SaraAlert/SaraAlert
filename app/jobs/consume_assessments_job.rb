@@ -63,7 +63,7 @@ class ConsumeAssessmentsJob < ApplicationJob
                                                              primary telephone number #{patient.primary_telephone}.")
           unless patient.dependents.blank?
             create_contact_attempt_history_for_dependents(patient.dependents, "Sara Alert was unable to send an SMS to \
-                                                                              this moonitoree's head of household.")
+                                                                              this monitoree's head of household.")
           end
 
           next
