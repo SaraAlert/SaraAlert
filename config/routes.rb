@@ -53,7 +53,8 @@ Rails.application.routes.draw do
   post '/laboratories', to: 'laboratories#create'
   post '/laboratories/:id', to: 'laboratories#update'
 
-  get '/jurisdictions/:jurisdiction_id/assigned_users/:scope', to: 'patients#assigned_users'
+  get '/jurisdictions/paths', to: 'jurisdictions#jurisdiction_paths', as: :jurisdiction_paths
+  get '/jurisdictions/assigned_users', to: 'jurisdictions#assigned_users_for_viewable_patients', as: :assigned_users_for_viewable_patients
 
   get '/patients/:id/group', to: 'patients#new_group_member'
 
@@ -65,7 +66,6 @@ Rails.application.routes.draw do
 
   post '/import/:workflow/:format', to: 'import#import'
   get '/import/download_guidance', to: 'import#download_guidance'
-  get '/import/error', to: 'import#error'
 
   get '/patients/:id/household_removeable', to: 'patients#household_removeable'
   post '/patients/bulk_edit/status', to: 'patients#bulk_update_status'
@@ -92,10 +92,12 @@ Rails.application.routes.draw do
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
-  get '/public_health/patients/self_reporting', to: 'public_health#self_reporting', as: :self_reporting
-  get '/public_health/patients/:workflow/:type/:assigned_jurisdiction/:scope/:assigned_user', to: 'public_health#patients', as: :public_health_patients
   get '/public_health', to: 'public_health#exposure', as: :public_health
   get '/public_health/isolation', to: 'public_health#isolation', as: :public_health_isolation
+  get '/public_health/patients', to: 'public_health#patients', as: :public_health_patients
+  get '/public_health/patients/counts/workflow', to: 'public_health#workflow_counts', as: :workflow_counts
+  get '/public_health/patients/counts/:workflow/:tab', to: 'public_health#tab_counts', as: :tab_counts
+  get '/public_health/patients/self_reporting', to: 'public_health#self_reporting', as: :self_reporting
 
   get '/analytics', to: 'analytics#index', as: :analytics
   get '/county_level_maps/:mapFile', to: 'analytics#clm_geo_json'

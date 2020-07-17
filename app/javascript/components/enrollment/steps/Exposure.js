@@ -40,11 +40,19 @@ class Exposure extends React.Component {
       if (jurisdiction_id) {
         value = jurisdiction_id;
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-        axios.get(window.BASE_PATH + `/jurisdictions/${jurisdiction_id}/assigned_users/immediate`).then(response => {
-          if (response?.data?.assignedUsers) {
-            this.setState({ assignedUsers: response.data.assignedUsers });
-          }
-        });
+        axios
+          .get('/jurisdictions/assigned_users', {
+            params: {
+              jurisdiction_id,
+              scope: 'exact',
+            },
+          })
+          .catch(() => {})
+          .then(response => {
+            if (response?.data?.assignedUsers) {
+              this.setState({ assignedUsers: response.data.assignedUsers });
+            }
+          });
       } else {
         value = -1;
       }

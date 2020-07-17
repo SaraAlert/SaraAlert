@@ -64,8 +64,8 @@ class AnalyticsJobTest < ActiveSupport::TestCase
 
   test 'monitoree counts by monitoring status' do
     active_counts = CacheAnalyticsJob.monitoree_counts_by_monitoring_status(1, @@monitorees)
-    verify_monitoree_count(active_counts, 0, true, 'Monitoring Status', 'Symptomatic', 'Missing', 2)
-    verify_monitoree_count(active_counts, 1, true, 'Monitoring Status', 'Non-Reporting', 'Missing', 14)
+    verify_monitoree_count(active_counts, 0, true, 'Monitoring Status', 'Symptomatic', 'Missing', 3)
+    verify_monitoree_count(active_counts, 1, true, 'Monitoring Status', 'Non-Reporting', 'Missing', 13)
     verify_monitoree_count(active_counts, 2, true, 'Monitoring Status', 'Asymptomatic', 'Missing', 2)
     assert_equal(3, active_counts.length)
   end
@@ -409,10 +409,6 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     assert_equal(total, maps[index].total, 'Total')
   end
   # rubocop:enable Metrics/ParameterLists
-
-  def get_absolute_date(relative_date)
-    eval(relative_date.tr('<%=  =>', '')) # rubocop:todo Security/Eval
-  end
 
   def days_ago(num_days)
     num_days.days.ago.strftime('%F')

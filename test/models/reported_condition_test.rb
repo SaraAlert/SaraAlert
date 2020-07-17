@@ -35,31 +35,31 @@ class ReportedConditionTest < ActiveSupport::TestCase
                       threshold_condition_hash: Faker::Alphanumeric.alphanumeric(number: 64)).threshold_condition)
   end
 
-  test 'reported condition fever or fever medication' do
-    assert_difference('ReportedCondition.fever_or_fever_medication.size', 1) do
+  test 'reported condition fever or fever reducer' do
+    assert_difference('ReportedCondition.fever_or_fever_reducer.size', 1) do
       fever_symptom = create(:fever_symptom)
       create(:reported_condition, symptoms: [fever_symptom])
     end
 
-    assert_difference('ReportedCondition.fever_or_fever_medication.size', 1) do
-      fever_medication_symptom = create(:fever_medication_symptom)
-      create(:reported_condition, symptoms: [fever_medication_symptom])
+    assert_difference('ReportedCondition.fever_or_fever_reducer.size', 1) do
+      fever_reducer_symptom = create(:fever_reducer_symptom)
+      create(:reported_condition, symptoms: [fever_reducer_symptom])
     end
 
-    assert_difference('ReportedCondition.fever_or_fever_medication.size', 1) do
+    assert_difference('ReportedCondition.fever_or_fever_reducer.size', 1) do
       fever_symptom = create(:fever_symptom)
-      fever_medication_symptom = create(:fever_medication_symptom)
-      create(:reported_condition, symptoms: [fever_symptom, fever_medication_symptom])
+      fever_reducer_symptom = create(:fever_reducer_symptom)
+      create(:reported_condition, symptoms: [fever_symptom, fever_reducer_symptom])
     end
 
-    assert_no_difference('ReportedCondition.fever_or_fever_medication.size') do
+    assert_no_difference('ReportedCondition.fever_or_fever_reducer.size') do
       fever_symptom = create(:fever_symptom, bool_value: false)
       create(:reported_condition, symptoms: [fever_symptom])
     end
 
-    assert_no_difference('ReportedCondition.fever_or_fever_medication.size') do
-      fever_medication_symptom = create(:fever_medication_symptom, bool_value: false)
-      create(:reported_condition, symptoms: [fever_medication_symptom])
+    assert_no_difference('ReportedCondition.fever_or_fever_reducer.size') do
+      fever_reducer_symptom = create(:fever_reducer_symptom, bool_value: false)
+      create(:reported_condition, symptoms: [fever_reducer_symptom])
     end
   end
 end

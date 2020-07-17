@@ -6,7 +6,7 @@ require 'roo'
 require_relative '../../../lib/system_test_utils'
 
 class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
-  include ImportExportHelper
+  include ImportExport
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
@@ -31,7 +31,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_epi_x_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
-    page.all('div.card-body').each_with_index do |card, index|
+    find('.modal-body').all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
       verify_existence(card, 'State/Local ID', row[0], index)
       verify_existence(card, 'CDC ID', row[4], index)
@@ -63,7 +63,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_sara_alert_format_import_page(jurisdiction_id, file_name)
     sheet = get_xslx(file_name).sheet(0)
-    page.all('div.card-body').each_with_index do |card, index|
+    find('.modal-body').all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
       verify_existence(card, 'State/Local ID', row[15], index)
       verify_existence(card, 'CDC ID', row[16], index)
@@ -97,7 +97,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
-    @@system_test_utils.wait_for_db_write_delay
+    sleep(2) # wait for db write
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
@@ -134,7 +134,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
 
   def verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     sheet = get_xslx(file_name).sheet(0)
-    @@system_test_utils.wait_for_db_write_delay
+    sleep(2) # wait for db write
     rejects = [] if rejects.nil?
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)

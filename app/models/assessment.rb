@@ -13,25 +13,8 @@ class Assessment < ApplicationRecord
   has_one :reported_condition, class_name: 'ReportedCondition'
   belongs_to :patient
 
-  scope :twenty_four_hours_fever_or_fever_medication, lambda {
-    where('created_at >= ?', 24.hours.ago).where_assoc_exists(:reported_condition, &:fever_or_fever_medication)
-  }
-
-  scope :seventy_two_hours_fever_or_fever_medication, lambda {
-    where('created_at >= ?', 72.hours.ago).where_assoc_exists(:reported_condition, &:fever_or_fever_medication)
-  }
-
-  scope :ten_days_symptomatic, lambda {
-    where('created_at >= ?', 10.days.ago).where(symptomatic: true)
-  }
-
-  scope :older_than_seventy_two_hours, lambda {
-    where('created_at <= ?', 72.hours.ago)
-  }
-
-  scope :symptomatic, lambda {
-    where(symptomatic: true)
-  }
+  after_save :update_patient_linelist_after_save
+  before_destroy :update_patient_linelist_before_destroy
 
   def symptomatic?
     symptom_groups = []
@@ -39,7 +22,7 @@ class Assessment < ApplicationRecord
       threshold_symptom = get_threshold_symptom(reported_symptom.name)
       # Group represents how many have to be true in that group to be considered as symptomatic
       symptom_group_index = threshold_symptom&.group || 1
-      # -1 to convert to 0-based ie: index 0 requires atleast 1 true, index 1 requires atleast 2 true...
+      # -1 to convert to 0-based ie: index 0 requires at least 1 true, index 1 requires at least 2 true...
       symptom_group_index -= 1
       symptom_passes = symptom_passes_threshold(reported_symptom.name, threshold_symptom)
       symptom_groups[symptom_group_index] = 0 if symptom_groups[symptom_group_index].nil?
@@ -135,6 +118,27 @@ class Assessment < ApplicationRecord
                                                 linkId: index.to_s)
         end
       end
+    )
+  end
+
+  private
+
+  def update_patient_linelist_after_save
+    patient.update(
+      symptom_onset: patient.assessments.where(symptomatic: true).minimum(:created_at),
+      latest_assessment_at: patient.assessments.maximum(:created_at)
+    )
+  end
+
+  def update_patient_linelist_before_destroy
+    # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
+    patient.update(
+      symptom_onset: patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at),
+      latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
+      latest_fever_or_fever_reducer_at: patient.assessments
+                                              .where.not(id: id)
+                                              .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
+                                              .maximum(:created_at)
     )
   end
 end

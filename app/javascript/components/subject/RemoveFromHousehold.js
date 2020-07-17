@@ -82,6 +82,9 @@ class RemoveFromHousehold extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button variant="primary btn-square" onClick={submit} disabled={!this.state.removeEligible || this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
@@ -89,9 +92,6 @@ class RemoveFromHousehold extends React.Component {
               </React.Fragment>
             )}
             Remove
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>

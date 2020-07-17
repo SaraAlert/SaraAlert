@@ -8,6 +8,110 @@ class AssessmentTest < ActiveSupport::TestCase
 
   def teardown; end
 
+  test 'update patient linelist' do
+    patient = create(:patient)
+
+    # Create assessment 1 as asymptomatic
+    timestamp_1 = 5.days.ago
+    assessment_1 = create(:assessment, patient: patient, symptomatic: false, created_at: timestamp_1)
+    assert_nil patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 1 to be symptomatic
+    timestamp_1 = 10.days.ago
+    assessment_1.update(symptomatic: true, created_at: timestamp_1)
+    assert_equal timestamp_1.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Create assessment 2 as symptomatic
+    timestamp_2 = 12.days.ago
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_2)
+    reported_condition_2 = create(:reported_condition, assessment_id: assessment_2.id)
+    symptom_2 = create(:symptom, condition_id: reported_condition_2.id, type: 'BoolSymptom', name: 'fever', bool_value: false)
+    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 2 to include fever
+    symptom_2.update(bool_value: true)
+    patient.reload.latest_fever_or_fever_reducer_at
+    assert_in_delta timestamp_2, patient.latest_fever_or_fever_reducer_at, 1
+
+    # Update assessment 2 to not include fever
+    symptom_2.update(bool_value: false)
+    patient.reload.latest_fever_or_fever_reducer_at
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Create assessment 3 as symptomatic
+    timestamp_3 = 12.days.ago
+    assessment_3 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_3)
+    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 3 to be symptomatic
+    assessment_3.update(symptomatic: true)
+    assert_equal timestamp_3.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Destroy assessment 3
+    assessment_3.destroy
+    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 2 date
+    timestamp_2 = 1.day.ago
+    assessment_2.update(created_at: timestamp_2)
+    assert_equal timestamp_1.to_date, patient.symptom_onset
+    assert_in_delta timestamp_2, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 1 to be asymptomatic
+    assessment_1.update!(symptomatic: false)
+    assert_equal timestamp_2.to_date, patient.symptom_onset
+    assert_in_delta timestamp_2, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Destroy assessment 2
+    assessment_2.destroy!
+    assert_nil patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 1 to be symptomatic
+    assessment_1.update!(symptomatic: true)
+    assert_equal timestamp_1.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Create assessment 4 with fever
+    timestamp_4 = 1.day.ago
+    assessment_4 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_4)
+    reported_condition_4 = create(:reported_condition, assessment_id: assessment_4.id)
+    symptom_4 = create(:symptom, condition_id: reported_condition_4.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
+    assert_equal timestamp_1.to_date, patient.symptom_onset
+    assert_in_delta timestamp_4, patient.latest_assessment_at, 1
+    patient.reload.latest_fever_or_fever_reducer_at
+    assert_in_delta timestamp_4, patient.latest_fever_or_fever_reducer_at, 1
+
+    # Destroy fever symptom
+    symptom_4.destroy
+    patient.reload.latest_fever_or_fever_reducer_at
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Destroy assessments 1 and 4
+    assessment_1.destroy
+    assessment_4.destroy
+    assert_nil patient.symptom_onset
+    assert_nil patient.latest_assessment_at
+    assert_nil patient.latest_fever_or_fever_reducer_at
+    assert_empty patient.assessments
+  end
+
   test 'float symptom less than passes threshold' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_symptom = create(:float_symptom, float_value: 90.1, threshold_operator: 'Less Than', name: 'pulse-ox', label: 'Pulse Ox')

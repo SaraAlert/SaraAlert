@@ -3,104 +3,104 @@
 # PublicHealthController: handles all epi actions
 class PublicHealthController < ApplicationController
   before_action :authenticate_user!
-
-  def exposure
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    @all_count = current_user.viewable_patients.where(isolation: false).where(purged: false).size
-    @i_all_count = current_user.viewable_patients.where(isolation: true).where(purged: false).size
-    @symptomatic_count = current_user.viewable_patients.exposure_symptomatic.size
-    @non_reporting_count = current_user.viewable_patients.exposure_non_reporting.size
-    @asymptomatic_count = current_user.viewable_patients.exposure_asymptomatic.size
-    @pui_count = current_user.viewable_patients.exposure_under_investigation.size
-    @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size
-    @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: false).size
-    @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: false).size
-    @assigned_jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }]
-    @assigned_users = current_user.jurisdiction.all_assigned_users
-  end
-
-  def isolation
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
-
-    @all_count = current_user.viewable_patients.where(isolation: true).where(purged: false).size
-    @e_all_count = current_user.viewable_patients.where(isolation: false).where(purged: false).size
-    @requiring_review_count = current_user.viewable_patients.isolation_requiring_review.size
-    @non_reporting_count = current_user.viewable_patients.isolation_non_reporting.size
-    @reporting_count = current_user.viewable_patients.isolation_reporting.size
-    @closed_count = current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size
-    @transferred_in_count = current_user.jurisdiction.transferred_in_patients.where(isolation: true).size
-    @transferred_out_count = current_user.jurisdiction.transferred_out_patients.where(isolation: true).size
-    @assigned_jurisdictions = Hash[Jurisdiction.order(:path).find(current_user.jurisdiction.subtree_ids).pluck(:id, :path).map { |id, path| [id, path] }]
-    @assigned_users = current_user.jurisdiction.all_assigned_users
-  end
+  before_action :authenticate_user_role
 
   def patients
-    # Restrict access to public health only
-    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
+    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction)
 
     # Validate workflow param
-    workflow = params.permit(:workflow)[:workflow].to_sym
-    redirect_to(root_url) && return unless %i[exposure isolation].include?(workflow)
+    workflow = permitted_params.require(:workflow).to_sym
+    return head :bad_request unless %i[exposure isolation].include?(workflow)
 
-    # Validate type param
-    type = params.permit(:type)[:type].to_sym
+    # Validate tab param
+    tab = permitted_params.require(:tab).to_sym
     if workflow == :exposure
-      redirect_to(root_url) && return unless %i[all_patients symptomatic_patients non_reporting_patients asymptomatic_patients pui_patients
-                                                closed_patients transferred_in_patients transferred_out_patients].include?(type)
+      return head :bad_request unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     else
-      redirect_to(root_url) && return unless %i[all_patients requiring_review_patients non_reporting_patients reporting_patients
-                                                closed_patients transferred_in_patients transferred_out_patients].include?(type)
+      return head :bad_request unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
     end
 
-    # Validate assigned jurisdiction param
-    assigned_jurisdiction = params.permit(:assigned_jurisdiction)[:assigned_jurisdiction]
-    redirect_to(root_url) && return unless assigned_jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(assigned_jurisdiction.to_i)
+    # Validate jurisdiction param
+    jurisdiction = permitted_params[:jurisdiction]
+    return head :bad_request unless jurisdiction.nil? || jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(jurisdiction.to_i)
 
     # Validate scope param
-    scope = params.permit(:scope)[:scope].to_sym
-    redirect_to(root_url) && return unless %i[all immediate].include?(scope)
+    scope = permitted_params[:scope]&.to_sym
+    return head :bad_request unless scope.nil? || %i[all exact].include?(scope)
 
-    # Validate assigned user param
-    assigned_user = params.permit(:assigned_user)[:assigned_user]
-    redirect_to(root_url) && return unless %w[all none].include?(assigned_user) || assigned_user.to_i.between?(1, 9999)
+    # Validate user param
+    user = permitted_params[:user]
+    return head :bad_request unless user.nil? || %w[all none].include?(user) || user.to_i.between?(1, 9999)
 
-    # Filter by workflow and type
-    if type == :transferred_in_patients
-      patients = current_user.jurisdiction.transferred_in_patients.where(isolation: workflow == :isolation)
-    elsif type == :transferred_out_patients
-      patients = current_user.jurisdiction.transferred_out_patients.where(isolation: workflow == :isolation)
-    else
-      patients = current_user.viewable_patients
+    # Validate search param
+    search = permitted_params[:search]
 
-      if workflow == :exposure
-        patients = patients.where(isolation: false)
-        patients = patients.exposure_symptomatic if type == :symptomatic_patients
-        patients = patients.exposure_non_reporting if type == :non_reporting_patients
-        patients = patients.exposure_asymptomatic if type == :asymptomatic_patients
-        patients = patients.exposure_under_investigation if type == :pui_patients
-      else
-        patients = patients.where(isolation: true)
-        patients = patients.isolation_requiring_review if type == :requiring_review_patients
-        patients = patients.isolation_non_reporting if type == :non_reporting_patients
-        patients = patients.isolation_reporting if type == :reporting_patients
-      end
+    # Validate pagination params
+    entries = permitted_params[:entries]&.to_i || 25
+    page = permitted_params[:page]&.to_i || 0
+    return head :bad_request unless entries >= 0 && page >= 0
 
-      patients = patients.monitoring_closed_without_purged if type == :closed_patients
-    end
+    # Validate sort params
+    order = permitted_params[:order]
+    return head :bad_request unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user state_local_id sex dob
+                                                                     end_of_monitoring risk_level monitoring_plan public_health_action expected_purge_date
+                                                                     reason_for_closure closed_at transferred_at latest_report].include?(order)
+
+    direction = permitted_params[:direction]
+    return head :bad_request unless direction.nil? || direction.blank? || %w[asc desc].include?(direction)
+    return head :bad_request unless (!order.blank? && !direction.blank?) || (order.blank? && direction.blank?)
+
+    # Get patients by workflow and tab
+    patients = patients_by_type(workflow, tab)
 
     # Filter by assigned jurisdiction
-    unless assigned_jurisdiction == 'all'
-      jur_id = assigned_jurisdiction.to_i
+    unless jurisdiction.nil? || jurisdiction == 'all' || tab == :transferred_out
+      jur_id = jurisdiction.to_i
       patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
     end
 
     # Filter by assigned user
-    patients = patients.where(assigned_user: assigned_user == 'none' ? nil : assigned_user.to_i) unless assigned_user == 'all'
+    patients = patients.where(assigned_user: user == 'none' ? nil : user.to_i) unless user.nil? || user == 'all'
 
-    render json: filter_sort_paginate(params, patients)
+    # Filter by search text
+    patients = filter(patients, search)
+
+    # Sort
+    patients = sort(patients, order, direction)
+
+    # Paginate
+    patients = patients.paginate(per_page: entries, page: page + 1)
+
+    # Extract only relevant fields to be displayed by workflow and tab
+    render json: linelist(patients, workflow, tab)
+  end
+
+  # Get patient counts by workflow
+  def workflow_counts
+    render json: {
+      exposure: current_user.viewable_patients.where(isolation: false, purged: false).size,
+      isolation: current_user.viewable_patients.where(isolation: true, purged: false).size
+    }
+  end
+
+  # Get counts for patients under the given workflow and tab
+  def tab_counts
+    # Validate workflow param
+    workflow = params.require(:workflow).to_sym
+    return head :bad_request unless %i[exposure isolation].include?(workflow)
+
+    # Validate tab param
+    tab = params.require(:tab).to_sym
+    if workflow == :exposure
+      return head :bad_request unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
+    else
+      return head :bad_request unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
+    end
+
+    # Get patients by workflow and tab
+    patients = patients_by_type(workflow, tab)
+
+    render json: { total: patients.size }
   end
 
   # Get all individuals whose responder_id = id, these people are "HOH eligible"
@@ -120,83 +120,163 @@ class PublicHealthController < ApplicationController
 
   protected
 
-  def filter_sort_paginate(params, data)
-    # Filter on search
-    filtered = filter(params, data)
+  def patients_by_type(workflow, tab)
+    return current_user.viewable_patients.where(isolation: workflow == :isolation, purged: false) if tab == :all
+    return current_user.viewable_patients.monitoring_closed_without_purged.where(isolation: workflow == :isolation) if tab == :closed
+    return current_user.jurisdiction.transferred_in_patients.where(isolation: workflow == :isolation) if tab == :transferred_in
+    return current_user.jurisdiction.transferred_out_patients.where(isolation: workflow == :isolation) if tab == :transferred_out
 
-    # Sort on columns
-    sorted = sort(params, filtered)
-
-    # Paginate
-    paginate(params, sorted)
+    if workflow == :exposure
+      return current_user.viewable_patients.exposure_symptomatic if tab == :symptomatic
+      return current_user.viewable_patients.exposure_non_reporting if tab == :non_reporting
+      return current_user.viewable_patients.exposure_asymptomatic if tab == :asymptomatic
+      return current_user.viewable_patients.exposure_under_investigation if tab == :pui
+    else
+      return current_user.viewable_patients.isolation_requiring_review if tab == :requiring_review
+      return current_user.viewable_patients.isolation_non_reporting if tab == :non_reporting
+      return current_user.viewable_patients.isolation_reporting if tab == :reporting
+    end
   end
 
-  def filter(params, data)
-    search = params[:search][:value] unless params[:search].nil?
-    if search.present?
-      data.where('first_name like ?', "#{search}%").or(
-        data.where('last_name like ?', "#{search}%").or(
-          data.where('user_defined_id_statelocal like ?', "#{search}%").or(
-            data.where('user_defined_id_cdc like ?', "#{search}%").or(
-              data.where('user_defined_id_nndss like ?', "#{search}%").or(
-                data.where('date_of_birth like ?', "#{search}%")
-              )
+  def filter(patients, search)
+    return patients if search.nil? || search.blank?
+
+    patients.where('first_name like ?', "#{search}%").or(
+      patients.where('last_name like ?', "#{search}%").or(
+        patients.where('user_defined_id_statelocal like ?', "#{search}%").or(
+          patients.where('user_defined_id_cdc like ?', "#{search}%").or(
+            patients.where('user_defined_id_nndss like ?', "#{search}%").or(
+              patients.where('date_of_birth like ?', "#{search}%")
             )
           )
         )
       )
-    else
-      data
-    end
+    )
   end
 
-  def sort(params, data)
-    return data if params[:order].nil?
+  def sort(patients, order, direction)
+    return patients if order.nil? || order.empty? || direction.nil? || direction.blank?
 
-    sorted = data
-    params[:order].each do |_num, val|
-      next if params[:columns].nil? || val.nil? || val['column'].blank? || params[:columns][val['column']].nil?
-      next if params[:columns][val['column']][:name].blank?
+    # Satisfy brakeman with additional sanitation logic
+    dir = direction == 'asc' ? 'asc' : 'desc'
 
-      direction = val['dir'] == 'asc' ? :asc : :desc
-      if params[:columns][val['column']][:name] == 'name' # Name
-        sorted = sorted.order(last_name: direction).order(first_name: direction)
-      elsif params[:columns][val['column']][:name] == 'jurisdiction' # Jurisdiction
-        sorted = sorted.includes(:jurisdiction).order('jurisdictions.name ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'assigned_user' # Assigned User
-        sorted = sorted.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'state_local_id' # State/Local ID
-        sorted = sorted.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'sex' # Sex
-        sorted = sorted.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'dob' # DOB
-        sorted = sorted.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'end_of_monitoring' # End of Monitoring
-        sorted = sorted.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'expected_purge_date' # Expected Purge Date
-        # Same as end of monitoring
-        sorted = sorted.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'risk' # Risk
-        sorted = sorted.order_by_risk(val['dir'] == 'asc')
-      elsif params[:columns][val['column']][:name] == 'monitoring_plan' # Monitoring Plan
-        sorted = sorted.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'monitoring_reason' # Reason
-        sorted = sorted.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'public_health_action' # PHA
-        sorted = sorted.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'latest_report' # Latest Report
-        sorted = sorted.left_outer_joins(:assessments).order('assessments.created_at ' + direction.to_s)
-      elsif params[:columns][val['column']][:name] == 'closed_at' # Closed At
-        sorted = sorted.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + direction.to_s)
-      end
+    case order
+    when 'name'
+      patients = patients.order(last_name: dir).order(first_name: dir)
+    when 'jurisdiction'
+      patients = patients.includes(:jurisdiction).order('jurisdictions.name ' + dir)
+    when 'transferred_from'
+      patients = patients.joins('INNER JOIN jurisdictions ON jurisdictions.id = patients.latest_transfer_from').order('jurisdictions.path ' + dir)
+    when 'transferred_to'
+      patients = patients.includes(:jurisdiction).order('jurisdictions.path ' + dir)
+    when 'assigned_user'
+      patients = patients.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + dir)
+    when 'state_local_id'
+      patients = patients.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + dir)
+    when 'sex'
+      patients = patients.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + dir)
+    when 'dob'
+      patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir)
+    when 'end_of_monitoring'
+      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
+    when 'risk_level'
+      patients = patients.order_by_risk(dir == 'asc')
+    when 'monitoring_plan'
+      patients = patients.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + dir)
+    when 'public_health_action'
+      patients = patients.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir)
+    when 'expected_purge_date'
+      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
+    when 'reason_for_closure'
+      patients = patients.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + dir)
+    when 'closed_at'
+      patients = patients.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, closed_at ' + dir)
+    when 'transferred_at'
+      patients = patients.order('CASE WHEN latest_transfer_at IS NULL THEN 1 ELSE 0 END, latest_transfer_at ' + dir)
+    when 'latest_report'
+      patients = patients.order('CASE WHEN latest_assessment_at IS NULL THEN 1 ELSE 0 END, latest_assessment_at ' + dir)
     end
-    sorted
+
+    patients
   end
 
-  def paginate(params, data)
-    length = params[:length].to_i
-    page = params[:start].to_i.zero? ? 1 : (params[:start].to_i / length) + 1
-    draw = params[:draw].to_i
-    { data: data.paginate(per_page: length, page: page), draw: draw, recordsTotal: data.size, recordsFiltered: data.size }
+  def linelist(patients, workflow, tab)
+    # get a list of fields relevant only to this linelist
+    fields = linelist_specific_fields(workflow, tab)
+
+    # retrieve proper jurisdiction
+    patients = if tab == :transferred_in
+                 patients.joins('INNER JOIN jurisdictions ON jurisdictions.id = patients.latest_transfer_from')
+               else
+                 patients.joins(:jurisdiction)
+               end
+
+    # only select patient fields necessary to generate linelists
+    patients = patients.select('patients.id, patients.first_name, patients.last_name, patients.user_defined_id_statelocal, patients.sex, '\
+                               'patients.date_of_birth, patients.assigned_user, patients.exposure_risk_assessment, patients.monitoring_plan, '\
+                               'patients.public_health_action, patients.monitoring_reason, patients.closed_at, patients.last_date_of_exposure, '\
+                               'patients.created_at, patients.updated_at, patients.latest_assessment_at, patients.latest_transfer_at, '\
+                               'patients.continuous_exposure, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path')
+
+    # execute query and get total count
+    total = patients.total_entries
+
+    linelist = []
+    patients.each do |patient|
+      # populate fields common to all linelists
+      details = {
+        id: patient[:id],
+        name: patient.displayed_name,
+        state_local_id: patient[:user_defined_id_statelocal] || '',
+        sex: patient[:sex] || '',
+        dob: patient[:date_of_birth]&.strftime('%F') || ''
+      }
+
+      # populate fields specific to this linelist only if relevant
+      details[:jurisdiction] = patient[:jurisdiction_name] || '' if fields.include?(:jurisdiction)
+      details[:transferred_from] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_from)
+      details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
+      details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
+      details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
+      details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
+      details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
+      details[:public_health_action] = patient[:public_health_action] || '' if fields.include?(:public_health_action)
+      details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
+      details[:reason_for_closure] = patient[:monitoring_reason] || '' if fields.include?(:reason_for_closure)
+      details[:closed_at] = patient[:closed_at]&.rfc2822 || '' if fields.include?(:closed_at)
+      details[:transferred_at] = patient[:latest_transfer_at]&.rfc2822 || '' if fields.include?(:transferred_at)
+      details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
+      details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
+
+      linelist << details
+    end
+
+    { linelist: linelist, fields: %i[name state_local_id sex dob].concat(fields), total: total }
+  end
+
+  def linelist_specific_fields(workflow, tab)
+    return %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
+
+    if workflow == :isolation
+      return %i[jurisdiction assigned_user monitoring_plan latest_report status] if tab == :all
+      return %i[transferred_from monitoring_plan transferred_at] if tab == :transferred_in
+      return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
+
+      return %i[jurisdiction assigned_user monitoring_plan latest_report]
+    end
+
+    return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status] if tab == :all
+    return %i[jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report] if tab == :pui
+    return %i[transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_in
+    return %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_out
+
+    %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report]
+  end
+
+  private
+
+  def authenticate_user_role
+    # Restrict access to public health only
+    redirect_to(root_url) && return unless current_user.can_view_public_health_dashboard?
   end
 end

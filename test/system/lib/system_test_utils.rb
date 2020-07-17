@@ -16,10 +16,6 @@ class SystemTestUtils < ApplicationSystemTestCase
   ENROLLMENT_PAGE_TRANSITION_DELAY = 1 # wait for carousel animation to finish
   POP_UP_ALERT_ANIMATION_DELAY = 1 # wait for alert to pop up or dismiss
   MODAL_ANIMATION_DELAY = 0.5 # wait for modal to load
-  ACCEPT_REJECT_DELAY = 0.01 # wait for UI to update after accepting or rejecting monitoree on import
-  DB_WRITE_DELAY = 1.5 # wait for DB write to finish
-  DATA_TABLE_LOAD_DELAY = 0.5 # wait for table data to load
-  EXPORT_DELAY = 0.5 # wait for export job to finish running
 
   def login(user_label)
     visit '/'
@@ -49,7 +45,7 @@ class SystemTestUtils < ApplicationSystemTestCase
   end
 
   def go_to_tab(tab)
-    find("##{tab}-tab").click
+    find("##{tab}_tab").click
   end
 
   def go_to_next_page(wait = true)
@@ -125,26 +121,6 @@ class SystemTestUtils < ApplicationSystemTestCase
 
   def wait_for_modal_animation
     sleep(MODAL_ANIMATION_DELAY)
-  end
-
-  def wait_for_dashboard_load
-    sleep(DASHBOARD_LOAD_DELAY)
-  end
-
-  def wait_for_accept_reject
-    sleep(ACCEPT_REJECT_DELAY)
-  end
-
-  def wait_for_db_write_delay
-    sleep(DB_WRITE_DELAY)
-  end
-
-  def wait_for_data_table_load_delay
-    sleep(DATA_TABLE_LOAD_DELAY)
-  end
-
-  def wait_for_export_delay
-    sleep(EXPORT_DELAY)
   end
 
   def assessments

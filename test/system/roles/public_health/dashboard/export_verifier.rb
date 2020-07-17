@@ -6,7 +6,7 @@ require 'roo'
 require_relative '../../../lib/system_test_utils'
 
 class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
-  include ImportExportHelper
+  include ImportExport
   @@system_test_utils = SystemTestUtils.new(nil)
 
   DOWNLOAD_TIMEOUT = 10
@@ -63,12 +63,10 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       assert_equal(patient[:id].to_s, csv[row][0], 'For field: id')
       details = patient.linelist
       details.keys.each_with_index do |field, col|
-        if field == :name
-          assert_equal(details[field][:name], csv[row][col + 1], "For field: #{field}")
-        elsif [true, false].include?(details[field])
-          assert_equal(details[field] ? 'true' : 'false', csv[row][col + 1], "For field: #{field}")
+        if [true, false].include?(details[field])
+          assert_equal(details[field] ? 'true' : 'false', csv[row][col], "For field: #{field}")
         else
-          assert_equal(details[field].to_s, csv[row][col + 1].to_s, "For field: #{field}")
+          assert_equal(details[field].to_s, csv[row][col].to_s, "For field: #{field}")
         end
       end
     end
@@ -172,7 +170,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   end
 
   def download_file(current_user, export_type)
-    @@system_test_utils.wait_for_export_delay
+    sleep(0.5) # wait for export and download to complete
     download = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).first
     visit "/export/download/#{download.lookup}"
     download.filename

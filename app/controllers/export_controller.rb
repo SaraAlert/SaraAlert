@@ -4,7 +4,7 @@ require 'axlsx'
 
 # ExportController: for exporting subjects
 class ExportController < ApplicationController
-  include ImportExportHelper
+  include ImportExport
 
   before_action :authenticate_user!
 
@@ -63,6 +63,6 @@ class ExportController < ApplicationController
     history.patient = patients.first
     history.history_type = 'Monitoree Data Downloaded'
     history.save
-    send_data build_excel_export_for_patients(patients)
+    send_data excel_export(patients)
   end
 end

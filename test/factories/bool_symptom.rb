@@ -5,7 +5,7 @@ FactoryBot.define do
     type { 'BoolSymptom' }
     bool_value { Faker::Boolean.boolean }
 
-    factory :fever_medication_symptom do
+    factory :fever_reducer_symptom do
       name { 'used-a-fever-reducer' }
       bool_value { true }
     end

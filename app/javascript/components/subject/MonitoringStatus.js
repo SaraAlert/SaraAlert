@@ -275,7 +275,7 @@ class MonitoringStatus extends React.Component {
           message: this.state.message,
           reasoning:
             (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
-              ? this.state.monitoring_reason + (this.state.reasoning ? ', ' : '')
+              ? this.state.monitoring_reason + (this.state.reasoning !== '' ? ', ' : '')
               : '') + this.state.reasoning,
           monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_reason : null,
           jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdiction_path),
@@ -362,6 +362,9 @@ class MonitoringStatus extends React.Component {
           )}
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           {this.state.monitoring_reasons && !this.state.monitoring_reason ? (
             <Button variant="primary btn-square" disabled>
               Submit
@@ -376,9 +379,6 @@ class MonitoringStatus extends React.Component {
               Submit
             </Button>
           )}
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
-          </Button>
         </Modal.Footer>
       </Modal>
     );

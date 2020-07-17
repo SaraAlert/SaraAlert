@@ -1,56 +1,56 @@
 assessment_1:
   symptoms:
     - id: 1
-      label: "Fever"
+      label: 'Fever'
       bool_value: true
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
     - id: 2
-      label: "Cough"
+      label: 'Cough'
       bool_value: true
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
     - id: 3
-      label: "Difficulty Breathing"
+      label: 'Difficulty Breathing'
       bool_value: true
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
 assessment_2:
   symptoms:
     - id: 1
-      label: "Fever"
+      label: 'Fever'
       bool_value: false
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
     - id: 2
-      label: "Cough"
+      label: 'Cough'
       bool_value: true
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
     - id: 3
-      label: "Difficulty Breathing"
+      label: 'Difficulty Breathing'
       bool_value: true
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
 assessment_3:
   symptoms:
     - id: 1
-      label: "Fever"
+      label: 'Fever'
       bool_value: false
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
     - id: 2
-      label: "Cough"
+      label: 'Cough'
       bool_value: false
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
     - id: 3
-      label: "Difficulty Breathing"
+      label: 'Difficulty Breathing'
       bool_value: false
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
 assessment_4:
   symptoms:
     - id: 1
-      label: "Fever"
+      label: 'Fever'
       bool_value: false
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
     - id: 2
-      label: "Cough"
+      label: 'Cough'
       bool_value: true
-      type: "BoolSymptom"
+      type: 'BoolSymptom'
     - id: 3
-      label: "Difficulty Breathing"
+      label: 'Difficulty Breathing'
       bool_value: false
-      type: "BoolSymptom"
+      type: 'BoolSymptom'

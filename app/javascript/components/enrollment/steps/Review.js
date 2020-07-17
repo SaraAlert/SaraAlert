@@ -48,11 +48,11 @@ class Review extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
-            Continue
-          </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
+          </Button>
+          <Button variant="primary btn-square" onClick={submit}>
+            Continue
           </Button>
         </Modal.Footer>
       </Modal>

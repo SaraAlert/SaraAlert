@@ -49,6 +49,9 @@ class SendReminder extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
@@ -56,9 +59,6 @@ class SendReminder extends React.Component {
               </React.Fragment>
             )}
             Send
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>

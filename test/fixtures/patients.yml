@@ -1,342 +1,363 @@
 patient_1:
   id: 1
-  created_at: "<%= 35.days.ago %>"
-  updated_at: "<%= 35.days.ago %>"
+  created_at: <%= 35.days.ago %>
+  updated_at: <%= 35.days.ago %>
   responder_id: 1
   creator_id: 1
   jurisdiction_id: 2
-  submission_token: "de8c267224b17cb977cd1787c2237693df17b703"
+  submission_token: 'de8c267224b17cb977cd1787c2237693df17b703'
   monitoring: true
-  user_defined_id_statelocal: "EX-349212"
-  first_name: "Domingo54"
-  middle_name: "Simonis31"
-  last_name: "Boehm62"
-  date_of_birth: "<%= 25.years.ago %>"
-  sex: "Male"
+  user_defined_id_statelocal: 'EX-349212'
+  first_name: 'Domingo54'
+  middle_name: 'Simonis31'
+  last_name: 'Boehm62'
+  date_of_birth: <%= 25.years.ago %>
+  sex: 'Male'
   american_indian_or_alaska_native: true
-  ethnicity: "Not Hispanic or Latino"
-  primary_language: "English"
-  address_line_1: "76640 Barney Street"
-  address_city: "South Lenport"
-  address_state: "New York"
-  address_zip: "41987-5448"
-  address_county: "Monroe"
-  monitored_address_line_1: "77289 Noma Row"
-  monitored_address_city: "Grahamshire"
-  monitored_address_state: "California"
-  monitored_address_zip: "03824"
-  primary_telephone: "(555) 555-0111"
-  primary_telephone_type: "Smartphone"
-  secondary_telephone: "(555) 555-0112"
-  secondary_telephone_type: "Landline"
-  email: "jeremy@example.com"
-  preferred_contact_method: "Telephone call"
-  preferred_contact_time: "Morning"
-  port_of_origin: "South Mandieshire"
-  source_of_report: "Self_Identified"
-  flight_or_vessel_number: "W345"
-  flight_or_vessel_carrier: "Brady Airlines"
-  port_of_entry_into_usa: "South Hershelmouth"
-  additional_planned_travel_type: "Domestic"
-  additional_planned_travel_destination: "Saulchester"
-  additional_planned_travel_destination_state: "Carolside"
-  additional_planned_travel_port_of_departure: "New Vaughn"
-  date_of_departure: "<%= 45.days.ago %>"
-  date_of_arrival: "<%= 45.days.ago %>"
-  additional_planned_travel_start_date: "<%= 44.days.ago %>"
-  additional_planned_travel_end_date: "<%= 35.days.ago %>"
-  last_date_of_exposure: "<%= 45.days.ago %>"
-  potential_exposure_location: "East Troy"
-  potential_exposure_country: "Malaysia"
+  ethnicity: 'Not Hispanic or Latino'
+  primary_language: 'English'
+  address_line_1: '76640 Barney Street'
+  address_city: 'South Lenport'
+  address_state: 'New York'
+  address_zip: '41987-5448'
+  address_county: 'Monroe'
+  monitored_address_line_1: '77289 Noma Row'
+  monitored_address_city: 'Grahamshire'
+  monitored_address_state: 'California'
+  monitored_address_zip: '03824'
+  primary_telephone: '(555) 555-0111'
+  primary_telephone_type: 'Smartphone'
+  secondary_telephone: '(555) 555-0112'
+  secondary_telephone_type: 'Landline'
+  email: 'jeremy@example.com'
+  preferred_contact_method: 'Telephone call'
+  preferred_contact_time: 'Morning'
+  port_of_origin: 'South Mandieshire'
+  source_of_report: 'Self_Identified'
+  flight_or_vessel_number: 'W345'
+  flight_or_vessel_carrier: 'Brady Airlines'
+  port_of_entry_into_usa: 'South Hershelmouth'
+  additional_planned_travel_type: 'Domestic'
+  additional_planned_travel_destination: 'Saulchester'
+  additional_planned_travel_destination_state: 'Carolside'
+  additional_planned_travel_port_of_departure: 'New Vaughn'
+  date_of_departure: <%= 45.days.ago %>
+  date_of_arrival: <%= 45.days.ago %>
+  additional_planned_travel_start_date: <%= 44.days.ago %>
+  additional_planned_travel_end_date: <%= 35.days.ago %>
+  last_date_of_exposure: <%= 45.days.ago %>
+  potential_exposure_location: 'East Troy'
+  potential_exposure_country: 'Malaysia'
   travel_to_affected_country_or_area: true
-  symptom_onset: "<%= 5.days.ago %>"
+  symptom_onset: <%= 5.days.ago %>
+  latest_assessment_at: <%= 36.days.ago %>
+  latest_positive_lab_at: <%= 5.days.ago %>
+  negative_lab_count: 1
 patient_2:
   id: 2
-  created_at: "<%= 45.days.ago %>"
-  updated_at: "<%= 45.days.ago %>"
+  created_at: <%= 45.days.ago %>
+  updated_at: <%= 45.days.ago %>
   responder_id: 2
   creator_id: 4
   jurisdiction_id: 2
   assigned_user: 7493
-  submission_token: "0badf6de985b9d1d954db6f6c80d1d367e5975d5"
+  submission_token: '0badf6de985b9d1d954db6f6c80d1d367e5975d5'
   monitoring: true
-  user_defined_id_statelocal: "EX-904188"
-  first_name: "Chris32"
-  middle_name: "Abernathy31"
-  last_name: "Kirlin44"
-  date_of_birth: "<%= 29.years.ago %>"
-  sex: "Male"
+  user_defined_id_statelocal: 'EX-904188'
+  first_name: 'Chris32'
+  middle_name: 'Abernathy31'
+  last_name: 'Kirlin44'
+  date_of_birth: <%= 29.years.ago %>
+  sex: 'Male'
   native_hawaiian_or_other_pacific_islander: true
-  ethnicity: "Hispanic or Latino"
-  primary_language: "English"
-  address_line_1: "358 Stefany Village"
-  address_city: "Spinkaville"
-  address_state: "California"
-  address_county: "Monroe"
-  address_zip: "19521"
-  monitored_address_line_1: "358 Stefany Village"
-  monitored_address_city: "Spinkaville"
-  monitored_address_state: "New Hampshire"
-  monitored_address_zip: "19521"
-  primary_telephone: "(555) 555-0141"
-  primary_telephone_type: "Plain Cell"
-  secondary_telephone: "(555) 555-0167"
-  secondary_telephone_type: "Landline"
-  email: "grazyna@example.com"
-  preferred_contact_method: "Telephone call"
-  port_of_origin: "Lake Franklynfurt"
-  source_of_report: "Self_Identified"
-  flight_or_vessel_number: "T343"
-  flight_or_vessel_carrier: "Morton Airlines"
-  port_of_entry_into_usa: "Brittanieshire"
-  date_of_departure: "<%= 45.days.ago %>"
-  date_of_arrival: "<%= 45.days.ago %>"
-  last_date_of_exposure: "<%= 47.days.ago %>"
-  potential_exposure_location: "East Vernaland"
-  potential_exposure_country: "United States Minor Outlying Islands"
+  ethnicity: 'Hispanic or Latino'
+  primary_language: 'English'
+  address_line_1: '358 Stefany Village'
+  address_city: 'Spinkaville'
+  address_state: 'California'
+  address_county: 'Monroe'
+  address_zip: '19521'
+  monitored_address_line_1: '358 Stefany Village'
+  monitored_address_city: 'Spinkaville'
+  monitored_address_state: 'New Hampshire'
+  monitored_address_zip: '19521'
+  primary_telephone: '(555) 555-0141'
+  primary_telephone_type: 'Plain Cell'
+  secondary_telephone: '(555) 555-0167'
+  secondary_telephone_type: 'Landline'
+  email: 'grazyna@example.com'
+  preferred_contact_method: 'Telephone call'
+  port_of_origin: 'Lake Franklynfurt'
+  source_of_report: 'Self_Identified'
+  flight_or_vessel_number: 'T343'
+  flight_or_vessel_carrier: 'Morton Airlines'
+  port_of_entry_into_usa: 'Brittanieshire'
+  date_of_departure: <%= 45.days.ago %>
+  date_of_arrival: <%= 45.days.ago %>
+  last_date_of_exposure: <%= 47.days.ago %>
+  potential_exposure_location: 'East Vernaland'
+  potential_exposure_country: 'United States Minor Outlying Islands'
   was_in_health_care_facility_with_known_cases: true
   pause_notifications: true
+  latest_assessment_at: <%= 36.days.ago %>
 patient_3:
   id: 3
-  created_at: "<%= 45.days.ago %>"
-  updated_at: "<%= 45.days.ago %>"
+  created_at: <%= 45.days.ago %>
+  updated_at: <%= 45.days.ago %>
   responder_id: 3
   creator_id: 2
   jurisdiction_id: 2
-  submission_token: "9ad102d900d807c6f7e41c2d01d13b678278705b"
+  submission_token: '9ad102d900d807c6f7e41c2d01d13b678278705b'
   monitoring: true
-  first_name: "Brianne43"
-  last_name: "Johnson09"
-  date_of_birth: "<%= 42.years.ago %>"
-  sex: "Female"
-  address_line_1: "41585 Sauer Divide"
-  address_city: "North Ranae"
-  address_state: "California"
-  address_zip: "19521"
-  primary_telephone: "(555) 555-0142"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 47.days.ago %>"
+  first_name: 'Brianne43'
+  last_name: 'Johnson09'
+  date_of_birth: <%= 42.years.ago %>
+  sex: 'Female'
+  address_line_1: '41585 Sauer Divide'
+  address_city: 'North Ranae'
+  address_state: 'California'
+  address_zip: '19521'
+  primary_telephone: '(555) 555-0142'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 47.days.ago %>
+  symptom_onset: <%= 23.days.ago %>
+  latest_assessment_at: <%= 23.days.ago %>
+  latest_transfer_at: <%= 4.hours.ago %>
+  latest_transfer_from: 4
 patient_4:
   id: 4
-  created_at: "<%= 45.days.ago %>"
-  updated_at: "<%= 45.days.ago %>"
+  created_at: <%= 45.days.ago %>
+  updated_at: <%= 45.days.ago %>
   responder_id: 4
   creator_id: 3
   jurisdiction_id: 4
   assigned_user: 8
-  submission_token: "4ce17914ec60b9a9ceec9c9e1314d940542c2820"
+  submission_token: '4ce17914ec60b9a9ceec9c9e1314d940542c2820'
   monitoring: true
-  first_name: "Lavern91"
-  last_name: "Ruecker20"
-  date_of_birth: "<%= 16.years.ago %>"
-  sex: "Female"
-  address_line_1: "91227 Rueben Skyway"
-  address_city: "Port Kaycee"
-  address_state: "New York"
-  address_zip: "15212"
-  primary_telephone: "(555) 555-0146"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 27.days.ago %>"
+  first_name: 'Lavern91'
+  last_name: 'Ruecker20'
+  date_of_birth: <%= 16.years.ago %>
+  sex: 'Female'
+  address_line_1: '91227 Rueben Skyway'
+  address_city: 'Port Kaycee'
+  address_state: 'New York'
+  address_zip: '15212'
+  primary_telephone: '(555) 555-0146'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 27.days.ago %>
+  latest_assessment_at: <%= 6.hours.ago %>
+  latest_transfer_at: <%= 10.hours.ago %>
+  latest_transfer_from: 2
 patient_5:
   id: 5
-  created_at: "<%= 45.days.ago %>"
-  updated_at: "<%= 45.days.ago %>"
+  created_at: <%= 45.days.ago %>
+  updated_at: <%= 45.days.ago %>
   responder_id: 5
   creator_id: 2
   jurisdiction_id: 2
-  submission_token: "746fb25b5d6b2eb7b3cc8c1eae2862900e39759f"
+  submission_token: '746fb25b5d6b2eb7b3cc8c1eae2862900e39759f'
   monitoring: false
-  closed_at: "<%= 1.hour.ago %>"
-  first_name: "Nicolas00"
-  last_name: "McClure72"
-  date_of_birth: "<%= 14.years.ago %>"
-  sex: "Unknown"
-  address_line_1: "74671 Beahan Stravenue"
-  address_city: "South Wilmertown"
-  address_state: "New York"
-  address_county: "Warren"
-  address_zip: "08291"
-  primary_telephone: "(555) 555-0148"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "Self_Identified"
+  closed_at: <%= 1.hour.ago %>
+  first_name: 'Nicolas00'
+  last_name: 'McClure72'
+  date_of_birth: <%= 14.years.ago %>
+  sex: 'Unknown'
+  address_line_1: '74671 Beahan Stravenue'
+  address_city: 'South Wilmertown'
+  address_state: 'New York'
+  address_county: 'Warren'
+  address_zip: '08291'
+  primary_telephone: '(555) 555-0148'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'Self_Identified'
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "<%= 66.days.ago %>"
+  last_date_of_exposure: <%= 66.days.ago %>
   pause_notifications: true
+  symptom_onset: <%= 24.days.ago %>
+  latest_assessment_at: <%= 24.days.ago %>
 patient_6:
   id: 6
-  created_at: "<%= 45.days.ago %>"
-  updated_at: "<%= 45.days.ago %>"
+  created_at: <%= 45.days.ago %>
+  updated_at: <%= 45.days.ago %>
   responder_id: 6
   creator_id: 2
   jurisdiction_id: 5
-  submission_token: "655e9f85a5a66d60ea0a2fffbd67526847851356"
+  submission_token: '655e9f85a5a66d60ea0a2fffbd67526847851356'
   monitoring: true
-  first_name: "Kendall65"
-  last_name: "Roberts79"
-  date_of_birth: "<%= 42.years.ago %>"
-  sex: "Male"
-  address_line_1: "3212 Granville Corners"
-  address_city: "Emoryburgh"
-  address_state: "California"
-  address_zip: "39204"
-  address_county: "Monroe"
-  primary_telephone: "(555) 555-0152"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
+  first_name: 'Kendall65'
+  last_name: 'Roberts79'
+  date_of_birth: <%= 42.years.ago %>
+  sex: 'Male'
+  address_line_1: '3212 Granville Corners'
+  address_city: 'Emoryburgh'
+  address_state: 'California'
+  address_zip: '39204'
+  address_county: 'Monroe'
+  primary_telephone: '(555) 555-0152'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "<%= 22.days.ago %>"
+  last_date_of_exposure: <%= 22.days.ago %>
   public_health_action: 'Recommended medical evaluation of symptoms'
+  latest_transfer_at: <%= 7.days.ago %>
+  latest_transfer_from: 5
 patient_7:
   id: 7
-  created_at: "<%= 45.days.ago %>"
-  updated_at: "<%= 45.days.ago %>"
+  created_at: <%= 45.days.ago %>
+  updated_at: <%= 45.days.ago %>
   responder_id: 7
   creator_id: 3
   jurisdiction_id: 2
   assigned_user: 6379
-  submission_token: "0c5047b6101d1fb0f5e3c257d8b074dbfe2e9d2c"
+  submission_token: '0c5047b6101d1fb0f5e3c257d8b074dbfe2e9d2c'
   monitoring: true
-  first_name: "Emory10"
+  first_name: 'Emory10'
   last_name: "O'Reilly83"
-  date_of_birth: "<%= 46.years.ago %>"
-  sex: "Unknown"
-  address_line_1: "55068 Elliott Garden"
-  address_city: "Mohammedville"
-  address_state: "New York"
-  address_county: "Pike"
-  address_zip: "16810-0047"
-  primary_telephone: "(555) 555-0164"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
+  date_of_birth: <%= 46.years.ago %>
+  sex: 'Unknown'
+  address_line_1: '55068 Elliott Garden'
+  address_city: 'Mohammedville'
+  address_state: 'New York'
+  address_county: 'Pike'
+  address_zip: '16810-0047'
+  primary_telephone: '(555) 555-0164'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "<%= 83.days.ago %>"
+  last_date_of_exposure: <%= 83.days.ago %>
   public_health_action: 'Recommended medical evaluation of symptoms'
 patient_8:
   id: 8
-  created_at: "<%= 17.days.ago %>"
-  updated_at: "<%= 17.days.ago %>"
+  created_at: <%= 17.days.ago %>
+  updated_at: <%= 17.days.ago %>
   responder_id: 8
   creator_id: 3
   jurisdiction_id: 2
   assigned_user: 6379
-  submission_token: "e475c6380a6fc306acf77c1f803fdc1a25fc6753"
+  submission_token: 'e475c6380a6fc306acf77c1f803fdc1a25fc6753'
   monitoring: true
-  first_name: "Carmelina02"
-  last_name: "Kunze43"
-  date_of_birth: "<%= 8.years.ago %>"
-  sex: "Female"
-  address_line_1: "94238 Douglas Tunnel"
-  address_city: "Port Kermithaven"
-  address_state: "Delaware"
-  address_zip: "62431-6865"
-  address_county: "Pike"
-  primary_telephone: "(555) 555-0169"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
+  first_name: 'Carmelina02'
+  last_name: 'Kunze43'
+  date_of_birth: <%= 8.years.ago %>
+  sex: 'Female'
+  address_line_1: '94238 Douglas Tunnel'
+  address_city: 'Port Kermithaven'
+  address_state: 'Delaware'
+  address_zip: '62431-6865'
+  address_county: 'Pike'
+  primary_telephone: '(555) 555-0169'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "<%= 41.days.ago %>"
+  last_date_of_exposure: <%= 41.days.ago %>
   public_health_action: 'Recommended medical evaluation of symptoms'
   pause_notifications: true
+  latest_assessment_at: <%= 5.hours.ago %>
+  latest_transfer_at: <%= 7.days.ago %>
+  latest_transfer_from: 2
 patient_9:
   id: 9
-  created_at: "<%= 17.days.ago %>"
-  updated_at: "<%= 17.days.ago %>"
+  created_at: <%= 17.days.ago %>
+  updated_at: <%= 17.days.ago %>
   responder_id: 9
   creator_id: 3
   jurisdiction_id: 3
   assigned_user: 297
-  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  submission_token: 'aab76adaa4fefdc714e421f47e9abbfb3eb4f92a'
   monitoring: true
-  first_name: "Borer35"
-  last_name: "Pollich01"
-  date_of_birth: "<%= 6.years.ago %>"
-  sex: "Female"
-  address_line_1: "65278 Ledner Island"
-  address_city: "West Amosfurt"
-  address_state: "Delaware"
-  address_zip: "62431-6865"
-  address_county: "Jackson"
-  primary_telephone: "(555) 555-0189"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
+  first_name: 'Borer35'
+  last_name: 'Pollich01'
+  date_of_birth: <%= 6.years.ago %>
+  sex: 'Female'
+  address_line_1: '65278 Ledner Island'
+  address_city: 'West Amosfurt'
+  address_state: 'Delaware'
+  address_zip: '62431-6865'
+  address_county: 'Jackson'
+  primary_telephone: '(555) 555-0189'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "<%= 41.days.ago %>"
+  last_date_of_exposure: <%= 41.days.ago %>
   public_health_action: 'Recommended medical evaluation of symptoms'
   pause_notifications: true
+  symptom_onset: <%= 24.days.ago %>
+  latest_assessment_at: <%= 10.hours.ago %>
 patient_10:
   id: 10
-  created_at: "<%= 8.days.ago %>"
-  updated_at: "<%= 8.days.ago %>"
+  created_at: <%= 8.days.ago %>
+  updated_at: <%= 8.days.ago %>
   responder_id: 10
   creator_id: 3
   jurisdiction_id: 7
   assigned_user: 1098
-  submission_token: "84a2182880cddef4935b76ae5395e069b185a996"
+  submission_token: '84a2182880cddef4935b76ae5395e069b185a996'
   monitoring: true
-  first_name: "Hettinger54"
-  last_name: "Schmitt03"
-  date_of_birth: "<%= 9.years.ago %>"
-  address_line_1: "7135 Michaela Stravenue"
-  address_city: "North Maciefort"
-  address_state: "Massachusetts"
-  address_zip: "62431-6865"
-  address_county: "Jackson"
-  primary_telephone: "(555) 555-0173"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
+  first_name: 'Hettinger54'
+  last_name: 'Schmitt03'
+  date_of_birth: <%= 9.years.ago %>
+  address_line_1: '7135 Michaela Stravenue'
+  address_city: 'North Maciefort'
+  address_state: 'Massachusetts'
+  address_zip: '62431-6865'
+  address_county: 'Jackson'
+  primary_telephone: '(555) 555-0173'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "<%= 22.days.ago %>"
+  last_date_of_exposure: <%= 22.days.ago %>
   public_health_action: 'Recommended medical evaluation of symptoms'
+  latest_assessment_at: <%= 18.hours.ago %>
 patient_11:
   id: 11
-  created_at: "<%= 8.days.ago %>"
-  updated_at: "<%= 8.days.ago %>"
+  created_at: <%= 8.days.ago %>
+  updated_at: <%= 8.days.ago %>
   responder_id: 11
   creator_id: 3
   jurisdiction_id: 6
   assigned_user: 79
-  submission_token: "5f85adc4bb3191c54918e90311bd252909b4c129"
+  submission_token: '5f85adc4bb3191c54918e90311bd252909b4c129'
   monitoring: true
-  first_name: "Danelle24"
-  last_name: "Nikolaus58"
-  date_of_birth: "<%= 6.years.ago %>"
+  first_name: 'Danelle24'
+  last_name: 'Nikolaus58'
+  date_of_birth: <%= 6.years.ago %>
   exposure_risk_assessment: 'Medium'
-  address_line_1: "55660 McCullough Summit"
-  address_city: "South Arthur"
-  address_state: "Massachusetts"
-  address_zip: "62431-6865"
-  address_county: "Suffolk"
-  primary_telephone: "(555) 555-0174"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 27.days.ago %>"
+  address_line_1: '55660 McCullough Summit'
+  address_city: 'South Arthur'
+  address_state: 'Massachusetts'
+  address_zip: '62431-6865'
+  address_county: 'Suffolk'
+  primary_telephone: '(555) 555-0174'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 27.days.ago %>
   public_health_action: 'Recommended medical evaluation of symptoms'
 patient_12:
   id: 12
-  created_at: "<%= 6.days.ago %>"
-  updated_at: "<%= 6.days.ago %>"
+  created_at: <%= 6.days.ago %>
+  updated_at: <%= 6.days.ago %>
   jurisdiction_id: 1
   monitoring: true
-  first_name: "David"
-  last_name: "Smith"
-  sex: "Male"
-  date_of_birth: "<%= 100.years.ago %>"
-  address_state: "Massachusetts"
-  address_county: "Suffolk"
+  first_name: 'David'
+  last_name: 'Smith'
+  sex: 'Male'
+  date_of_birth: <%= 100.years.ago %>
+  address_state: 'Massachusetts'
+  address_county: 'Suffolk'
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "<%= 35.days.ago %>"
-  potential_exposure_country: "China"
+  last_date_of_exposure: <%= 35.days.ago %>
+  potential_exposure_country: 'China'
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: true
@@ -347,19 +368,19 @@ patient_12:
   public_health_action: 'Recommended laboratory testing'
 patient_13:
   id: 13
-  created_at: "<%= 4.days.ago %>"
-  updated_at: "<%= 4.days.ago %>"
+  created_at: <%= 4.days.ago %>
+  updated_at: <%= 4.days.ago %>
   jurisdiction_id: 1
   monitoring: true
-  first_name: "Stephen"
-  last_name: "Yoo"
-  sex: "Male"
-  date_of_birth: "<%= 69.years.ago %>"
-  address_state: "Massachusetts"
-  address_county: "Suffolk"
+  first_name: 'Stephen'
+  last_name: 'Yoo'
+  sex: 'Male'
+  date_of_birth: <%= 69.years.ago %>
+  address_state: 'Massachusetts'
+  address_county: 'Suffolk'
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "<%= 179.days.ago %>"
-  potential_exposure_country: "Korea"
+  last_date_of_exposure: <%= 179.days.ago %>
+  potential_exposure_country: 'Korea'
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: true
@@ -370,19 +391,19 @@ patient_13:
   public_health_action: 'Recommended laboratory testing'
 patient_14:
   id: 14
-  created_at: "<%= 4.days.ago %>"
-  updated_at: "<%= 4.days.ago %>"
+  created_at: <%= 4.days.ago %>
+  updated_at: <%= 4.days.ago %>
   jurisdiction_id: 1
   monitoring: false
-  closed_at: "<%= 5.hours.ago %>"
-  first_name: "Sarah"
-  last_name: "Chung"
-  sex: "Female"
-  date_of_birth: "<%= 66.years.ago %>"
-  address_state: "Massachusetts"
+  closed_at: <%= 5.hours.ago %>
+  first_name: 'Sarah'
+  last_name: 'Chung'
+  sex: 'Female'
+  date_of_birth: <%= 66.years.ago %>
+  address_state: 'Massachusetts'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "<%= 318.days.ago %>"
-  potential_exposure_country: "Brazil"
+  last_date_of_exposure: <%= 318.days.ago %>
+  potential_exposure_country: 'Brazil'
   contact_of_known_case: true
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: false
@@ -393,19 +414,19 @@ patient_14:
   public_health_action: 'Recommended medical evaluation of symptoms'
 patient_15:
   id: 15
-  created_at: "<%= 3.days.ago %>"
-  updated_at: "<%= 3.days.ago %>"
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= 3.days.ago %>
   jurisdiction_id: 1
   monitoring: true
-  first_name: "Jon"
-  last_name: "Snow"
-  sex: "Unknown"
-  date_of_birth: "<%= 50.years.ago %>"
-  address_state: "Massachusetts"
-  address_county: "Lake"
+  first_name: 'Jon'
+  last_name: 'Snow'
+  sex: 'Unknown'
+  date_of_birth: <%= 50.years.ago %>
+  address_state: 'Massachusetts'
+  address_county: 'Lake'
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: "<%= 134.days.ago %>"
-  potential_exposure_country: "Iceland"
+  last_date_of_exposure: <%= 134.days.ago %>
+  potential_exposure_country: 'Iceland'
   contact_of_known_case: false
   travel_to_affected_country_or_area: false
   was_in_health_care_facility_with_known_cases: true
@@ -417,19 +438,19 @@ patient_15:
   pause_notifications: true
 patient_16:
   id: 16
-  created_at: "<%= 2.days.ago %>"
-  updated_at: "<%= 2.days.ago %>"
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 2.days.ago %>
   jurisdiction_id: 1
   monitoring: true
-  first_name: "Stephen"
-  last_name: "Curry"
-  sex: "Male"
-  date_of_birth: "<%= 45.years.ago %>"
-  address_state: "Massachusetts"
-  address_county: "Lake"
+  first_name: 'Stephen'
+  last_name: 'Curry'
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
+  address_state: 'Massachusetts'
+  address_county: 'Lake'
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: "<%= 26.days.ago %>"
-  potential_exposure_country: "Faroe Islands"
+  last_date_of_exposure: <%= 26.days.ago %>
+  potential_exposure_country: 'Faroe Islands'
   contact_of_known_case: true
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: false
@@ -440,19 +461,19 @@ patient_16:
   public_health_action: 'Document results of medical evaluation'
 patient_17:
   id: 17
-  created_at: "<%= 1.day.ago %>"
-  updated_at: "<%= 1.day.ago %>"
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
   jurisdiction_id: 1
   monitoring: true
-  first_name: "Arya"
-  last_name: "Stark"
-  sex: "Unknown"
-  date_of_birth: "<%= 36.years.ago %>"
-  address_state: "Massachusetts"
-  address_county: "Lake"
+  first_name: 'Arya'
+  last_name: 'Stark'
+  sex: 'Unknown'
+  date_of_birth: <%= 36.years.ago %>
+  address_state: 'Massachusetts'
+  address_county: 'Lake'
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "<%= 84.days.ago %>"
-  potential_exposure_country: "Faroe Islands"
+  last_date_of_exposure: <%= 84.days.ago %>
+  potential_exposure_country: 'Faroe Islands'
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: false
@@ -463,20 +484,20 @@ patient_17:
   public_health_action: 'Recommended medical evaluation of symptoms'
 patient_18:
   id: 18
-  created_at: "<%= 23.hours.ago %>"
-  updated_at: "<%= 23.hours.ago %>"
+  created_at: <%= 23.hours.ago %>
+  updated_at: <%= 23.hours.ago %>
   jurisdiction_id: 1
   monitoring: false
-  closed_at: "<%= 5.days.ago %>"
-  first_name: "Theon"
-  last_name: "Greyjoy"
-  sex: "Unknown"
-  date_of_birth: "<%= 35.years.ago %>"
-  address_state: "Massachusetts"
-  address_county: "Lake"
+  closed_at: <%= 5.days.ago %>
+  first_name: 'Theon'
+  last_name: 'Greyjoy'
+  sex: 'Unknown'
+  date_of_birth: <%= 35.years.ago %>
+  address_state: 'Massachusetts'
+  address_county: 'Lake'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "<%= 322.days.ago %>"
-  potential_exposure_country: "Malaysia"
+  last_date_of_exposure: <%= 322.days.ago %>
+  potential_exposure_country: 'Malaysia'
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: true
@@ -487,18 +508,18 @@ patient_18:
   public_health_action: 'Document results of medical evaluation'
 patient_19:
   id: 19
-  created_at: "<%= 15.hours.ago %>"
-  updated_at: "<%= 15.hours.ago %>"
+  created_at: <%= 15.hours.ago %>
+  updated_at: <%= 15.hours.ago %>
   jurisdiction_id: 1
   monitoring: true
-  first_name: "Laura"
-  last_name: "Smith"
-  sex: "Female"
-  date_of_birth: "<%= 19.years.ago %>"
-  address_county: "Lake"
+  first_name: 'Laura'
+  last_name: 'Smith'
+  sex: 'Female'
+  date_of_birth: <%= 19.years.ago %>
+  address_county: 'Lake'
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "<%= 34.days.ago %>"
-  potential_exposure_country: "Malaysia"
+  last_date_of_exposure: <%= 34.days.ago %>
+  potential_exposure_country: 'Malaysia'
   contact_of_known_case: true
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: false
@@ -510,17 +531,17 @@ patient_19:
   pause_notifications: true
 patient_20:
   id: 20
-  created_at: "<%= 4.hours.ago %>"
-  updated_at: "<%= 4.hours.ago %>"
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 1
   monitoring: true
-  first_name: "Ruby"
-  last_name: "Kim"
-  sex: "Female"
-  date_of_birth: "<%= 5.years.ago %>"
+  first_name: 'Ruby'
+  last_name: 'Kim'
+  sex: 'Female'
+  date_of_birth: <%= 5.years.ago %>
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: "<%= 1.day.ago %>"
-  potential_exposure_country: "Malaysia"
+  last_date_of_exposure: <%= 1.day.ago %>
+  potential_exposure_country: 'Malaysia'
   contact_of_known_case: false
   travel_to_affected_country_or_area: true
   was_in_health_care_facility_with_known_cases: true
@@ -533,499 +554,510 @@ patient_21:
   id: 21
   jurisdiction_id: 8
   monitoring: true
-  address_state: "American Samoa"
+  address_state: 'American Samoa'
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: "<%= 1.week.ago %>"
+  last_date_of_exposure: <%= 1.week.ago %>
 patient_22:
   id: 22
   jurisdiction_id: 8
   monitoring: true
-  address_state: "American Samoa"
+  address_state: 'American Samoa'
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: "<%= 3.weeks.ago %>"
+  last_date_of_exposure: <%= 3.weeks.ago %>
 patient_23:
   id: 23
   jurisdiction_id: 8
   monitoring: false
-  address_state: "American Samoa"
-  address_county: "Hancock"
-  closed_at: "<%= 9.hours.ago %>"
+  address_state: 'American Samoa'
+  address_county: 'Hancock'
+  closed_at: <%= 9.hours.ago %>
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "<%= 3.weeks.ago %>"
+  last_date_of_exposure: <%= 3.weeks.ago %>
 patient_24:
   id: 24
   jurisdiction_id: 8
   monitoring: false
-  address_state: "American Samoa"
-  address_county: "Crawford"
-  closed_at: "<%= 1.week.ago %>"
+  address_state: 'American Samoa'
+  address_county: 'Crawford'
+  closed_at: <%= 1.week.ago %>
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "<%= 11.weeks.ago %>"
+  last_date_of_exposure: <%= 11.weeks.ago %>
 patient_25:
   id: 25
   jurisdiction_id: 8
   monitoring: true
-  address_state: "Puerto Rico"
+  address_state: 'Puerto Rico'
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: "<%= 19.weeks.ago %>"
+  last_date_of_exposure: <%= 19.weeks.ago %>
 patient_26:
   id: 26
   jurisdiction_id: 8
   monitoring: false
-  address_state: "Puerto Rico"
-  closed_at: "<%= 1.day.ago %>"
+  address_state: 'Puerto Rico'
+  closed_at: <%= 1.day.ago %>
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: "<%= 21.weeks.ago %>"
+  last_date_of_exposure: <%= 21.weeks.ago %>
 patient_27:
   id: 27
   jurisdiction_id: 8
   monitoring: true
-  address_state: "Puerto Rico"
-  address_county: "Jackson"
+  address_state: 'Puerto Rico'
+  address_county: 'Jackson'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "<%= 25.weeks.ago %>"
+  last_date_of_exposure: <%= 25.weeks.ago %>
 patient_28:
   id: 28
   jurisdiction_id: 8
   monitoring: true
-  address_state: "Puerto Rico"
-  address_county: "Jackson"
+  address_state: 'Puerto Rico'
+  address_county: 'Jackson'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: "<%= 25.weeks.ago %>"
+  last_date_of_exposure: <%= 25.weeks.ago %>
 patient_29:
   id: 29
   jurisdiction_id: 8
   monitoring: true
-  address_state: "Guam"
-  address_county: "Lawrence"
-  last_date_of_exposure: "<%= 52.weeks.ago %>"
+  address_state: 'Guam'
+  address_county: 'Lawrence'
+  last_date_of_exposure: <%= 52.weeks.ago %>
 patient_30:
   id: 30
   jurisdiction_id: 8
   monitoring: true
-  address_state: "Guam"
-  last_date_of_exposure: "<%= 54.weeks.ago %>"
+  address_state: 'Guam'
+  last_date_of_exposure: <%= 54.weeks.ago %>
 patient_31:
   id: 31
   jurisdiction_id: 9
   monitoring: true
-  address_state: "Guam"
-  address_county: "Lawrence"
+  address_state: 'Guam'
+  address_county: 'Lawrence'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: '<%= 1.month.ago %>'
+  last_date_of_exposure: <%= 1.month.ago %>
 patient_32:
   id: 32
   jurisdiction_id: 9
   monitoring: true
-  address_state: "Alaska"
-  address_county: "Lawrence"
+  address_state: 'Alaska'
+  address_county: 'Lawrence'
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: '<%= 1.month.ago %>'
+  last_date_of_exposure: <%= 1.month.ago %>
 patient_33:
   id: 33
   jurisdiction_id: 9
   monitoring: false
-  address_state: "Alaska"
-  address_county: "Pike"
-  closed_at: "<%= 3.weeks.ago %>"
+  address_state: 'Alaska'
+  address_county: 'Pike'
+  closed_at: <%= 3.weeks.ago %>
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: '<%= 2.months.ago %>'
+  last_date_of_exposure: <%= 2.months.ago %>
 patient_34:
   id: 34
   jurisdiction_id: 9
   monitoring: true
-  address_state: "Alaska"
-  address_county: "Polk"
+  address_state: 'Alaska'
+  address_county: 'Polk'
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: '<%= 2.months.ago %>'
+  last_date_of_exposure: <%= 2.months.ago %>
 patient_35:
   id: 35
   jurisdiction_id: 9
   monitoring: true
-  address_state: "Alaska"
-  address_county: "Polk"
+  address_state: 'Alaska'
+  address_county: 'Polk'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: '<%= 5.months.ago %>'
+  last_date_of_exposure: <%= 5.months.ago %>
 patient_36:
   id: 36
   jurisdiction_id: 9
   monitoring: true
-  address_state: "Indiana"
-  address_county: "Polk"
+  address_state: 'Indiana'
+  address_county: 'Polk'
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: '<%= 5.months.ago %>'
+  last_date_of_exposure: <%= 5.months.ago %>
 patient_37:
   id: 37
   jurisdiction_id: 9
   monitoring: true
-  address_state: "Indiana"
-  address_county: "Warren"
+  address_state: 'Indiana'
+  address_county: 'Warren'
   exposure_risk_assessment: 'No Identified Risk'
-  last_date_of_exposure: '<%= 11.months.ago %>'
+  last_date_of_exposure: <%= 11.months.ago %>
 patient_38:
   id: 38
   jurisdiction_id: 9
   monitoring: false
-  address_state: "Indiana"
-  closed_at: "<%= 5.days.ago %>"
+  address_state: 'Indiana'
+  closed_at: <%= 5.days.ago %>
   exposure_risk_assessment: 'Medium'
-  last_date_of_exposure: '<%= 11.months.ago %>'
+  last_date_of_exposure: <%= 11.months.ago %>
 patient_39:
   id: 39
   jurisdiction_id: 9
   monitoring: true
-  address_state: "Indiana"
-  address_county: "Warren"
+  address_state: 'Indiana'
+  address_county: 'Warren'
   exposure_risk_assessment: 'Low'
-  last_date_of_exposure: '<%= 13.months.ago %>'
+  last_date_of_exposure: <%= 13.months.ago %>
 patient_40:
   id: 40
   jurisdiction_id: 9
   monitoring: true
-  address_state: "Indiana"
-  address_county: "Washington"
+  address_state: 'Indiana'
+  address_county: 'Washington'
   exposure_risk_assessment: 'High'
-  last_date_of_exposure: '<%= 14.months.ago %>'
+  last_date_of_exposure: <%= 14.months.ago %>
 patient_41:
   id: 41
-  created_at: "<%= 2.days.ago %>"
-  updated_at: "<%= 2.days.ago %>"
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 2.days.ago %>
   responder_id: 41
   creator_id: 5
   jurisdiction_id: 7
   monitoring: true
-  first_name: "Anderson32"
-  last_name: "Alec38"
-  sex: "Female"
-  date_of_birth: "<%= 35.years.ago %>"
-  address_line_1: "796 Lesch Heights"
-  address_city: "Laurenceborough"
-  address_state: "New York"
-  address_zip: "55335"
-  primary_telephone: "(555) 555-0175"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 3.days.ago %>"
+  first_name: 'Anderson32'
+  last_name: 'Alec38'
+  sex: 'Female'
+  date_of_birth: <%= 35.years.ago %>
+  address_line_1: '796 Lesch Heights'
+  address_city: 'Laurenceborough'
+  address_state: 'New York'
+  address_zip: '55335'
+  primary_telephone: '(555) 555-0175'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 3.days.ago %>
   pause_notifications: true
+  latest_transfer_at: <%= 1.hour.ago %>
+  latest_transfer_from: 6
 patient_42:
   id: 42
-  created_at: "<%= 2.days.ago %>"
-  updated_at: "<%= 2.days.ago %>"
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 2.days.ago %>
   responder_id: 42
   creator_id: 6
   jurisdiction_id: 6
   monitoring: true
-  first_name: "Armstrong46"
-  last_name: "Shirly90"
-  sex: "Male"
-  date_of_birth: "<%= 48.years.ago %>"
-  address_line_1: "45727 Skiles Parkways"
-  address_city: "Yundtborough"
-  address_state: "California"
-  address_zip: "53922"
-  primary_telephone: "(555) 555-0176"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 5.days.ago %>"
+  first_name: 'Armstrong46'
+  last_name: 'Shirly90'
+  sex: 'Male'
+  date_of_birth: <%= 48.years.ago %>
+  address_line_1: '45727 Skiles Parkways'
+  address_city: 'Yundtborough'
+  address_state: 'California'
+  address_zip: '53922'
+  primary_telephone: '(555) 555-0176'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 5.days.ago %>
+  latest_transfer_at: <%= 5.hours.ago %>
+  latest_transfer_from: 7
 patient_43:
   id: 43
-  created_at: "<%= 6.days.ago %>"
-  updated_at: "<%= 6.days.ago %>"
+  created_at: <%= 6.days.ago %>
+  updated_at: <%= 6.days.ago %>
   responder_id: 43
   creator_id: 1
   jurisdiction_id: 4
   monitoring: true
   isolation: true
-  first_name: "Bruen19"
-  last_name: "Bayer45"
-  sex: "Male"
-  date_of_birth: "<%= 79.years.ago %>"
-  address_line_1: "656 Gracie Drives"
-  address_city: "East Dewayneberg"
-  address_state: "New York"
-  address_zip: "27382"
-  primary_telephone: "(555) 555-0177"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 5.days.ago %>"
+  first_name: 'Bruen19'
+  last_name: 'Bayer45'
+  sex: 'Male'
+  date_of_birth: <%= 79.years.ago %>
+  address_line_1: '656 Gracie Drives'
+  address_city: 'East Dewayneberg'
+  address_state: 'New York'
+  address_zip: '27382'
+  primary_telephone: '(555) 555-0177'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 5.days.ago %>
   pause_notifications: true
+  latest_transfer_at: <%= 12.hours.ago %>
+  latest_transfer_from: 4
 patient_44:
   id: 44
-  created_at: "<%= 9.days.ago %>"
-  updated_at: "<%= 9.days.ago %>"
+  created_at: <%= 9.days.ago %>
+  updated_at: <%= 9.days.ago %>
   responder_id: 44
   creator_id: 1
   jurisdiction_id: 5
   monitoring: true
   isolation: true
-  first_name: "Edward54"
-  last_name: "Kilback94"
-  sex: "Female"
-  date_of_birth: "<%= 61.years.ago %>"
-  address_line_1: "5309 Nan Centers Suite 344"
-  address_city: "Ailenemouth"
-  address_state: "California"
-  address_zip: "93872"
-  primary_telephone: "(555) 555-0177"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 9.days.ago %>"
+  first_name: 'Edward54'
+  last_name: 'Kilback94'
+  sex: 'Female'
+  date_of_birth: <%= 61.years.ago %>
+  address_line_1: '5309 Nan Centers Suite 344'
+  address_city: 'Ailenemouth'
+  address_state: 'California'
+  address_zip: '93872'
+  primary_telephone: '(555) 555-0177'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 9.days.ago %>
+  latest_transfer_at: <%= 22.hours.ago %>
+  latest_transfer_from: 5
 patient_45:
   id: 45
-  created_at: "<%= 3.days.ago %>"
-  updated_at: "<%= 3.days.ago %>"
+  created_at: <%= 3.days.ago %>
+  updated_at: <%= 3.days.ago %>
   responder_id: 45
   creator_id: 1
   jurisdiction_id: 2
   monitoring: true
   isolation: true
-  first_name: "Gibson07"
-  last_name: "Altenwerth59"
-  sex: "Female"
-  date_of_birth: "<%= 2.years.ago %>"
-  address_line_1: "544 Saul Green"
-  address_city: "Port Walter"
-  address_state: "California"
-  address_zip: "61411-4761"
-  primary_telephone: "(555) 555-0178"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 9.days.ago %>"
+  first_name: 'Gibson07'
+  last_name: 'Altenwerth59'
+  sex: 'Female'
+  date_of_birth: <%= 2.years.ago %>
+  address_line_1: '544 Saul Green'
+  address_city: 'Port Walter'
+  address_state: 'California'
+  address_zip: '61411-4761'
+  primary_telephone: '(555) 555-0178'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 9.days.ago %>
 patient_46:
   id: 46
-  created_at: "<%= 4.days.ago %>"
-  updated_at: "<%= 4.days.ago %>"
+  created_at: <%= 4.days.ago %>
+  updated_at: <%= 4.days.ago %>
   responder_id: 46
   creator_id: 1
   jurisdiction_id: 2
   monitoring: true
   isolation: true
-  first_name: "Sung30"
-  last_name: "Bartoletti13"
-  sex: "Unknown"
-  date_of_birth: "<%= 18.years.ago %>"
-  address_line_1: "630 Frederick Land Apt. 170"
-  address_city: "Haydenburgh"
-  address_state: "California"
-  address_zip: "82912-2919"
-  primary_telephone: "(555) 555-0179"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 11.days.ago %>"
+  first_name: 'Sung30'
+  last_name: 'Bartoletti13'
+  sex: 'Unknown'
+  date_of_birth: <%= 18.years.ago %>
+  address_line_1: '630 Frederick Land Apt. 170'
+  address_city: 'Haydenburgh'
+  address_state: 'California'
+  address_zip: '82912-2919'
+  primary_telephone: '(555) 555-0179'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 11.days.ago %>
   pause_notifications: true
 patient_47:
   id: 47
-  created_at: "<%= 2.days.ago %>"
-  updated_at: "<%= 2.days.ago %>"
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 2.days.ago %>
   responder_id: 47
   creator_id: 1
   jurisdiction_id: 2
   monitoring: true
   isolation: true
-  first_name: "Ryan00"
-  last_name: "Auer09"
-  sex: "Unknown"
-  date_of_birth: "<%= 22.years.ago %>"
-  address_line_1: "37549 Von Overpass Suite 450"
-  address_city: "Boston"
-  address_state: "Massachusetts"
-  address_zip: "82912-2918"
-  primary_telephone: "(555) 555-0185"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 11.days.ago %>"
+  first_name: 'Ryan00'
+  last_name: 'Auer09'
+  sex: 'Unknown'
+  date_of_birth: <%= 22.years.ago %>
+  address_line_1: '37549 Von Overpass Suite 450'
+  address_city: 'Boston'
+  address_state: 'Massachusetts'
+  address_zip: '82912-2918'
+  primary_telephone: '(555) 555-0185'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 11.days.ago %>
 patient_48:
   id: 48
-  created_at: "<%= 4.days.ago %>"
-  updated_at: "<%= 4.days.ago %>"
+  created_at: <%= 4.days.ago %>
+  updated_at: <%= 4.days.ago %>
   responder_id: 48
   creator_id: 1
   jurisdiction_id: 2
   monitoring: true
   isolation: true
-  first_name: "Champlin07"
-  last_name: "Hills72"
-  sex: "Male"
-  date_of_birth: "<%= 31.years.ago %>"
-  address_line_1: "7854 Funk Junctions"
-  address_city: "South Douglasview"
-  address_state: "California"
-  address_zip: "82922-2919"
-  primary_telephone: "(555) 555-0182"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 12.days.ago %>"
+  first_name: 'Champlin07'
+  last_name: 'Hills72'
+  sex: 'Male'
+  date_of_birth: <%= 31.years.ago %>
+  address_line_1: '7854 Funk Junctions'
+  address_city: 'South Douglasview'
+  address_state: 'California'
+  address_zip: '82922-2919'
+  primary_telephone: '(555) 555-0182'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 12.days.ago %>
 patient_49:
   id: 49
-  created_at: "<%= 2.hours.ago %>"
-  updated_at: "<%= 2.hours.ago %>"
+  created_at: <%= 2.hours.ago %>
+  updated_at: <%= 2.hours.ago %>
   responder_id: 49
   creator_id: 1
   jurisdiction_id: 2
   monitoring: true
   isolation: true
-  first_name: "Bayer47"
-  last_name: "Mann80"
-  sex: "Male"
-  date_of_birth: "<%= 63.years.ago %>"
-  address_line_1: "630 Frederick Land Apt. 170"
-  address_city: "Port Clementeland"
-  address_state: "California"
-  address_zip: "99920"
-  primary_telephone: "(555) 555-0188"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 10.days.ago %>"
+  first_name: 'Bayer47'
+  last_name: 'Mann80'
+  sex: 'Male'
+  date_of_birth: <%= 63.years.ago %>
+  address_line_1: '630 Frederick Land Apt. 170'
+  address_city: 'Port Clementeland'
+  address_state: 'California'
+  address_zip: '99920'
+  primary_telephone: '(555) 555-0188'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 10.days.ago %>
   pause_notifications: true
 patient_50:
   id: 50
-  created_at: "<%= 5.hours.ago %>"
-  updated_at: "<%= 5.hours.ago %>"
+  created_at: <%= 5.hours.ago %>
+  updated_at: <%= 5.hours.ago %>
   responder_id: 50
   creator_id: 1
   jurisdiction_id: 2
-  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  submission_token: 'aab76adaa4fefdc714e421f47e9abbfb3eb4f92a'
   monitoring: true
   isolation: true
-  first_name: "Abbott24"
-  last_name: "Mante21"
-  sex: "Male"
-  date_of_birth: "<%= 52.years.ago %>"
-  address_line_1: "144 Jama Spurs"
-  address_city: "West April"
-  address_state: "California"
-  address_zip: "22804"
-  primary_telephone: "(555) 555-0189"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 12.days.ago %>"
+  first_name: 'Abbott24'
+  last_name: 'Mante21'
+  sex: 'Male'
+  date_of_birth: <%= 52.years.ago %>
+  address_line_1: '144 Jama Spurs'
+  address_city: 'West April'
+  address_state: 'California'
+  address_zip: '22804'
+  primary_telephone: '(555) 555-0189'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 12.days.ago %>
+  symptom_onset: <%= 1.hour.ago %>
+  latest_assessment_at: <%= 1.hour.ago %>
+  latest_fever_or_fever_reducer_at: <%= 1.hour.ago %>
 patient_51:
   id: 51
-  created_at: "<%= 8.hours.ago %>"
-  updated_at: "<%= 8.hours.ago %>"
+  created_at: <%= 8.hours.ago %>
+  updated_at: <%= 8.hours.ago %>
   responder_id: 51
   creator_id: 19
   jurisdiction_id: 10
-  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  submission_token: 'aab76adaa4fefdc714e421f47e9abbfb3eb4f92a'
   monitoring: true
   isolation: true
-  first_name: "Piper83"
-  middle_name: "Reynolds24"
-  last_name: "Altenwerth99"
-  sex: "Female"
-  date_of_birth: "2005-08-18"
-  address_line_1: "7197 Johnson Dale"
-  address_city: "Irmaborough"
-  address_state: "California"
-  address_zip: "86846-7192"
-  primary_telephone: "(555) 555-0189"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 12.days.ago %>"
+  first_name: 'Piper83'
+  middle_name: 'Reynolds24'
+  last_name: 'Altenwerth99'
+  sex: 'Female'
+  date_of_birth: '2005-08-18'
+  address_line_1: '7197 Johnson Dale'
+  address_city: 'Irmaborough'
+  address_state: 'California'
+  address_zip: '86846-7192'
+  primary_telephone: '(555) 555-0189'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 12.days.ago %>
 patient_52:
   id: 52
-  created_at: "<%= 10.days.ago %>"
-  updated_at: "<%= 10.days.ago %>"
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>
   responder_id: 52
   creator_id: 1
   jurisdiction_id: 2
-  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  submission_token: 'aab76adaa4fefdc714e421f47e9abbfb3eb4f92a'
   monitoring: true
   isolation: false
-  first_name: "Kathlyn81"
-  middle_name: "Lane00"
-  last_name: "Stehr98"
-  sex: "Female"
-  date_of_birth: "<%= 35.years.ago %>"
-  address_line_1: "1000 Micah Summit"
-  address_city: "Port Madalene"
-  address_state: "New Mexico"
-  address_zip: "69857"
-  primary_telephone: "(555) 555-1234"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 11.days.ago %>"
+  first_name: 'Kathlyn81'
+  middle_name: 'Lane00'
+  last_name: 'Stehr98'
+  sex: 'Female'
+  date_of_birth: <%= 35.years.ago %>
+  address_line_1: '1000 Micah Summit'
+  address_city: 'Port Madalene'
+  address_state: 'New Mexico'
+  address_zip: '69857'
+  primary_telephone: '(555) 555-1234'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 11.days.ago %>
 patient_53:
   id: 53
-  created_at: "<%= 10.days.ago %>"
-  updated_at: "<%= 10.days.ago %>"
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 10.days.ago %>
   responder_id: 52
   creator_id: 1
   jurisdiction_id: 2
-  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  submission_token: 'aab76adaa4fefdc714e421f47e9abbfb3eb4f92a'
   monitoring: true
   isolation: false
-  first_name: "Dietrich18"
-  middle_name: "Ava95"
-  last_name: "Stehr98"
-  sex: "Male"
-  date_of_birth: "<%= 25.years.ago %>"
-  address_line_1: "1000 Micah Summit"
-  address_city: "Port Madalene"
-  address_state: "New Mexico"
-  address_zip: "69857"
-  primary_telephone: "(555) 555-1234"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 11.days.ago %>"
+  first_name: 'Dietrich18'
+  middle_name: 'Ava95'
+  last_name: 'Stehr98'
+  sex: 'Male'
+  date_of_birth: <%= 25.years.ago %>
+  address_line_1: '1000 Micah Summit'
+  address_city: 'Port Madalene'
+  address_state: 'New Mexico'
+  address_zip: '69857'
+  primary_telephone: '(555) 555-1234'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 11.days.ago %>
 patient_54:
   id: 54
-  created_at: "<%= 6.days.ago %>"
-  updated_at: "<%= 6.days.ago %>"
+  created_at: <%= 6.days.ago %>
+  updated_at: <%= 6.days.ago %>
   responder_id: 54
   creator_id: 1
   jurisdiction_id: 2
-  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  submission_token: 'aab76adaa4fefdc714e421f47e9abbfb3eb4f92a'
   monitoring: true
   isolation: true
-  first_name: "Curtis44"
-  middle_name: "Kevin79"
-  last_name: "Gusikowski64"
-  sex: "Female"
-  date_of_birth: "<%= 35.years.ago %>"
-  address_line_1: "664 Ashley Station"
-  address_city: "Kemmerside"
-  address_state: "Utah"
-  address_zip: "28817-1621"
-  primary_telephone: "(555) 555-1234"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 8.days.ago %>"
+  first_name: 'Curtis44'
+  middle_name: 'Kevin79'
+  last_name: 'Gusikowski64'
+  sex: 'Female'
+  date_of_birth: <%= 35.years.ago %>
+  address_line_1: '664 Ashley Station'
+  address_city: 'Kemmerside'
+  address_state: 'Utah'
+  address_zip: '28817-1621'
+  primary_telephone: '(555) 555-1234'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 8.days.ago %>
 patient_55:
   id: 55
-  created_at: "<%= 4.days.ago %>"
-  updated_at: "<%= 4.days.ago %>"
+  created_at: <%= 4.days.ago %>
+  updated_at: <%= 4.days.ago %>
   responder_id: 54
   creator_id: 1
   jurisdiction_id: 2
-  submission_token: "aab76adaa4fefdc714e421f47e9abbfb3eb4f92a"
+  submission_token: 'aab76adaa4fefdc714e421f47e9abbfb3eb4f92a'
   monitoring: true
   isolation: true
-  first_name: "Cartwright70"
-  middle_name: "Patrice81"
-  last_name: "Lindgren51"
-  sex: "Female"
-  date_of_birth: "<%= 45.years.ago %>"
-  address_line_1: "664 Ashley Station"
-  address_city: "Kemmerside"
-  address_state: "Utah"
-  address_zip: "28817-1621"
-  primary_telephone: "(555) 555-1234"
-  primary_telephone_type: "Plain Cell"
-  preferred_contact_method: "Telephone call"
-  source_of_report: "CDC"
-  last_date_of_exposure: "<%= 4.days.ago %>"
+  first_name: 'Cartwright70'
+  middle_name: 'Patrice81'
+  last_name: 'Lindgren51'
+  sex: 'Female'
+  date_of_birth: <%= 45.years.ago %>
+  address_line_1: '664 Ashley Station'
+  address_city: 'Kemmerside'
+  address_state: 'Utah'
+  address_zip: '28817-1621'
+  primary_telephone: '(555) 555-1234'
+  primary_telephone_type: 'Plain Cell'
+  preferred_contact_method: 'Telephone call'
+  source_of_report: 'CDC'
+  last_date_of_exposure: <%= 4.days.ago %>

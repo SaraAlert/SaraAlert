@@ -40,6 +40,7 @@ export const totalMonitoreesMap = {
   },
   color: 'orangered',
 };
+
 export const symptomaticMonitoreesMap = {
   columns: {
     geo: {

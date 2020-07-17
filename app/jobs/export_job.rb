@@ -3,7 +3,7 @@
 # ExportJob: prepare an export for a user
 class ExportJob < ApplicationJob
   queue_as :default
-  include ImportExportHelper
+  include ImportExport
 
   def perform(user_id, export_type)
     user = User.find_by(id: user_id)
@@ -30,11 +30,11 @@ class ExportJob < ApplicationJob
     when 'full_history_all'
       patients = user.viewable_patients.where(purged: false)
       filename = "Sara-Alert-Full-Export-#{DateTime.now}.xlsx"
-      data = build_excel_export_for_patients(patients)
+      data = excel_export(patients)
     when 'full_history_purgeable'
       patients = user.viewable_patients.purge_eligible
       filename = "Sara-Alert-Purge-Eligible-Export-#{DateTime.now}.xlsx"
-      data = build_excel_export_for_patients(patients)
+      data = excel_export(patients)
     end
     return if data.blank?
 
