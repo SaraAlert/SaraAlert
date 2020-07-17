@@ -13,8 +13,10 @@ class Review extends React.Component {
   }
 
   submit(event, groupMember) {
-    this.setState({ submitDisabled: true });
-    this.props.submit(event, groupMember, this.reenableSubmit);
+    // Update state before submitting data so submit button disables when clicked to prevent multiple submissions.
+    this.setState({ submitDisabled: true }, () => {
+      this.props.submit(event, groupMember, this.reenableSubmit);
+    });
   }
 
   reenableSubmit() {
