@@ -117,6 +117,8 @@ class History < ApplicationRecord
   private_class_method def self.create_history(patient, created_by, type, comment)
     return if patient.nil?
 
-    History.create!(created_by: created_by, comment: comment, patient: patient, history_type: type)
+    patient = patient.id if patient.respond_to?(:id)
+
+    History.create!(created_by: created_by, comment: comment, patient_id: patient, history_type: type)
   end
 end
