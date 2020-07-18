@@ -77,6 +77,7 @@ ActiveRecord::Schema.define(version: 2020_07_14_172120) do
     t.string "phone"
     t.string "email"
     t.string "webpage"
+    t.string "message"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 

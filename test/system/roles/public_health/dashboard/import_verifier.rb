@@ -9,12 +9,23 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   include ImportExport
   @@system_test_utils = SystemTestUtils.new(nil)
 
+  TELEPHONE_FIELDS = %i[primary_telephone secondary_telephone].freeze
+  BOOL_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander interpretation_required
+                   contact_of_known_case travel_to_affected_country_or_area was_in_health_care_facility_with_known_cases laboratory_personnel
+                   healthcare_personnel crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort].freeze
+  STATE_FIELDS = %i[address_state foreign_monitored_address_state additional_planned_travel_destination_state].freeze
+  MONIOTRED_ADDRESS_FIELDS = %i[monitored_address_line_1 monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip].freeze
+  ISOLATION_FIELDS = %i[symptom_onset case_status].freeze
+  ENUM_FIELDS = %i[ethnicity preferred_contact_method primary_telephone_type secondary_telephone_type preferred_contact_time additional_planned_travel_type
+                   exposure_risk_assessment monitoring_plan case_status].freeze
+  RISK_FACTOR_FIELDS = %i[contact_of_known_case was_in_health_care_facility_with_known_cases].freeze
+
   def verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
     (2..sheet.last_row).each do |row_num|
       row = sheet.row(row_num)
       row.each_with_index do |value, index|
-        verify_validation(jurisdiction_id, workflow, EPI_X_FIELDS[index], [41, 42].include?(index) ? !value.blank? : value)
+        verify_validation(jurisdiction_id, workflow, EPI_X_FIELDS[index], RISK_FACTOR_FIELDS.include?(EPI_X_FIELDS[index]) ? !value.blank? : value)
       end
     end
   end
@@ -109,19 +120,19 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       else
         assert_not_nil(patient, "Patient not found in db: #{row[11]} #{row[10]} in row #{row_num}")
         EPI_X_FIELDS.each_with_index do |field, index|
-          if [28, 29].include?(index) # phone number fields
+          if TELEPHONE_FIELDS.include?(field)
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 13 && !row[index].blank? # sex
+          elsif field == :sex && !row[index].blank?
             assert_equal(SEX_ABBREVIATIONS[row[index].to_sym], patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 18 || (index == 22 && !row[22].nil?) # state fields
+          elsif field == :address_state || (field == :monitored_address_state && !row[index].nil?)
             assert_equal(normalize_state_field(row[index].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 22 && row[22].nil? # copy over monitored address state if state is nil
+          elsif field == :monitored_address_state && row[index].nil? # copy over monitored address state if state is nil
             assert_equal(normalize_state_field(row[index - 4].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif [20, 21, 23].include?(index) && row[index].nil? # copy over address fields if address is nil
+          elsif MONIOTRED_ADDRESS_FIELDS.include?(field) && row[index].nil? # copy over address fields if address is nil
             assert_equal(row[index - 4].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 34 # copy over potential exposure country to location
-            assert_equal(row[35].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif [41, 42].include?(index) # contact of known case and was in healthcare facilities
+          elsif field == :potential_exposure_location # copy over potential exposure country to location
+            assert_equal(row[index + 1].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif RISK_FACTOR_FIELDS.include?(field)
             assert_equal(!row[index].blank?, patient[field], "#{field} mismatch in row #{row_num}")
           elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
@@ -147,20 +158,25 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       else
         assert_not_nil(patient, "Patient not found in db: #{row[0]} #{row[1]} #{row[2]} in row #{row_num}")
         COMPREHENSIVE_FIELDS.each_with_index do |field, index|
-          if [44, 46].include?(index) # phone number fields
+          if TELEPHONE_FIELDS.include?(field)
             assert_equal(Phonelib.parse(row[index], 'US').full_e164, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif [5, 6, 7, 8, 9, 13, 69, 71, 72, 74, 76, 78, 79].include?(index) # bool fields
+          elsif BOOL_FIELDS.include?(field)
             assert_equal(normalize_bool_field(row[index]).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif [20, 39, 60].include?(index) || (index == 33 && !row[33].nil?) # state fields
+          elsif STATE_FIELDS.include?(field) || (field == :monitored_address_state && !row[index].nil?)
             assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 33 && row[33].nil? # copy over monitored address state if state is nil
+          elsif field == :monitored_address_state && row[index].nil? # copy over monitored address state if state is nil
             assert_equal(normalize_state_field(row[index - 13].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif [31, 32, 33, 34, 35].include?(index) & row[index].nil? # copy over address fields if address is nil
+          elsif MONIOTRED_ADDRESS_FIELDS.include?(field) & row[index].nil? # copy over address fields if address is nil
             assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif [85, 86].include?(index) # isolation workflow specific fields
+          elsif field == :symptom_onset # isolation workflow specific field
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif index == 95 # jurisdiction_path
+          elsif field == :case_status # isolation workflow specific enum field
+            normalized_cell_value = NORMALIZED_ENUMS[field][unformat_enum_field(row[index])].to_s
+            assert_equal(workflow == :isolation ? normalized_cell_value : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif field == :jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
+          elsif ENUM_FIELDS.include?(field)
+            assert_equal(NORMALIZED_ENUMS[field][unformat_enum_field(row[index])].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif !field.nil?
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
@@ -180,7 +196,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       # if VALIDATION[field][:checks].include?(:required) && (!value || value.blank?)
       #   assert page.has_content?("Required field '#{VALIDATION[field][:label]}' is missing"), "Error message for #{field}"
       # end
-      if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !VALID_ENUMS[field].include?(value)
+      if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !NORMALIZED_ENUMS[field].keys.include?(unformat_enum_field(value))
         assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:bool) && !%w[true false].include?(value.to_s.downcase)
