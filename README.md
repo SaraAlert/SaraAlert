@@ -1,5 +1,6 @@
 ![Sara Alert](https://user-images.githubusercontent.com/14923551/76420768-025c0880-6379-11ea-8342-0a9aebd9d287.png)
 
+[![Actions Tests](https://github.com/SaraAlert/SaraAlert/workflows/Tests/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
 [![Actions Static Analysis](https://github.com/SaraAlert/SaraAlert/workflows/Static%20Analysis/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
 ![Release](https://img.shields.io/github/v/tag/SaraAlert/SaraAlert)
 ![License](https://img.shields.io/github/license/SaraAlert/SaraAlert)
