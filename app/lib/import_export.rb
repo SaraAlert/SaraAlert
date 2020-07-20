@@ -160,6 +160,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     case_status: ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case']
   }.freeze
 
+  NORMALIZED_ENUMS = VALID_ENUMS.transform_values do |values|
+    Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
+  end
+
   VALIDATION = {
     first_name: { label: 'First Name', checks: [:required] },
     last_name: { label: 'Last Name', checks: [:required] },
@@ -203,6 +207,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
     report: { label: 'Lab Report Date', checks: [:date] }
   }.freeze
+
+  def unformat_enum_field(value)
+    value.to_s.downcase.gsub(/[ -.]/, '')
+  end
 
   def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|

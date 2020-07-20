@@ -42,7 +42,7 @@ class Import extends React.Component {
         this.submit(this.state.phased[0], 0, true);
       });
     } else {
-      // if there are no monitorees to import, go back to root after pressing the import button
+      // if there are no monitorees/cases to import, go back to root after pressing the import button
       location.href = '/';
     }
   }
@@ -72,7 +72,7 @@ class Import extends React.Component {
               this.submit(this.state.phased[num + 1], num + 1, bypass);
             }
           } else if (this.state.phased.length != 0) {
-            // if there are no monitorees to import, and import wasn't done one at a time go back to root after pressing the import button
+            // if there are no monitorees/cases to import, and import wasn't done one at a time go back to root after pressing the import button
             history.back();
           }
         });
@@ -110,8 +110,15 @@ class Import extends React.Component {
   handleConfirm = async confirmText => {
     this.setState({ acceptedAllStarted: true }, async () => {
       let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
-      let duplicatePrompt = duplicateCount != 0 ? `Include the ${duplicateCount} potential duplicate monitorees` : undefined;
-      if (await confirmDialog(confirmText, { title: 'Import Monitorees', extraOption: duplicatePrompt, extraOptionChange: this.handleExtraOptionToggle })) {
+      let duplicatePrompt =
+        duplicateCount != 0 ? `Include the ${duplicateCount} potential duplicate ${this.props.workflow === 'exposure' ? 'monitorees' : 'cases'}` : undefined;
+      if (
+        await confirmDialog(confirmText, {
+          title: this.props.workflow === 'exposure' ? 'Import Monitorees' : 'Import Cases',
+          extraOption: duplicatePrompt,
+          extraOptionChange: this.handleExtraOptionToggle,
+        })
+      ) {
         this.importAll();
       } else {
         this.setState({ acceptedAllStarted: false });
@@ -140,8 +147,9 @@ class Import extends React.Component {
         {this.state.errors.length == 0 && (
           <div className="mx-3 mt-1 mb-2">
             <h5>
-              Please review the monitoree records that are about to be imported. You can individually accept or reject each record below. You can also choose to
-              import all unique records or all records (including duplicates) by clicking the &quot;Import All&quot; button.
+              {`Please review the ${this.props.workflow === 'exposure' ? 'monitoree' : 'case'} records that are about to be imported.
+              You can individually accept or reject each record below.
+              You can also choose to import all unique records or all records (including duplicates) by clicking the 'Import All' button.`}
             </h5>
             {this.state.acceptedAllStarted ? (
               <Button variant="primary" className="btn-lg mt-2" disabled="true">
@@ -177,12 +185,24 @@ class Import extends React.Component {
                   bg="light"
                   border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
                   <React.Fragment>
-                    {patient.appears_to_be_duplicate && <Alert variant="danger">Warning: This monitoree already appears to exist in the system!</Alert>}
+                    {patient.appears_to_be_duplicate && (
+                      <Alert variant="danger">{`Warning: This ${
+                        this.props.workflow === 'exposure' ? 'monitoree' : 'case'
+                      } already appears to exist in the system!`}</Alert>
+                    )}
                     {(patient.jurisdiction_path || patient.assigned_user) && (
                       <Alert variant="info">
                         Note:
-                        {patient.jurisdiction_path && <span>{` This monitoree will be imported into '${patient.jurisdiction_path}'.`}</span>}
-                        {patient.assigned_user && <span>{` This monitoree will be assigned to user '${patient.assigned_user}'.`}</span>}
+                        {patient.jurisdiction_path && (
+                          <span>{` This ${this.props.workflow === 'exposure' ? 'monitoree' : 'case'} will be imported into '${
+                            patient.jurisdiction_path
+                          }'.`}</span>
+                        )}
+                        {patient.assigned_user && (
+                          <span>{` This ${this.props.workflow === 'exposure' ? 'monitoree' : 'case'} will be assigned to user '${
+                            patient.assigned_user
+                          }'.`}</span>
+                        )}
                       </Alert>
                     )}
                     <Row>

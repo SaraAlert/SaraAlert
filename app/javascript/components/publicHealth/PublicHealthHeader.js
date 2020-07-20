@@ -90,9 +90,13 @@ class PublicHealthHeader extends React.Component {
         <Modal.Header closeButton>
           {this.state.importData && (
             <React.Fragment>
-              {this.state.importData.errors.length > 0 && <Modal.Title as="h5">Import Error</Modal.Title>}
+              {this.state.importData.errors.length > 0 && (
+                <Modal.Title as="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} (error)</Modal.Title>
+              )}
               {this.state.importData.errors.length === 0 && (
-                <Modal.Title as="h5">{this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'}</Modal.Title>
+                <Modal.Title as="h5">
+                  {this.state.importType === 'epix' ? 'Import Epi-X' : 'Import Sara Alert Format'} ({this.props.workflow})
+                </Modal.Title>
               )}
             </React.Fragment>
           )}
@@ -118,8 +122,8 @@ class PublicHealthHeader extends React.Component {
     return (
       <Modal size="md" show={this.state.showUploadModal} onHide={() => this.setState({ showUploadModal: false, importType: null })}>
         <Modal.Header closeButton>
-          {this.state.importType === 'epix' && <Modal.Title as="h5">Import Epi-X</Modal.Title>}
-          {this.state.importType === 'saf' && <Modal.Title as="h5">Import Sara Alert Format</Modal.Title>}
+          {this.state.importType === 'epix' && <Modal.Title as="h5">{`Import Epi-X (${this.props.workflow})`}</Modal.Title>}
+          {this.state.importType === 'saf' && <Modal.Title as="h5">{`Import Sara Alert Format (${this.props.workflow})`}</Modal.Title>}
         </Modal.Header>
         <Modal.Body>
           {this.state.importType === 'saf' && (
@@ -175,8 +179,10 @@ class PublicHealthHeader extends React.Component {
                   <i className="fas fa-upload"></i> Import{' '}
                 </React.Fragment>
               }>
-              <Dropdown.Item onClick={() => this.setState({ importType: 'epix', showUploadModal: true })}>Epi-X</Dropdown.Item>
-              <Dropdown.Item onClick={() => this.setState({ importType: 'saf', showUploadModal: true })}>Sara Alert Format</Dropdown.Item>
+              <Dropdown.Item onClick={() => this.setState({ importType: 'epix', showUploadModal: true })}>Epi-X ({this.props.workflow})</Dropdown.Item>
+              <Dropdown.Item onClick={() => this.setState({ importType: 'saf', showUploadModal: true })}>
+                Sara Alert Format ({this.props.workflow})
+              </Dropdown.Item>
             </DropdownButton>
           )}
         </ButtonGroup>

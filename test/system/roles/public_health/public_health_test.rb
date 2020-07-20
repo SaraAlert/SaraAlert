@@ -240,6 +240,10 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_test_helper.import_epi_x('locals1c2_epi', :isolation, 'Epi-X-Format-Invalid-Fields.xlsx', :invalid_fields, nil)
   end
 
+  test 'import epi-x format and cancel' do
+    @@public_health_test_helper.import_and_cancel('locals2c4_epi', :isolation, 'Epi-X-Format.xlsx', 'Epi-X')
+  end
+
   test 'import sara alert format to exposure and accept all' do
     @@public_health_test_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, nil)
   end
@@ -303,6 +307,10 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   test 'import sara alert format to exposure and validate jurisdiction path' do
     @@public_health_test_helper.import_sara_alert_format('locals2c4_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :invalid_fields, [])
+  end
+
+  test 'import sara alert format and cancel' do
+    @@public_health_test_helper.import_and_cancel('locals2c4_epi', :exposure, 'Sara-Alert-Format.xlsx', 'Sara Alert Format')
   end
 
   # TODO: Re-enable when migrating away from GitHub LFS
