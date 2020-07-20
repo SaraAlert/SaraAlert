@@ -174,6 +174,7 @@ class CloseContact extends React.Component {
 
 CloseContact.propTypes = {
   close_contact: PropTypes.object,
+  user_role: PropTypes.object,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
 };

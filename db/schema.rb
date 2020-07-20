@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(version: 2020_07_14_172120) do
-=======
-ActiveRecord::Schema.define(version: 2020_07_14_203104) do
->>>>>>> Close Contacts
+ActiveRecord::Schema.define(version: 2020_07_20_150645) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -315,6 +311,8 @@ ActiveRecord::Schema.define(version: 2020_07_14_203104) do
     t.integer "negative_lab_count", default: 0
     t.datetime "latest_transfer_at"
     t.integer "latest_transfer_from"
+    t.string "gender_identity"
+    t.string "sexual_orientation"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"

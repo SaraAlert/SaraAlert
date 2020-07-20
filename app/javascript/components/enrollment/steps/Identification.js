@@ -264,6 +264,52 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
+              <Form.Row>
+                <Form.Group as={Col} controlId="gender_identity" md="auto">
+                  <Form.Label className="nav-input-label">GENDER IDENTITY{schema?.fields?.gender_identity?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['gender_identity']}
+                    as="select"
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.patient.gender_identity || ''}
+                    onChange={this.handleChange}>
+                    <option></option>
+                    <option>Male (Identifies as Male)</option>
+                    <option>Female (Identifies as Female)</option>
+                    <option>Transgender Male (Female to Male transexual (FTM))</option>
+                    <option>Transgender Female (Male to Female transsexual (MTF)) </option>
+                    <option>Non-conforming / Gender Queer (neither exclusively male nor female)</option>
+                    <option>Other</option>
+                    <option>Choose not to disclose (Asked but unknown)</option>
+                  </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['gender_identity']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} controlId="sexual_orientation" md="auto">
+                  <Form.Label className="nav-input-label">SEXUAL ORIENTATION{schema?.fields?.sexual_orientation?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['sexual_orientation']}
+                    as="select"
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.patient.sexual_orientation || ''}
+                    onChange={this.handleChange}>
+                    <option></option>
+                    <option>Straight or Heterosexual</option>
+                    <option>Lesbian, Gay, or Homosexual</option>
+                    <option>Bisexual</option>
+                    <option>Other</option>
+                    <option>Choose not to disclose (Asked but unknown)</option>
+                    <option>Don’t know (Unknown)</option>
+                    <option>Sexually attracted to neither Male or female sex</option>
+                  </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['sexual_orientation']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Form.Row>
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
