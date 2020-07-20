@@ -56,6 +56,9 @@ Rails.application.routes.draw do
   get '/jurisdictions/paths', to: 'jurisdictions#jurisdiction_paths', as: :jurisdiction_paths
   get '/jurisdictions/assigned_users', to: 'jurisdictions#assigned_users_for_viewable_patients', as: :assigned_users_for_viewable_patients
 
+  post '/close_contacts', to: 'close_contacts#create'
+  post '/close_contacts/:id', to: 'close_contacts#update'
+
   get '/patients/:id/group', to: 'patients#new_group_member'
 
   get '/export/csv/patients/:type/:workflow', to: 'export#csv'

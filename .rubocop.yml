@@ -16,11 +16,11 @@ Metrics/PerceivedComplexity:
 Metrics/CyclomaticComplexity:
   Enabled: false
 Metrics/MethodLength:
-  Max: 100
+  Max: 160
 Metrics/AbcSize:
   Enabled: false
 Metrics/ClassLength:
-  Max: 500
+  Max: 750
 Metrics/BlockLength:
   Enabled: false
 Style/ClassAndModuleChildren:

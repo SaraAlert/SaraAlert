@@ -106,7 +106,7 @@ class CaseStatus extends React.Component {
       (this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status === 'Not a Case' || this.state.case_status === '')
     ) {
       return (
-        <Modal size="lg" show centered>
+        <Modal size="lg" show centered onHide={toggle}>
           <Modal.Header>
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
@@ -144,7 +144,7 @@ class CaseStatus extends React.Component {
       );
     } else if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
       return (
-        <Modal size="lg" show centered>
+        <Modal size="lg" show centered onHide={toggle}>
           <Modal.Header>
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
@@ -195,7 +195,7 @@ class CaseStatus extends React.Component {
       this.state.case_status === ''
     ) {
       return (
-        <Modal size="lg" show centered>
+        <Modal size="lg" show centered onHide={toggle}>
           <Modal.Header>
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>

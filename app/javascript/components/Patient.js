@@ -146,8 +146,14 @@ class Patient extends React.Component {
                 <span className="font-weight-light">{`${this.props.details.user_defined_id_nndss ? this.props.details.user_defined_id_nndss : ''}`}</span>
               </Col>
               <Col className="text-truncate">
-                <span className="font-weight-normal">Sex:</span>{' '}
+                <span className="font-weight-normal">Birth Sex:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.sex ? this.props.details.sex : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Gender Identity:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.gender_identity ? this.props.details.gender_identity : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Sexual Orientation:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.sexual_orientation ? this.props.details.sexual_orientation : ''}`}</span>
                 <br />
                 <span className="font-weight-normal">Race:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.white ? 'White' : ''}${
@@ -443,6 +449,7 @@ class Patient extends React.Component {
 Patient.propTypes = {
   patient: PropTypes.object,
   group_members: PropTypes.array,
+  groupMembers: PropTypes.array,
   details: PropTypes.object,
   jurisdictionPath: PropTypes.string,
   goto: PropTypes.func,

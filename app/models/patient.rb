@@ -3,7 +3,7 @@
 require 'chronic'
 
 # Patient: patient model
-class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
+class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
 
@@ -53,6 +53,7 @@ class Patient < ApplicationRecord # rubocop:todo Metrics/ClassLength
   has_many :histories
   has_many :transfers
   has_many :laboratories
+  has_many :close_contacts
 
   # Most recent assessment
   def latest_assessment

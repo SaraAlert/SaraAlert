@@ -50,7 +50,7 @@ class Laboratory extends React.Component {
 
   createModal(title, toggle, submit) {
     return (
-      <Modal size="lg" show centered>
+      <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
@@ -120,7 +120,7 @@ class Laboratory extends React.Component {
       <React.Fragment>
         {!this.props.lab.id && (
           <Button onClick={this.toggleModal}>
-            <i className="fas fa-plus"></i> Add New Result
+            <i className="fas fa-plus"></i> Add New Lab Result
           </Button>
         )}
         {this.props.lab.id && (

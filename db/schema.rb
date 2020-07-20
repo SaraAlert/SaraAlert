@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_14_172120) do
+ActiveRecord::Schema.define(version: 2020_07_20_150645) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -33,6 +33,20 @@ ActiveRecord::Schema.define(version: 2020_07_14_172120) do
     t.index ["created_at"], name: "assessments_index_chain_1"
     t.index ["patient_id", "created_at"], name: "assessments_index_chain_3"
     t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"
+  end
+
+  create_table "close_contacts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "primary_telephone"
+    t.string "email"
+    t.text "notes"
+    t.integer "enrolled_id"
+    t.integer "contact_attempts"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_close_contacts_on_patient_id"
   end
 
   create_table "conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -297,6 +311,8 @@ ActiveRecord::Schema.define(version: 2020_07_14_172120) do
     t.integer "negative_lab_count", default: 0
     t.datetime "latest_transfer_at"
     t.integer "latest_transfer_from"
+    t.string "gender_identity"
+    t.string "sexual_orientation"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
