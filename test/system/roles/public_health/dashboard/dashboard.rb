@@ -71,11 +71,11 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
-    find('a', text: 'Epi-X').click
+    find('a', text: "Epi-X (#{workflow})").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
-      @@public_health_import_verifier.verify_epi_x_import_page(jurisdiction_id, file_name)
+      @@public_health_import_verifier.verify_epi_x_import_page(jurisdiction_id, workflow, file_name)
       select_monitorees_to_import(rejects, accept_duplicates)
       @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     elsif validity == :invalid_file
@@ -99,11 +99,11 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def import_sara_alert_format(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
-    find('a', text: 'Sara Alert Format').click
+    find('a', text: "Sara Alert Format (#{workflow})").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     if validity == :valid
-      @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction_id, file_name)
+      @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction_id, workflow, file_name)
       select_monitorees_to_import(rejects, accept_duplicates)
       @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
     elsif validity == :invalid_file
@@ -128,7 +128,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def import_and_cancel(workflow, file_name, file_type)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
-    find('a', text: file_type).click
+    find('a', text: "#{file_type} (#{workflow})").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
     sleep(0.5) # wait for import modal to open
@@ -162,7 +162,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def download_sara_alert_format_guidance(workflow)
     click_on 'Isolation Monitoring' if workflow == :isolation
     click_on 'Import'
-    find('a', text: 'Sara Alert Format').click
+    find('a', text: "Sara Alert Format (#{workflow})").click
     click_on 'Download formatting guidance'
     @@public_health_export_verifier.verify_sara_alert_format_guidance
     @@system_test_utils.wait_for_modal_animation

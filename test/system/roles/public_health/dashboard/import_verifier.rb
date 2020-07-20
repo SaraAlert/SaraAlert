@@ -40,7 +40,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_epi_x_import_page(jurisdiction_id, file_name)
+  def verify_epi_x_import_page(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
     find('.modal-body').all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
@@ -67,12 +67,12 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Close Contact w/ Known Case', !row[41].blank?.to_s, index)
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', !row[42].blank?.to_s, index)
       if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[11], last_name: row[10]).length > 1
-        assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
+        assert card.has_content?("Warning: This #{workflow == :exposure ? 'monitoree' : 'case'} already appears to exist in the system!")
       end
     end
   end
 
-  def verify_sara_alert_format_import_page(jurisdiction_id, file_name)
+  def verify_sara_alert_format_import_page(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
     find('.modal-body').all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
@@ -99,10 +99,10 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       verify_existence(card, 'Close Contact w/ Known Case', row[69] ? row[69].to_s.downcase : nil, index)
       verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[72] ? row[72].to_s.downcase : nil, index)
       if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
-        assert card.has_content?('Warning: This monitoree already appears to exist in the system!')
+        assert card.has_content?("Warning: This #{workflow == :exposure ? 'monitoree' : 'case'} already appears to exist in the system!")
       end
-      assert card.has_content?("This monitoree will be imported into '#{row[95]}'") if row[95]
-      assert card.has_content?("This monitoree will be assigned to user '#{row[96]}'") if row[96]
+      assert card.has_content?("This #{workflow == :exposure ? 'monitoree' : 'case'} will be imported into '#{row[95]}'") if row[95]
+      assert card.has_content?("This #{workflow == :exposure ? 'monitoree' : 'case'} will be assigned to user '#{row[96]}'") if row[96]
     end
   end
 
