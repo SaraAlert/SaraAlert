@@ -153,7 +153,9 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       lab_2_report: labs[1] ? (labs[1].report&.strftime('%F') || '') : '',
       lab_2_result: labs[1] ? (labs[1].result || '') : '',
       jurisdiction_path: jurisdiction[:path] || '',
-      assigned_user: assigned_user || ''
+      assigned_user: assigned_user || '',
+      gender_identity: gender_identity || '',
+      sexual_orientation: sexual_orientation || ''
     }
   end
 end

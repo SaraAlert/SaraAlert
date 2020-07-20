@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/MethodLength
 class EnrollmentFormSteps < ApplicationSystemTestCase
   # rubocop:disable Layout/LineLength
   def steps
@@ -113,4 +112,3 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
   end
   # rubocop:enable Layout/LineLength
 end
-# rubocop:enable Metrics/MethodLength
