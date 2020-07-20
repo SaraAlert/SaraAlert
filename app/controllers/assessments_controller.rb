@@ -91,13 +91,8 @@ class AssessmentsController < ApplicationController
         # Save a receipt
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save
-        history = History.new
-        history.created_by = current_user.email
-        comment = 'User created a new report. ID: ' + @assessment.id.to_s
-        history.comment = comment
-        history.patient = patient
-        history.history_type = 'Report Created'
-        history.save
+
+        History.report_created(patient: patient, created_by: current_user.email, comment: "User created a new report. ID: #{@assessment.id}")
       end
 
       redirect_to(patient_assessments_url)
@@ -132,14 +127,9 @@ class AssessmentsController < ApplicationController
     # Attempt to save and continue; else if failed redirect to index
     return unless assessment.save
 
-    history = History.new
-    history.created_by = current_user.email
     comment = 'User updated an existing report (ID: ' + assessment.id.to_s + ').'
     comment += ' Symptom updates: ' + delta.join(', ') + '.' unless delta.empty?
-    history.comment = comment
-    history.patient = patient
-    history.history_type = 'Report Updated'
-    history.save
+    History.report_updated(patient: patient, created_by: current_user.email, comment: comment)
     redirect_to(patient_assessments_url) && return
   end
 
