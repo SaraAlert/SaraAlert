@@ -37,7 +37,17 @@ class PatientsController < ApplicationController
   def new
     redirect_to(root_url) && return unless current_user.can_create_patient?
 
-    @patient = Patient.new(jurisdiction_id: current_user.jurisdiction_id, isolation: params.permit(:isolation)[:isolation] == 'true')
+    # If this is a close contact that is being fully enrolled, grab that record to auto-populate fields
+    @close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc)[:cc])&.first if params[:cc].present?
+
+    @patient = Patient.new(jurisdiction_id: current_user.jurisdiction_id,
+                           isolation: params.permit(:isolation)[:isolation] == 'true',
+                           first_name: @close_contact.nil? ? '' : @close_contact.first_name,
+                           last_name: @close_contact.nil? ? '' : @close_contact.last_name,
+                           primary_telephone: @close_contact.nil? ? '' : @close_contact.primary_telephone,
+                           email: @close_contact.nil? ? '' : @close_contact.email,
+                           contact_of_known_case: !@close_contact.nil?,
+                           contact_of_known_case_id: @close_contact.patient_id)
   end
 
   # Similar to 'new', except used for creating a new group member
@@ -136,6 +146,11 @@ class PatientsController < ApplicationController
 
       # Create a history for the enrollment
       History.enrollment(patient: patient, created_by: current_user.email)
+
+      if params[:cc_id].present?
+        close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc_id)[:cc_id])&.first
+        close_contact.update(enrolled_id: patient.id)
+      end
 
       # Create laboratories for patient if included in import
       unless params.dig(:patient, :laboratories).nil?

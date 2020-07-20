@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2020_07_14_172120) do
+=======
+ActiveRecord::Schema.define(version: 2020_07_14_203104) do
+>>>>>>> Close Contacts
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -33,6 +37,20 @@ ActiveRecord::Schema.define(version: 2020_07_14_172120) do
     t.index ["created_at"], name: "assessments_index_chain_1"
     t.index ["patient_id", "created_at"], name: "assessments_index_chain_3"
     t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"
+  end
+
+  create_table "close_contacts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "primary_telephone"
+    t.string "email"
+    t.text "notes"
+    t.integer "enrolled_id"
+    t.integer "contact_attempts"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_close_contacts_on_patient_id"
   end
 
   create_table "conditions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

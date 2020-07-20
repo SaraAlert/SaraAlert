@@ -131,6 +131,13 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  closeContacts: (
+    <div>
+      Close Contacts can be added whenever a user does not have the information required to complete enrollment of the contact into the exposure workflow. A
+      user must complete enrollment of any Close Contact before the system will start to send daily notifications to that individual.
+    </div>
+  ),
+
   // HISTORY
   history: (
     <div>
