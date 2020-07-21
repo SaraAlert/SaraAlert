@@ -208,7 +208,7 @@ class Identification extends React.Component {
             <Form>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} controlId="workflow">
-                  <Form.Label className="nav-input-label">WORKFLOW{schema?.fields?.workflow?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Label className="nav-input-label">WORKFLOW *</Form.Label>
                   <Select
                     name="workflow"
                     styles={cursorPointerStyle}
