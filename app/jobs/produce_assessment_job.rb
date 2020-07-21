@@ -17,9 +17,5 @@ class ProduceAssessmentJob < ApplicationJob
     }
     # report.except!(:reported_symptoms_array) if report[:reported_symptoms_array].blank?
     connection.publish 'reports', report.to_json
-  rescue Redis::ConnectionError, Redis::CannotConnectError => e
-    puts "ProduceAssessmentJob: Redis::ConnectionError (#{e}), retrying..."
-    sleep(1)
-    retry
   end
 end
