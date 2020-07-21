@@ -81,6 +81,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
           assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
+          assessment.save
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
@@ -105,6 +106,7 @@ class ConsumeAssessmentsJob < ApplicationJob
                                       else
                                         'Proxy'
                                       end
+            assessment.save
           end
         end
       rescue JSON::ParserError
