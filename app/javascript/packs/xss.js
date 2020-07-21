@@ -1,2 +1,0 @@
-// XSS sanitization
-require("xss");
