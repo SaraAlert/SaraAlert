@@ -112,14 +112,14 @@ class CloseContact extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button
             variant="primary btn-square"
             onClick={submit}
             disabled={!(this.state.first_name || this.state.last_name || this.state.email || this.state.primary_telephone || this.state.notes)}>
             {this.props.close_contact.id ? 'Update' : 'Create'}
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>
