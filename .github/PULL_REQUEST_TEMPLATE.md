@@ -44,14 +44,14 @@ The following are tests that require visual inspection (remove if not applicable
 
 # Reviewer Checklist*
 ## Reviewer 1
-Reviewer: @ron_swanson
+Reviewer: holmesie
 
 Checklist:
  - [ ] I have carried out all tests described in the PR and verified functionality. 
  - [ ] I have reviewed every file in the diff to verify that changes are reasonable, and that any updated/added code is maintainable and reusable and follows good practices.
 
 ## Reviewer 2
-Reviewer: @leeroy_jenkins
+Reviewer: kylietmo
 
 Checklist:
  - [ ] I have carried out all tests described in the PR and verified functionality. 
