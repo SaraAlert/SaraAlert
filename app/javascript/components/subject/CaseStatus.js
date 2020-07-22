@@ -73,6 +73,8 @@ class CaseStatus extends React.Component {
 
   submit() {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    diffState.push('public_health_action'); // force last public health action to update
+
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
