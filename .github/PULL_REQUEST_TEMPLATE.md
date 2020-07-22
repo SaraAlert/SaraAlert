@@ -15,7 +15,7 @@ Insert steps for how to replicate the bug this PR addresses.
 Insert description for the solution this PR implements to address the bug.
 
 # Important Changes*
-Please list important files (meaning substantial or integrel to the PR) along with a list of the general changes that should be highlighted for reviewers.
+Please list important files (meaning substantial or integral to the PR) along with a list of the general changes that should be highlighted for reviewers.
 
 `example_file.js`
 - Example change (ex: refactored import function)
