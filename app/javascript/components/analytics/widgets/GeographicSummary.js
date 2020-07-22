@@ -6,7 +6,8 @@ import { Button, Col, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
-import { stateOptions, insularAreas } from '../mapData';
+import { insularAreas } from '../mapData';
+import { stateOptions } from '../../../data/stateOptions';
 import CountyLevelMaps from './CountyLevelMaps';
 
 const MAX_DAYS_OF_HISTORY = 10; // only allow the user to scrub back N days from today

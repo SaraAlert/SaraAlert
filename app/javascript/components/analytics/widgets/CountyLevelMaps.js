@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import { PropTypes } from 'prop-types';
-import { stateOptions, insularAreas } from '../../data';
+import { insularAreas } from '../mapData';
+import { stateOptions } from '../../../data/stateOptions';
 import * as am4maps from '@amcharts/amcharts4/maps';
 import * as am4core from '@amcharts/amcharts4/core';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
