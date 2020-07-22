@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Button, Tabs, Tab, Form, Col } from 'react-bootstrap';
 import { countryOptions } from '../../../data/countryOptions';
-import { stateOptions } from '../../../data/stateOptions'
+import { stateOptions } from '../../../data/stateOptions';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
 

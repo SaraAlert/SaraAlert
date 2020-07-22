@@ -2,7 +2,6 @@
  * Objects used for configuring and populating analytics maps.
  */
 
-
 // Amcharts gets finicky with its internal map projections using certain iso codes, hence not all are `US-XX`
 export const insularAreas = [
   { abbrv: 'AS', isoCode: 'US-AS', name: 'American Samoa', mapFile: 'usaTerritories' },
