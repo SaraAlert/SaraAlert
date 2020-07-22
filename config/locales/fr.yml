@@ -34,6 +34,24 @@ fr:
       pulse-ox:
         name: 'd’oxymétrie de pouls'
         notes: 'Saisissez votre mesure d’oxymétrie de pouls la plus faible au cours des dernières 24 heures'
+      fatigue:
+        name: 'Fatigue'
+        notes: ''
+      nausea-or-vomiting:
+        name: 'Nausea Or Vomiting'
+        notes: ''
+      diarrhea:
+        name: 'Diarrhea'
+        notes: ''
+      nasal-congestion:
+        name: 'Nasal Congestion'
+        notes: ''
+      runny-nose:
+        name: 'Runny Nose'
+        notes: ''
+      temperature:
+        name: 'Temperature'
+        notes: ''
       no-symptoms: 'Aucun symptôme'
     threshold-op:
       less-than: 'moins que'

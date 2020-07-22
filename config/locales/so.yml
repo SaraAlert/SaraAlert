@@ -34,6 +34,24 @@ so:
       pulse-ox:
         name: 'Aksijiinta Dhiiggaaga'
         notes: 'Geli cabbirka aksijiinta dhiiggaaga ee ugu hooseeya ee la qaaday 24-kii saac ee la soo dhaafay'
+      fatigue:
+        name: 'Fatigue'
+        notes: ''
+      nausea-or-vomiting:
+        name: 'Nausea Or Vomiting'
+        notes: ''
+      diarrhea:
+        name: 'Diarrhea'
+        notes: ''
+      nasal-congestion:
+        name: 'Nasal Congestion'
+        notes: ''
+      runny-nose:
+        name: 'Runny Nose'
+        notes: ''
+      temperature:
+        name: 'Temperature'
+        notes: ''
       no-symptoms: 'Astaamo ma laha'
     threshold-op:
       less-than: 'Ka yar'
