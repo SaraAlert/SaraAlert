@@ -95,7 +95,6 @@ class Patient < ApplicationRecord
       .where('patients.id = patients.responder_id')
       .where(purged: false)
       .where.not(id: Patient.unscoped.isolation_requiring_review)
-      .where.not(id: Patient.unscoped.isolation_non_reporting_max)
       .left_outer_joins(:assessments)
       .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
       .or(
@@ -104,7 +103,6 @@ class Patient < ApplicationRecord
           .where('patients.id = patients.responder_id')
           .where(purged: false)
           .where.not(id: Patient.unscoped.isolation_requiring_review)
-          .where.not(id: Patient.unscoped.isolation_non_reporting_max)
           .left_outer_joins(:assessments)
           .where(assessments: { patient_id: nil })
       )
@@ -495,7 +493,10 @@ class Patient < ApplicationRecord
     return unless responder.id == id
 
     # Return if closed, UNLESS there are still group members who need to be reported on
-    return unless monitoring || dependents.where(monitoring: true).count.positive?
+    return unless monitoring ||
+                  dependents.where(monitoring: true).count.positive? ||
+                  continuous_exposure ||
+                  dependents.where(continuous_exposure: true).count.positive?
 
     # If force is set, the preferred contact time will be ignored
     unless force
@@ -520,10 +521,6 @@ class Patient < ApplicationRecord
     end
 
     if preferred_contact_method&.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-      # SMS-based assessments assess the patient _and_ all of their dependents
-      # If you are a dependent ie: someone whose responder.id is not your own an assessment will not be sent to you
-      # Because Twilio will open a second SMS flow for this user and send two responses, this option cannot be forced
-      # TODO: Find a way to end existing flows/sessions with this patient, and then this option can be forced
       if !force
         PatientMailer.assessment_sms(self).deliver_later
       else
