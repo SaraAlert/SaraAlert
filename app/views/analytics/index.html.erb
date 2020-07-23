@@ -13,5 +13,5 @@
 <% end %>
 
 <% if current_user.has_role?(:public_health) || current_user.has_role?(:public_health_enroller) || current_user.has_role?(:analyst) %>
-  <%= react_component("analytics/MonitorAnalytics", { current_user: current_user, stats: @stats }) %>
+  <%= react_component("analytics/PublicHealthAnalytics", { current_user: current_user, stats: @stats }) %>
 <% end %>

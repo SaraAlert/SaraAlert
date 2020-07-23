@@ -5,7 +5,7 @@ import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
 import Select from 'react-select';
 import InfoTooltip from '../../util/InfoTooltip';
-import supportedLanguages from '../../../json/supportedLanguages.json';
+import supportedLanguages from '../../../data/supportedLanguages.json';
 
 class Identification extends React.Component {
   constructor(props) {

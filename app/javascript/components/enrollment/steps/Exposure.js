@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
-import { countryOptions } from '../../data';
+import { countryOptions } from '../../../data/countryOptions';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import * as yup from 'yup';
