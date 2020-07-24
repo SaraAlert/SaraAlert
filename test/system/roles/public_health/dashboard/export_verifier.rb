@@ -65,6 +65,12 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       details.keys.each_with_index do |field, col|
         if [true, false].include?(details[field])
           assert_equal(details[field] ? 'true' : 'false', csv[row][col], "For field: #{field}")
+        elsif %i[latest_report transferred_at].include?(field)
+          if details[field].blank?
+            assert_nil csv[row][col]&.to_datetime, "For field: #{field}"
+          else
+            assert_in_delta(details[field].to_datetime, csv[row][col].to_datetime, 1, "For field: #{field}")
+          end
         else
           assert_equal(details[field].to_s, csv[row][col].to_s, "For field: #{field}")
         end

@@ -68,22 +68,20 @@ class Patient < ApplicationRecord
   # Patients who are eligible for reminders (exposure)
   scope :reminder_eligible_exposure, lambda {
     where(isolation: false)
+      .where(purged: false)
+      .where(public_health_action: 'None')
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where(purged: false)
-      .where.not(id: Patient.unscoped.exposure_under_investigation)
-      .where('last_date_of_exposure >= ? OR continuous_exposure = ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago, true)
-      .left_outer_joins(:assessments)
-      .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
+      .where('last_date_of_exposure >= ? OR continuous_exposure = ?', (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago, true)
+      .where.not('latest_assessment_at >= ?', Time.now.getlocal('-04:00').beginning_of_day)
       .or(
         where(isolation: false)
-          .where(pause_notifications: false)
-          .where('patients.id = patients.responder_id')
           .where(purged: false)
-          .where.not(id: Patient.unscoped.exposure_under_investigation)
-          .where('last_date_of_exposure >= ? OR continuous_exposure = ?', ADMIN_OPTIONS['monitoring_period_days'].days.ago, true)
-          .left_outer_joins(:assessments)
-          .where(assessments: { patient_id: nil })
+          .where(pause_notifications: false)
+          .where(public_health_action: 'None')
+          .where('patients.id = patients.responder_id')
+          .where('last_date_of_exposure >= ? OR continuous_exposure = ?', (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago, true)
+          .where(latest_assessment_at: nil)
       )
       .distinct
   }
@@ -91,20 +89,18 @@ class Patient < ApplicationRecord
   # Patients who are eligible for reminders (isolation)
   scope :reminder_eligible_isolation, lambda {
     where(isolation: true)
+      .where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where(purged: false)
       .where.not(id: Patient.unscoped.isolation_requiring_review)
-      .left_outer_joins(:assessments)
-      .where_assoc_not_exists(:assessments, ['created_at >= ?', Time.now.getlocal('-04:00').beginning_of_day])
+      .where.not('latest_assessment_at >= ?', Time.now.getlocal('-04:00').beginning_of_day)
       .or(
         where(isolation: true)
+          .where(purged: false)
           .where(pause_notifications: false)
           .where('patients.id = patients.responder_id')
-          .where(purged: false)
           .where.not(id: Patient.unscoped.isolation_requiring_review)
-          .left_outer_joins(:assessments)
-          .where(assessments: { patient_id: nil })
+          .where(latest_assessment_at: nil)
       )
       .distinct
   }
@@ -451,8 +447,8 @@ class Patient < ApplicationRecord
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
     return 'Continuous Exposure' if continuous_exposure
-    return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
-    return (created_at + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
+    return (last_date_of_exposure + (ADMIN_OPTIONS['monitoring_period_days'] + 1).days)&.to_s if last_date_of_exposure.present?
+    return (created_at + (ADMIN_OPTIONS['monitoring_period_days'] + 1).days)&.to_s if created_at.present?
   end
 
   # Date when patient is expected to be purged

@@ -20,10 +20,8 @@ class PublicHealthControllerTest < ActionController::TestCase
     end
 
     %i[public_health_user public_health_enroller_user].each do |role|
-      user = create(role)
-
       Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
-        user.update(jurisdiction: user_jur)
+        user = create(role, jurisdiction: user_jur)
         sign_in user
 
         error = assert_raises(ActionController::ParameterMissing) do
@@ -42,9 +40,7 @@ class PublicHealthControllerTest < ActionController::TestCase
   end
 
   test 'patients param validation' do
-    user = create(:public_health_user)
-
-    user.update(jurisdiction: Jurisdiction.first)
+    user = create(:public_health_user, jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
     sign_in user
 
     get :patients, params: { workflow: 'asdf', tab: 'all' }
@@ -59,7 +55,7 @@ class PublicHealthControllerTest < ActionController::TestCase
     get :patients, params: { workflow: 'exposure', tab: 'symptomatic', jurisdiction: 'asdf' }
     assert_response :bad_request
 
-    get :patients, params: { workflow: 'exposure', tab: 'symptomatic', jurisdiction: Jurisdiction.where.not(id: user.jurisdiction.subtree_ids).first[:id] }
+    get :patients, params: { workflow: 'exposure', tab: 'symptomatic', jurisdiction: Jurisdiction.where(path: 'USA, State 2').first }
     assert_response :bad_request
 
     get :patients, params: { workflow: 'exposure', tab: 'symptomatic', scope: 'fdsa' }
@@ -103,8 +99,7 @@ class PublicHealthControllerTest < ActionController::TestCase
 
   test 'patients by workflow and tab' do
     Jurisdiction.where(path: ['USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
-      user = create(:public_health_user)
-      user.update(jurisdiction: user_jur)
+      user = create(:public_health_user, jurisdiction: user_jur)
       sign_in user
 
       common_fields = %w[name state_local_id sex dob]
@@ -219,8 +214,7 @@ class PublicHealthControllerTest < ActionController::TestCase
   end
 
   test 'patients by jurisdiction and assigned user' do
-    user = create(:public_health_user)
-    user.update(jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
+    user = create(:public_health_user, jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
     sign_in user
 
     jur = Jurisdiction.where(path: 'USA, State 1, County 1').first
@@ -275,8 +269,7 @@ class PublicHealthControllerTest < ActionController::TestCase
   end
 
   test 'patients filtering' do
-    user = create(:public_health_user)
-    user.update(jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
+    user = create(:public_health_user, jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
     sign_in user
 
     filtered_patient = user.viewable_patients.where(isolation: false, purged: false).first
@@ -289,8 +282,7 @@ class PublicHealthControllerTest < ActionController::TestCase
   end
 
   test 'patients sorting' do
-    user = create(:public_health_user)
-    user.update(jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
+    user = create(:public_health_user, jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
     sign_in user
 
     order = 'name'
@@ -307,8 +299,7 @@ class PublicHealthControllerTest < ActionController::TestCase
   end
 
   test 'patients pagination' do
-    user = create(:public_health_user)
-    user.update(jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
+    user = create(:public_health_user, jurisdiction: Jurisdiction.where(path: 'USA, State 1').first)
     sign_in user
 
     entries = 5
@@ -338,10 +329,8 @@ class PublicHealthControllerTest < ActionController::TestCase
     end
 
     %i[public_health_user public_health_enroller_user].each do |role|
-      user = create(role)
-
       Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
-        user.update(jurisdiction: user_jur)
+        user = create(role, jurisdiction: user_jur)
         sign_in user
 
         get :workflow_counts
@@ -368,10 +357,8 @@ class PublicHealthControllerTest < ActionController::TestCase
     end
 
     %i[public_health_user public_health_enroller_user].each do |role|
-      user = create(role)
-
       Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
-        user.update(jurisdiction: user_jur)
+        user = create(role, jurisdiction: user_jur)
         sign_in user
 
         get :tab_counts, params: { workflow: 'asdf', tab: 'all' }
