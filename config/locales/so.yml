@@ -51,7 +51,7 @@ so:
         notes: ''
       temperature:
         name: 'Temperature'
-        notes: ''
+        notes: 'Measured temperature in degrees Fahrenheit'
       no-symptoms: 'Astaamo ma laha'
     threshold-op:
       less-than: 'Ka yar'

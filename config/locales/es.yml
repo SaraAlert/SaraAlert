@@ -51,7 +51,7 @@ es:
         notes: ''
       temperature:
         name: 'Temperature'
-        notes: ''
+        notes: 'Measured temperature in degrees Fahrenheit'
       no-symptoms: 'No tengo ningún síntoma.'
     threshold-op:
       less-than: 'Menos que'
