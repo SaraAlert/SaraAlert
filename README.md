@@ -23,6 +23,7 @@ To work with the application, you will need to install some prerequisites:
 * [Bundler](https://bundler.io/)
 * [MySQL](https://www.mysql.com/)
 * [Redis](https://redis.io)
+* [Yarn](https://yarnpkg.com/)
 
 ### Development Installation
 

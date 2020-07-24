@@ -76,7 +76,7 @@ class MoveToHousehold extends React.Component {
 
   createModal(title, toggle, submit) {
     return (
-      <Modal size="lg" show centered>
+      <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
@@ -114,6 +114,9 @@ class MoveToHousehold extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button variant="primary btn-square" onClick={submit} disabled={this.state.updateDisabled || this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
@@ -121,9 +124,6 @@ class MoveToHousehold extends React.Component {
               </React.Fragment>
             )}
             Update
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>

@@ -167,7 +167,7 @@
       options.empty();
       options.append($('<option></option>').attr('value', 'all').text('All'));
       if (assigned_jurisdiction !== 'all') {
-        options.append($('<option></option>').attr('value', 'immediate').text('Exact Match'));
+        options.append($('<option></option>').attr('value', 'exact').text('Exact Match'));
       }
     }
   });

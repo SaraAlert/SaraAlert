@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   before_action :user_must_change_password
   before_action :ensure_authy_enabled
   protect_from_forgery prepend: true
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   def user_must_change_password
     return unless current_user&.force_password_change
@@ -26,5 +27,11 @@ class ApplicationController < ActionController::Base
     return unless current_user && !current_user.authy_enabled? && current_user.authy_enforced
 
     redirect_to user_enable_authy_url
+  end
+
+  private
+
+  def record_not_found
+    redirect_to '/errors#not_found'
   end
 end

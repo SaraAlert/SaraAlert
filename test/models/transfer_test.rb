@@ -39,6 +39,55 @@ class TransferTest < ActiveSupport::TestCase
     assert_includes(exception.message, 'Who')
   end
 
+  test 'update patient linelist' do
+    jur_1 = create(:jurisdiction)
+    patient = create(:patient, jurisdiction: jur_1)
+
+    # Create transfer 1
+    timestamp_1 = 5.days.ago
+    jur_2 = create(:jurisdiction)
+    user = create(:user)
+    transfer_1 = Transfer.create!(patient: patient, created_at: timestamp_1, from_jurisdiction: jur_2, to_jurisdiction: jur_1, who: user)
+    assert_in_delta timestamp_1, patient.latest_transfer_at, 1
+    assert_equal jur_2.id, patient.latest_transfer_from
+
+    # Create transfer 2
+    timestamp_2 = 7.days.ago
+    jur_3 = create(:jurisdiction)
+    transfer_2 = Transfer.create!(patient: patient, created_at: timestamp_2, from_jurisdiction: jur_3, to_jurisdiction: jur_2, who: user)
+    assert_in_delta timestamp_1, patient.latest_transfer_at, 1
+    assert_equal jur_2.id, patient.latest_transfer_from
+
+    # Update transfer 2 created at
+    timestamp_2 = 4.days.ago
+    transfer_2.update!(created_at: timestamp_2)
+    assert_in_delta timestamp_2, patient.latest_transfer_at, 1
+    assert_equal jur_3.id, patient.latest_transfer_from
+
+    # Update transfer 2 created at
+    timestamp_2 = 4.days.ago
+    transfer_2.update(created_at: timestamp_2)
+    assert_in_delta timestamp_2, patient.latest_transfer_at, 1
+    assert_equal jur_3.id, patient.latest_transfer_from
+
+    # Update transfer 2 from jurisdiction
+    jur_4 = create(:jurisdiction)
+    transfer_2.update!(from_jurisdiction: jur_4)
+    assert_in_delta timestamp_2, patient.latest_transfer_at, 1
+    assert_equal jur_4.id, patient.latest_transfer_from
+
+    # Destroy transfer 2
+    transfer_2.destroy
+    assert_in_delta timestamp_1, patient.latest_transfer_at, 1
+    assert_equal jur_2.id, patient.latest_transfer_from
+
+    # Destroy transfer 2
+    transfer_1.destroy
+    assert_nil patient.latest_transfer_at
+    assert_nil patient.latest_transfer_from
+    assert_empty patient.transfers
+  end
+
   test 'from path' do
     from_jurisdiction = create(:jurisdiction)
     transfer = build(:transfer)

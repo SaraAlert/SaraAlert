@@ -76,7 +76,7 @@ class LastDateExposure extends React.Component {
 
   createModal(title, message, toggle, submit) {
     return (
-      <Modal size="lg" show centered>
+      <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
@@ -87,7 +87,7 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="switch"
                 id="apply_to_group"
-                label="Apply to all active members in this reporting group within the exposure workflow"
+                label='Update Last Date of Exposure for all household members whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group === true || false}
               />
@@ -99,7 +99,7 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="switch"
                 id="apply_to_group_cm_only"
-                label="Apply to all active members in this reporting group within the exposure workflow who have continuous exposure enabled"
+                label='Update Last Date of Exposure only for household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group_cm_only === true || false}
               />
@@ -107,6 +107,9 @@ class LastDateExposure extends React.Component {
           )}
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
@@ -114,9 +117,6 @@ class LastDateExposure extends React.Component {
               </React.Fragment>
             )}
             Submit
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>
@@ -138,37 +138,49 @@ class LastDateExposure extends React.Component {
             this.submit(false)
           )}
         <Row>
-          <Form.Group as={Col} md="6">
-            <Form.Label className="nav-input-label">
+          <Col md="4" sm="24">
+            <h6 className="nav-input-label mt-3">
               LAST DATE OF EXPOSURE
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
-            </Form.Label>
-            <Form.Control
-              size="lg"
-              id="last_date_of_exposure"
-              type="date"
-              className="form-square"
-              value={this.state.last_date_of_exposure || ''}
-              onChange={this.handleChange}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="18" className="align-self-end pl-0">
-            <Button className="btn-lg" onClick={() => this.toggleExposureDateModal()}>
-              <i className="fas fa-temperature-high"></i> Update
-            </Button>
-          </Form.Group>
-        </Row>
-        <Row>
-          <Form.Group as={Col} md="6">
-            <Form.Check
-              size="lg"
-              label="CONTINUOUS EXPOSURE"
-              type="switch"
-              id="continuous_exposure"
-              checked={this.state.continuous_exposure === true || false}
-              onChange={() => this.toggleContinuousMonitoringModal()}
-            />
-          </Form.Group>
+            </h6>
+          </Col>
+          <Col md="8" sm="24">
+            <Row>
+              <Col>
+                <Form.Control
+                  size="lg"
+                  id="last_date_of_exposure"
+                  type="date"
+                  className="form-square"
+                  value={this.state.last_date_of_exposure || ''}
+                  onChange={this.handleChange}
+                />
+              </Col>
+              <Col>
+                <Button className="btn-lg" onClick={() => this.toggleExposureDateModal()}>
+                  <i className="fas fa-temperature-high"></i> Update
+                </Button>
+              </Col>
+            </Row>
+            <Row>
+              <Form.Check
+                className="ml-3 mt-2"
+                size="lg"
+                label="CONTINUOUS EXPOSURE"
+                type="switch"
+                id="continuous_exposure"
+                checked={this.state.continuous_exposure === true || false}
+                onChange={() => this.toggleContinuousMonitoringModal()}
+              />
+            </Row>
+          </Col>
+          <Col md="12" sm="24">
+            <div className="mt-3">
+              <span className="nav-input-label">END OF MONITORING</span>
+              <InfoTooltip tooltipTextKey="endOfMonitoring" location="right"></InfoTooltip>
+              <span className="ml-3">{this.props.patient.linelist.end_of_monitoring}</span>
+            </div>
+          </Col>
         </Row>
       </React.Fragment>
     );

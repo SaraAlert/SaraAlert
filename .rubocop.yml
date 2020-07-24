@@ -16,11 +16,11 @@ Metrics/PerceivedComplexity:
 Metrics/CyclomaticComplexity:
   Enabled: false
 Metrics/MethodLength:
-  Max: 100
+  Max: 160
 Metrics/AbcSize:
   Enabled: false
 Metrics/ClassLength:
-  Max: 500
+  Max: 750
 Metrics/BlockLength:
   Enabled: false
 Style/ClassAndModuleChildren:
@@ -33,7 +33,7 @@ Lint/StructNewOverride:
 # Very good options that are not enabled by default yet and thus produce warnings
 Style/ClassVars:
   Enabled: true
-  Exclude: 
+  Exclude:
     - test/**/*
 Style/HashEachMethods:
   Enabled: true
@@ -47,3 +47,27 @@ Style/MultilineTernaryOperator:
   Enabled: false
 Style/NestedTernaryOperator:
   Enabled: false
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+Style/AccessorGrouping:
+  Enabled: true
+Style/BisectedAttrAccessor:
+  Enabled: true
+Style/ExponentialNotation:
+  Enabled: true
+Style/RedundantAssignment:
+  Enabled: true
+Style/RedundantFetchBlock:
+  Enabled: true
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+Style/RedundantRegexpEscape:
+  Enabled: true
+Style/SlicingWithRange:
+  Enabled: true

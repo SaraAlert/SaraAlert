@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import reportError from '../util/ReportError';
@@ -41,7 +41,7 @@ class Export extends React.Component {
 
   createModal(title, toggle, submit, endpoint) {
     return (
-      <Modal size="lg" show centered>
+      <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
@@ -57,15 +57,15 @@ class Export extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button
             variant="primary btn-square"
             onClick={() => {
               submit(endpoint);
             }}>
             Start Export
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>
@@ -75,43 +75,20 @@ class Export extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button className="btn-primary mb-4 ml-2 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown">
-          <i className="fas fa-download"></i> Export
-        </Button>
-        <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a
-            className="dropdown-item"
-            onClick={() => {
-              this.setState({ showCSVModal: true });
-            }}
-            href="#">
-            Line list CSV ({this.props.workflow})
-          </a>
-          <a
-            className="dropdown-item"
-            onClick={() => {
-              this.setState({ showSaraFormatModal: true });
-            }}
-            href="#">
-            Sara Alert Format ({this.props.workflow})
-          </a>
-          <a
-            className="dropdown-item"
-            onClick={() => {
-              this.setState({ showAllPurgeEligibleModal: true });
-            }}
-            href="#">
-            Excel Export For Purge-Eligible Monitorees
-          </a>
-          <a
-            className="dropdown-item"
-            onClick={() => {
-              this.setState({ showAllModal: true });
-            }}
-            href="#">
-            Excel Export For All Monitorees
-          </a>
-        </div>
+        <DropdownButton
+          as={ButtonGroup}
+          size="md"
+          className="ml-2 mb-4"
+          title={
+            <React.Fragment>
+              <i className="fas fa-download"></i> Export{' '}
+            </React.Fragment>
+          }>
+          <Dropdown.Item onClick={() => this.setState({ showCSVModal: true })}>Line list CSV ({this.props.workflow})</Dropdown.Item>
+          <Dropdown.Item onClick={() => this.setState({ showSaraFormatModal: true })}>Sara Alert Format ({this.props.workflow})</Dropdown.Item>
+          <Dropdown.Item onClick={() => this.setState({ showAllPurgeEligibleModal: true })}>Excel Export For Purge-Eligible Monitorees</Dropdown.Item>
+          <Dropdown.Item onClick={() => this.setState({ showAllModal: true })}>Excel Export For All Monitorees</Dropdown.Item>
+        </DropdownButton>
         {this.state.showCSVModal &&
           this.createModal(
             `Line list CSV (${this.props.workflow})`,

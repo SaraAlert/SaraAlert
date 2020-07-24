@@ -1,126 +1,126 @@
 patient_1_assessment_1:
   id: 1001
-  created_at: "<%= 38.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  created_at: <%= 38.days.ago %>
+  updated_at: <%= 32.days.ago %>
   patient_id: 1
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_1_assessment_2:
   id: 1002
-  created_at: "<%= 36.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
   patient_id: 1
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_2_assessment_1:
   id: 1003
-  created_at: "<%= 38.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  created_at: <%= 38.days.ago %>
+  updated_at: <%= 32.days.ago %>
   patient_id: 2
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_2_assessment_2:
   id: 1004
-  created_at: "<%= 36.days.ago %>"
-  updated_at: "<%= 32.days.ago %>"
+  created_at: <%= 36.days.ago %>
+  updated_at: <%= 32.days.ago %>
   patient_id: 2
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_3_assessment_1:
   id: 1005
-  created_at: "<%= 23.days.ago %>"
-  updated_at: "<%= 23.days.ago %>"
+  created_at: <%= 23.days.ago %>
+  updated_at: <%= 23.days.ago %>
   patient_id: 3
   symptomatic: true
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_3_assessment_2:
   id: 1006
-  created_at: "<%= 23.days.ago %>"
-  updated_at: "<%= 23.days.ago %>"
+  created_at: <%= 23.days.ago %>
+  updated_at: <%= 23.days.ago %>
   patient_id: 3
   symptomatic: true
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_4_assessment_1:
   id: 1007
-  created_at: "<%= 6.hours.ago %>"
-  updated_at: "<%= 6.hours.ago %>"
+  created_at: <%= 6.hours.ago %>
+  updated_at: <%= 6.hours.ago %>
   patient_id: 4
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_5_assessment_1:
   id: 1008
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
   patient_id: 5
   symptomatic: true
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_8_assessment_1:
   id: 1009
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
   patient_id: 8
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_8_assessment_2:
   id: 1010
-  created_at: "<%= 5.hours.ago %>"
-  updated_at: "<%= 5.hours.ago %>"
+  created_at: <%= 5.hours.ago %>
+  updated_at: <%= 5.hours.ago %>
   patient_id: 8
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_9_assessment_1:
   id: 1011
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
   patient_id: 9
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_9_assessment_2:
   id: 1012
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
   patient_id: 9
   symptomatic: true
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_9_assessment_3:
   id: 1013
-  created_at: "<%= 22.days.ago %>"
-  updated_at: "<%= 22.days.ago %>"
+  created_at: <%= 22.days.ago %>
+  updated_at: <%= 22.days.ago %>
   patient_id: 9
   symptomatic: true
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_9_assessment_4:
   id: 1014
-  created_at: "<%= 10.hours.ago %>"
-  updated_at: "<%= 10.hours.ago %>"
+  created_at: <%= 10.hours.ago %>
+  updated_at: <%= 10.hours.ago %>
   patient_id: 9
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_10_assessment_1:
   id: 1015
-  created_at: "<%= 26.days.ago %>"
-  updated_at: "<%= 26.days.ago %>"
+  created_at: <%= 26.days.ago %>
+  updated_at: <%= 26.days.ago %>
   patient_id: 10
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_10_assessment_2:
   id: 1016
-  created_at: "<%= 24.days.ago %>"
-  updated_at: "<%= 24.days.ago %>"
+  created_at: <%= 24.days.ago %>
+  updated_at: <%= 24.days.ago %>
   patient_id: 10
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_10_assessment_3:
   id: 1017
-  created_at: "<%= 18.hours.ago %>"
-  updated_at: "<%= 18.hours.ago %>"
+  created_at: <%= 18.hours.ago %>
+  updated_at: <%= 18.hours.ago %>
   patient_id: 10
   symptomatic: false
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'
 patient_50_assessment_1:
   id: 1018
-  created_at: "<%= 1.hour.ago %>"
-  updated_at: "<%= 1.hour.ago %>"
+  created_at: <%= 1.hour.ago %>
+  updated_at: <%= 1.hour.ago %>
   patient_id: 50
   symptomatic: true
-  who_reported: "Monitoree"
+  who_reported: 'Monitoree'

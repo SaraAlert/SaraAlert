@@ -49,7 +49,7 @@ class ContactAttempt extends React.Component {
 
   createModal(title, toggle, submit) {
     return (
-      <Modal size="lg" show centered>
+      <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
@@ -67,6 +67,9 @@ class ContactAttempt extends React.Component {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
           <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
             {this.state.loading && (
               <React.Fragment>
@@ -74,9 +77,6 @@ class ContactAttempt extends React.Component {
               </React.Fragment>
             )}
             Submit
-          </Button>
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
           </Button>
         </Modal.Footer>
       </Modal>

@@ -26,13 +26,13 @@ class MonitoringStatus extends React.Component {
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
       monitoring_plan: props.patient.monitoring_plan ? props.patient.monitoring_plan : '',
       exposure_risk_assessment: props.patient.exposure_risk_assessment ? props.patient.exposure_risk_assessment : '',
-      jurisdictionPath: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
-      originalJurisdictionId: this.props.patient.jurisdiction_id,
+      jurisdiction_path: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
+      original_jurisdiction_id: this.props.patient.jurisdiction_id,
       validJurisdiction: true,
-      assignedUser: props.patient.assigned_user ? props.patient.assigned_user : '',
-      originalAssignedUser: props.patient.assigned_user ? props.patient.assigned_user : '',
-      monitoring_status_options: null,
-      monitoring_status_option: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
+      assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
+      original_assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
+      monitoring_reasons: null,
+      monitoring_reason: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
       apply_to_group: false,
       isolation: props.patient.isolation,
@@ -50,7 +50,7 @@ class MonitoringStatus extends React.Component {
     this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
     this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
-    this.toggleassignedUserModal = this.toggleassignedUserModal.bind(this);
+    this.toggleAssignedUserModal = this.toggleAssignedUserModal.bind(this);
     this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
     this.toggleIsolation = this.toggleIsolation.bind(this);
     this.toggleNotifications = this.toggleNotifications.bind(this);
@@ -60,10 +60,10 @@ class MonitoringStatus extends React.Component {
     if (event?.target?.name && event.target.name === 'jurisdictionId') {
       // Jurisdiction is a weird case; the datalist and input work differently together
       this.setState({
-        message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.originalJurisdictionId] + '" to "' + event.target.value + '".',
-        message_warning: this.state.assignedUser === '' ? '' : 'Please also consider removing or updating the assigned user if it is no longer applicable.',
-        jurisdictionPath: event?.target?.value ? event.target.value : '',
-        monitoring_status_options: null,
+        message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + event.target.value + '".',
+        message_warning: this.state.assigned_user === '' ? '' : 'Please also consider removing or updating the assigned user if it is no longer applicable.',
+        jurisdiction_path: event?.target?.value ? event.target.value : '',
+        monitoring_reasons: null,
         validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
       });
     } else if (event?.target?.name && event.target.name === 'assignedUser') {
@@ -72,10 +72,10 @@ class MonitoringStatus extends React.Component {
         (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
       ) {
         this.setState({
-          message: 'assigned user from "' + this.state.originalAssignedUser + '"to"' + event.target.value + '".',
+          message: 'assigned user from "' + this.state.original_assigned_user + '"to"' + event.target.value + '".',
           message_warning: '',
-          assignedUser: event?.target?.value ? parseInt(event.target.value) : '',
-          monitoring_status_options: null,
+          assigned_user: event?.target?.value ? parseInt(event.target.value) : '',
+          monitoring_reasons: null,
         });
       }
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
@@ -84,7 +84,7 @@ class MonitoringStatus extends React.Component {
         message: 'exposure risk assessment to "' + event.target.value + '".',
         message_warning: '',
         exposure_risk_assessment: event?.target?.value ? event.target.value : '',
-        monitoring_status_options: null,
+        monitoring_reasons: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
       this.setState({
@@ -92,7 +92,7 @@ class MonitoringStatus extends React.Component {
         message: 'monitoring plan to "' + event.target.value + '".',
         message_warning: '',
         monitoring_plan: event?.target?.value ? event.target.value : '',
-        monitoring_status_options: null,
+        monitoring_reasons: null,
       });
     } else if (event?.target?.id && event.target.id === 'pause_notifications') {
       this.setState({
@@ -100,7 +100,7 @@ class MonitoringStatus extends React.Component {
         message: 'notification status to ' + (!this.state.pause_notifications ? 'paused.' : 'resumed.'),
         message_warning: '',
         pause_notifications: !this.state.pause_notifications,
-        monitoring_status_options: null,
+        monitoring_reasons: null,
       });
     } else if (event?.target?.id && event.target.id === 'public_health_action') {
       if (this.state.patient.isolation) {
@@ -110,7 +110,7 @@ class MonitoringStatus extends React.Component {
           message_warning:
             'The monitoree will be moved to the "Records Requiring Review" line list if they meet a recovery definition or will remain on the "Reporting" or "Non-Reporting" line list as appropriate until a recovery definition is met.',
           public_health_action: event?.target?.value ? event.target.value : '',
-          monitoring_status_options: null,
+          monitoring_reasons: null,
         });
       } else {
         this.setState({
@@ -121,7 +121,7 @@ class MonitoringStatus extends React.Component {
               ? 'The monitoree will be moved back into the primary status line lists.'
               : 'The monitoree will be moved into the PUI line list.',
           public_health_action: event?.target?.value ? event.target.value : '',
-          monitoring_status_options: null,
+          monitoring_reasons: null,
         });
       }
     } else if (event?.target?.id && event.target.id === 'isolation_status') {
@@ -134,7 +134,7 @@ class MonitoringStatus extends React.Component {
             : 'The monitoree will be moved into the Exposure workflow.',
         isolation: event.target.value === 'Isolation',
         isolation_status: event.target.value,
-        monitoring_status_options: null,
+        monitoring_reasons: null,
       });
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
@@ -143,7 +143,7 @@ class MonitoringStatus extends React.Component {
         message_warning: event.target.value === 'Not Monitoring' ? 'This record will be moved to the closed line list.' : '',
         monitoring: event.target.value === 'Actively Monitoring' ? true : false,
         monitoring_status: event?.target?.value ? event.target.value : '',
-        monitoring_status_options:
+        monitoring_reasons:
           event.target.value === 'Not Monitoring'
             ? [
                 'Completed Monitoring',
@@ -173,7 +173,7 @@ class MonitoringStatus extends React.Component {
         this.toggleJurisdictionModal();
       } else if (event?.target?.name && event.target.name === 'assignedUser') {
         event.preventDefault();
-        this.toggleassignedUserModal();
+        this.toggleAssignedUserModal();
       }
     }
   }
@@ -221,20 +221,20 @@ class MonitoringStatus extends React.Component {
   toggleJurisdictionModal() {
     let current = this.state.showJurisdictionModal;
     this.setState({
-      message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.originalJurisdictionId] + '" to "' + this.state.jurisdictionPath + '".',
+      message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + this.state.jurisdiction_path + '".',
       showJurisdictionModal: !current,
-      jurisdictionPath: current ? this.props.jurisdictionPaths[this.state.originalJurisdictionId] : this.state.jurisdictionPath,
+      jurisdiction_path: current ? this.props.jurisdictionPaths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
       apply_to_group: false,
       reasoning: '',
     });
   }
 
-  toggleassignedUserModal() {
+  toggleAssignedUserModal() {
     let current = this.state.showassignedUserModal;
     this.setState({
-      message: 'assigned user from "' + this.state.originalAssignedUser + '" to "' + this.state.assignedUser + '".',
+      message: 'assigned user from "' + this.state.original_assigned_user + '" to "' + this.state.assigned_user + '".',
       showassignedUserModal: !current,
-      assignedUser: current ? this.state.originalAssignedUser : this.state.assignedUser,
+      assigned_user: current ? this.state.original_assigned_user : this.state.assigned_user,
       apply_to_group: false,
       reasoning: '',
     });
@@ -275,11 +275,11 @@ class MonitoringStatus extends React.Component {
           message: this.state.message,
           reasoning:
             (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
-              ? this.state.monitoring_status_option + (this.state.reasoning ? ', ' : '')
+              ? this.state.monitoring_reason + (this.state.reasoning !== '' ? ', ' : '')
               : '') + this.state.reasoning,
-          monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_status_option : null,
-          jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdictionPath),
-          assigned_user: this.state.assignedUser,
+          monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_reason : null,
+          jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdiction_path),
+          assigned_user: this.state.assigned_user,
           apply_to_group: this.state.apply_to_group,
           isolation: this.state.isolation,
           pause_notifications: this.state.pause_notifications,
@@ -298,7 +298,7 @@ class MonitoringStatus extends React.Component {
 
   createModal(title, toggle, submit) {
     return (
-      <Modal size="lg" show centered>
+      <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
@@ -306,14 +306,14 @@ class MonitoringStatus extends React.Component {
           <p>
             You are about to change this monitoree&apos;s {this.state.message} {this.state.message_warning && <b>{this.state.message_warning}</b>}
           </p>
-          {this.state.monitoring_status_options && (
+          {this.state.monitoring_reasons && (
             <Form.Group>
               <Form.Label>Please select reason for status change:</Form.Label>
-              <Form.Control as="select" size="lg" className="form-square" id="monitoring_status_option" onChange={this.handleChange} defaultValue={-1}>
+              <Form.Control as="select" size="lg" className="form-square" id="monitoring_reason" onChange={this.handleChange} defaultValue={-1}>
                 <option value={-1} disabled>
                   --
                 </option>
-                {this.state.monitoring_status_options.map((option, index) => (
+                {this.state.monitoring_reasons.map((option, index) => (
                   <option key={`option-${index}`} value={option}>
                     {option}
                   </option>
@@ -321,19 +321,20 @@ class MonitoringStatus extends React.Component {
               </Form.Control>
             </Form.Group>
           )}
-          {this.props.isolation && this.state.monitoring_status_options && this.props.in_a_group && (
+          {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && (
             <Form.Group>
               <Form.Check
                 type="switch"
                 id="apply_to_group_cm_only"
-                label="If this monitoree's household has any active members in the exposure workflow that have continuous exposure on, update their last date of exposure"
+                label='Update Last Date of Exposure for all household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group_cm_only === true || false}
               />
             </Form.Group>
           )}
-          {this.props.isolation && this.state.monitoring_status_options && this.props.in_a_group && this.state.apply_to_group_cm_only && (
+          {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && this.state.apply_to_group_cm_only && (
             <Form.Group>
+              <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
               <Form.Control
                 size="lg"
                 id="apply_to_group_cm_only_date"
@@ -361,7 +362,10 @@ class MonitoringStatus extends React.Component {
           )}
         </Modal.Body>
         <Modal.Footer>
-          {this.state.monitoring_status_options && !this.state.monitoring_status_option ? (
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
+          {this.state.monitoring_reasons && !this.state.monitoring_reason ? (
             <Button variant="primary btn-square" disabled>
               Submit
             </Button>
@@ -375,9 +379,6 @@ class MonitoringStatus extends React.Component {
               Submit
             </Button>
           )}
-          <Button variant="secondary btn-square" onClick={toggle}>
-            Cancel
-          </Button>
         </Modal.Footer>
       </Modal>
     );
@@ -483,7 +484,7 @@ class MonitoringStatus extends React.Component {
                       className="form-control-lg"
                       onChange={this.handleChange}
                       onKeyPress={this.handleKeyPress}
-                      value={this.state.assignedUser}
+                      value={this.state.assigned_user}
                     />
                     <datalist id="assignedUsers">
                       {this.props.assignedUsers.map(num => {
@@ -494,12 +495,12 @@ class MonitoringStatus extends React.Component {
                         );
                       })}
                     </datalist>
-                    {this.state.assignedUser === this.state.originalAssignedUser ? (
+                    {this.state.assigned_user === this.state.original_assigned_user ? (
                       <Button className="btn-lg btn-square text-nowrap ml-2" disabled>
                         <i className="fas fa-users"></i> Change User
                       </Button>
                     ) : (
-                      <Button className="btn-lg btn-square text-nowrap ml-2" onClick={this.toggleassignedUserModal}>
+                      <Button className="btn-lg btn-square text-nowrap ml-2" onClick={this.toggleAssignedUserModal}>
                         <i className="fas fa-users"></i> Change User
                       </Button>
                     )}
@@ -519,7 +520,7 @@ class MonitoringStatus extends React.Component {
                       className="form-control-lg"
                       onChange={this.handleChange}
                       onKeyPress={this.handleKeyPress}
-                      value={this.state.jurisdictionPath}
+                      value={this.state.jurisdiction_path}
                     />
                     <datalist id="jurisdictionPaths">
                       {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
@@ -530,7 +531,7 @@ class MonitoringStatus extends React.Component {
                         );
                       })}
                     </datalist>
-                    {!this.state.validJurisdiction || this.state.jurisdictionPath === this.props.jurisdictionPaths[this.state.originalJurisdictionId] ? (
+                    {!this.state.validJurisdiction || this.state.jurisdiction_path === this.props.jurisdictionPaths[this.state.original_jurisdiction_id] ? (
                       <Button className="btn-lg btn-square text-nowrap ml-2" disabled>
                         <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
                       </Button>
@@ -549,7 +550,7 @@ class MonitoringStatus extends React.Component {
         {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
         {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
-        {this.state.showassignedUserModal && this.createModal('Assigned User', this.toggleassignedUserModal, this.submit)}
+        {this.state.showassignedUserModal && this.createModal('Assigned User', this.toggleAssignedUserModal, this.submit)}
         {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
         {this.state.showIsolationModal && this.createModal('Isolation', this.toggleIsolation, this.submit)}
         {this.state.showNotificationsModal && this.createModal('Notifications', this.toggleNotifications, this.submit)}

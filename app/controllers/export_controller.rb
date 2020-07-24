@@ -4,7 +4,7 @@ require 'axlsx'
 
 # ExportController: for exporting subjects
 class ExportController < ApplicationController
-  include ImportExportHelper
+  include ImportExport
 
   before_action :authenticate_user!
 
@@ -56,13 +56,7 @@ class ExportController < ApplicationController
     patients = current_user.viewable_patients.where(id: params[:patient_id])
     return if patients.empty?
 
-    history = History.new
-    history.created_by = current_user.email
-    comment = 'User downloaded monitoree\'s data in Excel Export.'
-    history.comment = comment
-    history.patient = patients.first
-    history.history_type = 'Monitoree Data Downloaded'
-    history.save
-    send_data build_excel_export_for_patients(patients)
+    History.monitoree_data_downloaded(patient: patients.first, created_by: current_user.email)
+    send_data excel_export(patients)
   end
 end

@@ -12,7 +12,7 @@ class ReportedCondition < Condition
     ThresholdCondition.find_by(threshold_condition_hash: threshold_condition_hash)
   end
 
-  scope :fever_or_fever_medication, lambda {
-    where_assoc_exists(:symptoms, &:fever_or_fever_medication)
+  scope :fever_or_fever_reducer, lambda {
+    where_assoc_exists(:symptoms, &:fever_or_fever_reducer)
   }
 end

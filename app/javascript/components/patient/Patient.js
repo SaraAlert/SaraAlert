@@ -1,9 +1,9 @@
 import React from 'react';
-import { Col, Row, Button, Collapse, Card } from 'react-bootstrap';
+import { Col, Row, Button, Collapse, Card, Table } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import ChangeHOH from './subject/ChangeHOH';
-import MoveToHousehold from './subject/MoveToHousehold';
-import RemoveFromHousehold from './subject/RemoveFromHousehold';
+import ChangeHOH from '../subject/ChangeHOH';
+import MoveToHousehold from '../subject/MoveToHousehold';
+import RemoveFromHousehold from '../subject/RemoveFromHousehold';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -30,16 +30,35 @@ class Patient extends React.Component {
         {this.props?.groupMembers && this.props?.groupMembers?.length > 0 && (
           <Row className="pb-3 mx-3">
             <Col>
-              <Row>This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
-              {this.props?.groupMembers?.map((member, index) => {
-                return (
-                  <Row key={'gm' + index}>
-                    <a href={'/patients/' + member.id}>
-                      {member.last_name}, {member.first_name} {member.middle_name || ''}
-                    </a>
-                  </Row>
-                );
-              })}
+              <Row className="pb-2">This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
+              <Row>
+                <Table striped bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Workflow</th>
+                      <th>Monitoring Status</th>
+                      <th>Continuous Exposure?</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.props?.groupMembers?.map((member, index) => {
+                      return (
+                        <tr key={`dl-${index}`}>
+                          <td>
+                            <a href={'/patients/' + member.id}>
+                              {member.last_name}, {member.first_name} {member.middle_name || ''}
+                            </a>
+                          </td>
+                          <td>{member.isolation ? 'Isolation' : 'Exposure'}</td>
+                          <td>{member.monitoring ? 'Actively Monitoring' : 'Not Monitoring'}</td>
+                          <td>{member.continuous_exposure ? 'Yes' : 'No'}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              </Row>
               <Row>
                 <ChangeHOH patient={this.props?.details} groupMembers={this.props?.groupMembers} authenticity_token={this.props.authenticity_token} />
               </Row>
@@ -127,8 +146,14 @@ class Patient extends React.Component {
                 <span className="font-weight-light">{`${this.props.details.user_defined_id_nndss ? this.props.details.user_defined_id_nndss : ''}`}</span>
               </Col>
               <Col className="text-truncate">
-                <span className="font-weight-normal">Sex:</span>{' '}
+                <span className="font-weight-normal">Birth Sex:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.sex ? this.props.details.sex : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Gender Identity:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.gender_identity ? this.props.details.gender_identity : ''}`}</span>
+                <br />
+                <span className="font-weight-normal">Sexual Orientation:</span>{' '}
+                <span className="font-weight-light">{`${this.props.details.sexual_orientation ? this.props.details.sexual_orientation : ''}`}</span>
                 <br />
                 <span className="font-weight-normal">Race:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.white ? 'White' : ''}${
@@ -424,6 +449,7 @@ class Patient extends React.Component {
 Patient.propTypes = {
   patient: PropTypes.object,
   group_members: PropTypes.array,
+  groupMembers: PropTypes.array,
   details: PropTypes.object,
   jurisdictionPath: PropTypes.string,
   goto: PropTypes.func,

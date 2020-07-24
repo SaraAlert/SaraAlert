@@ -1,122 +1,42 @@
 <% content_for :assets do %>
-  <%= javascript_pack_tag "datatables" %>
-  <%= javascript_pack_tag "xss" %>
   <%= javascript_pack_tag "moment" %>
 <% end %>
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Exposure Dashboard", href: nil} ] } %>
 
-<div class="btn-group">
+<%= react_component("public_health/PublicHealthHeader", {
+  authenticity_token: form_authenticity_token,
+  workflow: 'exposure',
+  abilities: {
+    analytics: current_user.can_view_analytics?,
+    enrollment: current_user.can_create_patient?,
+    export: current_user.can_export?,
+    import: current_user.can_import?
+  }
+}) %>
 
-  <% if current_user.can_view_analytics? %>
-    <%= link_to '<i class="fas fa-chart-pie"></i> Analytics'.html_safe, {controller: "analytics", action: "index"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
-  <% end %>
-
-  <% if current_user.can_create_patient? %>
-    <%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-primary btn-square ml-2 mb-4" %>
-  <% end %>
-
-  <% if current_user.can_export? %>
-    <%= react_component("export/Export", { authenticity_token: form_authenticity_token, workflow: 'exposure' } ) %>
-  <% end %>
-
-  <% if current_user.can_import? %>
-    <div class="">
-      <button type="button" class="btn btn-primary mb-4 ml-2 dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" >
-        <i class="fas fa-upload"></i> Import
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" data-toggle="modal" data-target="#epixModal">Epi-X</a>
-        <a class="dropdown-item" data-toggle="modal" data-target="#compModal">Sara Alert Format</a>
-      </div>
-    </div>
-    <div class="modal fade" id="epixModal" tabindex="-1" role="dialog" aria-labelledby="epixModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="epixModalLabel">Import Epi-X</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <%= form_tag(ADMIN_OPTIONS['base_path'] + '/import/exposure/epix', method: :post, multipart: true) do |f| %>
-              <%= file_field_tag 'file' %>
-              <%= submit_tag "Upload", class: "btn btn-primary float-right" %>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal fade" id="compModal" tabindex="-1" role="dialog" aria-labelledby="compModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="compModalLabel">Import Sara Alert Format</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <%= link_to 'Download formatting guidance', 'https://github.com/SaraAlert/SaraAlert/blob/master/public/Sara%20Alert%20Import%20Format.xlsx?raw=true' %>
-            <div class="mb-3"></div>
-            <%= form_tag(ADMIN_OPTIONS['base_path'] + '/import/exposure/comprehensive_monitorees', method: :post, multipart: true) do |f| %>
-              <%= file_field_tag 'file' %>
-              <%= submit_tag "Upload", class: "btn btn-primary float-right" %>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% end %>
-
-</div>
-
-<div class="btn-group mb-4 float-right mr-2" role="group">
-  <a class="btn btn-primary" href="<%= public_health_url %>"><i class="fas fa-people-arrows"></i> Exposure Monitoring (<%= @all_count %>)</a>
-  <a class="btn btn-outline-primary" href="<%= public_health_isolation_url %>"><i class="fas fa-house-user"></i> Isolation Monitoring (<%= @i_all_count %>)</a>
-</div>
-
-<%= render partial: "exposure_tabs" %>
-
-<script>
-  $(document).ready(function() {
-    if (localStorage.getItem('dashboardCurrentTab') !== null) {
-      $(localStorage.getItem('dashboardCurrentTab') + '-tab').find('span').trigger('click')
-      // Load remembered tab
-      $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-      window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-      if ($('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').length === 0) {
-        // Load default tab
-        $('#patients_table_symptomatic_patients').DataTable().draw();
-        localStorage.setItem('dashboardCurrentTab', 'symptomatic_patients');
-        window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-      }
-    } else {
-      // Load default tab
-      $('#patients_table_symptomatic_patients').DataTable().draw();
-      localStorage.setItem('dashboardCurrentTab', 'symptomatic_patients');
-      window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-    }
-    $('a[data-toggle="tab"]').on('click', function(e) {
-      if ($(e.target).attr('href') === undefined) {
-        localStorage.setItem('dashboardCurrentTab', $(e.target).parent().attr('href'))
-        if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
-          $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-          window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-        }
-      } else {
-        // Changed Tab, clear datatables selection
-        if (localStorage.getItem('dashboardCurrentTab') !== $(e.target).attr('href')) {
-          current_table = $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable();
-          current_table.rows( { selected: true } ).deselect();
-        }
-        localStorage.setItem('dashboardCurrentTab', $(e.target).attr('href'))
-        if (!window[localStorage.getItem('dashboardCurrentTab') + 'drawn']) {
-          $('#patients_table_' + localStorage.getItem('dashboardCurrentTab').replace(/-/g, '_').replace(/#/g, '') + '_patients').DataTable().draw();
-          window[localStorage.getItem('dashboardCurrentTab') + 'drawn'] = true;
-        }
-      }
-    });
-    window.WORKFLOW = 'exposure';
-  });
-</script>
+<%= react_component("public_health/PatientsTable", {
+  authenticity_token: form_authenticity_token,
+  jurisdiction: {
+    id: current_user.jurisdiction_id,
+    path: current_user.jurisdiction[:path]
+  },
+  workflow: 'exposure',
+  tabs: {
+    symptomatic: { label: 'Symptomatic', variant: 'danger', tooltip: 'exposure_symptomatic',
+      description: 'Monitorees who have reported symptoms, which need to be reviewed.' },
+    non_reporting: { label: 'Non-Reporting', variant: 'warning', tooltip: 'exposure_nonReporting',
+      description: 'Monitorees who have failed to report in the last day, and are not symptomatic.' },
+    asymptomatic: { label: 'Asymptomatic', variant: 'success', tooltip: 'exposure_asymptomatic',
+      description: 'Monitorees currently reporting no symptoms, who have reported during the last day.' },
+    pui: { label: 'PUI', variant: 'dark', tooltip: 'exposure_under_investigation',
+      description: 'Monitorees who are currently under investigation.' },
+    closed: { label: 'Closed', variant: 'secondary', tooltip: 'exposure_closed',
+      description: 'Monitorees not currently being monitored.' },
+    transferred_in: { label: 'Transferred In', variant: 'info',
+      description: 'Monitorees that have been transferred into this jurisdiction during the last 24 hours.' },
+    transferred_out: { label: 'Transferred Out', variant: 'info',
+      description: 'Monitorees that have been transferred out of this jurisdiction.' },
+    all: { label: 'All Monitorees', variant: 'primary',
+      description: 'All Monitorees in this jurisdiction, in the Exposure workflow.' }
+  }
+}) %>

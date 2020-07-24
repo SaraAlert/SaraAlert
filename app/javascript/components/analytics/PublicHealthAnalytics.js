@@ -12,7 +12,7 @@ import GeographicSummary from './widgets/GeographicSummary';
 import 'rc-slider/assets/index.css';
 import domtoimage from 'dom-to-image';
 
-class MonitorAnalytics extends React.Component {
+class PublicHealthAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.exportAsPNG = this.exportAsPNG.bind(this);
@@ -20,7 +20,7 @@ class MonitorAnalytics extends React.Component {
     this.state = {
       checked: false,
       viewTotal: false,
-      hasErrors: !this.props.stats,
+      hasErrors: !this.props.stats || Object.entries(this.props.stats).length === 0,
     };
   }
 
@@ -129,9 +129,9 @@ class MonitorAnalytics extends React.Component {
   }
 }
 
-MonitorAnalytics.propTypes = {
+PublicHealthAnalytics.propTypes = {
   stats: PropTypes.object,
   current_user: PropTypes.object,
 };
 
-export default MonitorAnalytics;
+export default PublicHealthAnalytics;

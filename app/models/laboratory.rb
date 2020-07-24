@@ -6,13 +6,8 @@ class Laboratory < ApplicationRecord
 
   validates :result, inclusion: { in: ['positive', 'negative', 'indeterminate', 'other', nil, ''] }
 
-  scope :last_ten_days_positive, lambda {
-    where('specimen_collection > ?', 10.days.ago).where(result: 'positive')
-  }
-
-  scope :before_ten_days_positive, lambda {
-    where('specimen_collection <= ?', 10.days.ago).where(result: 'positive')
-  }
+  after_save :update_patient_linelist_after_save
+  before_destroy :update_patient_linelist_before_destroy
 
   # Returns a representative FHIR::Observation for an instance of a Sara Alert Laboratory.
   # https://www.hl7.org/fhir/observation.html
@@ -38,5 +33,21 @@ class Laboratory < ApplicationRecord
       lab_created_at: created_at || '',
       lab_updated_at: updated_at || ''
     }
+  end
+
+  private
+
+  def update_patient_linelist_after_save
+    patient.update(
+      latest_positive_lab_at: patient.laboratories.where(result: 'positive').maximum(:specimen_collection),
+      negative_lab_count: patient.laboratories.where(result: 'negative').size
+    )
+  end
+
+  def update_patient_linelist_before_destroy
+    patient.update(
+      latest_positive_lab_at: patient.laboratories.where.not(id: id).where(result: 'positive').maximum(:specimen_collection),
+      negative_lab_count: patient.laboratories.where.not(id: id).where(result: 'negative').size
+    )
   end
 end

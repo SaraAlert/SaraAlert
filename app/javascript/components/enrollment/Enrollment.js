@@ -98,6 +98,9 @@ class Enrollment extends React.Component {
     if (this.props.parent_id) {
       data['responder_id'] = this.props.parent_id;
     }
+    if (this.props.cc_id) {
+      data['cc_id'] = this.props.cc_id;
+    }
     data['bypass_duplicate'] = false;
     axios({
       method: this.props.editMode ? 'patch' : 'post',
@@ -252,6 +255,7 @@ Enrollment.propTypes = {
   assignedUsers: PropTypes.array,
   editMode: PropTypes.bool,
   parent_id: PropTypes.number,
+  cc_id: PropTypes.number,
   can_add_group: PropTypes.bool,
   has_group_members: PropTypes.bool,
 };

@@ -135,6 +135,21 @@ class User < ApplicationRecord
     has_role?(:public_health) || has_role?(:public_health_enroller)
   end
 
+  # Can this user view Patient close contacts?
+  def can_view_patient_close_contacts?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user edit Patient close contacts?
+  def can_edit_patient_close_contacts?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user create Patient close contacts?
+  def can_create_patient_close_contacts?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
   # Can this user view Patient assessments?
   def can_view_patient_assessments?
     has_role?(:public_health) || has_role?(:public_health_enroller)

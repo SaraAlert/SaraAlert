@@ -4,17 +4,13 @@ require 'roo'
 
 # ImportController: for importing subjects from other formats
 class ImportController < ApplicationController
-  include ImportExportHelper
+  include ImportExport
   include PatientHelper
 
   before_action :authenticate_user!
 
   def index
     redirect_to(root_url) && return unless current_user.can_import?
-  end
-
-  def error
-    @error_msg = params[:error_details]
   end
 
   def download_guidance
@@ -83,7 +79,6 @@ class ImportController < ApplicationController
 
         begin
           # Run validations on fields that have restrictions conditional on other fields
-          validate_address(patient, row_ind)
           validate_required_primary_contact(patient, row_ind)
 
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
@@ -118,6 +113,8 @@ class ImportController < ApplicationController
       # This is a catch all for any other unexpected error
       @errors << "Unexpected Error: '#{e&.message}' Please make sure that .xlsx import file is formatted in accordance with the formatting guidance."
     end
+
+    render json: { patients: @patients, errors: @errors }
   end
 
   def lab_result(data, row_ind)
@@ -174,7 +171,9 @@ class ImportController < ApplicationController
 
   def validate_enum_field(field, value, row_ind)
     return nil if value.blank?
-    return value if VALID_ENUMS[field].include?(value)
+
+    normalized_value = unformat_enum_field(value)
+    return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
 
     err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are: #{VALID_ENUMS[field].to_sentence}"
     raise ValidationError.new(err_msg, row_ind)
@@ -194,7 +193,7 @@ class ImportController < ApplicationController
 
     unless value.match(/\d{4}-\d{2}-\d{2}/)
       err_msg = "'#{value}' is not a valid date for '#{VALIDATION[field][:label]}'"
-      if value.match(%r{\d{2}\/\d{2}\/\d{4}})
+      if value.match(%r{\d{2}/\d{2}/\d{4}})
         raise ValidationError.new("#{err_msg} due to ambiguity between 'MM/DD/YYYY' and 'DD/MM/YYYY', please use the 'YYYY-MM-DD' format instead", row_ind)
       end
 
@@ -268,13 +267,6 @@ class ImportController < ApplicationController
     return value.to_i if value.to_i.between?(1, 9999)
 
     raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999", row_ind)
-  end
-
-  def validate_address(patient, row_ind)
-    return if (patient[:address_line_1] && patient[:address_city] && patient[:address_state] && patient[:address_zip]) ||
-              (patient[:foreign_address_city] && patient[:foreign_address_country])
-
-    raise ValidationError.new('Either an address (line 1, city, state, zip) or foreign address (city, country) must be provided', row_ind)
   end
 
   def validate_required_primary_contact(patient, row_ind)

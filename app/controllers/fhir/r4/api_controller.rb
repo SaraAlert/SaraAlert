@@ -111,12 +111,7 @@ class Fhir::R4::ApiController < ActionController::API
       resource.send_enrollment_notification
 
       # Create a history for the enrollment
-      history = History.new
-      history.created_by = current_resource_owner.email
-      history.comment = 'User enrolled monitoree via API.'
-      history.patient = resource
-      history.history_type = 'Enrollment'
-      history.save
+      History.enrollment(patient: resource, created_by: current_resource_owner.email, comment: 'User enrolled monitoree via API.')
     end
     status_created(resource.as_fhir) && return
   rescue StandardError

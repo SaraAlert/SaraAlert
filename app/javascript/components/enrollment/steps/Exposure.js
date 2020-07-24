@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
-import { countryOptions } from '../../data';
+import { countryOptions } from '../../../data/countryOptions';
 import { PropTypes } from 'prop-types';
 import axios from 'axios';
 import * as yup from 'yup';
@@ -40,11 +40,19 @@ class Exposure extends React.Component {
       if (jurisdiction_id) {
         value = jurisdiction_id;
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-        axios.get(window.BASE_PATH + `/jurisdictions/${jurisdiction_id}/assigned_users/immediate`).then(response => {
-          if (response?.data?.assignedUsers) {
-            this.setState({ assignedUsers: response.data.assignedUsers });
-          }
-        });
+        axios
+          .get('/jurisdictions/assigned_users', {
+            params: {
+              jurisdiction_id,
+              scope: 'exact',
+            },
+          })
+          .catch(() => {})
+          .then(response => {
+            if (response?.data?.assignedUsers) {
+              this.setState({ assignedUsers: response.data.assignedUsers });
+            }
+          });
       } else {
         value = -1;
       }
@@ -144,9 +152,6 @@ class Exposure extends React.Component {
               <option></option>
               <option>Confirmed</option>
               <option>Probable</option>
-              <option>Suspect</option>
-              <option>Unknown</option>
-              <option>Not a Case</option>
             </Form.Control>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['case_status']}

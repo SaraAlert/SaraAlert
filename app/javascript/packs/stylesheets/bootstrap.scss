@@ -29,6 +29,10 @@ body {
   border-radius: 0;
 }
 
+.card {
+  border-radius: 0 !important;
+}
+
 .table-smaller-font {
   font-size: 0.9em;
 }
@@ -155,4 +159,8 @@ select.form-control {
   // will be drawn in front of any other modals
   background-color: rgba(20, 20, 20, 0.60);
   z-index: 2000;
+}
+
+.modal-import {
+  max-width: 95% !important;
 }

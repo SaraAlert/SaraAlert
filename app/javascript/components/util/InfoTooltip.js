@@ -14,6 +14,20 @@ const TOOLTIP_TEXT = {
 
   lastDateOfExposure: <div> Used by the system to automatically calculate the monitoring period. </div>,
 
+  primaryLanguage: (
+    <div>
+      <i>Primary Language</i> is used to determine the translations for what the monitoree sees/hears. If a language is not fully supported, a warning to users
+      will appear.
+    </div>
+  ),
+
+  secondaryLanguage: (
+    <div>
+      <i>Secondary Language</i> is not used to determine which language the system sends messages to the monitoree in. Information in this field can be used to
+      inform interpretation needs.
+    </div>
+  ),
+
   // MONITORING ACTIONS
   monitoringStatus: (
     <div>
@@ -79,17 +93,26 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  // REQUIRES REVIEW RECOVERY LOGIC
-  symptomaticNonTestBased: (
+  endOfMonitoring: (
     <div>
-      At least 10 days have passed since the symptom onset date and at least 72 hours have passed since the case last reported “Yes” for fever or use of
-      fever-inducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other
-      symptoms have improved.
+      Calculated by the system based on Last Date of Exposure
+      <div>
+        <i>Only relevent for Exposure Workflow</i>
+      </div>
     </div>
   ),
 
+  // REQUIRES REVIEW RECOVERY LOGIC
   asymptomaticNonTestBased: (
-    <div>At least 10 days have passed since the report date of a positive laboratory test and the monitoree has never reported symptoms.</div>
+    <div>At least 10 days have passed since the specimen collection date of a positive laboratory test and the monitoree has never reported symptoms.</div>
+  ),
+
+  symptomaticNonTestBased: (
+    <div>
+      At least 10 days have passed since the symptom onset date and at least 72 hours have passed since the case last reported “Yes” for fever or use of
+      fever-reducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other
+      symptoms have improved.
+    </div>
   ),
 
   testBased: (
@@ -105,6 +128,13 @@ const TOOLTIP_TEXT = {
   labResults: (
     <div>
       Lab Results are used in the isolation workflow to determine if a case might meet the test-based or asymptomatic non-test based recovery definitions.
+    </div>
+  ),
+
+  closeContacts: (
+    <div>
+      Close Contacts can be added whenever a user does not have the information required to complete enrollment of the contact into the exposure workflow. A
+      user must complete enrollment of any Close Contact before the system will start to send daily notifications to that individual.
     </div>
   ),
 

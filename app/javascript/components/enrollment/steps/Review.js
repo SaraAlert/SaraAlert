@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Modal } from 'react-bootstrap';
-import Patient from '../../Patient';
+import Patient from '../../patient/Patient';
 import { PropTypes } from 'prop-types';
 
 class Review extends React.Component {
@@ -13,8 +13,10 @@ class Review extends React.Component {
   }
 
   submit(event, groupMember) {
-    this.setState({ submitDisabled: true });
-    this.props.submit(event, groupMember, this.reenableSubmit);
+    // Update state before submitting data so submit button disables when clicked to prevent multiple submissions.
+    this.setState({ submitDisabled: true }, () => {
+      this.props.submit(event, groupMember, this.reenableSubmit);
+    });
   }
 
   reenableSubmit() {
@@ -30,7 +32,7 @@ class Review extends React.Component {
 
   createModal(title, toggle, submit) {
     return (
-      <Modal size="lg" show centered>
+      <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
@@ -46,11 +48,11 @@ class Review extends React.Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary btn-square" onClick={submit}>
-            Continue
-          </Button>
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
+          </Button>
+          <Button variant="primary btn-square" onClick={submit}>
+            Continue
           </Button>
         </Modal.Footer>
       </Modal>

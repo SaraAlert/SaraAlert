@@ -3,12 +3,22 @@ import { Card, Button, Form, Col } from 'react-bootstrap';
 import moment from 'moment-timezone';
 import { PropTypes } from 'prop-types';
 import * as yup from 'yup';
+import Select from 'react-select';
+import InfoTooltip from '../../util/InfoTooltip';
+import supportedLanguages from '../../../data/supportedLanguages.json';
 
 class Identification extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
+    this.state = {
+      ...this.props,
+      current: { ...this.props.currentState },
+      errors: {},
+      modified: {},
+      languageOptions: this.getLanguageOptions(),
+    };
     this.handleChange = this.handleChange.bind(this);
+    this.handleLanguageChange = this.handleLanguageChange.bind(this);
     this.validate = this.validate.bind(this);
   }
 
@@ -50,6 +60,22 @@ class Identification extends React.Component {
     );
   }
 
+  handleLanguageChange(languageType, event) {
+    const value = event.value;
+    const current = this.state.current;
+    const modified = this.state.modified;
+    const self = this;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [languageType]: value } },
+        modified: { ...modified, patient: { ...modified.patient, [languageType]: value } },
+      },
+      () => {
+        self.props.setEnrollmentState({ ...self.state.modified });
+      }
+    );
+  }
+
   validate(callback) {
     let self = this;
     schema
@@ -70,6 +96,77 @@ class Identification extends React.Component {
           self.setState({ errors: issues });
         }
       });
+  }
+
+  getLanguageOptions() {
+    const langOptions = supportedLanguages.languages.map(lang => {
+      const fullySupported = lang.supported.sms && lang.supported.email && lang.supported.phone;
+      const langLabel = fullySupported ? lang.name : lang.name + '*';
+      return { value: lang.name, label: langLabel };
+    });
+    return langOptions;
+  }
+
+  getLanguageValue(language) {
+    return this.state.languageOptions.find(lang => lang.value === language);
+  }
+
+  renderLanguageSupportMessage(selectedLanguage, languageType) {
+    if (selectedLanguage) {
+      const languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
+
+      if (languageJson && languageJson.supported) {
+        const sms = languageJson.supported.sms;
+        const email = languageJson.supported.email;
+        const phone = languageJson.supported.phone;
+        const fullySupported = sms && email && phone;
+
+        if (!fullySupported) {
+          let message = languageJson.name;
+          if (!sms && !email && !phone) {
+            message += ' is not currently supported by Sara Alert.';
+            if (languageType === 'primary') {
+              message += ' Any messages sent to this monitoree will be in English.';
+            }
+          } else if (!sms && !email && phone) {
+            message += ' is supported for the telephone call method only.';
+            if (languageType === 'primary') {
+              message += ' If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
+            }
+          } else if (!sms && email && !phone) {
+            message += ' is supported for the email weblink method only.';
+            if (languageType === 'primary') {
+              message += ' If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
+            }
+          } else if (!sms && email && phone) {
+            message += ' is supported for telephone call and email reporting methods only.';
+            if (languageType === 'primary') {
+              message += ' If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
+            }
+          } else if (sms && !email && !phone) {
+            message += ' is supported for the SMS text weblink method only.';
+            if (languageType === 'primary') {
+              message += ' If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
+            }
+          } else if (sms && !email && phone) {
+            message += ' is supported for telephone call and SMS text reporting methods only.';
+            if (languageType === 'primary') {
+              message += ' If email is selected as the preferred reporting method, the email will be in English.';
+            }
+          } else if (sms && email && !phone) {
+            message += ' is supported for email and SMS text reporting methods only.';
+            if (languageType === 'primary') {
+              message += ' If telephone call is selected as the preferred reporting method, the call will be in English.';
+            }
+          }
+          return (
+            <i>
+              <b>* Warning:</b> {message}
+            </i>
+          );
+        }
+      }
+    }
   }
 
   render() {
@@ -170,6 +267,52 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
+              <Form.Row>
+                <Form.Group as={Col} controlId="gender_identity" md="auto">
+                  <Form.Label className="nav-input-label">GENDER IDENTITY{schema?.fields?.gender_identity?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['gender_identity']}
+                    as="select"
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.patient.gender_identity || ''}
+                    onChange={this.handleChange}>
+                    <option></option>
+                    <option>Male (Identifies as Male)</option>
+                    <option>Female (Identifies as Female)</option>
+                    <option>Transgender Male (Female to Male transexual (FTM))</option>
+                    <option>Transgender Female (Male to Female transsexual (MTF)) </option>
+                    <option>Non-conforming / Gender Queer (neither exclusively male nor female)</option>
+                    <option>Other</option>
+                    <option>Choose not to disclose (Asked but unknown)</option>
+                  </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['gender_identity']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} controlId="sexual_orientation" md="auto">
+                  <Form.Label className="nav-input-label">SEXUAL ORIENTATION{schema?.fields?.sexual_orientation?._exclusive?.required && ' *'}</Form.Label>
+                  <Form.Control
+                    isInvalid={this.state.errors['sexual_orientation']}
+                    as="select"
+                    size="lg"
+                    className="form-square"
+                    value={this.state.current.patient.sexual_orientation || ''}
+                    onChange={this.handleChange}>
+                    <option></option>
+                    <option>Straight or Heterosexual</option>
+                    <option>Lesbian, Gay, or Homosexual</option>
+                    <option>Bisexual</option>
+                    <option>Other</option>
+                    <option>Choose not to disclose (Asked but unknown)</option>
+                    <option>Don’t know (Unknown)</option>
+                    <option>Sexually attracted to neither Male or female sex</option>
+                  </Form.Control>
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['sexual_orientation']}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Form.Row>
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
@@ -226,113 +369,51 @@ class Identification extends React.Component {
               <Form.Row className="pt-3 ml-0">
                 <div className="nav-input-label">LANGUAGE</div>
               </Form.Row>
-              <Form.Row className="pb-3 pt-1 ml-0">
-                Primary Language is used to determine the translations for what the monitoree sees/hears. Currently supported languages are indicated by a * in
-                the below list. When a primary contact method is selected for a language that is not supported, Sara Alert will default to English.
-              </Form.Row>
+              <Form.Row className="pb-3 pt-1 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
-                <Form.Group as={Col} controlId="primary_language">
-                  <Form.Label className="nav-input-label">PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['primary_language']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.primary_language || ''}
-                    onChange={this.handleChange}
-                    as="input"
-                    list="languages"
+                <Form.Group as={Col} controlId="primary_language" id="primary_language_wrapper">
+                  <Form.Label className="nav-input-label">
+                    PRIMARY LANGUAGE{schema?.fields?.primary_language?._exclusive?.required && ' *'}
+                    <InfoTooltip tooltipTextKey="primaryLanguage" location="right"></InfoTooltip>
+                  </Form.Label>
+                  <Select
+                    name="primary_language"
+                    value={this.getLanguageValue(this.state.current.patient.primary_language)}
+                    options={this.state.languageOptions}
+                    onChange={e => this.handleLanguageChange('primary_language', e)}
+                    placeholder=""
+                    theme={theme => ({
+                      ...theme,
+                      borderRadius: 0,
+                    })}
                   />
-                  <datalist id="languages">
-                    <option></option>
-                    <option value="English">English*</option>
-                    <option value="Spanish">Spanish*</option>
-                    <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)*</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Bengali">Bengali</option>
-                    <option value="Czech">Czech</option>
-                    <option value="Danish">Danish</option>
-                    <option value="German">German</option>
-                    <option value="Greek">Greek</option>
-                    <option value="Finnish">Finnish</option>
-                    <option value="French">French</option>
-                    <option value="Frysian">Frysian</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Croatian">Croatian</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Korean">Korean</option>
-                    <option value="Dutch">Dutch</option>
-                    <option value="Norwegian">Norwegian</option>
-                    <option value="Punjabi">Punjabi</option>
-                    <option value="Polish">Polish</option>
-                    <option value="Portuguese">Portuguese</option>
-                    <option value="Russian">Russian</option>
-                    <option value="Serbian">Serbian</option>
-                    <option value="Swedish">Swedish</option>
-                    <option value="Telegu">Telegu</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Vietnamese">Vietnamese</option>
-                    <option value="Tagalog">Tagalog</option>
-                    <option value="Somali">Somali</option>
-                    <option value="Nepali">Nepali</option>
-                    <option value="Swahili">Swahili</option>
-                    <option value="Burmese">Burmese</option>
-                  </datalist>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['primary_language']}
-                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
-                <Form.Group as={Col} controlId="secondary_language">
-                  <Form.Label className="nav-input-label">SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['secondary_language']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.secondary_language || ''}
-                    onChange={this.handleChange}
-                    as="input"
-                    list="languages"
+                <Form.Group as={Col} controlId="secondary_language" id="secondary_language_wrapper">
+                  <Form.Label className="nav-input-label">
+                    SECONDARY LANGUAGE{schema?.fields?.secondary_language?._exclusive?.required && ' *'}
+                    <InfoTooltip tooltipTextKey="secondaryLanguage" location="right"></InfoTooltip>
+                  </Form.Label>
+                  <Select
+                    name="secondary_language"
+                    value={this.getLanguageValue(this.state.current.patient.secondary_language)}
+                    options={this.state.languageOptions}
+                    onChange={e => this.handleLanguageChange('secondary_language', e)}
+                    placeholder=""
+                    theme={theme => ({
+                      ...theme,
+                      borderRadius: 0,
+                    })}
                   />
-                  <datalist id="languages">
-                    <option></option>
-                    <option value="English">English</option>
-                    <option value="Spanish">Spanish</option>
-                    <option value="Spanish (Puerto Rican)">Spanish (Puerto Rican)</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Bengali">Bengali</option>
-                    <option value="Czech">Czech</option>
-                    <option value="Danish">Danish</option>
-                    <option value="German">German</option>
-                    <option value="Greek">Greek</option>
-                    <option value="Finnish">Finnish</option>
-                    <option value="French">French</option>
-                    <option value="Frysian">Frysian</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Croatian">Croatian</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Korean">Korean</option>
-                    <option value="Dutch">Dutch</option>
-                    <option value="Norwegian">Norwegian</option>
-                    <option value="Punjabi">Punjabi</option>
-                    <option value="Polish">Polish</option>
-                    <option value="Portuguese">Portuguese</option>
-                    <option value="Russian">Russian</option>
-                    <option value="Serbian">Serbian</option>
-                    <option value="Swedish">Swedish</option>
-                    <option value="Telegu">Telegu</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Vietnamese">Vietnamese</option>
-                    <option value="Tagalog">Tagalog</option>
-                    <option value="Somali">Somali</option>
-                    <option value="Nepali">Nepali</option>
-                    <option value="Swahili">Swahili</option>
-                    <option value="Burmese">Burmese</option>
-                  </datalist>
-                  <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['secondary_language']}
-                  </Form.Control.Feedback>
+                </Form.Group>
+              </Form.Row>
+              <Form.Row>
+                <Form.Group as={Col} controlId="secondary_language_support_message">
+                  {this.renderLanguageSupportMessage(this.state.current.patient.primary_language, 'primary')}
+                </Form.Group>
+                <Form.Group as={Col} md="1"></Form.Group>
+                <Form.Group as={Col} controlId="secondary_language_support_message">
+                  {this.renderLanguageSupportMessage(this.state.current.patient.secondary_language, 'secondary')}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">

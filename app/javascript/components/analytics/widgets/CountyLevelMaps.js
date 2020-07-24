@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import { PropTypes } from 'prop-types';
-import { stateOptions, insularAreas } from '../../data';
+import { insularAreas } from '../mapData';
+import { stateOptions } from '../../../data/stateOptions';
 import * as am4maps from '@amcharts/amcharts4/maps';
 import * as am4core from '@amcharts/amcharts4/core';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
@@ -230,11 +231,19 @@ class CountyLevelMaps extends React.Component {
     heatLegendReference.series = dataSeries;
     heatLegendReference.align = 'right';
     heatLegendReference.valign = 'bottom';
-    heatLegendReference.width = am4core.percent(25);
-    heatLegendReference.marginRight = am4core.percent(4);
-    heatLegendReference.background.fill = am4core.color('#3c5bdc');
+    heatLegendReference.marginRight = '7px';
+    heatLegendReference.background.fill = am4core.color('#fff');
     heatLegendReference.background.fillOpacity = 0.05;
-    heatLegendReference.padding(5, 5, 5, 5);
+    // For Insular Areas, we still want a Horizontal Legend, but for the 50-states we want a vertical legend
+    // so it doesnt sit over and obstruct Florida
+    if (this.props.jurisdictionToShow.category === 'territory') {
+      heatLegendReference.width = am4core.percent(25);
+      heatLegendReference.padding(5, 5, 5, 5);
+    } else {
+      heatLegendReference.width = '50px';
+      heatLegendReference.padding(10, 10, 10, 0);
+      heatLegendReference.orientation = 'vertical';
+    }
 
     let minRange = heatLegendReference.valueAxis.axisRanges.create();
     minRange.label.horizontalCenter = 'left';

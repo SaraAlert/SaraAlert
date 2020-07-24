@@ -1,396 +1,396 @@
 monitoree_1:
   identification:
-    first_name: "Herb52"
-    last_name: "Nraz91"
-    date_of_birth: "03/25/1999"
-    sex: "Female"
+    first_name: 'Herb52'
+    last_name: 'Nraz91'
+    date_of_birth: '03/25/1999'
+    sex: 'Female'
   address:
-    address_line_1: "126 Lesha Trail"
-    address_city: "Linseyfort"
-    address_state: "Wyoming"
-    address_zip: "81210-6722"
+    address_line_1: '126 Lesha Trail'
+    address_city: 'Linseyfort'
+    address_state: 'Wyoming'
+    address_zip: '81210-6722'
   contact_info:
-    preferred_contact_method: "Telephone call"
-    primary_telephone: "+15555550111"
-    primary_telephone_type: "Plain Cell"
+    preferred_contact_method: 'Telephone call'
+    primary_telephone: '+15555550111'
+    primary_telephone_type: 'Plain Cell'
   potential_exposure_info:
-    last_date_of_exposure: "02/05/2020"
-    jurisdiction_id: "USA, State 1, County 1"
-    assigned_user: "5"
+    last_date_of_exposure: '02/05/2020'
+    jurisdiction_id: 'USA, State 1, County 1'
+    assigned_user: '5'
 monitoree_2:
   identification:
-    first_name: "Chi10"
-    middle_name: "DuBuque22"
-    last_name: "Quitzon99"
-    date_of_birth: "03/09/1984"
-    sex: "Male"
+    first_name: 'Chi10'
+    middle_name: 'DuBuque22'
+    last_name: 'Quitzon99'
+    date_of_birth: '03/09/1984'
+    sex: 'Male'
     white: true
     black_or_african_american: true
     american_indian_or_alaska_native: true
     asian: true
     native_hawaiian_or_other_pacific_islander: true
-    ethnicity: "Not Hispanic or Latino"
-    primary_language: "English"
-    secondary_language: "Spanish"
+    ethnicity: 'Not Hispanic or Latino'
+    primary_language: 'English'
+    secondary_language: 'Spanish'
     interpretation_required: true
-    nationality: "American"
-    user_defined_id_statelocal: "123456"
-    user_defined_id_cdc: "987532"
-    user_defined_id_nndss: "672819"
+    nationality: 'American'
+    user_defined_id_statelocal: '123456'
+    user_defined_id_cdc: '987532'
+    user_defined_id_nndss: '672819'
   address:
-    address_line_1: "762 Otha Burgs"
-    address_line_2: "#419"
-    address_city: "Lake Mathewland"
-    address_state: "New Mexico"
-    address_zip: "71928"
-    address_county: "Suffolk"
-    monitored_address_line_1: "763 Otha Burgs"
-    monitored_address_line_2: "#219"
-    monitored_address_city: "Lake Markland"
-    monitored_address_state: "New York"
-    monitored_address_zip: "12345"
-    monitored_address_county: "White Plains"
+    address_line_1: '762 Otha Burgs'
+    address_line_2: '#419'
+    address_city: 'Lake Mathewland'
+    address_state: 'New Mexico'
+    address_zip: '71928'
+    address_county: 'Suffolk'
+    monitored_address_line_1: '763 Otha Burgs'
+    monitored_address_line_2: '#219'
+    monitored_address_city: 'Lake Markland'
+    monitored_address_state: 'New York'
+    monitored_address_zip: '12345'
+    monitored_address_county: 'White Plains'
   contact_info:
-    preferred_contact_method: "SMS Texted Weblink"
-    preferred_contact_time: "Morning"
-    primary_telephone: "+15555550112"
-    secondary_telephone: "+15555550113"
-    primary_telephone_type: "Smartphone"
-    secondary_telephone_type: "Landline"
-    email: "carey@example.com"
-    confirm_email: "carey@example.com"
+    preferred_contact_method: 'SMS Texted Weblink'
+    preferred_contact_time: 'Morning'
+    primary_telephone: '+15555550112'
+    secondary_telephone: '+15555550113'
+    primary_telephone_type: 'Smartphone'
+    secondary_telephone_type: 'Landline'
+    email: 'carey@example.com'
+    confirm_email: 'carey@example.com'
   arrival_info:
-    port_of_origin: "Ushashire"
-    date_of_departure: "02/15/2020"
-    source_of_report: "CDC"
-    flight_or_vessel_number: "S947"
-    flight_or_vessel_carrier: "Ethan Airlines"
-    port_of_entry_into_usa: "Gusikowskishire"
-    date_of_arrival: "02/16/2020"
-    travel_related_notes: "notes..."
+    port_of_origin: 'Ushashire'
+    date_of_departure: '02/15/2020'
+    source_of_report: 'CDC'
+    flight_or_vessel_number: 'S947'
+    flight_or_vessel_carrier: 'Ethan Airlines'
+    port_of_entry_into_usa: 'Gusikowskishire'
+    date_of_arrival: '02/16/2020'
+    travel_related_notes: 'notes...'
   additional_planned_travel:
-    additional_planned_travel_type: "Domestic"
-    additional_planned_travel_destination: "Clarindaburgh"
-    additional_planned_travel_destination_state: "Massachusetts"
-    additional_planned_travel_port_of_departure: "D'Amoremouth"
-    additional_planned_travel_start_date: "03/10/2020"
-    additional_planned_travel_end_date: "03/20/2020"
-    additional_planned_travel_related_notes: "more notes..."
+    additional_planned_travel_type: 'Domestic'
+    additional_planned_travel_destination: 'Clarindaburgh'
+    additional_planned_travel_destination_state: 'Massachusetts'
+    additional_planned_travel_port_of_departure: 'Amoremouth'
+    additional_planned_travel_start_date: '03/10/2020'
+    additional_planned_travel_end_date: '03/20/2020'
+    additional_planned_travel_related_notes: 'more notes...'
   potential_exposure_info:
-    last_date_of_exposure: "02/25/2020"
-    potential_exposure_location: "Phebestad"
-    potential_exposure_country: "Guatemala"
+    last_date_of_exposure: '02/25/2020'
+    potential_exposure_location: 'Phebestad'
+    potential_exposure_country: 'Guatemala'
     contact_of_known_case: true
-    contact_of_known_case_id: "123"
+    contact_of_known_case_id: '123'
     travel_to_affected_country_or_area: true
     was_in_health_care_facility_with_known_cases: true
-    was_in_health_care_facility_with_known_cases_facility_name: "Facility Name"
+    was_in_health_care_facility_with_known_cases_facility_name: 'Facility Name'
     laboratory_personnel: true
-    laboratory_personnel_facility_name: "LP Facility Name"
+    laboratory_personnel_facility_name: 'LP Facility Name'
     healthcare_personnel: true
-    healthcare_personnel_facility_name: "HP Facility Name"
+    healthcare_personnel_facility_name: 'HP Facility Name'
     crew_on_passenger_or_cargo_flight: true
     member_of_a_common_exposure_cohort: true
-    member_of_a_common_exposure_cohort_type: "Description"
+    member_of_a_common_exposure_cohort_type: 'Description'
     contact_of_known_case: true
-    exposure_risk_assessment: "Medium"
-    monitoring_plan: "Self-monitoring with delegated supervision"
-    exposure_notes: "notes..."
+    exposure_risk_assessment: 'Medium'
+    monitoring_plan: 'Self-monitoring with delegated supervision'
+    exposure_notes: 'notes...'
 monitoree_3:
   identification:
-    first_name: "Birdie84"
-    last_name: "Crist10"
-    date_of_birth: "03/22/2008"
+    first_name: 'Birdie84'
+    last_name: 'Crist10'
+    date_of_birth: '03/22/2008'
   address:
-    address_line_1: "2309 Hector Cliff"
-    address_city: "East Yer"
-    address_state: "Tennessee"
-    address_zip: "43058"
+    address_line_1: '2309 Hector Cliff'
+    address_city: 'East Yer'
+    address_state: 'Tennessee'
+    address_zip: '43058'
   contact_info:
-    preferred_contact_method: "E-mailed Web Link"
-    email: "edda@example.com"
-    confirm_email: "edda@example.com"
+    preferred_contact_method: 'E-mailed Web Link'
+    email: 'monitoree_3@example.com'
+    confirm_email: 'monitoree_3@example.com'
   potential_exposure_info:
-    last_date_of_exposure: "12/30/2019"
+    last_date_of_exposure: '12/30/2019'
 monitoree_4:
   identification:
-    first_name: "Jeanie24"
-    last_name: "Spinka54"
-    date_of_birth: "08/10/2016"
+    first_name: 'Jeanie24'
+    last_name: 'Spinka54'
+    date_of_birth: '08/10/2016'
   address:
-    foreign_address_line_1: "le français baño हिन्दी"
-    foreign_address_city: "서울 汉字"
-    foreign_address_country: "Korea (the Republic of)"
-    foreign_address_line_2: "15 Trần Phủ Росси́я"
-    foreign_address_zip: "920102"
-    foreign_address_line_3: "اَلْعَرَبِيَّةُ ตัวอักษรไทย"
-    foreign_address_state: "ふりがな ギリギリ"
-    foreign_monitored_address_line_1: "60648 Langworth Club"
-    foreign_monitored_address_city: "South Alvera"
-    foreign_monitored_address_state: "Oklahoma"
-    foreign_monitored_address_line_2: "724 Ryan Squares"
-    foreign_monitored_address_zip: "68039"
-    foreign_monitored_address_county: "Lake Bryant"
+    foreign_address_line_1: 'le français baño हिन्दी'
+    foreign_address_city: '서울 汉字'
+    foreign_address_country: 'Korea (the Republic of)'
+    foreign_address_line_2: '15 Trần Phủ Росси́я'
+    foreign_address_zip: '920102'
+    foreign_address_line_3: 'اَلْعَرَبِيَّةُ ตัวอักษรไทย'
+    foreign_address_state: 'ふりがな ギリギリ'
+    foreign_monitored_address_line_1: '60648 Langworth Club'
+    foreign_monitored_address_city: 'South Alvera'
+    foreign_monitored_address_state: 'Oklahoma'
+    foreign_monitored_address_line_2: '724 Ryan Squares'
+    foreign_monitored_address_zip: '68039'
+    foreign_monitored_address_county: 'Lake Bryant'
   contact_info:
-    preferred_contact_method: "E-mailed Web Link"
-    email: "edda@example.com"
-    confirm_email: "edda@example.com"
+    preferred_contact_method: 'E-mailed Web Link'
+    email: 'edda@example.com'
+    confirm_email: 'edda@example.com'
   additional_planned_travel:
-    additional_planned_travel_type: "International"
-    additional_planned_travel_destination: "Kamalaton"
-    additional_planned_travel_destination_country: "Algeria"
-    additional_planned_travel_port_of_departure: "D'Amoremouth"
-    additional_planned_travel_start_date: "05/09/2020"
-    additional_planned_travel_end_date: "05/30/2020"
-    additional_planned_travel_related_notes: "asdogihlawkefjionak"
+    additional_planned_travel_type: 'International'
+    additional_planned_travel_destination: 'Kamalaton'
+    additional_planned_travel_destination_country: 'Algeria'
+    additional_planned_travel_port_of_departure: 'Amoremouth'
+    additional_planned_travel_start_date: '05/09/2020'
+    additional_planned_travel_end_date: '05/30/2020'
+    additional_planned_travel_related_notes: 'asdogihlawkefjionak'
   potential_exposure_info:
-    last_date_of_exposure: "12/30/2019"
-    assigned_user: "9429"
+    last_date_of_exposure: '12/30/2019'
+    assigned_user: '9429'
 monitoree_5:
   identification:
-    first_name: "Ulrich"
-    last_name: "Effertz"
-    date_of_birth: "01/02/1940"
-    sex: "Female"
+    first_name: 'Ulrich'
+    last_name: 'Effertz'
+    date_of_birth: '01/02/1940'
+    sex: 'Female'
     white: true
     black_or_african_american: true
     american_indian_or_alaska_native: true
     asian: true
     native_hawaiian_or_other_pacific_islander: true
-    ethnicity: "Hispanic or Latino"
+    ethnicity: 'Hispanic or Latino'
   address:
-    address_line_1: "107 Chia Pike"
-    address_city: "New Luciusmouth"
-    address_state: "North Carolina"
-    address_zip: "50099-6977"
+    address_line_1: '107 Chia Pike'
+    address_city: 'New Luciusmouth'
+    address_state: 'North Carolina'
+    address_zip: '50099-6977'
   contact_info:
-    preferred_contact_method: "SMS Text-message"
-    primary_telephone: "+15555550114"
-    primary_telephone_type: "Smartphone"
+    preferred_contact_method: 'SMS Text-message'
+    primary_telephone: '+15555550114'
+    primary_telephone_type: 'Smartphone'
   potential_exposure_info:
-    last_date_of_exposure: "01/30/2020"
+    last_date_of_exposure: '01/30/2020'
     contact_of_known_case: true
-    contact_of_known_case_id: "9BIHOS2819"
+    contact_of_known_case_id: '9BIHOS2819'
     travel_to_affected_country_or_area: true
-    jurisdiction_id: "USA, State 1, County 1"
+    jurisdiction_id: 'USA, State 1, County 1'
 monitoree_6:
   identification:
-    first_name: "Ken43"
-    middle_name: "Dare84"
-    last_name: "Connelly49"
-    date_of_birth: "10/01/1983"
-    sex: "Unknown"
+    first_name: 'Ken43'
+    middle_name: 'Dare84'
+    last_name: 'Connelly49'
+    date_of_birth: '10/01/1983'
+    sex: 'Unknown'
     asian: true
-    ethnicity: "Not Hispanic or Latino"
-    primary_language: "English"
-    secondary_language: "Korean"
+    ethnicity: 'Not Hispanic or Latino'
+    primary_language: 'English'
+    secondary_language: 'Korean'
     interpretation_required: true
-    nationality: "Korean"
-    user_defined_id_statelocal: "N93DM01"
-    user_defined_id_cdc: "AB0-IH32"
-    user_defined_id_nndss: "J31HJ019289"
+    nationality: 'Korean'
+    user_defined_id_statelocal: 'N93DM01'
+    user_defined_id_cdc: 'AB0-IH32'
+    user_defined_id_nndss: 'J31HJ019289'
   address:
-    address_line_1: "701 Laurine Fork"
-    address_line_2: "PO Box #1928"
-    address_city: "New Haven"
-    address_state: "Connecticut"
-    address_zip: "82910"
-    address_county: "Orange County"
-    monitored_address_line_1: "8851 Brekke Field"
-    monitored_address_line_2: "Suite 124"
-    monitored_address_city: "West Delia"
-    monitored_address_state: "Maryland"
-    monitored_address_zip: "91829"
-    monitored_address_county: "Sussex"
+    address_line_1: '701 Laurine Fork'
+    address_line_2: 'PO Box #1928'
+    address_city: 'New Haven'
+    address_state: 'Connecticut'
+    address_zip: '82910'
+    address_county: 'Orange County'
+    monitored_address_line_1: '8851 Brekke Field'
+    monitored_address_line_2: 'Suite 124'
+    monitored_address_city: 'West Delia'
+    monitored_address_state: 'Maryland'
+    monitored_address_zip: '91829'
+    monitored_address_county: 'Sussex'
   contact_info:
-    preferred_contact_method: "Telephone call"
-    preferred_contact_time: "Evening"
-    primary_telephone: "+15555550115"
-    secondary_telephone: "+15555550116"
-    primary_telephone_type: "Landline"
-    secondary_telephone_type: "Plain Cell"
-    email: "roberta@example.com"
-    confirm_email: "roberta@example.com"
+    preferred_contact_method: 'Telephone call'
+    preferred_contact_time: 'Evening'
+    primary_telephone: '+15555550115'
+    secondary_telephone: '+15555550116'
+    primary_telephone_type: 'Landline'
+    secondary_telephone_type: 'Plain Cell'
+    email: 'roberta@example.com'
+    confirm_email: 'roberta@example.com'
   arrival_info:
-    port_of_origin: "Teresiaport"
-    date_of_departure: "03/01/2020"
-    source_of_report: "Self-Identified"
-    flight_or_vessel_number: "D973"
-    flight_or_vessel_carrier: "Toney Airlines"
-    port_of_entry_into_usa: "Teddyborough"
-    date_of_arrival: "03/02/2020"
-    travel_related_notes: "938nasd fok3hf8oisdkm sfkl93hnk"
+    port_of_origin: 'Teresiaport'
+    date_of_departure: '03/01/2020'
+    source_of_report: 'Self-Identified'
+    flight_or_vessel_number: 'D973'
+    flight_or_vessel_carrier: 'Toney Airlines'
+    port_of_entry_into_usa: 'Teddyborough'
+    date_of_arrival: '03/02/2020'
+    travel_related_notes: '938nasd fok3hf8oisdkm sfkl93hnk'
   potential_exposure_info:
-    last_date_of_exposure: "03/01/2020"
-    potential_exposure_location: "Sporertown"
-    potential_exposure_country: "Kuwait"
+    last_date_of_exposure: '03/01/2020'
+    potential_exposure_location: 'Sporertown'
+    potential_exposure_country: 'Kuwait'
     crew_on_passenger_or_cargo_flight: true
-    exposure_risk_assessment: "High"
-    monitoring_plan: "Daily active monitoring"
-    exposure_notes: "oihadsgohoiawengolnlasdn,lk ashiowehghaie 1928unfvs al"
-    jurisdiction_id: "USA, State 2, County 4"
+    exposure_risk_assessment: 'High'
+    monitoring_plan: 'Daily active monitoring'
+    exposure_notes: 'oihadsgohoiawengolnlasdn,lk ashiowehghaie 1928unfvs al'
+    jurisdiction_id: 'USA, State 2, County 4'
 monitoree_7:
   identification:
-    first_name: "Zachery33"
-    middle_name: "Smith11"
-    last_name: "Kirlin27"
-    date_of_birth: "05/31/2016"
-    sex: "Male"
+    first_name: 'Zachery33'
+    middle_name: 'Smith11'
+    last_name: 'Kirlin27'
+    date_of_birth: '05/31/2016'
+    sex: 'Male'
   contact_info:
-    confirm_email: "roberta@example.com"
+    confirm_email: 'roberta@example.com'
 monitoree_8:
   identification:
-    first_name: "Mary12"
-    middle_name: "David01"
-    last_name: "Paul091"
-    date_of_birth: "11/01/1919"
-    sex: "Female"
+    first_name: 'Mary12'
+    middle_name: 'David01'
+    last_name: 'Paul091'
+    date_of_birth: '11/01/1919'
+    sex: 'Female'
 monitoree_9:
   identification:
-    first_name: "Hodor12"
-    middle_name: "Stark63"
-    last_name: "Bran17"
-    date_of_birth: "12/03/2000"
-    sex: "Unknown"
+    first_name: 'Hodor12'
+    middle_name: 'Stark63'
+    last_name: 'Bran17'
+    date_of_birth: '12/03/2000'
+    sex: 'Unknown'
   address:
-    foreign_address_city: "서울 汉字"
+    foreign_address_city: '서울 汉字'
 monitoree_10:
   identification:
-    first_name: "Tiny60"
-    last_name: "Bode63"
-    date_of_birth: "05/08/2002"
+    first_name: 'Tiny60'
+    last_name: 'Bode63'
+    date_of_birth: '05/08/2002'
   address:
-    address_line_1: "998 Adams Junctions"
-    address_city: "Kubborough"
-    address_line_2: "Apt 221"
-    address_state: "North Dakota"
-    address_zip: "33194-7675"
-    address_county: "Bergen"
+    address_line_1: '998 Adams Junctions'
+    address_city: 'Kubborough'
+    address_line_2: 'Apt 221'
+    address_state: 'North Dakota'
+    address_zip: '33194-7675'
+    address_county: 'Bergen'
   contact_info:
-    preferred_contact_method: "Telephone call"
-    preferred_contact_time: "Afternoon"
-    primary_telephone: "+15555550117"
-    primary_telephone_type: "Landline"
+    preferred_contact_method: 'Telephone call'
+    preferred_contact_time: 'Afternoon'
+    primary_telephone: '+15555550117'
+    primary_telephone_type: 'Landline'
   potential_exposure_info:
-    last_date_of_exposure: "01/31/2020"
+    last_date_of_exposure: '01/31/2020'
 monitoree_11:
   identification:
-    first_name: "Julian"
-    last_name: "Edelman"
-    date_of_birth: "05/22/1986"
+    first_name: 'Julian'
+    last_name: 'Edelman'
+    date_of_birth: '05/22/1986'
   address:
-    address_line_1: "998 Adams Junctions"
-    address_city: "Kubborough"
-    address_line_2: "Apt 221"
-    address_state: "North Dakota"
-    address_zip: "33194-7675"
-    address_county: "Bergen"
+    address_line_1: '998 Adams Junctions'
+    address_city: 'Kubborough'
+    address_line_2: 'Apt 221'
+    address_state: 'North Dakota'
+    address_zip: '33194-7675'
+    address_county: 'Bergen'
   contact_info:
-    preferred_contact_method: "Telephone call"
-    preferred_contact_time: "Evening"
-    primary_telephone: "+15555550118"
-    primary_telephone_type: "Landline"
+    preferred_contact_method: 'Telephone call'
+    preferred_contact_time: 'Evening'
+    primary_telephone: '+15555550118'
+    primary_telephone_type: 'Landline'
   potential_exposure_info:
-    last_date_of_exposure: "01/31/2020"
-    exposure_risk_assessment: "Low"
-    monitoring_plan: "Self-monitoring with public health supervision"
+    last_date_of_exposure: '01/31/2020'
+    exposure_risk_assessment: 'Low'
+    monitoring_plan: 'Self-monitoring with public health supervision'
 monitoree_12:
   identification:
-    first_name: "Tom"
-    middle_name: "The GOAT"
-    last_name: "Brady"
-    date_of_birth: "08/03/1977"
-    sex: "Male"
+    first_name: 'Tom'
+    middle_name: 'The GOAT'
+    last_name: 'Brady'
+    date_of_birth: '08/03/1977'
+    sex: 'Male'
     white: true
     black_or_african_american: true
     american_indian_or_alaska_native: true
     asian: true
     native_hawaiian_or_other_pacific_islander: true
-    ethnicity: "Hispanic or Latino"
-    primary_language: "English"
-    secondary_language: "Spanish"
+    ethnicity: 'Hispanic or Latino'
+    primary_language: 'English'
+    secondary_language: 'Spanish'
     interpretation_required: true
-    nationality: "American"
-    user_defined_id_statelocal: "123456"
-    user_defined_id_cdc: "987532"
-    user_defined_id_nndss: "672819"
+    nationality: 'American'
+    user_defined_id_statelocal: '123456'
+    user_defined_id_cdc: '987532'
+    user_defined_id_nndss: '672819'
   address:
-    address_line_1: "762 Otha Burgs"
-    address_line_2: "#419"
-    address_city: "Lake Mathewland"
-    address_state: "New Mexico"
-    address_zip: "71928"
-    address_county: "Suffolk"
-    monitored_address_line_1: "763 Otha Burgs"
-    monitored_address_line_2: "#219"
-    monitored_address_city: "Lake Markland"
-    monitored_address_state: "New York"
-    monitored_address_zip: "12345"
-    monitored_address_county: "White Plains"
-    foreign_address_line_1: "le français baño हिन्दी"
-    foreign_address_city: "서울 汉字"
-    foreign_address_country: "Korea (the Republic of)"
-    foreign_address_line_2: "15 Trần Phủ Росси́я"
-    foreign_address_zip: "920102"
-    foreign_address_line_3: "اَلْعَرَبِيَّةُ ตัวอักษรไทย"
-    foreign_address_state: "ふりがな ギリギリ"
-    foreign_monitored_address_line_1: "60648 Langworth Club"
-    foreign_monitored_address_city: "South Alvera"
-    foreign_monitored_address_state: "Oklahoma"
-    foreign_monitored_address_line_2: "724 Ryan Squares"
-    foreign_monitored_address_zip: "68039"
-    foreign_monitored_address_county: "Lake Bryant"
+    address_line_1: '762 Otha Burgs'
+    address_line_2: '#419'
+    address_city: 'Lake Mathewland'
+    address_state: 'New Mexico'
+    address_zip: '71928'
+    address_county: 'Suffolk'
+    monitored_address_line_1: '763 Otha Burgs'
+    monitored_address_line_2: '#219'
+    monitored_address_city: 'Lake Markland'
+    monitored_address_state: 'New York'
+    monitored_address_zip: '12345'
+    monitored_address_county: 'White Plains'
+    foreign_address_line_1: 'le français baño हिन्दी'
+    foreign_address_city: '서울 汉字'
+    foreign_address_country: 'Korea (the Republic of)'
+    foreign_address_line_2: '15 Trần Phủ Росси́я'
+    foreign_address_zip: '920102'
+    foreign_address_line_3: 'اَلْعَرَبِيَّةُ ตัวอักษรไทย'
+    foreign_address_state: 'ふりがな ギリギリ'
+    foreign_monitored_address_line_1: '60648 Langworth Club'
+    foreign_monitored_address_city: 'South Alvera'
+    foreign_monitored_address_state: 'Oklahoma'
+    foreign_monitored_address_line_2: '724 Ryan Squares'
+    foreign_monitored_address_zip: '68039'
+    foreign_monitored_address_county: 'Lake Bryant'
   contact_info:
-    preferred_contact_method: "SMS Texted Weblink"
-    preferred_contact_time: "Afternoon"
-    primary_telephone: "+15555550121"
-    secondary_telephone: "+15555550122"
-    primary_telephone_type: "Smartphone"
-    secondary_telephone_type: "Landline"
-    email: "carey@example.com"
-    confirm_email: "carey@example.com"
+    preferred_contact_method: 'SMS Texted Weblink'
+    preferred_contact_time: 'Afternoon'
+    primary_telephone: '+15555550121'
+    secondary_telephone: '+15555550122'
+    primary_telephone_type: 'Smartphone'
+    secondary_telephone_type: 'Landline'
+    email: 'carey@example.com'
+    confirm_email: 'carey@example.com'
   arrival_info:
-    port_of_origin: "Ushashire"
-    date_of_departure: "02/15/2020"
-    source_of_report: "CDC"
-    flight_or_vessel_number: "S947"
-    flight_or_vessel_carrier: "Ethan Airlines"
-    port_of_entry_into_usa: "Gusikowskishire"
-    date_of_arrival: "02/16/2020"
-    travel_related_notes: "notes..."
+    port_of_origin: 'Ushashire'
+    date_of_departure: '02/15/2020'
+    source_of_report: 'CDC'
+    flight_or_vessel_number: 'S947'
+    flight_or_vessel_carrier: 'Ethan Airlines'
+    port_of_entry_into_usa: 'Gusikowskishire'
+    date_of_arrival: '02/16/2020'
+    travel_related_notes: 'notes...'
   additional_planned_travel:
-    additional_planned_travel_type: "Domestic"
-    additional_planned_travel_destination: "Clarindaburgh"
-    additional_planned_travel_destination_state: "Massachusetts"
-    additional_planned_travel_port_of_departure: "D'Amoremouth"
-    additional_planned_travel_start_date: "03/10/2020"
-    additional_planned_travel_end_date: "03/20/2020"
-    additional_planned_travel_related_notes: "more notes..."
+    additional_planned_travel_type: 'Domestic'
+    additional_planned_travel_destination: 'Clarindaburgh'
+    additional_planned_travel_destination_state: 'Massachusetts'
+    additional_planned_travel_port_of_departure: 'Amoremouth'
+    additional_planned_travel_start_date: '03/10/2020'
+    additional_planned_travel_end_date: '03/20/2020'
+    additional_planned_travel_related_notes: 'more notes...'
   potential_exposure_info:
-    last_date_of_exposure: "02/25/2020"
-    potential_exposure_location: "Phebestad"
-    potential_exposure_country: "Guatemala"
+    last_date_of_exposure: '02/25/2020'
+    potential_exposure_location: 'Phebestad'
+    potential_exposure_country: 'Guatemala'
     contact_of_known_case: true
-    contact_of_known_case_id: "0108SDFI134"
+    contact_of_known_case_id: '0108SDFI134'
     travel_to_affected_country_or_area: true
     was_in_health_care_facility_with_known_cases: true
     laboratory_personnel: true
     healthcare_personnel: true
     crew_on_passenger_or_cargo_flight: true
-    exposure_risk_assessment: "No Identified Risk"
-    monitoring_plan: "Self-observation"
-    exposure_notes: "notes..."
+    exposure_risk_assessment: 'No Identified Risk'
+    monitoring_plan: 'Self-observation'
+    exposure_notes: 'notes...'
 monitoree_13:
   potential_exposure_info:
-    jurisdiction_id: "USA, State 2, County 3"
+    jurisdiction_id: 'USA, State 2, County 3'
 monitoree_14:
   potential_exposure_info:
-    jurisdiction_id: "USA, State 2, County 4"
+    jurisdiction_id: 'USA, State 2, County 4'
     update_group_member_jurisdiction_id: true
 monitoree_15:
   potential_exposure_info:
-    assigned_user: "5"
+    assigned_user: '5'
 monitoree_16:
   potential_exposure_info:
-    assigned_user: "6"
+    assigned_user: '6'
     update_group_member_assigned_user: true

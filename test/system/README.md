@@ -16,22 +16,10 @@ bundle exec rails test:system
 To run individual system test files:
 
 ```
-bundle exec rails test <test_file_path>
-```
-
-OR
-
-```
 ruby -I test <test_file_path>
 ```
 
 Example:
-
-```
-bundle exec rails test test/system/roles/public_health/public_health_test.rb
-```
-
-OR
 
 ```
 ruby -I test test/system/roles/public_health/public_health_test.rb

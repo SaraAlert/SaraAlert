@@ -1,36 +1,36 @@
 patient_1_laboratory_1:
   id: 1001
   patient_id: 1
-  lab_type: "lab type 1"
-  specimen_collection: "<%= 5.days.ago %>"
-  report: "<%= 3.days.ago %>"
-  result: "positive"
-  created_at: "<%= 5.days.ago %>"
-  updated_at: "<%= 3.days.ago %>"
+  lab_type: 'lab type 1'
+  specimen_collection: <%= 5.days.ago %>
+  report: <%= 3.days.ago %>
+  result: 'positive'
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 3.days.ago %>
 patient_1_laboratory_2:
   id: 1002
   patient_id: 1
-  lab_type: "lab type 2"
-  specimen_collection: "<%= 4.days.ago %>"
-  report: "<%= 2.days.ago %>"
-  result: "negative"
-  created_at: "<%= 4.days.ago %>"
-  updated_at: "<%= 2.days.ago %>"
+  lab_type: 'lab type 2'
+  specimen_collection: <%= 4.days.ago %>
+  report: <%= 2.days.ago %>
+  result: 'negative'
+  created_at: <%= 4.days.ago %>
+  updated_at: <%= 2.days.ago %>
 patient_2_laboratory_1:
   id: 2001
   patient_id: 2
-  lab_type: "lab type 1"
-  specimen_collection: "<%= 7.days.ago %>"
-  report: "<%= 6.days.ago %>"
-  result: "result 1"
-  created_at: "<%= 7.days.ago %>"
-  updated_at: "<%= 6.days.ago %>"
+  lab_type: 'lab type 1'
+  specimen_collection: <%= 7.days.ago %>
+  report: <%= 6.days.ago %>
+  result: 'result 1'
+  created_at: <%= 7.days.ago %>
+  updated_at: <%= 6.days.ago %>
 patient_2_laboratory_2:
   id: 2002
   patient_id: 2
-  lab_type: "lab type 2"
-  specimen_collection: "<%= 10.days.ago %>"
-  report: "<%= 4.days.ago %>"
-  result: "result 2"
-  created_at: "<%= 10.days.ago %>"
-  updated_at: "<%= 4.days.ago %>"
+  lab_type: 'lab type 2'
+  specimen_collection: <%= 10.days.ago %>
+  report: <%= 4.days.ago %>
+  result: 'result 2'
+  created_at: <%= 10.days.ago %>
+  updated_at: <%= 4.days.ago %>

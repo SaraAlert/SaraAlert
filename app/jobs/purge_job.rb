@@ -6,6 +6,8 @@ class PurgeJob < ApplicationJob
 
   def perform(*_args)
     Patient.purge_eligible.find_each(batch_size: 5000) do |monitoree|
+      next if monitoree.dependents.where.not(id: monitoree.id).where(monitoring: true).count.positive?
+
       # Whitelist attributes to keep
       attributes = Patient.new.attributes.keys
       whitelist = %w[id created_at updated_at responder_id creator_id jurisdiction_id
@@ -24,6 +26,8 @@ class PurgeJob < ApplicationJob
       monitoree.purged = true
       monitoree.save!
       monitoree.histories.destroy_all
+      monitoree.close_contacts.destroy_all
+      monitoree.laboratories.destroy_all
     end
     Download.where('created_at < ?', 24.hours.ago).destroy_all
   end
