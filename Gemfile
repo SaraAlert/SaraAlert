@@ -111,6 +111,7 @@ group :test do
   gem 'minitest-retry'
   gem 'mocha'
   gem 'rack-test'
+  gem 'rspec-mocks'
   gem 'selenium-webdriver'
   gem 'simplecov'
   gem 'simplecov-lcov'
