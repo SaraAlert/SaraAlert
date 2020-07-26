@@ -1,7 +1,10 @@
 import React from 'react';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import 'react-dates/initialize';
+import { SingleDatePicker } from 'react-dates';
 import axios from 'axios';
+import moment from 'moment';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
 import InfoTooltip from '../util/InfoTooltip';
@@ -54,13 +57,19 @@ class SymptomOnset extends React.Component {
               SYMPTOM ONSET
               <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
             </Form.Label>
-            <Form.Control
-              size="lg"
+            <SingleDatePicker
+              date={this.state.symptom_onset ? moment.utc(this.state.symptom_onset, 'YYYY-MM-DD') : null}
+              onDateChange={date => this.setState({ symptom_onset: date })}
+              focused={this.state.symptom_onset_focused}
+              onFocusChange={({ focused }) => this.setState({ symptom_onset_focused: focused })}
               id="symptom_onset"
-              type="date"
-              className="form-square"
-              value={this.state.symptom_onset || ''}
-              onChange={this.handleChange}
+              showDefaultInputIcon
+              placeholder="mm/dd/yyyy"
+              openDirection="up"
+              numberOfMonths={1}
+              hideKeyboardShortcutsPanel
+              isOutsideRange={() => false}
+              showClearDate
             />
           </Form.Group>
           <Form.Group as={Col} md="18" className="align-self-end pl-0">

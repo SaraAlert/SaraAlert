@@ -1,16 +1,19 @@
 import React from 'react';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import 'react-dates/initialize';
+import { SingleDatePicker } from 'react-dates';
 import axios from 'axios';
+import moment from 'moment';
+import _ from 'lodash';
 import reportError from '../util/ReportError';
 import InfoTooltip from '../util/InfoTooltip';
-import _ from 'lodash';
 
 class LastDateExposure extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      last_date_of_exposure: this.props.patient.last_date_of_exposure,
+      last_date_of_exposure: this.props.patient.last_date_of_exposure ? moment.utc(this.props.patient.last_date_of_exposure, 'YYYY-MM-DD') : null,
       continuous_exposure: !!this.props.patient.continuous_exposure,
       loading: false,
       apply_to_group: false, // Flag to apply a change to all members
@@ -21,13 +24,10 @@ class LastDateExposure extends React.Component {
     this.origState = Object.assign({}, this.state);
     this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.toggleExposureDateModal = this.toggleExposureDateModal.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
+    this.closeExposureDateModal = this.closeExposureDateModal.bind(this);
     this.toggleContinuousMonitoringModal = this.toggleContinuousMonitoringModal.bind(this);
     this.createModal = this.createModal.bind(this);
-  }
-
-  toggleExposureDateModal() {
-    this.setState({ showExposureDateModal: !this.state.showExposureDateModal, apply_to_group: false, apply_to_group_cm_only: false });
   }
 
   toggleContinuousMonitoringModal() {
@@ -37,6 +37,30 @@ class LastDateExposure extends React.Component {
       apply_to_group: false,
       apply_to_group_cm_only: false,
     });
+  }
+
+  closeExposureDateModal() {
+    this.setState({
+      last_date_of_exposure: this.props.patient.last_date_of_exposure ? moment.utc(this.props.patient.last_date_of_exposure, 'YYYY-MM-DD') : null,
+      showExposureDateModal: false,
+      apply_to_group: false,
+      apply_to_group_cm_only: false,
+    });
+  }
+
+  handleDateChange(date) {
+    if (date && date.format('YYYY-MM-DD') !== this.props.patient.last_date_of_exposure) {
+      this.setState({
+        last_date_of_exposure: date,
+        showExposureDateModal: true,
+        apply_to_group: false,
+        apply_to_group_cm_only: false,
+      });
+    } else {
+      this.setState({
+        last_date_of_exposure: date,
+      });
+    }
   }
 
   handleChange(event) {
@@ -129,8 +153,10 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            'Are you sure you want to modify the last date of exposure? This will reset the continuous monitoring status for this monitoree.',
-            this.toggleExposureDateModal,
+            `Are you sure you want to modify the last date of exposure to ${this.state.last_date_of_exposure.format(
+              'MM/DD/YYYY'
+            )}? This will reset the continuous monitoring status for this monitoree.`,
+            this.closeExposureDateModal,
             () => this.submit(true)
           )}
         {this.state.showContinuousMonitoringModal &&
@@ -147,19 +173,19 @@ class LastDateExposure extends React.Component {
           <Col md="8" sm="24">
             <Row>
               <Col>
-                <Form.Control
-                  size="lg"
+                <SingleDatePicker
+                  date={this.state.last_date_of_exposure}
+                  onDateChange={this.handleDateChange}
+                  focused={this.state.last_date_of_exposure_focused}
+                  onFocusChange={({ focused }) => this.setState({ last_date_of_exposure_focused: focused })}
                   id="last_date_of_exposure"
-                  type="date"
-                  className="form-square"
-                  value={this.state.last_date_of_exposure || ''}
-                  onChange={this.handleChange}
+                  showDefaultInputIcon
+                  placeholder="mm/dd/yyyy"
+                  openDirection="up"
+                  numberOfMonths={1}
+                  hideKeyboardShortcutsPanel
+                  isOutsideRange={() => false}
                 />
-              </Col>
-              <Col>
-                <Button className="btn-lg" onClick={() => this.toggleExposureDateModal()}>
-                  <i className="fas fa-temperature-high"></i> Update
-                </Button>
               </Col>
             </Row>
             <Row>

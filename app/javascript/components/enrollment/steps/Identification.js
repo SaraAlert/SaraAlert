@@ -1,7 +1,9 @@
 import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
-import moment from 'moment-timezone';
 import { PropTypes } from 'prop-types';
+import 'react-dates/initialize';
+import { SingleDatePicker } from 'react-dates';
+import moment from 'moment-timezone';
 import * as yup from 'yup';
 import Select from 'react-select';
 import InfoTooltip from '../../util/InfoTooltip';
@@ -23,6 +25,7 @@ class Identification extends React.Component {
       languageOptions: this.getLanguageOptions(),
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
     this.handleLanguageChange = this.handleLanguageChange.bind(this);
     this.validate = this.validate.bind(this);
   }
@@ -33,7 +36,6 @@ class Identification extends React.Component {
     let modified = this.state.modified;
     let self = this;
     event.persist();
-    value = event.target.type === 'date' && value === '' ? undefined : value;
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
@@ -83,6 +85,21 @@ class Identification extends React.Component {
   };
 
   getWorkflowValue = () => (this.state.current.isolation ? WORKFLOW_OPTIONS[1] : WORKFLOW_OPTIONS[0]);
+
+  handleDateChange(field, date) {
+    let current = this.state.current;
+    let modified = this.state.modified;
+    let self = this;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [field]: date } },
+        modified: { ...modified, patient: { ...modified.patient, [field]: date } },
+      },
+      () => {
+        self.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  }
 
   handleLanguageChange(languageType, event) {
     const value = event.value;
@@ -267,13 +284,19 @@ class Identification extends React.Component {
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="auto" controlId="date_of_birth">
                   <Form.Label className="nav-input-label">DATE OF BIRTH{schema?.fields?.date_of_birth?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['date_of_birth']}
-                    size="lg"
-                    type="date"
-                    className="form-square"
-                    value={this.state.current.patient.date_of_birth || ''}
-                    onChange={this.handleChange}
+                  <SingleDatePicker
+                    date={this.state.current.patient.date_of_birth ? moment.utc(this.state.current.patient.date_of_birth, 'YYYY-MM-DD') : null}
+                    onDateChange={date => this.handleDateChange('date_of_birth', date)}
+                    focused={this.state.date_of_birth_focused}
+                    onFocusChange={({ focused }) => this.setState({ date_of_birth_focused: focused })}
+                    id="date_of_birth"
+                    showDefaultInputIcon
+                    placeholder="mm/dd/yyyy"
+                    openDirection="down"
+                    numberOfMonths={1}
+                    hideKeyboardShortcutsPanel
+                    isOutsideRange={() => false}
+                    block
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_birth']}

@@ -1,6 +1,9 @@
 import React from 'react';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import 'react-dates/initialize';
+import { SingleDatePicker } from 'react-dates';
+import moment from 'moment';
 import * as yup from 'yup';
 
 class Arrival extends React.Component {
@@ -15,11 +18,24 @@ class Arrival extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    value = event.target.type === 'date' && value === '' ? undefined : value;
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  }
+
+  handleDateChange(field, date) {
+    let current = this.state.current;
+    let modified = this.state.modified;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [field]: date } },
+        modified: { ...modified, patient: { ...modified.patient, [field]: date } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -69,13 +85,20 @@ class Arrival extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="date_of_departure">
                   <Form.Label className="nav-input-label">DATE OF DEPARTURE{schema?.fields?.date_of_departure?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['date_of_departure']}
-                    size="lg"
-                    type="date"
-                    className="form-square"
-                    value={this.state.current.patient.date_of_departure || ''}
-                    onChange={this.handleChange}
+                  <SingleDatePicker
+                    date={this.state.current.patient.date_of_departure ? moment.utc(this.state.current.patient.date_of_departure, 'YYYY-MM-DD') : null}
+                    onDateChange={date => this.handleDateChange('date_of_departure', date)}
+                    focused={this.state.date_of_departure_focused}
+                    onFocusChange={({ focused }) => this.setState({ date_of_departure_focused: focused })}
+                    id="date_of_departure"
+                    showDefaultInputIcon
+                    placeholder="mm/dd/yyyy"
+                    openDirection="down"
+                    numberOfMonths={1}
+                    hideKeyboardShortcutsPanel
+                    isOutsideRange={() => false}
+                    showClearDate
+                    block
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['port_of_origin']}
@@ -130,13 +153,20 @@ class Arrival extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="date_of_arrival">
                   <Form.Label className="nav-input-label">DATE OF ARRIVAL{schema?.fields?.date_of_arrival?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['date_of_arrival']}
-                    size="lg"
-                    type="date"
-                    className="form-square"
-                    value={this.state.current.patient.date_of_arrival || ''}
-                    onChange={this.handleChange}
+                  <SingleDatePicker
+                    date={this.state.current.patient.date_of_arrival ? moment.utc(this.state.current.patient.date_of_arrival, 'YYYY-MM-DD') : null}
+                    onDateChange={date => this.handleDateChange('date_of_arrival', date)}
+                    focused={this.state.date_of_arrival_focused}
+                    onFocusChange={({ focused }) => this.setState({ date_of_arrival_focused: focused })}
+                    id="date_of_arrival"
+                    showDefaultInputIcon
+                    placeholder="mm/dd/yyyy"
+                    openDirection="down"
+                    numberOfMonths={1}
+                    hideKeyboardShortcutsPanel
+                    isOutsideRange={() => false}
+                    showClearDate
+                    block
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_arrival']}

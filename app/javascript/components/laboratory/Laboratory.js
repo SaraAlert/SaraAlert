@@ -1,6 +1,9 @@
 import React from 'react';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import 'react-dates/initialize';
+import { SingleDatePicker } from 'react-dates';
+import moment from 'moment';
 import axios from 'axios';
 import reportError from '../util/ReportError';
 
@@ -10,8 +13,8 @@ class Laboratory extends React.Component {
     this.state = {
       showModal: false,
       lab_type: this.props.lab.lab_type || '',
-      specimen_collection: this.props.lab.specimen_collection || '',
-      report: this.props.lab.report || '',
+      specimen_collection: this.props.lab.specimen_collection,
+      report: this.props.lab.report,
       result: this.props.lab.result || '',
     };
     this.toggleModal = this.toggleModal.bind(this);
@@ -74,19 +77,40 @@ class Laboratory extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Specimen Collection Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  className="form-square form-control-lg"
-                  value={this.state.specimen_collection}
-                  onChange={this.handleChange}
+                <SingleDatePicker
+                  date={this.state.current.patient.specimen_collection ? moment.utc(this.state.current.patient.specimen_collection, 'YYYY-MM-DD') : null}
+                  onDateChange={date => this.setState({ specimen_collection: date })}
+                  focused={this.state.specimen_collection_focused}
+                  onFocusChange={({ focused }) => this.setState({ specimen_collection_focused: focused })}
                   id="specimen_collection"
+                  showDefaultInputIcon
+                  placeholder="mm/dd/yyyy"
+                  openDirection="down"
+                  numberOfMonths={1}
+                  hideKeyboardShortcutsPanel
+                  isOutsideRange={() => false}
+                  showClearDate
                 />
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Report Date</Form.Label>
-                <Form.Control type="date" className="form-square form-control-lg" value={this.state.report} onChange={this.handleChange} id="report" />
+                <SingleDatePicker
+                  date={this.state.current.patient.report ? moment.utc(this.state.current.patient.report, 'YYYY-MM-DD') : null}
+                  onDateChange={date => this.setState({ report: date })}
+                  focused={this.state.report_focused}
+                  onFocusChange={({ focused }) => this.setState({ report_focused: focused })}
+                  id="report"
+                  showDefaultInputIcon
+                  placeholder="mm/dd/yyyy"
+                  openDirection="down"
+                  numberOfMonths={1}
+                  hideKeyboardShortcutsPanel
+                  isOutsideRange={() => false}
+                  showClearDate
+                  block
+                />
               </Form.Group>
             </Row>
             <Row>
