@@ -74,19 +74,38 @@ class UserModal extends React.Component {
           </Form.Group>
           <Form.Group>
             <Form.Label>Status</Form.Label>
-            <ToggleButtonGroup type="radio" name="statusToggleGroup" defaultValue={this.props.initialUserData.is_locked ? true : false}>
-              {[
-                { name: 'Locked', value: true },
-                { name: 'Unlocked', value: false },
-              ].map((option, index) => {
-                const iconClassName = option.value ? 'fas fa-lock' : 'fas fa-unlock-alt';
-                return (
-                  <ToggleButton key={index} value={option.value}>
-                    <i className={iconClassName}></i>&nbsp;{option.name}
-                  </ToggleButton>
-                );
-              })}
-            </ToggleButtonGroup>
+            <Form.Row>
+              <ToggleButtonGroup type="radio" name="statusToggleGroup" defaultValue={this.props.initialUserData.is_locked ? true : false}>
+                {[
+                  { name: 'Locked', value: true },
+                  { name: 'Unlocked', value: false },
+                ].map((option, index) => {
+                  const iconClassName = option.value ? 'fas fa-lock' : 'fas fa-unlock-alt';
+                  return (
+                    <ToggleButton key={index} value={option.value}>
+                      <i className={iconClassName}></i>&nbsp;{option.name}
+                    </ToggleButton>
+                  );
+                })}
+              </ToggleButtonGroup>
+            </Form.Row>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>API Access</Form.Label>
+            <Form.Row>
+              <ToggleButtonGroup type="radio" name="statusToggleGroup" defaultValue={this.props.initialUserData.is_locked ? true : false}>
+                {[
+                  { name: 'Enabled', value: true },
+                  { name: 'Disabled', value: false },
+                ].map((option, index) => {
+                  return (
+                    <ToggleButton key={index} value={option.value}>
+                      {option.name}
+                    </ToggleButton>
+                  );
+                })}
+              </ToggleButtonGroup>
+            </Form.Row>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]
 
   resources :admin, only: [:index, :create_user]
+  get 'admin/users', to: 'admin#users'
 
   post 'admin/create_user', to: 'admin#create_user'
   post 'admin/edit_user', to: 'admin#edit_user'

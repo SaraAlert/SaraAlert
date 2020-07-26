@@ -8,6 +8,85 @@ class AdminController < ApplicationController
     redirect_to(root_url) && return unless current_user.has_role? :admin
   end
 
+  def users
+    permitted_params = params.permit(:search, :entries, :page, :order_by, :sort_direction)
+
+    # Validate search param
+    search = permitted_params[:search]
+
+    # Validate pagination params
+    entries = permitted_params[:entries]&.to_i || 25
+    page = permitted_params[:page]&.to_i || 0
+    return head :bad_request unless entries >= 0 && page >= 0
+
+    # Validate sort params
+    order_by = permitted_params[:order_by]
+    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction role].include?(order_by)
+
+    sort_direction = permitted_params[:sort_direction]
+    return head :bad_request unless sort_direction.nil? || sort_direction.blank? || %w[asc desc].include?(sort_direction)
+    return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
+
+    # Get all users within the current user's jurisdiction
+    users = User.all.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
+
+    # Filter by search text
+    users = filter(users, search)
+
+    # Sort
+    users = sort(users, order_by, sort_direction)
+
+    # Paginate
+    users = users.paginate(per_page: entries, page: page + 1)
+
+    # Get total count
+    total = users.total_entries
+
+    linelist = []
+    users.each do |user|
+      details = {
+        id: user.id,
+        email: user.email,
+        jurisdictionPath: user.jurisdiction_path.join(', ') || [],
+        role: user.roles[0].name.split('_').map(&:capitalize).join(' ') || '',
+        isLocked: user.locked_at.nil? || false,
+        isAPIEnabled: user[:api_enabled] || false,
+        is2FAEnabled: user.authy_id.nil? || false,
+      }
+
+      linelist << details
+    end
+
+    render json: { linelist: linelist, total: total }
+  end
+
+  def sort(users, order_by, sort_direction)
+    return users if order_by.nil? || order_by.empty? || sort_direction.nil? || sort_direction.blank?
+
+    # Satisfy brakeman with additional sanitation logic
+    dir = direction == 'asc' ? 'asc' : 'desc'
+
+    case order_by
+    when 'id'
+      users = users.order(id: dir)
+    when 'email'
+      users = users.order(email: dir)
+    when 'jurisdiction'
+      users = users.order(jurisdiction_path: dir)
+    when 'role'
+      users = users.order(role: dir)
+    end
+
+    users
+  end
+
+  def filter(users, search)
+    return users if search.nil? || search.blank?
+
+    users.where('id like ?', "#{search}%").or(
+      users.where('email like ?', "#{search}%"))
+  end
+
   def create_user
     permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title)
     roles = Role.pluck(:name)
