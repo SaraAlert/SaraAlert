@@ -467,7 +467,7 @@ class Patient < ApplicationRecord
     end
 
     # Do not allow messages to go to household members
-    return unless responder.id == id
+    return unless responder_id == id
 
     # Return if closed, UNLESS there are still group members who need to be reported on
     return unless monitoring ||
