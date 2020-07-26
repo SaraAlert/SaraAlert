@@ -37,7 +37,7 @@ class CloseContact extends React.Component {
   }
 
   contactAttempt = async () => {
-    if (await confirmDialog('Are you sure you want to increase the contact attempt count?', { title: 'New Contact Attempt' })) {
+    if (await confirmDialog('Are you sure you want to log an additional contact attempt?', { title: 'New Contact Attempt' })) {
       this.setState({ contact_attempts: this.state.contact_attempts + 1 }, () => {
         this.submit();
       });

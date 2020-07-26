@@ -278,13 +278,13 @@ class Identification extends React.Component {
                     value={this.state.current.patient.gender_identity || ''}
                     onChange={this.handleChange}>
                     <option></option>
-                    <option>Male (Identifies as Male)</option>
-                    <option>Female (Identifies as Female)</option>
-                    <option>Transgender Male (Female to Male transexual (FTM))</option>
-                    <option>Transgender Female (Male to Female transsexual (MTF)) </option>
-                    <option>Non-conforming / Gender Queer (neither exclusively male nor female)</option>
-                    <option>Other</option>
-                    <option>Choose not to disclose (Asked but unknown)</option>
+                    <option>Male (Identifies as male)</option>
+                    <option>Female (Identifies as female)</option>
+                    <option>Transgender Male (Female-to-Male [FTM])</option>
+                    <option>Transgender Female (Male-to-Female [MTF]</option>
+                    <option>Genderqueer / gender nonconforming (neither exclusively male nor female)</option>
+                    <option>Another</option>
+                    <option>Chose not to disclose</option>
                   </Form.Control>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['gender_identity']}
@@ -303,10 +303,9 @@ class Identification extends React.Component {
                     <option>Straight or Heterosexual</option>
                     <option>Lesbian, Gay, or Homosexual</option>
                     <option>Bisexual</option>
-                    <option>Other</option>
-                    <option>Choose not to disclose (Asked but unknown)</option>
-                    <option>Don’t know (Unknown)</option>
-                    <option>Sexually attracted to neither Male or female sex</option>
+                    <option>Another</option>
+                    <option>Choose not to disclose</option>
+                    <option>Don’t know</option>
                   </Form.Control>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['sexual_orientation']}

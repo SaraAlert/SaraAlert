@@ -316,25 +316,6 @@ class Patient < ApplicationRecord
          .distinct
   }
 
-  # Individuals not meeting review and are not reporting for a while (isolation workflow only)
-  scope :isolation_non_reporting_max, lambda {
-    where.not(id: Patient.unscoped.isolation_requiring_review)
-         .where(monitoring: true)
-         .where(purged: false)
-         .where(isolation: true)
-         .where(latest_assessment_at: nil)
-         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-         .or(
-           where.not(id: Patient.unscoped.isolation_requiring_review)
-           .where(monitoring: true)
-           .where(purged: false)
-           .where(isolation: true)
-           .where('latest_assessment_at < ?', ADMIN_OPTIONS['isolation_non_reporting_max_days'].days.ago)
-           .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-         )
-         .distinct
-  }
-
   # All individuals currently being monitored if true, all individuals otherwise
   scope :monitoring_active, lambda { |active_monitoring|
     where(monitoring: true) if active_monitoring
