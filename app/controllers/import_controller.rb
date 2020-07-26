@@ -41,6 +41,7 @@ class ImportController < ApplicationController
       xlsx = Roo::Excelx.new(params[:file].tempfile.path, file_warning: :ignore)
       validate_headers(format, xlsx.sheet(0).row(1))
       raise ValidationError.new('File must contain at least one monitoree to import', 2) if xlsx.sheet(0).last_row < 2
+      raise ValidationError.new('Please limit each import to 1000 monitorees.', 1000) if xlsx.sheet(0).last_row > 1000
 
       xlsx.sheet(0).each_with_index do |row, row_ind|
         next if row_ind.zero? # Skip headers
