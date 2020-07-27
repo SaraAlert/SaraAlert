@@ -9,19 +9,32 @@ class UserModal extends React.Component {
       email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
       jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
       role: this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0],
+      isAPIEnabled: this.props.initialUserData.isAPIEnabled ? this.props.initialUserData.isAPIEnabled : false,
+      isLocked: this.props.initialUserData.isLocked ? this.props.initialUserData.isLocked : false,
     };
   }
 
   handleEmailChange = e => {
-    this.setState({ email: e.target.value });
+    const val = e.target.value;
+    this.setState({ email: val });
   };
 
   handleJurisdictionChange = e => {
-    this.setState({ jurisdictionPath: e.target.value });
+    const val = e.target.value;
+    this.setState({ jurisdictionPath: val });
   };
 
   handleRoleChange = e => {
-    this.setState({ role: e.target.value });
+    const val = e.target.value;
+    this.setState({ role: val });
+  };
+
+  handleLockedStatusChange = val => {
+    this.setState({ isLocked: val });
+  };
+
+  handleAPIAccessChange = val => {
+    this.setState({ isAPIEnabled: val });
   };
 
   render() {
@@ -72,28 +85,38 @@ class UserModal extends React.Component {
               })}
             </Form.Control>
           </Form.Group>
-          <Form.Group>
-            <Form.Label>Status</Form.Label>
-            <Form.Row>
-              <ToggleButtonGroup type="radio" name="statusToggleGroup" defaultValue={this.props.initialUserData.is_locked ? true : false}>
-                {[
-                  { name: 'Locked', value: true },
-                  { name: 'Unlocked', value: false },
-                ].map((option, index) => {
-                  const iconClassName = option.value ? 'fas fa-lock' : 'fas fa-unlock-alt';
-                  return (
-                    <ToggleButton key={index} value={option.value}>
-                      <i className={iconClassName}></i>&nbsp;{option.name}
-                    </ToggleButton>
-                  );
-                })}
-              </ToggleButtonGroup>
-            </Form.Row>
-          </Form.Group>
+          {this.props.type === 'edit' && (
+            <Form.Group>
+              <Form.Label>Status</Form.Label>
+              <Form.Row>
+                <ToggleButtonGroup
+                  type="radio"
+                  name="statusToggleGroup"
+                  defaultValue={this.props.initialUserData.is_locked ? true : false}
+                  onChange={this.handleLockedStatusChange}>
+                  {[
+                    { name: 'Locked', value: true },
+                    { name: 'Unlocked', value: false },
+                  ].map((option, index) => {
+                    const iconClassName = option.value ? 'fas fa-lock' : 'fas fa-unlock-alt';
+                    return (
+                      <ToggleButton key={index} value={option.value}>
+                        <i className={iconClassName}></i>&nbsp;{option.name}
+                      </ToggleButton>
+                    );
+                  })}
+                </ToggleButtonGroup>
+              </Form.Row>
+            </Form.Group>
+          )}
           <Form.Group>
             <Form.Label>API Access</Form.Label>
             <Form.Row>
-              <ToggleButtonGroup type="radio" name="statusToggleGroup" defaultValue={this.props.initialUserData.is_locked ? true : false}>
+              <ToggleButtonGroup
+                type="radio"
+                name="statusToggleGroup"
+                defaultValue={this.props.initialUserData.is_locked ? true : false}
+                onChange={this.handleAPIAccessChange}>
                 {[
                   { name: 'Enabled', value: true },
                   { name: 'Disabled', value: false },
@@ -123,6 +146,7 @@ class UserModal extends React.Component {
 
 UserModal.propTypes = {
   show: bool,
+  type: PropTypes.string,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
   title: PropTypes.string,

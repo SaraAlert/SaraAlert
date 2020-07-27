@@ -33,6 +33,7 @@ class AdminTable extends React.Component {
       actionsEnabled: false,
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
+      editRow: null,
     };
   }
 
@@ -116,11 +117,12 @@ class AdminTable extends React.Component {
 
   handleAddUser = data => {
     const path = 'create_user';
-
+    console.log('data:', data);
     const dataToSend = {
       email: data.email,
       jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
-      role_title: data.role,
+      role: data.role,
+      is_api_enabled: data.isAPIEnabled,
     };
 
     const handleSuccess = response => {
@@ -141,7 +143,9 @@ class AdminTable extends React.Component {
     const dataToSend = {
       email: data.email,
       jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
-      role_title: data.role,
+      role: data.role,
+      is_api_enabled: data.isAPIEnabled,
+      is_locked: data.isLocked,
     };
 
     const handleSuccess = response => {
@@ -257,6 +261,7 @@ class AdminTable extends React.Component {
             onSave={formData => this.handleSave(this.state.showAddUserModal, formData)}
             onClose={this.handleModalClose}
             title={this.state.showEditUserModal ? 'Edit User' : 'Add User'}
+            type={this.state.showEditUserModal ? 'edit' : 'add'}
             jurisdictionPaths={Object.keys(this.props.jurisdiction_paths)}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
