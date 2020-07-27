@@ -30,12 +30,13 @@ class CaseStatus extends React.Component {
   handleChange(event) {
     event.persist();
 
-    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    let hideModal = this.state.isolation && (value === 'Confirmed' || value === 'Probable');
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    const changeWorkflow = value === 'Suspect' || value === 'Unknown' || value === 'Not a Case' ? true : false;
+    const showModal = !this.state.isolation || changeWorkflow;
 
-    this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal }, () => {
+    this.setState({ [event.target.id]: value, showCaseStatusModal: showModal }, () => {
       // specific case where case status is just changed with no modal
-      if (hideModal) {
+      if (!showModal) {
         this.setState({ message: 'case status to "' + this.state.case_status + '".' });
         this.submit();
       }
@@ -57,8 +58,13 @@ class CaseStatus extends React.Component {
             message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
-      } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
-        this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
+      } else if (changeWorkflow || event.target.value === '') {
+        this.setState({
+          monitoring: true,
+          isolation: false,
+          public_health_action: 'None',
+          message: 'case status to "' + this.state.case_status + '".',
+        });
       }
     });
   }
@@ -74,11 +80,6 @@ class CaseStatus extends React.Component {
   submit() {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
 
-    // force last public health action to update
-    if (this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status == 'Not a Case') {
-      diffState.push('public_health_action');
-    }
-
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -90,10 +91,7 @@ class CaseStatus extends React.Component {
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
           apply_to_group: this.state.apply_to_group,
-          public_health_action:
-            this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status == 'Not a Case'
-              ? 'None'
-              : this.state.public_health_action,
+          public_health_action: this.state.public_health_action,
           diffState: diffState,
         })
         .then(() => {
