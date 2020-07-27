@@ -11,6 +11,7 @@ class CaseStatus extends React.Component {
     super(props);
     this.state = {
       showCaseStatusModal: false,
+      confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
       case_status: this.props.patient.case_status || '',
       message: '',
       confirmed: '',
@@ -31,12 +32,12 @@ class CaseStatus extends React.Component {
     event.persist();
 
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    const changeWorkflow = value === 'Suspect' || value === 'Unknown' || value === 'Not a Case' ? true : false;
-    const showModal = !this.state.isolation || changeWorkflow;
+    const confirmedOrProbable = value === 'Confirmed' || value === 'Probable' ? true : false;
+    const hideModal = this.state.isolation && confirmedOrProbable;
 
-    this.setState({ [event.target.id]: value, showCaseStatusModal: showModal }, () => {
+    this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal, confirmedOrProbable: confirmedOrProbable }, () => {
       // specific case where case status is just changed with no modal
-      if (!showModal) {
+      if (hideModal) {
         this.setState({ message: 'case status to "' + this.state.case_status + '".' });
         this.submit();
       }
@@ -58,7 +59,7 @@ class CaseStatus extends React.Component {
             message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
-      } else if (changeWorkflow || event.target.value === '') {
+      } else if (!confirmedOrProbable) {
         this.setState({
           monitoring: true,
           isolation: false,
@@ -79,7 +80,6 @@ class CaseStatus extends React.Component {
 
   submit() {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
-
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -106,8 +106,8 @@ class CaseStatus extends React.Component {
   createModal(title, toggle, submit) {
     if (
       this.props.patient.isolation &&
-      (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable') &&
-      (this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status === 'Not a Case' || this.state.case_status === '')
+      !this.state.confirmedOrProbable &&
+      (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')
     ) {
       return (
         <Modal size="lg" show centered onHide={toggle}>
@@ -146,7 +146,7 @@ class CaseStatus extends React.Component {
           </Modal.Footer>
         </Modal>
       );
-    } else if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
+    } else if (this.state.confirmedOrProbable) {
       return (
         <Modal size="lg" show centered onHide={toggle}>
           <Modal.Header>
@@ -192,12 +192,7 @@ class CaseStatus extends React.Component {
           </Modal.Footer>
         </Modal>
       );
-    } else if (
-      this.state.case_status === 'Suspect' ||
-      this.state.case_status === 'Unknown' ||
-      this.state.case_status === 'Not a Case' ||
-      this.state.case_status === ''
-    ) {
+    } else if (!this.state.confirmedOrProbable) {
       return (
         <Modal size="lg" show centered onHide={toggle}>
           <Modal.Header>
