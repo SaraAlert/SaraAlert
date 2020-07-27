@@ -1,8 +1,8 @@
 import React from 'react';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import 'react-dates/initialize';
-import { SingleDatePicker } from 'react-dates';
+import DatePicker from 'react-datepicker';
+import MaskedInput from 'react-text-mask';
 import axios from 'axios';
 import moment from 'moment';
 import _ from 'lodash';
@@ -13,7 +13,7 @@ class LastDateExposure extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      last_date_of_exposure: this.props.patient.last_date_of_exposure ? moment.utc(this.props.patient.last_date_of_exposure, 'YYYY-MM-DD') : null,
+      last_date_of_exposure: moment(this.props.patient.last_date_of_exposure, 'YYYY-MM-DD').toDate(),
       continuous_exposure: !!this.props.patient.continuous_exposure,
       loading: false,
       apply_to_group: false, // Flag to apply a change to all members
@@ -41,7 +41,7 @@ class LastDateExposure extends React.Component {
 
   closeExposureDateModal() {
     this.setState({
-      last_date_of_exposure: this.props.patient.last_date_of_exposure ? moment.utc(this.props.patient.last_date_of_exposure, 'YYYY-MM-DD') : null,
+      last_date_of_exposure: moment(this.props.patient.last_date_of_exposure, 'YYYY-MM-DD').toDate(),
       showExposureDateModal: false,
       apply_to_group: false,
       apply_to_group_cm_only: false,
@@ -49,7 +49,7 @@ class LastDateExposure extends React.Component {
   }
 
   handleDateChange(date) {
-    if (date && date.format('YYYY-MM-DD') !== this.props.patient.last_date_of_exposure) {
+    if (date && moment(date).format('YYYY-MM-DD') !== this.props.patient.last_date_of_exposure) {
       this.setState({
         last_date_of_exposure: date,
         showExposureDateModal: true,
@@ -153,7 +153,7 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the last date of exposure to ${this.state.last_date_of_exposure.format(
+            `Are you sure you want to modify the last date of exposure to ${moment(this.state.last_date_of_exposure).format(
               'MM/DD/YYYY'
             )}? This will reset the continuous monitoring status for this monitoree.`,
             this.closeExposureDateModal,
@@ -164,33 +164,39 @@ class LastDateExposure extends React.Component {
             this.submit(false)
           )}
         <Row>
-          <Col md="4" sm="24">
+          <Col lg="6" md="5" sm="24">
             <h6 className="nav-input-label mt-3">
               LAST DATE OF EXPOSURE
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
             </h6>
           </Col>
-          <Col md="8" sm="24">
+          <Col lg="10" md="12" sm="24">
             <Row>
               <Col>
-                <SingleDatePicker
-                  date={this.state.last_date_of_exposure}
-                  onDateChange={this.handleDateChange}
-                  focused={this.state.last_date_of_exposure_focused}
-                  onFocusChange={({ focused }) => this.setState({ last_date_of_exposure_focused: focused })}
-                  id="last_date_of_exposure"
-                  showDefaultInputIcon
-                  placeholder="mm/dd/yyyy"
-                  openDirection="up"
-                  numberOfMonths={1}
-                  hideKeyboardShortcutsPanel
-                  isOutsideRange={() => false}
-                />
+                <div>
+                  <i
+                    className="fas fa-calendar"
+                    style={{ zIndex: '1', position: 'absolute', left: '2rem', top: '0.75rem', color: '#495057', fontSize: '18pt' }}></i>
+                  <DatePicker
+                    selected={this.state.last_date_of_exposure}
+                    onChange={this.handleDateChange}
+                    popperPlacement="top"
+                    placeholderText="mm/dd/yyyy"
+                    customInput={
+                      <MaskedInput
+                        mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
+                        keepCharPositions
+                        className="form-control form-control-lg react-datepicker-ignore-onclickoutside"
+                        style={{ paddingLeft: '3.375rem' }}
+                      />
+                    }
+                  />
+                </div>
               </Col>
             </Row>
             <Row>
               <Form.Check
-                className="ml-3 mt-2"
+                className="ml-3 mt-1"
                 size="lg"
                 label="CONTINUOUS EXPOSURE"
                 type="switch"
@@ -200,7 +206,7 @@ class LastDateExposure extends React.Component {
               />
             </Row>
           </Col>
-          <Col md="12" sm="24">
+          <Col lg="8" md="7" sm="24">
             <div className="mt-3">
               <span className="nav-input-label">END OF MONITORING</span>
               <InfoTooltip tooltipTextKey="endOfMonitoring" location="right"></InfoTooltip>
