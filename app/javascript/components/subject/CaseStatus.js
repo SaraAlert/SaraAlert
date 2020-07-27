@@ -11,6 +11,7 @@ class CaseStatus extends React.Component {
     super(props);
     this.state = {
       showCaseStatusModal: false,
+      confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
       case_status: this.props.patient.case_status || '',
       message: '',
       confirmed: '',
@@ -30,10 +31,11 @@ class CaseStatus extends React.Component {
   handleChange(event) {
     event.persist();
 
-    let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    let hideModal = this.state.isolation && (value === 'Confirmed' || value === 'Probable');
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
+    const hideModal = this.state.isolation && confirmedOrProbable;
 
-    this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal }, () => {
+    this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal, confirmedOrProbable }, () => {
       // specific case where case status is just changed with no modal
       if (hideModal) {
         this.setState({ message: 'case status to "' + this.state.case_status + '".' });
@@ -57,8 +59,13 @@ class CaseStatus extends React.Component {
             message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
-      } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
-        this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
+      } else if (!confirmedOrProbable) {
+        this.setState({
+          monitoring: true,
+          isolation: false,
+          public_health_action: 'None',
+          message: 'case status to "' + this.state.case_status + '".',
+        });
       }
     });
   }
@@ -84,10 +91,7 @@ class CaseStatus extends React.Component {
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
           apply_to_group: this.state.apply_to_group,
-          public_health_action:
-            this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status == 'Not a Case'
-              ? 'None'
-              : this.state.public_health_action,
+          public_health_action: this.state.public_health_action,
           diffState: diffState,
         })
         .then(() => {
@@ -102,8 +106,8 @@ class CaseStatus extends React.Component {
   createModal(title, toggle, submit) {
     if (
       this.props.patient.isolation &&
-      (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable') &&
-      (this.state.case_status === 'Suspect' || this.state.case_status === 'Unknown' || this.state.case_status === 'Not a Case' || this.state.case_status === '')
+      !this.state.confirmedOrProbable &&
+      (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')
     ) {
       return (
         <Modal size="lg" show centered onHide={toggle}>
@@ -142,7 +146,7 @@ class CaseStatus extends React.Component {
           </Modal.Footer>
         </Modal>
       );
-    } else if (this.state.case_status === 'Confirmed' || this.state.case_status === 'Probable') {
+    } else if (this.state.confirmedOrProbable) {
       return (
         <Modal size="lg" show centered onHide={toggle}>
           <Modal.Header>
@@ -188,12 +192,7 @@ class CaseStatus extends React.Component {
           </Modal.Footer>
         </Modal>
       );
-    } else if (
-      this.state.case_status === 'Suspect' ||
-      this.state.case_status === 'Unknown' ||
-      this.state.case_status === 'Not a Case' ||
-      this.state.case_status === ''
-    ) {
+    } else if (!this.state.confirmedOrProbable) {
       return (
         <Modal size="lg" show centered onHide={toggle}>
           <Modal.Header>
