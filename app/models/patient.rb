@@ -471,8 +471,8 @@ class Patient < ApplicationRecord
 
     # Return if closed, UNLESS there are still group members who need to be reported on
     return unless monitoring ||
-                  dependents.where(monitoring: true).count.positive? ||
                   continuous_exposure ||
+                  dependents.where(monitoring: true).count.positive? ||
                   dependents.where(continuous_exposure: true).count.positive?
 
     # If force is set, the preferred contact time will be ignored
