@@ -32,7 +32,7 @@ class CaseStatus extends React.Component {
     event.persist();
 
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    const confirmedOrProbable = value === 'Confirmed' || value === 'Probable' ? true : false;
+    const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
     const hideModal = this.state.isolation && confirmedOrProbable;
 
     this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal, confirmedOrProbable: confirmedOrProbable }, () => {
