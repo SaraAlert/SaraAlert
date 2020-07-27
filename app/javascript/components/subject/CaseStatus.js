@@ -35,7 +35,7 @@ class CaseStatus extends React.Component {
     const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
     const hideModal = this.state.isolation && confirmedOrProbable;
 
-    this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal, confirmedOrProbable: confirmedOrProbable }, () => {
+    this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal, confirmedOrProbable }, () => {
       // specific case where case status is just changed with no modal
       if (hideModal) {
         this.setState({ message: 'case status to "' + this.state.case_status + '".' });
