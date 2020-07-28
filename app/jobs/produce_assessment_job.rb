@@ -7,7 +7,6 @@ class ProduceAssessmentJob < ApplicationJob
   queue_as :default
 
   def perform(assessment)
-    connection = Redis.new
     report = {
       response_status: assessment['response_status'],
       threshold_condition_hash: assessment['threshold_hash'],
@@ -16,6 +15,6 @@ class ProduceAssessmentJob < ApplicationJob
       patient_submission_token: assessment['patient_submission_token']
     }
     # report.except!(:reported_symptoms_array) if report[:reported_symptoms_array].blank?
-    connection.publish 'reports', report.to_json
+    $redis.publish 'reports', report.to_json
   end
 end
