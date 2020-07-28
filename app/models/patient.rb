@@ -471,8 +471,8 @@ class Patient < ApplicationRecord
 
     # Return if closed, UNLESS there are still group members who need to be reported on
     return unless monitoring ||
-                  dependents.where(monitoring: true).count.positive? ||
                   continuous_exposure ||
+                  dependents.where(monitoring: true).count.positive? ||
                   dependents.where(continuous_exposure: true).count.positive?
 
     # If force is set, the preferred contact time will be ignored
@@ -510,6 +510,8 @@ class Patient < ApplicationRecord
     elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && email.present?
       PatientMailer.assessment_email(self).deliver_later
     end
+
+    id # Return ID if we reached this point, to mark as sent later in the send job
   end
 
   def calc_current_age

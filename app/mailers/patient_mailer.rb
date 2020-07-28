@@ -44,7 +44,6 @@ class PatientMailer < ApplicationMailer
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
     add_fail_history_sms(patient)
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def enrollment_sms_text_based(patient)
@@ -65,7 +64,6 @@ class PatientMailer < ApplicationMailer
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
     add_fail_history_sms(patient)
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   # Right now the wording of this message is the same as for enrollment
@@ -96,12 +94,10 @@ class PatientMailer < ApplicationMailer
       )
       add_success_history(p)
       # Always update the last contact time so the system does not try and send emails again.
-      patient.update(last_assessment_reminder_sent: DateTime.now)
     end
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
     add_fail_history_sms(patient)
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_sms_reminder(patient)
@@ -120,11 +116,9 @@ class PatientMailer < ApplicationMailer
     )
     add_success_history(patient)
     # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
     add_fail_history_sms(patient)
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_sms(patient)
@@ -163,12 +157,9 @@ class PatientMailer < ApplicationMailer
       parameters: params
     )
     add_success_history(patient)
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
     add_fail_history_sms(patient)
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_voice(patient)
@@ -210,11 +201,9 @@ class PatientMailer < ApplicationMailer
     )
     add_success_history(patient)
     # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
     History.report_reminder(patient: patient, comment: "Sara Alert failed to call monitoree at #{patient.primary_telephone}.")
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def assessment_email(patient)
@@ -229,8 +218,6 @@ class PatientMailer < ApplicationMailer
       format.html { render layout: 'main_mailer' }
     end
     add_success_history(patient)
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def closed_email(patient)
