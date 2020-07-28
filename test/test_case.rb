@@ -16,6 +16,7 @@ class ActiveSupport::TestCase
     create(:public_health_enroller)
     create(:admin)
     create(:analyst)
+    Sidekiq::Worker.clear_all
   end
 
   # Run tests in parallel with specified workers

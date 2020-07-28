@@ -16,6 +16,8 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
         ports:
         - 3306
+      redis:
+        image: redis:rc-alpine
     steps:
       - uses: actions/checkout@v2
       - name: Setup Ruby
