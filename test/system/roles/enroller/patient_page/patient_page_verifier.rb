@@ -31,11 +31,8 @@ class EnrollerPatientPageVerifier < ApplicationSystemTestCase
 
     fields.each do |field|
       if data[field[:id]] && field[:info_page]
-        if field[:type] == 'text' || field[:type] == 'select'
+        if field[:type] == 'text' || field[:type] == 'select' || field[:type] == 'date'
           assert page.has_content?(data[field[:id]]), @@system_test_utils.get_err_msg('Monitoree details', field[:id], data[field[:id]])
-        elsif field[:type] == 'date'
-          date = @@system_test_utils.format_date(data[field[:id]])
-          assert page.has_content?(date), @@system_test_utils.get_err_msg('Monitoree details', field[:id], date)
         elsif field[:type] == 'age'
           age = @@system_test_utils.calculate_age(data[field[:id]])
           assert page.has_content?(age), @@system_test_utils.get_err_msg('Monitoree details', field[:id], age)

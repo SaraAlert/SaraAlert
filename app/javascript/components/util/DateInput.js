@@ -5,26 +5,48 @@ import MaskedInput from 'react-text-mask';
 import moment from 'moment';
 
 class DateInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.datePickerRef = React.createRef();
+    this.handleRawChange = this.handleRawChange.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
+    this.clearDate = this.clearDate.bind(this);
+  }
+
+  handleDateChange(date) {
+    this.props.onChange(date && moment(date).format('YYYY-MM-DD'));
+    this.datePickerRef.current.setOpen(false);
+  }
+
+  handleRawChange(event) {
+    if (event.target.value) {
+      this.datePickerRef.current.setOpen(true);
+    }
+  }
+
+  clearDate() {
+    event.preventDefault();
+    this.props.onChange(null);
+    this.datePickerRef.current.setOpen(false);
+  }
+
   render() {
     return (
       <div className="date-input">
         <i className="fas fa-calendar date-input__calendar_icon"></i>
         {this.props.isClearable && this.props.date && (
-          <button
-            className={`close ${this.props.isInvalid ? 'date-input__clear-btn-invalid' : 'date-input__clear-btn'}`}
-            onClick={event => {
-              event.preventDefault();
-              this.props.onChange(null);
-            }}>
+          <button className={`close ${this.props.isInvalid ? 'date-input__clear-btn-invalid' : 'date-input__clear-btn'}`} onClick={this.clearDate}>
             <i className="fas fa-times"></i>
           </button>
         )}
         <DatePicker
           id={this.props.id}
           selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
-          onChange={date => this.props.onChange(date && moment(date).format('YYYY-MM-DD'))}
+          onChange={this.handleDateChange}
           popperPlacement={this.props.placement || 'auto'}
           placeholderText="mm/dd/yyyy"
+          ref={this.datePickerRef}
+          onChangeRaw={this.handleRawChange}
           customInput={
             <MaskedInput
               mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}

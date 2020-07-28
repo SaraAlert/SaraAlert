@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Col, Row, Button, Collapse, Card, Table } from 'react-bootstrap';
+import moment from 'moment';
 
 import ChangeHOH from '../subject/ChangeHOH';
 import MoveToHousehold from '../subject/MoveToHousehold';
@@ -127,7 +128,9 @@ class Patient extends React.Component {
             <Row>
               <Col className="text-truncate">
                 <span className="font-weight-normal">DOB:</span>{' '}
-                <span className="font-weight-light">{this.props.details.date_of_birth && `${this.props.details.date_of_birth}`}</span>
+                <span className="font-weight-light">
+                  {this.props.details.date_of_birth && `${moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}`}
+                </span>
                 <br />
                 <span className="font-weight-normal">Age:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.age ? this.props.details.age : ''}`}</span>
@@ -279,13 +282,17 @@ class Patient extends React.Component {
                     <h6>DEPARTED</h6>
                     <span className="font-weight-light">{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
                     <br />
-                    <span className="font-weight-light">{`${this.props.details.date_of_departure ? this.props.details.date_of_departure : ''}`}</span>
+                    <span className="font-weight-light">{`${
+                      this.props.details.date_of_departure ? moment(this.props.details.date_of_departure, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
+                    }`}</span>
                   </Col>
                   <Col className="text-truncate">
                     <h6>ARRIVAL</h6>
                     <span className="font-weight-light">{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
                     <br />
-                    <span className="font-weight-light">{`${this.props.details.date_of_arrival ? this.props.details.date_of_arrival : ''}`}</span>
+                    <span className="font-weight-light">{`${
+                      this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
+                    }`}</span>
                   </Col>
                 </Row>
                 <Row>
@@ -340,12 +347,16 @@ class Patient extends React.Component {
                     <br />
                     <span className="font-weight-normal">End Date:</span>{' '}
                     <span className="font-weight-light">{`${
-                      this.props.details.additional_planned_travel_start_date ? this.props.details.additional_planned_travel_start_date : ''
+                      this.props.details.additional_planned_travel_start_date
+                        ? moment(this.props.details.additional_planned_travel_start_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                        : ''
                     }`}</span>
                     <br />
                     <span className="font-weight-normal">Start Date:</span>{' '}
                     <span className="font-weight-light">{`${
-                      this.props.details.additional_planned_travel_end_date ? this.props.details.additional_planned_travel_end_date : ''
+                      this.props.details.additional_planned_travel_end_date
+                        ? moment(this.props.details.additional_planned_travel_end_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                        : ''
                     }`}</span>
                   </Col>
                 </Row>
@@ -379,7 +390,9 @@ class Patient extends React.Component {
                         {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
                       </span>
                       <br />
-                      <span className="font-weight-light">{`${this.props.details.last_date_of_exposure ? this.props.details.last_date_of_exposure : ''}`}</span>
+                      <span className="font-weight-light">{`${
+                        this.props.details.last_date_of_exposure ? moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
+                      }`}</span>
                       <br />
                       <span className="font-weight-light text-danger">
                         {this.props.details.contact_of_known_case
@@ -431,7 +444,11 @@ class Patient extends React.Component {
                   {this.props.details.isolation && (
                     <Col className="text-truncate">
                       <span className="font-weight-light">
-                        {`${this.props.details.symptom_onset ? `Symptom Onset: ${this.props.details.symptom_onset}` : ''}`}
+                        {`${
+                          this.props.details.symptom_onset
+                            ? `Symptom Onset: ${moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}`
+                            : ''
+                        }`}
                       </span>
                       <br />
                       <span className="font-weight-light">{`${this.props.details.case_status ? `Case Status: ${this.props.details.case_status}` : ''}`}</span>

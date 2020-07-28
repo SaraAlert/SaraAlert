@@ -43,8 +43,8 @@
         <td><%= patient.assigned_user %></td>
         <td><%= patient.user_defined_id_statelocal.blank? ? '' : patient.user_defined_id_statelocal %></td>
         <td><%= patient.sex %></td>
-        <td><%= patient.date_of_birth&.strftime('%F') %></td>
-        <td><%= patient.created_at.to_date&.strftime('%F') %></td>
+        <td><%= patient.date_of_birth&.strftime('%m/%d/%Y') %></td>
+        <td><%= patient.created_at.to_date&.strftime('%m/%d/%Y') %></td>
         <td><%= patient.jurisdiction[:path] %></td>
       </tr>
     <% end -%>

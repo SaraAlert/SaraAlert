@@ -28,10 +28,8 @@ class EnrollmentFormVerifier < ApplicationSystemTestCase
       next unless data[field[:id]]
 
       click_on field[:tab] if field[:tab]
-      if field[:type] == 'text' || field[:type] == 'select'
+      if field[:type] == 'text' || field[:type] == 'select' || field[:type] == 'date'
         assert_equal(data[field[:id]], find("##{field[:id]}")['value'], "#{field[:id]} mismatch")
-      elsif field[:type] == 'date'
-        assert_equal(@@system_test_utils.format_date(data[field[:id]]), find("##{field[:id]}")['value'], "#{field[:id]} mismatch")
       elsif field[:type] == 'checkbox' || field[:type] == 'race' || field[:type] == 'risk factor'
         # figure out how to get value of checkbox input from DOM
       end

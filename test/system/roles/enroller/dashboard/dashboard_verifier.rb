@@ -56,15 +56,14 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
   end
 
   def verify_monitoree_info_not_on_dashboard(monitoree, is_epi = false)
-    displayed_birthday = @@system_test_utils.format_date(monitoree['identification']['date_of_birth'])
+    displayed_birthday = monitoree['identification']['date_of_birth']
     search_and_verify_nonexistence("#{monitoree['identification']['first_name']} #{monitoree['identification']['last_name']} #{displayed_birthday}", is_epi)
   end
 
   def search_for_monitoree(monitoree, is_epi)
     displayed_name = @@system_test_utils.get_displayed_name(monitoree)
-    displayed_birthday = @@system_test_utils.format_date(monitoree['identification']['date_of_birth'])
-    search_and_verify_existence(monitoree['identification']['first_name'], displayed_name, displayed_birthday, is_epi)
-    search_and_verify_existence(monitoree['identification']['last_name'], displayed_name, displayed_birthday, is_epi)
+    search_and_verify_existence(monitoree['identification']['first_name'], displayed_name, monitoree['identification']['date_of_birth'], is_epi)
+    search_and_verify_existence(monitoree['identification']['last_name'], displayed_name, monitoree['identification']['date_of_birth'], is_epi)
     displayed_name
   end
 
@@ -88,8 +87,8 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
     verify_patient_field_in_data_table('assigned user', patient.assigned_user)
     verify_patient_field_in_data_table('state/local id', patient.user_defined_id_statelocal)
     verify_patient_field_in_data_table('sex', patient.sex)
-    verify_patient_field_in_data_table('date of birth', patient.date_of_birth)
-    verify_patient_field_in_data_table('enrollment date', patient.created_at.to_date)
+    verify_patient_field_in_data_table('date of birth', patient.date_of_birth.strftime('%m/%d/%Y'))
+    verify_patient_field_in_data_table('enrollment date', patient.created_at.to_date.strftime('%m/%d/%Y'))
   end
 
   def verify_patient_field_in_data_table(field, value)
