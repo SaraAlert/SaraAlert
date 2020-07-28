@@ -12,14 +12,22 @@ module ConsumeAssessmentsJobTestHelper
       @@response_statuses
     end
 
-    def random_assessment
+    def reported_symptom_assessment(symptomatic: nil)
       {
         response_status: nil,
         threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
-        reported_symptoms_array: [],
-        experiencing_symptoms: Faker::Boolean.boolean,
+        reported_symptoms_array: [
+          {
+            name: 'Cough',
+            value: false,
+            type: 'BoolSymptom',
+            label: 'Cough',
+            notes: 'Have you coughed today?'
+          }
+        ],
+        experiencing_symptoms: symptomatic,
         patient_submission_token: @patient.submission_token
-      }
+      }.to_json
     end
 
     def generic_assessment(symptomatic:)
@@ -27,9 +35,19 @@ module ConsumeAssessmentsJobTestHelper
         response_status: nil,
         threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
         reported_symptoms_array: nil,
-        experiencing_symptoms: :symptomatic,
+        experiencing_symptoms: symptomatic,
         patient_submission_token: @patient.submission_token
-      }
+      }.to_json
+    end
+
+    def missing_threshold_condition
+      {
+        response_status: nil,
+        threshold_condition_hash: nil,
+        reported_symptoms_array: nil,
+        experiencing_symptoms: false,
+        patient_submission_token: @patient.submission_token
+      }.to_json
     end
 
     def no_answer_assessment(type)
@@ -43,7 +61,7 @@ module ConsumeAssessmentsJobTestHelper
         reported_symptoms_array: nil,
         experiencing_symptoms: nil,
         patient_submission_token: @patient.submission_token
-      }
+      }.to_json
     end
   end
 end
