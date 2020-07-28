@@ -81,6 +81,7 @@ class PatientMailerTest < ActionMailer::TestCase
       PatientMailer.enrollment_email(@patient).deliver_now
       assert_not ActionMailer::Base.deliveries.empty?
       @patient.reload
+      assert_equal 'Welcome Message Sent', @patient.histories.first.history_type
     end
   end
 
