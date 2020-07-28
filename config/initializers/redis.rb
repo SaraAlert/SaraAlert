@@ -1,2 +1,4 @@
 # Redis.new will use ENV['REDIS_URL'] to connect to.
-$redis = Redis.new
+Rails.application.configure do
+  config.redis = Redis.new
+end
