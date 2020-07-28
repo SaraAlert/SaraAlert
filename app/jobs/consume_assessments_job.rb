@@ -7,7 +7,7 @@ class ConsumeAssessmentsJob < ApplicationJob
   queue_as :default
 
   def perform
-    $redis.subscribe 'reports' do |on|
+    Rails.application.config.redis.subscribe 'reports' do |on|
       on.message do |_channel, msg|
         # message = SaraSchema::Validator.validate(:assessment, JSON.parse(msg))
         message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
@@ -25,7 +25,6 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         # Get list of dependents excluding the patient itself.
         dependents = patient.dependents_exclude_self
-
         if message['response_status'] == 'no_answer_voice'
           # If nobody answered, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
