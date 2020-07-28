@@ -7,8 +7,7 @@ class ConsumeAssessmentsJob < ApplicationJob
   queue_as :default
 
   def perform
-    connection = Redis.new
-    connection.subscribe 'reports' do |on|
+    $redis.subscribe 'reports' do |on|
       on.message do |_channel, msg|
         # message = SaraSchema::Validator.validate(:assessment, JSON.parse(msg))
         message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
