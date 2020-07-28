@@ -144,10 +144,11 @@ class Exposure extends React.Component {
           <Form.Group as={Col} md="7" controlId="symptom_onset">
             <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
             <DateInput
-              name="symptom_onset"
+              id="symptom_onset"
               date={this.state.current.patient.symptom_onset}
               onChange={date => this.handleDateChange('symptom_onset', date)}
               placement="bottom"
+              isInvalid={!!this.state.errors['symptom_onset']}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['symptom_onset']}
@@ -203,10 +204,11 @@ class Exposure extends React.Component {
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
             </Form.Label>
             <DateInput
-              name="last_date_of_exposure"
+              id="last_date_of_exposure"
               date={this.state.current.patient.last_date_of_exposure}
               onChange={date => this.handleDateChange('last_date_of_exposure', date)}
               placement="bottom"
+              isInvalid={!!this.state.errors['last_date_of_exposure']}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['last_date_of_exposure']}

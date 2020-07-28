@@ -170,7 +170,7 @@ class LastDateExposure extends React.Component {
           <Col lg="10" md="12" sm="24">
             <Row>
               <Col>
-                <DateInput name="last_date_of_exposure" date={this.state.last_date_of_exposure} onChange={this.handleDateChange} placement="top" />
+                <DateInput id="last_date_of_exposure" date={this.state.last_date_of_exposure} onChange={this.handleDateChange} placement="top" />
               </Col>
             </Row>
             <Row>

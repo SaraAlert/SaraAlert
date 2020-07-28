@@ -177,10 +177,12 @@ class AdditionalPlannedTravel extends React.Component {
                     START DATE{schema?.fields?.additional_planned_travel_start_date?._exclusive?.required && ' *'}
                   </Form.Label>
                   <DateInput
-                    name="additional_planned_travel_start_date"
+                    id="additional_planned_travel_start_date"
                     date={this.state.current.patient.additional_planned_travel_start_date}
                     onChange={date => this.handleDateChange('additional_planned_travel_start_date', date)}
                     placement="bottom"
+                    isInvalid={!!this.state.errors['additional_planned_travel_start_date']}
+                    isClearable
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_start_date']}
@@ -191,10 +193,12 @@ class AdditionalPlannedTravel extends React.Component {
                     END DATE{schema?.fields?.additional_planned_travel_end_date?._exclusive?.required && ' *'}
                   </Form.Label>
                   <DateInput
-                    name="additional_planned_travel_end_date"
+                    id="additional_planned_travel_end_date"
                     date={this.state.current.patient.additional_planned_travel_end_date}
                     onChange={date => this.handleDateChange('additional_planned_travel_end_date', date)}
                     placement="bottom"
+                    isInvalid={!!this.state.errors['additional_planned_travel_end_date']}
+                    isClearable
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_end_date']}

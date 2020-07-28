@@ -77,7 +77,7 @@ class Laboratory extends React.Component {
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Specimen Collection Date</Form.Label>
                 <DateInput
-                  name="specimen_collection"
+                  id="specimen_collection"
                   date={this.state.specimen_collection}
                   onChange={date => this.setState({ specimen_collection: date })}
                   placement="bottom"
@@ -87,7 +87,7 @@ class Laboratory extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Report Date</Form.Label>
-                <DateInput name="report" date={this.state.report} onChange={date => this.setState({ report: date })} placement="bottom" />
+                <DateInput id="report" date={this.state.report} onChange={date => this.setState({ report: date })} placement="bottom" />
               </Form.Group>
             </Row>
             <Row>

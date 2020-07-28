@@ -338,7 +338,7 @@ class MonitoringStatus extends React.Component {
             <Form.Group>
               <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
               <DateInput
-                name="apply_to_group_cm_only_date"
+                id="apply_to_group_cm_only_date"
                 date={this.state.apply_to_group_cm_only_date}
                 onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
                 placement="bottom"

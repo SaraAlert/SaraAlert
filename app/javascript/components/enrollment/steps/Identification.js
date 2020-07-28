@@ -285,10 +285,11 @@ class Identification extends React.Component {
                 <Form.Group as={Col} md="auto" controlId="date_of_birth">
                   <Form.Label className="nav-input-label">DATE OF BIRTH{schema?.fields?.date_of_birth?._exclusive?.required && ' *'}</Form.Label>
                   <DateInput
-                    name="date_of_birth"
+                    id="date_of_birth"
                     date={this.state.current.patient.date_of_birth}
                     onChange={date => this.handleDateChange('date_of_birth', date)}
                     placement="bottom"
+                    isInvalid={!!this.state.errors['date_of_birth']}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_birth']}

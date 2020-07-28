@@ -7,10 +7,20 @@ import moment from 'moment';
 class DateInput extends React.Component {
   render() {
     return (
-      <div style={{ position: 'relative' }}>
-        <i className="fas fa-calendar" style={{ zIndex: '1', position: 'absolute', left: '1.25rem', top: '0.75rem', color: '#495057', fontSize: '18pt' }}></i>
+      <div className="date-input">
+        <i className="fas fa-calendar date-input__calendar_icon"></i>
+        {this.props.isClearable && this.props.date && (
+          <button
+            className={`close ${this.props.isInvalid ? 'date-input__clear-btn-invalid' : 'date-input__clear-btn'}`}
+            onClick={event => {
+              event.preventDefault();
+              this.props.onChange(null);
+            }}>
+            <i className="fas fa-times"></i>
+          </button>
+        )}
         <DatePicker
-          name={this.props.name}
+          id={this.props.id}
           selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
           onChange={date => this.props.onChange(date && moment(date).format('YYYY-MM-DD'))}
           popperPlacement={this.props.placement || 'auto'}
@@ -19,8 +29,7 @@ class DateInput extends React.Component {
             <MaskedInput
               mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
               keepCharPositions
-              className="form-control form-control-lg react-datepicker-ignore-onclickoutside"
-              style={{ paddingLeft: '3.375rem' }}
+              className={`date-input__input react-datepicker-ignore-onclickoutside form-control form-control-lg ${this.props.isInvalid ? 'is-invalid' : ''}`}
             />
           }
         />
@@ -30,14 +39,16 @@ class DateInput extends React.Component {
 }
 
 DateInput.propTypes = {
-  name: PropTypes.string,
+  id: PropTypes.string,
   date: function(props) {
     if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
-      return new Error('Invalid prop `date` supplied to `DateInput`, `date` must be a string in the `YYYY-MM-DD` format.');
+      return new Error('Invalid prop `date` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
     }
   },
   onChange: PropTypes.func.isRequired,
   placement: PropTypes.oneOf(['top', 'bottom', 'left', 'right', 'auto']),
+  isInvalid: PropTypes.bool,
+  isClearable: PropTypes.bool,
 };
 
 export default DateInput;

@@ -56,7 +56,7 @@ class SymptomOnset extends React.Component {
               SYMPTOM ONSET
               <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
             </Form.Label>
-            <DateInput name="symptom_onset" date={this.state.symptom_onset} onChange={date => this.setState({ symptom_onset: date })} placement="bottom" />
+            <DateInput id="symptom_onset" date={this.state.symptom_onset} onChange={date => this.setState({ symptom_onset: date })} placement="bottom" />
           </Form.Group>
           <Form.Group as={Col} md="18" className="align-self-end pl-0">
             <Button className="btn-lg" onClick={() => this.handleSubmit('Are you sure you want to modify the symptom onset date?')}>

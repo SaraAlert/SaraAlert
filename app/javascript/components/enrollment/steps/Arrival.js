@@ -81,17 +81,22 @@ class Arrival extends React.Component {
                     value={this.state.current.patient.port_of_origin || ''}
                     onChange={this.handleChange}
                   />
+                  <Form.Control.Feedback className="d-block" type="invalid">
+                    {this.state.errors['port_of_origin']}
+                  </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="date_of_departure">
                   <Form.Label className="nav-input-label">DATE OF DEPARTURE{schema?.fields?.date_of_departure?._exclusive?.required && ' *'}</Form.Label>
                   <DateInput
-                    name="date_of_departure"
+                    id="date_of_departure"
                     date={this.state.current.patient.date_of_departure}
                     onChange={date => this.handleDateChange('date_of_departure', date)}
                     placement="bottom"
+                    isInvalid={!!this.state.errors['date_of_departure']}
+                    isClearable
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
-                    {this.state.errors['port_of_origin']}
+                    {this.state.errors['date_of_departure']}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
@@ -144,10 +149,12 @@ class Arrival extends React.Component {
                 <Form.Group as={Col} md="8" controlId="date_of_arrival">
                   <Form.Label className="nav-input-label">DATE OF ARRIVAL{schema?.fields?.date_of_arrival?._exclusive?.required && ' *'}</Form.Label>
                   <DateInput
-                    name="date_of_arrival"
+                    id="date_of_arrival"
                     date={this.state.current.patient.date_of_arrival}
                     onChange={date => this.handleDateChange('date_of_arrival', date)}
                     placement="bottom"
+                    isInvalid={!!this.state.errors['date_of_arrival']}
+                    isClearable
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_arrival']}

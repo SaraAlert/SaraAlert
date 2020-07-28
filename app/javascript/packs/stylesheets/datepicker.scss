@@ -1,0 +1,40 @@
+.date-input {
+  position: relative;
+}
+
+.date-input__calendar_icon {
+  z-index: 1;
+  position: absolute;
+  left: 1.25rem;
+  top: 0.75rem;
+  color: #495057;
+  font-size: 18pt;
+}
+
+.date-input__input {
+  padding-left: 3.375rem;
+}
+
+.date-input__clear-btn {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  padding: 0.8125rem 1rem !important;
+  color: #555;
+  font-size: 16pt;
+  outline: none;
+}
+
+.date-input__clear-btn-invalid {
+  z-index: 1;
+  position: absolute;
+  right: 1.5rem;
+  padding: 0.8125rem 1rem !important;
+  color: #555;
+  font-size: 16pt;
+  outline: none;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
