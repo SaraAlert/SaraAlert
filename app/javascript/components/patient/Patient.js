@@ -1,6 +1,7 @@
 import React from 'react';
-import { Col, Row, Button, Collapse, Card, Table } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Col, Row, Button, Collapse, Card, Table } from 'react-bootstrap';
+
 import ChangeHOH from '../subject/ChangeHOH';
 import MoveToHousehold from '../subject/MoveToHousehold';
 import RemoveFromHousehold from '../subject/RemoveFromHousehold';

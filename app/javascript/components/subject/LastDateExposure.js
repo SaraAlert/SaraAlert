@@ -1,6 +1,6 @@
 import React from 'react';
-import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 

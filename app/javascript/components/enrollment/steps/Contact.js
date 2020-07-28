@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
 import libphonenumber from 'google-libphonenumber';
+
 import InfoTooltip from '../../util/InfoTooltip';
 
 const PNF = libphonenumber.PhoneNumberFormat;

@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
-import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { BootstrapTable, TableHeaderColumn, InsertModalHeader, InsertModalFooter } from 'react-bootstrap-table';
+import 'react-bootstrap-table/dist/react-bootstrap-table.min.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ReleaseUpdate from './ReleaseUpdate';
 import { CSVLink } from 'react-csv';
+import axios from 'axios';
+
+import ReleaseUpdate from './ReleaseUpdate';
 
 class Admin extends React.Component {
   constructor(props) {

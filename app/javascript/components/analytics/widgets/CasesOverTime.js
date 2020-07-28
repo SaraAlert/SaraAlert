@@ -1,7 +1,7 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Card } from 'react-bootstrap';
 import { BarChart, Bar, ResponsiveContainer, CartesianGrid, Text, XAxis, YAxis, Tooltip } from 'recharts';
-import { PropTypes } from 'prop-types';
 
 class ReportingSummary extends React.Component {
   constructor(props) {

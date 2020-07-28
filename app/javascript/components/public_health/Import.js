@@ -1,7 +1,8 @@
 import React from 'react';
-import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
 import axios from 'axios';
+
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
 

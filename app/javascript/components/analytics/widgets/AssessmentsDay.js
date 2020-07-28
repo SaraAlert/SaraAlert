@@ -1,7 +1,7 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Card } from 'react-bootstrap';
 import { LineChart, ResponsiveContainer, XAxis, YAxis, Legend, CartesianGrid, Line, Tooltip } from 'recharts';
-import { PropTypes } from 'prop-types';
 
 class AssessmentsDay extends React.Component {
   constructor(props) {

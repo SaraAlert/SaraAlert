@@ -1,8 +1,5 @@
 import React from 'react';
-
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
-import moment from 'moment-timezone';
 import {
   Badge,
   Button,
@@ -22,10 +19,12 @@ import {
   Tooltip,
 } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
+import axios from 'axios';
+import moment from 'moment-timezone';
 
-import InfoTooltip from '../util/InfoTooltip';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
+import InfoTooltip from '../util/InfoTooltip';
 
 class PatientsTable extends React.Component {
   constructor(props) {
