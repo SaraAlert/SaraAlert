@@ -15,6 +15,6 @@ class ProduceAssessmentJob < ApplicationJob
       patient_submission_token: assessment['patient_submission_token']
     }
     # report.except!(:reported_symptoms_array) if report[:reported_symptoms_array].blank?
-    $redis.publish 'reports', report.to_json
+    Rails.application.config.redis.publish 'reports', report.to_json
   end
 end
