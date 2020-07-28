@@ -44,7 +44,7 @@ class Jurisdiction < ApplicationRecord
            .where(jurisdiction_id: subtree_ids + [id])
   end
 
-  # The threadhold_hash is a way for an assessment to reference the set of symptoms and expected values that
+  # The threshold_hash is a way for an assessment to reference the set of symptoms and expected values that
   # are associated with the assessment
   # It is better to call hierarchical_symptomatic_condition.threshold_condition_hash because it guarentees that
   # the threshold condtition that this hash references _actually_ exists
