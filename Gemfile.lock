@@ -137,6 +137,8 @@ GEM
       railties (>= 5.0.0)
     faker (2.13.0)
       i18n (>= 1.6, < 2)
+    fakeredis (0.8.0)
+      redis (~> 4.1)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.13.1)
@@ -386,6 +388,7 @@ DEPENDENCIES
   doorkeeper
   factory_bot_rails
   faker
+  fakeredis
   fhir_models
   gemsurance
   jbuilder (~> 2.7)
