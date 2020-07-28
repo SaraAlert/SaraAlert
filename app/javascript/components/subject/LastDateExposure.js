@@ -1,19 +1,18 @@
 import React from 'react';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import DatePicker from 'react-datepicker';
-import MaskedInput from 'react-text-mask';
-import axios from 'axios';
-import moment from 'moment';
 import _ from 'lodash';
-import reportError from '../util/ReportError';
+import axios from 'axios';
+
+import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
+import reportError from '../util/ReportError';
 
 class LastDateExposure extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      last_date_of_exposure: moment(this.props.patient.last_date_of_exposure, 'YYYY-MM-DD').toDate(),
+      last_date_of_exposure: this.props.patient.last_date_of_exposure,
       continuous_exposure: !!this.props.patient.continuous_exposure,
       loading: false,
       apply_to_group: false, // Flag to apply a change to all members
@@ -41,7 +40,7 @@ class LastDateExposure extends React.Component {
 
   closeExposureDateModal() {
     this.setState({
-      last_date_of_exposure: moment(this.props.patient.last_date_of_exposure, 'YYYY-MM-DD').toDate(),
+      last_date_of_exposure: this.props.patient.last_date_of_exposure,
       showExposureDateModal: false,
       apply_to_group: false,
       apply_to_group_cm_only: false,
@@ -49,7 +48,7 @@ class LastDateExposure extends React.Component {
   }
 
   handleDateChange(date) {
-    if (date && moment(date).format('YYYY-MM-DD') !== this.props.patient.last_date_of_exposure) {
+    if (date && date !== this.props.patient.last_date_of_exposure) {
       this.setState({
         last_date_of_exposure: date,
         showExposureDateModal: true,
@@ -153,9 +152,7 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the last date of exposure to ${moment(this.state.last_date_of_exposure).format(
-              'MM/DD/YYYY'
-            )}? This will reset the continuous monitoring status for this monitoree.`,
+            `Are you sure you want to modify the last date of exposure to ${this.state.last_date_of_exposure}? This will reset the continuous monitoring status for this monitoree.`,
             this.closeExposureDateModal,
             () => this.submit(true)
           )}
@@ -173,25 +170,7 @@ class LastDateExposure extends React.Component {
           <Col lg="10" md="12" sm="24">
             <Row>
               <Col>
-                <div>
-                  <i
-                    className="fas fa-calendar"
-                    style={{ zIndex: '1', position: 'absolute', left: '2rem', top: '0.75rem', color: '#495057', fontSize: '18pt' }}></i>
-                  <DatePicker
-                    selected={this.state.last_date_of_exposure}
-                    onChange={this.handleDateChange}
-                    popperPlacement="top"
-                    placeholderText="mm/dd/yyyy"
-                    customInput={
-                      <MaskedInput
-                        mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
-                        keepCharPositions
-                        className="form-control form-control-lg react-datepicker-ignore-onclickoutside"
-                        style={{ paddingLeft: '3.375rem' }}
-                      />
-                    }
-                  />
-                </div>
+                <DateInput name="last_date_of_exposure" date={this.state.last_date_of_exposure} onChange={this.handleDateChange} placement="top" />
               </Col>
             </Row>
             <Row>

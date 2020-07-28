@@ -7,6 +7,8 @@ SimpleCov.command_name 'TestCase'
 class ActiveSupport::TestCase
   include FactoryBot::Syntax::Methods
 
+  fixtures :all
+
   def setup
     create(:enroller)
     create(:public_health)

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import 'react-dates/initialize';
-import { SingleDatePicker } from 'react-dates';
-import moment from 'moment-timezone';
+import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
+import moment from 'moment-timezone';
 import Select from 'react-select';
+
+import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
 import supportedLanguages from '../../../data/supportedLanguages.json';
 
@@ -284,19 +284,11 @@ class Identification extends React.Component {
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="auto" controlId="date_of_birth">
                   <Form.Label className="nav-input-label">DATE OF BIRTH{schema?.fields?.date_of_birth?._exclusive?.required && ' *'}</Form.Label>
-                  <SingleDatePicker
-                    date={this.state.current.patient.date_of_birth ? moment.utc(this.state.current.patient.date_of_birth, 'YYYY-MM-DD') : null}
-                    onDateChange={date => this.handleDateChange('date_of_birth', date)}
-                    focused={this.state.date_of_birth_focused}
-                    onFocusChange={({ focused }) => this.setState({ date_of_birth_focused: focused })}
-                    id="date_of_birth"
-                    showDefaultInputIcon
-                    placeholder="mm/dd/yyyy"
-                    openDirection="down"
-                    numberOfMonths={1}
-                    hideKeyboardShortcutsPanel
-                    isOutsideRange={() => false}
-                    block
+                  <DateInput
+                    name="date_of_birth"
+                    date={this.state.current.patient.date_of_birth}
+                    onChange={date => this.handleDateChange('date_of_birth', date)}
+                    placement="bottom"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_birth']}

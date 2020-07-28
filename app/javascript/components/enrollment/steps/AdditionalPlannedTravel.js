@@ -1,12 +1,11 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Card, Button, Form, Col } from 'react-bootstrap';
+import * as yup from 'yup';
+
+import DateInput from '../../util/DateInput';
 import { countryOptions } from '../../../data/countryOptions';
 import { stateOptions } from '../../../data/stateOptions';
-import { PropTypes } from 'prop-types';
-import 'react-dates/initialize';
-import { SingleDatePicker } from 'react-dates';
-import moment from 'moment';
-import * as yup from 'yup';
 
 class AdditionalPlannedTravel extends React.Component {
   constructor(props) {
@@ -177,24 +176,11 @@ class AdditionalPlannedTravel extends React.Component {
                   <Form.Label className="nav-input-label">
                     START DATE{schema?.fields?.additional_planned_travel_start_date?._exclusive?.required && ' *'}
                   </Form.Label>
-                  <SingleDatePicker
-                    date={
-                      this.state.current.patient.additional_planned_travel_start_date
-                        ? moment.utc(this.state.current.patient.additional_planned_travel_start_date, 'YYYY-MM-DD')
-                        : null
-                    }
-                    onDateChange={date => this.handleDateChange('additional_planned_travel_start_date', date)}
-                    focused={this.state.additional_planned_travel_start_date_focused}
-                    onFocusChange={({ focused }) => this.setState({ additional_planned_travel_start_date_focused: focused })}
-                    id="additional_planned_travel_start_date"
-                    showDefaultInputIcon
-                    placeholder="mm/dd/yyyy"
-                    openDirection="down"
-                    numberOfMonths={1}
-                    hideKeyboardShortcutsPanel
-                    isOutsideRange={() => false}
-                    showClearDate
-                    block
+                  <DateInput
+                    name="additional_planned_travel_start_date"
+                    date={this.state.current.patient.additional_planned_travel_start_date}
+                    onChange={date => this.handleDateChange('additional_planned_travel_start_date', date)}
+                    placement="bottom"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_start_date']}
@@ -204,24 +190,11 @@ class AdditionalPlannedTravel extends React.Component {
                   <Form.Label className="nav-input-label">
                     END DATE{schema?.fields?.additional_planned_travel_end_date?._exclusive?.required && ' *'}
                   </Form.Label>
-                  <SingleDatePicker
-                    date={
-                      this.state.current.patient.additional_planned_travel_end_date
-                        ? moment.utc(this.state.current.patient.additional_planned_travel_end_date, 'YYYY-MM-DD')
-                        : null
-                    }
-                    onDateChange={date => this.handleDateChange('additional_planned_travel_end_date', date)}
-                    focused={this.state.additional_planned_travel_end_date_focused}
-                    onFocusChange={({ focused }) => this.setState({ additional_planned_travel_end_date_focused: focused })}
-                    id="additional_planned_travel_end_date"
-                    showDefaultInputIcon
-                    placeholder="mm/dd/yyyy"
-                    openDirection="down"
-                    numberOfMonths={1}
-                    hideKeyboardShortcutsPanel
-                    isOutsideRange={() => false}
-                    showClearDate
-                    block
+                  <DateInput
+                    name="additional_planned_travel_end_date"
+                    date={this.state.current.patient.additional_planned_travel_end_date}
+                    onChange={date => this.handleDateChange('additional_planned_travel_end_date', date)}
+                    placement="bottom"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_end_date']}

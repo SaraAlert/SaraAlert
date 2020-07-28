@@ -1,10 +1,9 @@
 import React from 'react';
-import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import 'react-dates/initialize';
-import { SingleDatePicker } from 'react-dates';
-import moment from 'moment';
+import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
+
+import DateInput from '../../util/DateInput';
 
 class Arrival extends React.Component {
   constructor(props) {
@@ -85,20 +84,11 @@ class Arrival extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="date_of_departure">
                   <Form.Label className="nav-input-label">DATE OF DEPARTURE{schema?.fields?.date_of_departure?._exclusive?.required && ' *'}</Form.Label>
-                  <SingleDatePicker
-                    date={this.state.current.patient.date_of_departure ? moment.utc(this.state.current.patient.date_of_departure, 'YYYY-MM-DD') : null}
-                    onDateChange={date => this.handleDateChange('date_of_departure', date)}
-                    focused={this.state.date_of_departure_focused}
-                    onFocusChange={({ focused }) => this.setState({ date_of_departure_focused: focused })}
-                    id="date_of_departure"
-                    showDefaultInputIcon
-                    placeholder="mm/dd/yyyy"
-                    openDirection="down"
-                    numberOfMonths={1}
-                    hideKeyboardShortcutsPanel
-                    isOutsideRange={() => false}
-                    showClearDate
-                    block
+                  <DateInput
+                    name="date_of_departure"
+                    date={this.state.current.patient.date_of_departure}
+                    onChange={date => this.handleDateChange('date_of_departure', date)}
+                    placement="bottom"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['port_of_origin']}
@@ -153,20 +143,11 @@ class Arrival extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} md="8" controlId="date_of_arrival">
                   <Form.Label className="nav-input-label">DATE OF ARRIVAL{schema?.fields?.date_of_arrival?._exclusive?.required && ' *'}</Form.Label>
-                  <SingleDatePicker
-                    date={this.state.current.patient.date_of_arrival ? moment.utc(this.state.current.patient.date_of_arrival, 'YYYY-MM-DD') : null}
-                    onDateChange={date => this.handleDateChange('date_of_arrival', date)}
-                    focused={this.state.date_of_arrival_focused}
-                    onFocusChange={({ focused }) => this.setState({ date_of_arrival_focused: focused })}
-                    id="date_of_arrival"
-                    showDefaultInputIcon
-                    placeholder="mm/dd/yyyy"
-                    openDirection="down"
-                    numberOfMonths={1}
-                    hideKeyboardShortcutsPanel
-                    isOutsideRange={() => false}
-                    showClearDate
-                    block
+                  <DateInput
+                    name="date_of_arrival"
+                    date={this.state.current.patient.date_of_arrival}
+                    onChange={date => this.handleDateChange('date_of_arrival', date)}
+                    placement="bottom"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_arrival']}

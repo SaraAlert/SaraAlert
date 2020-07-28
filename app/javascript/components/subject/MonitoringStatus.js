@@ -1,14 +1,14 @@
 import React from 'react';
-import { Form, Row, Col, Button, Modal, Tooltip } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import 'react-dates/initialize';
-import { SingleDatePicker } from 'react-dates';
+import { Form, Row, Col, Button, Modal, Tooltip } from 'react-bootstrap';
+import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
-import _ from 'lodash';
+
 import CaseStatus from './CaseStatus';
-import reportError from '../util/ReportError';
+import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
+import reportError from '../util/ReportError';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -337,18 +337,11 @@ class MonitoringStatus extends React.Component {
           {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && this.state.apply_to_group_cm_only && (
             <Form.Group>
               <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
-              <SingleDatePicker
-                date={moment.utc(this.state.apply_to_group_cm_only_date, 'YYYY-MM-DD')}
-                onDateChange={this.openExposureDateModal}
-                focused={this.state.apply_to_group_cm_only_date_focused}
-                onFocusChange={({ focused }) => this.setState({ apply_to_group_cm_only_date_focused: focused })}
-                id="apply_to_group_cm_only_date"
-                showDefaultInputIcon
-                placeholder="mm/dd/yyyy"
-                openDirection="up"
-                numberOfMonths={1}
-                hideKeyboardShortcutsPanel
-                isOutsideRange={() => false}
+              <DateInput
+                name="apply_to_group_cm_only_date"
+                date={this.state.apply_to_group_cm_only_date}
+                onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
+                placement="bottom"
               />
             </Form.Group>
           )}

@@ -1,13 +1,12 @@
 import React from 'react';
-import { Form, Row, Col, Button } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import 'react-dates/initialize';
-import { SingleDatePicker } from 'react-dates';
+import { Form, Row, Col, Button } from 'react-bootstrap';
 import axios from 'axios';
-import moment from 'moment';
+
 import confirmDialog from '../util/ConfirmDialog';
-import reportError from '../util/ReportError';
+import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
+import reportError from '../util/ReportError';
 
 class SymptomOnset extends React.Component {
   constructor(props) {
@@ -57,20 +56,7 @@ class SymptomOnset extends React.Component {
               SYMPTOM ONSET
               <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
             </Form.Label>
-            <SingleDatePicker
-              date={this.state.symptom_onset ? moment.utc(this.state.symptom_onset, 'YYYY-MM-DD') : null}
-              onDateChange={date => this.setState({ symptom_onset: date })}
-              focused={this.state.symptom_onset_focused}
-              onFocusChange={({ focused }) => this.setState({ symptom_onset_focused: focused })}
-              id="symptom_onset"
-              showDefaultInputIcon
-              placeholder="mm/dd/yyyy"
-              openDirection="up"
-              numberOfMonths={1}
-              hideKeyboardShortcutsPanel
-              isOutsideRange={() => false}
-              showClearDate
-            />
+            <DateInput name="symptom_onset" date={this.state.symptom_onset} onChange={date => this.setState({ symptom_onset: date })} placement="bottom" />
           </Form.Group>
           <Form.Group as={Col} md="18" className="align-self-end pl-0">
             <Button className="btn-lg" onClick={() => this.handleSubmit('Are you sure you want to modify the symptom onset date?')}>

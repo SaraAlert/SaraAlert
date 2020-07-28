@@ -1,14 +1,13 @@
 import React from 'react';
-import { Card, Button, Form, Col } from 'react-bootstrap';
-import { countryOptions } from '../../../data/countryOptions';
 import { PropTypes } from 'prop-types';
-import 'react-dates/initialize';
-import { SingleDatePicker } from 'react-dates';
-import axios from 'axios';
-import moment from 'moment';
+import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
+import axios from 'axios';
+
 import confirmDialog from '../../util/ConfirmDialog';
+import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
+import { countryOptions } from '../../../data/countryOptions';
 
 class Exposure extends React.Component {
   constructor(props) {
@@ -144,20 +143,11 @@ class Exposure extends React.Component {
         <Form.Row>
           <Form.Group as={Col} md="7" controlId="symptom_onset">
             <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
-            <SingleDatePicker
-              date={this.state.current.patient.symptom_onset ? moment.utc(this.state.current.patient.symptom_onset, 'YYYY-MM-DD') : null}
-              onDateChange={date => this.handleDateChange('symptom_onset', date)}
-              focused={this.state.symptom_onset_focused}
-              onFocusChange={({ focused }) => this.setState({ symptom_onset_focused: focused })}
-              id="symptom_onset"
-              showDefaultInputIcon
-              placeholder="mm/dd/yyyy"
-              openDirection="down"
-              numberOfMonths={1}
-              hideKeyboardShortcutsPanel
-              isOutsideRange={() => false}
-              showClearDate
-              block
+            <DateInput
+              name="symptom_onset"
+              date={this.state.current.patient.symptom_onset}
+              onChange={date => this.handleDateChange('symptom_onset', date)}
+              placement="bottom"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['symptom_onset']}
@@ -212,19 +202,11 @@ class Exposure extends React.Component {
               LAST DATE OF EXPOSURE{this.schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
             </Form.Label>
-            <SingleDatePicker
-              date={this.state.current.patient.last_date_of_exposure ? moment.utc(this.state.current.patient.last_date_of_exposure, 'YYYY-MM-DD') : null}
-              onDateChange={date => this.handleDateChange('last_date_of_exposure', date)}
-              focused={this.state.last_date_of_exposure_focused}
-              onFocusChange={({ focused }) => this.setState({ last_date_of_exposure_focused: focused })}
-              id="last_date_of_exposure"
-              showDefaultInputIcon
-              placeholder="mm/dd/yyyy"
-              openDirection="down"
-              numberOfMonths={1}
-              hideKeyboardShortcutsPanel
-              isOutsideRange={() => false}
-              block
+            <DateInput
+              name="last_date_of_exposure"
+              date={this.state.current.patient.last_date_of_exposure}
+              onChange={date => this.handleDateChange('last_date_of_exposure', date)}
+              placement="bottom"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['last_date_of_exposure']}
