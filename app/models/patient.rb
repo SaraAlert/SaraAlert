@@ -510,8 +510,6 @@ class Patient < ApplicationRecord
     elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && email.present?
       PatientMailer.assessment_email(self).deliver_later
     end
-
-    id # Return ID if we reached this point, to mark as sent later in the send job
   end
 
   def calc_current_age
