@@ -305,6 +305,7 @@ class Identification extends React.Component {
                     className="form-square"
                     value={this.state.current.patient.age || ''}
                     onChange={this.handleChange}
+                    readOnly
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['age']}

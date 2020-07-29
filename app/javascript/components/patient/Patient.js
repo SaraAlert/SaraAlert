@@ -12,6 +12,11 @@ class Patient extends React.Component {
     super(props);
   }
 
+  displayPhoneNumber(phone) {
+    const match = phone.replace('+1', '').match(/^(\d{3})(\d{3})(\d{4})$/);
+    return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
+  }
+
   render() {
     if (!this.props.details) {
       return <React.Fragment>No monitoree details to show.</React.Fragment>;
@@ -197,7 +202,9 @@ class Patient extends React.Component {
             <Row>
               <Col className="text-truncate">
                 <span className="font-weight-normal">Phone:</span>{' '}
-                <span className="font-weight-light">{this.props.details.primary_telephone && `${this.props.details.primary_telephone}`}</span>
+                <span className="font-weight-light">
+                  {this.props.details.primary_telephone && `${this.displayPhoneNumber(this.props.details.primary_telephone)}`}
+                </span>
                 <br />
                 <span className="font-weight-normal">Preferred Contact Time:</span>{' '}
                 <span className="font-weight-light">{this.props.details.preferred_contact_time && `${this.props.details.preferred_contact_time}`}</span>

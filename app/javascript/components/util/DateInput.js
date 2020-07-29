@@ -51,7 +51,7 @@ class DateInput extends React.Component {
             <MaskedInput
               mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
               keepCharPositions
-              className={`date-input__input react-datepicker-ignore-onclickoutside form-control form-control-lg ${this.props.isInvalid ? 'is-invalid' : ''}`}
+              className={`date-input__input react-datepicker-ignore-onclickoutside form-control form-control-lg${this.props.isInvalid ? ' is-invalid' : ''}`}
             />
           }
         />
