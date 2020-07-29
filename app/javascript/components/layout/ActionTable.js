@@ -30,8 +30,8 @@ class ActionTable extends React.Component {
     // Store event target value in string before calling async method (otherwise event will be nullified by the time it's called).
     const value = event.target.value;
     this.setState(
-      prevState => {
-        const pagination = { ...prevState.pagination, entries: value };
+      state => {
+        const pagination = { ...state.pagination, entries: value };
         return { pagination };
       },
       () => {
@@ -46,12 +46,16 @@ class ActionTable extends React.Component {
    * @param {*} field
    */
   handleSortClick = field => {
-    this.setState(prevState => {
-      const sortDirection = prevState.tableQuery.sortDirection === 'asc' ? 'desc' : 'asc';
-      const tableQuery = { ...prevState.tableQuery, sortDirection, orderBy: field };
-      return { tableQuery };
-    });
-    this.props.handleTableUpdate({ ...this.state.tableQuery });
+    this.setState(
+      state => {
+        const sortDirection = state.tableQuery.sortDirection === 'asc' ? 'desc' : 'asc';
+        const tableQuery = { ...state.tableQuery, sortDirection, orderBy: field };
+        return { tableQuery };
+      },
+      () => {
+        this.props.handleTableUpdate({ ...this.state.tableQuery });
+      }
+    );
   };
 
   /**
@@ -61,6 +65,7 @@ class ActionTable extends React.Component {
    */
   handleCheckboxChange = (e, row) => {
     const checked = e.target.checked;
+    console.log('checkbox change:', checked);
 
     // If row is selected and wasn't previously, add it to the selected rows.
     if (checked && !this.props.selectedRows.includes(row)) {
@@ -182,11 +187,6 @@ class ActionTable extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.rowData.length === 0 && (
-              <tr className="odd">
-                <td className="text-center">No data available in table.</td>
-              </tr>
-            )}
             {this.props.rowData.map((data, row) => {
               return (
                 <tr key={data.id}>
@@ -213,6 +213,7 @@ class ActionTable extends React.Component {
             })}
           </tbody>
         </Table>
+        {this.props.rowData.length === 0 && <div className="text-center">No data available in table.</div>}
         <div className="d-flex justify-content-between">
           <Form inline className="align-middle">
             <Row>

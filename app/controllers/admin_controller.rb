@@ -9,7 +9,7 @@ class AdminController < ApplicationController
   end
 
   def users
-    permitted_params = params.permit(:search, :entries, :page, :order_by, :sort_direction)
+    permitted_params = params.permit(:search, :entries, :page, :orderBy, :sortDirection)
 
     # Validate search param
     search = permitted_params[:search]
@@ -20,15 +20,15 @@ class AdminController < ApplicationController
     return head :bad_request unless entries >= 0 && page >= 0
 
     # Validate sort params
-    order_by = permitted_params[:order_by]
-    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction role].include?(order_by)
+    order_by = permitted_params[:orderBy]
+    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path].include?(order_by)
 
-    sort_direction = permitted_params[:sort_direction]
+    sort_direction = permitted_params[:sortDirection]
     return head :bad_request unless sort_direction.nil? || sort_direction.blank? || %w[asc desc].include?(sort_direction)
     return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
 
     # Get all users within the current user's jurisdiction
-    users = User.all.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
+    users = User.all.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, jurisdictions.path')
 
     # Filter by search text
     users = filter(users, search)
@@ -47,11 +47,11 @@ class AdminController < ApplicationController
       details = {
         id: user.id,
         email: user.email,
-        jurisdictionPath: user.jurisdiction_path.join(', ') || [],
+        jurisdiction_path: user.path || '',
         role: user.roles[0].name || '',
-        isLocked: !user.locked_at.nil? || false,
-        isAPIEnabled: user[:api_enabled] || false,
-        is2FAEnabled: user.authy_id.nil? || false
+        is_locked: !user.locked_at.nil? || false,
+        is_API_enabled: user[:api_enabled] || false,
+        is_2FA_enabled: user.authy_id.nil? || false
       }
 
       linelist << details
@@ -64,17 +64,16 @@ class AdminController < ApplicationController
     return users if order_by.nil? || order_by.empty? || sort_direction.nil? || sort_direction.blank?
 
     # Satisfy brakeman with additional sanitation logic
-    dir = direction == 'asc' ? 'asc' : 'desc'
+    dir = sort_direction == 'asc' ? 'asc' : 'desc'
 
+    puts "order by: #{order_by}"
     case order_by
     when 'id'
       users = users.order(id: dir)
     when 'email'
       users = users.order(email: dir)
-    when 'jurisdiction'
-      users = users.order(jurisdiction_path: dir)
-    when 'role'
-      users = users.order(role: dir)
+    when 'jurisdiction_path'
+      users = users.order(path: dir)
     end
 
     users
@@ -83,8 +82,9 @@ class AdminController < ApplicationController
   def filter(users, search)
     return users if search.nil? || search.blank?
 
-    users.where('id like ?', "#{search}%").or(
-      users.where('email like ?', "#{search}%"))
+    users.where('users.id like ?', "#{search}%").or(
+      users.where('users.email like ?', "#{search}%")
+    )
   end
 
   def create_user
@@ -182,15 +182,18 @@ class AdminController < ApplicationController
   def reset_2fa
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:email)
-    email = permitted_params[:email]
-    user = User.find_by(email: email)
+    permitted_params = params[:admin].permit({ ids: [] })
+    ids = permitted_params[:ids]
+    users = User.where(id: ids)
     cur_jur = current_user.jurisdiction
-    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
+    users.each do |user|
+      #TODO: do we want this to just move on here or should we initially check that all pass this validation?
+      redirect_to(root_url) && next unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
-    user.authy_id = nil
-    user.authy_enabled = false
-    user.save!
+      user.authy_id = nil
+      user.authy_enabled = false
+      user.save!
+    end
   end
 
   def unlock_user
@@ -208,29 +211,32 @@ class AdminController < ApplicationController
   def reset_password
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:email)
-    email = permitted_params[:email]
-    user = User.find_by(email: email)
+    permitted_params = params[:admin].permit({ ids: [] })
+    ids = permitted_params[:ids]
+    users = User.where(id: ids)
     cur_jur = current_user.jurisdiction
-    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
+    users.each do |user|
+      #TODO: do we want this to just move on here or should we initially check that all pass this validation?
+      redirect_to(root_url) && next unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
-    user.unlock_access!
-    password = User.rand_gen
-    user.password = password
-    user.force_password_change = true
-    user.save!
-    UserMailer.welcome_email(user, password).deliver_later
+      user.unlock_access!
+      password = User.rand_gen
+      user.password = password
+      user.force_password_change = true
+      user.save!
+      UserMailer.welcome_email(user, password).deliver_later
+    end
   end
 
   def send_email
     redirect_to(root_url) && return unless current_user.can_send_admin_emails?
 
-    permitted_params = params.permit(:comment)
+    permitted_params = params[:admin].permit(:comment, { ids: [] })
+    ids = permitted_params[:ids]
     comment = permitted_params[:comment]
-
     return if comment.blank?
 
-    User.all.find_each(batch_size: 5) do |user|
+    User.where(id: ids).each do |user|
       UserMailer.admin_message_email(user, comment).deliver_later
     end
   end

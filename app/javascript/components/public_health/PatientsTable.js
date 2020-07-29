@@ -454,7 +454,8 @@ class PatientsTable extends React.Component {
                 isLoading={this.state.table.loading}
                 page={this.state.query.page}
                 handlePageUpdate={this.handlePageUpdate}
-                selectedRows={this.state.selectedPatients}></ActionTable>
+                selectedRows={this.state.selectedPatients}
+              />
             </Card.Body>
           </Card>
         </TabContent>
