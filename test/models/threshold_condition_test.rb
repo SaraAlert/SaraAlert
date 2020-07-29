@@ -33,8 +33,10 @@ class ThresholdConditionTest < ActiveSupport::TestCase
     symptoms.each_with_index do |symptom, idx|
       if symptom.type == 'BoolSymptom'
         assert_not_equal(threshold_condition.symptoms[idx].value, symptom.value)
+      elsif symptom.type == 'IntegerSymptom'
+        assert_equal(2_147_483_647, symptom.value)
       else
-        assert_equal(0, symptom.value)
+        assert_equal(3.402823466e+38, symptom.value)
       end
       assert_equal(threshold_condition.symptoms[idx].name, symptom.name)
       assert_equal(threshold_condition.symptoms[idx].label, symptom.label)

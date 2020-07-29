@@ -14,6 +14,8 @@ class IntegerSymptom < Symptom
     self.int_value = value
   end
 
+  # Set the symptom value to the max for this data type if the threshold operator includes
+  # 'less than' such that the symptom is never counted as symptomatic by Assessment#symptom_passes_threshold
   def negate
     self.int_value = if threshold_operator&.downcase&.include?('less')
                        # Max Integer for database column - ActiveRecord errors on 648.
