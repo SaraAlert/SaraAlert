@@ -12,7 +12,7 @@ class Patient extends React.Component {
     super(props);
   }
 
-  displayPhoneNumber(phone) {
+  formatPhoneNumber(phone) {
     const match = phone.replace('+1', '').match(/^(\d{3})(\d{3})(\d{4})$/);
     return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
   }
@@ -203,7 +203,7 @@ class Patient extends React.Component {
               <Col className="text-truncate">
                 <span className="font-weight-normal">Phone:</span>{' '}
                 <span className="font-weight-light">
-                  {this.props.details.primary_telephone && `${this.displayPhoneNumber(this.props.details.primary_telephone)}`}
+                  {this.props.details.primary_telephone && `${this.formatPhoneNumber(this.props.details.primary_telephone)}`}
                 </span>
                 <br />
                 <span className="font-weight-normal">Preferred Contact Time:</span>{' '}

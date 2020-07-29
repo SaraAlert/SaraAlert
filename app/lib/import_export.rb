@@ -434,6 +434,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     patients_jurisdiction_names
   end
 
+  # Converts phone number from e164 to CDC recommended format
+  def format_phone_number(phone)
+    Phonelib.parse(phone).national(false)&.insert(6, '-')&.insert(3, '-')
+  end
+
   # Linelist fields obtainable without any joins
   def incomplete_linelists_for_export(patients)
     linelists = {}
@@ -512,9 +517,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         foreign_monitored_address_zip: patient[:foreign_monitored_address_zip] || '',
         foreign_monitored_address_county: patient[:foreign_monitored_address_county] || '',
         preferred_contact_method: patient[:preferred_contact_method] || '',
-        primary_telephone: patient[:primary_telephone] || '',
+        primary_telephone: patient[:primary_telephone] ? format_phone_number(patient[:primary_telephone]) : '',
         primary_telephone_type: patient[:primary_telephone_type] || '',
-        secondary_telephone: patient[:secondary_telephone] || '',
+        secondary_telephone: patient[:secondary_telephone] ? format_phone_number(patient[:secondary_telephone]) : '',
         secondary_telephone_type: patient[:secondary_telephone_type] || '',
         preferred_contact_time: patient[:preferred_contact_time] || '',
         email: patient[:email] || '',
