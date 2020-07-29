@@ -1,8 +1,3 @@
-Please note that Apache 2.0 does not allow the use of trademark.  Sara Alert™ is a MITRE trademark.
-If you are interested in using the trademark in your work, please contact tto@mitre.org.
-
----
-
                               Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
@@ -193,3 +188,9 @@ If you are interested in using the trademark in your work, please contact tto@mi
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+---
+
+Please note that Apache 2.0 does not allow the use of trademark.  Sara Alert™ is a MITRE trademark.
+If you are interested in using the trademark in your work, please contact tto@mitre.org.
+
