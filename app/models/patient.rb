@@ -428,8 +428,8 @@ class Patient < ApplicationRecord
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
     return 'Continuous Exposure' if continuous_exposure
-    return (last_date_of_exposure + (ADMIN_OPTIONS['monitoring_period_days'] + 1).days)&.to_s if last_date_of_exposure.present?
-    return (created_at + (ADMIN_OPTIONS['monitoring_period_days'] + 1).days)&.to_s if created_at.present?
+    return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
+    return (created_at + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end
 
   # Date when patient is expected to be purged
