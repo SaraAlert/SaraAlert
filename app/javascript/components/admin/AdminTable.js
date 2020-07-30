@@ -32,11 +32,13 @@ class AdminTable extends React.Component {
       query: {
         page: 0,
         search: '',
+        entries: 25,
       },
       actions: {
         resetPassword: { name: 'Reset Password', title: 'Reset Password(s)' },
         resetTwoFactorAuth: { name: 'Reset 2FA', title: 'Reset Two-Factor Authentication' },
       },
+      entryOptions: [10, 15, 25, 50, 100],
       showEditUserModal: false,
       showAddUserModal: false,
       showEmailModal: false,
@@ -326,6 +328,27 @@ class AdminTable extends React.Component {
   };
 
   /**
+   * Called when the number of entries to be shown on a page changes.
+   * Updates state and then calls table update handler.
+   * @param {SyntheticEvent} event - Event when num entries changes
+   */
+  handleEntriesChange = event => {
+    const value = event.target.value;
+    console.log(value);
+    console.log(typeof value);
+    this.setState(
+      state => {
+        return {
+          query: { ...state.query, entries: value },
+        };
+      },
+      () => {
+        this.getTableData(this.state.query);
+      }
+    );
+  };
+
+  /**
    * Called when Export to CSV button is clicked.
    * Fetches all user data for export to CSV and then updates state which triggers the CSVLink
    * component to be clicked via ref.
@@ -344,9 +367,9 @@ class AdminTable extends React.Component {
         const csvData = response.data.linelist.map(userData => {
           return {
             ...userData,
-            isAPIEnabled: userData.isAPIEnabled.toString(),
-            is2FAEnabled: userData.is2FAEnabled.toString(),
-            isLocked: userData.isLocked.toString(),
+            is_API_enabled: userData.is_API_enabled.toString(),
+            is_2FA_enabled: userData.is_2FA_enabled.toString(),
+            is_locked: userData.is_locked.toString(),
           };
         });
         // If there's a valid response, update state accordingly
@@ -586,11 +609,14 @@ class AdminTable extends React.Component {
           }}
           handleSelect={this.handleSelect}
           handleEdit={this.handleEditClick}
+          handleEntriesChange={this.handleEntriesChange}
           isEditable={true}
           isLoading={this.state.isLoading}
           page={this.state.query.page}
           handlePageUpdate={this.handlePageUpdate}
           selectedRows={this.state.table.selectedRows}
+          entryOptions={this.state.entryOptions}
+          entries={this.state.query.entries}
         />
         <UserModal
           show={this.state.showEditUserModal || this.state.showAddUserModal}

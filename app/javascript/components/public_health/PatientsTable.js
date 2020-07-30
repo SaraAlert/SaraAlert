@@ -69,7 +69,9 @@ class PatientsTable extends React.Component {
         user: 'all',
         search: '',
         page: 0,
+        entries: 25,
       },
+      entryOptions: [10, 15, 25, 50, 100],
       cancelToken: axios.CancelToken.source(),
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
@@ -123,7 +125,28 @@ class PatientsTable extends React.Component {
   handlePageUpdate = page => {
     this.setState(
       state => {
-        return { query: { ...state.query, page: page.selected } };
+        return {
+          query: { ...state.query, page: page.selected },
+        };
+      },
+      () => {
+        this.updateTable(this.state.query);
+      }
+    );
+  };
+
+  /**
+   * Called when the number of entries to be shown on a page changes.
+   * Updates state and then calls table update handler.
+   * @param {SyntheticEvent} event - Event when num entries changes
+   */
+  handleEntriesChange = event => {
+    const value = event.target.value;
+    this.setState(
+      state => {
+        return {
+          query: { ...state.query, entries: value },
+        };
       },
       () => {
         this.updateTable(this.state.query);
@@ -444,11 +467,14 @@ class PatientsTable extends React.Component {
                 totalRows={this.state.table.totalRows}
                 handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
                 handleSelect={this.handleSelect}
+                handleEntriesChange={this.handleEntriesChange}
                 isEditable={false}
                 isLoading={this.state.table.loading}
                 page={this.state.query.page}
                 handlePageUpdate={this.handlePageUpdate}
                 selectedRows={this.state.selectedPatients}
+                entryOptions={this.state.entryOptions}
+                entries={this.state.query.entries}
               />
             </Card.Body>
           </Card>

@@ -9,36 +9,12 @@ class ActionTable extends React.Component {
     super(props);
     this.state = {
       selectAll: false,
-      // TODO: make these props?
-      pagination: {
-        entries: 25,
-        entryOptions: [10, 15, 25, 50, 100],
-      },
       tableQuery: {
         orderBy: '',
         sortDirection: '',
       },
     };
   }
-
-  /**
-   * Called when the number of entries to be shown on a page changes.
-   * Updates state and then calls table update handler.
-   * @param {SyntheticEvent} event - Change event on entries input.
-   */
-  handleNumEntriesChange = event => {
-    // Store event target value in string before calling async method (otherwise event will be nullified by the time it's called).
-    const value = event.target.value;
-    this.setState(
-      state => {
-        const pagination = { ...state.pagination, entries: value };
-        return { pagination };
-      },
-      () => {
-        this.props.handleTableUpdate({ ...this.state.tableQuery, entries: this.state.pagination.entries });
-      }
-    );
-  };
 
   /**
    * Called when a sorting button is clicked in a column header.
@@ -73,7 +49,7 @@ class ActionTable extends React.Component {
       this.props.handleSelect(selectedRows);
 
       // Update select all if all displayed rows are checked.
-      if (selectedRows >= this.state.pagination.entries) {
+      if (selectedRows >= this.props.entries) {
         this.setState({ selectAll: true });
       }
     } else {
@@ -182,7 +158,7 @@ class ActionTable extends React.Component {
                 <input
                   type="checkbox"
                   onChange={this.toggleSelectAll}
-                  checked={this.state.selectAll || this.props.selectedRows.length >= this.state.pagination.entries}></input>
+                  checked={this.state.selectAll || this.props.selectedRows.length >= this.props.entries}></input>
               </th>
             </tr>
           </thead>
@@ -225,8 +201,8 @@ class ActionTable extends React.Component {
                       <span className="ml-1">Show</span>
                     </InputGroup.Text>
                   </InputGroup.Prepend>
-                  <Form.Control as="select" size="md" name="entries" value={this.state.pagination.entries} onChange={this.handleNumEntriesChange}>
-                    {this.state.pagination.entryOptions.map(num => {
+                  <Form.Control as="select" size="md" name="entries" value={this.props.entries} onChange={this.props.handleEntriesChange}>
+                    {this.props.entryOptions.map(num => {
                       return (
                         <option key={num} value={num}>
                           {num}
@@ -243,7 +219,7 @@ class ActionTable extends React.Component {
           </Form>
           <ReactPaginate
             className=""
-            pageCount={Math.ceil(this.props.totalRows / this.state.pagination.entries)}
+            pageCount={Math.ceil(this.props.totalRows / this.props.entries)}
             pageRangeDisplayed={4}
             marginPagesDisplayed={1}
             initialPage={this.props.page}
@@ -260,7 +236,7 @@ class ActionTable extends React.Component {
             breakClassName="paginate_button page-item"
             pageLinkClassName="page-link text-primary"
             previousLinkClassName={this.props.page === 0 ? 'page-link' : 'page-link text-primary'}
-            nextLinkClassName={this.props.page === Math.ceil(this.props.totalRows / this.state.pagination.entries) - 1 ? 'page-link' : 'page-link text-primary'}
+            nextLinkClassName={this.props.page === Math.ceil(this.props.totalRows / this.props.entries) - 1 ? 'page-link' : 'page-link text-primary'}
             activeLinkClassName="page-link text-light"
             breakLinkClassName="page-link text-primary"
           />
@@ -279,10 +255,13 @@ ActionTable.propTypes = {
   handleTableUpdate: PropTypes.func,
   handleSelect: PropTypes.func,
   handlePageUpdate: PropTypes.func,
+  handleEntriesChange: PropTypes.func,
   actions: PropTypes.object,
   isLoading: PropTypes.bool,
   page: PropTypes.number,
   selectedRows: PropTypes.array,
+  entries: PropTypes.number,
+  entryOptions: PropTypes.array,
 };
 
 ActionTable.defaultProps = {
