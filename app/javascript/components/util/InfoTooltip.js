@@ -109,7 +109,7 @@ const TOOLTIP_TEXT = {
 
   symptomaticNonTestBased: (
     <div>
-      At least 10 days have passed since the symptom onset date and at least 72 hours have passed since the case last reported “Yes” for fever or use of
+      At least 10 days have passed since the symptom onset date and at least 24 hours have passed since the case last reported “Yes” for fever or use of
       fever-reducing medicine to the system. The system does not collect information on severity of symptoms. Public health will need to validate if other
       symptoms have improved.
     </div>

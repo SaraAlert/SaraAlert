@@ -19,7 +19,7 @@ every weekly_purge_warning_date.strftime("%A"), at: weekly_purge_warning_date.st
   runner "UserMailer.purge_notification.deliver_now"
 end
 
-every 1.hours do
+every 24.hours do
   runner "CacheAnalyticsJob.perform_now"
 end
 

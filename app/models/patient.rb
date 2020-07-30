@@ -316,25 +316,6 @@ class Patient < ApplicationRecord
          .distinct
   }
 
-  # Individuals not meeting review and are not reporting for a while (isolation workflow only)
-  scope :isolation_non_reporting_max, lambda {
-    where.not(id: Patient.unscoped.isolation_requiring_review)
-         .where(monitoring: true)
-         .where(purged: false)
-         .where(isolation: true)
-         .where(latest_assessment_at: nil)
-         .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-         .or(
-           where.not(id: Patient.unscoped.isolation_requiring_review)
-           .where(monitoring: true)
-           .where(purged: false)
-           .where(isolation: true)
-           .where('latest_assessment_at < ?', ADMIN_OPTIONS['isolation_non_reporting_max_days'].days.ago)
-           .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
-         )
-         .distinct
-  }
-
   # All individuals currently being monitored if true, all individuals otherwise
   scope :monitoring_active, lambda { |active_monitoring|
     where(monitoring: true) if active_monitoring
@@ -486,12 +467,12 @@ class Patient < ApplicationRecord
     end
 
     # Do not allow messages to go to household members
-    return unless responder.id == id
+    return unless responder_id == id
 
     # Return if closed, UNLESS there are still group members who need to be reported on
     return unless monitoring ||
-                  dependents.where(monitoring: true).count.positive? ||
                   continuous_exposure ||
+                  dependents.where(monitoring: true).count.positive? ||
                   dependents.where(continuous_exposure: true).count.positive?
 
     # If force is set, the preferred contact time will be ignored
@@ -529,8 +510,6 @@ class Patient < ApplicationRecord
     elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && email.present?
       PatientMailer.assessment_email(self).deliver_later
     end
-
-    update(last_assessment_reminder_sent: DateTime.now)
   end
 
   def calc_current_age

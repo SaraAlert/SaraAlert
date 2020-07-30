@@ -6,41 +6,46 @@ namespace :admin do
 
   desc "Import/Update Jurisdictions"
   task import_or_update_jurisdictions: :environment do
-    config_contents = YAML.load_file('config/sara/jurisdictions.yml')
+    ActiveRecord::Base.transaction do
+      config_contents = YAML.load_file('config/sara/jurisdictions.yml')
 
-    config_contents.each do |jur_name, jur_values|
-      parse_jurisdiction(nil, jur_name, jur_values)
+      config_contents.each do |jur_name, jur_values|
+        parse_jurisdiction(nil, jur_name, jur_values)
+      end
+
+      # Call hierarchical_symptomatic_condition on each jurisdiction
+      # Will pre-generate all possible thresholdConditions
+      Jurisdiction.all.each do |jur|
+        jur.hierarchical_symptomatic_condition
+      end
+
+      # Seed newly created jurisdictions with (empty) analytic cache entries
+      Rake::Task["analytics:cache_current_analytics"].reenable
+      Rake::Task["analytics:cache_current_analytics"].invoke
+      puts "\e[41mNOTICE: Make sure that this rake task has been run the exact same number of times with identical jurisdiction.yml files on the enrollment and assessment servers\e[0m"
+      puts "\e[41mThe following output on each of the servers should be EXACTLY EQUAL\e[0m"
+      combined_hash = ""
+      Jurisdiction.all.each do |jur|
+        theshold_conditions_edit_count = 0
+        jur.path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
+        puts jur.jurisdiction_path_string.ljust(80)  + "Edits: " + theshold_conditions_edit_count.to_s.ljust(5) + "Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
+        combined_hash += jur.jurisdiction_path_threshold_hash
+      end
+
+      unique_identifier_check = if Jurisdiction.where(unique_identifier: nil).count.zero?
+                                  "\e[42mChecking Jurisdictions for nil unique identifiers... no nil unique identifiers found, no further action is needed.\e[0m"
+                                else
+                                  "\e[41mChecking Jurisdictions for nil unique identifiers... nil unique identifiers found! This should be investigated as soon as possible.\e[0m"
+                                end
+      puts unique_identifier_check
+
+      final_hash = Digest::SHA256.hexdigest(combined_hash)
+      puts "\e[41mCompare the following hash as output by this task when run on the enrollment and assessment servers and make sure that the hashes are EXACTLY EQUAL\e[0m"
+      puts "\e[41m>>>>>>>>>>#{final_hash}<<<<<<<<<<\e[0m"
+      puts "Do the hashes on the enrollment and assessment servers match? (y/N)"
+      res = STDIN.getc
+      exit unless res.downcase == 'y'
     end
-
-    # Call hierarchical_symptomatic_condition on each jurisdiction
-    # Will pre-generate all possible thresholdConditions
-    Jurisdiction.all.each do |jur|
-      jur.hierarchical_symptomatic_condition
-    end
-
-    # Seed newly created jurisdictions with (empty) analytic cache entries
-    Rake::Task["analytics:cache_current_analytics"].reenable
-    Rake::Task["analytics:cache_current_analytics"].invoke
-    puts "\e[41mNOTICE: Make sure that this rake task has been run the exact same number of times with identical jurisdiction.yml files on the enrollment and assessment servers\e[0m"
-    puts "\e[41mThe following output on each of the servers should be EXACTLY EQUAL\e[0m"
-    combined_hash = ""
-    Jurisdiction.all.each do |jur|
-      theshold_conditions_edit_count = 0
-      jur.path&.map(&:threshold_conditions)&.each { |x| theshold_conditions_edit_count += x.count }
-      puts jur.jurisdiction_path_string.ljust(80)  + "Edits: " + theshold_conditions_edit_count.to_s.ljust(5) + "Hash: " + jur.jurisdiction_path_threshold_hash[0..6]
-      combined_hash += jur.jurisdiction_path_threshold_hash
-    end
-
-    unique_identifier_check = if Jurisdiction.where(unique_identifier: nil).count.zero?
-                                "\e[42mChecking Jurisdictions for nil unique identifiers... no nil unique identifiers found, no further action is needed.\e[0m"
-                              else
-                                "\e[41mChecking Jurisdictions for nil unique identifiers... nil unique identifiers found! This should be investigated as soon as possible.\e[0m"
-                              end
-    puts unique_identifier_check
-
-    final_hash = Digest::SHA256.hexdigest(combined_hash)
-    puts "\e[41mCompare the following hash as output by this task when run on the enrollment and assessment servers and make sure that the hashes are EXACTLY EQUAL\e[0m"
-    puts "\e[41m>>>>>>>>>>#{final_hash}<<<<<<<<<<\e[0m"
   end
 
   # This is useful in case the base/sample jurisdiction.yml is run on prod and the jurisdictions with generic names need to be removed
