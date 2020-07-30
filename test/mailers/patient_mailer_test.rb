@@ -178,9 +178,6 @@ class PatientMailerTest < ActionMailer::TestCase
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
 
-    first_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.weblink.intro2', locale: 'en')}"
-    second_contents = new_patient_assessment_jurisdiction_report_lang_url(dependent.submission_token, 'en', dependent.jurisdiction.unique_identifier[0, 32])
-
     # Cannot do the same expectation as previous tests because the expectation that any instance gets called with create is taken up by the first loop of sending
     # messages. So instead we count the amount of times create was called. Cannot do this with typical rspec methods because when you use any_instance_of the
     # expectation for number of calls applies to EVERY instance, not just any single instance. Instead we calculate based on our mock method.
