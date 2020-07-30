@@ -188,12 +188,6 @@ class PatientsTable extends React.Component {
     });
   };
 
-  //TODO: rename this or clean this up
-  handleTableUpdate = query => {
-    const fullQuery = { ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection };
-    this.updateTable(fullQuery);
-  };
-
   updateTable(query) {
     // cancel any previous unfinished requests to prevent race condition inconsistencies
     this.state.cancelToken.cancel();
@@ -448,7 +442,7 @@ class PatientsTable extends React.Component {
                 columnData={this.state.table.displayedColData}
                 rowData={this.state.table.rowData}
                 totalRows={this.state.table.totalRows}
-                handleTableUpdate={this.handleTableUpdate}
+                handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
                 handleSelect={this.handleSelect}
                 isEditable={false}
                 isLoading={this.state.table.loading}

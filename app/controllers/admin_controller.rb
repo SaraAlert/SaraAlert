@@ -28,7 +28,9 @@ class AdminController < ApplicationController
     return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
 
     # Get all users within the current user's jurisdiction
-    users = User.all.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, jurisdictions.path')
+    users = User.all.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
+      'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path '
+    )
 
     # Filter by search text
     users = filter(users, search)
@@ -51,7 +53,8 @@ class AdminController < ApplicationController
         role: user.roles[0].name || '',
         is_locked: !user.locked_at.nil? || false,
         is_API_enabled: user[:api_enabled] || false,
-        is_2FA_enabled: user.authy_id.nil? || false
+        is_2FA_enabled: user.authy_id.nil? || false,
+        num_failed_logins: user.failed_attempts
       }
 
       linelist << details
@@ -74,6 +77,8 @@ class AdminController < ApplicationController
       users = users.order(email: dir)
     when 'jurisdiction_path'
       users = users.order(path: dir)
+    when 'num_failed_logins'
+      users = users.order(failed_attempts: dir)
     end
 
     users
@@ -154,8 +159,6 @@ class AdminController < ApplicationController
     user.add_role role.to_sym
 
     user.update!(api_enabled: is_api_enabled)
-    puts "is_locked: #{is_locked}"
-    puts "locked at val: , #{user.locked_at.nil?}"
     if user.locked_at.nil? && is_locked
       puts "here"
       user.lock_access!
