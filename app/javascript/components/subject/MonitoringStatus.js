@@ -288,7 +288,19 @@ class MonitoringStatus extends React.Component {
           apply_to_group_cm_only_date: this.state.apply_to_group_cm_only_date,
         })
         .then(() => {
-          location.reload(true);
+          if (diffState.includes('jurisdiction_path')) {
+            const currentUserJurisdictionString = this.props.current_user.jurisdiction_path.join(', ');
+            // check if current_user has access to the changed jurisdiction
+            // if so, reload the page, if not, redirect to exposure or isolation dashboard
+            if (!this.state.jurisdiction_path.startsWith(currentUserJurisdictionString)) {
+              const pathEnd = this.state.isolation ? '/isolation' : '';
+              location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health' + pathEnd);
+            } else {
+              location.reload(true);
+            }
+          } else {
+            location.reload(true);
+          }
         })
         .catch(error => {
           reportError(error);
@@ -560,6 +572,7 @@ class MonitoringStatus extends React.Component {
 }
 
 MonitoringStatus.propTypes = {
+  current_user: PropTypes.object,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   jurisdictionPaths: PropTypes.object,
