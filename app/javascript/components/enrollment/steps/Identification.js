@@ -7,6 +7,11 @@ import Select from 'react-select';
 import InfoTooltip from '../../util/InfoTooltip';
 import supportedLanguages from '../../../data/supportedLanguages.json';
 
+const WORKFLOW_OPTIONS = [
+  { label: 'Exposure (contact)', value: 'exposure' },
+  { label: 'Isolation (case)', value: 'isolation' },
+];
+
 class Identification extends React.Component {
   constructor(props) {
     super(props);
@@ -59,6 +64,25 @@ class Identification extends React.Component {
       }
     );
   }
+
+  handleWorkflowChange = event => {
+    const value = event.value;
+    const current = this.state.current;
+    const modified = this.state.modified;
+    const isIsolation = value === 'isolation';
+    const self = this;
+    this.setState(
+      {
+        current: { ...current, isolation: isIsolation, patient: { ...current.patient, isolation: isIsolation } },
+        modified: { ...modified, isolation: isIsolation, patient: { ...modified.patient, isolation: isIsolation } },
+      },
+      () => {
+        self.props.setEnrollmentState({ ...self.state.modified });
+      }
+    );
+  };
+
+  getWorkflowValue = () => (this.state.current.isolation ? WORKFLOW_OPTIONS[1] : WORKFLOW_OPTIONS[0]);
 
   handleLanguageChange(languageType, event) {
     const value = event.value;
@@ -170,12 +194,35 @@ class Identification extends React.Component {
   }
 
   render() {
+    const cursorPointerStyle = {
+      option: provided => ({
+        ...provided,
+        cursor: 'pointer',
+      }),
+    };
     return (
       <React.Fragment>
         <Card className="mx-2 card-square">
           <Card.Header as="h5">Monitoree Identification</Card.Header>
           <Card.Body>
             <Form>
+              <Form.Row className="pt-2">
+                <Form.Group as={Col} controlId="workflow">
+                  <Form.Label className="nav-input-label">WORKFLOW *</Form.Label>
+                  <Select
+                    name="workflow"
+                    styles={cursorPointerStyle}
+                    value={this.getWorkflowValue()}
+                    options={WORKFLOW_OPTIONS}
+                    onChange={e => this.handleWorkflowChange(e)}
+                    placeholder=""
+                    theme={theme => ({
+                      ...theme,
+                      borderRadius: 0,
+                    })}
+                  />
+                </Form.Group>
+              </Form.Row>
               <Form.Row className="pt-2">
                 <Form.Group as={Col} controlId="first_name">
                   <Form.Label className="nav-input-label">FIRST NAME{schema?.fields?.first_name?._exclusive?.required && ' *'}</Form.Label>
@@ -381,6 +428,7 @@ class Identification extends React.Component {
                     options={this.state.languageOptions}
                     onChange={e => this.handleLanguageChange('primary_language', e)}
                     placeholder=""
+                    styles={cursorPointerStyle}
                     theme={theme => ({
                       ...theme,
                       borderRadius: 0,
@@ -399,6 +447,7 @@ class Identification extends React.Component {
                     options={this.state.languageOptions}
                     onChange={e => this.handleLanguageChange('secondary_language', e)}
                     placeholder=""
+                    styles={cursorPointerStyle}
                     theme={theme => ({
                       ...theme,
                       borderRadius: 0,
