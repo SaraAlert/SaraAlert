@@ -122,6 +122,7 @@ GEM
     devise-security (0.14.3)
       devise (>= 4.3.0, < 5.0)
       rails (>= 4.2.0, < 7.0)
+    diff-lcs (1.4.4)
     docile (1.3.2)
     doorkeeper (5.4.0)
       railties (>= 5)
@@ -269,6 +270,10 @@ GEM
     roo (2.8.3)
       nokogiri (~> 1)
       rubyzip (>= 1.3.0, < 3.0.0)
+    rspec-mocks (3.9.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-support (3.9.3)
     rubocop (0.88.0)
       parallel (~> 1.10)
       parser (>= 2.7.1.1)
@@ -399,6 +404,7 @@ DEPENDENCIES
   react-rails
   rolify
   roo
+  rspec-mocks
   rubocop
   sara-schema
   sass-rails (>= 6)

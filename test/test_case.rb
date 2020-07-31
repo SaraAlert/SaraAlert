@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'rspec/mocks/minitest_integration'
 
 SimpleCov.command_name 'TestCase'
 
