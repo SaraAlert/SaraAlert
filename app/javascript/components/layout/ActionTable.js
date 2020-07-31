@@ -253,6 +253,7 @@ ActionTable.propTypes = {
   columnData: PropTypes.array,
   rowData: PropTypes.array,
   totalRows: PropTypes.number,
+  selectedRows: PropTypes.array,
   isEditable: PropTypes.bool,
   handleEdit: PropTypes.func,
   handleTableUpdate: PropTypes.func,
@@ -262,7 +263,6 @@ ActionTable.propTypes = {
   actions: PropTypes.object,
   isLoading: PropTypes.bool,
   page: PropTypes.number,
-  selectedRows: PropTypes.array,
   entries: PropTypes.number,
   entryOptions: PropTypes.array,
 };

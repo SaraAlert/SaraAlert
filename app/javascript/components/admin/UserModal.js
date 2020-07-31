@@ -5,7 +5,6 @@ import { Button, Modal, InputGroup, FormControl, Form } from 'react-bootstrap';
 class UserModal extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props.initialUserData.is_API_enabled);
     this.state = {
       email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
       jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
@@ -32,7 +31,6 @@ class UserModal extends React.Component {
 
   handleLockedStatusChange = event => {
     const val = event.target.checked;
-    console.log(val);
     this.setState({ is_locked: val });
   };
 
@@ -127,13 +125,13 @@ class UserModal extends React.Component {
 
 UserModal.propTypes = {
   show: bool,
+  title: PropTypes.string,
   type: PropTypes.string,
+  initialUserData: PropTypes.object,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
-  title: PropTypes.string,
   jurisdictionPaths: PropTypes.array,
   roles: PropTypes.array,
-  initialUserData: PropTypes.object,
 };
 
 export default UserModal;

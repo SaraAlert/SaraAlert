@@ -129,8 +129,11 @@ class AdminController < ApplicationController
   def edit_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_API_enabled, :is_locked)
+    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role, :is_API_enabled, :is_locked)
     roles = Role.pluck(:name)
+
+    id = permitted_params[:id]
+
     email = permitted_params[:email]
     raise 'EMAIL must be provided' unless email
 
@@ -143,7 +146,9 @@ class AdminController < ApplicationController
     puts jurisdiction.to_s + '   ------ '
     raise "JURISDICTION must be provided and one of #{jurisdictions}" unless jurisdiction && jurisdictions.include?(jurisdiction)
 
-    user = User.find_by(email: email)
+    # Find user
+    user = User.find_by(id: id)
+
     cur_jur = current_user.jurisdiction
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
     raise 'USER not found' unless user
@@ -153,6 +158,9 @@ class AdminController < ApplicationController
 
     is_locked = permitted_params[:is_locked]
     #TODO: validation?
+
+    # Update email
+    user.email = email
 
     # Update jurisdiction
     user.jurisdiction = Jurisdiction.find_by_id(jurisdiction)

@@ -196,13 +196,12 @@ class AdminTable extends React.Component {
    * @param {Obejct} formData - Data submitted via the modal form.
    */
   handleUserModalSave = (isNewUser, formData) => {
-    this.handleUserModalClose();
-
     if (isNewUser) {
       this.addUser(formData);
     } else {
-      this.editUser(formData);
+      this.editUser(this.state.editRow, formData);
     }
+    this.handleUserModalClose();
   };
 
   /**
@@ -233,12 +232,14 @@ class AdminTable extends React.Component {
 
   /**
    * Makes POST request to admin/edit_user to update an existing user on the backend.
-   * @param {Object} data
+   * @param {Number} row - Row being edited.
+   * @param {Object} data - Form data from edit user modal.
    */
-  editUser = data => {
+  editUser = (row, data) => {
     const path = 'edit_user';
 
     const dataToSend = {
+      id: this.state.table.rowData[parseInt(row)].id,
       email: data.email,
       jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
       role: data.role,
@@ -535,7 +536,7 @@ class AdminTable extends React.Component {
   getActionDescription = action => {
     switch (action) {
       case this.state.actions.resetPassword.name:
-        return `reset the passwords(s) of ${this.state.table.selectedRows.length} user(s)`;
+        return `reset the password(s) of ${this.state.table.selectedRows.length} user(s)`;
       case this.state.actions.resetTwoFactorAuth.name:
         return `reset two-factor authentication for ${this.state.table.selectedRows.length} user(s)`;
       default:
@@ -603,9 +604,7 @@ class AdminTable extends React.Component {
           columnData={this.state.table.colData}
           rowData={this.state.table.rowData}
           totalRows={this.state.table.totalRows}
-          handleTableUpdate={query => {
-            this.getTableData({ ...this.state.query, ...query });
-          }}
+          handleTableUpdate={query => this.getTableData({ ...this.state.query, ...query })}
           handleSelect={this.handleSelect}
           handleEdit={this.handleEditClick}
           handleEntriesChange={this.handleEntriesChange}
