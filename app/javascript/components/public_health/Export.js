@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
-import reportError from '../util/ReportError';
+import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
+
+import reportError from '../util/ReportError';
 
 class Export extends React.Component {
   constructor(props) {

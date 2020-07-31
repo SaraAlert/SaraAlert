@@ -1,10 +1,12 @@
 import React from 'react';
-import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
-import reportError from '../util/ReportError';
-import InfoTooltip from '../util/InfoTooltip';
+import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
+import axios from 'axios';
+
+import DateInput from '../util/DateInput';
+import InfoTooltip from '../util/InfoTooltip';
+import reportError from '../util/ReportError';
 
 class LastDateExposure extends React.Component {
   constructor(props) {
@@ -21,13 +23,10 @@ class LastDateExposure extends React.Component {
     this.origState = Object.assign({}, this.state);
     this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.toggleExposureDateModal = this.toggleExposureDateModal.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
+    this.closeExposureDateModal = this.closeExposureDateModal.bind(this);
     this.toggleContinuousMonitoringModal = this.toggleContinuousMonitoringModal.bind(this);
     this.createModal = this.createModal.bind(this);
-  }
-
-  toggleExposureDateModal() {
-    this.setState({ showExposureDateModal: !this.state.showExposureDateModal, apply_to_group: false, apply_to_group_cm_only: false });
   }
 
   toggleContinuousMonitoringModal() {
@@ -37,6 +36,30 @@ class LastDateExposure extends React.Component {
       apply_to_group: false,
       apply_to_group_cm_only: false,
     });
+  }
+
+  closeExposureDateModal() {
+    this.setState({
+      last_date_of_exposure: this.props.patient.last_date_of_exposure,
+      showExposureDateModal: false,
+      apply_to_group: false,
+      apply_to_group_cm_only: false,
+    });
+  }
+
+  handleDateChange(date) {
+    if (date && date !== this.props.patient.last_date_of_exposure) {
+      this.setState({
+        last_date_of_exposure: date,
+        showExposureDateModal: true,
+        apply_to_group: false,
+        apply_to_group_cm_only: false,
+      });
+    } else {
+      this.setState({
+        last_date_of_exposure: date,
+      });
+    }
   }
 
   handleChange(event) {
@@ -129,8 +152,8 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            'Are you sure you want to modify the last date of exposure? This will reset the continuous monitoring status for this monitoree.',
-            this.toggleExposureDateModal,
+            `Are you sure you want to modify the last date of exposure to ${this.state.last_date_of_exposure}? This will reset the continuous monitoring status for this monitoree.`,
+            this.closeExposureDateModal,
             () => this.submit(true)
           )}
         {this.state.showContinuousMonitoringModal &&
@@ -138,33 +161,21 @@ class LastDateExposure extends React.Component {
             this.submit(false)
           )}
         <Row>
-          <Col md="4" sm="24">
+          <Col lg="6" md="5" sm="24">
             <h6 className="nav-input-label mt-3">
               LAST DATE OF EXPOSURE
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
             </h6>
           </Col>
-          <Col md="8" sm="24">
+          <Col lg="10" md="12" sm="24">
             <Row>
               <Col>
-                <Form.Control
-                  size="lg"
-                  id="last_date_of_exposure"
-                  type="date"
-                  className="form-square"
-                  value={this.state.last_date_of_exposure || ''}
-                  onChange={this.handleChange}
-                />
-              </Col>
-              <Col>
-                <Button className="btn-lg" onClick={() => this.toggleExposureDateModal()}>
-                  <i className="fas fa-temperature-high"></i> Update
-                </Button>
+                <DateInput id="last_date_of_exposure" date={this.state.last_date_of_exposure} onChange={this.handleDateChange} placement="top" />
               </Col>
             </Row>
             <Row>
               <Form.Check
-                className="ml-3 mt-2"
+                className="ml-3 mt-1"
                 size="lg"
                 label="CONTINUOUS EXPOSURE"
                 type="switch"
@@ -174,7 +185,7 @@ class LastDateExposure extends React.Component {
               />
             </Row>
           </Col>
-          <Col md="12" sm="24">
+          <Col lg="8" md="7" sm="24">
             <div className="mt-3">
               <span className="nav-input-label">END OF MONITORING</span>
               <InfoTooltip tooltipTextKey="endOfMonitoring" location="right"></InfoTooltip>

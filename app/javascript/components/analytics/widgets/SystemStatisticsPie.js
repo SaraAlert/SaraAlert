@@ -1,6 +1,6 @@
 import React from 'react';
-import { Row, Col, Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Row, Col, Card } from 'react-bootstrap';
 import { PieChart, Pie, ResponsiveContainer, Cell, Legend, Label, Tooltip } from 'recharts';
 
 const COLOR_MAPPING = [

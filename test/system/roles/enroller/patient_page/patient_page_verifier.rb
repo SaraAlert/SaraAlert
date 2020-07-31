@@ -6,6 +6,7 @@ require_relative '../enrollment/steps'
 require_relative '../../../lib/system_test_utils'
 
 class EnrollerPatientPageVerifier < ApplicationSystemTestCase
+  include ImportExport
   @@enrollment_form_steps = EnrollmentFormSteps.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
@@ -31,17 +32,17 @@ class EnrollerPatientPageVerifier < ApplicationSystemTestCase
 
     fields.each do |field|
       if data[field[:id]] && field[:info_page]
-        if field[:type] == 'text' || field[:type] == 'select'
+        if %w[text select date].include?(field[:type])
           assert page.has_content?(data[field[:id]]), @@system_test_utils.get_err_msg('Monitoree details', field[:id], data[field[:id]])
-        elsif field[:type] == 'date'
-          date = @@system_test_utils.format_date(data[field[:id]])
-          assert page.has_content?(date), @@system_test_utils.get_err_msg('Monitoree details', field[:id], date)
+        elsif field[:type] == 'phone'
+          phone = format_phone_number(data[field[:id]])
+          assert page.has_content?(phone), @@system_test_utils.get_err_msg('Monitoree details', field[:id], phone)
         elsif field[:type] == 'age'
           age = @@system_test_utils.calculate_age(data[field[:id]])
           assert page.has_content?(age), @@system_test_utils.get_err_msg('Monitoree details', field[:id], age)
         elsif field[:type] == 'race'
           assert page.has_content?(field[:info_page]), @@system_test_utils.get_err_msg('Monitoree details', field[:info_page], 'present')
-        elsif field[:type] == 'checkbox' || field[:type] == 'risk factor'
+        elsif field[:type] == 'checkbox' || field[:type] == 'risk_factor'
           assert page.has_content?(field[:label]), @@system_test_utils.get_err_msg('Monitoree details', field[:label], 'present')
         end
       end

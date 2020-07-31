@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import { time_ago_in_words } from './helpers';
+import { Card } from 'react-bootstrap';
 import moment from 'moment-timezone';
+
+import { time_ago_in_words } from './helpers';
 
 const history = ({ history }) => {
   return (

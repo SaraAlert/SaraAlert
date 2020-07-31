@@ -1,9 +1,11 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Card, Button, Form, Col } from 'react-bootstrap';
+import * as yup from 'yup';
+
+import DateInput from '../../util/DateInput';
 import { countryOptions } from '../../../data/countryOptions';
 import { stateOptions } from '../../../data/stateOptions';
-import { PropTypes } from 'prop-types';
-import * as yup from 'yup';
 
 class AdditionalPlannedTravel extends React.Component {
   constructor(props) {
@@ -17,14 +19,24 @@ class AdditionalPlannedTravel extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    value =
-      (event.target.id === 'additional_planned_travel_start_date' || event.target.id === 'additional_planned_travel_end_date') && value === ''
-        ? undefined
-        : value;
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  }
+
+  handleDateChange(field, date) {
+    let current = this.state.current;
+    let modified = this.state.modified;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [field]: date } },
+        modified: { ...modified, patient: { ...modified.patient, [field]: date } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -160,33 +172,33 @@ class AdditionalPlannedTravel extends React.Component {
                     {this.state.errors['additional_planned_travel_port_of_departure']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md="6" controlId="additional_planned_travel_start_date">
+                <Form.Group as={Col} md="8" controlId="additional_planned_travel_start_date">
                   <Form.Label className="nav-input-label">
                     START DATE{schema?.fields?.additional_planned_travel_start_date?._exclusive?.required && ' *'}
                   </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['additional_planned_travel_start_date']}
-                    size="lg"
-                    type="date"
-                    className="form-square"
-                    value={this.state.current.patient.additional_planned_travel_start_date || ''}
-                    onChange={this.handleChange}
+                  <DateInput
+                    id="additional_planned_travel_start_date"
+                    date={this.state.current.patient.additional_planned_travel_start_date}
+                    onChange={date => this.handleDateChange('additional_planned_travel_start_date', date)}
+                    placement="bottom"
+                    isInvalid={!!this.state.errors['additional_planned_travel_start_date']}
+                    isClearable
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_start_date']}
                   </Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md="6" controlId="additional_planned_travel_end_date">
+                <Form.Group as={Col} md="8" controlId="additional_planned_travel_end_date">
                   <Form.Label className="nav-input-label">
                     END DATE{schema?.fields?.additional_planned_travel_end_date?._exclusive?.required && ' *'}
                   </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['additional_planned_travel_end_date']}
-                    size="lg"
-                    type="date"
-                    className="form-square"
-                    value={this.state.current.patient.additional_planned_travel_end_date || ''}
-                    onChange={this.handleChange}
+                  <DateInput
+                    id="additional_planned_travel_end_date"
+                    date={this.state.current.patient.additional_planned_travel_end_date}
+                    onChange={date => this.handleDateChange('additional_planned_travel_end_date', date)}
+                    placement="bottom"
+                    isInvalid={!!this.state.errors['additional_planned_travel_end_date']}
+                    isClearable
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_end_date']}

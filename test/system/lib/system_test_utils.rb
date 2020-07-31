@@ -93,16 +93,8 @@ class SystemTestUtils < ApplicationSystemTestCase
     "#{MONITOREES[monitoree_label]['identification']['last_name']}, #{MONITOREES[monitoree_label]['identification']['first_name']}"
   end
 
-  def format_date(value)
-    "#{value[6..9]}-#{value[0..1]}-#{value[3..4]}"
-  end
-
-  def trim_ms_from_date(value)
-    Time.parse(value).change(usec: 0).strftime('%Y-%m-%d %H:%M:%S')
-  end
-
   def calculate_age(value)
-    dob = Date.parse(format_date(value))
+    dob = Date.parse("#{value[6..9]}-#{value[0..1]}-#{value[3..4]}")
     now = Time.now.utc.to_date
     now.year - dob.year - (now.month > dob.month || (now.month == dob.month && now.day >= dob.day) ? 0 : 1)
   end

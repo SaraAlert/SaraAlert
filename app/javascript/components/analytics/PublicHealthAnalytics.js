@@ -1,16 +1,17 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Row, Col, Button } from 'react-bootstrap';
+import moment from 'moment-timezone';
+import domtoimage from 'dom-to-image';
+import 'rc-slider/assets/index.css';
+
 import RiskStratificationTable from './widgets/RiskStratificationTable';
 import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
 import RiskFactors from './widgets/RiskFactors';
 import reportError from '../util/ReportError';
 import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
-import moment from 'moment-timezone';
 import GeographicSummary from './widgets/GeographicSummary';
-import 'rc-slider/assets/index.css';
-import domtoimage from 'dom-to-image';
 
 class PublicHealthAnalytics extends React.Component {
   constructor(props) {

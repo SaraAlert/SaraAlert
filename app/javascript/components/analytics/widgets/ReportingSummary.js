@@ -1,7 +1,7 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Col, Card, Row } from 'react-bootstrap';
 import { PieChart, Pie, ResponsiveContainer, Cell, Label, Tooltip } from 'recharts';
-import { PropTypes } from 'prop-types';
 
 class ReportingSummary extends React.Component {
   constructor(props) {

@@ -1,9 +1,11 @@
 import React from 'react';
-import { Card, Button, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
 import libphonenumber from 'google-libphonenumber';
+
 import InfoTooltip from '../../util/InfoTooltip';
+import PhoneInput from '../../util/PhoneInput';
 
 const PNF = libphonenumber.PhoneNumberFormat;
 const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
@@ -19,6 +21,9 @@ class Contact extends React.Component {
 
   handleChange(event) {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    if (event.target.id === 'primary_telephone' || event.target.id === 'secondary_telephone') {
+      value = value.replace(/-/g, '');
+    }
     let current = this.state.current;
     let modified = this.state.modified;
     this.setState(
@@ -203,12 +208,11 @@ class Contact extends React.Component {
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="11" controlId="primary_telephone">
                   <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['primary_telephone']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.primary_telephone || ''}
+                  <PhoneInput
+                    id="primary_telephone"
+                    value={this.state.current.patient.primary_telephone}
                     onChange={this.handleChange}
+                    isInvalid={!!this.state.errors['primary_telephone']}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['primary_telephone']}
@@ -219,12 +223,11 @@ class Contact extends React.Component {
                   <Form.Label className="nav-input-label">
                     SECONDARY TELEPHONE NUMBER{schema?.fields?.secondary_telephone?._exclusive?.required && ' *'}
                   </Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['secondary_telephone']}
-                    size="lg"
-                    className="form-square"
-                    value={this.state.current.patient.secondary_telephone || ''}
+                  <PhoneInput
+                    id="secondary_telephone"
+                    value={this.state.current.patient.secondary_telephone}
                     onChange={this.handleChange}
+                    isInvalid={!!this.state.errors['secondary_telephone']}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['secondary_telephone']}
@@ -350,7 +353,7 @@ yup.addMethod(yup.string, 'phone', function() {
           return true; // Blank numbers are allowed
         }
         // Make sure we'll be able to convert to E164 format at submission time
-        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164);
+        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) && /\d{10}/.test(value);
       } catch (e) {
         return false;
       }

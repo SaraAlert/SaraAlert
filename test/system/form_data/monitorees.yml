@@ -11,7 +11,7 @@ monitoree_1:
     address_zip: '81210-6722'
   contact_info:
     preferred_contact_method: 'Telephone call'
-    primary_telephone: '+15555550111'
+    primary_telephone: '5555550111'
     primary_telephone_type: 'Plain Cell'
   potential_exposure_info:
     last_date_of_exposure: '02/05/2020'
@@ -53,8 +53,8 @@ monitoree_2:
   contact_info:
     preferred_contact_method: 'SMS Texted Weblink'
     preferred_contact_time: 'Morning'
-    primary_telephone: '+15555550112'
-    secondary_telephone: '+15555550113'
+    primary_telephone: '5555550112'
+    secondary_telephone: '5555550113'
     primary_telephone_type: 'Smartphone'
     secondary_telephone_type: 'Landline'
     email: 'carey@example.com'
@@ -165,7 +165,7 @@ monitoree_5:
     address_zip: '50099-6977'
   contact_info:
     preferred_contact_method: 'SMS Text-message'
-    primary_telephone: '+15555550114'
+    primary_telephone: '5555550114'
     primary_telephone_type: 'Smartphone'
   potential_exposure_info:
     last_date_of_exposure: '01/30/2020'
@@ -205,8 +205,8 @@ monitoree_6:
   contact_info:
     preferred_contact_method: 'Telephone call'
     preferred_contact_time: 'Evening'
-    primary_telephone: '+15555550115'
-    secondary_telephone: '+15555550116'
+    primary_telephone: '5555550115'
+    secondary_telephone: '5555550116'
     primary_telephone_type: 'Landline'
     secondary_telephone_type: 'Plain Cell'
     email: 'roberta@example.com'
@@ -269,7 +269,7 @@ monitoree_10:
   contact_info:
     preferred_contact_method: 'Telephone call'
     preferred_contact_time: 'Afternoon'
-    primary_telephone: '+15555550117'
+    primary_telephone: '5555550117'
     primary_telephone_type: 'Landline'
   potential_exposure_info:
     last_date_of_exposure: '01/31/2020'
@@ -288,7 +288,7 @@ monitoree_11:
   contact_info:
     preferred_contact_method: 'Telephone call'
     preferred_contact_time: 'Evening'
-    primary_telephone: '+15555550118'
+    primary_telephone: '5555550118'
     primary_telephone_type: 'Landline'
   potential_exposure_info:
     last_date_of_exposure: '01/31/2020'
@@ -343,8 +343,8 @@ monitoree_12:
   contact_info:
     preferred_contact_method: 'SMS Texted Weblink'
     preferred_contact_time: 'Afternoon'
-    primary_telephone: '+15555550121'
-    secondary_telephone: '+15555550122'
+    primary_telephone: '5555550121'
+    secondary_telephone: '5555550122'
     primary_telephone_type: 'Smartphone'
     secondary_telephone_type: 'Landline'
     email: 'carey@example.com'

@@ -94,8 +94,8 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     verify_patient_field('assigned user', patient[:assigned_user]) unless %i[transferred_in transferred_out].include?(tab)
     verify_patient_field('state/local id', patient[:user_defined_id_statelocal])
     verify_patient_field('sex', patient[:sex])
-    verify_patient_field('date of birth', patient[:date_of_birth])
-    verify_patient_field('end of monitoring', patient.end_of_monitoring) unless workflow == :isolation || tab == :closed
+    verify_patient_field('date of birth', patient[:date_of_birth].strftime('%m/%d/%Y'))
+    verify_patient_field('end of monitoring', Date.parse(patient.end_of_monitoring).strftime('%m/%d/%Y')) unless workflow == :isolation || tab == :closed
     verify_patient_field('risk level', patient[:exposure_risk_assessment]) unless workflow == :isolation || tab == :closed
     verify_patient_field('monitoring plan', patient[:monitoring_plan]) unless %i[closed pui].include?(tab)
     verify_patient_field('public health action', patient[:public_health_action]) if tab == :pui

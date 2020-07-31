@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Table, Row } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Card, Table, Row } from 'react-bootstrap';
 
 class MonitoreeFlow extends React.Component {
   constructor(props) {

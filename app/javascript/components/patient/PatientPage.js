@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
-import Patient from './Patient';
 import { PropTypes } from 'prop-types';
+import { Card } from 'react-bootstrap';
+
+import Patient from './Patient';
 
 class PatientPage extends React.Component {
   constructor(props) {

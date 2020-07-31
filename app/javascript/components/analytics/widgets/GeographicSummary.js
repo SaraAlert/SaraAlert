@@ -1,11 +1,12 @@
 import React from 'react';
-import axios from 'axios';
-import _ from 'lodash';
 import { PropTypes } from 'prop-types';
 import { Button, Col, Row, Table } from 'react-bootstrap';
-import moment from 'moment';
 import Slider from 'rc-slider/lib/Slider';
 import 'rc-slider/assets/index.css';
+import _ from 'lodash';
+import axios from 'axios';
+import moment from 'moment';
+
 import { insularAreas } from '../mapData';
 import { stateOptions } from '../../../data/stateOptions';
 import CountyLevelMaps from './CountyLevelMaps';

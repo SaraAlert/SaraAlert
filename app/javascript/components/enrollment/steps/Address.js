@@ -1,9 +1,10 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Card, Button, Tabs, Tab, Form, Col } from 'react-bootstrap';
+import * as yup from 'yup';
+
 import { countryOptions } from '../../../data/countryOptions';
 import { stateOptions } from '../../../data/stateOptions';
-import { PropTypes } from 'prop-types';
-import * as yup from 'yup';
 
 class Address extends React.Component {
   constructor(props) {

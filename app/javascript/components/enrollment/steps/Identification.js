@@ -1,9 +1,11 @@
 import React from 'react';
-import { Card, Button, Form, Col } from 'react-bootstrap';
-import moment from 'moment-timezone';
 import { PropTypes } from 'prop-types';
+import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
+import moment from 'moment-timezone';
 import Select from 'react-select';
+
+import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
 import supportedLanguages from '../../../data/supportedLanguages.json';
 
@@ -23,6 +25,7 @@ class Identification extends React.Component {
       languageOptions: this.getLanguageOptions(),
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
     this.handleLanguageChange = this.handleLanguageChange.bind(this);
     this.validate = this.validate.bind(this);
   }
@@ -33,7 +36,6 @@ class Identification extends React.Component {
     let modified = this.state.modified;
     let self = this;
     event.persist();
-    value = event.target.type === 'date' && value === '' ? undefined : value;
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
@@ -83,6 +85,21 @@ class Identification extends React.Component {
   };
 
   getWorkflowValue = () => (this.state.current.isolation ? WORKFLOW_OPTIONS[1] : WORKFLOW_OPTIONS[0]);
+
+  handleDateChange(field, date) {
+    let current = this.state.current;
+    let modified = this.state.modified;
+    let self = this;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [field]: date } },
+        modified: { ...modified, patient: { ...modified.patient, [field]: date } },
+      },
+      () => {
+        self.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  }
 
   handleLanguageChange(languageType, event) {
     const value = event.value;
@@ -267,13 +284,12 @@ class Identification extends React.Component {
               <Form.Row className="pt-2">
                 <Form.Group as={Col} md="auto" controlId="date_of_birth">
                   <Form.Label className="nav-input-label">DATE OF BIRTH{schema?.fields?.date_of_birth?._exclusive?.required && ' *'}</Form.Label>
-                  <Form.Control
-                    isInvalid={this.state.errors['date_of_birth']}
-                    size="lg"
-                    type="date"
-                    className="form-square"
-                    value={this.state.current.patient.date_of_birth || ''}
-                    onChange={this.handleChange}
+                  <DateInput
+                    id="date_of_birth"
+                    date={this.state.current.patient.date_of_birth}
+                    onChange={date => this.handleDateChange('date_of_birth', date)}
+                    placement="bottom"
+                    isInvalid={!!this.state.errors['date_of_birth']}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_birth']}
@@ -289,6 +305,7 @@ class Identification extends React.Component {
                     className="form-square"
                     value={this.state.current.patient.age || ''}
                     onChange={this.handleChange}
+                    readOnly
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['age']}

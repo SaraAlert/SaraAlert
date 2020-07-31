@@ -1,8 +1,9 @@
 import React from 'react';
+import { PropTypes } from 'prop-types';
 import { Row, Col } from 'react-bootstrap';
+
 import SystemStatistics from './widgets/SystemStatistics';
 import YourStatistics from './widgets/YourStatistics';
-import { PropTypes } from 'prop-types';
 
 class EnrollerAnalytics extends React.Component {
   constructor(props) {

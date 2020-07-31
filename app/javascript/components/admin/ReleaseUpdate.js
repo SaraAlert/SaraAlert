@@ -1,8 +1,8 @@
 import React from 'react';
-import { Form, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
+import { Form, Button, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 class ReleaseUpdate extends React.Component {
   constructor(props) {

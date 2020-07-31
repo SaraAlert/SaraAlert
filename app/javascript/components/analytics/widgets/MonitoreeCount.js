@@ -1,7 +1,7 @@
 import React from 'react';
-import _ from 'lodash';
-import { Card } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Card } from 'react-bootstrap';
+import _ from 'lodash';
 
 class MonitoreeCount extends React.Component {
   constructor(props) {

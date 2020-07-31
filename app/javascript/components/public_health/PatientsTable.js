@@ -1,8 +1,5 @@
 import React from 'react';
-
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
-import moment from 'moment-timezone';
 import {
   Badge,
   Button,
@@ -22,10 +19,12 @@ import {
   Tooltip,
 } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
+import axios from 'axios';
+import moment from 'moment-timezone';
 
-import InfoTooltip from '../util/InfoTooltip';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
+import InfoTooltip from '../util/InfoTooltip';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -226,7 +225,7 @@ class PatientsTable extends React.Component {
 
   formatTimestamp(timestamp) {
     const ts = moment.tz(timestamp, 'UTC');
-    return ts.isValid() ? ts.tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm z') : '';
+    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
 
   renderTableHeader(field, label, sortable, tooltip) {
@@ -521,8 +520,8 @@ class PatientsTable extends React.Component {
                             {'assigned_user' in patient && <td>{patient.assigned_user}</td>}
                             {'state_local_id' in patient && <td>{patient.state_local_id}</td>}
                             {'sex' in patient && <td>{patient.sex}</td>}
-                            {'dob' in patient && <td>{patient.dob}</td>}
-                            {'end_of_monitoring' in patient && <td>{patient.end_of_monitoring}</td>}
+                            {'dob' in patient && <td>{moment(patient.dob, 'YYYY-MM-DD').format('MM/DD/YYYY')}</td>}
+                            {'end_of_monitoring' in patient && <td>{moment(patient.end_of_monitoring, 'YYYY-MM-DD').format('MM/DD/YYYY')}</td>}
                             {'risk_level' in patient && <td>{patient.risk_level}</td>}
                             {'monitoring_plan' in patient && <td>{patient.monitoring_plan}</td>}
                             {'public_health_action' in patient && <td>{patient.public_health_action}</td>}
