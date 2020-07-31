@@ -92,14 +92,12 @@ class Patient < ApplicationRecord
       .where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where.not(id: Patient.unscoped.isolation_requiring_review)
       .where.not('latest_assessment_at >= ?', Time.now.getlocal('-04:00').beginning_of_day)
       .or(
         where(isolation: true)
           .where(purged: false)
           .where(pause_notifications: false)
           .where('patients.id = patients.responder_id')
-          .where.not(id: Patient.unscoped.isolation_requiring_review)
           .where(latest_assessment_at: nil)
       )
       .distinct
