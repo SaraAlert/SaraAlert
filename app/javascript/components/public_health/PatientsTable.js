@@ -52,8 +52,8 @@ class PatientsTable extends React.Component {
         ],
         displayedColData: [],
         rowData: [],
-        loading: false,
       },
+      loading: false,
       actionsEnabled: false,
       selectedPatients: [],
       jurisdictionPaths: {},
@@ -415,51 +415,49 @@ class PatientsTable extends React.Component {
                       </Col>
                     </React.Fragment>
                   )}
-                  <Col lg={20} md={19} sm={18} className="my-1">
-                    <InputGroup size="sm">
-                      <InputGroup.Prepend>
-                        <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
-                          <InputGroup.Text className="rounded-0">
-                            <i className="fas fa-search"></i>
-                            <span className="ml-1">Search</span>
-                          </InputGroup.Text>
-                        </OverlayTrigger>
-                      </InputGroup.Prepend>
-                      <Form.Control
-                        autoComplete="off"
-                        size="sm"
-                        name="search"
-                        value={this.state.query.search}
-                        onChange={this.handleChange}
-                        onKeyPress={this.handleKeyPress}
-                      />
-                      {this.state.query !== 'transferred_out' && (
-                        <DropdownButton
-                          as={ButtonGroup}
-                          size="sm"
-                          variant="primary"
-                          title={
-                            <React.Fragment>
-                              <i className="fas fa-tools"></i> Actions{' '}
-                            </React.Fragment>
-                          }
-                          className="ml-2"
-                          disabled={!this.state.actionsEnabled}>
-                          {this.state.query.tab !== 'closed' && (
-                            <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Close Records' })}>
-                              <i className="fas fa-window-close text-center" style={{ width: '1em' }}></i>
-                              <span className="ml-2">Close Records</span>
-                            </Dropdown.Item>
-                          )}
-                          <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Case Status' })}>
-                            <i className="fas fa-clipboard-list text-center" style={{ width: '1em' }}></i>
-                            <span className="ml-2">Update Case Status</span>
-                          </Dropdown.Item>
-                        </DropdownButton>
-                      )}
-                    </InputGroup>
-                  </Col>
                 </Form.Row>
+                <InputGroup size="sm" className="d-flex justify-content-between">
+                  <InputGroup.Prepend>
+                    <OverlayTrigger overlay={<Tooltip>Search by monitoree name, date of birth, state/local id, cdc id, or nndss/case id</Tooltip>}>
+                      <InputGroup.Text className="rounded-0">
+                        <i className="fas fa-search"></i>
+                        <span className="ml-1">Search</span>
+                      </InputGroup.Text>
+                    </OverlayTrigger>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    autoComplete="off"
+                    size="sm"
+                    name="search"
+                    value={this.state.query.search}
+                    onChange={this.handleChange}
+                    onKeyPress={this.handleKeyPress}
+                  />
+                  {this.state.query !== 'transferred_out' && (
+                    <DropdownButton
+                      as={ButtonGroup}
+                      size="sm"
+                      variant="primary"
+                      title={
+                        <React.Fragment>
+                          <i className="fas fa-tools"></i> Actions{' '}
+                        </React.Fragment>
+                      }
+                      className="ml-2"
+                      disabled={!this.state.actionsEnabled}>
+                      {this.state.query.tab !== 'closed' && (
+                        <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Close Records' })}>
+                          <i className="fas fa-window-close text-center" style={{ width: '1em' }}></i>
+                          <span className="ml-2">Close Records</span>
+                        </Dropdown.Item>
+                      )}
+                      <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Case Status' })}>
+                        <i className="fas fa-clipboard-list text-center" style={{ width: '1em' }}></i>
+                        <span className="ml-2">Update Case Status</span>
+                      </Dropdown.Item>
+                    </DropdownButton>
+                  )}
+                </InputGroup>
               </Form>
               <ActionTable
                 columnData={this.state.table.displayedColData}
@@ -469,7 +467,7 @@ class PatientsTable extends React.Component {
                 handleSelect={this.handleSelect}
                 handleEntriesChange={this.handleEntriesChange}
                 isEditable={false}
-                isLoading={this.state.table.loading}
+                isLoading={this.state.loading}
                 page={this.state.query.page}
                 handlePageUpdate={this.handlePageUpdate}
                 selectedRows={this.state.selectedPatients}

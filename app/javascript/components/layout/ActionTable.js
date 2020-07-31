@@ -41,26 +41,29 @@ class ActionTable extends React.Component {
    */
   handleCheckboxChange = (e, row) => {
     const checked = e.target.checked;
-    console.log('checkbox change:', checked);
 
     // If row is selected and wasn't previously, add it to the selected rows.
     if (checked && !this.props.selectedRows.includes(row)) {
       const selectedRows = [...this.props.selectedRows, row];
-      this.props.handleSelect(selectedRows);
 
       // Update select all if all displayed rows are checked.
       if (selectedRows >= this.props.entries) {
         this.setState({ selectAll: true });
       }
+
+      // Call parent handler
+      this.props.handleSelect(selectedRows);
     } else {
       // Otherwise if it was unchecked, remove it from the selected rows and toggle off select all if applicable.
       const selectedRows = [...this.props.selectedRows];
       const index = selectedRows.indexOf(row);
       selectedRows.splice(index, 1);
-      this.props.handleSelect(selectedRows);
 
       // Update select all if not all displayed rows are checked.
       this.setState({ selectAll: false });
+
+      // Call parent handler
+      this.props.handleSelect(selectedRows);
     }
   };
 
@@ -76,8 +79,9 @@ class ActionTable extends React.Component {
         };
       },
       () => {
-        // Call handler for when a row is checked/unchecked.
         const selectedRows = this.state.selectAll ? [...Array(this.props.rowData.length).keys()] : [];
+
+        // Call parent handler
         this.props.handleSelect(selectedRows);
       }
     );
@@ -117,7 +121,6 @@ class ActionTable extends React.Component {
         style={{ cursor: sortable ? 'pointer' : 'default' }}>
         {sortable && (
           <React.Fragment>
-            {/* // TODO: move inline styling out */}
             <div style={{ position: 'relative' }}>
               <i className="fas fa-sort float-right my-1" style={{ color: '#b8b8b8', position: 'absolute', right: '-12px' }}></i>
               {this.state.tableQuery.orderBy === field && this.state.tableQuery.sortDirection === 'asc' && (
@@ -143,11 +146,11 @@ class ActionTable extends React.Component {
     return (
       <React.Fragment>
         {this.props.isLoading && (
-          <div className="text-center" style={{ height: '0' }}>
+          <div className="text-center" style={{ height: '0', top: '30%' }}>
             <Spinner variant="secondary" animation="border" size="lg" />
           </div>
         )}
-        <Table striped bordered hover size="sm" className="m-2">
+        <Table striped bordered hover size="sm">
           <thead>
             <tr>
               {this.props.columnData.map(data => {
@@ -212,34 +215,34 @@ class ActionTable extends React.Component {
                   </Form.Control>
                 </InputGroup>
               </Col>
-              <Col>
-                <span className="ml-2 text-nowrap">{`Displaying ${this.props.rowData.length} out of ${this.props.totalRows} rows.`}</span>
-              </Col>
+              <span className="ml-2 text-nowrap align-self-center">{`Displaying ${this.props.rowData.length} out of ${this.props.totalRows} rows.`}</span>
             </Row>
           </Form>
-          <ReactPaginate
-            className=""
-            pageCount={Math.ceil(this.props.totalRows / this.props.entries)}
-            pageRangeDisplayed={4}
-            marginPagesDisplayed={1}
-            initialPage={this.props.page}
-            onPageChange={this.props.handlePageUpdate}
-            previousLabel="Previous"
-            nextLabel="Next"
-            breakLabel="..."
-            containerClassName="pagination mb-0"
-            activeClassName="active"
-            disabledClassName="disabled"
-            pageClassName="paginate_button page-item"
-            previousClassName="paginate_button page-item"
-            nextClassName="paginate_button page-item"
-            breakClassName="paginate_button page-item"
-            pageLinkClassName="page-link text-primary"
-            previousLinkClassName={this.props.page === 0 ? 'page-link' : 'page-link text-primary'}
-            nextLinkClassName={this.props.page === Math.ceil(this.props.totalRows / this.props.entries) - 1 ? 'page-link' : 'page-link text-primary'}
-            activeLinkClassName="page-link text-light"
-            breakLinkClassName="page-link text-primary"
-          />
+          {this.props.totalRows > 0 && (
+            <ReactPaginate
+              className=""
+              pageCount={Math.ceil(this.props.totalRows / this.props.entries)}
+              pageRangeDisplayed={4}
+              marginPagesDisplayed={1}
+              initialPage={this.props.page}
+              onPageChange={this.props.handlePageUpdate}
+              previousLabel="Previous"
+              nextLabel="Next"
+              breakLabel="..."
+              containerClassName="pagination mb-0"
+              activeClassName="active"
+              disabledClassName="disabled"
+              pageClassName="paginate_button page-item"
+              previousClassName="paginate_button page-item"
+              nextClassName="paginate_button page-item"
+              breakClassName="paginate_button page-item"
+              pageLinkClassName="page-link text-primary"
+              previousLinkClassName={this.props.page === 0 ? 'page-link' : 'page-link text-primary'}
+              nextLinkClassName={this.props.page === Math.ceil(this.props.totalRows / this.props.entries) - 1 ? 'page-link' : 'page-link text-primary'}
+              activeLinkClassName="page-link text-light"
+              breakLinkClassName="page-link text-primary"
+            />
+          )}
         </div>
       </React.Fragment>
     );

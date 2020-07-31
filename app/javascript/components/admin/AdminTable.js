@@ -216,7 +216,7 @@ class AdminTable extends React.Component {
       email: data.email,
       jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
       role: data.role,
-      is_api_enabled: data.isAPIEnabled,
+      is_API_enabled: data.is_API_enabled,
     };
 
     const handleSuccess = () => {
@@ -242,8 +242,8 @@ class AdminTable extends React.Component {
       email: data.email,
       jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
       role: data.role,
-      is_api_enabled: data.isAPIEnabled,
-      is_locked: data.isLocked,
+      is_API_enabled: data.is_API_enabled,
+      is_locked: data.is_locked,
     };
 
     const handleSuccess = () => {
@@ -548,7 +548,7 @@ class AdminTable extends React.Component {
       <div>
         <div className="d-flex justify-content-between mb-2">
           <div className="mb-1">
-            <Button className="mx-1" size="lg" onClick={this.handleAddUserClick}>
+            <Button className="mr-1" size="lg" onClick={this.handleAddUserClick}>
               <i className="fas fa-plus-circle"></i>
               &nbsp;Add User
             </Button>
@@ -580,12 +580,12 @@ class AdminTable extends React.Component {
                 className="ml-3"
                 disabled={!this.state.actionsEnabled}>
                 {this.state.query.tab !== 'closed' && (
-                  <Dropdown.Item className="px-3" onClick={() => this.handleResetClick(this.state.actions.resetPassword.name)}>
+                  <Dropdown.Item className="px-3" onClick={() => this.handleResetClick(this.state.actions.resetPassword)}>
                     <i className="fas fa-undo"></i>
                     <span className="ml-2">Reset Password</span>
                   </Dropdown.Item>
                 )}
-                <Dropdown.Item className="px-3" onClick={() => this.handleResetClick(this.state.actions.resetTwoFactorAuth.name)}>
+                <Dropdown.Item className="px-3" onClick={() => this.handleResetClick(this.state.actions.resetTwoFactorAuth)}>
                   <i className="fas fa-key"></i>
                   <span className="ml-2">Reset 2FA</span>
                 </Dropdown.Item>
@@ -599,7 +599,6 @@ class AdminTable extends React.Component {
             </InputGroup>
           </div>
         </div>
-
         <ActionTable
           columnData={this.state.table.colData}
           rowData={this.state.table.rowData}
@@ -618,30 +617,36 @@ class AdminTable extends React.Component {
           entryOptions={this.state.entryOptions}
           entries={this.state.query.entries}
         />
-        <UserModal
-          show={this.state.showEditUserModal || this.state.showAddUserModal}
-          onSave={formData => this.handleUserModalSave(this.state.showAddUserModal, formData)}
-          onClose={this.handleUserModalClose}
-          title={this.state.showEditUserModal ? 'Edit User' : 'Add User'}
-          type={this.state.showEditUserModal ? 'edit' : 'add'}
-          jurisdictionPaths={Object.keys(this.props.jurisdiction_paths)}
-          roles={this.props.role_types}
-          initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
-        />
-        <EmailModal
-          show={this.state.showEmailModal}
-          title="Send Email to User(s)"
-          onClose={this.handleEmailModalClose}
-          onSave={formData => this.handleEmailSave(formData)}
-          userCount={this.state.table.selectedRows.length}
-        />
-        <ConfirmationModal
-          show={this.state.showConfirmationModal}
-          title={this.state.currentAction ? this.state.currentAction.title : ''}
-          onClose={this.handleConfirmationModalClose}
-          onSave={this.handleConfirmationSave}
-          actionDescription={this.getActionDescription(this.state.currentAction)}
-        />
+        {(this.state.showEditUserModal || this.state.showAddUserModal) && (
+          <UserModal
+            show={this.state.showEditUserModal || this.state.showAddUserModal}
+            onSave={formData => this.handleUserModalSave(this.state.showAddUserModal, formData)}
+            onClose={this.handleUserModalClose}
+            title={this.state.showEditUserModal ? 'Edit User' : 'Add User'}
+            type={this.state.showEditUserModal ? 'edit' : 'add'}
+            jurisdictionPaths={Object.keys(this.props.jurisdiction_paths)}
+            roles={this.props.role_types}
+            initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
+          />
+        )}
+        {this.state.showEmailModal && (
+          <EmailModal
+            show={this.state.showEmailModal}
+            title="Send Email to User(s)"
+            onClose={this.handleEmailModalClose}
+            onSave={formData => this.handleEmailSave(formData)}
+            userCount={this.state.table.selectedRows.length}
+          />
+        )}
+        {this.state.showConfirmationModal && (
+          <ConfirmationModal
+            show={this.state.showConfirmationModal}
+            title={this.state.currentAction ? this.state.currentAction.title : ''}
+            onClose={this.handleConfirmationModalClose}
+            onSave={this.handleConfirmationSave}
+            actionDescription={this.getActionDescription(this.state.currentAction.name)}
+          />
+        )}
         <ToastContainer />
       </div>
     );

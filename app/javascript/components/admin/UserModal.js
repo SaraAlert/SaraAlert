@@ -1,16 +1,17 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
-import { Button, Modal, InputGroup, FormControl, Form, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Button, Modal, InputGroup, FormControl, Form } from 'react-bootstrap';
 
 class UserModal extends React.Component {
   constructor(props) {
     super(props);
+    console.log(this.props.initialUserData.is_API_enabled);
     this.state = {
       email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
       jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
       role: this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0],
-      isAPIEnabled: this.props.initialUserData.isAPIEnabled ? this.props.initialUserData.isAPIEnabled : false,
-      isLocked: this.props.initialUserData.isLocked ? this.props.initialUserData.isLocked : false,
+      is_API_enabled: this.props.initialUserData.is_API_enabled ? this.props.initialUserData.is_API_enabled : false,
+      is_locked: this.props.initialUserData.is_locked ? this.props.initialUserData.is_locked : false,
     };
   }
 
@@ -29,12 +30,15 @@ class UserModal extends React.Component {
     this.setState({ role: val });
   };
 
-  handleLockedStatusChange = val => {
-    this.setState({ isLocked: val });
+  handleLockedStatusChange = event => {
+    const val = event.target.checked;
+    console.log(val);
+    this.setState({ is_locked: val });
   };
 
-  handleAPIAccessChange = val => {
-    this.setState({ isAPIEnabled: val });
+  handleAPIAccessChange = event => {
+    const val = event.target.checked;
+    this.setState({ is_API_enabled: val });
   };
 
   render() {
@@ -88,47 +92,24 @@ class UserModal extends React.Component {
           {this.props.type === 'edit' && (
             <Form.Group>
               <Form.Label>Status</Form.Label>
-              <Form.Row>
-                <ToggleButtonGroup
-                  type="radio"
-                  name="statusToggleGroup"
-                  defaultValue={this.props.initialUserData.is_locked ? true : false}
-                  onChange={this.handleLockedStatusChange}>
-                  {[
-                    { name: 'Locked', value: true },
-                    { name: 'Unlocked', value: false },
-                  ].map((option, index) => {
-                    const iconClassName = option.value ? 'fas fa-lock' : 'fas fa-unlock-alt';
-                    return (
-                      <ToggleButton key={index} value={option.value}>
-                        <i className={iconClassName}></i>&nbsp;{option.name}
-                      </ToggleButton>
-                    );
-                  })}
-                </ToggleButtonGroup>
-              </Form.Row>
+              <Form.Check
+                id="statusSwitch"
+                type="switch"
+                checked={this.state.is_locked}
+                label={this.state.is_locked ? 'Locked' : 'Unlocked'}
+                onChange={this.handleLockedStatusChange}
+              />
             </Form.Group>
           )}
           <Form.Group>
             <Form.Label>API Access</Form.Label>
-            <Form.Row>
-              <ToggleButtonGroup
-                type="radio"
-                name="statusToggleGroup"
-                defaultValue={this.props.initialUserData.is_locked ? true : false}
-                onChange={this.handleAPIAccessChange}>
-                {[
-                  { name: 'Enabled', value: true },
-                  { name: 'Disabled', value: false },
-                ].map((option, index) => {
-                  return (
-                    <ToggleButton key={index} value={option.value}>
-                      {option.name}
-                    </ToggleButton>
-                  );
-                })}
-              </ToggleButtonGroup>
-            </Form.Row>
+            <Form.Check
+              id="accessSwitch"
+              type="switch"
+              checked={this.state.is_API_enabled}
+              label={this.state.is_API_enabled ? 'Enabled' : 'Disabled'}
+              onChange={this.handleAPIAccessChange}
+            />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

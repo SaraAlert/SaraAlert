@@ -50,7 +50,7 @@ class AdminController < ApplicationController
         id: user.id,
         email: user.email,
         jurisdiction_path: user.path || '',
-        role: user.roles[0].name || '',
+        role: user.roles[0].name.split('_').map(&:capitalize).join(' ') || '',
         is_locked: !user.locked_at.nil? || false,
         is_API_enabled: user[:api_enabled] || false,
         is_2FA_enabled: user.authy_id.nil? || false,
@@ -93,7 +93,7 @@ class AdminController < ApplicationController
   end
 
   def create_user
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_api_enabled)
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_API_enabled)
     email = permitted_params[:email].strip
     raise 'EMAIL must be provided' unless email
 
@@ -101,7 +101,7 @@ class AdminController < ApplicationController
     raise 'EMAIL is invalid' unless address.valid? && !address.disposable?
 
     password = User.rand_gen
-    role = permitted_params[:role]
+    role = permitted_params[:role].split(' ').map(&:downcase).join('_')
     roles = Role.pluck(:name)
     raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
 
@@ -109,8 +109,7 @@ class AdminController < ApplicationController
     jurisdiction = permitted_params[:jurisdiction]
     raise "JURISDICTION must be provided and one of #{jurisdictions}" unless jurisdiction && jurisdictions.include?(jurisdiction)
 
-    is_api_enabled = permitted_params[:is_api_enabled]
-    puts "api enabled? #{is_api_enabled}"
+    is_API_enabled = permitted_params[:is_API_enabled]
     # TODO: validation?
 
     # Create user
@@ -120,7 +119,7 @@ class AdminController < ApplicationController
       password: password,
       jurisdiction: Jurisdiction.find_by_id(jurisdiction),
       force_password_change: true,
-      api_enabled: is_api_enabled
+      api_enabled: is_API_enabled
     )
     user.add_role role.to_sym
     user.save!
@@ -130,12 +129,13 @@ class AdminController < ApplicationController
   def edit_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_api_enabled, :is_locked)
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_API_enabled, :is_locked)
     roles = Role.pluck(:name)
     email = permitted_params[:email]
     raise 'EMAIL must be provided' unless email
 
-    role = permitted_params[:role]
+    role = permitted_params[:role].split(' ').map(&:downcase).join('_')
+    puts "role in edit: #{role}"
     raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
 
     jurisdictions = Jurisdiction.pluck(:id)
@@ -148,22 +148,26 @@ class AdminController < ApplicationController
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
     raise 'USER not found' unless user
 
-    is_api_enabled = permitted_params[:is_api_enabled]
+    is_API_enabled = permitted_params[:is_API_enabled]
     #TODO: validation?
 
     is_locked = permitted_params[:is_locked]
     #TODO: validation?
 
+    # Update jurisdiction
     user.jurisdiction = Jurisdiction.find_by_id(jurisdiction)
+
+    # Update role
     user.roles = []
     user.add_role role.to_sym
 
-    user.update!(api_enabled: is_api_enabled)
+    # Update API access
+    user.update!(api_enabled: is_API_enabled)
+
+    # Update locked status
     if user.locked_at.nil? && is_locked
-      puts "here"
       user.lock_access!
     elsif !user.locked_at.nil? && !is_locked
-      puts "here2"
       user.unlock_access!
     end
 
