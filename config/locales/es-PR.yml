@@ -34,6 +34,24 @@ es-PR:
       pulse-ox:
         name: 'oxímetro de pulso'
         notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
+      fatigue:
+        name: 'Fatigue'
+        notes: ''
+      nausea-or-vomiting:
+        name: 'Nausea Or Vomiting'
+        notes: ''
+      diarrhea:
+        name: 'Diarrhea'
+        notes: ''
+      nasal-congestion:
+        name: 'Nasal Congestion'
+        notes: ''
+      runny-nose:
+        name: 'Runny Nose'
+        notes: ''
+      temperature:
+        name: 'Temperature'
+        notes: 'Measured temperature in degrees Fahrenheit'
       no-symptoms: 'No tengo ningún síntoma.'
     threshold-op:
       less-than: 'Menos que'

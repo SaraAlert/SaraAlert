@@ -34,6 +34,24 @@ en:
       pulse-ox:
         name: 'Pulse Ox'
         notes: 'What was your lowest oxygen level in the past 24 hours?'
+      fatigue:
+        name: 'Fatigue'
+        notes: ''
+      nausea-or-vomiting:
+        name: 'Nausea Or Vomiting'
+        notes: ''
+      diarrhea:
+        name: 'Diarrhea'
+        notes: ''
+      nasal-congestion:
+        name: 'Nasal Congestion'
+        notes: ''
+      runny-nose:
+        name: 'Runny Nose'
+        notes: ''
+      temperature:
+        name: 'Temperature'
+        notes: 'Measured temperature in degrees Fahrenheit'
       no-symptoms: 'I am not experiencing any symptoms'
     threshold-op:
       less-than: 'Less Than'
