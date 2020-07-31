@@ -178,9 +178,10 @@ class PatientMailerTest < ActionMailer::TestCase
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
 
-    # Cannot do the same expectation as previous tests because the expectation that any instance gets called with create is taken up by the first loop of sending
-    # messages. So instead we count the amount of times create was called. Cannot do this with typical rspec methods because when you use any_instance_of the
-    # expectation for number of calls applies to EVERY instance, not just any single instance. Instead we calculate based on our mock method.
+    # Cannot do the same expectation as previous tests because the expectation that any instance gets called with create is taken up by the first loop of
+    # sending messages. So instead we count the amount of times create was called. Cannot do this with typical rspec methods because when you use
+    # any_instance_of the expectation for number of calls applies to EVERY instance, not just any single instance. Instead we calculate 
+    # based on our mock method.
     create_count = 0
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
       create_count += 1
