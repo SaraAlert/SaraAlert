@@ -8,6 +8,8 @@ class AssessmentsController < ApplicationController
     @assessment = Assessment.new
     @patient_submission_token = params[:patient_submission_token]
 
+    return if @patient_submission_token.length != 40
+
     # If monitoree, limit number of reports per time period
     if current_user.nil?
       if AssessmentReceipt.where(submission_token: @patient_submission_token)
@@ -19,7 +21,7 @@ class AssessmentsController < ApplicationController
     end
 
     jurisdiction = Jurisdiction.where('unique_identifier like ?', "#{params[:unique_identifier]}%").first if ADMIN_OPTIONS['report_mode']
-    jurisdiction = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction unless ADMIN_OPTIONS['report_mode']
+    jurisdiction = Patient.find_by(submission_token: @patient_submission_token).jurisdiction unless ADMIN_OPTIONS['report_mode']
     return if jurisdiction.nil?
 
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
@@ -48,6 +50,7 @@ class AssessmentsController < ApplicationController
           assessment_placeholder['experiencing_symptoms'] = experiencing_symptoms
         end
         ProduceAssessmentJob.perform_later assessment_placeholder
+        AssessmentReceipt.where(submission_token: params.permit(:patient_submission_token)[:patient_submission_token]).destroy_all
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save
       end
