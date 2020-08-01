@@ -10,8 +10,8 @@ class AssessmentsController < ApplicationController
     return if @patient_submission_token.length != 40
 
     # Don't bother with this if the jurisdiction unique identifier isn't at least 32 characters long (reflects mailer logic)
-    @unique_identifier = params[:unique_identifier].gsub(/[^0-9a-z]/i, '')
-    return if @unique_identifier.length < 32
+    @unique_identifier = params[:unique_identifier]&.gsub(/[^0-9a-z]/i, '')
+    return if @unique_identifier.present? && @unique_identifier.length < 32
 
     @assessment = Assessment.new
 
@@ -25,6 +25,7 @@ class AssessmentsController < ApplicationController
       end
     end
 
+    # Figure out the jurisdiction to know which symptoms to render
     jurisdiction = Jurisdiction.where('unique_identifier like ?', "#{@unique_identifier}%").first if ADMIN_OPTIONS['report_mode']
     jurisdiction = Patient.find_by(submission_token: @patient_submission_token).jurisdiction unless ADMIN_OPTIONS['report_mode']
     return if jurisdiction.nil?
