@@ -457,6 +457,7 @@ class Patient < ApplicationRecord
     end
   end
 
+  # Send a daily assessment to this monitoree
   def send_assessment(force = false)
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
 
@@ -510,6 +511,7 @@ class Patient < ApplicationRecord
     end
   end
 
+  # Return the calculated age based on the date of birth
   def calc_current_age
     dob = date_of_birth || Date.today
     today = Date.today
@@ -520,11 +522,88 @@ class Patient < ApplicationRecord
     age
   end
 
+  # Determine the proper language for sending reports to this monitoree
   def select_language
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
     lang = PatientHelper.languages(primary_language)&.dig(:code)&.to_sym || :en
     lang = :en unless %i[en es es-PR so fr].include?(lang)
     lang
+  end
+
+  # Determine if this patient is eligible for receiving daily report messages; return
+  # a boolean result to switch on, and a tailored message useful for user interfaces.
+  def report_eligibility
+    report_cutoff_time = Time.now.getlocal('-04:00').beginning_of_day
+    reporting_period = (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago
+    eligible = true
+    messages = []
+
+    # Workflow agnostic conditions
+
+    # Can't send messages to monitorees that are purged (this should never actually show up)
+    if purged
+      eligible = false
+      messages << { message: 'Monitoree was purged', datetime: nil }
+    end
+
+    # Can't send messages if notifications are paused
+    if pause_notifications
+      eligible = false
+      messages << { message: 'Monitoree\'s notifications are paused', datetime: nil }
+    end
+
+    # Can't send to household members
+    if id != responder_id
+      eligible = false
+      messages << { message: 'Monitoree is within a household, so the HoH will receive notifications instead', datetime: nil }
+    end
+
+    # Has already reported today
+    if !latest_assessment_at.nil? && latest_assessment_at >= report_cutoff_time
+      eligible = false
+      messages << { message: 'Monitoree has already reported today', datetime: latest_assessment_at }
+    end
+
+    # Has already been contacted today
+    if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent >= 12.hours.ago
+      eligible = false
+      messages << { message: 'Monitoree has been contacted recently', datetime: last_assessment_reminder_sent }
+    end
+
+    # Has an ineligible preferred contact method
+    if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
+      eligible = false
+      messages << { message: "Monitoree has an ineligible preferred contact method (#{preferred_contact_method})", datetime: nil }
+    end
+
+    # Exposure workflow specific conditions
+    unless isolation
+      # In PUI
+      if public_health_action != 'None'
+        eligible = false
+        messages << { message: 'Monitoree\'s latest public health action is not "None"', datetime: nil }
+      end
+      # Monitoring period has elapsed
+      if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
+        eligible = false
+        messages << { message: "Monitoree\'s monitoring period has elapsed and continuos exposure is not enabled", datetime: end_of_monitoring }
+      end
+    end
+
+    # Rough estimate of next contact time
+    if eligible
+      messages << if preferred_contact_time == 'Morning'
+                    { message: '8:00 AM local time (Morning)', datetime: nil }
+                  elsif preferred_contact_time == 'Afternoon'
+                    { message: '12:00 PM local time (Afternoon)', datetime: nil }
+                  elsif preferred_contact_time == 'Evening'
+                    { message: '4:00 PM local time (Evening)', datetime: nil }
+                  else
+                    { message: 'Today', datetime: nil }
+                  end
+    end
+
+    { eligible: eligible, messages: messages }
   end
 
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core

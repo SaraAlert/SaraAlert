@@ -45,7 +45,7 @@
   <div class="card mx-2 mt-3 mb-4 card-square">
     <h5 class="card-header"> Reports</h5>
     <div class="m-4">
-      <%= react_component("subject/CurrentStatus", { status: @patient.status, isolation: @patient.isolation } ) %>
+      <%= react_component("subject/CurrentStatus", { report_eligibility: @patient.report_eligibility, status: @patient.status, isolation: @patient.isolation } ) %>
       <div class="pb-4 pt-2">
         <div class="btn-group" role="group">
           <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New Report</button>

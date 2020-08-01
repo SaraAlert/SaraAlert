@@ -21,6 +21,57 @@ class PatientTest < ActiveSupport::TestCase
     assert_empty patient.transfers
   end
 
+  test 'report eligibility' do
+    patient = create(:patient, purged: true)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'purged'
+
+    patient = create(:patient, pause_notifications: true)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'paused'
+
+    patient = create(:patient, id: 100)
+    patient.update(responder_id: 42)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'household'
+
+    patient = create(:patient, latest_assessment_at: 1.hour.ago)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'already reported'
+
+    patient = create(:patient, last_assessment_reminder_sent: 1.hour.ago)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'contacted recently'
+
+    patient = create(:patient, preferred_contact_method: 'Unknown')
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'ineligible preferred contact method'
+
+    patient = create(:patient, isolation: false, public_health_action: 'foobar')
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'latest public health action is not'
+
+    patient = create(:patient, isolation: false, last_date_of_exposure: 30.days.ago, continuous_exposure: false)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'monitoring period has elapsed'
+
+    patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Morning')
+    assert patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? '8:00 AM local time (Morning)'
+
+    patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Afternoon')
+    assert patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? '12:00 PM local time (Afternoon)'
+
+    patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Evening')
+    assert patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? '4:00 PM local time (Evening)'
+
+    patient = create(:patient, preferred_contact_method: 'Telephone call')
+    assert patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'Today'
+  end
+
   test 'monitoring open' do
     patient = create(:patient, monitoring: true, purged: false)
     assert_equal 1, Patient.monitoring_open.where(id: patient.id).count

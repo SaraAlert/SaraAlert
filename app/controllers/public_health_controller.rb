@@ -247,6 +247,7 @@ class PublicHealthController < ApplicationController
       details[:transferred_at] = patient[:latest_transfer_at]&.rfc2822 || '' if fields.include?(:transferred_at)
       details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
       details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
+      details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
 
       linelist << details
     end
@@ -258,19 +259,19 @@ class PublicHealthController < ApplicationController
     return %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
 
     if workflow == :isolation
-      return %i[jurisdiction assigned_user monitoring_plan latest_report status] if tab == :all
+      return %i[jurisdiction assigned_user monitoring_plan latest_report status report_eligibility] if tab == :all
       return %i[transferred_from monitoring_plan transferred_at] if tab == :transferred_in
       return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
 
-      return %i[jurisdiction assigned_user monitoring_plan latest_report]
+      return %i[jurisdiction assigned_user monitoring_plan latest_report report_eligibility]
     end
 
-    return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status] if tab == :all
-    return %i[jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report] if tab == :pui
+    return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility] if tab == :all
+    return %i[jurisdiction assigned_user end_of_monitoring risk_level public_health_action latest_report report_eligibility] if tab == :pui
     return %i[transferred_from end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_in
     return %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_out
 
-    %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report]
+    %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 
   private
