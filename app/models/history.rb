@@ -6,6 +6,7 @@ require 'action_view/helpers'
 # History: history model
 class History < ApplicationRecord
   HISTORY_TYPES = {
+    monitoree_edit: 'Monitoree Edit',
     report_created: 'Report Created',
     report_updated: 'Report Updated',
     comment: 'Comment',
@@ -26,7 +27,7 @@ class History < ApplicationRecord
   columns.each do |column|
     case column.type
     when :text
-      validates column.name.to_sym, length: { maximum: 2000 }
+      validates column.name.to_sym, length: { maximum: 10000 }
     when :string
       validates column.name.to_sym, length: { maximum: 200 }
     end
@@ -49,6 +50,10 @@ class History < ApplicationRecord
       none
     end
   }
+
+  def self.monitoree_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a monitoree record.')
+    create_history(patient, created_by, HISTORY_TYPES[:monitoree_edit], comment)
+  end
 
   def self.report_created(patient: nil, created_by: 'Sara Alert System', comment: 'User created a new report.')
     create_history(patient, created_by, HISTORY_TYPES[:report_created], comment)

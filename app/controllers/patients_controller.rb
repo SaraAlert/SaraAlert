@@ -231,8 +231,16 @@ class PatientsController < ApplicationController
       end
     end
 
-    # Attempt to update, else return to index if failed
-    redirect_to(root_url) && return unless patient.update!(content)
+    # Grab diff, attempt to update, else return to index if failed
+    patient_before = patient.dup
+    if patient.update(content)
+      diffs = patient_diff(patient_before, patient)
+      unless diffs.length.zero?
+        pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
+        comment = "User edited a monitoree record. Changes were: #{pretty_diff.join(', ')}."
+        history = History.monitoree_edit(patient: patient, created_by: current_user.email, comment: comment)
+      end
+    end
 
     render json: patient
   end
@@ -411,6 +419,17 @@ class PatientsController < ApplicationController
     patient.send_assessment(true)
 
     History.report_reminder(patient: patient, created_by: current_user)
+  end
+
+  # Construct a diff for a patient update to keep track of changes
+  def patient_diff(patient_before, patient_after)
+    diffs = []
+    allowed_params.each do | attribute |
+      if patient_before[attribute] != patient_after[attribute]
+        diffs << { attribute: attribute, before: patient_before[attribute], after: patient_after[attribute] }
+      end
+    end
+    diffs
   end
 
   # Parameters allowed for saving to database
