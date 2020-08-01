@@ -69,7 +69,6 @@ class Patient < ApplicationRecord
   scope :reminder_eligible_exposure, lambda {
     where(isolation: false)
       .where(purged: false)
-      .where(public_health_action: 'None')
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
       .where('last_date_of_exposure >= ? OR continuous_exposure = ?', (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago, true)
@@ -78,7 +77,6 @@ class Patient < ApplicationRecord
         where(isolation: false)
           .where(purged: false)
           .where(pause_notifications: false)
-          .where(public_health_action: 'None')
           .where('patients.id = patients.responder_id')
           .where('last_date_of_exposure >= ? OR continuous_exposure = ?', (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago, true)
           .where(latest_assessment_at: nil)
@@ -578,11 +576,6 @@ class Patient < ApplicationRecord
 
     # Exposure workflow specific conditions
     unless isolation
-      # In PUI
-      if public_health_action != 'None'
-        eligible = false
-        messages << { message: 'Monitoree\'s latest public health action is not "None"', datetime: nil }
-      end
       # Monitoring period has elapsed
       if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
         eligible = false

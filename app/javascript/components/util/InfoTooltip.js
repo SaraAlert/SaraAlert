@@ -36,7 +36,7 @@ const TOOLTIP_TEXT = {
         <b>Actively Monitoring</b>
       </i>
       , the system moves the record to the appropriate line list based on reporting history and latest public health actions. The system will send daily report
-      reminders if the record is not on the <i>PUI</i> (exposure) or <i>Records Requiring Review</i> (isolation) line lists. If set to{' '}
+      reminders if the record is not on the <i>Records Requiring Review</i> (isolation) line list. If set to{' '}
       <i>
         <b>Not Monitoring</b>
       </i>

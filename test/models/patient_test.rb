@@ -47,10 +47,6 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'ineligible preferred contact method'
 
-    patient = create(:patient, isolation: false, public_health_action: 'foobar')
-    assert_not patient.report_eligibility[:eligible]
-    assert patient.report_eligibility[:messages].join(' ').include? 'latest public health action is not'
-
     patient = create(:patient, isolation: false, last_date_of_exposure: 30.days.ago, continuous_exposure: false)
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'monitoring period has elapsed'
