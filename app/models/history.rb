@@ -27,7 +27,7 @@ class History < ApplicationRecord
   columns.each do |column|
     case column.type
     when :text
-      validates column.name.to_sym, length: { maximum: 10000 }
+      validates column.name.to_sym, length: { maximum: 10_000 }
     when :string
       validates column.name.to_sym, length: { maximum: 200 }
     end

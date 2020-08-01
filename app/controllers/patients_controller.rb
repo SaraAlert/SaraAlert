@@ -424,7 +424,7 @@ class PatientsController < ApplicationController
   # Construct a diff for a patient update to keep track of changes
   def patient_diff(patient_before, patient_after)
     diffs = []
-    allowed_params.each do | attribute |
+    allowed_params.each do |attribute|
       if patient_before[attribute] != patient_after[attribute]
         diffs << { attribute: attribute, before: patient_before[attribute], after: patient_after[attribute] }
       end
