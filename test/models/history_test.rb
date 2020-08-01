@@ -22,7 +22,7 @@ class HistoryTest < ActiveSupport::TestCase
   test 'create history' do
     history_types.each do |type|
       assert create(:history, history_type: type)
-      assert create(:history, history_type: type, comment: 'v' * 2000, created_by: 'v' * 200)
+      assert create(:history, history_type: type, comment: 'v' * 10_000, created_by: 'v' * 200)
     end
 
     assert_raises(ActiveRecord::RecordInvalid) do
@@ -32,11 +32,11 @@ class HistoryTest < ActiveSupport::TestCase
     history_types.each do |type|
       assert_raises(ActiveRecord::RecordInvalid) do
         # Text column type
-        create(:history, history_type: type, comment: 'v' * 2001)
+        create(:history, history_type: type, comment: 'v' * 10_001)
       end
 
       assert_raises(ActiveRecord::RecordInvalid) do
-        # String colomn type
+        # String column type
         create(:history, history_type: type, created_by: 'v' * 201)
       end
     end
