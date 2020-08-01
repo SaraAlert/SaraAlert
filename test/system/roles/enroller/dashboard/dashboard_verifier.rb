@@ -86,7 +86,6 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
     verify_patient_field_in_data_table('assigned jurisdiction', patient.jurisdiction[:name])
     verify_patient_field_in_data_table('assigned user', patient.assigned_user)
     verify_patient_field_in_data_table('state/local id', patient.user_defined_id_statelocal)
-    verify_patient_field_in_data_table('sex', patient.sex)
     verify_patient_field_in_data_table('date of birth', patient.date_of_birth.strftime('%m/%d/%Y'))
     verify_patient_field_in_data_table('enrollment date', patient.created_at.to_date.strftime('%m/%d/%Y'))
   end

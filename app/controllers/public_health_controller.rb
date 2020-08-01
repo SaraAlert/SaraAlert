@@ -42,7 +42,7 @@ class PublicHealthController < ApplicationController
 
     # Validate sort params
     order = permitted_params[:order]
-    return head :bad_request unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user state_local_id sex dob
+    return head :bad_request unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user state_local_id dob
                                                                      end_of_monitoring risk_level monitoring_plan public_health_action expected_purge_date
                                                                      reason_for_closure closed_at transferred_at latest_report].include?(order)
 
@@ -173,12 +173,12 @@ class PublicHealthController < ApplicationController
       patients = patients.order('CASE WHEN assigned_user IS NULL THEN 1 ELSE 0 END, assigned_user ' + dir)
     when 'state_local_id'
       patients = patients.order('CASE WHEN user_defined_id_statelocal IS NULL THEN 1 ELSE 0 END, user_defined_id_statelocal ' + dir)
-    when 'sex'
-      patients = patients.order('CASE WHEN sex IS NULL THEN 1 ELSE 0 END, sex ' + dir)
     when 'dob'
       patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir)
     when 'end_of_monitoring'
       patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
+    when 'symptom_onset'
+      patients = patients.order('CASE WHEN symptom_onset IS NULL THEN 1 ELSE 0 END, symptom_onset ' + dir)
     when 'risk_level'
       patients = patients.order_by_risk(dir == 'asc')
     when 'monitoring_plan'
@@ -212,7 +212,7 @@ class PublicHealthController < ApplicationController
                end
 
     # only select patient fields necessary to generate linelists
-    patients = patients.select('patients.id, patients.first_name, patients.last_name, patients.user_defined_id_statelocal, patients.sex, '\
+    patients = patients.select('patients.id, patients.first_name, patients.last_name, patients.user_defined_id_statelocal, patients.symptom_onset, '\
                                'patients.date_of_birth, patients.assigned_user, patients.exposure_risk_assessment, patients.monitoring_plan, '\
                                'patients.public_health_action, patients.monitoring_reason, patients.closed_at, patients.last_date_of_exposure, '\
                                'patients.created_at, patients.updated_at, patients.latest_assessment_at, patients.latest_transfer_at, '\
@@ -228,7 +228,6 @@ class PublicHealthController < ApplicationController
         id: patient[:id],
         name: patient.displayed_name,
         state_local_id: patient[:user_defined_id_statelocal] || '',
-        sex: patient[:sex] || '',
         dob: patient[:date_of_birth]&.strftime('%F') || ''
       }
 
@@ -248,22 +247,23 @@ class PublicHealthController < ApplicationController
       details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
       details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
       details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
+      details[:symptom_onset] = patient.symptom_onset if fields.include?(:symptom_onset)
 
       linelist << details
     end
 
-    { linelist: linelist, fields: %i[name state_local_id sex dob].concat(fields), total: total }
+    { linelist: linelist, fields: %i[name state_local_id dob].concat(fields), total: total }
   end
 
   def linelist_specific_fields(workflow, tab)
     return %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
 
     if workflow == :isolation
-      return %i[jurisdiction assigned_user monitoring_plan latest_report status report_eligibility] if tab == :all
+      return %i[jurisdiction assigned_user monitoring_plan latest_report status report_eligibility symptom_onset] if tab == :all
       return %i[transferred_from monitoring_plan transferred_at] if tab == :transferred_in
       return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
 
-      return %i[jurisdiction assigned_user monitoring_plan latest_report report_eligibility]
+      return %i[jurisdiction assigned_user monitoring_plan latest_report report_eligibility symptom_onset]
     end
 
     return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility] if tab == :all

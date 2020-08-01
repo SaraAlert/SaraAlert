@@ -476,9 +476,9 @@ class PatientsTable extends React.Component {
                         {this.renderTableHeader('transferred_to', 'To Jurisdiction', true, null, null)}
                         {this.renderTableHeader('assigned_user', 'Assigned User', true, null, null)}
                         {this.renderTableHeader('state_local_id', 'State/Local ID', true, null, null)}
-                        {this.renderTableHeader('sex', 'Sex', true, null, null)}
                         {this.renderTableHeader('dob', 'Date of Birth', true, null, null)}
                         {this.renderTableHeader('end_of_monitoring', 'End of Monitoring', true, null, null)}
+                        {this.renderTableHeader('symptom_onset', 'Symptom Onset', true, null, null)}
                         {this.renderTableHeader('risk_level', 'Risk Level', true, null, null)}
                         {this.renderTableHeader('monitoring_plan', 'Monitoring Plan', true, null, null)}
                         {this.renderTableHeader('public_health_action', 'Latest Public Health Action', true, null, null)}
@@ -526,7 +526,6 @@ class PatientsTable extends React.Component {
                             {'transferred_to' in patient && <td>{patient.transferred_to}</td>}
                             {'assigned_user' in patient && <td>{patient.assigned_user}</td>}
                             {'state_local_id' in patient && <td>{patient.state_local_id}</td>}
-                            {'sex' in patient && <td>{patient.sex}</td>}
                             {'dob' in patient && <td>{moment(patient.dob, 'YYYY-MM-DD').format('MM/DD/YYYY')}</td>}
                             {'end_of_monitoring' in patient && (
                               <td>
@@ -534,6 +533,9 @@ class PatientsTable extends React.Component {
                                   ? 'Continuous Exposure'
                                   : moment(patient.end_of_monitoring, 'YYYY-MM-DD').format('MM/DD/YYYY')}
                               </td>
+                            )}
+                            {'symptom_onset' in patient && (
+                              <td>{patient.symptom_onset ? moment(patient.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''}</td>
                             )}
                             {'risk_level' in patient && <td>{patient.risk_level}</td>}
                             {'monitoring_plan' in patient && <td>{patient.monitoring_plan}</td>}
