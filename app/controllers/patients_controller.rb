@@ -282,7 +282,7 @@ class PatientsController < ApplicationController
       unless not_viewable.empty?
         responders = Patient.find(not_viewable).map(&:responder)
         responders.uniq
-        render json: { error: 'Selected Patients dependents are in a household that spans jurisidictions which you do not have access to.',
+        render json: { error: 'Selected monitoree dependents are in a household that spans jurisidictions which you do not have access to.',
                        patients: responders }, status: 401
       end
 
