@@ -4,10 +4,10 @@ import { Button, DropdownButton, Dropdown, InputGroup, Form, OverlayTrigger, Too
 import 'react-toastify/dist/ReactToastify.css';
 import UserModal from './UserModal';
 import EmailModal from './EmailModal';
-import ConfirmationModal from '../layout/ConfirmationModal';
+import confirmDialog from '../util/ConfirmDialog';
 import axios from 'axios';
 import { CSVLink } from 'react-csv';
-import ActionTable from '../layout/ActionTable';
+import CustomTable from '../layout/CustomTable';
 import { ToastContainer, toast } from 'react-toastify';
 
 class AdminTable extends React.Component {
@@ -21,8 +21,8 @@ class AdminTable extends React.Component {
           { label: 'Jurisdiction', field: 'jurisdiction_path', isSortable: true },
           { label: 'Role', field: 'role', isSortable: false },
           { label: 'Status', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },
-          { label: 'API Enabled', field: 'is_API_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
-          { label: '2FA Enabled', field: 'is_2FA_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
+          { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
+          { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: 'Failed Login Attempts', field: 'num_failed_logins', isSortable: true },
         ],
         rowData: [],
@@ -34,21 +34,16 @@ class AdminTable extends React.Component {
         search: '',
         entries: 25,
       },
-      actions: {
-        resetPassword: { name: 'Reset Password', title: 'Reset Password(s)' },
-        resetTwoFactorAuth: { name: 'Reset 2FA', title: 'Reset Two-Factor Authentication' },
-      },
       entryOptions: [10, 15, 25, 50, 100],
       showEditUserModal: false,
       showAddUserModal: false,
       showEmailModal: false,
-      showConfirmationModal: false,
       actionsEnabled: false,
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
       editRow: null,
-      currentAction: null,
       csvData: [],
+      jurisdictionPaths: {},
     };
     // Ref for the CSVLink component used to click it when async data fetch has completed
     this.csvLink = React.createRef();
@@ -57,6 +52,9 @@ class AdminTable extends React.Component {
   componentDidMount() {
     // Update table data on initial mount.
     this.getTableData(this.state.query);
+
+    // Gets jurisdiction path options on initial mount.
+    this.getJurisdictionPaths();
   }
 
   componentDidUpdate() {
@@ -84,7 +82,7 @@ class AdminTable extends React.Component {
    * @param {Function} handleSuccess - Success callback.
    * @param {Function} handleError  - Error callback.
    */
-  axiosPostRequest = (path, data, handleSuccess, handleError) => {
+  axiosAdminPostRequest = (path, data, handleSuccess, handleError) => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post('/admin/' + path, data)
@@ -100,7 +98,7 @@ class AdminTable extends React.Component {
    * @param {Function} handleError  - Error callback.
    * @param {Boolean} isLoading - Desired value of isLoading in state.
    */
-  axiosGetRequest = (path, params, handleSuccess, handleError, isLoading) => {
+  axiosAdminGetRequest = (path, params, handleSuccess, handleError, isLoading) => {
     // Cancel any previous unfinished requests to prevent race condition inconsistencies and
     // generate new cancel token for this request.
     this.state.cancelToken.cancel();
@@ -116,6 +114,15 @@ class AdminTable extends React.Component {
         .catch(handleError);
     });
   };
+
+  /**
+   * Gets the jurisdictions path options via an axios GET request.
+   */
+  getJurisdictionPaths() {
+    axios.get('admin/jurisdiction_paths').then(response => {
+      this.setState({ jurisdictionPaths: response.data.jurisdictionPaths });
+    });
+  }
 
   /**
    * Queries the backend with passed in query data and updates the table data stored in local state.
@@ -152,8 +159,8 @@ class AdminTable extends React.Component {
         console.log(error);
       }
     };
-
-    this.axiosGetRequest(path, params, handleSuccess, handleError, true);
+    console.log(params);
+    this.axiosAdminGetRequest(path, params, handleSuccess, handleError, true);
   };
 
   /**
@@ -213,9 +220,9 @@ class AdminTable extends React.Component {
 
     const dataToSend = {
       email: data.email,
-      jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
+      jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
       role: data.role,
-      is_API_enabled: data.is_API_enabled,
+      is_api_enabled: data.is_api_enabled,
     };
 
     const handleSuccess = () => {
@@ -227,7 +234,7 @@ class AdminTable extends React.Component {
       console.log(error);
     };
 
-    this.axiosPostRequest(path, dataToSend, handleSuccess, handleError);
+    this.axiosAdminPostRequest(path, dataToSend, handleSuccess, handleError);
   };
 
   /**
@@ -241,9 +248,9 @@ class AdminTable extends React.Component {
     const dataToSend = {
       id: this.state.table.rowData[parseInt(row)].id,
       email: data.email,
-      jurisdiction: this.props.jurisdiction_paths[data.jurisdictionPath],
+      jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
       role: data.role,
-      is_API_enabled: data.is_API_enabled,
+      is_api_enabled: data.is_api_enabled,
       is_locked: data.is_locked,
     };
 
@@ -256,7 +263,7 @@ class AdminTable extends React.Component {
       console.log(error);
     };
 
-    this.axiosPostRequest(path, dataToSend, handleSuccess, handleError);
+    this.axiosAdminPostRequest(path, dataToSend, handleSuccess, handleError);
   };
 
   /**
@@ -311,7 +318,7 @@ class AdminTable extends React.Component {
       console.log(error);
     };
 
-    this.axiosPostRequest(path, dataToSend, handleSuccess, handleError);
+    this.axiosAdminPostRequest(path, dataToSend, handleSuccess, handleError);
   };
 
   /**
@@ -368,8 +375,8 @@ class AdminTable extends React.Component {
         const csvData = response.data.linelist.map(userData => {
           return {
             ...userData,
-            is_API_enabled: userData.is_API_enabled.toString(),
-            is_2FA_enabled: userData.is_2FA_enabled.toString(),
+            is_api_enabled: userData.is_api_enabled.toString(),
+            is_2fa_enabled: userData.is_2fa_enabled.toString(),
             is_locked: userData.is_locked.toString(),
           };
         });
@@ -392,7 +399,7 @@ class AdminTable extends React.Component {
       console.log(error);
     };
 
-    this.axiosGetRequest(path, params, handleSuccess, handleError, false);
+    this.axiosAdminGetRequest(path, params, handleSuccess, handleError, false);
   };
 
   /**
@@ -428,42 +435,34 @@ class AdminTable extends React.Component {
   };
 
   /**
-   * Called when a reset action is clicked.
-   * Sets the state to show a confirmation modal and sets the currently selected action.
-   * @param {String} currentAction - Current action that was clicked.
+   * Called when the reset password action is clicked.
+   * Opens a confirmation modal and calls method to reset password for selected users if confirmed.
    */
-  handleResetClick = currentAction => {
-    this.setState({
-      showConfirmationModal: true,
-      currentAction,
-    });
+  handleResetPasswordClick = async () => {
+    const confirmText = `Are you sure you would like to reset the password(s) of ${this.state.table.selectedRows.length} user(s)?`;
+    const options = {
+      title: 'Reset Password(s)',
+      okLabel: 'Confirm',
+      cancelLabel: 'Cancel',
+    };
+    if (await confirmDialog(confirmText, options)) {
+      this.handleResetPasswords();
+    }
   };
 
   /**
-   * Called when the confirmation modal cancel or X button is clicked.
-   * Updates the state appropriately to hide the modal and reset the current action to null.
+   * Called when the reset 2FA action is clicked.
+   * Opens a confirmation modal and calls method to reset 2FA for selected users if confirmed.
    */
-  handleConfirmationModalClose = () => {
-    this.setState({
-      showConfirmationModal: false,
-      currentAction: null,
-    });
-  };
-
-  /**
-   * Closes confirmatiom modal and executes currently selected action.
-   */
-  handleConfirmationSave = () => {
-    this.handleConfirmationModalClose();
-    switch (this.state.currentAction) {
-      case this.state.actions.resetPassword.name:
-        this.handleResetPasswords();
-        break;
-      case this.state.actions.resetTwoFactorAuth.name:
-        this.handleReset2FA();
-        break;
-      default:
-        console.log('No current action to execute.');
+  handleReset2FAClick = async () => {
+    const confirmText = `Are you sure you would like to reset two-factor authentication for ${this.state.table.selectedRows.length} user(s)?`;
+    const options = {
+      title: 'Reset Two-Factor Authentication',
+      okLabel: 'Confirm',
+      cancelLabel: 'Cancel',
+    };
+    if (await confirmDialog(confirmText, options)) {
+      this.handleReset2FA();
     }
   };
 
@@ -495,7 +494,7 @@ class AdminTable extends React.Component {
       console.log(error);
     };
 
-    this.axiosPostRequest(path, dataToSend, handleSuccess, handleError);
+    this.axiosAdminPostRequest(path, dataToSend, handleSuccess, handleError);
   };
 
   /**
@@ -526,22 +525,7 @@ class AdminTable extends React.Component {
       console.log(error);
     };
 
-    this.axiosPostRequest(path, dataToSend, handleSuccess, handleError);
-  };
-
-  /**
-   * Gets the corresponding description for the confirmatiom model based on the input action.
-   * @param {String} action - Action to get description for.
-   */
-  getActionDescription = action => {
-    switch (action) {
-      case this.state.actions.resetPassword.name:
-        return `reset the password(s) of ${this.state.table.selectedRows.length} user(s)`;
-      case this.state.actions.resetTwoFactorAuth.name:
-        return `reset two-factor authentication for ${this.state.table.selectedRows.length} user(s)`;
-      default:
-        return '';
-    }
+    this.axiosAdminPostRequest(path, dataToSend, handleSuccess, handleError);
   };
 
   render() {
@@ -581,12 +565,12 @@ class AdminTable extends React.Component {
                 className="ml-3"
                 disabled={!this.state.actionsEnabled}>
                 {this.state.query.tab !== 'closed' && (
-                  <Dropdown.Item className="px-3" onClick={() => this.handleResetClick(this.state.actions.resetPassword)}>
+                  <Dropdown.Item className="px-3" onClick={this.handleResetPasswordClick}>
                     <i className="fas fa-undo"></i>
                     <span className="ml-2">Reset Password</span>
                   </Dropdown.Item>
                 )}
-                <Dropdown.Item className="px-3" onClick={() => this.handleResetClick(this.state.actions.resetTwoFactorAuth)}>
+                <Dropdown.Item className="px-3" onClick={this.handleReset2FAClick}>
                   <i className="fas fa-key"></i>
                   <span className="ml-2">Reset 2FA</span>
                 </Dropdown.Item>
@@ -600,7 +584,7 @@ class AdminTable extends React.Component {
             </InputGroup>
           </div>
         </div>
-        <ActionTable
+        <CustomTable
           columnData={this.state.table.colData}
           rowData={this.state.table.rowData}
           totalRows={this.state.table.totalRows}
@@ -623,7 +607,7 @@ class AdminTable extends React.Component {
             onClose={this.handleUserModalClose}
             title={this.state.showEditUserModal ? 'Edit User' : 'Add User'}
             type={this.state.showEditUserModal ? 'edit' : 'add'}
-            jurisdictionPaths={Object.keys(this.props.jurisdiction_paths)}
+            jurisdictionPaths={Object.keys(this.state.jurisdictionPaths)}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
           />
@@ -637,15 +621,6 @@ class AdminTable extends React.Component {
             userCount={this.state.table.selectedRows.length}
           />
         )}
-        {this.state.showConfirmationModal && (
-          <ConfirmationModal
-            show={this.state.showConfirmationModal}
-            title={this.state.currentAction ? this.state.currentAction.title : ''}
-            onClose={this.handleConfirmationModalClose}
-            onSave={this.handleConfirmationSave}
-            actionDescription={this.getActionDescription(this.state.currentAction.name)}
-          />
-        )}
         <ToastContainer />
       </div>
     );
@@ -654,7 +629,6 @@ class AdminTable extends React.Component {
 
 AdminTable.propTypes = {
   authenticity_token: PropTypes.string,
-  jurisdiction_paths: PropTypes.object,
   role_types: PropTypes.array,
   is_usa_admin: PropTypes.bool,
 };

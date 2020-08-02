@@ -4,7 +4,7 @@ import { Spinner, Table, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import InfoTooltip from '../util/InfoTooltip';
 
-class ActionTable extends React.Component {
+class CustomTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,7 +19,7 @@ class ActionTable extends React.Component {
   /**
    * Called when a sorting button is clicked in a column header.
    * Toggles sort direction and updates the table based on the clicked column field.
-   * @param {*} field
+   * @param {String} field - Field that is being sorted on.
    */
   handleSortClick = field => {
     this.setState(
@@ -117,20 +117,19 @@ class ActionTable extends React.Component {
             this.handleSortClick(field);
           }
         }}
-        className={sortable ? 'pr-3' : ''}
-        style={{ cursor: sortable ? 'pointer' : 'default' }}>
+        className={sortable ? 'pr-3 pointer-cursor' : ''}>
         {sortable && (
           <React.Fragment>
-            <div style={{ position: 'relative' }}>
-              <i className="fas fa-sort float-right my-1" style={{ color: '#b8b8b8', position: 'absolute', right: '-12px' }}></i>
+            <div className="sort-header">
+              <i className="fas fa-sort float-right my-1 sort-header__button--default"></i>
               {this.state.tableQuery.orderBy === field && this.state.tableQuery.sortDirection === 'asc' && (
                 <span>
-                  <i className="fas fa-sort-up float-right my-1" style={{ position: 'absolute', right: '-12px' }}></i>
+                  <i className="fas fa-sort-up float-right my-1 sort-header__button--selected"></i>
                 </span>
               )}
               {this.state.tableQuery.orderBy === field && this.state.tableQuery.sortDirection === 'desc' && (
                 <span>
-                  <i className="fas fa-sort-down float-right my-1" style={{ position: 'absolute', right: '-12px' }}></i>
+                  <i className="fas fa-sort-down float-right my-1 sort-header__button--selected"></i>
                 </span>
               )}
             </div>
@@ -249,7 +248,7 @@ class ActionTable extends React.Component {
   }
 }
 
-ActionTable.propTypes = {
+CustomTable.propTypes = {
   columnData: PropTypes.array,
   rowData: PropTypes.array,
   totalRows: PropTypes.number,
@@ -267,10 +266,10 @@ ActionTable.propTypes = {
   entryOptions: PropTypes.array,
 };
 
-ActionTable.defaultProps = {
+CustomTable.defaultProps = {
   handleEdit: () => {},
   handleTableUpdate: () => {},
   handleSelect: () => {},
 };
 
-export default ActionTable;
+export default CustomTable;

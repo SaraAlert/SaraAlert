@@ -2,7 +2,6 @@
 <%= react_component("admin/AdminTable", {
         role_types: Role.pluck(:name).uniq.reverse.map{|role| role.split('_').map(&:capitalize).join(' ')}, 
         authenticity_token: form_authenticity_token, 
-        jurisdiction_paths: Hash[Jurisdiction.where(id: current_user.jurisdiction.subtree_ids).map{|jur| [jur[:path], jur.id]}], 
         is_usa_admin: current_user.can_send_admin_emails? 
     }) 
 %>

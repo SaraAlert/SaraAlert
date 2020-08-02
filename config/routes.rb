@@ -34,20 +34,18 @@ Rails.application.routes.draw do
   get '/.well-known/smart-configuration', to: 'fhir/r4/api#well_known'
   get '/redirect', to: redirect { |params, request| "/oauth/authorize/native?#{request.params.to_query}" }
 
-  resources :patients, only: [:index, :new, :create, :show, :edit, :update, :new_group_member]
+  resources :patients, only: [:index, :new, :create, :show, :edit, :update]
 
-  resources :admin, only: [:index, :create_user]
+  resources :admin, only: [:index]
   get 'admin/users', to: 'admin#users'
-
+  get 'admin/jurisdiction_paths', to: 'admin#jurisdiction_paths'
+  
   post 'admin/create_user', to: 'admin#create_user'
   post 'admin/edit_user', to: 'admin#edit_user'
-  post 'admin/lock_user', to: 'admin#lock_user'
-  post 'admin/unlock_user', to: 'admin#unlock_user'
   post 'admin/reset_password', to: 'admin#reset_password'
   post 'admin/reset_2fa', to: 'admin#reset_2fa'
   post 'admin/email', to: 'admin#send_email'
-  post 'admin/enable_api', to: 'admin#enable_api'
-  post 'admin/disable_api', to: 'admin#disable_api'
+
 
   resources :histories, only: [:create]
 

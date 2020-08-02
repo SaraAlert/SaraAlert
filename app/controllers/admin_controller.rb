@@ -9,6 +9,8 @@ class AdminController < ApplicationController
   end
 
   def users
+    redirect_to(root_url) && return unless current_user.has_role? :admin
+
     permitted_params = params.permit(:search, :entries, :page, :orderBy, :sortDirection)
 
     # Validate search param
@@ -21,14 +23,14 @@ class AdminController < ApplicationController
 
     # Validate sort params
     order_by = permitted_params[:orderBy]
-    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path].include?(order_by)
+    return head :bad_request unless order_by.nil? || order_by.blank? || %w[id email jurisdiction_path num_failed_logins].include?(order_by)
 
     sort_direction = permitted_params[:sortDirection]
     return head :bad_request unless sort_direction.nil? || sort_direction.blank? || %w[asc desc].include?(sort_direction)
     return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
 
     # Get all users within the current user's jurisdiction
-    users = User.all.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
+    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
       'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path '
     )
 
@@ -52,8 +54,8 @@ class AdminController < ApplicationController
         jurisdiction_path: user.path || '',
         role: user.roles[0].name.split('_').map(&:capitalize).join(' ') || '',
         is_locked: !user.locked_at.nil? || false,
-        is_API_enabled: user[:api_enabled] || false,
-        is_2FA_enabled: user.authy_id.nil? || false,
+        is_api_enabled: user[:api_enabled] || false,
+        is_2fa_enabled: user.authy_id.nil? || false,
         num_failed_logins: user.failed_attempts
       }
 
@@ -69,7 +71,6 @@ class AdminController < ApplicationController
     # Satisfy brakeman with additional sanitation logic
     dir = sort_direction == 'asc' ? 'asc' : 'desc'
 
-    puts "order by: #{order_by}"
     case order_by
     when 'id'
       users = users.order(id: dir)
@@ -93,24 +94,24 @@ class AdminController < ApplicationController
   end
 
   def create_user
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_API_enabled)
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_api_enabled)
     email = permitted_params[:email].strip
-    raise 'EMAIL must be provided' unless email
+    return head :bad_request unless email
 
     address = ValidEmail2::Address.new(email)
-    raise 'EMAIL is invalid' unless address.valid? && !address.disposable?
+    return head :bad_request unless address.valid? && !address.disposable?
 
     password = User.rand_gen
     role = permitted_params[:role].split(' ').map(&:downcase).join('_')
     roles = Role.pluck(:name)
-    raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
+    return head :bad_request unless role && roles.include?(role)
 
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
-    raise "JURISDICTION must be provided and one of #{jurisdictions}" unless jurisdiction && jurisdictions.include?(jurisdiction)
+    return head :bad_request unless jurisdiction && jurisdictions.include?(jurisdiction)
 
-    is_API_enabled = permitted_params[:is_API_enabled]
-    # TODO: validation?
+    is_api_enabled = permitted_params[:is_api_enabled]
+    return head :bad_request unless [true, false].include? is_api_enabled
 
     # Create user
     # - require user to change password on first login
@@ -119,7 +120,7 @@ class AdminController < ApplicationController
       password: password,
       jurisdiction: Jurisdiction.find_by_id(jurisdiction),
       force_password_change: true,
-      api_enabled: is_API_enabled
+      api_enabled: is_api_enabled
     )
     user.add_role role.to_sym
     user.save!
@@ -129,35 +130,34 @@ class AdminController < ApplicationController
   def edit_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role, :is_API_enabled, :is_locked)
+    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role, :is_api_enabled, :is_locked)
     roles = Role.pluck(:name)
 
     id = permitted_params[:id]
 
     email = permitted_params[:email]
-    raise 'EMAIL must be provided' unless email
+    return head :bad_request unless email
 
     role = permitted_params[:role].split(' ').map(&:downcase).join('_')
-    puts "role in edit: #{role}"
-    raise "ROLE must be provided and one of #{roles}" unless role && roles.include?(role)
+    return head :bad_request unless role && roles.include?(role)
 
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
-    puts jurisdiction.to_s + '   ------ '
-    raise "JURISDICTION must be provided and one of #{jurisdictions}" unless jurisdiction && jurisdictions.include?(jurisdiction)
+    return head :bad_request unless jurisdiction && jurisdictions.include?(jurisdiction)
+
+    is_api_enabled = permitted_params[:is_api_enabled]
+    return head :bad_request unless [true, false].include? is_api_enabled
+
+    is_locked = permitted_params[:is_locked]
+    return head :bad_request unless [true, false].include? is_locked
 
     # Find user
     user = User.find_by(id: id)
+    return head :bad_request unless user
 
+    # Verify user jurisdiction access
     cur_jur = current_user.jurisdiction
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
-    raise 'USER not found' unless user
-
-    is_API_enabled = permitted_params[:is_API_enabled]
-    #TODO: validation?
-
-    is_locked = permitted_params[:is_locked]
-    #TODO: validation?
 
     # Update email
     user.email = email
@@ -170,7 +170,7 @@ class AdminController < ApplicationController
     user.add_role role.to_sym
 
     # Update API access
-    user.update!(api_enabled: is_API_enabled)
+    user.update!(api_enabled: is_api_enabled)
 
     # Update locked status
     if user.locked_at.nil? && is_locked
@@ -180,18 +180,6 @@ class AdminController < ApplicationController
     end
 
     user.save!
-  end
-
-  def lock_user
-    redirect_to(root_url) && return unless current_user.has_role? :admin
-
-    permitted_params = params[:admin].permit(:email)
-    email = permitted_params[:email]
-    user = User.find_by(email: email)
-    cur_jur = current_user.jurisdiction
-    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
-
-    user.lock_access!
   end
 
   def reset_2fa
@@ -209,18 +197,6 @@ class AdminController < ApplicationController
       user.authy_enabled = false
       user.save!
     end
-  end
-
-  def unlock_user
-    redirect_to(root_url) && return unless current_user.has_role? :admin
-
-    permitted_params = params[:admin].permit(:email)
-    email = permitted_params[:email]
-    user = User.find_by(email: email)
-    cur_jur = current_user.jurisdiction
-    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
-
-    user.unlock_access!
   end
 
   def reset_password
@@ -243,7 +219,7 @@ class AdminController < ApplicationController
     end
   end
 
-  def send_email
+  def email
     redirect_to(root_url) && return unless current_user.can_send_admin_emails?
 
     permitted_params = params[:admin].permit(:comment, { ids: [] })
@@ -256,27 +232,8 @@ class AdminController < ApplicationController
     end
   end
 
-  def enable_api
-    redirect_to(root_url) && return unless current_user.has_role? :admin
-
-    permitted_params = params[:admin].permit(:email)
-    email = permitted_params[:email]
-    user = User.find_by(email: email)
-    cur_jur = current_user.jurisdiction
-    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
-
-    user.update!(api_enabled: true)
-  end
-
-  def disable_api
-    redirect_to(root_url) && return unless current_user.has_role? :admin
-
-    permitted_params = params[:admin].permit(:email)
-    email = permitted_params[:email]
-    user = User.find_by(email: email)
-    cur_jur = current_user.jurisdiction
-    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
-
-    user.update!(api_enabled: false)
+  # Get jurisdiction ids and paths of viewable jurisdictions
+  def jurisdiction_paths
+    render json: { jurisdictionPaths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [path, id] }] }
   end
 end

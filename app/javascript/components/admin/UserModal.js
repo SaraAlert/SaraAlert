@@ -9,7 +9,7 @@ class UserModal extends React.Component {
       email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
       jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
       role: this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0],
-      is_API_enabled: this.props.initialUserData.is_API_enabled ? this.props.initialUserData.is_API_enabled : false,
+      is_api_enabled: this.props.initialUserData.is_api_enabled ? this.props.initialUserData.is_api_enabled : false,
       is_locked: this.props.initialUserData.is_locked ? this.props.initialUserData.is_locked : false,
     };
   }
@@ -36,7 +36,7 @@ class UserModal extends React.Component {
 
   handleAPIAccessChange = event => {
     const val = event.target.checked;
-    this.setState({ is_API_enabled: val });
+    this.setState({ is_api_enabled: val });
   };
 
   render() {
@@ -104,8 +104,8 @@ class UserModal extends React.Component {
             <Form.Check
               id="accessSwitch"
               type="switch"
-              checked={this.state.is_API_enabled}
-              label={this.state.is_API_enabled ? 'Enabled' : 'Disabled'}
+              checked={this.state.is_api_enabled}
+              label={this.state.is_api_enabled ? 'Enabled' : 'Disabled'}
               onChange={this.handleAPIAccessChange}
             />
           </Form.Group>

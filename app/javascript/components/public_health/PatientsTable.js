@@ -22,7 +22,7 @@ import {
 import InfoTooltip from '../util/InfoTooltip';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
-import ActionTable from '../layout/ActionTable';
+import CustomTable from '../layout/CustomTable';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -459,7 +459,7 @@ class PatientsTable extends React.Component {
                   )}
                 </InputGroup>
               </Form>
-              <ActionTable
+              <CustomTable
                 columnData={this.state.table.displayedColData}
                 rowData={this.state.table.rowData}
                 totalRows={this.state.table.totalRows}
