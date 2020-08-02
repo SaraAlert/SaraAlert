@@ -26,7 +26,7 @@ class PatientMailer < ApplicationMailer
     intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
     url_contents = new_patient_assessment_jurisdiction_report_lang_url(patient.submission_token,
                                                                        lang&.to_s || 'en',
-                                                                       patient.jurisdiction.unique_identifier[0, 32]).to_s
+                                                                       patient.jurisdiction.unique_identifier[0, 32])
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
@@ -79,7 +79,7 @@ class PatientMailer < ApplicationMailer
       intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
       url_contents = new_patient_assessment_jurisdiction_report_lang_url(p.submission_token,
                                                                          lang&.to_s || 'en',
-                                                                         patient.jurisdiction.unique_identifier[0, 32]).to_s
+                                                                         patient.jurisdiction.unique_identifier[0, 32])
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
       from = ENV['TWILLIO_SENDING_NUMBER']

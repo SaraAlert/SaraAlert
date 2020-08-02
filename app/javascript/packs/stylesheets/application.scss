@@ -3,10 +3,12 @@
 @import '~datatables.net-bs4/css/dataTables.bootstrap4';
 @import '~datatables.net-select-bs4/css/select.bootstrap4';
 @import '~datatables.net-buttons-bs4/css/buttons.bootstrap4';
+@import 'react-datepicker/dist/react-datepicker.css';
 @import 'login';
 @import 'layout';
 @import 'recharts';
 @import 'datatables';
+@import 'datepicker';
 @import 'toastify';
 @import 'analytics';
 @import 'custom_table';

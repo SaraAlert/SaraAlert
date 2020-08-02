@@ -1,12 +1,14 @@
 import React from 'react';
-import { Form, Row, Col, Button, Modal, Tooltip } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
-import CaseStatus from './CaseStatus';
-import reportError from '../util/ReportError';
-import InfoTooltip from '../util/InfoTooltip';
+import { Form, Row, Col, Button, Modal, Tooltip } from 'react-bootstrap';
 import _ from 'lodash';
+import axios from 'axios';
 import moment from 'moment';
+
+import CaseStatus from './CaseStatus';
+import DateInput from '../util/DateInput';
+import InfoTooltip from '../util/InfoTooltip';
+import reportError from '../util/ReportError';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {
@@ -288,7 +290,19 @@ class MonitoringStatus extends React.Component {
           apply_to_group_cm_only_date: this.state.apply_to_group_cm_only_date,
         })
         .then(() => {
-          location.reload(true);
+          if (diffState.includes('jurisdiction_path')) {
+            const currentUserJurisdictionString = this.props.current_user.jurisdiction_path.join(', ');
+            // check if current_user has access to the changed jurisdiction
+            // if so, reload the page, if not, redirect to exposure or isolation dashboard
+            if (!this.state.jurisdiction_path.startsWith(currentUserJurisdictionString)) {
+              const pathEnd = this.state.isolation ? '/isolation' : '';
+              location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health' + pathEnd);
+            } else {
+              location.reload(true);
+            }
+          } else {
+            location.reload(true);
+          }
         })
         .catch(error => {
           reportError(error);
@@ -335,13 +349,11 @@ class MonitoringStatus extends React.Component {
           {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && this.state.apply_to_group_cm_only && (
             <Form.Group>
               <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
-              <Form.Control
-                size="lg"
+              <DateInput
                 id="apply_to_group_cm_only_date"
-                type="date"
-                className="form-square"
-                value={this.state.apply_to_group_cm_only_date || ''}
-                onChange={this.handleChange}
+                date={this.state.apply_to_group_cm_only_date}
+                onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
+                placement="bottom"
               />
             </Form.Group>
           )}
@@ -560,6 +572,7 @@ class MonitoringStatus extends React.Component {
 }
 
 MonitoringStatus.propTypes = {
+  current_user: PropTypes.object,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   jurisdictionPaths: PropTypes.object,

@@ -1,10 +1,12 @@
 import React from 'react';
-import { Form, Row, Col, Button } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Form, Row, Col, Button } from 'react-bootstrap';
 import axios from 'axios';
+
 import confirmDialog from '../util/ConfirmDialog';
-import reportError from '../util/ReportError';
+import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
+import reportError from '../util/ReportError';
 
 class SymptomOnset extends React.Component {
   constructor(props) {
@@ -54,14 +56,7 @@ class SymptomOnset extends React.Component {
               SYMPTOM ONSET
               <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
             </Form.Label>
-            <Form.Control
-              size="lg"
-              id="symptom_onset"
-              type="date"
-              className="form-square"
-              value={this.state.symptom_onset || ''}
-              onChange={this.handleChange}
-            />
+            <DateInput id="symptom_onset" date={this.state.symptom_onset} onChange={date => this.setState({ symptom_onset: date })} placement="bottom" />
           </Form.Group>
           <Form.Group as={Col} md="18" className="align-self-end pl-0">
             <Button className="btn-lg" onClick={() => this.handleSubmit('Are you sure you want to modify the symptom onset date?')}>

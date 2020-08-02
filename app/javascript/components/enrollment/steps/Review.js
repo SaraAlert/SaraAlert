@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, Button, Modal } from 'react-bootstrap';
-import Patient from '../../patient/Patient';
 import { PropTypes } from 'prop-types';
+import { Card, Button, Modal } from 'react-bootstrap';
+
+import Patient from '../../patient/Patient';
 
 class Review extends React.Component {
   constructor(props) {

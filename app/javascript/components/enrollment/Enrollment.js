@@ -1,19 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
-import { debounce, pickBy, identity } from 'lodash';
 import { Carousel } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { debounce, pickBy, identity } from 'lodash';
+import axios from 'axios';
+import libphonenumber from 'google-libphonenumber';
+
 import Identification from './steps/Identification';
 import Address from './steps/Address';
 import Contact from './steps/Contact';
 import Arrival from './steps/Arrival';
+import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
 import Exposure from './steps/Exposure';
 import Review from './steps/Review';
 import confirmDialog from '../util/ConfirmDialog';
-import AdditionalPlannedTravel from './steps/AdditionalPlannedTravel';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import libphonenumber from 'google-libphonenumber';
 import reportError from '../util/ReportError';
 
 const PNF = libphonenumber.PhoneNumberFormat;

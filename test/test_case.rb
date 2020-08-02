@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'rspec/mocks/minitest_integration'
 
 SimpleCov.command_name 'TestCase'
 
 class ActiveSupport::TestCase
   include FactoryBot::Syntax::Methods
+
+  fixtures :all
 
   def setup
     create(:enroller)

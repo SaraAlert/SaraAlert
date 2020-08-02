@@ -1,7 +1,9 @@
 import React from 'react';
-import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
+
+import DateInput from '../util/DateInput';
 import reportError from '../util/ReportError';
 
 class Laboratory extends React.Component {
@@ -10,8 +12,8 @@ class Laboratory extends React.Component {
     this.state = {
       showModal: false,
       lab_type: this.props.lab.lab_type || '',
-      specimen_collection: this.props.lab.specimen_collection || '',
-      report: this.props.lab.report || '',
+      specimen_collection: this.props.lab.specimen_collection,
+      report: this.props.lab.report,
       result: this.props.lab.result || '',
     };
     this.toggleModal = this.toggleModal.bind(this);
@@ -74,19 +76,18 @@ class Laboratory extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Specimen Collection Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  className="form-square form-control-lg"
-                  value={this.state.specimen_collection}
-                  onChange={this.handleChange}
+                <DateInput
                   id="specimen_collection"
+                  date={this.state.specimen_collection}
+                  onChange={date => this.setState({ specimen_collection: date })}
+                  placement="bottom"
                 />
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Report Date</Form.Label>
-                <Form.Control type="date" className="form-square form-control-lg" value={this.state.report} onChange={this.handleChange} id="report" />
+                <DateInput id="report" date={this.state.report} onChange={date => this.setState({ report: date })} placement="bottom" />
               </Form.Group>
             </Row>
             <Row>

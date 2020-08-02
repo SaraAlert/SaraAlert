@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Table, Button, Row, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Card, Table, Button, Row, Col } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import Switch from 'react-switch';
 import _ from 'lodash';

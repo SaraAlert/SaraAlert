@@ -1,8 +1,7 @@
 import React from 'react';
-import { Card, Form, Col } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Card, Form, Col } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-
 import _ from 'lodash';
 
 let DATES_OF_INTEREST = []; // If certain dates are desired, they can be specified here

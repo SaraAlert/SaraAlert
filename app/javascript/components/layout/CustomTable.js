@@ -169,8 +169,15 @@ class CustomTable extends React.Component {
               return (
                 <tr key={data.id}>
                   {Object.values(this.props.columnData).map((col, index) => {
-                    // If this column has value options, use the data value as a key to those options
-                    const value = col.options ? col.options[data[col.field]] : data[col.field];
+                    let value = data[col.field];
+                    if (col.options) {
+                      // If this column has value options, use the data value as a key to those options
+                      value = col.options[data[col.field]];
+                    } else if (col.filter) {
+                      // If this column has a filter, apply the filter to the value
+                      value = col.filter(data[col.field]);
+                    }
+
                     return <td key={index}>{value}</td>;
                   })}
                   {this.props.isEditable && (

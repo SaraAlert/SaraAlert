@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
-import _ from 'lodash';
 import { Carousel } from 'react-bootstrap';
+import _ from 'lodash';
+import axios from 'axios';
+
 import SymptomsAssessment from './steps/SymptomsAssessment';
 import AssessmentCompleted from './steps/AssessmentCompleted';
 import confirmDialog from '../util/ConfirmDialog';

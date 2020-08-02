@@ -1,11 +1,13 @@
 import React from 'react';
-import { Card, Button, Form, Col } from 'react-bootstrap';
-import { countryOptions } from '../../../data/countryOptions';
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
+import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
+import axios from 'axios';
+
 import confirmDialog from '../../util/ConfirmDialog';
+import DateInput from '../../util/DateInput';
 import InfoTooltip from '../../util/InfoTooltip';
+import { countryOptions } from '../../../data/countryOptions';
 
 class Exposure extends React.Component {
   constructor(props) {
@@ -33,7 +35,6 @@ class Exposure extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    value = event.target.type === 'date' && value === '' ? undefined : value;
     if (event?.target?.name && event.target.name === 'jurisdictionId') {
       this.setState({ jurisdictionPath: event.target.value });
       let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
@@ -65,6 +66,20 @@ class Exposure extends React.Component {
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        this.props.setEnrollmentState({ ...this.state.modified });
+      }
+    );
+  }
+
+  handleDateChange(field, date) {
+    let current = this.state.current;
+    let modified = this.state.modified;
+    this.setState(
+      {
+        current: { ...current, patient: { ...current.patient, [field]: date } },
+        modified: { ...modified, patient: { ...modified.patient, [field]: date } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
@@ -128,13 +143,12 @@ class Exposure extends React.Component {
         <Form.Row>
           <Form.Group as={Col} md="7" controlId="symptom_onset">
             <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
-            <Form.Control
-              isInvalid={this.state.errors['symptom_onset']}
-              size="lg"
-              type="date"
-              className="form-square"
-              value={this.state.current.patient.symptom_onset || ''}
-              onChange={this.handleChange}
+            <DateInput
+              id="symptom_onset"
+              date={this.state.current.patient.symptom_onset}
+              onChange={date => this.handleDateChange('symptom_onset', date)}
+              placement="bottom"
+              isInvalid={!!this.state.errors['symptom_onset']}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['symptom_onset']}
@@ -189,13 +203,12 @@ class Exposure extends React.Component {
               LAST DATE OF EXPOSURE{this.schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
             </Form.Label>
-            <Form.Control
-              isInvalid={this.state.errors['last_date_of_exposure']}
-              size="lg"
-              type="date"
-              className="form-square"
-              value={this.state.current.patient.last_date_of_exposure || ''}
-              onChange={this.handleChange}
+            <DateInput
+              id="last_date_of_exposure"
+              date={this.state.current.patient.last_date_of_exposure}
+              onChange={date => this.handleDateChange('last_date_of_exposure', date)}
+              placement="bottom"
+              isInvalid={!!this.state.errors['last_date_of_exposure']}
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['last_date_of_exposure']}

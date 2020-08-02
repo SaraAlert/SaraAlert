@@ -69,6 +69,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
           if details[field].blank?
             assert_nil csv[row][col]&.to_datetime, "For field: #{field}"
           else
+            sleep(0.1)
             assert_in_delta(details[field].to_datetime, csv[row][col].to_datetime, 1, "For field: #{field}")
           end
         else
@@ -90,6 +91,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         cell_value = monitorees.cell(row + 2, col + 1)
         if field == :status
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field}")
+        elsif %i[primary_telephone secondary_telephone].include?(field)
+          assert_equal(format_phone_number(details[field]).to_s, cell_value || '', "For field: #{field}")
         else
           assert_equal(details[field].to_s, cell_value || '', "For field: #{field}")
         end
@@ -109,6 +112,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         cell_value = monitorees_list.cell(row + 2, col + 1)
         if field == :status
           assert_equal(patient.status&.to_s&.humanize&.downcase, cell_value, "For field: #{field} in Monitorees List")
+        elsif %i[primary_telephone secondary_telephone].include?(field)
+          assert_equal(format_phone_number(details[field]).to_s, cell_value || '', "For field: #{field} in Monitorees List")
         else
           assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Monitorees List")
         end

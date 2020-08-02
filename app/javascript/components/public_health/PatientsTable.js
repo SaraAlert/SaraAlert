@@ -1,8 +1,5 @@
 import React from 'react';
-
 import { PropTypes } from 'prop-types';
-import axios from 'axios';
-import moment from 'moment-timezone';
 import {
   Badge,
   Button,
@@ -19,9 +16,12 @@ import {
   TabContent,
   Tooltip,
 } from 'react-bootstrap';
-import InfoTooltip from '../util/InfoTooltip';
+import axios from 'axios';
+import moment from 'moment-timezone';
+
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
+import InfoTooltip from '../util/InfoTooltip';
 import CustomTable from '../layout/CustomTable';
 
 class PatientsTable extends React.Component {
@@ -38,8 +38,8 @@ class PatientsTable extends React.Component {
           { field: 'assigned_user', label: 'Assigned User', isSortable: true, tooltip: null },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
           { field: 'sex', label: 'Sex', isSortable: true, tooltip: null },
-          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null },
-          { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null },
+          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatDate },
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
           { field: 'public_health_action', label: 'Latest Public Health Action', isSortable: true, tooltip: null },
@@ -284,7 +284,11 @@ class PatientsTable extends React.Component {
 
   formatTimestamp(timestamp) {
     const ts = moment.tz(timestamp, 'UTC');
-    return ts.isValid() ? ts.tz(moment.tz.guess()).format('YYYY-MM-DD HH:mm z') : '';
+    return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
+  }
+
+  formatDate(date) {
+    return moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY');
   }
 
   render() {

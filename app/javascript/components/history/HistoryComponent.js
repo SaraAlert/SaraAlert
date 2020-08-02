@@ -1,10 +1,11 @@
 import React from 'react';
-import { Card, Row } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Card, Row } from 'react-bootstrap';
+import Pagination from 'jw-react-pagination';
+import Select from 'react-select';
+
 import History from './History';
 import InfoTooltip from '../util/InfoTooltip';
-import Select from 'react-select';
-import Pagination from 'jw-react-pagination';
 
 class HistoryComponent extends React.Component {
   constructor(props) {

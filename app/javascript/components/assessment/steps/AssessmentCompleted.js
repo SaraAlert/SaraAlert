@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Form } from 'react-bootstrap';
 import { PropTypes } from 'prop-types';
+import { Card, Form } from 'react-bootstrap';
 
 class AssessmentCompleted extends React.Component {
   constructor(props) {
