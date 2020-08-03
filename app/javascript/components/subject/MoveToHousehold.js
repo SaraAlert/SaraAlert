@@ -35,7 +35,7 @@ class MoveToHousehold extends React.Component {
   handleChange(event) {
     let updateDisabled = true;
     if (event.target.id == 'hoh_selection') {
-      updateDisabled = !this.state.groupMembers.map(p => p.id?.toString()).includes(event.target.value?.split('SaraID: ')[1]?.split(' ')[0]);
+      updateDisabled = event.target.value == '--';
     }
     this.setState({ [event.target.id]: event.target.value, updateDisabled: updateDisabled });
   }
@@ -63,7 +63,7 @@ class MoveToHousehold extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
-          new_hoh_id: this.state.hoh_selection.split('SaraID: ')[1].split(' ')[0],
+          new_hoh_id: this.state.hoh_selection,
         })
         .then(() => {
           this.setState({ updateDisabled: false });
@@ -89,27 +89,18 @@ class MoveToHousehold extends React.Component {
                 <Form.Label size="sm" className="nav-input-label">
                   Note: The current monitoree will be moved into the selected monitoree&apos;s household
                 </Form.Label>
-                <Form.Control
-                  className="form-square"
-                  id="hoh_selection"
-                  onChange={this.handleChange}
-                  as="input"
-                  name="newhohcandidate"
-                  list="newhohcandidates"
-                  autoComplete="on"
-                  size="lg"
-                />
-                <datalist id="newhohcandidates">
-                  {this.state?.groupMembers
-                    ?.sort((a, b) => (a.last_name > b.last_name ? 1 : -1))
-                    .map((member, index) => {
-                      return (
-                        <option key={`option-${index}`} data-value={member.id}>
-                          {member.last_name}, {member.first_name} Age: {member.age} SaraID: {member.id} StateID: {member.state_id}
-                        </option>
-                      );
-                    })}
-                </datalist>
+                <Form.Control as="select" className="form-control-lg" id="hoh_selection" onChange={this.handleChange} defaultValue={-1}>
+                  <option value={-1} disabled>
+                    --
+                  </option>
+                  {this.state?.groupMembers?.map((member, index) => {
+                    return (
+                      <option key={`option-${index}`} value={member.id}>
+                        {member.last_name}, {member.first_name} Age: {member.age}, State ID: {member.state_id}
+                      </option>
+                    );
+                  })}
+                </Form.Control>
               </Form.Group>
             </Row>
           </Form>

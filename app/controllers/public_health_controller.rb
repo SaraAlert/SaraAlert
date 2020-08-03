@@ -115,7 +115,7 @@ class PublicHealthController < ApplicationController
     patients = patients.pluck(:id, :first_name, :last_name, :age, :user_defined_id_statelocal).map do |p|
       { id: p[0], first_name: p[1], last_name: p[2], age: p[3], state_id: p[4] }
     end
-    render json: { self_reporting: patients.to_json }
+    render json: { self_reporting: patients.sort_by{|p| p[:last_name]}.to_json }
   end
 
   protected
