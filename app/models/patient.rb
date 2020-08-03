@@ -579,7 +579,7 @@ class Patient < ApplicationRecord
       # Monitoring period has elapsed
       if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
         eligible = false
-        messages << { message: "Monitoree\'s monitoring period has elapsed and continuos exposure is not enabled", datetime: end_of_monitoring }
+        messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: end_of_monitoring }
       end
     end
 

@@ -238,7 +238,7 @@ class PatientsController < ApplicationController
       unless diffs.length.zero?
         pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
         comment = "User edited a monitoree record. Changes were: #{pretty_diff.join(', ')}."
-        history = History.monitoree_edit(patient: patient, created_by: current_user.email, comment: comment)
+        history = History.record_edit(patient: patient, created_by: current_user.email, comment: comment)
       end
     end
 

@@ -6,7 +6,7 @@ require 'action_view/helpers'
 # History: history model
 class History < ApplicationRecord
   HISTORY_TYPES = {
-    monitoree_edit: 'Monitoree Edit',
+    record_edit: 'Record Edit',
     report_created: 'Report Created',
     report_updated: 'Report Updated',
     comment: 'Comment',
@@ -51,8 +51,8 @@ class History < ApplicationRecord
     end
   }
 
-  def self.monitoree_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a monitoree record.')
-    create_history(patient, created_by, HISTORY_TYPES[:monitoree_edit], comment)
+  def self.record_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a record.')
+    create_history(patient, created_by, HISTORY_TYPES[:record_edit], comment)
   end
 
   def self.report_created(patient: nil, created_by: 'Sara Alert System', comment: 'User created a new report.')

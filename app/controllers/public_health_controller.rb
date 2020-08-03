@@ -44,7 +44,7 @@ class PublicHealthController < ApplicationController
     order = permitted_params[:order]
     return head :bad_request unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user state_local_id dob
                                                                      end_of_monitoring risk_level monitoring_plan public_health_action expected_purge_date
-                                                                     reason_for_closure closed_at transferred_at latest_report].include?(order)
+                                                                     reason_for_closure closed_at transferred_at latest_report symptom_onset].include?(order)
 
     direction = permitted_params[:direction]
     return head :bad_request unless direction.nil? || direction.blank? || %w[asc desc].include?(direction)
