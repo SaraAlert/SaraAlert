@@ -58,8 +58,6 @@ namespace :coverage do
 
     # Expect a folder full of artifacts downloaded from GitHub actions within the
     # 'github-artifacts' folder. This filename is set in within the action itself
-    byebug
-
     SimpleCov.collate(Dir.glob('github-artifacts/coverage-*/**', File::FNM_DOTMATCH).reject { |file| file.end_with?('.') }, 'rails') do
       SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
       formatter SimpleCov::Formatter::MultiFormatter.new([
