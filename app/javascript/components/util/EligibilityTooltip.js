@@ -18,10 +18,10 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-bell"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-play-circle"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
-                <i className="fa-fw fas fa-bell"></i>
+                <i className="fa-fw fas fa-play-circle"></i>
               </div>
             )}
           </span>
@@ -37,16 +37,16 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-check"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-check-circle"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
-                <i className="fa-fw fas fa-check"></i>
+                <i className="fa-fw fas fa-check-circle"></i>
               </div>
             )}
           </span>
           <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
             <div>
-              <p className="lead mb-0">Already reported today:</p>
+              <p className="lead mb-0">Received a report today:</p>
               <ul className="pl-3 mb-0">
                 {eligibility.messages.map((m, index) => (
                   <li className="mb-0" key={`rei${id}${index}`}>
@@ -63,16 +63,16 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-comment-dots"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-question-circle"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
-                <i className="fa-fw fas fa-comment-dots"></i>
+                <i className="fa-fw fas fa-question-circle"></i>
               </div>
             )}
           </span>
           <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
             <div>
-              <p className="lead mb-0">Already sent a daily report:</p>
+              <p className="lead mb-0">Waiting for a response:</p>
               <ul className="pl-3 mb-0">
                 {eligibility.messages.map((m, index) => (
                   <li className="mb-0" key={`rei${id}${index}`}>
@@ -89,10 +89,10 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-bell-slash"></i>}
+            {this.props.inline && <i className="fa-fw far fa-circle"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
-                <i className="fa-fw fas fa-bell-slash"></i>
+                <i className="fa-fw fas fa-pause-circle"></i>
               </div>
             )}
           </span>
