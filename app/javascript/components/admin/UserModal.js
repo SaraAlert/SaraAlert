@@ -34,12 +34,12 @@ class UserModal extends React.Component {
 
   handleLockedStatusChange = event => {
     const val = event.target.checked;
-    this.setState({ is_locked: val });
+    this.setState({ isLocked: val });
   };
 
   handleAPIAccessChange = event => {
     const val = event.target.checked;
-    this.setState({ is_api_enabled: val });
+    this.setState({ isAPIEnabled: val });
   };
 
   render() {
