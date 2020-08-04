@@ -487,8 +487,8 @@ class PatientsTable extends React.Component {
                         {this.renderTableHeader('closed_at', 'Closed At', true, null, null)}
                         {this.renderTableHeader('transferred_at', 'Transferred At', true, null, null)}
                         {this.renderTableHeader('latest_report', 'Latest Report', true, null, null)}
-                        {this.renderTableHeader('report_eligibility', '', false, null, 'far fa-bell')}
                         {this.renderTableHeader('status', 'Status', false, null, null)}
+                        {this.renderTableHeader('report_eligibility', '', false, null, 'far fa-bell')}
                         {this.state.patients.fields.includes('name') && this.state.query.tab !== 'transferred_out' && (
                           <th style={{ cursor: 'pointer' }} onClick={this.handleSelectAllPatients}>
                             <Form.Check
@@ -545,12 +545,12 @@ class PatientsTable extends React.Component {
                             {'closed_at' in patient && <td>{this.formatTimestamp(patient.closed_at)}</td>}
                             {'transferred_at' in patient && <td>{this.formatTimestamp(patient.transferred_at)}</td>}
                             {'latest_report' in patient && <td>{this.formatTimestamp(patient.latest_report)}</td>}
+                            {'status' in patient && <td>{patient.status}</td>}
                             {'report_eligibility' in patient && (
                               <td>
                                 <EligibilityTooltip report_eligibility={patient.report_eligibility} id={patient.id} inline={false} />
                               </td>
                             )}
-                            {'status' in patient && <td>{patient.status}</td>}
                             {'id' in patient && this.state.query.tab !== 'transferred_out' && (
                               <td style={{ cursor: 'pointer' }} onClick={() => this.handleSelectPatient(index)}>
                                 <Form.Check

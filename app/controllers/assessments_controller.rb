@@ -64,7 +64,7 @@ class AssessmentsController < ApplicationController
         ProduceAssessmentJob.perform_later assessment_placeholder
 
         # Save a new receipt and clear out any older ones
-        AssessmentReceipt.where(submission_token: @patient_submission_token).destroy_all
+        AssessmentReceipt.where(submission_token: @patient_submission_token).delete_all
         assessment_receipt = AssessmentReceipt.new(submission_token: @patient_submission_token)
         assessment_receipt.save
       end
@@ -100,14 +100,14 @@ class AssessmentsController < ApplicationController
         @assessment.who_reported = 'Monitoree'
         @assessment.save
         # Save a new receipt and clear out any older ones
-        AssessmentReceipt.where(submission_token: params.permit(:patient_submission_token)[:patient_submission_token]).destroy_all
+        AssessmentReceipt.where(submission_token: params.permit(:patient_submission_token)[:patient_submission_token]).delete_all
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save
       else
         @assessment.who_reported = current_user.email
         @assessment.save
         # Save a new receipt and clear out any older ones
-        AssessmentReceipt.where(submission_token: params.permit(:patient_submission_token)[:patient_submission_token]).destroy_all
+        AssessmentReceipt.where(submission_token: params.permit(:patient_submission_token)[:patient_submission_token]).delete_all
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save
 

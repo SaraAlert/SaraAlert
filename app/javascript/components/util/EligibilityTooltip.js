@@ -33,6 +33,58 @@ class EligibilityTooltip extends React.Component {
           </ReactTooltip>
         </React.Fragment>
       );
+    } else if (eligibility.reported) {
+      return (
+        <React.Fragment>
+          <span data-for={`re${id}`} data-tip="">
+            {this.props.inline && <i className="fa-fw fas fa-check"></i>}
+            {!this.props.inline && (
+              <div className="text-center ml-0">
+                <i className="fa-fw fas fa-check"></i>
+              </div>
+            )}
+          </span>
+          <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
+            <div>
+              <p className="lead mb-0">Already reported today:</p>
+              <ul className="pl-3 mb-0">
+                {eligibility.messages.map((m, index) => (
+                  <li className="mb-0" key={`rei${id}${index}`}>
+                    {m.message}
+                    {m.datetime ? ` (${this.formatTimestamp(m.datetime)})` : ''}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </ReactTooltip>
+        </React.Fragment>
+      );
+    } else if (eligibility.sent) {
+      return (
+        <React.Fragment>
+          <span data-for={`re${id}`} data-tip="">
+            {this.props.inline && <i className="fa-fw fas fa-comment-dots"></i>}
+            {!this.props.inline && (
+              <div className="text-center ml-0">
+                <i className="fa-fw fas fa-comment-dots"></i>
+              </div>
+            )}
+          </span>
+          <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
+            <div>
+              <p className="lead mb-0">Already sent a daily report:</p>
+              <ul className="pl-3 mb-0">
+                {eligibility.messages.map((m, index) => (
+                  <li className="mb-0" key={`rei${id}${index}`}>
+                    {m.message}
+                    {m.datetime ? ` (${this.formatTimestamp(m.datetime)})` : ''}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </ReactTooltip>
+        </React.Fragment>
+      );
     } else {
       return (
         <React.Fragment>

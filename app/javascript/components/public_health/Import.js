@@ -44,7 +44,7 @@ class Import extends React.Component {
       });
     } else {
       // if there are no monitorees/cases to import, go back to root after pressing the import button
-      location.href = '/';
+      location.reload();
     }
   }
 
@@ -74,7 +74,7 @@ class Import extends React.Component {
             }
           } else if (this.state.phased.length != 0) {
             // if there are no monitorees/cases to import, and import wasn't done one at a time go back to root after pressing the import button
-            history.back();
+            location.reload();
           }
         });
       })

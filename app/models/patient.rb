@@ -489,7 +489,9 @@ class Patient < ApplicationRecord
     end
 
     # Default calling to afternoon if not specified
-    if preferred_contact_method&.downcase == 'telephone call' && responder.id == id && preferred_contact_time.blank?
+    if (preferred_contact_method&.downcase == 'telephone call' ||
+        preferred_contact_method&.downcase == 'sms texted weblink' ||
+        preferred_contact_method&.downcase == 'sms text-message') && responder.id == id && preferred_contact_time.blank?
       hour = Time.now.getlocal(address_timezone_offset).hour
       return unless (12..16).include? hour
     end
@@ -534,6 +536,8 @@ class Patient < ApplicationRecord
     report_cutoff_time = Time.now.getlocal('-04:00').beginning_of_day
     reporting_period = (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago
     eligible = true
+    sent = false
+    reported = false
     messages = []
 
     # Workflow agnostic conditions
@@ -556,18 +560,6 @@ class Patient < ApplicationRecord
       messages << { message: 'Monitoree is within a household, so the HoH will receive notifications instead', datetime: nil }
     end
 
-    # Has already reported today
-    if !latest_assessment_at.nil? && latest_assessment_at >= report_cutoff_time
-      eligible = false
-      messages << { message: 'Monitoree has already reported today', datetime: latest_assessment_at }
-    end
-
-    # Has already been contacted today
-    if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent >= 12.hours.ago
-      eligible = false
-      messages << { message: 'Monitoree has been contacted recently', datetime: last_assessment_reminder_sent }
-    end
-
     # Has an ineligible preferred contact method
     if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
       eligible = false
@@ -583,6 +575,20 @@ class Patient < ApplicationRecord
       end
     end
 
+    # Has already reported today
+    if !latest_assessment_at.nil? && latest_assessment_at >= report_cutoff_time
+      eligible = false
+      reported = true
+      messages << { message: 'Monitoree has already reported today', datetime: latest_assessment_at }
+    end
+
+    # Has already been contacted today
+    if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent >= 12.hours.ago
+      eligible = false
+      sent = true
+      messages << { message: 'Monitoree has been contacted recently', datetime: last_assessment_reminder_sent }
+    end
+
     # Rough estimate of next contact time
     if eligible
       messages << if preferred_contact_time == 'Morning'
@@ -596,7 +602,7 @@ class Patient < ApplicationRecord
                   end
     end
 
-    { eligible: eligible, messages: messages }
+    { eligible: eligible, sent: sent, reported: reported, messages: messages }
   end
 
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core
