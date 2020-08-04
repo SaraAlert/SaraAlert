@@ -66,7 +66,7 @@ so:
       submit: 'Gudbi'
       thank-you: 'Waad ku mahadsantahay bogida warbixintaada maalinlaha ah!'
       instruction1: 'If you did not report any symptoms, please continue to follow the recommendations provided by your local health department.'
-      instruction2: 'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please call your medical provider or local health department. Avoid close contact with other people and stay at home.'
+      instruction2: 'If you reported any symptoms, your local health department will be reaching out soon. If you have any immediate concerns, please contact your medical provider or local health department. Avoid close contact with other people and stay at home.'
       instruction3: 'If you are experiencing a medical emergency, please call 911 and let them know you are being monitored by the health department.'
       instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
       email: 'Email'
