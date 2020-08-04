@@ -18,10 +18,10 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-play-circle"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-comment"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
-                <i className="fa-fw fas fa-play-circle"></i>
+                <i className="fa-fw fas fa-comment"></i>
               </div>
             )}
           </span>
@@ -37,10 +37,10 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-check-circle"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-comments"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
-                <i className="fa-fw fas fa-check-circle"></i>
+                <i className="fa-fw fas fa-comments"></i>
               </div>
             )}
           </span>
@@ -63,10 +63,10 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-question-circle"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-comment-dots"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
-                <i className="fa-fw fas fa-question-circle"></i>
+                <i className="fa-fw fas fa-comment-dots"></i>
               </div>
             )}
           </span>
@@ -89,10 +89,10 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw far fa-circle"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-comment-slash"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
-                <i className="fa-fw fas fa-pause-circle"></i>
+                <i className="fa-fw fas fa-comment-slash"></i>
               </div>
             )}
           </span>

@@ -488,7 +488,7 @@ class PatientsTable extends React.Component {
                         {this.renderTableHeader('transferred_at', 'Transferred At', true, null, null)}
                         {this.renderTableHeader('latest_report', 'Latest Report', true, null, null)}
                         {this.renderTableHeader('status', 'Status', false, null, null)}
-                        {this.renderTableHeader('report_eligibility', '', false, null, 'fas fa-bell')}
+                        {this.renderTableHeader('report_eligibility', '', false, null, 'far fa-comment')}
                         {this.state.patients.fields.includes('name') && this.state.query.tab !== 'transferred_out' && (
                           <th style={{ cursor: 'pointer' }} onClick={this.handleSelectAllPatients}>
                             <Form.Check
