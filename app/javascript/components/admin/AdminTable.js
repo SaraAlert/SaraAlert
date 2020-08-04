@@ -38,6 +38,7 @@ class AdminTable extends React.Component {
       showEditUserModal: false,
       showAddUserModal: false,
       showEmailModal: false,
+      showEmailAllModal: false,
       actionsEnabled: false,
       cancelToken: axios.CancelToken.source(),
       isLoading: false,
@@ -267,11 +268,20 @@ class AdminTable extends React.Component {
   };
 
   /**
+   * Called when the Send Email to All button is clicked.
+   * Updates the state appropriately to show the modal.
+   */
+  handleEmailAllClick = () => {
+    this.setState({
+      showEmailAllModal: true,
+    });
+  };
+
+  /**
    * Called when the email action is selected.
    * Updates the state appropriately to show the modal.
    */
   handleEmailClick = () => {
-    // Show edit user Modal
     this.setState({
       showEmailModal: true,
     });
@@ -284,7 +294,37 @@ class AdminTable extends React.Component {
   handleEmailModalClose = () => {
     this.setState({
       showEmailModal: false,
+      showEmailAllModal: false,
     });
+  };
+
+  /**
+   * Closes email modal and send emails to ALL users admin has access to with POST request.
+   * @param {Object} data - Data submitted from the email modal.
+   */
+  handleEmailAllSave = data => {
+    this.handleEmailModalClose();
+
+    const path = 'email_all';
+    const dataToSend = {
+      comment: data.comment,
+    };
+
+    const handleSuccess = () => {
+      toast.success('Successfully sent emails to all users.', {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    };
+
+    const handleError = error => {
+      toast.error('Failed to send emails.', {
+        autoClose: 2000,
+        position: toast.POSITION.TOP_CENTER,
+      });
+      console.log(error);
+    };
+
+    this.axiosAdminPostRequest(path, dataToSend, handleSuccess, handleError);
   };
 
   /**
@@ -298,7 +338,6 @@ class AdminTable extends React.Component {
     const ids = this.state.table.selectedRows.map(row => {
       return this.state.table.rowData[parseInt(row)].id;
     });
-    console.log;
     const dataToSend = {
       ids: ids,
       comment: data.comment,
@@ -539,8 +578,14 @@ class AdminTable extends React.Component {
             </Button>
             <Button className="mx-1" size="lg" variant="secondary" onClick={this.getCSVData}>
               <i className="fas fa-download"></i>
-              &nbsp;Export to CSV
+              &nbsp;Export All to CSV
             </Button>
+            {this.props.is_usa_admin && (
+              <Button className="mx-1" size="lg" variant="secondary" onClick={this.handleEmailAllClick}>
+                <i className="fas fa-envelope"></i>
+                &nbsp;Send Email to All
+              </Button>
+            )}
             {this.state.csvData.length > 0 ? <CSVLink data={this.state.csvData} filename={'sara-accounts.csv'} ref={this.csvLink} /> : undefined}
           </div>
           <div>
@@ -612,13 +657,13 @@ class AdminTable extends React.Component {
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
           />
         )}
-        {this.state.showEmailModal && (
+        {(this.state.showEmailModal || this.state.showEmailAllModal) && (
           <EmailModal
-            show={this.state.showEmailModal}
-            title="Send Email to User(s)"
+            show={this.state.showEmailModal || this.state.showEmailAllModal}
+            title={this.state.showEmailModal ? 'Send Email to User(s)' : 'Send Email to All Users'}
             onClose={this.handleEmailModalClose}
-            onSave={formData => this.handleEmailSave(formData)}
-            userCount={this.state.table.selectedRows.length}
+            onSave={this.state.showEmailModal ? this.handleEmailSave : this.handleEmailAllSave}
+            userCount={this.state.showEmailModal ? this.state.table.selectedRows.length : this.state.table.totalRows}
           />
         )}
         <ToastContainer />

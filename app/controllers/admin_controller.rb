@@ -55,7 +55,7 @@ class AdminController < ApplicationController
         role: user.roles[0].name.split('_').map(&:capitalize).join(' ') || '',
         is_locked: !user.locked_at.nil? || false,
         is_api_enabled: user[:api_enabled] || false,
-        is_2fa_enabled: user.authy_id.nil? || false,
+        is_2fa_enabled: !user.authy_id.nil? || false,
         num_failed_logins: user.failed_attempts
       }
 
@@ -94,17 +94,22 @@ class AdminController < ApplicationController
   end
 
   def create_user
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_api_enabled)
-    email = permitted_params[:email].strip
-    return head :bad_request unless email
+    redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    address = ValidEmail2::Address.new(email)
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_api_enabled)
+    email = permitted_params[:email]
+    return head :bad_request unless email
+    stripped_email = email.strip
+
+    address = ValidEmail2::Address.new(stripped_email)
     return head :bad_request unless address.valid? && !address.disposable?
 
-    password = User.rand_gen
-    role = permitted_params[:role].split(' ').map(&:downcase).join('_')
+    role = permitted_params[:role]
+    return head :bad_request unless role
+
+    parsed_role = role.split(' ').map(&:downcase).join('_')
     roles = Role.pluck(:name)
-    return head :bad_request unless role && roles.include?(role)
+    return head :bad_request unless roles.include?(parsed_role)
 
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
@@ -113,10 +118,13 @@ class AdminController < ApplicationController
     is_api_enabled = permitted_params[:is_api_enabled]
     return head :bad_request unless [true, false].include? is_api_enabled
 
+    # Generate initial password for user
+    password = User.rand_gen
+
     # Create user
     # - require user to change password on first login
     user = User.create!(
-      email: email,
+      email: stripped_email,
       password: password,
       jurisdiction: Jurisdiction.find_by_id(jurisdiction),
       force_password_change: true,
@@ -134,9 +142,14 @@ class AdminController < ApplicationController
     roles = Role.pluck(:name)
 
     id = permitted_params[:id]
+    user_ids = User.pluck(:id)
+    return head :bad_request unless user_ids.include?(id)
 
     email = permitted_params[:email]
     return head :bad_request unless email
+
+    address = ValidEmail2::Address.new(email)
+    return head :bad_request unless address.valid? && !address.disposable?
 
     role = permitted_params[:role].split(' ').map(&:downcase).join('_')
     return head :bad_request unless role && roles.include?(role)
@@ -187,11 +200,13 @@ class AdminController < ApplicationController
 
     permitted_params = params[:admin].permit({ ids: [] })
     ids = permitted_params[:ids]
+    return head :bad_request unless ids
+
     users = User.where(id: ids)
     cur_jur = current_user.jurisdiction
     users.each do |user|
       #TODO: do we want this to just move on here or should we initially check that all pass this validation?
-      redirect_to(root_url) && next unless cur_jur.subtree_ids.include? user.jurisdiction.id
+      next unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
       user.authy_id = nil
       user.authy_enabled = false
@@ -208,7 +223,7 @@ class AdminController < ApplicationController
     cur_jur = current_user.jurisdiction
     users.each do |user|
       #TODO: do we want this to just move on here or should we initially check that all pass this validation?
-      redirect_to(root_url) && next unless cur_jur.subtree_ids.include? user.jurisdiction.id
+      next unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
       user.unlock_access!
       password = User.rand_gen
@@ -219,6 +234,7 @@ class AdminController < ApplicationController
     end
   end
 
+  # Send email to the users with ids in params
   def email
     redirect_to(root_url) && return unless current_user.can_send_admin_emails?
 
@@ -228,6 +244,22 @@ class AdminController < ApplicationController
     return if comment.blank?
 
     User.where(id: ids).each do |user|
+      UserMailer.admin_message_email(user, comment).deliver_later
+    end
+  end
+
+  # Sends email to all users in this admin's jurisdiction
+  def email_all
+    redirect_to(root_url) && return unless current_user.can_send_admin_emails?
+
+    permitted_params = params[:admin].permit(:comment)
+    comment = permitted_params[:comment]
+    return if comment.blank?
+
+    # Get all users within the current user's jurisdiction
+    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
+
+    users.each do |user|
       UserMailer.admin_message_email(user, comment).deliver_later
     end
   end
