@@ -120,7 +120,7 @@ class AdminTable extends React.Component {
    * Gets the jurisdictions path options via an axios GET request.
    */
   getJurisdictionPaths() {
-    axios.get('admin/jurisdiction_paths').then(response => {
+    axios.get('/jurisdictions/paths').then(response => {
       this.setState({ jurisdictionPaths: response.data.jurisdictionPaths });
     });
   }
@@ -221,17 +221,23 @@ class AdminTable extends React.Component {
 
     const dataToSend = {
       email: data.email,
-      jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
+      jurisdiction: parseInt(data.jurisdictionId),
       role: data.role,
-      is_api_enabled: data.is_api_enabled,
+      is_api_enabled: data.isAPIEnabled,
     };
 
     const handleSuccess = () => {
+      toast.success('Successfully added new user.', {
+        position: toast.POSITION.TOP_CENTER,
+      });
       this.getTableData(this.state.query);
     };
 
     const handleError = error => {
-      alert('Error adding new user. New user not saved.');
+      toast.error('Failed to add new user. Please verify email is valid.', {
+        autoClose: 2000,
+        position: toast.POSITION.TOP_CENTER,
+      });
       console.log(error);
     };
 
@@ -249,10 +255,10 @@ class AdminTable extends React.Component {
     const dataToSend = {
       id: this.state.table.rowData[parseInt(row)].id,
       email: data.email,
-      jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
+      jurisdiction: parseInt(data.jurisdictionId),
       role: data.role,
-      is_api_enabled: data.is_api_enabled,
-      is_locked: data.is_locked,
+      is_api_enabled: data.isAPIEnabled,
+      is_locked: data.isLocked,
     };
 
     const handleSuccess = () => {
@@ -260,7 +266,10 @@ class AdminTable extends React.Component {
     };
 
     const handleError = error => {
-      alert('Error editing new user. Changes not saved.');
+      toast.error('Failed to edit user. Please verify email is valid.', {
+        autoClose: 2000,
+        position: toast.POSITION.TOP_CENTER,
+      });
       console.log(error);
     };
 
@@ -652,7 +661,7 @@ class AdminTable extends React.Component {
             onClose={this.handleUserModalClose}
             title={this.state.showEditUserModal ? 'Edit User' : 'Add User'}
             type={this.state.showEditUserModal ? 'edit' : 'add'}
-            jurisdictionPaths={Object.keys(this.state.jurisdictionPaths)}
+            jurisdictionPaths={this.state.jurisdictionPaths}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
           />

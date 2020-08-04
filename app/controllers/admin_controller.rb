@@ -8,6 +8,7 @@ class AdminController < ApplicationController
     redirect_to(root_url) && return unless current_user.has_role? :admin
   end
 
+  # Retrieve users for the admin user table.
   def users
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
@@ -65,6 +66,7 @@ class AdminController < ApplicationController
     render json: { linelist: linelist, total: total }
   end
 
+  # Sort users by a given field either in ascending or descending order.
   def sort(users, order_by, sort_direction)
     return users if order_by.nil? || order_by.empty? || sort_direction.nil? || sort_direction.blank?
 
@@ -85,6 +87,7 @@ class AdminController < ApplicationController
     users
   end
 
+  # Filter users with a search query.
   def filter(users, search)
     return users if search.nil? || search.blank?
 
@@ -93,27 +96,29 @@ class AdminController < ApplicationController
     )
   end
 
+  # Create and save a new user. Triggers welcome email to be sent.
   def create_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
     permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_api_enabled)
     email = permitted_params[:email]
-    return head :bad_request unless email
+    return head :bad_request if email.nil? || email.blank?
     stripped_email = email.strip
 
     address = ValidEmail2::Address.new(stripped_email)
     return head :bad_request unless address.valid? && !address.disposable?
 
     role = permitted_params[:role]
-    return head :bad_request unless role
+    return head :bad_request if role.nil? || role.blank? 
 
+    # Parse back to format in records
     parsed_role = role.split(' ').map(&:downcase).join('_')
     roles = Role.pluck(:name)
-    return head :bad_request unless roles.include?(parsed_role)
+    return head :bad_request if !roles.include?(parsed_role)
 
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
-    return head :bad_request unless jurisdiction && jurisdictions.include?(jurisdiction)
+    return head :bad_request unless jurisdictions.include?(jurisdiction)
 
     is_api_enabled = permitted_params[:is_api_enabled]
     return head :bad_request unless [true, false].include? is_api_enabled
@@ -135,6 +140,7 @@ class AdminController < ApplicationController
     UserMailer.welcome_email(user, password).deliver_later
   end
 
+  # Edit existing user.
   def edit_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
@@ -146,17 +152,22 @@ class AdminController < ApplicationController
     return head :bad_request unless user_ids.include?(id)
 
     email = permitted_params[:email]
-    return head :bad_request unless email
+    return head :bad_request if email.nil? || email.blank?
 
     address = ValidEmail2::Address.new(email)
     return head :bad_request unless address.valid? && !address.disposable?
 
-    role = permitted_params[:role].split(' ').map(&:downcase).join('_')
-    return head :bad_request unless role && roles.include?(role)
+    role = permitted_params[:role]
+    return head :bad_request if role.nil? || role.blank? 
+
+    # Parse back to format in records
+    parsed_role = role.split(' ').map(&:downcase).join('_')
+    roles = Role.pluck(:name)
+    return head :bad_request if !roles.include?(parsed_role)
 
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
-    return head :bad_request unless jurisdiction && jurisdictions.include?(jurisdiction)
+    return head :bad_request unless jurisdictions.include?(jurisdiction)
 
     is_api_enabled = permitted_params[:is_api_enabled]
     return head :bad_request unless [true, false].include? is_api_enabled
@@ -195,36 +206,44 @@ class AdminController < ApplicationController
     user.save!
   end
 
+  # Resets 2FA for the users with ids in params.
   def reset_2fa
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
     permitted_params = params[:admin].permit({ ids: [] })
     ids = permitted_params[:ids]
-    return head :bad_request unless ids
+    return head :bad_request unless ids.is_a?(Array)
 
     users = User.where(id: ids)
     cur_jur = current_user.jurisdiction
-    users.each do |user|
-      #TODO: do we want this to just move on here or should we initially check that all pass this validation?
-      next unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
+    # This should never happen, but if there is a user who is not underneath the current user's jurisdiction
+    # this is a bad request. 
+    users.each {|u| return head :bad_request unless cur_jur.subtree_ids.include? u.jurisdiction.id }
+
+    users.each do |user|
       user.authy_id = nil
       user.authy_enabled = false
       user.save!
     end
   end
 
+  # Resets passwords of the users with ids in params.
   def reset_password
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
     permitted_params = params[:admin].permit({ ids: [] })
     ids = permitted_params[:ids]
+    return head :bad_request unless ids.is_a?(Array)
+
     users = User.where(id: ids)
     cur_jur = current_user.jurisdiction
-    users.each do |user|
-      #TODO: do we want this to just move on here or should we initially check that all pass this validation?
-      next unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
+    # This should never happen, but if there is a user who is not underneath the current user's jurisdiction
+    # this is a bad request. 
+    users.each {|u| return head :bad_request unless cur_jur.subtree_ids.include? u.jurisdiction.id }
+    
+    users.each do |user|
       user.unlock_access!
       password = User.rand_gen
       user.password = password
@@ -234,27 +253,29 @@ class AdminController < ApplicationController
     end
   end
 
-  # Send email to the users with ids in params
+  # Send email to the users with ids in params.
   def email
     redirect_to(root_url) && return unless current_user.can_send_admin_emails?
 
     permitted_params = params[:admin].permit(:comment, { ids: [] })
     ids = permitted_params[:ids]
+    return head :bad_request unless ids.is_a?(Array)
+
     comment = permitted_params[:comment]
-    return if comment.blank?
+    return head :bad_request if comment.nil? || comment.blank?
 
     User.where(id: ids).each do |user|
       UserMailer.admin_message_email(user, comment).deliver_later
     end
   end
 
-  # Sends email to all users in this admin's jurisdiction
+  # Sends email to all users in this admin's jurisdiction.
   def email_all
     redirect_to(root_url) && return unless current_user.can_send_admin_emails?
 
     permitted_params = params[:admin].permit(:comment)
     comment = permitted_params[:comment]
-    return if comment.blank?
+    return head :bad_request if comment.nil? || comment.blank?
 
     # Get all users within the current user's jurisdiction
     users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
@@ -262,10 +283,5 @@ class AdminController < ApplicationController
     users.each do |user|
       UserMailer.admin_message_email(user, comment).deliver_later
     end
-  end
-
-  # Get jurisdiction ids and paths of viewable jurisdictions
-  def jurisdiction_paths
-    render json: { jurisdictionPaths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [path, id] }] }
   end
 end

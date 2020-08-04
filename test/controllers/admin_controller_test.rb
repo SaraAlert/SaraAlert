@@ -5,7 +5,9 @@ require 'test_case'
 class AdminControllerTest < ActionController::TestCase
   def setup; end
 
-  def teardown; end
+  def teardown
+    ActionMailer::Base.deliveries.clear
+  end
 
   test 'admin authorization' do
     # Shouldn't be able to see admin page without first signing in
@@ -297,64 +299,152 @@ class AdminControllerTest < ActionController::TestCase
     sign_out user
   end
 
-# TODO: fix test
-#   test 'reset 2fa' do
-#     # Test redirect if not admin user
-#     user = create(:public_health_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
-#     sign_in user
-#     post :reset_2fa
-#     assert_redirected_to @controller.root_url
-#     sign_out user
+  test 'reset 2fa' do
+    # Test redirect if not admin user
+    user = create(:public_health_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
+    sign_in user
+    post :reset_2fa
+    assert_redirected_to @controller.root_url
+    sign_out user
 
-#     user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
-#     sign_in user
+    # Test for bad request if user's jurisdiction is not underneath the current user's jurisdiction
+    user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA, State 1'))
+    sign_in user
 
-#     # Test ids param
-#     post :reset_2fa, params: {ids: 'test'}, as: :json
-#     assert_response :bad_request
+    post :reset_2fa, params: {ids: [15, 3]}, as: :json
+    assert_response :bad_request
 
+    sign_out user
 
-#     # Test 2FA is reset for all users with passed in ids
-#     user_ids = [1, 2, 3]
-#     assert_no_difference 'User.count' do
-#         post :reset_2fa, params: {ids: user_ids}, as: :json
-#     end
-#     assert_response :success
+    # Create USA user
+    user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
+    sign_in user
 
-#     User.where(id: user_ids).each do |u|
-#         assert u.authy_id.nil?
-#         assert !u.authy_enabled
-#     end
+    # Test for ids param validation
+    post :reset_2fa, params: {ids: 'test'}, as: :json
+    assert_response :bad_request
 
-#     sign_out user
+    # Test 2FA is reset for all users with passed in ids
+    user_ids = [1, 2, 3]
+    assert_no_difference 'User.count' do
+        post :reset_2fa, params: {ids: user_ids}, as: :json
+    end
+    assert_response :success
 
-#     #Test skip user if their jurisdiction is not underneath the current user's jurisdiction
-#     user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA, State 1'))
-#     sign_in user
-#     post :reset_2fa, params: {ids: [15, 3]}, as: :json
-#     assert_response :success
+    User.where(id: user_ids).each do |u|
+        assert u.authy_id.nil?
+        assert !u.authy_enabled
+    end
 
-#     # User with jurisdiction above current user's jurisdiction should be unchanged
-#     unchanged_user = User.find_by(id: 15)
-#     assert !unchanged_user.authy_id.nil?
-#     assert unchanged_user.authy_enabled
+    sign_out user
+  end
 
-#     # User with jurisdiction below current user's jurisdiction should be changed
-#     changed_user = User.find_by(id: 3)
-#     assert changed_user.authy_id.nil?
-#     assert !changed_user.authy_enabled
+  test 'reset password' do
+    # Test redirect if not admin user
+    user = create(:public_health_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
+    sign_in user
+    post :reset_password
+    assert_redirected_to @controller.root_url
+    sign_out user
 
-#     sign_out user
-    
-#   end
+    # Test for bad request if user's jurisdiction is not underneath the current user's jurisdiction
+    user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA, State 1'))
+    sign_in user
 
-# TODO: finish tests
-#   test 'reset password' do
-#   end
+    post :reset_password, params: {ids: [15, 3]}, as: :json
+    assert_response :bad_request
 
-#   test 'email' do
-#   end
+    sign_out user
 
-#   test 'email_all' do
-#   end
+    # Create USA user
+    user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
+    sign_in user
+
+    # Test for ids param validation
+    post :reset_password, params: {ids: 'test'}, as: :json
+    assert_response :bad_request
+
+    # Test password is reset for all users with passed in ids
+    user_ids = [1, 2, 3]
+    assert_no_difference 'User.count' do
+        post :reset_password, params: {ids: user_ids}, as: :json
+    end
+    assert_response :success
+
+    # Test welcome emails were sent for all three users
+    User.where(id: user_ids).each_with_index do |u, index|
+      assert u.force_password_change
+      # Test that the welcome email is queued
+      email = ActionMailer::Base.deliveries[index]
+      assert_equal(email.to, [u.email])
+      assert_equal(email.subject, 'Welcome to the Sara Alert system')
+    end
+
+    sign_out user
+  end
+
+  test 'email' do
+    # Test redirect if not admin user
+    user = create(:public_health_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
+    sign_in user
+    post :email
+    assert_redirected_to @controller.root_url
+    sign_out user
+
+    user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
+    sign_in user
+
+    # Test for ids param validation
+    post :email, params: {ids: 'test', comment: 'Hello!'}, as: :json
+    assert_response :bad_request
+
+    # Test for comment param validation
+    post :email, params: {ids: 'test', comment: ' '}, as: :json
+    assert_response :bad_request
+
+    # Test email is sent for all users with passed in ids
+    user_ids = [1, 2, 3]
+    assert_no_difference 'User.count' do
+        post :email, params: {ids: user_ids, comment: 'Hello!'}, as: :json
+    end
+    assert_response :success
+
+    User.where(id: user_ids).each_with_index do |u, index|
+      email = ActionMailer::Base.deliveries[index]
+      assert_equal(email.to, [u.email])
+      assert_equal(email.subject, 'Message from the Sara Alert system')
+    end
+
+    sign_out user
+  end
+
+  test 'email_all' do
+    # Test redirect if not admin user
+    user = create(:public_health_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
+    sign_in user
+    post :email_all
+    assert_redirected_to @controller.root_url
+    sign_out user
+
+    user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
+    sign_in user
+
+    # Test for comment param validation
+    post :email_all, params: {comment: ' '}, as: :json
+    assert_response :bad_request
+
+    # Test email is sent for all users
+    assert_no_difference 'User.count' do
+        post :email_all, params: {comment: 'Hello!'}, as: :json
+    end
+    assert_response :success
+
+    User.all.each_with_index do |u, index|
+      email = ActionMailer::Base.deliveries[index]
+      assert_equal(email.to, [u.email])
+      assert_equal(email.subject, 'Message from the Sara Alert system')
+    end
+
+    sign_out user
+  end
 end

@@ -7,10 +7,12 @@ class UserModal extends React.Component {
     super(props);
     this.state = {
       email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
-      jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
+      jurisdictionId: this.props.initialUserData.jurisdiction_path
+        ? this.props.initialUserData.jurisdiction_path
+        : Object.keys(this.props.jurisdictionPaths)[0],
       role: this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0],
-      is_api_enabled: this.props.initialUserData.is_api_enabled ? this.props.initialUserData.is_api_enabled : false,
-      is_locked: this.props.initialUserData.is_locked ? this.props.initialUserData.is_locked : false,
+      isAPIEnabled: this.props.initialUserData.is_api_enabled ? this.props.initialUserData.is_api_enabled : false,
+      isLocked: this.props.initialUserData.is_locked ? this.props.initialUserData.is_locked : false,
     };
   }
 
@@ -21,7 +23,8 @@ class UserModal extends React.Component {
 
   handleJurisdictionChange = e => {
     const val = e.target.value;
-    this.setState({ jurisdictionPath: val });
+    const jurisdictionId = Object.keys(this.props.jurisdictionPaths).find(key => this.props.jurisdictionPaths[parseInt(key)] === val);
+    this.setState({ jurisdictionId });
   };
 
   handleRoleChange = e => {
@@ -69,9 +72,11 @@ class UserModal extends React.Component {
               <Form.Control
                 as="select"
                 onChange={this.handleJurisdictionChange}
-                defaultValue={this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0]}>
-                {this.props.jurisdictionPaths.map((path, index) => {
-                  return <option key={index}>{path}</option>;
+                defaultValue={
+                  this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : Object.values(this.props.jurisdictionPaths)[0]
+                }>
+                {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
+                  return <option key={id}>{path}</option>;
                 })}
               </Form.Control>
             </Form.Group>
@@ -93,8 +98,8 @@ class UserModal extends React.Component {
               <Form.Check
                 id="statusSwitch"
                 type="switch"
-                checked={this.state.is_locked}
-                label={this.state.is_locked ? 'Locked' : 'Unlocked'}
+                checked={this.state.isLocked}
+                label={this.state.isLocked ? 'Locked' : 'Unlocked'}
                 onChange={this.handleLockedStatusChange}
               />
             </Form.Group>
@@ -104,8 +109,8 @@ class UserModal extends React.Component {
             <Form.Check
               id="accessSwitch"
               type="switch"
-              checked={this.state.is_api_enabled}
-              label={this.state.is_api_enabled ? 'Enabled' : 'Disabled'}
+              checked={this.state.isAPIEnabled}
+              label={this.state.isAPIEnabled ? 'Enabled' : 'Disabled'}
               onChange={this.handleAPIAccessChange}
             />
           </Form.Group>
@@ -130,7 +135,7 @@ UserModal.propTypes = {
   initialUserData: PropTypes.object,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
-  jurisdictionPaths: PropTypes.array,
+  jurisdictionPaths: PropTypes.object,
   roles: PropTypes.array,
 };
 

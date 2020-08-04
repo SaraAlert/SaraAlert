@@ -38,7 +38,6 @@ Rails.application.routes.draw do
 
   resources :admin, only: [:index]
   get 'admin/users', to: 'admin#users'
-  get 'admin/jurisdiction_paths', to: 'admin#jurisdiction_paths'
   
   post 'admin/create_user', to: 'admin#create_user'
   post 'admin/edit_user', to: 'admin#edit_user'
