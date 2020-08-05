@@ -7,10 +7,10 @@ require_relative 'admin_test_helper'
 class AdminTest < ApplicationSystemTestCase
   @@admin_test_helper = AdminTestHelper.new(nil)
 
-  test 'view users' do
-    @@admin_test_helper.view_users('usa_admin')
-    @@admin_test_helper.view_users('state1_admin')
-  end
+  # test 'view users' do
+  #   @@admin_test_helper.view_users('usa_admin')
+  #   @@admin_test_helper.view_users('state1_admin')
+  # end
 
   test 'add users with different jurisdictions and roles' do
     @@admin_test_helper.add_user('usa_admin', 'locals1c1_enroller2@example.com', 'USA, State 1, County 1', 'Enroller', true)

@@ -32,7 +32,7 @@ class AdminController < ApplicationController
 
     # Get all users within the current user's jurisdiction
     users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
-      'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path '
+      'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path'
     )
 
     # Filter by search text
@@ -47,23 +47,23 @@ class AdminController < ApplicationController
     # Get total count
     total = users.total_entries
 
-    linelist = []
+    user_rows = []
     users.each do |user|
       details = {
         id: user.id,
         email: user.email,
         jurisdiction_path: user.path || '',
-        role: user.roles[0].name.split('_').map(&:capitalize).join(' ') || '',
+        role_title: user.roles[0].name.split('_').map(&:capitalize).join(' ') || '',
         is_locked: !user.locked_at.nil? || false,
         is_api_enabled: user[:api_enabled] || false,
         is_2fa_enabled: !user.authy_id.nil? || false,
         num_failed_logins: user.failed_attempts
       }
 
-      linelist << details
+      user_rows << details
     end
 
-    render json: { linelist: linelist, total: total }
+    render json: { user_rows: user_rows, total: total }
   end
 
   # Sort users by a given field either in ascending or descending order.
@@ -92,7 +92,9 @@ class AdminController < ApplicationController
     return users if search.nil? || search.blank?
 
     users.where('users.id like ?', "#{search}%").or(
-      users.where('users.email like ?', "#{search}%")
+      users.where('users.email like ?', "#{search}%").or(
+        users.where('jurisdictions.path like ?', "#{search}%")
+      )
     )
   end
 
@@ -100,7 +102,7 @@ class AdminController < ApplicationController
   def create_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_api_enabled)
+    permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title, :is_api_enabled)
     email = permitted_params[:email]
     return head :bad_request if email.nil? || email.blank?
 
@@ -108,7 +110,7 @@ class AdminController < ApplicationController
     address = ValidEmail2::Address.new(email)
     return head :bad_request unless address.valid? && !address.disposable?
 
-    role = permitted_params[:role]
+    role = permitted_params[:role_title]
     return head :bad_request if role.nil? || role.blank? 
 
     # Parse back to format in records
@@ -144,7 +146,7 @@ class AdminController < ApplicationController
   def edit_user
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
-    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role, :is_api_enabled, :is_locked)
+    permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked)
     roles = Role.pluck(:name)
 
     id = permitted_params[:id]
@@ -158,7 +160,7 @@ class AdminController < ApplicationController
     address = ValidEmail2::Address.new(email)
     return head :bad_request unless address.valid? && !address.disposable?
 
-    role = permitted_params[:role]
+    role = permitted_params[:role_title]
     return head :bad_request if role.nil? || role.blank? 
 
     # Parse back to format in records

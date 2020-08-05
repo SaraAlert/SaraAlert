@@ -19,7 +19,7 @@ class AdminTable extends React.Component {
           { label: 'Id', field: 'id', isSortable: true },
           { label: 'Email', field: 'email', isSortable: true },
           { label: 'Jurisdiction', field: 'jurisdiction_path', isSortable: true },
-          { label: 'Role', field: 'role', isSortable: false },
+          { label: 'Role', field: 'role_title', isSortable: false },
           { label: 'Status', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },
           { label: 'API Enabled', field: 'is_api_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
           { label: '2FA Enabled', field: 'is_2fa_enabled', isSortable: false, options: { true: 'Yes', false: 'No' } },
@@ -138,11 +138,11 @@ class AdminTable extends React.Component {
     const path = 'users';
     const params = { ...query };
     const handleSuccess = response => {
-      if (response && response.data && response.data.linelist) {
+      if (response && response.data && response.data.user_rows) {
         // If there's a valid response, update state accordingly
         this.setState(state => {
           return {
-            table: { ...state.table, rowData: response.data.linelist, totalRows: response.data.total },
+            table: { ...state.table, rowData: response.data.user_rows, totalRows: response.data.total },
             selectedRows: [],
             isLoading: false,
           };
@@ -226,7 +226,7 @@ class AdminTable extends React.Component {
     const dataToSend = {
       email: data.email,
       jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
-      role: data.role,
+      role_title: data.roleTitle,
       is_api_enabled: data.isAPIEnabled,
     };
 
@@ -260,7 +260,7 @@ class AdminTable extends React.Component {
       id: this.state.table.rowData[parseInt(row)].id,
       email: data.email,
       jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
-      role: data.role,
+      role_title: data.roleTitle,
       is_api_enabled: data.isAPIEnabled,
       is_locked: data.isLocked,
     };
@@ -420,11 +420,11 @@ class AdminTable extends React.Component {
     const params = { entries: this.state.table.totalRows, page: 0 };
 
     const handleSuccess = response => {
-      if (response && response.data && response.data.linelist) {
+      if (response && response.data && response.data.user_rows) {
         // NOTE: react-csv has a bug where false values don't show up in the downloaded CSV
         // This has been addressed and recently merged: https://github.com/react-csv/react-csv/pull/193
         // Once this gets released and we update our version this code won't be necessary.
-        const csvData = response.data.linelist.map(userData => {
+        const csvData = response.data.user_rows.map(userData => {
           return {
             ...userData,
             is_api_enabled: userData.is_api_enabled.toString(),
@@ -585,16 +585,16 @@ class AdminTable extends React.Component {
       <div>
         <div className="d-flex justify-content-between mb-2">
           <div className="mb-1">
-            <Button className="mr-1" size="lg" onClick={this.handleAddUserClick}>
+            <Button className="mr-1" size="md" onClick={this.handleAddUserClick}>
               <i className="fas fa-plus-circle"></i>
               &nbsp;Add User
             </Button>
-            <Button className="mx-1" size="lg" variant="secondary" onClick={this.getCSVData}>
+            <Button className="mx-1" size="md" variant="secondary" onClick={this.getCSVData}>
               <i className="fas fa-download"></i>
               &nbsp;Export All to CSV
             </Button>
             {this.props.is_usa_admin && (
-              <Button className="mx-1" size="lg" variant="secondary" onClick={this.handleEmailAllClick}>
+              <Button className="mx-1" size="md" variant="secondary" onClick={this.handleEmailAllClick}>
                 <i className="fas fa-envelope"></i>
                 &nbsp;Send Email to All
               </Button>

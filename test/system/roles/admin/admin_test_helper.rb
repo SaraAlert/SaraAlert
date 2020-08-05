@@ -26,9 +26,11 @@ class AdminTestHelper < ApplicationSystemTestCase
 
   def add_user(user_label, email, jurisdiction, role, isAPIEnabled, submit = true)
     @@system_test_utils.login(user_label)
-    @@admin_dashboard.add_user(email, jurisdiction, role, isAPIEnabled, submit)
-    @@admin_dashboard.search_for_user(email)
-    @@admin_dashboard_verifier.verify_add_user(email, jurisdiction, role, isAPIEnabled, submit)
+    Capybara.using_wait_time(4) do
+      @@admin_dashboard.add_user(email, jurisdiction, role, isAPIEnabled, submit)
+      @@admin_dashboard.search_for_user(email)
+      @@admin_dashboard_verifier.verify_add_user(email, jurisdiction, role, isAPIEnabled, submit)
+    end
     @@system_test_utils.logout
   end
 

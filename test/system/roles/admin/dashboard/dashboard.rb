@@ -10,6 +10,8 @@ class AdminDashboard < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def add_user(email, jurisdiction, role, isAPIEnabled, submit = true)
+    page.execute_script("$('user-modal').css('transition','none')");
+
     click_on 'Add User'
     fill_in 'email', with: email
     select jurisdiction, from: 'jurisdiction'

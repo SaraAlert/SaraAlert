@@ -8,7 +8,7 @@ class UserModal extends React.Component {
     this.state = {
       email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
       jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
-      role: this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0],
+      roleTitle: this.props.initialUserData.role_title ? this.props.initialUserData.role_title : this.props.roles[0],
       isAPIEnabled: this.props.initialUserData.is_api_enabled ? this.props.initialUserData.is_api_enabled : false,
       isLocked: this.props.initialUserData.is_locked ? this.props.initialUserData.is_locked : false,
     };
@@ -26,7 +26,7 @@ class UserModal extends React.Component {
 
   handleRoleChange = e => {
     const val = e.target.value;
-    this.setState({ role: val });
+    this.setState({ roleTitle: val });
   };
 
   handleLockedStatusChange = event => {
@@ -41,7 +41,7 @@ class UserModal extends React.Component {
 
   render() {
     return (
-      <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal id="user-modal" show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
         <Modal.Header closeButton>
           <Modal.Title>{this.props.title}</Modal.Title>
         </Modal.Header>
@@ -87,7 +87,7 @@ class UserModal extends React.Component {
               name="role"
               as="select"
               onChange={this.handleRoleChange}
-              defaultValue={this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0]}>
+              defaultValue={this.props.initialUserData.role_title ? this.props.initialUserData.role_title : this.props.roles[0]}>
               {this.props.roles.map((role, index) => {
                 return <option key={index}>{role}</option>;
               })}

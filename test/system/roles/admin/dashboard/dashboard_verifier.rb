@@ -21,14 +21,12 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
   end
 
   def verify_add_user(email, jurisdiction, role, isAPIEnabled, submit = true)
-    Capybara.using_wait_time(4) do
-      if submit
-        assert page.has_content?(email), @@system_test_utils.get_err_msg('New user info', 'email', email)
-        assert page.has_content?(jurisdiction), @@system_test_utils.get_err_msg('New user info', 'jurisdiction', jurisdiction)
-        assert page.has_content?(role), @@system_test_utils.get_err_msg('New user info', 'role', role)
-      else
-        assert page.has_no_content?(email), @@system_test_utils.get_err_msg('Add user', 'user', 'non-existent')
-      end
+    if submit
+      assert page.has_content?(email), @@system_test_utils.get_err_msg('New user info', 'email', email)
+      assert page.has_content?(jurisdiction), @@system_test_utils.get_err_msg('New user info', 'jurisdiction', jurisdiction)
+      assert page.has_content?(role), @@system_test_utils.get_err_msg('New user info', 'role', role)
+    else
+      assert page.has_no_content?(email), @@system_test_utils.get_err_msg('Add user', 'user', 'non-existent')
     end
   end
 
