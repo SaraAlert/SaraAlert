@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 
 import InfoTooltip from '../util/InfoTooltip';
+import EligibilityTooltip from '../util/EligibilityTooltip';
 
 class CurrentStatus extends React.Component {
   constructor(props) {
@@ -50,27 +51,34 @@ class CurrentStatus extends React.Component {
     }
   }
 
+  generateReportEligibility(eligibility) {
+    return (
+      <React.Fragment>
+        <span>
+          . This {this.props.isolation ? 'case' : 'monitoree'} is {eligibility.eligible ? 'currently' : 'not currently'} eligible to receive a notification
+          today&nbsp;
+        </span>
+        <EligibilityTooltip report_eligibility={this.props.report_eligibility} id={`eltt`} inline={true} />.
+      </React.Fragment>
+    );
+  }
+
   render() {
     return (
       <React.Fragment>
-        {!this.props.isolation && (
-          <h1 className="display-6 pb-3">
-            This monitoree is in the <u>exposure</u> workflow, and their current status is <b>{this.generateStatus(this.props.status)}</b>.
-            {this.generateInfoHover(this.props.status)}
-          </h1>
-        )}
-        {this.props.isolation && (
-          <h1 className="display-6 pb-3">
-            This monitoree is in the <u>isolation</u> workflow, and their current status is <b>{this.generateStatus(this.props.status)}</b>.
-            {this.generateInfoHover(this.props.status)}
-          </h1>
-        )}
+        <h1 className="display-6 pb-3">
+          This monitoree is in the <u>{this.props.isolation ? 'isolation' : 'exposure'}</u> workflow, and their current status is{' '}
+          <b>{this.generateStatus(this.props.status)}</b>
+          {this.generateInfoHover(this.props.status)}
+          {this.generateReportEligibility(this.props.report_eligibility)}
+        </h1>
       </React.Fragment>
     );
   }
 }
 
 CurrentStatus.propTypes = {
+  report_eligibility: PropTypes.object,
   status: PropTypes.string,
   isolation: PropTypes.bool,
 };

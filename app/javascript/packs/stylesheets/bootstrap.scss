@@ -164,3 +164,18 @@ select.form-control {
 .modal-import {
   max-width: 95% !important;
 }
+
+.modal-header {
+  background-color: #226891 !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  border: 0px !important;
+}
+
+.modal-content {
+  border: 0px !important;
+}
+
+.modal-title {
+  color: #fff !important;
+}

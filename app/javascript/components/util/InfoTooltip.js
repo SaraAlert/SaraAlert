@@ -28,6 +28,29 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  sexAtBirth: (
+    <div>
+      This is the monitoree&apos;s legal sex, sometimes referred to as biological sex. Ask the monitoree &quot;What sex was originally listed on your birth
+      certificate?&quot;
+    </div>
+  ),
+
+  sexualOrientation: (
+    <div>
+      Allows collection of information to help address potential health disparities and identify any specific health care needs. Describes who the person is
+      attracted to. Assure the monitoree that the information will be kept confidential. Ask the monitoree &quot;Do you think of yourself as...&quot; and
+      provide the options for sexual orientation that are listed.
+    </div>
+  ),
+
+  genderIdentity: (
+    <div>
+      Allows collection of information to help address potential health disparities and identify any specific health care needs. Relates to a person’s internal
+      sense of their gender. Assure the monitoree that the information will be kept confidential. Ask the monitoree &quot;What gender do you identify
+      with...&quot; and provide the options for gender identity that are listed.
+    </div>
+  ),
+
   // MONITORING ACTIONS
   monitoringStatus: (
     <div>
@@ -36,7 +59,7 @@ const TOOLTIP_TEXT = {
         <b>Actively Monitoring</b>
       </i>
       , the system moves the record to the appropriate line list based on reporting history and latest public health actions. The system will send daily report
-      reminders if the record is not on the <i>PUI</i> (exposure) or <i>Records Requiring Review</i> (isolation) line lists. If set to{' '}
+      reminders if the record is not on the <i>Records Requiring Review</i> (isolation) line list. If set to{' '}
       <i>
         <b>Not Monitoring</b>
       </i>

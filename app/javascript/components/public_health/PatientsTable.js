@@ -25,6 +25,7 @@ import moment from 'moment-timezone';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import InfoTooltip from '../util/InfoTooltip';
+import EligibilityTooltip from '../util/EligibilityTooltip';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -228,7 +229,7 @@ class PatientsTable extends React.Component {
     return ts.isValid() ? ts.tz(moment.tz.guess()).format('MM/DD/YYYY HH:mm z') : '';
   }
 
-  renderTableHeader(field, label, sortable, tooltip) {
+  renderTableHeader(field, label, sortable, tooltip, icon) {
     return (
       <React.Fragment>
         {this.state.patients.fields.includes(field) && (
@@ -254,6 +255,11 @@ class PatientsTable extends React.Component {
               </div>
             )}
             <span>{label}</span>
+            {icon && (
+              <div className="text-center ml-0">
+                <i className={`fa-fw ${icon}`}></i>
+              </div>
+            )}
             {tooltip && <InfoTooltip tooltipTextKey={tooltip} location="right"></InfoTooltip>}
           </th>
         )}
@@ -433,7 +439,7 @@ class PatientsTable extends React.Component {
                           variant="primary"
                           title={
                             <React.Fragment>
-                              <i className="fas fa-tools"></i> Actions{' '}
+                              <i className="fas fa-cogs"></i> Actions{' '}
                             </React.Fragment>
                           }
                           className="ml-2"
@@ -464,24 +470,25 @@ class PatientsTable extends React.Component {
                   <Table striped bordered hover size="sm" className="mb-2">
                     <thead>
                       <tr>
-                        {this.renderTableHeader('name', 'Monitoree', true, null)}
-                        {this.renderTableHeader('jurisdiction', 'Jurisdiction', true, null)}
-                        {this.renderTableHeader('transferred_from', 'From Jurisdiction', true, null)}
-                        {this.renderTableHeader('transferred_to', 'To Jurisdiction', true, null)}
-                        {this.renderTableHeader('assigned_user', 'Assigned User', true, null)}
-                        {this.renderTableHeader('state_local_id', 'State/Local ID', true, null)}
-                        {this.renderTableHeader('sex', 'Sex', true, null)}
-                        {this.renderTableHeader('dob', 'Date of Birth', true, null)}
-                        {this.renderTableHeader('end_of_monitoring', 'End of Monitoring', true, null)}
-                        {this.renderTableHeader('risk_level', 'Risk Level', true, null)}
-                        {this.renderTableHeader('monitoring_plan', 'Monitoring Plan', true, null)}
-                        {this.renderTableHeader('public_health_action', 'Latest Public Health Action', true, null)}
-                        {this.renderTableHeader('expected_purge_date', 'Eligible For Purge After', true, 'purgeDate')}
-                        {this.renderTableHeader('reason_for_closure', 'Reason for Closure', true, null)}
-                        {this.renderTableHeader('closed_at', 'Closed At', true, null)}
-                        {this.renderTableHeader('transferred_at', 'Transferred At', true, null)}
-                        {this.renderTableHeader('latest_report', 'Latest Report', true, null)}
-                        {this.renderTableHeader('status', 'Status', false, null)}
+                        {this.renderTableHeader('name', 'Monitoree', true, null, null)}
+                        {this.renderTableHeader('jurisdiction', 'Jurisdiction', true, null, null)}
+                        {this.renderTableHeader('transferred_from', 'From Jurisdiction', true, null, null)}
+                        {this.renderTableHeader('transferred_to', 'To Jurisdiction', true, null, null)}
+                        {this.renderTableHeader('assigned_user', 'Assigned User', true, null, null)}
+                        {this.renderTableHeader('state_local_id', 'State/Local ID', true, null, null)}
+                        {this.renderTableHeader('dob', 'Date of Birth', true, null, null)}
+                        {this.renderTableHeader('end_of_monitoring', 'End of Monitoring', true, null, null)}
+                        {this.renderTableHeader('symptom_onset', 'Symptom Onset', true, null, null)}
+                        {this.renderTableHeader('risk_level', 'Risk Level', true, null, null)}
+                        {this.renderTableHeader('monitoring_plan', 'Monitoring Plan', true, null, null)}
+                        {this.renderTableHeader('public_health_action', 'Latest Public Health Action', true, null, null)}
+                        {this.renderTableHeader('expected_purge_date', 'Eligible For Purge After', true, 'purgeDate', null)}
+                        {this.renderTableHeader('reason_for_closure', 'Reason for Closure', true, null, null)}
+                        {this.renderTableHeader('closed_at', 'Closed At', true, null, null)}
+                        {this.renderTableHeader('transferred_at', 'Transferred At', true, null, null)}
+                        {this.renderTableHeader('latest_report', 'Latest Report', true, null, null)}
+                        {this.renderTableHeader('status', 'Status', false, null, null)}
+                        {this.renderTableHeader('report_eligibility', '', false, null, 'far fa-comment')}
                         {this.state.patients.fields.includes('name') && this.state.query.tab !== 'transferred_out' && (
                           <th style={{ cursor: 'pointer' }} onClick={this.handleSelectAllPatients}>
                             <Form.Check
@@ -519,9 +526,17 @@ class PatientsTable extends React.Component {
                             {'transferred_to' in patient && <td>{patient.transferred_to}</td>}
                             {'assigned_user' in patient && <td>{patient.assigned_user}</td>}
                             {'state_local_id' in patient && <td>{patient.state_local_id}</td>}
-                            {'sex' in patient && <td>{patient.sex}</td>}
                             {'dob' in patient && <td>{moment(patient.dob, 'YYYY-MM-DD').format('MM/DD/YYYY')}</td>}
-                            {'end_of_monitoring' in patient && <td>{moment(patient.end_of_monitoring, 'YYYY-MM-DD').format('MM/DD/YYYY')}</td>}
+                            {'end_of_monitoring' in patient && (
+                              <td>
+                                {patient.end_of_monitoring === 'Continuous Exposure'
+                                  ? 'Continuous Exposure'
+                                  : moment(patient.end_of_monitoring, 'YYYY-MM-DD').format('MM/DD/YYYY')}
+                              </td>
+                            )}
+                            {'symptom_onset' in patient && (
+                              <td>{patient.symptom_onset ? moment(patient.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''}</td>
+                            )}
                             {'risk_level' in patient && <td>{patient.risk_level}</td>}
                             {'monitoring_plan' in patient && <td>{patient.monitoring_plan}</td>}
                             {'public_health_action' in patient && <td>{patient.public_health_action}</td>}
@@ -531,6 +546,11 @@ class PatientsTable extends React.Component {
                             {'transferred_at' in patient && <td>{this.formatTimestamp(patient.transferred_at)}</td>}
                             {'latest_report' in patient && <td>{this.formatTimestamp(patient.latest_report)}</td>}
                             {'status' in patient && <td>{patient.status}</td>}
+                            {'report_eligibility' in patient && (
+                              <td>
+                                <EligibilityTooltip report_eligibility={patient.report_eligibility} id={patient.id} inline={false} />
+                              </td>
+                            )}
                             {'id' in patient && this.state.query.tab !== 'transferred_out' && (
                               <td style={{ cursor: 'pointer' }} onClick={() => this.handleSelectPatient(index)}>
                                 <Form.Check

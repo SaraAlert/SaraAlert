@@ -29,6 +29,7 @@ class PurgeJob < ApplicationJob
       monitoree.close_contacts.destroy_all
       monitoree.laboratories.destroy_all
     end
-    Download.where('created_at < ?', 24.hours.ago).destroy_all
+    Download.where('created_at < ?', 24.hours.ago).delete_all
+    AssessmentReceipt.where('created_at < ?', 24.hours.ago).delete_all
   end
 end
