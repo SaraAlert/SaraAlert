@@ -35,7 +35,7 @@ class MoveToHousehold extends React.Component {
   handleChange(event) {
     let updateDisabled = true;
     if (event.target.id == 'hoh_selection') {
-      updateDisabled = event.target.value == '--';
+      updateDisabled = event.target.value === -1;
     }
     this.setState({ [event.target.id]: event.target.value, updateDisabled: updateDisabled });
   }
