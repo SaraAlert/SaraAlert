@@ -3,7 +3,24 @@
 FactoryBot.define do
   factory :symptom do
     type { Symptom.valid_types.sample }
-    name { Faker::Alphanumeric.alphanumeric(number: 10) }
+    name do
+      %w[
+        cough
+        fever
+        used-a-fever-reducer
+        chills
+        repeated-shaking-with-chills
+        muscle-pain
+        headache
+        sore-throat
+        new-loss-of-taste-or-smell
+        pulse-ox
+        diarrhea
+        nasal-congestion
+        runny-nose
+        temperature
+      ].sample
+    end
     label { Faker::Alphanumeric.alphanumeric(number: 10) }
     notes { Faker::Alphanumeric.alphanumeric(number: 10) }
     condition_id { Faker::Alphanumeric.alphanumeric(number: 10) }
