@@ -48,7 +48,7 @@ class PatientsTable extends React.Component {
           { field: 'reason_for_closure', label: 'Reason for Closure', isSortable: true, tooltip: null },
           { field: 'closed_at', label: 'Closed At', isSortable: true, tooltip: null },
           { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null },
-          { field: 'latest_report', label: 'Latest Report', isSortable: true, tooltip: null },
+          { field: 'latest_report', label: 'Latest Report', isSortable: true, tooltip: null, filter: this.formatTimestamp },
           { field: 'status', label: 'Status', isSortable: false, tooltip: null },
           { field: 'report_eligibility', label: '', isSortable: false, tooltip: null, filter: this.createEligibilityTooltip, icon: 'far fa-comment' },
         ],
@@ -302,8 +302,8 @@ class PatientsTable extends React.Component {
     return moment(endOfMonitoring, 'YYYY-MM-DD').format('MM/DD/YYYY');
   }
 
-  createEligibilityTooltip(reportEligibility) {
-    return <EligibilityTooltip report_eligibility={reportEligibility} inline={false} />;
+  createEligibilityTooltip(reportEligibility, patientId) {
+    return <EligibilityTooltip id={patientId} report_eligibility={reportEligibility} inline={false} />;
   }
 
   render() {

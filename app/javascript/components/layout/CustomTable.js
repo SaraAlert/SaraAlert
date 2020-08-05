@@ -147,6 +147,17 @@ class CustomTable extends React.Component {
     );
   };
 
+  handlePageChange = page => {
+    this.setState(
+      {
+        selectAll: false,
+      },
+      () => {
+        this.props.handlePageUpdate(page);
+      }
+    );
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -181,7 +192,7 @@ class CustomTable extends React.Component {
                       value = col.options[data[col.field]];
                     } else if (col.filter) {
                       // If this column has a filter, apply the filter to the value
-                      value = col.filter(data[col.field]);
+                      value = col.filter(data[col.field], data.id.toString());
                     }
 
                     return <td key={index}>{value}</td>;
@@ -196,7 +207,7 @@ class CustomTable extends React.Component {
                   <td>
                     <input
                       type="checkbox"
-                      checked={this.state.selectAll && this.props.selectedRows.includes(row)}
+                      checked={this.state.selectAll || this.props.selectedRows.includes(row)}
                       onChange={e => this.handleCheckboxChange(e, row)}></input>
                   </td>
                 </tr>
@@ -237,7 +248,7 @@ class CustomTable extends React.Component {
               pageRangeDisplayed={4}
               marginPagesDisplayed={1}
               initialPage={this.props.page}
-              onPageChange={this.props.handlePageUpdate}
+              onPageChange={this.handlePageChange}
               previousLabel="Previous"
               nextLabel="Next"
               breakLabel="..."
