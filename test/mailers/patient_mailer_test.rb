@@ -286,7 +286,7 @@ class PatientMailerTest < ActionMailer::TestCase
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'en')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'en')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'en')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'en')}"
+      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'en')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'en')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'en')}"
       # rubocop:enable Layout/LineLength
     }
 
@@ -316,7 +316,7 @@ class PatientMailerTest < ActionMailer::TestCase
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'en')}, , #{I18n.t('assessments.phone.age', locale: 'en')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'en')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'en')}#{I18n.t('assessments.phone.daily3', locale: 'en')}?#{I18n.t('assessments.phone.daily4', locale: 'en')}"
+      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'en')}, , #{I18n.t('assessments.phone.age', locale: 'en')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'en')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'en')}#{I18n.t('assessments.phone.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}?#{I18n.t('assessments.phone.daily4', locale: 'en')}"
       # rubocop:enable Layout/LineLength
     }
 
