@@ -107,8 +107,9 @@ class CustomTable extends React.Component {
    * @param {String} label - Display label for the column.
    * @param {Boolean} sortable - True if this column should be sortable and false otherwise.
    * @param {String} tooltip - Text for the tooltip (if any).
+   * @param {String} icon - Icon class for the header (if any)
    */
-  renderTableHeader = (field, label, sortable, tooltip) => {
+  renderTableHeader = (field, label, sortable, tooltip, icon) => {
     return (
       <th
         key={field}
@@ -136,6 +137,11 @@ class CustomTable extends React.Component {
           </React.Fragment>
         )}
         <span>{label}</span>
+        {icon && (
+          <div className="text-center ml-0">
+            <i className={`fa-fw ${icon}`}></i>
+          </div>
+        )}
         {tooltip && <InfoTooltip tooltipTextKey={tooltip} location="right"></InfoTooltip>}
       </th>
     );
@@ -153,7 +159,7 @@ class CustomTable extends React.Component {
           <thead>
             <tr>
               {this.props.columnData.map(data => {
-                return this.renderTableHeader(data.field, data.label, data.isSortable, data.tooltip);
+                return this.renderTableHeader(data.field, data.label, data.isSortable, data.tooltip, data.icon);
               })}
               {this.props.isEditable && <th>Edit</th>}
               <th>

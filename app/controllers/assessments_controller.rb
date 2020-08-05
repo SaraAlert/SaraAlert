@@ -5,8 +5,15 @@ class AssessmentsController < ApplicationController
   def index; end
 
   def new
+    # Don't bother with this if the submission token isn't the correct length
+    @patient_submission_token = params[:patient_submission_token].gsub(/[^0-9a-z]/i, '')
+    return if @patient_submission_token.length != 40
+
+    # Don't bother with this if the jurisdiction unique identifier isn't at least 32 characters long (reflects mailer logic)
+    @unique_identifier = params[:unique_identifier]&.gsub(/[^0-9a-z]/i, '')
+    return if @unique_identifier.present? && @unique_identifier.length < 32
+
     @assessment = Assessment.new
-    @patient_submission_token = params[:patient_submission_token]
 
     # If monitoree, limit number of reports per time period
     if current_user.nil?
@@ -18,8 +25,9 @@ class AssessmentsController < ApplicationController
       end
     end
 
-    jurisdiction = Jurisdiction.where('unique_identifier like ?', "#{params[:unique_identifier]}%").first if ADMIN_OPTIONS['report_mode']
-    jurisdiction = Patient.find_by(submission_token: params[:patient_submission_token]).jurisdiction unless ADMIN_OPTIONS['report_mode']
+    # Figure out the jurisdiction to know which symptoms to render
+    jurisdiction = Jurisdiction.where('unique_identifier like ?', "#{@unique_identifier}%").first if ADMIN_OPTIONS['report_mode']
+    jurisdiction = Patient.find_by(submission_token: @patient_submission_token).jurisdiction unless ADMIN_OPTIONS['report_mode']
     return if jurisdiction.nil?
 
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
@@ -33,6 +41,10 @@ class AssessmentsController < ApplicationController
 
   def create
     if ADMIN_OPTIONS['report_mode']
+      # Don't bother with this if the submission token isn't the correct length
+      @patient_submission_token = params[:patient_submission_token].gsub(/[^0-9a-z]/i, '')
+      return if @patient_submission_token.length != 40
+
       # Limit number of reports per time period
       unless AssessmentReceipt.where(submission_token: @patient_submission_token)
                               .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists?
@@ -40,15 +52,20 @@ class AssessmentsController < ApplicationController
         assessment_placeholder = assessment_placeholder.merge(params.permit(:response_status).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit({ symptoms: %i[name value type label notes required] }).to_h)
-        assessment_placeholder = assessment_placeholder.merge(params.permit(:patient_submission_token).to_h)
+        assessment_placeholder['patient_submission_token'] = @patient_submission_token
         # The generic 'experiencing_symptoms' boolean is used in cases where a user does not specify _which_ symptoms they are experiencing,
-        # a value of true will result in an asesssment being marked as symptomatic regardless of if symptoms are specified
+        # a value of true will result in an assessment being marked as symptomatic regardless of if symptoms are specified
         unless params.permit(:experiencing_symptoms)['experiencing_symptoms'].blank?
           experiencing_symptoms = (%w[yes yeah].include? params.permit(:experiencing_symptoms)['experiencing_symptoms'].downcase.gsub(/\W/, ''))
           assessment_placeholder['experiencing_symptoms'] = experiencing_symptoms
         end
+
+        # Send the assessment to the queue for consumption
         ProduceAssessmentJob.perform_later assessment_placeholder
-        assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
+
+        # Save a new receipt and clear out any older ones
+        AssessmentReceipt.where(submission_token: @patient_submission_token).delete_all
+        assessment_receipt = AssessmentReceipt.new(submission_token: @patient_submission_token)
         assessment_receipt.save
       end
     else
@@ -82,13 +99,15 @@ class AssessmentsController < ApplicationController
       if current_user.nil?
         @assessment.who_reported = 'Monitoree'
         @assessment.save
-        # Save a receipt
+        # Save a new receipt and clear out any older ones
+        AssessmentReceipt.where(submission_token: params.permit(:patient_submission_token)[:patient_submission_token]).delete_all
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save
       else
         @assessment.who_reported = current_user.email
         @assessment.save
-        # Save a receipt
+        # Save a new receipt and clear out any older ones
+        AssessmentReceipt.where(submission_token: params.permit(:patient_submission_token)[:patient_submission_token]).delete_all
         assessment_receipt = AssessmentReceipt.new(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
         assessment_receipt.save
 

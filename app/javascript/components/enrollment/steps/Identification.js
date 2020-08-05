@@ -314,6 +314,7 @@ class Identification extends React.Component {
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="sex" md="auto">
                   <Form.Label className="nav-input-label">SEX AT BIRTH{schema?.fields?.sex?._exclusive?.required && ' *'}</Form.Label>
+                  <InfoTooltip tooltipTextKey="sexAtBirth" location="right"></InfoTooltip>
                   <Form.Control
                     isInvalid={this.state.errors['sex']}
                     as="select"
@@ -334,6 +335,7 @@ class Identification extends React.Component {
               <Form.Row>
                 <Form.Group as={Col} controlId="gender_identity" md="auto">
                   <Form.Label className="nav-input-label">GENDER IDENTITY{schema?.fields?.gender_identity?._exclusive?.required && ' *'}</Form.Label>
+                  <InfoTooltip tooltipTextKey="genderIdentity" location="right"></InfoTooltip>
                   <Form.Control
                     isInvalid={this.state.errors['gender_identity']}
                     as="select"
@@ -356,6 +358,7 @@ class Identification extends React.Component {
                 </Form.Group>
                 <Form.Group as={Col} controlId="sexual_orientation" md="auto">
                   <Form.Label className="nav-input-label">SEXUAL ORIENTATION{schema?.fields?.sexual_orientation?._exclusive?.required && ' *'}</Form.Label>
+                  <InfoTooltip tooltipTextKey="sexualOrientation" location="right"></InfoTooltip>
                   <Form.Control
                     isInvalid={this.state.errors['sexual_orientation']}
                     as="select"

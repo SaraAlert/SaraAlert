@@ -23,6 +23,7 @@ import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import InfoTooltip from '../util/InfoTooltip';
 import CustomTable from '../layout/CustomTable';
+import EligibilityTooltip from '../util/EligibilityTooltip';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -37,9 +38,9 @@ class PatientsTable extends React.Component {
           { field: 'transferred_to', label: 'To Jurisdiction', isSortable: true, tooltip: null },
           { field: 'assigned_user', label: 'Assigned User', isSortable: true, tooltip: null },
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
-          { field: 'sex', label: 'Sex', isSortable: true, tooltip: null },
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
-          { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
+          { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: this.formatDate },
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
           { field: 'public_health_action', label: 'Latest Public Health Action', isSortable: true, tooltip: null },
@@ -49,6 +50,7 @@ class PatientsTable extends React.Component {
           { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null },
           { field: 'latest_report', label: 'Latest Report', isSortable: true, tooltip: null },
           { field: 'status', label: 'Status', isSortable: false, tooltip: null },
+          { field: 'report_eligibility', label: '', isSortable: false, tooltip: null, filter: this.createEligibilityTooltip, icon: 'far fa-comment' },
         ],
         displayedColData: [],
         rowData: [],
@@ -290,7 +292,18 @@ class PatientsTable extends React.Component {
   }
 
   formatDate(date) {
-    return moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY');
+    return date ? moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY') : '';
+  }
+
+  formatEndOfMonitoring(endOfMonitoring) {
+    if (endOfMonitoring === 'Continuous Exposure') {
+      return 'Continuous Exposure';
+    }
+    return moment(endOfMonitoring, 'YYYY-MM-DD').format('MM/DD/YYYY');
+  }
+
+  createEligibilityTooltip(reportEligibility) {
+    return <EligibilityTooltip report_eligibility={reportEligibility} inline={false} />;
   }
 
   render() {
