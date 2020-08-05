@@ -8,37 +8,40 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_user(user, should_exist = true)
-    if should_exist
-      assert page.has_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', user.email)
-      assert page.has_content?(user.jurisdiction[:path]), @@system_test_utils.get_err_msg('User info', 'jurisdiction', user.jurisdiction[:path])
-      verify_lock_status(user.email, !user.locked_at.nil?)
-    else
-      assert page.has_no_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', 'nonexistent')
-      assert page.has_no_content?(user.jurisdiction[:path]), @@system_test_utils.get_err_msg('User info', 'jurisdiction', 'nonexistent')
+    Capybara.using_wait_time(4) do
+      if should_exist
+        assert page.has_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', user.email)
+        assert page.has_content?(user.jurisdiction[:path]), @@system_test_utils.get_err_msg('User info', 'jurisdiction', user.jurisdiction[:path])
+        verify_lock_status(user.email, !user.locked_at.nil?)
+      else
+        assert page.has_no_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', 'nonexistent')
+        assert page.has_no_content?(user.jurisdiction[:path]), @@system_test_utils.get_err_msg('User info', 'jurisdiction', 'nonexistent')
+      end
     end
   end
 
-  def verify_add_user(email, jurisdiction, role, submit = true)
-    if submit
-      assert page.has_content?(email), @@system_test_utils.get_err_msg('New user info', 'email', email)
-      assert page.has_content?(jurisdiction), @@system_test_utils.get_err_msg('New user info', 'jurisdiction', jurisdiction)
-      assert page.has_content?(role), @@system_test_utils.get_err_msg('New user info', 'role', role)
-      assert page.has_content?('Unlocked'), @@system_test_utils.get_err_msg('New user info', 'status', 'Unlocked')
-      assert page.has_content?('Lock'), @@system_test_utils.get_err_msg('New user info', 'lock/unlock button', 'Lock')
-      assert page.has_content?('Enable'), @@system_test_utils.get_err_msg('New user info', 'enable/disable api button', 'Enable')
-    else
-      assert page.has_no_content?(email), @@system_test_utils.get_err_msg('Add user', 'user', 'non-existent')
+  def verify_add_user(email, jurisdiction, role, isAPIEnabled, submit = true)
+    Capybara.using_wait_time(4) do
+      if submit
+        assert page.has_content?(email), @@system_test_utils.get_err_msg('New user info', 'email', email)
+        assert page.has_content?(jurisdiction), @@system_test_utils.get_err_msg('New user info', 'jurisdiction', jurisdiction)
+        assert page.has_content?(role), @@system_test_utils.get_err_msg('New user info', 'role', role)
+      else
+        assert page.has_no_content?(email), @@system_test_utils.get_err_msg('Add user', 'user', 'non-existent')
+      end
     end
+  end
+
+  def verify_user_field(field, value)
+    assert page.find('tbody').has_content?(value), @@system_test_utils.get_err_msg('User info', field, value) unless value.nil?
   end
 
   def verify_lock_status(email, locked)
     if locked
       assert page.has_content?('Locked'), @@system_test_utils.get_err_msg('User info', 'status', 'Locked')
-      assert page.has_content?('Unlock'), @@system_test_utils.get_err_msg('User info', 'lock/unlock button', 'Unlock')
       assert_not_nil User.where(email: email).first.locked_at, @@system_test_utils.get_err_msg('Lock user', 'locked_at', 'not nil')
     else
       assert page.has_content?('Unlocked'), @@system_test_utils.get_err_msg('User info', 'status', 'Unlocked')
-      assert page.has_content?('Lock'), @@system_test_utils.get_err_msg('User info', 'lock/unlock button', 'Lock')
       assert_nil User.where(email: email).first.locked_at, @@system_test_utils.get_err_msg('Lock user', 'locked_at', 'nil')
     end
   end

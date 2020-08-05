@@ -103,18 +103,18 @@ class AdminController < ApplicationController
     permitted_params = params[:admin].permit(:email, :jurisdiction, :role, :is_api_enabled)
     email = permitted_params[:email]
     return head :bad_request if email.nil? || email.blank?
-    stripped_email = email.strip
 
-    address = ValidEmail2::Address.new(stripped_email)
+    email = email.strip
+    address = ValidEmail2::Address.new(email)
     return head :bad_request unless address.valid? && !address.disposable?
 
     role = permitted_params[:role]
     return head :bad_request if role.nil? || role.blank? 
 
     # Parse back to format in records
-    parsed_role = role.split(' ').map(&:downcase).join('_')
+    role = role.split(' ').map(&:downcase).join('_')
     roles = Role.pluck(:name)
-    return head :bad_request if !roles.include?(parsed_role)
+    return head :bad_request if !roles.include?(role)
 
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
@@ -129,7 +129,7 @@ class AdminController < ApplicationController
     # Create user
     # - require user to change password on first login
     user = User.create!(
-      email: stripped_email,
+      email: email,
       password: password,
       jurisdiction: Jurisdiction.find_by_id(jurisdiction),
       force_password_change: true,
@@ -154,6 +154,7 @@ class AdminController < ApplicationController
     email = permitted_params[:email]
     return head :bad_request if email.nil? || email.blank?
 
+    email = email.strip
     address = ValidEmail2::Address.new(email)
     return head :bad_request unless address.valid? && !address.disposable?
 
@@ -161,9 +162,9 @@ class AdminController < ApplicationController
     return head :bad_request if role.nil? || role.blank? 
 
     # Parse back to format in records
-    parsed_role = role.split(' ').map(&:downcase).join('_')
+    role = role.split(' ').map(&:downcase).join('_')
     roles = Role.pluck(:name)
-    return head :bad_request if !roles.include?(parsed_role)
+    return head :bad_request unless roles.include?(role)
 
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]

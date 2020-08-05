@@ -17,7 +17,7 @@ class AdminTable extends React.Component {
       table: {
         colData: [
           { label: 'Id', field: 'id', isSortable: true },
-          { label: 'email', field: 'email', isSortable: true },
+          { label: 'Email', field: 'email', isSortable: true },
           { label: 'Jurisdiction', field: 'jurisdiction_path', isSortable: true },
           { label: 'Role', field: 'role', isSortable: false },
           { label: 'Status', field: 'is_locked', isSortable: false, options: { true: 'Locked', false: 'Unlocked' } },
@@ -121,7 +121,12 @@ class AdminTable extends React.Component {
    */
   getJurisdictionPaths() {
     axios.get('/jurisdictions/paths').then(response => {
-      this.setState({ jurisdictionPaths: response.data.jurisdictionPaths });
+      const responseData = response.data.jurisdictionPaths;
+
+      // Swap keys and values for ease of use
+      let jurisdictionPaths = Object.assign({}, ...Object.entries(responseData).map(([id, path]) => ({ [path]: parseInt(id) })));
+
+      this.setState({ jurisdictionPaths });
     });
   }
 
@@ -160,7 +165,6 @@ class AdminTable extends React.Component {
         console.log(error);
       }
     };
-    console.log(params);
     this.axiosAdminGetRequest(path, params, handleSuccess, handleError, true);
   };
 
@@ -221,7 +225,7 @@ class AdminTable extends React.Component {
 
     const dataToSend = {
       email: data.email,
-      jurisdiction: parseInt(data.jurisdictionId),
+      jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
       role: data.role,
       is_api_enabled: data.isAPIEnabled,
     };
@@ -255,7 +259,7 @@ class AdminTable extends React.Component {
     const dataToSend = {
       id: this.state.table.rowData[parseInt(row)].id,
       email: data.email,
-      jurisdiction: parseInt(data.jurisdictionId),
+      jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
       role: data.role,
       is_api_enabled: data.isAPIEnabled,
       is_locked: data.isLocked,
@@ -607,7 +611,7 @@ class AdminTable extends React.Component {
                   </InputGroup.Text>
                 </OverlayTrigger>
               </InputGroup.Prepend>
-              <Form.Control autoComplete="off" size="md" name="search" value={this.state.query.search} onChange={this.handleSearchChange} />
+              <Form.Control id="search-input" autoComplete="off" size="md" name="search" value={this.state.query.search} onChange={this.handleSearchChange} />
               <DropdownButton
                 size="md"
                 variant="primary"
@@ -654,14 +658,14 @@ class AdminTable extends React.Component {
           entryOptions={this.state.entryOptions}
           entries={this.state.query.entries}
         />
-        {(this.state.showEditUserModal || this.state.showAddUserModal) && (
+        {Object.keys(this.state.jurisdictionPaths).length && (this.state.showEditUserModal || this.state.showAddUserModal) && (
           <UserModal
             show={this.state.showEditUserModal || this.state.showAddUserModal}
             onSave={formData => this.handleUserModalSave(this.state.showAddUserModal, formData)}
             onClose={this.handleUserModalClose}
             title={this.state.showEditUserModal ? 'Edit User' : 'Add User'}
             type={this.state.showEditUserModal ? 'edit' : 'add'}
-            jurisdictionPaths={this.state.jurisdictionPaths}
+            jurisdictionPaths={Object.keys(this.state.jurisdictionPaths)}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
           />

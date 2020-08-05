@@ -7,9 +7,7 @@ class UserModal extends React.Component {
     super(props);
     this.state = {
       email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
-      jurisdictionId: this.props.initialUserData.jurisdiction_path
-        ? this.props.initialUserData.jurisdiction_path
-        : Object.keys(this.props.jurisdictionPaths)[0],
+      jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
       role: this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0],
       isAPIEnabled: this.props.initialUserData.is_api_enabled ? this.props.initialUserData.is_api_enabled : false,
       isLocked: this.props.initialUserData.is_locked ? this.props.initialUserData.is_locked : false,
@@ -23,8 +21,7 @@ class UserModal extends React.Component {
 
   handleJurisdictionChange = e => {
     const val = e.target.value;
-    const jurisdictionId = Object.keys(this.props.jurisdictionPaths).find(key => this.props.jurisdictionPaths[parseInt(key)] === val);
-    this.setState({ jurisdictionId });
+    this.setState({ jurisdictionPath: val });
   };
 
   handleRoleChange = e => {
@@ -59,6 +56,8 @@ class UserModal extends React.Component {
                   </InputGroup.Text>
                 </InputGroup.Prepend>
                 <FormControl
+                  id="email-input"
+                  name="email"
                   defaultValue={this.props.initialUserData.email ? this.props.initialUserData.email : ''}
                   placeholder="Enter email address"
                   aria-label="Enter email address"
@@ -70,13 +69,13 @@ class UserModal extends React.Component {
             <Form.Group>
               <Form.Label>Jurisdiction</Form.Label>
               <Form.Control
+                id="jurisdiction-input"
+                name="jurisdiction"
                 as="select"
-                onChange={this.handleJurisdictionChange}
-                defaultValue={
-                  this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : Object.values(this.props.jurisdictionPaths)[0]
-                }>
-                {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
-                  return <option key={id}>{path}</option>;
+                onClick={this.handleJurisdictionChange}
+                defaultValue={this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0]}>
+                {this.props.jurisdictionPaths.map((path, index) => {
+                  return <option key={index}>{path}</option>;
                 })}
               </Form.Control>
             </Form.Group>
@@ -84,6 +83,8 @@ class UserModal extends React.Component {
           <Form.Group>
             <Form.Label>Role</Form.Label>
             <Form.Control
+              id="role-input"
+              name="role"
               as="select"
               onChange={this.handleRoleChange}
               defaultValue={this.props.initialUserData.role ? this.props.initialUserData.role : this.props.roles[0]}>
@@ -96,7 +97,8 @@ class UserModal extends React.Component {
             <Form.Group>
               <Form.Label>Status</Form.Label>
               <Form.Check
-                id="statusSwitch"
+                id="status-input"
+                name="status"
                 type="switch"
                 checked={this.state.isLocked}
                 label={this.state.isLocked ? 'Locked' : 'Unlocked'}
@@ -107,7 +109,8 @@ class UserModal extends React.Component {
           <Form.Group>
             <Form.Label>API Access</Form.Label>
             <Form.Check
-              id="accessSwitch"
+              id="access-input"
+              name="access"
               type="switch"
               checked={this.state.isAPIEnabled}
               label={this.state.isAPIEnabled ? 'Enabled' : 'Disabled'}
@@ -135,7 +138,7 @@ UserModal.propTypes = {
   initialUserData: PropTypes.object,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
-  jurisdictionPaths: PropTypes.object,
+  jurisdictionPaths: PropTypes.array,
   roles: PropTypes.array,
 };
 

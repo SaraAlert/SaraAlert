@@ -24,20 +24,28 @@ class AdminTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def add_user(user_label, email, jurisdiction, role, submit = true)
+  def add_user(user_label, email, jurisdiction, role, isAPIEnabled, submit = true)
     @@system_test_utils.login(user_label)
-    @@admin_dashboard.add_user(email, jurisdiction, role, submit)
+    @@admin_dashboard.add_user(email, jurisdiction, role, isAPIEnabled, submit)
     @@admin_dashboard.search_for_user(email)
-    @@admin_dashboard_verifier.verify_add_user(email, jurisdiction, role, submit)
+    @@admin_dashboard_verifier.verify_add_user(email, jurisdiction, role, isAPIEnabled, submit)
     @@system_test_utils.logout
   end
 
-  def add_existing_user(user_label, email, jurisdiction, role)
+  def add_existing_user(user_label, email, jurisdiction, role, isAPIEnabled)
     @@system_test_utils.login(user_label)
-    @@admin_dashboard.add_user(email, jurisdiction, role)
+    @@admin_dashboard.add_user(email, jurisdiction, role, isAPIEnabled)
     assert_equal('User already exists', page.driver.browser.switch_to.alert.text)
     page.driver.browser.switch_to.alert.dismiss
     @@system_test_utils.logout
+  end
+
+  def edit_user(user_label, id)
+    #TODO: implement
+  end
+
+  def select_user(user_label, id)
+    #TODO: implement
   end
 
   def lock_user(user_label, email)
