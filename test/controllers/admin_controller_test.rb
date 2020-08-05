@@ -135,43 +135,43 @@ class AdminControllerTest < ActionController::TestCase
 
     sort_direction = 'asc'
     get :users, params: { orderBy: order_by, sortDirection: sort_direction }
-    ordered_ids = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).order(email: sort_direction).pluck(:id)
-    assert_equal(ordered_ids, (JSON.parse(response.body)['linelist'].map { |user| user['id'] }))
+    ordered_emails = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).order(email: sort_direction).pluck(:email)
+    assert_equal(ordered_emails, (JSON.parse(response.body)['linelist'].map { |user| user['email'] }))
 
     sort_direction = 'desc'
     get :users, params: { orderBy: order_by, sortDirection: sort_direction }
-    ordered_ids = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).order(email: sort_direction).pluck(:id)
-    assert_equal(ordered_ids, (JSON.parse(response.body)['linelist'].map { |user| user['id'] }))
+    ordered_emails = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).order(email: sort_direction).pluck(:email)
+    assert_equal(ordered_emails, (JSON.parse(response.body)['linelist'].map { |user| user['email'] }))
 
     # Test sort by jurisdiction_path 
     order_by = 'jurisdiction_path'
 
     sort_direction = 'asc'
     get :users, params: { orderBy: order_by, sortDirection: sort_direction }
-    ordered_ids = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
+    ordered_paths = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
         'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path '
-      ).order(path: sort_direction).pluck(:id)
-    assert_equal(ordered_ids, (JSON.parse(response.body)['linelist'].map { |user| user['id'] }))
+      ).order(path: sort_direction).pluck(:path)
+    assert_equal(ordered_paths, (JSON.parse(response.body)['linelist'].map { |user| user['jurisdiction_path'] }))
 
     sort_direction = 'desc'
     get :users, params: { orderBy: order_by, sortDirection: sort_direction }
-    ordered_ids = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
+    ordered_paths = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
         'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path '
-      ).order(path: sort_direction).pluck(:id)    
-    assert_equal(ordered_ids, (JSON.parse(response.body)['linelist'].map { |user| user['id'] }))
+      ).order(path: sort_direction).pluck(:path)    
+    assert_equal(ordered_paths, (JSON.parse(response.body)['linelist'].map { |user| user['jurisdiction_path'] }))
 
     # Test sort by num failed logins 
     order_by = 'num_failed_logins'
 
     sort_direction = 'asc'
     get :users, params: { orderBy: order_by, sortDirection: sort_direction }
-    ordered_ids = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).order(failed_attempts: sort_direction).pluck(:id)
-    assert_equal(ordered_ids, (JSON.parse(response.body)['linelist'].map { |user| user['id'] }))
+    ordered_logins = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).order(failed_attempts: sort_direction).pluck(:failed_attempts)
+    assert_equal(ordered_logins, (JSON.parse(response.body)['linelist'].map { |user| user['num_failed_logins'] }))
 
     sort_direction = 'desc'
     get :users, params: { orderBy: order_by, sortDirection: sort_direction }
-    ordered_ids = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).order(failed_attempts: sort_direction).pluck(:id)
-    assert_equal(ordered_ids, (JSON.parse(response.body)['linelist'].map { |user| user['id'] }))
+    ordered_logins = User.where(jurisdiction_id: user.jurisdiction.subtree_ids).order(failed_attempts: sort_direction).pluck(:failed_attempts)
+    assert_equal(ordered_logins, (JSON.parse(response.body)['linelist'].map { |user| user['num_failed_logins'] }))
 
     sign_out user
   end
