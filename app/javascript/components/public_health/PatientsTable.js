@@ -439,7 +439,7 @@ class PatientsTable extends React.Component {
                           variant="primary"
                           title={
                             <React.Fragment>
-                              <i className="fas fa-tools"></i> Actions{' '}
+                              <i className="fas fa-cogs"></i> Actions{' '}
                             </React.Fragment>
                           }
                           className="ml-2"
