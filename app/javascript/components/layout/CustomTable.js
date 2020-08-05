@@ -8,7 +8,6 @@ class CustomTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectAll: false,
       tableQuery: {
         orderBy: '',
         sortDirection: '',
@@ -46,11 +45,6 @@ class CustomTable extends React.Component {
     if (checked && !this.props.selectedRows.includes(row)) {
       const selectedRows = [...this.props.selectedRows, row];
 
-      // Update select all if all displayed rows are checked.
-      if (selectedRows >= this.props.entries) {
-        this.setState({ selectAll: true });
-      }
-
       // Call parent handler
       this.props.handleSelect(selectedRows);
     } else {
@@ -59,9 +53,6 @@ class CustomTable extends React.Component {
       const index = selectedRows.indexOf(row);
       selectedRows.splice(index, 1);
 
-      // Update select all if not all displayed rows are checked.
-      this.setState({ selectAll: false });
-
       // Call parent handler
       this.props.handleSelect(selectedRows);
     }
@@ -69,22 +60,12 @@ class CustomTable extends React.Component {
 
   /**
    * Called when the checkbox in the table header is clicked and either selects all rows
-   * or deselects all rows based on the current state.
+   * or deselects all rows based on the current selectAll value.
    */
   toggleSelectAll = () => {
-    this.setState(
-      state => {
-        return {
-          selectAll: !state.selectAll,
-        };
-      },
-      () => {
-        const selectedRows = this.state.selectAll ? [...Array(this.props.rowData.length).keys()] : [];
-
-        // Call parent handler
-        this.props.handleSelect(selectedRows);
-      }
-    );
+    const selectedRows = this.props.selectAll ? [] : [...Array(this.props.rowData.length).keys()];
+    // Call parent handler
+    this.props.handleSelect(selectedRows);
   };
 
   /**
@@ -147,17 +128,6 @@ class CustomTable extends React.Component {
     );
   };
 
-  handlePageChange = page => {
-    this.setState(
-      {
-        selectAll: false,
-      },
-      () => {
-        this.props.handlePageUpdate(page);
-      }
-    );
-  };
-
   render() {
     return (
       <React.Fragment>
@@ -174,10 +144,7 @@ class CustomTable extends React.Component {
               })}
               {this.props.isEditable && <th>Edit</th>}
               <th>
-                <input
-                  type="checkbox"
-                  onChange={this.toggleSelectAll}
-                  checked={this.state.selectAll && this.props.selectedRows.length >= this.props.entries}></input>
+                <input type="checkbox" onChange={this.toggleSelectAll} checked={this.props.selectAll}></input>
               </th>
             </tr>
           </thead>
@@ -207,7 +174,7 @@ class CustomTable extends React.Component {
                   <td>
                     <input
                       type="checkbox"
-                      checked={this.state.selectAll || this.props.selectedRows.includes(row)}
+                      checked={this.props.selectAll || this.props.selectedRows.includes(row)}
                       onChange={e => this.handleCheckboxChange(e, row)}></input>
                   </td>
                 </tr>
@@ -248,7 +215,7 @@ class CustomTable extends React.Component {
               pageRangeDisplayed={4}
               marginPagesDisplayed={1}
               initialPage={this.props.page}
-              onPageChange={this.handlePageChange}
+              onPageChange={this.props.handlePageUpdate}
               previousLabel="Previous"
               nextLabel="Next"
               breakLabel="..."
@@ -277,6 +244,7 @@ CustomTable.propTypes = {
   rowData: PropTypes.array,
   totalRows: PropTypes.number,
   selectedRows: PropTypes.array,
+  selectAll: PropTypes.bool,
   isEditable: PropTypes.bool,
   handleEdit: PropTypes.func,
   handleTableUpdate: PropTypes.func,

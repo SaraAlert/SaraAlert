@@ -28,6 +28,7 @@ class AdminTable extends React.Component {
         rowData: [],
         totalRows: 0,
         selectedRows: [],
+        selectAll: false,
       },
       query: {
         page: 0,
@@ -142,7 +143,7 @@ class AdminTable extends React.Component {
         // If there's a valid response, update state accordingly
         this.setState(state => {
           return {
-            table: { ...state.table, selectedRows: [], rowData: response.data.user_rows, totalRows: response.data.total },
+            table: { ...state.table, selectedRows: [], selectAll: false, rowData: response.data.user_rows, totalRows: response.data.total },
             isLoading: false,
             actionsEnabled: false,
           };
@@ -151,7 +152,7 @@ class AdminTable extends React.Component {
         // If the response doesn't have the expected data, don't update table data
         this.setState(state => {
           return {
-            table: { ...state.table, selectedRows: [] },
+            table: { ...state.table, selectedRows: [], selectAll: false },
             isLoading: false,
             actionsEnabled: false,
           };
@@ -166,7 +167,6 @@ class AdminTable extends React.Component {
           return {
             table: { ...state.table, rowData: [], totalRows: 0 },
             isLoading: false,
-            actionsEnabled: false,
           };
         });
         console.log(error);
@@ -386,10 +386,12 @@ class AdminTable extends React.Component {
    * @param {Number[]} selectedRows - Array of selected row indices.
    */
   handleSelect = selectedRows => {
+    // All rows are selected if the number selected is the max number shown or the total number of rows completely
+    const selectAll = selectedRows.length >= this.state.query.entries || selectedRows.length >= this.state.table.totalRows;
     this.setState(state => {
       return {
         actionsEnabled: selectedRows.length > 0,
-        table: { ...state.table, selectedRows },
+        table: { ...state.table, selectedRows, selectAll },
       };
     });
   };
@@ -542,14 +544,14 @@ class AdminTable extends React.Component {
     };
 
     const handleSuccess = () => {
-      toast.success(`Password reset for ${this.state.selectedRows} users.`, {
+      toast.success(`Password reset for ${this.state.table.selectedRows} users.`, {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
     };
 
     const handleError = error => {
-      toast.error(`Failed to reset password for ${this.state.selectedRows} users.`, {
+      toast.error(`Failed to reset password for ${this.state.table.selectedRows} users.`, {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
@@ -573,14 +575,14 @@ class AdminTable extends React.Component {
     };
 
     const handleSuccess = () => {
-      toast.success(`Two-factor authentication reset for ${this.state.selectedRows} users.`, {
+      toast.success(`Two-factor authentication reset for ${this.state.table.selectedRows} users.`, {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
     };
 
     const handleError = error => {
-      toast.error(`Failed to reset Two-factor Authentication for ${this.state.selectedRows} users.`, {
+      toast.error(`Failed to reset Two-factor Authentication for ${this.state.table.selectedRows} users.`, {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
@@ -665,6 +667,7 @@ class AdminTable extends React.Component {
           page={this.state.query.page}
           handlePageUpdate={this.handlePageUpdate}
           selectedRows={this.state.table.selectedRows}
+          selectAll={this.state.table.selectAll}
           entryOptions={this.state.entryOptions}
           entries={this.state.query.entries}
         />

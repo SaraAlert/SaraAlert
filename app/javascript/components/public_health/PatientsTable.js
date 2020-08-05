@@ -54,10 +54,12 @@ class PatientsTable extends React.Component {
         ],
         displayedColData: [],
         rowData: [],
+        totalRows: 0,
       },
       loading: false,
       actionsEnabled: false,
       selectedPatients: [],
+      selectAll: false,
       jurisdictionPaths: {},
       assignedUsers: [],
       form: {
@@ -77,9 +79,6 @@ class PatientsTable extends React.Component {
       cancelToken: axios.CancelToken.source(),
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
-    this.handleChange = this.handleChange.bind(this);
-    this.updateTable = this.updateTable.bind(this);
-    this.linkPatient = this.linkPatient.bind(this);
   }
 
   componentDidMount() {
@@ -157,7 +156,7 @@ class PatientsTable extends React.Component {
     );
   };
 
-  handleChange(event) {
+  handleChange = event => {
     const form = this.state.form;
     const query = this.state.query;
     if (event.target.name === 'jurisdictionPath') {
@@ -178,7 +177,7 @@ class PatientsTable extends React.Component {
     } else if (event.target.name === 'search') {
       this.updateTable({ ...query, search: event.target.value, page: 0 });
     }
-  }
+  };
 
   handleScopeChange(scope) {
     if (scope !== this.state.query.scope) {
@@ -208,13 +207,16 @@ class PatientsTable extends React.Component {
    * @param {Number[]} selectedRows - Array of selected row indices.
    */
   handleSelect = selectedRows => {
+    // All rows are selected if the number selected is the max number shown or the total number of rows completely
+    const selectAll = selectedRows.length >= this.state.query.entries || selectedRows.length >= this.state.table.totalRows;
     this.setState({
       actionsEnabled: selectedRows.length > 0,
       selectedPatients: selectedRows,
+      selectAll,
     });
   };
 
-  updateTable(query) {
+  updateTable = query => {
     // cancel any previous unfinished requests to prevent race condition inconsistencies
     this.state.cancelToken.cancel();
 
@@ -241,7 +243,6 @@ class PatientsTable extends React.Component {
               return {
                 table: { ...state.table, rowData: [], totalRows: 0 },
                 loading: false,
-                actionsEnabled: false,
               };
             });
           }
@@ -253,16 +254,22 @@ class PatientsTable extends React.Component {
               return {
                 table: { ...state.table, displayedColData, rowData: response.data.linelist, totalRows: response.data.total },
                 selectedPatients: [],
+                selectAll: false,
                 loading: false,
                 actionsEnabled: false,
               };
             });
           } else {
-            this.setState({ selectedPatients: [], loading: false });
+            this.setState({
+              selectedPatients: [],
+              selectAll: false,
+              actionsEnabled: false,
+              loading: false,
+            });
           }
         });
     });
-  }
+  };
 
   updateJurisdictionPaths() {
     axios.get('/jurisdictions/paths').then(response => {
@@ -498,6 +505,7 @@ class PatientsTable extends React.Component {
                 page={this.state.query.page}
                 handlePageUpdate={this.handlePageUpdate}
                 selectedRows={this.state.selectedPatients}
+                selectAll={this.state.selectAll}
                 entryOptions={this.state.entryOptions}
                 entries={this.state.query.entries}
               />
@@ -511,14 +519,14 @@ class PatientsTable extends React.Component {
           {this.state.action === 'Close Records' && (
             <CloseRecords
               authenticity_token={this.props.authenticity_token}
-              patients={this.state.patients.linelist.filter((_, index) => this.state.selectedPatients.includes(index))}
+              patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
               close={() => this.setState({ action: undefined })}
             />
           )}
           {this.state.action === 'Update Case Status' && (
             <UpdateCaseStatus
               authenticity_token={this.props.authenticity_token}
-              patients={this.state.patients.linelist.filter((_, index) => this.state.selectedPatients.includes(index))}
+              patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
               close={() => this.setState({ action: undefined })}
             />
           )}
