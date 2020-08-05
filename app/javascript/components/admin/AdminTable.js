@@ -142,14 +142,20 @@ class AdminTable extends React.Component {
         // If there's a valid response, update state accordingly
         this.setState(state => {
           return {
-            table: { ...state.table, rowData: response.data.user_rows, totalRows: response.data.total },
-            selectedRows: [],
+            table: { ...state.table, selectedRows: [], rowData: response.data.user_rows, totalRows: response.data.total },
             isLoading: false,
+            actionsEnabled: false,
           };
         });
       } else {
         // If the response doesn't have the expected data, don't update table data
-        this.setState({ selectedRows: [], isLoading: false });
+        this.setState(state => {
+          return {
+            table: { ...state.table, selectedRows: [] },
+            isLoading: false,
+            actionsEnabled: false,
+          };
+        });
       }
     };
 
@@ -160,6 +166,7 @@ class AdminTable extends React.Component {
           return {
             table: { ...state.table, rowData: [], totalRows: 0 },
             isLoading: false,
+            actionsEnabled: false,
           };
         });
         console.log(error);
@@ -478,7 +485,10 @@ class AdminTable extends React.Component {
   handlePageUpdate = page => {
     this.setState(
       state => {
-        return { query: { ...state.query, page: page.selected } };
+        return {
+          query: { ...state.query, page: page.selected },
+          table: { ...state.table, selectedRows: [] },
+        };
       },
       () => {
         this.getTableData(this.state.query);

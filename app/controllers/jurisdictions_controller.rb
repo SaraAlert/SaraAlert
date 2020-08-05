@@ -66,6 +66,7 @@ class JurisdictionsController < ApplicationController
   private
 
   def authenticate_user_role
-    return head :unauthorized unless current_user.can_create_patient? || current_user.can_edit_patient? || current_user.can_view_public_health_dashboard? || current_user.admin?
+    return head :unauthorized unless current_user.can_create_patient? || current_user.can_edit_patient? ||
+                                     current_user.can_view_public_health_dashboard? || current_user.admin?
   end
 end

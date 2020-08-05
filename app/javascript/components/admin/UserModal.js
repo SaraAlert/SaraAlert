@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
 import { Button, Modal, InputGroup, FormControl, Form } from 'react-bootstrap';
+import Select from 'react-select';
 
 class UserModal extends React.Component {
   constructor(props) {
@@ -19,14 +20,12 @@ class UserModal extends React.Component {
     this.setState({ email: val });
   };
 
-  handleJurisdictionChange = e => {
-    const val = e.target.value;
-    this.setState({ jurisdictionPath: val });
+  handleJurisdictionChange = data => {
+    this.setState({ jurisdictionPath: data.value });
   };
 
-  handleRoleChange = e => {
-    const val = e.target.value;
-    this.setState({ roleTitle: val });
+  handleRoleChange = data => {
+    this.setState({ roleTitle: data.value });
   };
 
   handleLockedStatusChange = event => {
@@ -68,55 +67,69 @@ class UserModal extends React.Component {
             </Form.Group>
             <Form.Group>
               <Form.Label>Jurisdiction</Form.Label>
-              <Form.Control
-                id="jurisdiction-input"
+              <Select
                 name="jurisdiction"
-                as="select"
-                onClick={this.handleJurisdictionChange}
-                defaultValue={this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0]}>
-                {this.props.jurisdictionPaths.map((path, index) => {
-                  return <option key={index}>{path}</option>;
+                defaultValue={
+                  this.props.initialUserData.jurisdiction_path
+                    ? { label: this.props.initialUserData.jurisdiction_path, value: this.props.initialUserData.jurisdiction_path }
+                    : { label: this.props.jurisdictionPaths[0], value: this.props.jurisdictionPaths[0] }
+                }
+                options={this.props.jurisdictionPaths.map(path => {
+                  return { label: path, value: path };
                 })}
-              </Form.Control>
-            </Form.Group>
-          </Form>
-          <Form.Group>
-            <Form.Label>Role</Form.Label>
-            <Form.Control
-              id="role-input"
-              name="role"
-              as="select"
-              onChange={this.handleRoleChange}
-              defaultValue={this.props.initialUserData.role_title ? this.props.initialUserData.role_title : this.props.roles[0]}>
-              {this.props.roles.map((role, index) => {
-                return <option key={index}>{role}</option>;
-              })}
-            </Form.Control>
-          </Form.Group>
-          {this.props.type === 'edit' && (
-            <Form.Group>
-              <Form.Label>Status</Form.Label>
-              <Form.Check
-                id="status-input"
-                name="status"
-                type="switch"
-                checked={this.state.isLocked}
-                label={this.state.isLocked ? 'Locked' : 'Unlocked'}
-                onChange={this.handleLockedStatusChange}
+                onChange={this.handleJurisdictionChange}
+                placeholder=""
+                theme={theme => ({
+                  ...theme,
+                  borderRadius: 0,
+                })}
               />
             </Form.Group>
-          )}
-          <Form.Group>
-            <Form.Label>API Access</Form.Label>
-            <Form.Check
-              id="access-input"
-              name="access"
-              type="switch"
-              checked={this.state.isAPIEnabled}
-              label={this.state.isAPIEnabled ? 'Enabled' : 'Disabled'}
-              onChange={this.handleAPIAccessChange}
-            />
-          </Form.Group>
+            <Form.Group>
+              <Form.Label>Role</Form.Label>
+              <Select
+                name="role"
+                defaultValue={
+                  this.props.initialUserData.role_title
+                    ? { label: this.props.initialUserData.role_title, value: this.props.initialUserData.jurisdiction_path }
+                    : { label: this.props.roles[0], value: this.props.roles[0] }
+                }
+                options={this.props.roles.map(role => {
+                  return { label: role, value: role };
+                })}
+                onChange={this.handleRoleChange}
+                placeholder=""
+                theme={theme => ({
+                  ...theme,
+                  borderRadius: 0,
+                })}
+              />
+            </Form.Group>
+            {this.props.type === 'edit' && (
+              <Form.Group>
+                <Form.Label>Status</Form.Label>
+                <Form.Check
+                  id="status-input"
+                  name="status"
+                  type="switch"
+                  checked={this.state.isLocked}
+                  label={this.state.isLocked ? 'Locked' : 'Unlocked'}
+                  onChange={this.handleLockedStatusChange}
+                />
+              </Form.Group>
+            )}
+            <Form.Group>
+              <Form.Label>API Access</Form.Label>
+              <Form.Check
+                id="access-input"
+                name="access"
+                type="switch"
+                checked={this.state.isAPIEnabled}
+                label={this.state.isAPIEnabled ? 'Enabled' : 'Disabled'}
+                onChange={this.handleAPIAccessChange}
+              />
+            </Form.Group>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={this.props.onClose}>

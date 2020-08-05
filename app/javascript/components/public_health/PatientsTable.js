@@ -238,6 +238,7 @@ class PatientsTable extends React.Component {
               return {
                 table: { ...state.table, rowData: [], totalRows: 0 },
                 loading: false,
+                actionsEnabled: false,
               };
             });
           }
@@ -250,6 +251,7 @@ class PatientsTable extends React.Component {
                 table: { ...state.table, displayedColData, rowData: response.data.linelist, totalRows: response.data.total },
                 selectedPatients: [],
                 loading: false,
+                actionsEnabled: false,
               };
             });
           } else {

@@ -111,12 +111,12 @@ class AdminController < ApplicationController
     return head :bad_request unless address.valid? && !address.disposable?
 
     role = permitted_params[:role_title]
-    return head :bad_request if role.nil? || role.blank? 
+    return head :bad_request if role.nil? || role.blank?
 
     # Parse back to format in records
     role = role.split(' ').map(&:downcase).join('_')
     roles = Role.pluck(:name)
-    return head :bad_request if !roles.include?(role)
+    return head :bad_request unless roles.include?(role)
 
     jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
@@ -147,7 +147,6 @@ class AdminController < ApplicationController
     redirect_to(root_url) && return unless current_user.has_role? :admin
 
     permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked)
-    roles = Role.pluck(:name)
 
     id = permitted_params[:id]
     user_ids = User.pluck(:id)
@@ -161,7 +160,7 @@ class AdminController < ApplicationController
     return head :bad_request unless address.valid? && !address.disposable?
 
     role = permitted_params[:role_title]
-    return head :bad_request if role.nil? || role.blank? 
+    return head :bad_request if role.nil? || role.blank?
 
     # Parse back to format in records
     role = role.split(' ').map(&:downcase).join('_')
@@ -221,8 +220,8 @@ class AdminController < ApplicationController
     cur_jur = current_user.jurisdiction
 
     # This should never happen, but if there is a user who is not underneath the current user's jurisdiction
-    # this is a bad request. 
-    users.each {|u| return head :bad_request unless cur_jur.subtree_ids.include? u.jurisdiction.id }
+    # this is a bad request.
+    users.each { |u| return head :bad_request unless cur_jur.subtree_ids.include? u.jurisdiction.id }
 
     users.each do |user|
       user.authy_id = nil
@@ -243,9 +242,9 @@ class AdminController < ApplicationController
     cur_jur = current_user.jurisdiction
 
     # This should never happen, but if there is a user who is not underneath the current user's jurisdiction
-    # this is a bad request. 
-    users.each {|u| return head :bad_request unless cur_jur.subtree_ids.include? u.jurisdiction.id }
-    
+    # this is a bad request.
+    users.each { |u| return head :bad_request unless cur_jur.subtree_ids.include? u.jurisdiction.id }
+
     users.each do |user|
       user.unlock_access!
       password = User.rand_gen

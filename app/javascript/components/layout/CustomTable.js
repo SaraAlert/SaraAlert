@@ -160,7 +160,7 @@ class CustomTable extends React.Component {
                 <input
                   type="checkbox"
                   onChange={this.toggleSelectAll}
-                  checked={this.state.selectAll || this.props.selectedRows.length >= this.props.entries}></input>
+                  checked={this.state.selectAll && this.props.selectedRows.length >= this.props.entries}></input>
               </th>
             </tr>
           </thead>
@@ -190,7 +190,7 @@ class CustomTable extends React.Component {
                   <td>
                     <input
                       type="checkbox"
-                      checked={this.state.selectAll || this.props.selectedRows.includes(row)}
+                      checked={this.state.selectAll && this.props.selectedRows.includes(row)}
                       onChange={e => this.handleCheckboxChange(e, row)}></input>
                   </td>
                 </tr>
