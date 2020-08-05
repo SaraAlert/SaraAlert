@@ -32,7 +32,7 @@ class PatientsTable extends React.Component {
     this.state = {
       table: {
         colData: [
-          { field: 'name', label: 'Monitoree', isSortable: true, tooltip: null },
+          { field: 'name', label: 'Monitoree', isSortable: true, tooltip: null, filter: this.linkPatient },
           { field: 'jurisdiction', label: 'Jurisdiction', isSortable: true, tooltip: null },
           { field: 'transferred_from', label: 'From Jurisdiction', isSortable: true, tooltip: null },
           { field: 'transferred_to', label: 'To Jurisdiction', isSortable: true, tooltip: null },
@@ -79,6 +79,7 @@ class PatientsTable extends React.Component {
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
     this.handleChange = this.handleChange.bind(this);
     this.updateTable = this.updateTable.bind(this);
+    this.linkPatient = this.linkPatient.bind(this);
   }
 
   componentDidMount() {
@@ -285,6 +286,13 @@ class PatientsTable extends React.Component {
         });
     }
   }
+
+  linkPatient = (name, id) => {
+    if (this.state.query.tab === 'transferred_out') {
+      return name;
+    }
+    return <a href={`/patients/${id}`}>{name}</a>;
+  };
 
   formatTimestamp(timestamp) {
     const ts = moment.tz(timestamp, 'UTC');
