@@ -11,7 +11,7 @@ class JurisdictionsControllerTest < ActionController::TestCase
     get :jurisdiction_paths
     assert_redirected_to(new_user_session_path)
 
-    %i[admin_user analyst_user].each do |role|
+    %i[analyst_user].each do |role|
       user = create(role)
       sign_in user
       get :jurisdiction_paths
@@ -44,7 +44,7 @@ class JurisdictionsControllerTest < ActionController::TestCase
     get :assigned_users_for_viewable_patients
     assert_redirected_to(new_user_session_path)
 
-    %i[admin_user analyst_user].each do |role|
+    %i[analyst_user].each do |role|
       user = create(role)
       sign_in user
       get :jurisdiction_paths
