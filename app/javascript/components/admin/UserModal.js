@@ -68,6 +68,7 @@ class UserModal extends React.Component {
             <Form.Group>
               <Form.Label>Jurisdiction</Form.Label>
               <Select
+                id="jurisdiction-select"
                 name="jurisdiction"
                 defaultValue={
                   this.props.initialUserData.jurisdiction_path
@@ -88,6 +89,7 @@ class UserModal extends React.Component {
             <Form.Group>
               <Form.Label>Role</Form.Label>
               <Select
+                id="role-select"
                 name="role"
                 defaultValue={
                   this.props.initialUserData.role_title

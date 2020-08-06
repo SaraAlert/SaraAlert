@@ -151,7 +151,7 @@ class CustomTable extends React.Component {
           <tbody>
             {this.props.rowData.map((data, row) => {
               return (
-                <tr key={data.id}>
+                <tr key={row} id={data.id ? data.id : row}>
                   {Object.values(this.props.columnData).map((col, index) => {
                     let value = data[col.field];
                     if (col.options) {
