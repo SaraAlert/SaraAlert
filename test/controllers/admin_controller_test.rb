@@ -380,10 +380,13 @@ class AdminControllerTest < ActionController::TestCase
     assert_response :success
 
     # Test welcome emails were sent for all three users
-    User.where(id: user_ids).each_with_index do |u, index|
+    delivered_emails = ActionMailer::Base.deliveries.sort_by { |email| email.to }
+    users = User.where(id: user_ids).sort_by { |u| u.email }
+    assert_equal(delivered_emails.length, users.length)
+    users.each_with_index do |u, index|
       assert u.force_password_change
       # Test that the welcome email is queued
-      email = ActionMailer::Base.deliveries[index]
+      email = delivered_emails[index]
       assert_equal(email.to, [u.email])
       assert_equal(email.subject, 'Welcome to the Sara Alert system')
     end
@@ -417,8 +420,13 @@ class AdminControllerTest < ActionController::TestCase
     end
     assert_response :success
 
-    User.where(id: user_ids).each_with_index do |u, index|
-      email = ActionMailer::Base.deliveries[index]
+    delivered_emails = ActionMailer::Base.deliveries.sort_by { |email| email.to}
+    users = User.where(id: user_ids).sort_by { |u| u.email }
+    assert_equal(delivered_emails.length, users.length)
+
+
+    users.each_with_index do |u, index|
+      email = delivered_emails[index]
       assert_equal(email.to, [u.email])
       assert_equal(email.subject, 'Message from the Sara Alert system')
     end
@@ -446,9 +454,12 @@ class AdminControllerTest < ActionController::TestCase
       post :email_all, params: { comment: 'Hello!' }, as: :json
     end
     assert_response :success
-
-    User.all.each_with_index do |u, index|
-      email = ActionMailer::Base.deliveries[index]
+    delivered_emails = ActionMailer::Base.deliveries.sort_by { |email| email.to}
+    users = User.all.sort_by { |u| u.email }
+    emails = delivered_emails.map {|email| email.to}
+    assert_equal(delivered_emails.length, users.length)
+    users.each_with_index do |u, index|
+      email = delivered_emails[index]
       assert_equal(email.to, [u.email])
       assert_equal(email.subject, 'Message from the Sara Alert system')
     end
