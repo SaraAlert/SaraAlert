@@ -195,7 +195,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   end
 
   def check_patient(patient_label)
-    find_by_id("#{PATIENTS[patient_label]['id']}").find('input').click
+    find_by_id(PATIENTS[patient_label]['id'].to_s).find('input').click
   end
 
   def bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_group)
