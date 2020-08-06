@@ -133,7 +133,7 @@ class UserModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={this.props.onClose}>
-            Close
+            Cancel
           </Button>
           <Button variant="primary" onClick={() => this.props.onSave(this.state)}>
             Save
