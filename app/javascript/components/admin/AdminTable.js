@@ -544,14 +544,14 @@ class AdminTable extends React.Component {
     };
 
     const handleSuccess = () => {
-      toast.success(`Password reset for ${this.state.table.selectedRows} users.`, {
+      toast.success(`Password reset for ${this.state.table.selectedRows.length} users.`, {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
     };
 
     const handleError = error => {
-      toast.error(`Failed to reset password for ${this.state.table.selectedRows} users.`, {
+      toast.error(`Failed to reset password for ${this.state.table.selectedRows.length} users.`, {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
@@ -575,14 +575,14 @@ class AdminTable extends React.Component {
     };
 
     const handleSuccess = () => {
-      toast.success(`Two-factor authentication reset for ${this.state.table.selectedRows} users.`, {
+      toast.success(`Two-factor authentication reset for ${this.state.table.selectedRows.length} users.`, {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
     };
 
     const handleError = error => {
-      toast.error(`Failed to reset Two-factor Authentication for ${this.state.table.selectedRows} users.`, {
+      toast.error(`Failed to reset Two-factor Authentication for ${this.state.table.selectedRows.length} users.`, {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
