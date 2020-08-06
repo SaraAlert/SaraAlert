@@ -102,6 +102,9 @@ class Enrollment extends React.Component {
     if (this.props.cc_id) {
       data['cc_id'] = this.props.cc_id;
     }
+    if (data.patient.symptom_onset !== undefined && data.patient.symptom_onset !== this.props.patient.symptom_onset) {
+      data.patient.user_defined_symptom_onset = true;
+    }
     data['bypass_duplicate'] = false;
     axios({
       method: this.props.editMode ? 'patch' : 'post',

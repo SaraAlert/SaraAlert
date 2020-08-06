@@ -13,7 +13,10 @@ class Patient extends React.Component {
   }
 
   formatPhoneNumber(phone) {
-    const match = phone.replace('+1', '').match(/^(\d{3})(\d{3})(\d{4})$/);
+    const match = phone
+      .replace('+1', '')
+      .replace(/\D/g, '')
+      .match(/^(\d{3})(\d{3})(\d{4})$/);
     return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
   }
 

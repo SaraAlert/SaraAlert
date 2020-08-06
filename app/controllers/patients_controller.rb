@@ -529,6 +529,7 @@ class PatientsController < ApplicationController
       continuous_exposure
       gender_identity
       sexual_orientation
+      user_defined_symptom_onset
     ]
   end
 
@@ -606,6 +607,7 @@ class PatientsController < ApplicationController
       symptom_onset
       case_status
       continuous_exposure
+      user_defined_symptom_onset
     ]
   end
 
@@ -624,6 +626,7 @@ class PatientsController < ApplicationController
       assigned_user
       last_date_of_exposure
       continuous_exposure
+      user_defined_symptom_onset
     ]
   end
 end
