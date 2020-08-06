@@ -380,8 +380,8 @@ class AdminControllerTest < ActionController::TestCase
     assert_response :success
 
     # Test welcome emails were sent for all three users
-    delivered_emails = ActionMailer::Base.deliveries.sort_by { |email| email.to }
-    users = User.where(id: user_ids).sort_by { |u| u.email }
+    delivered_emails = ActionMailer::Base.deliveries.sort_by(&:to)
+    users = User.where(id: user_ids).sort_by(&:email)
     assert_equal(delivered_emails.length, users.length)
     users.each_with_index do |u, index|
       assert u.force_password_change
@@ -420,10 +420,9 @@ class AdminControllerTest < ActionController::TestCase
     end
     assert_response :success
 
-    delivered_emails = ActionMailer::Base.deliveries.sort_by { |email| email.to}
-    users = User.where(id: user_ids).sort_by { |u| u.email }
+    delivered_emails = ActionMailer::Base.deliveries.sort_by(&:to)
+    users = User.where(id: user_ids).sort_by(&:email)
     assert_equal(delivered_emails.length, users.length)
-
 
     users.each_with_index do |u, index|
       email = delivered_emails[index]
@@ -454,9 +453,10 @@ class AdminControllerTest < ActionController::TestCase
       post :email_all, params: { comment: 'Hello!' }, as: :json
     end
     assert_response :success
-    delivered_emails = ActionMailer::Base.deliveries.sort_by { |email| email.to}
-    users = User.all.sort_by { |u| u.email }
-    emails = delivered_emails.map {|email| email.to}
+
+    delivered_emails = ActionMailer::Base.deliveries.sort_by(&:to)
+    users = User.all.sort_by(&:email)
+
     assert_equal(delivered_emails.length, users.length)
     users.each_with_index do |u, index|
       email = delivered_emails[index]
