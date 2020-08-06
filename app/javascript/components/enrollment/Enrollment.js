@@ -52,7 +52,7 @@ class Enrollment extends React.Component {
       enrollmentState: {
         patient: { ...currentEnrollmentState.patient, ...enrollmentState.patient },
         propagatedFields: { ...currentEnrollmentState.propagatedFields, ...enrollmentState.propagatedFields },
-        isolation: !!enrollmentState.isolation,
+        isolation: enrollmentState.isolation ? !!enrollmentState.isolation : currentEnrollmentState.isolation,
       },
     });
   }
