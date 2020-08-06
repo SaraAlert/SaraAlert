@@ -24,20 +24,30 @@ class AdminTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def add_user(user_label, email, jurisdiction, role, submit = true)
-    @@system_test_utils.login(user_label)
-    @@admin_dashboard.add_user(email, jurisdiction, role, submit)
-    @@admin_dashboard.search_for_user(email)
-    @@admin_dashboard_verifier.verify_add_user(email, jurisdiction, role, submit)
+  def add_user(user_data, submit = true)
+    @@system_test_utils.login(user_data[:label])
+    Capybara.using_wait_time(4) do
+      @@admin_dashboard.add_user(user_data, submit)
+      @@admin_dashboard.search_for_user(user_data[:email])
+      @@admin_dashboard_verifier.verify_add_user(user_data, submit)
+    end
     @@system_test_utils.logout
   end
 
-  def add_existing_user(user_label, email, jurisdiction, role)
+  def add_existing_user(user_label, email, jurisdiction, role, is_api_enabled)
     @@system_test_utils.login(user_label)
-    @@admin_dashboard.add_user(email, jurisdiction, role)
+    @@admin_dashboard.add_user(email, jurisdiction, role, is_api_enabled)
     assert_equal('User already exists', page.driver.browser.switch_to.alert.text)
     page.driver.browser.switch_to.alert.dismiss
     @@system_test_utils.logout
+  end
+
+  def edit_user(user_label, id)
+    # TODO: implement
+  end
+
+  def select_user(user_label, id)
+    # TODO: implement
   end
 
   def lock_user(user_label, email)

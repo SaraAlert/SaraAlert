@@ -1,17 +1,7 @@
-<%= react_component("admin/Admin", {
-    data: User.all.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
-        .joins(:jurisdiction)
-        .select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, jurisdictions.path')
-        .map {
-            |u| u.attributes.slice('id', 'email', 'api_enabled').merge(
-                jurisdiction_path: u.path, 
-                role: u.roles[0].name,
-                locked: !u.locked_at.nil? ? 'Locked' : 'Unlocked', 
-                configured_2fa: !u.authy_id.nil? ? 'Yes' : 'No'
-            )
-    },
-    role_types: Role.pluck(:name).uniq.reverse, 
-    authenticity_token: form_authenticity_token, 
-    jurisdiction_paths: Hash[Jurisdiction.where(id: current_user.jurisdiction.subtree_ids).map{|jur| [jur[:path], jur.id]}], 
-    is_usa_admin: current_user.can_send_admin_emails? })
- %>
+<%= stylesheet_link_tag "AdminTable" %>
+<%= react_component("admin/AdminTable", {
+        role_types: Role.pluck(:name).uniq.reverse.map{|role| role.split('_').map(&:capitalize).join(' ')}, 
+        authenticity_token: form_authenticity_token, 
+        is_usa_admin: current_user.can_send_admin_emails? 
+    }) 
+%>

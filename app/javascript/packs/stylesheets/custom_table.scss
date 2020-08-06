@@ -1,0 +1,20 @@
+.sort-header {
+    position: relative;
+
+    &__button {
+        &--default {
+            color: #b8b8b8;
+            position: absolute;
+            right: -12px;
+        }
+
+        &--selected {
+            position: absolute;
+            right: -12px;
+        }
+    }
+}
+
+.pointer-cursor {
+    cursor: pointer;
+}

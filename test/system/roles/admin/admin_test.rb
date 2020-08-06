@@ -12,48 +12,57 @@ class AdminTest < ApplicationSystemTestCase
     @@admin_test_helper.view_users('state1_admin')
   end
 
-  test 'add users with different jurisdictions and roles' do
-    @@admin_test_helper.add_user('usa_admin', 'locals1c1_enroller2@example.com', 'USA, State 1, County 1', 'enroller')
-    @@admin_test_helper.add_user('usa_admin', 'state1_enroller2@example.com', 'USA, State 1', 'enroller')
-    @@admin_test_helper.add_user('usa_admin', 'usa_enroller2@example.com', 'USA', 'enroller')
-    @@admin_test_helper.add_user('usa_admin', 'locals1c2_epi2@example.com', 'USA, State 1, County 2', 'public_health')
-    @@admin_test_helper.add_user('usa_admin', 'state1_epi2@example.com', 'USA, State 1', 'public_health')
-    @@admin_test_helper.add_user('usa_admin', 'usa_epi2@example.com', 'USA', 'public_health')
-    @@admin_test_helper.add_user('usa_admin', 'locals2c3_epi_enroller2@example.com', 'USA, State 2, County 3', 'public_health_enroller')
-    @@admin_test_helper.add_user('usa_admin', 'state1_epi_enroller2@example.com', 'USA, State 1', 'public_health_enroller')
-    @@admin_test_helper.add_user('usa_admin', 'usa_epi_enroller2@example.com', 'USA', 'public_health_enroller')
-    @@admin_test_helper.add_user('usa_admin', 'locals1c1_admin2@example.com', 'USA, State 1, County 1', 'admin')
-    @@admin_test_helper.add_user('usa_admin', 'state2_admin2@example.com', 'USA, State 2', 'admin')
-    @@admin_test_helper.add_user('usa_admin', 'usa_admin2@example.com', 'USA', 'admin')
-    @@admin_test_helper.add_user('usa_admin', 'locals2c4_analyst2@example.com', 'USA, State 2, County 4', 'analyst')
-    @@admin_test_helper.add_user('usa_admin', 'state1_analyst2@example.com', 'USA, State 1', 'analyst')
-    @@admin_test_helper.add_user('usa_admin', 'usa_analyst2@example.com', 'USA', 'analyst')
-  end
+  # test 'add users with different jurisdictions and roles' do
+  #   users = [
+  #     { label: 'usa_admin', email: 'locals1c1_enroller2@example.com', jurisdiction: 'USA, State 1, County 1', role: 'Enroller', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'state1_enroller2@example.com', jurisdiction: 'USA, State 1', role: 'Enroller', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'usa_enroller2@example.com', jurisdiction: 'USA', role: 'Enroller', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'locals1c2_epi2@example.com', jurisdiction: 'USA, State 1, County 2', role: 'Public Health', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'state1_epi2@example.com', jurisdiction: 'USA, State 1', role: 'Public Health', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'usa_epi2@example.com', jurisdiction: 'USA', role: 'Public Health', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'state1_epi_enroller2@example.com', jurisdiction: 'USA, State 1', role: 'Public Health Enroller', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'usa_epi_enroller2@example.com', jurisdiction: 'USA', role: 'Public Health Enroller', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'locals1c1_admin2@example.com', jurisdiction: 'USA, State 1, County 1', role: 'Admin', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'state2_admin2@example.com', jurisdiction: 'USA, State 2', role: 'Admin', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'usa_admin2@example.com', jurisdiction: 'USA', role: 'Admin', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'locals2c4_analyst2@example.com', jurisdiction: 'USA, State 2, County 4', role: 'Analyst', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'state1_analyst2@example.com', jurisdiction: 'USA, State 1', role: 'Analyst', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'usa_analyst2@example.com', jurisdiction: 'USA', role: 'Analyst', is_api_enabled: true },
+  #     { label: 'usa_admin', email: 'locals2c3_epi_enroller2@example.com', jurisdiction: 'USA, State 2, County 3',
+  #       role: 'Public Health Enroller', is_api_enabled: true }
+  #   ]
 
-  test 'should not add user if close button is clicked' do
-    @@admin_test_helper.add_user('usa_admin', 'another_user@example.com', 'USA', 'enroller', false)
-  end
+  #   users.each do |user_data|
+  #     @@admin_test_helper.add_user(user_data)
+  #   end
+  # end
 
-  test 'should display error message if user is added with email of an existing user' do
-    @@admin_test_helper.add_existing_user('usa_admin', 'locals1c1_enroller@example.com', 'USA, State 1, County 1', 'enroller')
-  end
+  # test 'should not add user if close button is clicked' do
+  #   user_data = { label: 'usa_admin', email: 'another_user@example.com', jurisdiction: 'USA', role: 'Enroller', is_api_enabled: true }
+  #   @@admin_test_helper.add_user(user_data, false)
+  # end
 
-  test 'lock user' do
-    @@admin_test_helper.lock_user('usa_admin', 'locals2c3_epi@example.com')
-    @@admin_test_helper.lock_user('state1_admin', 'state1_epi_enroller@example.com')
-  end
+  # test 'edit users with different jurisdictions and roles' do
+  # end
 
-  test 'reset user password' do
-    @@admin_test_helper.reset_user_password('usa_admin', 'state2_epi@example.com')
-    @@admin_test_helper.reset_user_password('state1_admin', 'locals1c1_enroller@example.com')
-  end
+  # test 'should not edit user if close button is clicked' do
+  # end
 
-  test 'enable api' do
-    @@admin_test_helper.enable_api('usa_admin', 'locals1c2_epi@example.com', true)
-    @@admin_test_helper.enable_api('state1_admin', 'state1_enroller@example.com', true)
-  end
+  # test 'should display error message if there was a problem editing the user' do
+  # end
 
-  test 'disable api' do
-    @@admin_test_helper.enable_api('usa_admin', 'state1_epi_enroller@example.com', false)
-  end
+  # test 'reset 2fa of selected users' do
+  # end
+
+  # test 'reset passwords of selected users' do
+  # end
+
+  # test 'send email to selected users' do
+  # end
+
+  # test 'export user data' do
+  # end
+
+  # test 'send email to all users' do
+  # end
 end

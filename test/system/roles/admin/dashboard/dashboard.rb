@@ -9,44 +9,26 @@ class AdminDashboard < ApplicationSystemTestCase
   @@admin_dashboard_verifier = AdminDashboardVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def add_user(email, jurisdiction, role, submit = true)
+  def add_user(user_data, submit = true)
+    # Remove fade animation from Bootstrap modal
+    # NOTE: This can apparently affect Capybara's fill_in functionality and more
+    page.execute_script("$('user-modal').css('transition','none')")
+
     click_on 'Add User'
-    fill_in 'Email', with: email
-    select jurisdiction, from: 'Jurisdiction'
-    select role, from: 'Role'
+    fill_in 'email', with: user_data[:email]
+    select user_data[:jurisdiction], from: 'jurisdiction'
+    select user_data[:role], from: 'role'
+
+    find('label[for="access-input"]').click if user_data[:is_api_enabled]
+
     if submit
-      find('.modal-footer').click_on('Add User')
+      find('.modal-footer').click_on('Save')
     else
       find('.modal-footer').click_on('Close')
     end
   end
 
-  def lock_user(email)
-    search_for_user(email)
-    click_on 'Lock'
-    @@admin_dashboard_verifier.verify_lock_status(email, true)
-  end
-
-  def unlock_user(email)
-    search_for_user(email)
-    click_on 'Unlock'
-    @@admin_dashboard_verifier.verify_lock_status(email, false)
-  end
-
-  def reset_user_password(email)
-    search_for_user(email)
-    click_on 'Reset Password'
-    sleep(1) # Added sleep to prevent reoccurring race condition when saving user
-    @@admin_dashboard_verifier.verify_reset_user_password(email)
-  end
-
-  def enable_api(email, enable)
-    search_for_user(email)
-    click_on enable ? 'Enable' : 'Disable'
-    @@admin_dashboard_verifier.verify_enable_api(email, enable)
-  end
-
   def search_for_user(query)
-    fill_in 'Search', with: query
+    fill_in 'search', with: query
   end
 end
