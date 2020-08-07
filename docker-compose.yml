@@ -68,7 +68,7 @@ services:
     restart: unless-stopped
     networks:
       - dt-net-bridge
-  sidekiq-enrollment:
+  sidekiq-enrollment-mailer:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
       - REDIS_URL=redis://redis-enrollment:6379/1
@@ -77,7 +77,21 @@ services:
     restart: unless-stopped
     networks:
       - dt-net-enrollment
-    command: "bin/bundle exec sidekiq -q default -q mailers"
+    command: "bin/bundle exec sidekiq -q mailers"
+    depends_on:
+      - redis-enrollment
+      - sara-alert-enrollment
+      - mysql-enrollment
+  sidekiq-enrollment-default:
+    image: "${SARA_ALERT_IMAGE}:development-test"
+    environment:
+      - REDIS_URL=redis://redis-enrollment:6379/1
+    env_file:
+      - .env-prod-enrollment
+    restart: unless-stopped
+    networks:
+      - dt-net-enrollment
+    command: "bin/bundle exec sidekiq -q default"
     depends_on:
       - redis-enrollment
       - sara-alert-enrollment

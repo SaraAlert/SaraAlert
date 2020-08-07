@@ -5,7 +5,9 @@ services:
     image: ${SARA_ALERT_IMAGE}:latest
   sara-alert-assessment:
     image: ${SARA_ALERT_IMAGE}:latest
-  sidekiq-enrollment:
+  sidekiq-enrollment-mailer:
+    image: ${SARA_ALERT_IMAGE}:latest
+  sidekiq-enrollment-default:
     image: ${SARA_ALERT_IMAGE}:latest
   sidekiq-bridge-enrollment:
     image: ${SARA_ALERT_IMAGE}:latest
