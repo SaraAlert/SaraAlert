@@ -54,6 +54,7 @@
   "version": "0.1.0",
   "devDependencies": {
     "@babel/preset-env": "^7.11.0",
+    "@testing-library/jest-dom": "^5.11.2",
     "@testing-library/react": "^10.4.8",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^26.2.2",
@@ -90,11 +91,15 @@
       "<rootDir>/app/javascript"
     ],
     "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/$1"
+      "^@/(.*)$": "<rootDir>/$1",
+      "\\.(css|sass|scss)$": "identity-obj-proxy"
     },
     "transform": {
       "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
-    }
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(rc-slider|@amcharts)/)"
+    ]
   },
   "scripts": {
     "test": "jest --config package.json"

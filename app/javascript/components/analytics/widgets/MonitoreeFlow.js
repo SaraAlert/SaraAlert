@@ -40,15 +40,15 @@ class MonitoreeFlow extends React.Component {
                   </tr>
                   <tr>
                     <td className="text-right">NEW ENROLLMENTS</td>
-                    <td>{this.data_last_24_hours.new_enrollments}</td>
-                    <td>{this.data_last_14_days.new_enrollments}</td>
-                    <td>{this.data_total.new_enrollments}</td>
+                    <td data-testid="last_24_hours_new_enrollments">{this.data_last_24_hours.new_enrollments}</td>
+                    <td data-testid="last_14_days_new_enrollments">{this.data_last_14_days.new_enrollments}</td>
+                    <td data-testid="total_new_enrollments">{this.data_total.new_enrollments}</td>
                   </tr>
                   <tr>
                     <td className="text-right">TRANSFERRED IN</td>
-                    <td>{this.data_last_24_hours.transferred_in}</td>
-                    <td>{this.data_last_14_days.transferred_in}</td>
-                    <td>{this.data_total.transferred_in}</td>
+                    <td data-testid="last_24_hours_transferred_in">{this.data_last_24_hours.transferred_in}</td>
+                    <td data-testid="last_14_days_transferred_in">{this.data_last_14_days.transferred_in}</td>
+                    <td data-testid="total_transferred_in">{this.data_total.transferred_in}</td>
                   </tr>
                   <tr style={{ height: '0px' }}></tr>
                   <tr>
@@ -58,15 +58,15 @@ class MonitoreeFlow extends React.Component {
                   </tr>
                   <tr className="pt-5">
                     <td className="text-right">CLOSED</td>
-                    <td>{this.data_last_24_hours.closed}</td>
-                    <td>{this.data_last_14_days.closed}</td>
-                    <td>{this.data_total.closed}</td>
+                    <td data-testid="last_24_hours_closed">{this.data_last_24_hours.closed}</td>
+                    <td data-testid="last_14_days_closed">{this.data_last_14_days.closed}</td>
+                    <td data-testid="total_closed">{this.data_total.closed}</td>
                   </tr>
                   <tr>
                     <td className="text-right">TRANSFERRED OUT</td>
-                    <td>{this.data_last_24_hours.transferred_out}</td>
-                    <td>{this.data_last_14_days.transferred_out}</td>
-                    <td>{this.data_total.transferred_out}</td>
+                    <td data-testid="last_24_hours_transferred_out">{this.data_last_24_hours.transferred_out}</td>
+                    <td data-testid="last_14_days_transferred_out">{this.data_last_14_days.transferred_out}</td>
+                    <td data-testid="total_transferred_out">{this.data_total.transferred_out}</td>
                   </tr>
                 </tbody>
               </Table>
