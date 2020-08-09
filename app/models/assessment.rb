@@ -124,21 +124,37 @@ class Assessment < ApplicationRecord
   private
 
   def update_patient_linelist_after_save
-    patient.update(
-      symptom_onset: patient.assessments.where(symptomatic: true).minimum(:created_at),
-      latest_assessment_at: patient.assessments.maximum(:created_at)
-    )
+    if patient.user_defined_symptom_onset.present?
+      patient.update(
+        latest_assessment_at: patient.assessments.maximum(:created_at)
+      )
+    else
+      patient.update(
+        latest_assessment_at: patient.assessments.maximum(:created_at),
+        symptom_onset: patient.assessments.where(symptomatic: true).minimum(:created_at)
+      )
+    end
   end
 
   def update_patient_linelist_before_destroy
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
-    patient.update(
-      symptom_onset: patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at),
-      latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
-      latest_fever_or_fever_reducer_at: patient.assessments
-                                              .where.not(id: id)
-                                              .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
-                                              .maximum(:created_at)
-    )
+    if patient.user_defined_symptom_onset.present?
+      patient.update(
+        latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
+        latest_fever_or_fever_reducer_at: patient.assessments
+                                                 .where.not(id: id)
+                                                 .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
+                                                 .maximum(:created_at)
+      )
+    else
+      patient.update(
+        symptom_onset: patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at),
+        latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
+        latest_fever_or_fever_reducer_at: patient.assessments
+                                                 .where.not(id: id)
+                                                 .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
+                                                 .maximum(:created_at)
+      )
+    end
   end
 end

@@ -15,7 +15,7 @@ class AddLinelistFieldsToPatients < ActiveRecord::Migration[6.0]
         FROM assessments
         GROUP BY patient_id
       ) t ON patients.id = t.patient_id
-      SET patients.latest_assessment_at = t.latest_assessment_at  
+      SET patients.latest_assessment_at = t.latest_assessment_at
     SQL
 
     # populate :latest_fever_or_fever_reducer_at

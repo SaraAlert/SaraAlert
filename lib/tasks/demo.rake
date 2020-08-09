@@ -270,9 +270,9 @@ namespace :demo do
       # Contact Information
       patient[:preferred_contact_method] = ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'].sample
       patient[:preferred_contact_time] = ['Morning', 'Afternoon', 'Evening', nil].sample if patient[:preferred_contact_method] != 'E-mailed Web Link'
-      patient[:primary_telephone] = "(555) 555-01#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
+      patient[:primary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:preferred_contact_method] != 'E-mailed Web Link' || rand < 0.5
       patient[:primary_telephone_type] = ['Smartphone', 'Plain Cell', 'Landline'].sample if patient[:primary_telephone]
-      patient[:secondary_telephone] = "(555) 555-01#{rand(9)}#{rand(9)}" if patient[:primary_telephone] && rand < 0.5
+      patient[:secondary_telephone] = "+155555501#{rand(9)}#{rand(9)}" if patient[:primary_telephone] && rand < 0.5
       patient[:secondary_telephone_type] = ['Smartphone', 'Plain Cell', 'Landline'].sample if patient[:secondary_telephone]
       patient[:email] = "#{rand(1000000000..9999999999)}fake@example.com" if patient[:preferred_contact_method] == 'E-mailed Web Link' || rand < 0.5
 

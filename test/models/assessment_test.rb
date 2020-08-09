@@ -45,15 +45,48 @@ class AssessmentTest < ActiveSupport::TestCase
     assert_nil patient.latest_fever_or_fever_reducer_at
 
     # Create assessment 3 as symptomatic
-    timestamp_3 = 12.days.ago
+    timestamp_3 = 14.days.ago
     assessment_3 = create(:assessment, patient: patient, symptomatic: true, created_at: timestamp_3)
+    assert_equal timestamp_3.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 3 to be asymptomatic
+    assessment_3.update(symptomatic: false)
     assert_equal timestamp_2.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_nil patient.latest_fever_or_fever_reducer_at
 
-    # Update assessment 3 to be symptomatic
-    assessment_3.update(symptomatic: true)
+    # Manually update symptom onset
+    symptom_onset_timestamp = 16.days.ago
+    patient.update(user_defined_symptom_onset: true, symptom_onset: symptom_onset_timestamp)
+
+    # Update assessment 3 as symptomatic
+    timestamp_3 = 18.days.ago
+    assessment_3.update(symptomatic: true, created_at: timestamp_3)
+    assert_equal symptom_onset_timestamp.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 3 to be asymptomatic
+    assessment_3.update(symptomatic: false)
+    assert_equal symptom_onset_timestamp.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Turn off manual symptom onset override
+    patient.update(user_defined_symptom_onset: false)
+
+    # Update assessment 3 as symptomatic
+    timestamp_3 = 18.days.ago
+    assessment_3.update(symptomatic: true, created_at: timestamp_3)
     assert_equal timestamp_3.to_date, patient.symptom_onset
+    assert_in_delta timestamp_1, patient.latest_assessment_at, 1
+    assert_nil patient.latest_fever_or_fever_reducer_at
+
+    # Update assessment 3 to be asymptomatic
+    assessment_3.update(symptomatic: false)
+    assert_equal timestamp_2.to_date, patient.symptom_onset
     assert_in_delta timestamp_1, patient.latest_assessment_at, 1
     assert_nil patient.latest_fever_or_fever_reducer_at
 

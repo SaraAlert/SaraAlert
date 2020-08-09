@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_01_142657) do
+ActiveRecord::Schema.define(version: 2020_08_06_201118) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -314,6 +314,7 @@ ActiveRecord::Schema.define(version: 2020_08_01_142657) do
     t.integer "latest_transfer_from"
     t.string "gender_identity"
     t.string "sexual_orientation"
+    t.boolean "user_defined_symptom_onset"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
