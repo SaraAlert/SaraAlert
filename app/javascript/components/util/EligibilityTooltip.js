@@ -14,7 +14,26 @@ class EligibilityTooltip extends React.Component {
   }
 
   formatEligibility(eligibility, id) {
-    if (eligibility.eligible) {
+    if (eligibility.household) {
+      return (
+        <React.Fragment>
+          <span data-for={`re${id}`} data-tip="">
+            {this.props.inline && <i className="fa-fw fas fa-house-user"></i>}
+            {!this.props.inline && (
+              <div className="text-center ml-0">
+                <i className="fa-fw fas fa-house-user"></i>
+              </div>
+            )}
+          </span>
+          <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
+            <div>
+              <p className="lead mb-0">In a household:</p>
+              <span>{eligibility.messages[0].message}</span>
+            </div>
+          </ReactTooltip>
+        </React.Fragment>
+      );
+    } else if (eligibility.eligible) {
       return (
         <React.Fragment>
           <span data-for={`re${id}`} data-tip="">

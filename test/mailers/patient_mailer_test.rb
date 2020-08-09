@@ -112,7 +112,7 @@ class PatientMailerTest < ActionMailer::TestCase
         assert_not_nil @patient.last_assessment_reminder_sent
         @patient.reload
         assert_equal 'Report Reminder', @patient.histories.first.history_type
-        assert_includes @patient.histories.first.comment, "Sara Alert failed to send an SMS to #{@patient.primary_telephone}."
+        assert_includes @patient.histories.first.comment, "Sara Alert attempted to send an SMS to #{@patient.primary_telephone}, but the message could not be delivered."
       end
     end
   end
