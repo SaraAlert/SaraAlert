@@ -153,7 +153,7 @@ class Import extends React.Component {
               You can also choose to import all unique records or all records (including duplicates) by clicking the 'Import All' button.`}
             </h5>
             {this.state.acceptedAllStarted ? (
-              <Button variant="primary" className="btn-lg mt-2" disabled="true">
+              <Button variant="primary" className="btn-lg mt-2" disabled={true}>
                 <i className="fas fa-upload"></i> Import All
               </Button>
             ) : (

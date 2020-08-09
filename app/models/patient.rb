@@ -240,7 +240,7 @@ class Patient < ApplicationRecord
         .where(purged: false)
         .where(isolation: true)
         .where('symptom_onset <= ?', 10.days.ago)
-        .where('latest_fever_or_fever_reducer_at < ?', 72.hours.ago)
+        .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
       )
       .distinct
   }

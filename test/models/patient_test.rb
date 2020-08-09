@@ -308,7 +308,7 @@ class PatientTest < ActiveSupport::TestCase
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 14.days.ago, symptom_onset: 12.days.ago)
 
-    # meets definition: symptomatic assessment older than 72 hours
+    # meets definition: symptomatic assessment older than 24 hours
     assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 11.days.ago)
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
@@ -320,7 +320,7 @@ class PatientTest < ActiveSupport::TestCase
     verify_patient_status(patient, :isolation_symp_non_test_based)
     assessment.destroy
 
-    # meets definition: had a fever but more than 72 hours ago
+    # meets definition: had a fever but more than 24 hours ago
     assessment = create(:assessment, patient: patient, symptomatic: true, created_at: 13.days.ago)
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true)
@@ -332,23 +332,23 @@ class PatientTest < ActiveSupport::TestCase
     verify_patient_status(patient, :isolation_non_reporting)
     assessment.destroy
 
-    # does not meet definition: had a fever within the past 72 hours
+    # does not meet definition: had a fever within the past 24 hours
     assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: 11.days.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: 70.hours.ago)
-    reported_condition = create(:reported_condition, assessment: assessment_2, created_at: 70.hours.ago)
-    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true, created_at: 70.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: 22.hours.ago)
+    reported_condition = create(:reported_condition, assessment: assessment_2, created_at: 22.hours.ago)
+    create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'fever', bool_value: true, created_at: 22.hours.ago)
     patient.reload.latest_fever_or_fever_reducer_at
-    verify_patient_status(patient, :isolation_non_reporting)
+    verify_patient_status(patient, :isolation_reporting)
     assessment_1.destroy
     assessment_2.destroy
 
-    # does not meet definition: used a fever reducer within the past 72 hours
+    # does not meet definition: used a fever reducer within the past 24 hours
     assessment_1 = create(:assessment, patient: patient, symptomatic: true, created_at: 80.hours.ago)
-    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: 70.hours.ago)
+    assessment_2 = create(:assessment, patient: patient, symptomatic: true, created_at: 21.hours.ago)
     reported_condition = create(:reported_condition, assessment: assessment_2)
     create(:symptom, condition_id: reported_condition.id, type: 'BoolSymptom', name: 'used-a-fever-reducer', bool_value: true)
     patient.reload.latest_fever_or_fever_reducer_at
-    verify_patient_status(patient, :isolation_non_reporting)
+    verify_patient_status(patient, :isolation_reporting)
     assessment_1.destroy
     assessment_2.destroy
   end
