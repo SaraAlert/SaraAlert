@@ -509,7 +509,7 @@ class Exposure extends React.Component {
                         value={this.state.current.patient.assigned_user || ''}
                       />
                       <datalist id="assignedUsers">
-                        {this.state.assignedUsers.map(num => {
+                        {this.state.assignedUsers?.map(num => {
                           return (
                             <option value={num} key={num}>
                               {num}

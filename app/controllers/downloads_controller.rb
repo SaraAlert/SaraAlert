@@ -11,7 +11,7 @@ class DownloadsController < ApplicationController
     if download.nil?
       @error = true
     else
-      send_data(Base64.decode64(download.contents), filename: download.filename) && download.destroy
+      send_data(Base64.decode64(download.contents), filename: download.filename) && download.delete
     end
   end
 end
