@@ -53,7 +53,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
   def verify_excel_single_monitoree(patient_id)
     xlsx = get_xlsx("Sara-Alert-Monitoree-Export-#{patient_id}-????-??-??T??_??_?????_??.xlsx")
     patients = Patient.where(id: patient_id)
-    verify_excel_export(xlsx, patients)
+    verify_excel_export(xlsx, xlsx, xlsx, xlsx, patients)
   end
 
   def verify_sara_alert_format_guidance

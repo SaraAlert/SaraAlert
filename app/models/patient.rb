@@ -65,7 +65,7 @@ class Patient < ApplicationRecord
     transfers.order(created_at: :desc).first
   end
 
-  # Patients who are eligible for reminders (exposure)
+  # Patients who are eligible for reminders
   scope :reminder_eligible, lambda {
     where(purged: false)
       .where(pause_notifications: false)

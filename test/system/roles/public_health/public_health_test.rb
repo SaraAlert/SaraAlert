@@ -184,9 +184,9 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_test_helper.export_excel_all_monitorees('state1_epi', :isolation, :export)
   end
 
-  # test 'export excel single monitoree' do
-  #   @@public_health_test_helper.export_excel_single_monitoree('locals2c4_epi', 'patient_10')
-  # end
+  test 'export excel single monitoree' do
+    @@public_health_test_helper.export_excel_single_monitoree('locals2c4_epi', 'patient_10')
+  end
 
   test 'import epi-x to exposure and accept all' do
     @@public_health_test_helper.import_epi_x('state1_epi_enroller', :exposure, 'Epi-X-Format.xlsx', :valid, nil)

@@ -7,6 +7,7 @@ import axios from 'axios';
 import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
+import SymptomOnset from './SymptomOnset';
 
 class LastDateExposure extends React.Component {
   constructor(props) {
@@ -161,37 +162,50 @@ class LastDateExposure extends React.Component {
             this.submit(false)
           )}
         <Row>
-          <Col lg="6" md="5" sm="24">
-            <h6 className="nav-input-label mt-3">
-              LAST DATE OF EXPOSURE
-              <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
-            </h6>
-          </Col>
-          <Col lg="10" md="12" sm="24">
+          <SymptomOnset authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+          <Col>
+            <Row className="reports-actions-title">
+              <Col>
+                <h6 className="nav-input-label">
+                  LAST DATE OF EXPOSURE
+                  <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
+                </h6>
+              </Col>
+            </Row>
             <Row>
               <Col>
                 <DateInput id="last_date_of_exposure" date={this.state.last_date_of_exposure} onChange={this.handleDateChange} placement="top" />
               </Col>
             </Row>
-            <Row>
-              <Form.Check
-                className="ml-3 mt-1"
-                size="lg"
-                label="CONTINUOUS EXPOSURE"
-                type="switch"
-                id="continuous_exposure"
-                checked={this.state.continuous_exposure === true || false}
-                onChange={() => this.toggleContinuousMonitoringModal()}
-              />
+            <Row className="pt-2">
+              <Col>
+                <Form.Check
+                  size="lg"
+                  label="CONTINUOUS EXPOSURE"
+                  type="switch"
+                  id="continuous_exposure"
+                  checked={this.state.continuous_exposure === true || false}
+                  onChange={() => this.toggleContinuousMonitoringModal()}
+                />
+              </Col>
             </Row>
           </Col>
-          <Col lg="8" md="7" sm="24">
-            <div className="mt-3">
-              <span className="nav-input-label">END OF MONITORING</span>
-              <InfoTooltip tooltipTextKey="endOfMonitoring" location="right"></InfoTooltip>
-              <span className="ml-3">{this.props.patient.linelist.end_of_monitoring}</span>
-            </div>
-          </Col>
+          {!this.props.patient.isolation && (
+            <Col>
+              <Row className="reports-actions-title">
+                <Col>
+                  <span className="nav-input-label">END OF MONITORING</span>
+                  <InfoTooltip tooltipTextKey="endOfMonitoring" location="right"></InfoTooltip>
+                </Col>
+              </Row>
+              <Row>
+                <Col>{this.props.patient.linelist.end_of_monitoring}</Col>
+              </Row>
+              <Row>
+                <Col></Col>
+              </Row>
+            </Col>
+          )}
         </Row>
       </React.Fragment>
     );
