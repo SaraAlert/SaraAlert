@@ -82,10 +82,7 @@ class Identification extends React.Component {
         // If date is undefined, age will stay undefined (which nulls out the age field)
         if (dateOfBirth) {
           age = 0 - moment(dateOfBirth).diff(moment.now(), 'years');
-          console.log('age first:', age);
-
           age = age < 200 && age > 0 ? age : self.state.current.patient.age;
-          console.log('age:', age);
         }
         self.setState(
           state => {
