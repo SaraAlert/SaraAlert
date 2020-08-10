@@ -353,7 +353,7 @@ class PatientsController < ApplicationController
       patient.closed_at = DateTime.now
     end
     if params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]
-      params_to_update.concat([:user_defined_symptom_onset, :symptom_onset])
+      params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
       params[:patient][:user_defined_symptom_onset] = false
       params[:patient][:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
     end

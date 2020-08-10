@@ -63,22 +63,22 @@ class ExportJob < ApplicationJob
                                          excel_export_monitorees(patients),
                                          "Sara-Alert-Purge-Eligible-Export-Monitorees-#{DateTime.now}.xlsx",
                                          export_type),
-                   filename: "Sara-Alert-Full-Export-Monitorees-#{DateTime.now}.xlsx" }
+                   filename: "Sara-Alert-Purge-Eligible-Export-Monitorees-#{DateTime.now}.xlsx" }
       lookups << { lookup: save_download(user_id,
                                          excel_export_assessments(patients),
                                          "Sara-Alert-Purge-Eligible-Export-Assessments-#{DateTime.now}.xlsx",
                                          export_type),
-                   filename: "Sara-Alert-Full-Export-Assessments-#{DateTime.now}.xlsx" }
+                   filename: "Sara-Alert-Purge-Eligible-Export-Assessments-#{DateTime.now}.xlsx" }
       lookups << { lookup: save_download(user_id,
                                          excel_export_lab_results(patients),
                                          "Sara-Alert-Purge-Eligible-Export-Lab-Results-#{DateTime.now}.xlsx",
                                          export_type),
-                   filename: "Sara-Alert-Full-Export-Lab-Results-#{DateTime.now}.xlsx" }
+                   filename: "Sara-Alert-Purge-Eligible-Export-Lab-Results-#{DateTime.now}.xlsx" }
       lookups << { lookup: save_download(user_id,
                                          excel_export_histories(patients),
                                          "Sara-Alert-Purge-Eligible-Export-Histories-#{DateTime.now}.xlsx",
                                          export_type),
-                   filename: "Sara-Alert-Full-Export-Histories-#{DateTime.now}.xlsx" }
+                   filename: "Sara-Alert-Purge-Eligible-Export-Histories-#{DateTime.now}.xlsx" }
     end
     return if lookups.empty?
 
@@ -88,16 +88,16 @@ class ExportJob < ApplicationJob
 
   # Save a download file and return the lookup
   def save_download(user_id, data, filename, export_type)
-    download = Download.new(user_id: user_id, contents: data, filename: filename, lookup: SecureRandom.uuid, export_type: export_type)
-
+    lookup = SecureRandom.uuid
     if ActiveRecord::Base.logger.formatter.nil?
-      download.save!
+      download = Download.insert(user_id: user_id, contents: data, filename: filename, lookup: lookup,
+                                 export_type: export_type, created_at: DateTime.now, updated_at: DateTime.now)
     else
       ActiveRecord::Base.logger.silence do
-        download.save!
+        download = Download.insert(user_id: user_id, contents: data, filename: filename, lookup: lookup,
+                                   export_type: export_type, created_at: DateTime.now, updated_at: DateTime.now)
       end
     end
-
-    download.lookup
+    lookup
   end
 end
