@@ -61,7 +61,7 @@ class AdminTable extends React.Component {
 
   componentDidUpdate() {
     /**
-     * This check is necessary due to bug with react-csv where it cannot currently handle async onClick events despite
+     * This check is necessary due to a bug with react-csv where it cannot currently handle async onClick events despite
      * claiming support. Read about this error (and solutions that inspired this) here:
      * https://github.com/react-csv/react-csv/issues/189
      * PR to solve issue is open here: https://github.com/react-csv/react-csv/pull/201
@@ -403,8 +403,6 @@ class AdminTable extends React.Component {
    */
   handleEntriesChange = event => {
     const value = event.target.value;
-    console.log(value);
-    console.log(typeof value);
     this.setState(
       state => {
         return {

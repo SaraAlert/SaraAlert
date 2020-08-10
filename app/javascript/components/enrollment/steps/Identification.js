@@ -42,27 +42,7 @@ class Identification extends React.Component {
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
       },
       () => {
-        let current = this.state.current;
-        let modified = this.state.modified;
-        if (event.target.id === 'date_of_birth') {
-          let age;
-          // if value is undefined, age will stay undefined (which nulls out the age field)
-          if (typeof value !== 'undefined') {
-            age = 0 - moment(self.state.current.patient.date_of_birth).diff(moment.now(), 'years');
-            age = age < 200 && age > 0 ? age : current.patient.age;
-          }
-          self.setState(
-            {
-              current: { ...current, patient: { ...current.patient, age } },
-              modified: { ...modified, patient: { ...modified.patient, age } },
-            },
-            () => {
-              self.props.setEnrollmentState({ ...self.state.modified });
-            }
-          );
-        } else {
-          self.props.setEnrollmentState({ ...self.state.modified });
-        }
+        self.props.setEnrollmentState({ ...self.state.modified });
       }
     );
   }
@@ -87,16 +67,37 @@ class Identification extends React.Component {
   getWorkflowValue = () => (this.state.current.isolation ? WORKFLOW_OPTIONS[1] : WORKFLOW_OPTIONS[0]);
 
   handleDateChange(field, date) {
-    let current = this.state.current;
-    let modified = this.state.modified;
     let self = this;
     this.setState(
-      {
-        current: { ...current, patient: { ...current.patient, [field]: date } },
-        modified: { ...modified, patient: { ...modified.patient, [field]: date } },
+      state => {
+        return {
+          current: { ...state.current, patient: { ...state.current.patient, [field]: date } },
+          modified: { ...state.modified, patient: { ...state.modified.patient, [field]: date } },
+        };
       },
       () => {
-        self.props.setEnrollmentState({ ...this.state.modified });
+        // Automatically calculate age field once a date of birth is entered.
+        let age;
+        const dateOfBirth = self.state.current.patient.date_of_birth;
+        // If date is undefined, age will stay undefined (which nulls out the age field)
+        if (dateOfBirth) {
+          age = 0 - moment(dateOfBirth).diff(moment.now(), 'years');
+          console.log('age first:', age);
+
+          age = age < 200 && age > 0 ? age : self.state.current.patient.age;
+          console.log('age:', age);
+        }
+        self.setState(
+          state => {
+            return {
+              current: { ...state.current, patient: { ...state.current.patient, age } },
+              modified: { ...state.modified, patient: { ...state.modified.patient, age } },
+            };
+          },
+          () => {
+            self.props.setEnrollmentState({ ...self.state.modified });
+          }
+        );
       }
     );
   }
