@@ -9,9 +9,9 @@ class AssessmentsController < ApplicationController
     @patient_submission_token = params[:patient_submission_token].gsub(/[^0-9a-z]/i, '')
     return if @patient_submission_token.length != 40
 
-    # Don't bother with this if the jurisdiction unique identifier isn't at least 32 characters long (reflects mailer logic)
+    # Don't bother with this if the jurisdiction unique identifier isn't at least 10 characters long
     @unique_identifier = params[:unique_identifier]&.gsub(/[^0-9a-z]/i, '')
-    return if @unique_identifier.present? && @unique_identifier.length < 32
+    return if @unique_identifier.present? && @unique_identifier.length < 10
 
     @assessment = Assessment.new
 
