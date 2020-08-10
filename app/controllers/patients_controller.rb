@@ -21,7 +21,7 @@ class PatientsController < ApplicationController
     @jurisdiction_path = @patient.jurisdiction_path
 
     # Group members if this is HOH
-    @group_members = @patient.dependents.where.not(id: @patient.id)
+    @group_members = @patient.dependents.where(purged: false).where.not(id: @patient.id)
 
     # All group members regardless if this is not HOH
     dependents = current_user.get_patient(@patient.responder_id)&.dependents
