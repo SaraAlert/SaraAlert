@@ -94,10 +94,9 @@ class PatientMailer < ApplicationMailer
         to: Phonelib.parse(num, 'US').full_e164,
         body: url_contents
       )
-      add_success_history(p)
-      # Always update the last contact time so the system does not try and send emails again.
-      patient.update(last_assessment_reminder_sent: DateTime.now)
+      add_success_history(p, patient)
     end
+    patient.update(last_assessment_reminder_sent: DateTime.now)
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
     add_fail_history_sms(patient)
@@ -118,7 +117,7 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       body: contents
     )
-    add_success_history(patient)
+    add_success_history(patient, patient)
     # Always update the last contact time so the system does not try and send emails again.
     patient.update(last_assessment_reminder_sent: DateTime.now)
   rescue Twilio::REST::RestError => e
@@ -162,7 +161,7 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
     )
-    add_success_history(patient)
+    add_success_history(patient, patient)
     # Always update the last contact time so the system does not try and send emails again.
     patient.update(last_assessment_reminder_sent: DateTime.now)
   rescue Twilio::REST::RestError => e
@@ -208,7 +207,7 @@ class PatientMailer < ApplicationMailer
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
     )
-    add_success_history(patient)
+    add_success_history(patient, patient)
     # Always update the last contact time so the system does not try and send emails again.
     patient.update(last_assessment_reminder_sent: DateTime.now)
   rescue Twilio::REST::RestError => e
@@ -228,7 +227,7 @@ class PatientMailer < ApplicationMailer
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
     end
-    add_success_history(patient)
+    add_success_history(patient, patient)
     # Always update the last contact time so the system does not try and send emails again.
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
@@ -245,8 +244,13 @@ class PatientMailer < ApplicationMailer
 
   private
 
-  def add_success_history(patient)
-    History.report_reminder(patient: patient, comment: "Sara Alert sent a report reminder to this monitoree via #{patient.preferred_contact_method}.")
+  def add_success_history(patient, parent)
+    if patient == parent
+      comment = "Sara Alert sent a report reminder to this monitoree via #{parent.preferred_contact_method}."
+    else
+      comment = "Sara Alert sent a report reminder to this monitoree's HoH via #{parent.preferred_contact_method}."
+    end
+    History.report_reminder(patient: patient, comment: comment)
   end
 
   def add_fail_history_sms(patient)
