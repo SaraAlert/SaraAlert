@@ -13,6 +13,7 @@ class SymptomOnset extends React.Component {
     super(props);
     this.state = {
       symptom_onset: this.props.patient.symptom_onset,
+      symptom_onset_old: this.props.patient.symptom_onset,
       loading: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -21,12 +22,14 @@ class SymptomOnset extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({ [event.target.id]: event.target.value });
+    this.setState({ symptom_onset_old: this.state.symptom_onset, [event.target.id]: event.target.value });
   }
 
   handleSubmit = async confirmText => {
     if (await confirmDialog(confirmText)) {
       this.submit();
+    } else {
+      this.setState({ symptom_onset: this.state.symptom_onset_old });
     }
   };
 
@@ -71,7 +74,6 @@ class SymptomOnset extends React.Component {
                   })
                 }
                 placement="bottom"
-                isClearable
               />
             </Col>
           </Row>
