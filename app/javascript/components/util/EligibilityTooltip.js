@@ -17,7 +17,7 @@ class EligibilityTooltip extends React.Component {
     if (eligibility.household) {
       return (
         <React.Fragment>
-          <span data-for={`re${id}`} data-tip="">
+          <span key={`re-icon${id}`} data-for={`re${id}`} data-tip="">
             {this.props.inline && <i className="fa-fw fas fa-house-user"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
@@ -36,7 +36,7 @@ class EligibilityTooltip extends React.Component {
     } else if (eligibility.eligible) {
       return (
         <React.Fragment>
-          <span data-for={`re${id}`} data-tip="">
+          <span key={`re-icon${id}`} data-for={`re${id}`} data-tip="">
             {this.props.inline && <i className="fa-fw fas fa-comment"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
@@ -55,8 +55,8 @@ class EligibilityTooltip extends React.Component {
     } else if (eligibility.reported) {
       return (
         <React.Fragment>
-          <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-comments"></i>}
+          <span key={`re-icon${id}`} data-for={`re${id}`} data-tip="">
+            {this.props.inline && <i key={`icon-inline${id}`} className="fa-fw fas fa-comments"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
                 <i className="fa-fw fas fa-comments"></i>
@@ -81,8 +81,8 @@ class EligibilityTooltip extends React.Component {
     } else if (eligibility.sent) {
       return (
         <React.Fragment>
-          <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-comment-dots"></i>}
+          <span key={`re-icon${id}`} data-for={`re${id}`} data-tip="">
+            {this.props.inline && <i key={`icon-inline${id}`} className="fa-fw fas fa-comment-dots"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
                 <i className="fa-fw fas fa-comment-dots"></i>
@@ -107,8 +107,8 @@ class EligibilityTooltip extends React.Component {
     } else {
       return (
         <React.Fragment>
-          <span data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i className="fa-fw fas fa-comment-slash"></i>}
+          <span key={`re-icon${id}`} data-for={`re${id}`} data-tip="">
+            {this.props.inline && <i key={`icon-inline${id}`} className="fa-fw fas fa-comment-slash"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
                 <i className="fa-fw fas fa-comment-slash"></i>
