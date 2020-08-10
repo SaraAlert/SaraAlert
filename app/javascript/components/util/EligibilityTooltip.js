@@ -25,7 +25,7 @@ class EligibilityTooltip extends React.Component {
               </div>
             )}
           </span>
-          <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
+          <ReactTooltip key={`re-tooltip${id}`} id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
             <div>
               <p className="lead mb-0">In a household:</p>
               <span>{eligibility.messages[0].message}</span>
@@ -44,7 +44,7 @@ class EligibilityTooltip extends React.Component {
               </div>
             )}
           </span>
-          <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
+          <ReactTooltip key={`re-tooltip${id}`} id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
             <div>
               <p className="lead mb-0">Eligible for notifications:</p>
               <span>{eligibility.messages[0].message}</span>
@@ -56,14 +56,14 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span key={`re-icon${id}`} data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i key={`icon-inline${id}`} className="fa-fw fas fa-comments"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-comments"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
                 <i className="fa-fw fas fa-comments"></i>
               </div>
             )}
           </span>
-          <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
+          <ReactTooltip key={`re-tooltip${id}`} id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
             <div>
               <p className="lead mb-0">Received a report today:</p>
               <ul className="pl-3 mb-0">
@@ -82,14 +82,14 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span key={`re-icon${id}`} data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i key={`icon-inline${id}`} className="fa-fw fas fa-comment-dots"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-comment-dots"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
                 <i className="fa-fw fas fa-comment-dots"></i>
               </div>
             )}
           </span>
-          <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
+          <ReactTooltip key={`re-tooltip${id}`} id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
             <div>
               <p className="lead mb-0">Waiting for a response:</p>
               <ul className="pl-3 mb-0">
@@ -108,14 +108,14 @@ class EligibilityTooltip extends React.Component {
       return (
         <React.Fragment>
           <span key={`re-icon${id}`} data-for={`re${id}`} data-tip="">
-            {this.props.inline && <i key={`icon-inline${id}`} className="fa-fw fas fa-comment-slash"></i>}
+            {this.props.inline && <i className="fa-fw fas fa-comment-slash"></i>}
             {!this.props.inline && (
               <div className="text-center ml-0">
                 <i className="fa-fw fas fa-comment-slash"></i>
               </div>
             )}
           </span>
-          <ReactTooltip id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
+          <ReactTooltip key={`re-tooltip${id}`} id={`re${id}`} multiline={true} type="dark" effect="solid" className="tooltip-container">
             <div>
               <p className="lead mb-0">Not eligible for notifications:</p>
               <ul className="pl-3 mb-0">
