@@ -51,13 +51,10 @@ class CurrentStatus extends React.Component {
     }
   }
 
-  generateReportEligibility(eligibility) {
+  generateReportEligibility() {
     return (
       <React.Fragment>
-        <span>
-          . This {this.props.isolation ? 'case' : 'monitoree'} is {eligibility.eligible ? 'currently' : 'not currently'} eligible to receive a notification
-          today&nbsp;
-        </span>
+        <span>. This {this.props.isolation ? "case's" : "monitoree's"} notification status is&nbsp;</span>
         <EligibilityTooltip report_eligibility={this.props.report_eligibility} id={`eltt`} inline={true} />.
       </React.Fragment>
     );
@@ -70,7 +67,7 @@ class CurrentStatus extends React.Component {
           This monitoree is in the <u>{this.props.isolation ? 'isolation' : 'exposure'}</u> workflow, and their current status is{' '}
           <b>{this.generateStatus(this.props.status)}</b>
           {this.generateInfoHover(this.props.status)}
-          {this.generateReportEligibility(this.props.report_eligibility)}
+          {this.generateReportEligibility()}
         </h1>
       </React.Fragment>
     );

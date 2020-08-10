@@ -30,24 +30,30 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
   def verify_excel_purge_eligible_monitorees(user_label)
     current_user = @@system_test_utils.get_user(user_label)
-    download_file(current_user, 'full_history_purgeable')
-    xlsx = get_xlsx('Sara-Alert-Purge-Eligible-Export-????-??-??T??_??_?????_??.xlsx')
+    download_comprehensive_export_files(current_user, 'full_history_purgeable')
+    xlsx_monitorees = get_xlsx('Sara-Alert-Purge-Eligible-Export-Monitorees-????-??-??T??_??_?????_??.xlsx')
+    xlsx_assessments = get_xlsx('Sara-Alert-Purge-Eligible-Export-Assessments-????-??-??T??_??_?????_??.xlsx')
+    xlsx_lab_results = get_xlsx('Sara-Alert-Purge-Eligible-Export-Lab-Results-????-??-??T??_??_?????_??.xlsx')
+    xlsx_histories = get_xlsx('Sara-Alert-Purge-Eligible-Export-Histories-????-??-??T??_??_?????_??.xlsx')
     patients = current_user.jurisdiction.all_patients.purge_eligible.order(:id)
-    verify_excel_export(xlsx, patients)
+    verify_excel_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_histories, patients)
   end
 
   def verify_excel_all_monitorees(user_label)
     current_user = @@system_test_utils.get_user(user_label)
-    download_file(current_user, 'full_history_all')
-    xlsx = get_xlsx('Sara-Alert-Full-Export-????-??-??T??_??_?????_??.xlsx')
+    download_comprehensive_export_files(current_user, 'full_history_all')
+    xlsx_monitorees = get_xlsx('Sara-Alert-Full-Export-Monitorees-????-??-??T??_??_??-??_??.xlsx')
+    xlsx_assessments = get_xlsx('Sara-Alert-Full-Export-Assessments-????-??-??T??_??_??-??_??.xlsx')
+    xlsx_lab_results = get_xlsx('Sara-Alert-Full-Export-Lab-Results-????-??-??T??_??_??-??_??.xlsx')
+    xlsx_histories = get_xlsx('Sara-Alert-Full-Export-Histories-????-??-??T??_??_??-??_??.xlsx')
     patients = current_user.jurisdiction.all_patients.order(:id)
-    verify_excel_export(xlsx, patients)
+    verify_excel_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_histories, patients)
   end
 
   def verify_excel_single_monitoree(patient_id)
     xlsx = get_xlsx("Sara-Alert-Monitoree-Export-#{patient_id}-????-??-??T??_??_?????_??.xlsx")
     patients = Patient.where(id: patient_id)
-    verify_excel_export(xlsx, patients)
+    verify_excel_export(xlsx, xlsx, xlsx, xlsx, patients)
   end
 
   def verify_sara_alert_format_guidance
@@ -69,7 +75,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
           if details[field].blank?
             assert_nil csv[row][col]&.to_datetime, "For field: #{field}"
           else
-            sleep(0.2)
+            sleep(0.1)
             assert_in_delta(details[field].to_datetime, csv[row][col].to_datetime, 1, "For field: #{field}")
           end
         else
@@ -100,8 +106,8 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_excel_export(xlsx, patients)
-    monitorees_list = xlsx.sheet('Monitorees List')
+  def verify_excel_export(xlsx_monitorees, xlsx_assessments, xlsx_lab_results, xlsx_histories, patients)
+    monitorees_list = xlsx_monitorees.sheet('Monitorees List')
     assert_equal(patients.size, monitorees_list.last_row - 1, 'Number of patients in Monitorees List')
     MONITOREES_LIST_HEADERS.each_with_index do |header, col|
       assert_equal(header, monitorees_list.cell(1, col + 1), "For header: #{header} in Monitorees List")
@@ -122,7 +128,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
 
     patient_ids = patients.pluck(:id)
 
-    assessments = xlsx.sheet('Assessments')
+    assessments = xlsx_assessments.sheet('Assessments')
     symptom_labels = Patient.where(id: patient_ids)
                             .joins(assessments: [{ reported_condition: :symptoms }])
                             .select('symptoms.label')
@@ -149,7 +155,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
               end
             end
 
-    lab_results = xlsx.sheet('Lab Results')
+    lab_results = xlsx_lab_results.sheet('Lab Results')
     labs = Laboratory.where(patient_id: patient_ids)
     assert_equal(labs.size, lab_results.last_row - 1, 'Number of results in Lab Results')
     lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
@@ -164,7 +170,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
       end
     end
 
-    edit_histories = xlsx.sheet('Edit Histories')
+    edit_histories = xlsx_histories.sheet('Edit Histories')
     histories = History.where(patient_id: patient_ids)
     assert_equal(histories.size, edit_histories.last_row - 1, 'Number of histories in Edit Histories')
     history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
@@ -178,6 +184,19 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
         assert_equal(details[field].to_s, cell_value || '', "For field: #{field} in Edit Histories")
       end
     end
+  end
+
+  def download_comprehensive_export_files(current_user, export_type)
+    sleep(0.5) # wait for export and download to complete
+    download_monitorees = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).first
+    download_assessments = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).second
+    download_lab_results = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).third
+    download_histories = Download.where(user_id: current_user.id, export_type: export_type).where('created_at > ?', 5.seconds.ago).fourth
+    visit "/export/download/#{download_monitorees.lookup}"
+    visit "/export/download/#{download_assessments.lookup}"
+    visit "/export/download/#{download_lab_results.lookup}"
+    visit "/export/download/#{download_histories.lookup}"
+    [download_monitorees.filename, download_assessments.filename, download_lab_results.filename, download_histories.filename]
   end
 
   def download_file(current_user, export_type)

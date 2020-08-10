@@ -250,7 +250,8 @@ class PatientMailer < ApplicationMailer
   end
 
   def add_fail_history_sms(patient)
-    History.report_reminder(patient: patient, comment: "Sara Alert failed to send an SMS to #{patient.primary_telephone}.")
+    comment = "Sara Alert attempted to send an SMS to #{patient.primary_telephone}, but the message could not be delivered."
+    History.report_reminder(patient: patient, comment: comment)
   end
 
   def add_fail_history_blank_field(patient, type)

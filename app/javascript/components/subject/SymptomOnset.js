@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Row, Col, Button } from 'react-bootstrap';
+import { Form, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 
 import confirmDialog from '../util/ConfirmDialog';
@@ -13,6 +13,7 @@ class SymptomOnset extends React.Component {
     super(props);
     this.state = {
       symptom_onset: this.props.patient.symptom_onset,
+      symptom_onset_old: this.props.patient.symptom_onset,
       loading: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -21,12 +22,14 @@ class SymptomOnset extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({ [event.target.id]: event.target.value });
+    this.setState({ symptom_onset_old: this.state.symptom_onset, [event.target.id]: event.target.value });
   }
 
   handleSubmit = async confirmText => {
     if (await confirmDialog(confirmText)) {
       this.submit();
+    } else {
+      this.setState({ symptom_onset: this.state.symptom_onset_old });
     }
   };
 
@@ -51,31 +54,33 @@ class SymptomOnset extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Row>
-          <Form.Group as={Col} md="6">
-            <Form.Label className="nav-input-label">
-              SYMPTOM ONSET
-              <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
-            </Form.Label>
-            <DateInput
-              id="symptom_onset"
-              date={this.state.symptom_onset}
-              onChange={date => this.setState({ symptom_onset: date })}
-              placement="bottom"
-              isClearable
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="18" className="align-self-end pl-0">
-            <Button className="btn-lg" onClick={() => this.handleSubmit('Are you sure you want to modify the symptom onset date?')}>
-              <i className="fas fa-temperature-high"></i> Update
-              {this.state.loading && (
-                <React.Fragment>
-                  &nbsp;<span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                </React.Fragment>
-              )}
-            </Button>
-          </Form.Group>
-        </Row>
+        <Col>
+          <Row className="reports-actions-title">
+            <Col>
+              <Form.Label className="nav-input-label">
+                SYMPTOM ONSET
+                <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
+              </Form.Label>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <DateInput
+                id="symptom_onset"
+                date={this.state.symptom_onset}
+                onChange={date =>
+                  this.setState({ symptom_onset: date }, () => {
+                    this.handleSubmit('Are you sure you want to modify the symptom onset date?');
+                  })
+                }
+                placement="bottom"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col></Col>
+          </Row>
+        </Col>
       </React.Fragment>
     );
   }

@@ -65,37 +65,18 @@ class Patient < ApplicationRecord
     transfers.order(created_at: :desc).first
   end
 
-  # Patients who are eligible for reminders (exposure)
-  scope :reminder_eligible_exposure, lambda {
-    where(isolation: false)
-      .where(purged: false)
+  # Patients who are eligible for reminders
+  scope :reminder_eligible, lambda {
+    where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where('last_date_of_exposure >= ? OR continuous_exposure = ?', (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago, true)
+      .where('isolation = ? OR last_date_of_exposure >= ? OR continuous_exposure = ?', true, (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago, true)
       .where.not('latest_assessment_at >= ?', Time.now.getlocal('-04:00').beginning_of_day)
       .or(
-        where(isolation: false)
-          .where(purged: false)
+        where(purged: false)
           .where(pause_notifications: false)
           .where('patients.id = patients.responder_id')
-          .where('last_date_of_exposure >= ? OR continuous_exposure = ?', (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago, true)
-          .where(latest_assessment_at: nil)
-      )
-      .distinct
-  }
-
-  # Patients who are eligible for reminders (isolation)
-  scope :reminder_eligible_isolation, lambda {
-    where(isolation: true)
-      .where(purged: false)
-      .where(pause_notifications: false)
-      .where('patients.id = patients.responder_id')
-      .where.not('latest_assessment_at >= ?', Time.now.getlocal('-04:00').beginning_of_day)
-      .or(
-        where(isolation: true)
-          .where(purged: false)
-          .where(pause_notifications: false)
-          .where('patients.id = patients.responder_id')
+          .where('isolation = ? OR last_date_of_exposure >= ? OR continuous_exposure = ?', true, (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago, true)
           .where(latest_assessment_at: nil)
       )
       .distinct
@@ -538,6 +519,7 @@ class Patient < ApplicationRecord
     eligible = true
     sent = false
     reported = false
+    household = false
     messages = []
 
     # Workflow agnostic conditions
@@ -557,13 +539,14 @@ class Patient < ApplicationRecord
     # Can't send to household members
     if id != responder_id
       eligible = false
+      household = true
       messages << { message: 'Monitoree is within a household, so the HoH will receive notifications instead', datetime: nil }
     end
 
     # Has an ineligible preferred contact method
     if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
       eligible = false
-      messages << { message: "Monitoree has an ineligible preferred contact method (#{preferred_contact_method})", datetime: nil }
+      messages << { message: "Monitoree has an ineligible preferred contact method (#{preferred_contact_method || 'Missing'})", datetime: nil }
     end
 
     # Exposure workflow specific conditions
@@ -575,18 +558,18 @@ class Patient < ApplicationRecord
       end
     end
 
-    # Has already reported today
-    if !latest_assessment_at.nil? && latest_assessment_at >= report_cutoff_time
-      eligible = false
-      reported = true
-      messages << { message: 'Monitoree has already reported today', datetime: latest_assessment_at }
-    end
-
     # Has already been contacted today
     if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent >= 12.hours.ago
       eligible = false
       sent = true
       messages << { message: 'Monitoree has been contacted recently', datetime: last_assessment_reminder_sent }
+    end
+
+    # Has already reported today
+    if !latest_assessment_at.nil? && latest_assessment_at >= report_cutoff_time
+      eligible = false
+      reported = true
+      messages << { message: 'Monitoree has already reported today', datetime: latest_assessment_at }
     end
 
     # Rough estimate of next contact time
@@ -602,7 +585,7 @@ class Patient < ApplicationRecord
                   end
     end
 
-    { eligible: eligible, sent: sent, reported: reported, messages: messages }
+    { eligible: eligible, sent: sent, reported: reported, messages: messages, household: household }
   end
 
   # Returns a representative FHIR::Patient for an instance of a Sara Alert Patient. Uses US Core

@@ -44,10 +44,10 @@ class PatientsTable extends React.Component {
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },
           { field: 'public_health_action', label: 'Latest Public Health Action', isSortable: true, tooltip: null },
-          { field: 'expected_purge_date', label: 'Eligible For Purge After', isSortable: true, tooltip: 'purgeDate' },
+          { field: 'expected_purge_date', label: 'Eligible For Purge After', isSortable: true, tooltip: 'purgeDate', filter: this.formatTimestamp },
           { field: 'reason_for_closure', label: 'Reason for Closure', isSortable: true, tooltip: null },
-          { field: 'closed_at', label: 'Closed At', isSortable: true, tooltip: null },
-          { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null },
+          { field: 'closed_at', label: 'Closed At', isSortable: true, tooltip: null, filter: this.formatTimestamp },
+          { field: 'transferred_at', label: 'Transferred At', isSortable: true, tooltip: null, filter: this.formatTimestamp },
           { field: 'latest_report', label: 'Latest Report', isSortable: true, tooltip: null, filter: this.formatTimestamp },
           { field: 'status', label: 'Status', isSortable: false, tooltip: null },
           { field: 'report_eligibility', label: '', isSortable: false, tooltip: null, filter: this.createEligibilityTooltip, icon: 'far fa-comment' },
@@ -415,7 +415,7 @@ class PatientsTable extends React.Component {
                             onChange={this.handleChange}
                           />
                           <datalist id="assignedUsers">
-                            {this.state.assignedUsers.map(num => {
+                            {this.state.assignedUsers?.map(num => {
                               return (
                                 <option value={num} key={num}>
                                   {num}

@@ -53,8 +53,10 @@ class ClearReports extends React.Component {
         <Modal.Body>
           {!this.props.patient.isolation && (
             <p>
-              This will change any reports where the &quot;Needs Review&quot; column is &quot;Yes&quot; to &quot;No&quot;. This subject will be moved from the
-              &quot;Symptomatic&quot; line list to either the asymptomatic or non reporting line list as appropriate.
+              You are about to clear all symptomatic report flags on this record. This indicates that the disease of interest is not suspected after review of
+              this monitoree&apos;s symptom report(s). The &quot;Needs Review&quot; status will be changed to &quot;No&quot; for all reports. The record will
+              move from the symptomatic line list to the asymptomatic or non-reporting line list as appropriate. The symptom onset date field will also be
+              cleared unless a date has been entered by a user.
             </p>
           )}
           {this.props.patient.isolation && (

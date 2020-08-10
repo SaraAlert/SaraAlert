@@ -231,6 +231,11 @@ class PatientsController < ApplicationController
       end
     end
 
+    if !content[:isolation].nil? && !content[:isolation]
+      content[:user_defined_symptom_onset] = false
+      content[:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
+    end
+
     # Grab diff, attempt to update, else return to index if failed
     patient_before = patient.dup
     if patient.update(content)
@@ -346,6 +351,11 @@ class PatientsController < ApplicationController
                        end
     if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
       patient.closed_at = DateTime.now
+    end
+    if params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]
+      params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
+      params[:patient][:user_defined_symptom_onset] = false
+      params[:patient][:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
     end
     patient.update(params.require(:patient).permit(params_to_update))
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
@@ -604,10 +614,8 @@ class PatientsController < ApplicationController
       isolation
       jurisdiction_id
       assigned_user
-      symptom_onset
       case_status
       continuous_exposure
-      user_defined_symptom_onset
     ]
   end
 

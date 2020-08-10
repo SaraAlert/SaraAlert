@@ -423,7 +423,7 @@ class PatientTest < ActiveSupport::TestCase
     # patient has asymptomatic assessment more than 24 hours ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
 
-    assert_not Patient.reminder_eligible_isolation.find_by(id: patient.id).nil?
+    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'isolation non reporting send report when no assessments and patient was created more than 1 day ago' do
@@ -431,7 +431,7 @@ class PatientTest < ActiveSupport::TestCase
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 2.days.ago)
 
-    assert_not Patient.reminder_eligible_isolation.find_by(id: patient.id).nil?
+    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'exposure send report when latest assessment was more than 1 day ago' do
@@ -442,7 +442,7 @@ class PatientTest < ActiveSupport::TestCase
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
 
-    assert_not Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
+    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'exposure send report when no assessments and patient was created more than 1 day ago' do
@@ -450,7 +450,7 @@ class PatientTest < ActiveSupport::TestCase
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 2.days.ago, last_date_of_exposure: 14.days.ago)
 
-    assert_not Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
+    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'exposure send report without continuous exposure' do
@@ -461,7 +461,7 @@ class PatientTest < ActiveSupport::TestCase
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
 
-    assert_not Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
+    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'exposure dont send report without continuous exposure' do
@@ -469,7 +469,7 @@ class PatientTest < ActiveSupport::TestCase
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 2.days.ago, last_date_of_exposure: 20.days.ago)
 
-    assert Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
+    assert Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'exposure send report with continuous exposure' do
@@ -480,7 +480,7 @@ class PatientTest < ActiveSupport::TestCase
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
 
-    assert_not Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
+    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'exposure dont send report with continuous exposure' do
@@ -488,7 +488,7 @@ class PatientTest < ActiveSupport::TestCase
     Patient.destroy_all
     patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 2.days.ago, continuous_exposure: false)
 
-    assert Patient.reminder_eligible_exposure.find_by(id: patient.id).nil?
+    assert Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'address timezone offset' do

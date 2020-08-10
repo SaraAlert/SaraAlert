@@ -616,7 +616,7 @@ class AdminTable extends React.Component {
           <div>
             <InputGroup size="md">
               <InputGroup.Prepend>
-                <OverlayTrigger overlay={<Tooltip>Search by id or email.</Tooltip>}>
+                <OverlayTrigger overlay={<Tooltip>Search by id, email, or jurisdiction.</Tooltip>}>
                   <InputGroup.Text className="rounded-0">
                     <i className="fas fa-search"></i>
                     <span className="ml-1">Search</span>
