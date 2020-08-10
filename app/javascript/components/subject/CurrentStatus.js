@@ -54,7 +54,7 @@ class CurrentStatus extends React.Component {
   generateReportEligibility() {
     return (
       <React.Fragment>
-        <span>. This {this.props.isolation ? "case's" : 'monitorees'} notification status is&nbsp;</span>
+        <span>. This {this.props.isolation ? "case's" : "monitoree's"} notification status is&nbsp;</span>
         <EligibilityTooltip report_eligibility={this.props.report_eligibility} id={`eltt`} inline={true} />.
       </React.Fragment>
     );
