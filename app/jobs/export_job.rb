@@ -80,7 +80,7 @@ class ExportJob < ApplicationJob
                                          export_type),
                    filename: "Sara-Alert-Full-Export-Histories-#{DateTime.now}.xlsx" }
     end
-    return if data.blank?
+    return if lookups.empty?
 
     # Send an email to user
     UserMailer.download_email(user, export_type, lookups).deliver_later
