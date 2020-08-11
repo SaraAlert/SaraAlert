@@ -261,11 +261,11 @@ class InfoTooltip extends React.Component {
   render() {
     return (
       <div style={{ display: 'inline' }}>
-        <span data-for={this.customID} data-tip="" className="ml-1">
+        <span data-testid="info_tooltip" data-for={this.customID} data-tip="" className="ml-1">
           <i className="fas fa-question-circle px-0"></i>
         </span>
         <ReactTooltip id={this.customID} multiline={true} place={this.props.location} type="dark" effect="solid" className="tooltip-container">
-          <span>{TOOLTIP_TEXT[this.props.tooltipTextKey]}</span>
+          <span data-testid="info_tooltip_text">{TOOLTIP_TEXT[this.props.tooltipTextKey]}</span>
         </ReactTooltip>
       </div>
     );
