@@ -4,7 +4,7 @@ import { render, screen, prettyDOM } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 
 import PublicHealthAnalytics from '../../components/analytics/PublicHealthAnalytics.js'
-import { mockUser1, mockAnalyticsData } from '../mockData/mock'
+import { mockUser1, mockAnalyticsData } from '../mockData/mockData'
 
 test('PublicHealthAnalytics properly renders', () => {
   window.SVGPathElement = function () {};

@@ -1,5 +1,3 @@
-// module "my-module.js"
-
 import mockAnalyticsData from './mockAnalytics'
 
 const mockUser1 = {
