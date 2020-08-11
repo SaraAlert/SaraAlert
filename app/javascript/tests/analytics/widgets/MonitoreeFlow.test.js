@@ -2,7 +2,7 @@
 import React from 'react'
 import { render, fireEvent, waitFor, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import MonitoreeFow from '../components/analytics/widgets/MonitoreeFlow.js'
+import MonitoreeFow from '../../../components/analytics/widgets/MonitoreeFlow.js'
 
 const mocked_monitoree_snapshot = [
   {
