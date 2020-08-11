@@ -2,7 +2,7 @@
 import React from 'react'
 import { render, fireEvent, waitFor, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import MonitoreeFow from '../../../components/analytics/widgets/MonitoreeFlow.js'
+import MonitoreeFlow from '../../../components/analytics/widgets/MonitoreeFlow.js'
 
 const mocked_monitoree_snapshot = [
   {
@@ -65,7 +65,7 @@ const mocked_stats = {
 }
 
 test('MonitoreeFlow properly renders', () => {
-  render(<MonitoreeFow stats={mocked_stats}/>)
+  render(<MonitoreeFlow stats={mocked_stats}/>)
   const allExpectedDomStrings = ['Last 24 Hours', 'Last 14 Days', 'Total', 'INCOMING', 'NEW ENROLLMENTS',
     'TRANSFERRED IN', 'OUTGOING', 'CLOSED', 'TRANSFERRED OUT'];
   // screen.debug(); // Can be thought of as a DOM-dump. Essentially `console.log()` for jest
