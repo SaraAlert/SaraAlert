@@ -134,7 +134,7 @@ class EligibilityTooltip extends React.Component {
   }
 
   render() {
-    return <React.Fragment>{this.formatEligibility(this.props.report_eligibility, this.props.id)}</React.Fragment>;
+    return <div data-testid="eligibility_tooltip">{this.formatEligibility(this.props.report_eligibility, this.props.id)}</div>;
   }
 }
 

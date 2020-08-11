@@ -6,6 +6,7 @@ class PhoneInput extends React.Component {
   render() {
     return (
       <MaskedInput
+        data-testid="phone_input"
         id={this.props.id}
         value={this.props.value?.replace('+1', '')}
         mask={[/\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}

@@ -32,7 +32,7 @@ class DateInput extends React.Component {
 
   render() {
     return (
-      <div className="date-input">
+      <div className="date-input" data-testid="date_input">
         <i className="fas fa-calendar date-input__calendar_icon"></i>
         {this.props.isClearable && this.props.date && (
           <button className={`close ${this.props.isInvalid ? 'date-input__clear-btn-invalid' : 'date-input__clear-btn'}`} onClick={this.clearDate}>
