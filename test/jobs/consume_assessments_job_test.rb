@@ -90,7 +90,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
     @patient.update(assessments: [])
 
     assert_difference '@patient.assessments.count', 1 do
-      @redis.publish('reports', @assessment_generator.generic_assessment(symptomatic: nil))
+      @redis.publish('reports', @assessment_generator.generic_assessment(symptomatic: false))
       ConsumeAssessmentsJob.perform_now
       @patient.reload
       assert_not @patient.assessments.first.symptomatic
