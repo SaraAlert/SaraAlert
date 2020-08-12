@@ -170,7 +170,7 @@ class AdminController < ApplicationController
     return head :bad_request unless roles.include?(role)
 
     jurisdiction = permitted_params[:jurisdiction]
-    
+
     # New jurisdiction should only be from the subset of jurisdictions available to the current user
     allowed_jurisdictions = current_user.jurisdiction.subtree.pluck(:id)
     return head :bad_request unless allowed_jurisdictions.include?(jurisdiction)
