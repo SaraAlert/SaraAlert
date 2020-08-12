@@ -244,7 +244,7 @@ class AdminControllerTest < ActionController::TestCase
     assert_response :success
 
     user = User.find_by(email: 'test@testing.com')
-    assert_equal(user.jurisdiction, Jurisdiction.find_by_id(2))
+    assert_equal(user.jurisdiction, current_user_jur)
     assert_equal(user.api_enabled, true)
     assert_equal(user.roles[0].name, 'public_health_enroller')
     assert_equal(user.force_password_change, true)
