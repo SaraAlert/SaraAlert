@@ -51,9 +51,14 @@ end
 namespace :coverage do
   desc 'Generate a GitHub Actions compatible report'
   task :report do
+    raise 'This task is only for use in a CI/CD testing environment' unless ENV['APP_IN_CI']
+
     require 'simplecov'
     require 'simplecov-lcov'
-    SimpleCov.collate(Dir['coverage/.resultset.json'], 'rails') do
+
+    # Expect a folder full of artifacts downloaded from GitHub actions within the
+    # 'github-artifacts' folder. This filename is set in within the action itself
+    SimpleCov.collate(Dir.glob('github-artifacts/coverage-*/**', File::FNM_DOTMATCH).reject { |file| file.end_with?('.') }, 'rails') do
       SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
       formatter SimpleCov::Formatter::MultiFormatter.new([
                                                            SimpleCov::Formatter::LcovFormatter,

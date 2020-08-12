@@ -2,6 +2,8 @@
 
 require 'application_system_test_case'
 
+SimpleCov.command_name 'SystemTestCaseAnalyst'
+
 require_relative 'dashboard/monitoree_counts_verifier'
 require_relative 'dashboard/monitoree_snapshots_verifier'
 require_relative '../../lib/system_test_utils'

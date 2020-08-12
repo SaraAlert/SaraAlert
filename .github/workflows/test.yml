@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
+  test-model-controller:
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -61,24 +61,426 @@ jobs:
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-tests
+          path: coverage/.resultset.json
+  test-system-public-health:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
       - name: Run System Tests
-        run: bundle exec rake test:system
+        run: bundle exec rake test TEST=test/system/roles/public_health/public_health_test.rb
         env:
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
-      - name: Merge Code Coverage
-        run: bundle exec rake coverage:report
-        env:
-          APP_IN_CI: true
-      - name: Upload to Coveralls
-        uses: coverallsapp/github-action@master
+      - uses: actions/upload-artifact@v1
+        if: success()
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/lcov/SaraAlert.lcov
+          name: coverage-public_health
+          path: coverage/.resultset.json
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
           name: screenshots
           path: tmp/screenshots/
-
+  test-system-enroller:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
+      - name: Run System Tests
+        run: bundle exec rake test TEST=test/system/roles/enroller/enroller_test.rb
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-enroller
+          path: coverage/.resultset.json
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: screenshots
+          path: tmp/screenshots/
+  test-system-analyst:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
+      - name: Run System Tests
+        run: bundle exec rake test TEST=test/system/roles/analyst/analyst_test.rb
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-analyst
+          path: coverage/.resultset.json
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: screenshots
+          path: tmp/screenshots/
+  test-system-admin:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
+      - name: Run System Tests
+        run: bundle exec rake test TEST=test/system/roles/admin/admin_test.rb
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-admin
+          path: coverage/.resultset.json
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: screenshots
+          path: tmp/screenshots/
+  test-system-monitoree:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
+      - name: Run System Tests
+        run: bundle exec rake test TEST=test/system/roles/monitoree/monitoree_test.rb
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-monitoree
+          path: coverage/.resultset.json
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: screenshots
+          path: tmp/screenshots/
+  test-system-workflow:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - name: Install Bundler
+        run: gem install bundler
+      - name: Install Yarn
+        run: npm install yarn
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Run Yarn Install
+        run: yarn install --ignore-engines
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Setup Test Database Configuration
+        run: |
+          cp config/github-ci/github-database.yml config/database.yml
+          mysql -h 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -proot -e 'CREATE DATABASE IF NOT EXISTS disease_trakker_test;'
+      - name: Run System Tests
+        run: bundle exec rake test TEST=test/system/workflow/workflow_test.rb
+        env:
+          CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          APP_IN_CI: true
+      - uses: actions/upload-artifact@v1
+        if: success()
+        with:
+          name: coverage-workflow
+          path: coverage/.resultset.json
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: screenshots
+          path: tmp/screenshots/
+  compile-test-coverage:
+    name: Display Test Coverage Results
+    needs: [test-system-workflow, test-system-monitoree, test-model-controller, test-system-public-health, test-system-enroller, test-system-analyst, test-system-admin]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          path: github-artifacts
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+      - name: Install Bundler
+        run: gem install bundler
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Run Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install
+      - name: Collate coverage
+        run: |
+          bundle exec rake coverage:report
+        env:
+          APP_IN_CI: true
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov/SaraAlert.lcov
 

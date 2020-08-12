@@ -2,6 +2,8 @@
 
 require 'application_system_test_case'
 
+SimpleCov.command_name 'SystemTestCasePublicHealth'
+
 require_relative 'public_health_test_helper'
 require_relative '../../lib/system_test_utils'
 

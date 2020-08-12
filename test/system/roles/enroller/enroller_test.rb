@@ -2,6 +2,8 @@
 
 require 'application_system_test_case'
 
+SimpleCov.command_name 'SystemTestCaseEnroller'
+
 require_relative 'enroller_test_helper'
 
 class EnrollerTest < ApplicationSystemTestCase
