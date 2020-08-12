@@ -75,7 +75,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
           if details[field].blank?
             assert_nil csv[row][col]&.to_datetime, "For field: #{field}"
           else
-            sleep(0.1)
+            sleep(0.2)
             assert_in_delta(details[field].to_datetime, csv[row][col].to_datetime, 1, "For field: #{field}")
           end
         else

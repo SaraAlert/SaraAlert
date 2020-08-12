@@ -518,7 +518,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   # Converts phone number from e164 to CDC recommended format
   def format_phone_number(phone)
-    Phonelib.parse(phone).national(false)&.insert(6, '-')&.insert(3, '-')
+    cleaned_phone_number = Phonelib.parse(phone).national(false)
+    return nil if cleaned_phone_number.nil? || cleaned_phone_number.length != 10
+
+    cleaned_phone_number.insert(6, '-').insert(3, '-')
   end
 
   # Linelist fields obtainable without any joins

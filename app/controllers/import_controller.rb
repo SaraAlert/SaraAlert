@@ -211,8 +211,8 @@ class ImportController < ApplicationController
   def validate_phone_field(field, value, row_ind)
     return nil if value.blank?
 
-    normalized_phone = Phonelib.parse(value, 'US').full_e164
-    return normalized_phone if normalized_phone
+    phone = Phonelib.parse(value, 'US')
+    return phone.full_e164 unless phone.national(false).nil? || phone.national(false).length != 10
 
     raise ValidationError.new("'#{value}' is not a valid phone number for '#{VALIDATION[field][:label]}'", row_ind)
   end
