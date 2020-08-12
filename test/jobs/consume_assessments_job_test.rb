@@ -5,9 +5,14 @@ require_relative '../test_helpers/consume_assessments_job_test_helper'
 
 class ConsumeAssessmentsJobTest < ActiveJob::TestCase
   def setup
+    Sidekiq::Testing.fake!
     @redis = Rails.application.config.redis
     @patient = create(:patient, submission_token: SecureRandom.hex(20), primary_telephone: '(555) 555-0111')
     @assessment_generator = ConsumeAssessmentsJobTestHelper::AssessmentGenerator.new(@patient)
+  end
+
+  def teardown
+    Sidekiq::Testing.inline!
   end
 
   test 'consume assessment bad json' do
