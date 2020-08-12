@@ -42,10 +42,6 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Run Yarn Install
         run: yarn install --ignore-engines
-      - name: Run React Component Tests
-        run: |
-          yarn install
-          yarn run test
       - uses: actions/cache@v1
         with:
           path: vendor/bundle
@@ -390,6 +386,27 @@ jobs:
         with:
           name: screenshots
           path: tmp/screenshots/
+  react-component-tests:
+    - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+    - name: Install Yarn
+      run: npm install yarn
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+    - uses: actions/cache@v1
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Run Yarn Install
+      run: yarn install --ignore-engines
+    - name: Run React Component Tests
+      run: yarn run test
   test-system-workflow:
     runs-on: ubuntu-latest
     services:
