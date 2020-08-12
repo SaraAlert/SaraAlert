@@ -114,10 +114,57 @@
                 <% unless @patient.isolation %>
                 <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
                 <% end %>
+              </td>
+            <% end %>
+            <td><%= assessment.who_reported %></td>
+            <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
+            <% columns.each do |column| -%>
+              <% if assessment.get_reported_symptom_by_name(column) == nil %>
+                <td></td>
+              <% end %>
+              <%passes_threshold = assessment.symptom_passes_threshold(column)%>
+              <%symptom_value = assessment.get_reported_symptom_value(column)%>
+              <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
+                <% if symptom_value %>
+                  <% symptom_value = "Yes" %>
+                <% else symptom_value %>
+                  <% symptom_value = "No"%>
+                <%end%>
+                <td>
+                  <% if passes_threshold -%>
+                    <span class="concern"><%=symptom_value%></span>
+                  <% else -%>
+                    <%=symptom_value%>
+                  <% end -%>
+                </td>
+              <% end %>
+              <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
+                <td>
+                  <% if passes_threshold -%>
+                    <span class="concern"><%=symptom_value%></span>
+                  <% elsif symptom_value == 100_000 || symptom_value == 100_000.00 -%>
+                    Asymptomatic
+                  <% else -%>
+                    <%=symptom_value%>
+                  <% end -%>
+               </td>
+              <% end %>
+            <% end -%>
+            <td>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-primary dropdown-toggle btn-block a-dropdown" type="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-cogs fw"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton">
+                  <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
+                  <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                  <% unless @patient.isolation %>
+                    <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                  <% end %>
+                </div>
               </div>
-            </div>
-          </td>
-        </tr>
+            </td>
+          </tr>
         <% end -%>
       </tbody>
     </table>
