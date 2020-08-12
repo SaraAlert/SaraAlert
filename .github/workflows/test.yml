@@ -389,9 +389,9 @@ jobs:
   react-component-tests:
     steps:
       - name: Setup Node.js
-          uses: actions/setup-node@v1
-          with:
-            node-version: '13.x'
+        uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
       - name: Install Yarn
         run: npm install yarn
       - name: Get yarn cache directory path
