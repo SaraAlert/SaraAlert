@@ -29,7 +29,7 @@ FactoryBot.define do
 
     after(:build) do |symptom|
       if symptom.type == 'IntegerSymptom' && symptom.int_value.nil?
-        symptom.int_value = Faker::Number.between(from: 0, to: 2_147_483_648)
+        symptom.int_value = Faker::Number.between(from: 0, to: 99_999)
       elsif symptom.type == 'BoolSymptom' && symptom.bool_value.nil?
         symptom.bool_value = false
       elsif symptom.type == 'FloatSymptom' && symptom.float_value.nil?
