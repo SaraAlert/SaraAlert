@@ -15,7 +15,7 @@ class CloseSubjectsJob < ApplicationJob
     #   - Subject's last assessment was completed within the <reporting_period_minutes>
 
     # Grab closable subjects
-    closeable = Patient.asymptomatic.where(continuous_exposure: false)
+    closeable = Patient.exposure_symptomatic.where(continuous_exposure: false)
 
     # Close subjects who are past the monitoring period (and are actually closable from above logic)
     closeable.find_each(batch_size: 5000) do |subject|
