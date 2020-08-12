@@ -387,6 +387,7 @@ jobs:
           name: screenshots
           path: tmp/screenshots/
   react-component-tests:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js
