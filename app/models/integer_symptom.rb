@@ -18,8 +18,9 @@ class IntegerSymptom < Symptom
   # 'less than' such that the symptom is never counted as symptomatic by Assessment#symptom_passes_threshold
   def negate
     self.int_value = if threshold_operator&.downcase&.include?('less')
-                       # Max Integer for database column - ActiveRecord errors on 648.
-                       2_147_483_647
+                       # Chosen number which is likely high enough in a biological context
+                       # to signify that the patient responded asymptomatic
+                       99_999
                      else
                        0
                      end

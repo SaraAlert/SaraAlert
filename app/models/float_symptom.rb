@@ -18,7 +18,9 @@ class FloatSymptom < Symptom
   # 'less than' such that the symptom is never counted as symptomatic by Assessment#symptom_passes_threshold
   def negate
     self.float_value = if threshold_operator&.downcase&.include?('less')
-                         3.402823466e38
+                         # Chosen number which is likely high enough in a biological context
+                         # to signify that the patient responded asymptomatic
+                         99_999.99
                        else
                          0.0
                        end
