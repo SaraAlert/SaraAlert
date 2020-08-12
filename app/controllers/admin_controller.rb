@@ -118,9 +118,11 @@ class AdminController < ApplicationController
     roles = Role.pluck(:name)
     return head :bad_request unless roles.include?(role)
 
-    jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
-    return head :bad_request unless jurisdictions.include?(jurisdiction)
+
+    # New jurisdiction should only be from the subset of jurisdictions available to the current user
+    allowed_jurisdictions = current_user.jurisdiction.subtree.pluck(:id)
+    return head :bad_request unless allowed_jurisdictions.include?(jurisdiction)
 
     is_api_enabled = permitted_params[:is_api_enabled]
     return head :bad_request unless [true, false].include? is_api_enabled
@@ -167,9 +169,11 @@ class AdminController < ApplicationController
     roles = Role.pluck(:name)
     return head :bad_request unless roles.include?(role)
 
-    jurisdictions = Jurisdiction.pluck(:id)
     jurisdiction = permitted_params[:jurisdiction]
-    return head :bad_request unless jurisdictions.include?(jurisdiction)
+    
+    # New jurisdiction should only be from the subset of jurisdictions available to the current user
+    allowed_jurisdictions = current_user.jurisdiction.subtree.pluck(:id)
+    return head :bad_request unless allowed_jurisdictions.include?(jurisdiction)
 
     is_api_enabled = permitted_params[:is_api_enabled]
     return head :bad_request unless [true, false].include? is_api_enabled
@@ -181,7 +185,7 @@ class AdminController < ApplicationController
     user = User.find_by(id: id)
     return head :bad_request unless user
 
-    # Verify user jurisdiction access
+    # Verify user current jurisdiction access
     cur_jur = current_user.jurisdiction
     redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
 
