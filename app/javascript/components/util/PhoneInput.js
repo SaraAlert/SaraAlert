@@ -7,7 +7,7 @@ class PhoneInput extends React.Component {
     return (
       <MaskedInput
         id={this.props.id}
-        value={this.props.value}
+        value={this.props.value?.replace('+1', '')}
         mask={[/\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
         className={`form-control form-control-lg${this.props.isInvalid ? ' is-invalid' : ''}`}
         placeholder="___-___-____"
