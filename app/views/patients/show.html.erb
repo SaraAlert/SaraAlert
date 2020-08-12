@@ -140,10 +140,16 @@
               <% end %>
               <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
                 <td>
-                  <% if passes_threshold -%>
+                  <!-- Reported symptomatic via nonspecific means such as voice or sms -->
+                  <% if passes_threshold && (symptom_value == 100_000 || symptom_value == 100_000.00) -%>
+                    <span class="concern">-</span>
+                  <!-- Reported symptomatic via specific means such as weblink or email -->
+                  <% elsif passes_threshold -%>
                     <span class="concern"><%=symptom_value%></span>
+                  <!-- Reported asymptomatic via nonspecific means such as voice or sms -->
                   <% elsif symptom_value == 100_000 || symptom_value == 100_000.00 -%>
                     Asymptomatic
+                  <!-- Reported asymptomatic via specific means such as weblink or email -->
                   <% else -%>
                     <%=symptom_value%>
                   <% end -%>
