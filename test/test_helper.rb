@@ -10,4 +10,4 @@ require 'mocha/test_unit'
 require 'mocha/minitest'
 require 'fakeredis/minitest'
 require 'sidekiq/testing'
-Sidekiq::Testing.fake!
+Sidekiq::Testing.inline!
