@@ -20,7 +20,7 @@ class FloatSymptom < Symptom
     self.float_value = if threshold_operator&.downcase&.include?('less')
                          # Chosen number which is likely high enough in a biological context
                          # to signify that the patient responded asymptomatic
-                         100_000.00
+                         100_000.0
                        else
                          0.0
                        end
