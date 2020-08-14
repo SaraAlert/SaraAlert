@@ -25,7 +25,7 @@ RUN addgroup -g 1000 -S app && adduser -u 1000 -S app -G app
 COPY . /app/disease-trakker
 
 RUN RAILS_ENV=production SECRET_KEY_BASE=precompile_only bundle exec rake assets:precompile
-RUN rm -rf node_modules tmp/ vendor/assets lib/assets test/
+RUN rm -rf node_modules tmp/ vendor/assets test/
 ENV RAILS_SERVE_STATIC_FILES true
 ENV RAILS_LOG_TO_STDOUT true
 ENV RAILS_ENV production
