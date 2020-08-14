@@ -19,13 +19,14 @@ WORKDIR /app/disease-trakker
 RUN gem install bundler && bundle config set without 'development test' && bundle config set deployment 'true'
 RUN bundle install --jobs $(nproc)
 RUN yarn install --no-optional
-RUN apk del build-dependencies && rm -rf /var/cache/apk/* && rm -rf /usr/local/bundle/cache/*.gem && find /usr/local/bundle/gems/ -name "*.c" -delete
 
 RUN addgroup -g 1000 -S app && adduser -u 1000 -S app -G app
 COPY . /app/disease-trakker
-
 RUN RAILS_ENV=production SECRET_KEY_BASE=precompile_only bundle exec rake assets:precompile
-RUN rm -rf node_modules tmp/ vendor/assets lib/assets test/
+
+RUN apk del build-dependencies && \
+    find /usr/local/bundle/gems/ -name "*.c" -delete && \
+    rm -rf /usr/local/bundle/cache/*.gem /var/cache/apk/* node_modules tmp/ /tmp vendor/assets test/ /root/.bundle /root/.npm /usr/local/share/.cache
 ENV RAILS_SERVE_STATIC_FILES true
 ENV RAILS_LOG_TO_STDOUT true
 ENV RAILS_ENV production

@@ -159,8 +159,7 @@ This results in a 'split architecture' where multiple instances of the SaraAlert
 A key portion of this is the use of the Nginx reverse proxy container. The configuration (located at `./nginx.conf`) will route traffic from 'untrusted' users submitting assessments to the `dt-net-assessment` application while, at the same time, enrollers and epidemiologists are routed to the enrollment database.
 
 Below is a graphic depicting the services and applications present on each network:
-
-![SaraAlertDockerNetworks](https://user-images.githubusercontent.com/3009651/78150057-c27ec300-7404-11ea-8db3-4c65666f5d60.png)
+![SaraAlertDockerNetworks](https://user-images.githubusercontent.com/3009651/90296500-a7fc3200-de59-11ea-873b-f690c52509bc.png)
 
 **Environment Variable Setup**
 
