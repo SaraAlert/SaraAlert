@@ -386,7 +386,7 @@ jobs:
         with:
           name: screenshots
           path: tmp/screenshots/
-  react-component-tests:
+  test-react-components:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
