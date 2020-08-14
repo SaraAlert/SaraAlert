@@ -5,9 +5,11 @@ node_modules
 .git
 .gitignore
 .gitlab-ci.yml
-log/*
-tmp/*
-test/*
+.github
+log
+tmp
+test
+coverage
 .env-prod
 .env-prod-example
 .dockerignore
@@ -25,3 +27,8 @@ CHANGELOG.md
 .env-prod-enrollment
 .env-prod-assessment-example
 .env-prod-enrollment-example
+dump.rdb
+gemsurance_report.html
+nginx.conf
+public/packs
+public/packs-test
