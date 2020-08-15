@@ -12,6 +12,10 @@ export default function reportError(error, reportToSentry = true) {
     return;
   }
 
+  if (typeof error === 'string' || error instanceof String) {
+    errorExplanationString = error;
+  }
+
   if (error?.response) {
     httpStatus = error.response.status;
   } else if (error?.httpStatus) {

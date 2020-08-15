@@ -15,11 +15,21 @@ class ExportController < ApplicationController
     # Verify params
     redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
-    # Spawn job to handle export
-    ExportJob.perform_later(current_user.id, "csv_#{params[:workflow]}")
+    type = "csv_#{params[:workflow]}"
 
-    respond_to do |format|
-      format.any { head :ok }
+    if current_user.export_receipts.where(export_type: type).where('created_at > ?', 1.hour.ago).exists?
+      render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
+    else
+      # Clear out old receipts and create a new one
+      current_user.export_receipts.where(export_type: type).destroy_all
+      ExportReceipt.create(user_id: current_user.id, export_type: type)
+
+      # Spawn job to handle export
+      ExportJob.perform_later(current_user.id, type)
+
+      respond_to do |format|
+        format.any { head :ok }
+      end
     end
   end
 
@@ -30,22 +40,42 @@ class ExportController < ApplicationController
     # Verify params
     redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
-    # Spawn job to handle export
-    ExportJob.perform_later(current_user.id, "sara_format_#{params[:workflow]}")
+    type = "sara_format_#{params[:workflow]}"
 
-    respond_to do |format|
-      format.any { head :ok }
+    if current_user.export_receipts.where(export_type: type).where('created_at > ?', 1.hour.ago).exists?
+      render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
+    else
+      # Clear out old receipts and create a new one
+      current_user.export_receipts.where(export_type: type).destroy_all
+      ExportReceipt.create(user_id: current_user.id, export_type: type)
+
+      # Spawn job to handle export
+      ExportJob.perform_later(current_user.id, type)
+
+      respond_to do |format|
+        format.any { head :ok }
+      end
     end
   end
 
   def excel_full_history_patients
     redirect_to(root_url) && return unless current_user.can_export?
 
-    # Spawn job to handle export
-    ExportJob.perform_later(current_user.id, "full_history_#{params[:scope] == 'purgeable' ? 'purgeable' : 'all'}")
+    type = "full_history_#{params[:scope] == 'purgeable' ? 'purgeable' : 'all'}"
 
-    respond_to do |format|
-      format.any { head :ok }
+    if current_user.export_receipts.where(export_type: type).where('created_at > ?', 1.hour.ago).exists?
+      render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
+    else
+      # Clear out old receipts and create a new one
+      current_user.export_receipts.where(export_type: type).destroy_all
+      ExportReceipt.create(user_id: current_user.id, export_type: type)
+
+      # Spawn job to handle export
+      ExportJob.perform_later(current_user.id, type)
+
+      respond_to do |format|
+        format.any { head :ok }
+      end
     end
   end
 
