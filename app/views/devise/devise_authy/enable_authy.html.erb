@@ -16,7 +16,8 @@
             <%= enable_authy_form do %>
               <div class="form-row">
                 <div class="form-group col-md-10 mb-0">
-                  <%= text_field_tag :country_code, '', autocomplete: :off, placeholder: I18n.t('devise.country'), id: "authy-countries", class: "form-control form-control-lg" %>
+                  <input id="countries-input-0" class="countries-input" type="text" autocomplete="off" disabled="disabled" placeholder="United States of America (+1)">
+                  <input type="hidden" id="country-code-0" name="country_code" value="1">
                 </div>
                 <div class="form-group col-md-10 mb-0">
                   <%= text_field_tag :cellphone, '', autocomplete: :off, placeholder: I18n.t('devise.cellphone'), id: "authy-cellphone", class: "form-control form-control-lg" %>
