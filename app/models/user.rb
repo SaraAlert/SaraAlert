@@ -21,6 +21,7 @@ class User < ApplicationRecord
   has_many :created_patients, class_name: 'Patient', foreign_key: 'creator_id'
 
   has_many :downloads
+  has_many :export_receipts
 
   belongs_to :jurisdiction
 

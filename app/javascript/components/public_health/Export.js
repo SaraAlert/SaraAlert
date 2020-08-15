@@ -36,7 +36,13 @@ class Export extends React.Component {
         });
       })
       .catch(err => {
-        reportError(err);
+        reportError(err?.response?.data?.message ? err.response.data.message : err, false);
+        this.setState({
+          showCSVModal: false,
+          showSaraFormatModal: false,
+          showAllPurgeEligibleModal: false,
+          showAllModal: false,
+        });
       });
   }
 
@@ -54,7 +60,7 @@ class Export extends React.Component {
           </p>
           <p>
             NOTE: The system will store one of each type of export file. If you initiate another export of this file type, any old files will be overwritten and
-            download links that have not been accessed will be invalid.
+            download links that have not been accessed will be invalid. Only one of each export type is allowed per user per hour.
           </p>
         </Modal.Body>
         <Modal.Footer>
