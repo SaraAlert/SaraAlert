@@ -36,7 +36,7 @@ class Export extends React.Component {
         });
       })
       .catch(err => {
-        reportError(err?.response?.data?.message ? err.response.data.message : err);
+        reportError(err?.response?.data?.message ? err.response.data.message : err, false);
         this.setState({
           showCSVModal: false,
           showSaraFormatModal: false,
