@@ -1,38 +1,38 @@
-<% content_for :body do %>
-  <h3>Send Assessments Job Results (<%= DateTime.now.to_s %>)</h3>
-  Eligible: <%= @eligible %>
-  <br />
-  Sent: <%= @sent.count %>
-  <br />
-  Not Sent: <%= @not_sent.count %>
-  <br />
-  <h3>Sent</h3>
-  <table>
+<h1>Send Assessments Job Results (<%= DateTime.now.to_s %>)</h1>
+Eligible: <%= @eligible %>
+<br />
+Sent: <%= @sent.count %>
+<br />
+Not Sent: <%= @not_sent.count %>
+<br />
+<br />
+<h2>Sent</h2>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Method</th>
+  </tr>
+  <% @sent.each do |s| %>
     <tr>
-      <th>ID</th>
-      <th>Method</th>
-    </tr>
-    <% @sent.each do |s| %>
-      <tr>
-        <td><%= s[:id] %></td>
-        <td><%= s[:method] %></td>
-      <tr>
-    <% end %>
-  </table>
-  <br />
-  <h3>Not Sent</h3>
-  <table>
+      <td><%= s[:id] %></td>
+      <td><%= s[:method] %></td>
     <tr>
-      <th>ID</th>
-      <th>Method</th>
-      <th>Reason</th>
-    </tr>
-    <% @not_sent.each do |s| %>
-      <tr>
-        <td><%= s[:id] %></td>
-        <td><%= s[:method] %></td>
-        <td><%= s[:reason] %></td>
-      <tr>
-    <% end %>
-  </table>
-<% end %>
+  <% end %>
+</table>
+<br />
+<br />
+<h2>Not Sent</h2>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Method</th>
+    <th>Reason</th>
+  </tr>
+  <% @not_sent.each do |s| %>
+    <tr>
+      <td><%= s[:id] %></td>
+      <td><%= s[:method] %></td>
+      <td><%= s[:reason] %></td>
+    <tr>
+  <% end %>
+</table>

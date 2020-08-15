@@ -10,9 +10,7 @@ class UserMailer < ApplicationMailer
     @sent = sent
     @not_sent = not_sent
     @eligible = eligible
-    mail(to: ADMIN_OPTIONS['job_run_email'], subject: 'Sara Alert Assessment Job') do |format|
-      format.html { render layout: 'main_mailer' }
-    end
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: 'Sara Alert Assessment Job')
   end
 
   def download_email(user, export_type, lookups)
