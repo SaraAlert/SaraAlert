@@ -6,6 +6,15 @@ require 'chronic'
 class UserMailer < ApplicationMailer
   default from: 'notifications@saraalert.org'
 
+  def assessment_job_email(sent, not_sent, eligible)
+    @sent = sent
+    @not_sent = not_sent
+    @eligible = eligible
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: 'Sara Alert Assessment Job') do |format|
+      format.html { render layout: 'main_mailer' }
+    end
+  end
+
   def download_email(user, export_type, lookups)
     @user = user
     @export_type = export_type

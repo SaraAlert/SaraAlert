@@ -5,6 +5,17 @@ class SendAssessmentsJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    Patient.reminder_eligible.find_each(batch_size: 5_000, &:send_assessment)
+    eligible = Patient.reminder_eligible.count
+    sent = []
+    not_sent = []
+    Patient.reminder_eligible.each do |patient|
+      begin
+        sent << { id: patient.id, method: patient.preferred_contact_method } if patient.send_assessment
+      rescue StandardError => e
+        not_sent << { id: patient.id, method: patient.preferred_contact_method, reason: e.message }
+        next
+      end
+    end
+    UserMailer.assessment_job_email(sent, not_sent, eligible).deliver_now
   end
 end

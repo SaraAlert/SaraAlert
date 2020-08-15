@@ -39,3 +39,6 @@ report_mode: <%= ENV["SARA_ALERT_REPORT_MODE"] || false %>
 
 # Optional Sentry URL for application monitoring and error reporting
 sentry_url: <%= ENV["SENTRY_URL"] || '' %>
+
+# Address to send job run results
+job_run_email: <%= ENV["JOB_RUN_EMAIL"] || '' %>
