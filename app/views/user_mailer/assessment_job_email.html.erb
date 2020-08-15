@@ -1,9 +1,11 @@
-<h1>Send Assessments Job Results (<%= DateTime.now.to_s %>)</h1>
-Eligible: <%= @eligible %>
+<h1>Send Assessments Job Results (<%= ActionMailer::Base.default_url_options[:host] %>)</h1>
+<h2><%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %></h2>
 <br />
-Sent: <%= @sent.count %>
+Total eligible for notifications at runtime: <%= @eligible %>
 <br />
-Not Sent: <%= @not_sent.count %>
+Sent during this job run: <%= @sent.count %>
+<br />
+Not sent during this job run (due to exception): <%= @not_sent.count %>
 <br />
 <br />
 <h2>Sent</h2>
