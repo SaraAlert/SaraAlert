@@ -10,7 +10,7 @@ class UserMailer < ApplicationMailer
     @sent = sent
     @not_sent = not_sent
     @eligible = eligible
-    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Assessment Job (#{ActionMailer::Base.default_url_options[:host]})")
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Send Assessments Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
   def download_email(user, export_type, lookups)
