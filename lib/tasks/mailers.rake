@@ -49,11 +49,11 @@ namespace :mailers do
 
   desc "Send Assessments and Assessment Reminders To Non-Reporting Individuals"
   task send_assessments: :environment do
-    SendAssessmentsJob.perform_now
+    SendAssessmentsJob.perform_later
   end
 
   desc "Sends data purge warning to users"
   task send_purge_warning: :environment do
-    SendPurgeWarningsJob.perform_now
+    SendPurgeWarningsJob.perform_later
   end
 end
