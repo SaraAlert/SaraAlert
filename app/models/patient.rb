@@ -450,15 +450,15 @@ class Patient < ApplicationRecord
     # Return if closed, UNLESS there are still group members who need to be reported on
     return unless monitoring ||
                   continuous_exposure ||
-                  dependents.where(monitoring: true).count.positive? ||
-                  dependents.where(continuous_exposure: true).count.positive?
+                  dependents.where(monitoring: true).exists? ||
+                  dependents.where(continuous_exposure: true).exists?
 
     # If force is set, the preferred contact time will be ignored
     unless force
       hour = Time.now.getlocal(address_timezone_offset).hour
       # These are the hours that we consider to be morning, afternoon and evening
-      morning = (8..11)
-      afternoon = (12..15)
+      morning = (8..12)
+      afternoon = (12..16)
       evening = (16..19)
       if preferred_contact_time == 'Morning'
         return unless morning.include? hour
@@ -474,7 +474,7 @@ class Patient < ApplicationRecord
         preferred_contact_method&.downcase == 'sms texted weblink' ||
         preferred_contact_method&.downcase == 'sms text-message') && responder.id == id && preferred_contact_time.blank?
       hour = Time.now.getlocal(address_timezone_offset).hour
-      return unless (12..16).include? hour
+      return unless (11..17).include? hour
     end
 
     if preferred_contact_method&.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
