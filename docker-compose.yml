@@ -53,7 +53,7 @@ services:
     networks:
       - dt-net-assessment
   redis-enrollment:
-    image: "redis:rc-alpine"
+    image: "redis:alpine"
     volumes:
       - 'redis-enrollment:/data'
     command: redis-server
@@ -61,7 +61,7 @@ services:
     networks:
       - dt-net-enrollment
   redis-bridge:
-    image: "redis:rc-alpine"
+    image: "redis:alpine"
     volumes:
       - 'redis-bridge:/data'
     command: redis-server
