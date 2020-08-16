@@ -114,9 +114,9 @@ class Enrollment extends React.Component {
       .then(response => {
         if (response.data && response.data.is_duplicate && response.data.duplicate_fields) {
           const dupFields = response.data.duplicate_fields;
-          let confirmText = `This ${
-            this.state.enrollmentState.isolation ? 'case' : 'monitoree'
-          } appears to be a duplicate of an existing record in the system. `;
+          const patientType = this.state.enrollmentState.isolation ? 'case' : 'monitoree';
+
+          let confirmText = `This ${patientType} appears to be a duplicate of an existing record in the system. `;
           confirmText += 'There is a record with matching values in the following field(s): ';
 
           let field;
@@ -129,7 +129,7 @@ class Enrollment extends React.Component {
               confirmText += `${field}. `;
             }
           }
-          confirmText += ' Are you sure you want to enroll this monitoree?';
+          confirmText += ` Are you sure you want to enroll this ${patientType}?`;
 
           // Duplicate, ask if want to continue with create
           this.handleConfirmDuplicate(data, groupMember, message, reenableSubmit, confirmText);
