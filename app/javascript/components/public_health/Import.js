@@ -127,23 +127,27 @@ class Import extends React.Component {
     });
   };
 
-  getDuplicateWarningText(dupFields) {
-    let warningText = `Warning: This ${this.props.workflow === 'exposure' ? 'monitoree' : 'case'} already appears to exist in the system! `;
-    warningText += 'There is a record with matching values in the following field(s): ';
+  getDuplicateWarningText(dupFieldData) {
+    let text = `Warning: This ${this.props.workflow === 'exposure' ? 'monitoree' : 'case'} already appears to exist in the system! `;
 
-    let field;
-    for (let i = 0; i < dupFields.length; i++) {
-      // parseInt() to satisfy eslint-security
-      field = dupFields[parseInt(i)];
-      if (dupFields.length > 1) {
-        warningText += i == dupFields.length - 1 ? `and ${field}. ` : `${field}, `;
-      } else {
-        warningText += `${field}. `;
+    for (const fieldData of dupFieldData) {
+      text += `There ${fieldData.count > 1 ? `are ${fieldData.count} records` : 'is 1 record'}  with matching values in the following field(s): `;
+      let field;
+      for (let i = 0; i < fieldData.fields.length; i++) {
+        // parseInt() to satisfy eslint-security
+        field = fieldData.fields[parseInt(i)];
+        console.log('field:', field);
+        if (fieldData.fields.length > 1) {
+          text += i == fieldData.fields.length - 1 ? `and ${field}. ` : `${field}, `;
+        } else {
+          text += `${field}. `;
+        }
       }
     }
+
     return (
       <Alert variant="danger">
-        <span>{warningText}</span>
+        <span>{text}</span>
       </Alert>
     );
   }
@@ -207,7 +211,7 @@ class Import extends React.Component {
                   bg="light"
                   border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
                   <React.Fragment>
-                    {patient.duplicate_data.is_duplicate && this.getDuplicateWarningText(patient.duplicate_data.duplicate_fields)}
+                    {patient.duplicate_data.is_duplicate && this.getDuplicateWarningText(patient.duplicate_data.duplicate_field_data)}
                     {(patient.jurisdiction_path || patient.assigned_user) && (
                       <Alert variant="info">
                         Note:

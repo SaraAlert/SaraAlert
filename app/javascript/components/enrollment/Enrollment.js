@@ -112,27 +112,32 @@ class Enrollment extends React.Component {
       data: data,
     })
       .then(response => {
-        if (response.data && response.data.is_duplicate && response.data.duplicate_fields) {
-          const dupFields = response.data.duplicate_fields;
+        if (response.data && response.data.is_duplicate) {
+          const dupFieldData = response.data.duplicate_field_data;
           const patientType = this.state.enrollmentState.isolation ? 'case' : 'monitoree';
 
-          let confirmText = `This ${patientType} appears to be a duplicate of an existing record in the system. `;
-          confirmText += 'There is a record with matching values in the following field(s): ';
+          let text = `This ${patientType} already appears to exist in the system! `;
 
-          let field;
-          for (let i = 0; i < response.data.duplicate_fields.length; i++) {
-            // parseInt() to satisfy eslint-security
-            field = response.data.duplicate_fields[parseInt(i)];
-            if (dupFields.length > 1) {
-              confirmText += i == dupFields.length - 1 ? `and ${field}. ` : `${field}, `;
-            } else {
-              confirmText += `${field}. `;
+          if (dupFieldData) {
+            // Format matching fields and associated counts for text display
+            for (const fieldData of dupFieldData) {
+              text += `There ${fieldData.count > 1 ? `are ${fieldData.count} records` : 'is 1 record'}  with matching values in the following field(s): `;
+              let field;
+              for (let i = 0; i < fieldData.fields.length; i++) {
+                // parseInt() to satisfy eslint-security
+                field = fieldData.fields[parseInt(i)];
+                if (fieldData.fields.length > 1) {
+                  text += i == fieldData.fields.length - 1 ? `and ${field}. ` : `${field}, `;
+                } else {
+                  text += `${field}. `;
+                }
+              }
             }
           }
-          confirmText += ` Are you sure you want to enroll this ${patientType}?`;
+          text += ` Are you sure you want to enroll this ${patientType}?`;
 
           // Duplicate, ask if want to continue with create
-          this.handleConfirmDuplicate(data, groupMember, message, reenableSubmit, confirmText);
+          this.handleConfirmDuplicate(data, groupMember, message, reenableSubmit, text);
         } else {
           // Success, inform user and redirect to home
           toast.success(message, {

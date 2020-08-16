@@ -519,7 +519,16 @@ class PatientTest < ActiveSupport::TestCase
                                             patient_dup[:user_defined_id_statelocal])
 
     assert duplicate_data[:is_duplicate]
-    assert_equal(duplicate_data[:duplicate_fields], ['First Name', 'Last Name', 'Sex', 'Date of Birth', 'State/Local ID'])
+    assert_equal(duplicate_data[:duplicate_field_data], [
+      { 
+        count: 1,
+        fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth']
+      },
+      { 
+        count: 1,
+        fields: ['State/Local ID']
+      },
+    ])
   end
 
   test 'duplicate_data finds duplicate that matches basic info fields' do
@@ -531,7 +540,10 @@ class PatientTest < ActiveSupport::TestCase
                                             'test state/local ID')
 
     assert duplicate_data[:is_duplicate]
-    assert_equal(duplicate_data[:duplicate_fields], ['First Name', 'Last Name', 'Sex', 'Date of Birth'])
+    assert_equal(duplicate_data[:duplicate_field_data], [{ 
+      count: 1,
+      fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth']
+    }])
   end
 
   test 'duplicate_data finds duplicate that matches state/local id' do
@@ -543,7 +555,10 @@ class PatientTest < ActiveSupport::TestCase
                                             patient_dup[:user_defined_id_statelocal])
 
     assert duplicate_data[:is_duplicate]
-    assert_equal(duplicate_data[:duplicate_fields], ['State/Local ID'])
+    assert_equal(duplicate_data[:duplicate_field_data], [{ 
+      count: 1,
+      fields: ['State/Local ID']
+    }])
   end
 
   test 'duplicate_data correctly finds no duplicates' do
@@ -554,7 +569,7 @@ class PatientTest < ActiveSupport::TestCase
                                             'test state/local ID')
 
     assert !duplicate_data[:is_duplicate]
-    assert_equal(duplicate_data[:duplicate_fields], [])
+    assert_equal(duplicate_data[:duplicate_field_data], [])
   end
 
   def verify_patient_status(patient, status)
