@@ -1,7 +1,7 @@
 default: &default
   adapter: <%= ENV['DISEASE_TRAKKER_DATABASE_ADAPTER'].presence || 'mysql2' %>
   encoding: <%= ENV['DISEASE_TRAKKER_DATABASE_ENCODING'].presence || 'utf8' %>
-  pool: <%= ENV['DISEASE_TRAKKER_DATABASE_POOL'].presence || ENV.fetch('RAILS_MAX_THREADS') { 8 } %>
+  pool: <%= ENV['DISEASE_TRAKKER_DATABASE_POOL'].presence || ENV.fetch('RAILS_MAX_THREADS') { 10 } %>
   reconnect: <%= ENV['DISEASE_TRAKKER_DATABASE_RECONNECT'].presence || 'true' %>
   username: <%= ENV['DISEASE_TRAKKER_DATABASE_USERNAME'].presence || 'disease_trakker' %>
   password: <%= ENV['DISEASE_TRAKKER_DATABASE_PASSWORD'] %>
