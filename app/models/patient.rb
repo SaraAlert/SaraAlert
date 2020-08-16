@@ -364,16 +364,16 @@ class Patient < ApplicationRecord
   # - matching state/local id
   def self.duplicate_data(first_name, last_name, sex, date_of_birth, user_defined_id_statelocal)
     dup_info = where('first_name = ?', first_name)
-                  .where('last_name = ?', last_name)
-                  .where('sex = ?', sex)
-                  .where('date_of_birth = ?', date_of_birth)
+               .where('last_name = ?', last_name)
+               .where('sex = ?', sex)
+               .where('date_of_birth = ?', date_of_birth)
 
     dup_statelocal_id = where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
 
     # Get fields that have matching values
     duplicate_field_data = []
-    duplicate_field_data << {count: dup_info.count, fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth']} if dup_info.present?
-    duplicate_field_data << {count: dup_statelocal_id.count, fields: ['State/Local ID']} if dup_statelocal_id.present?
+    duplicate_field_data << { count: dup_info.count, fields: ['First Name', 'Last Name', 'Sex', 'Date of Birth'] } if dup_info.present?
+    duplicate_field_data << { count: dup_statelocal_id.count, fields: ['State/Local ID'] } if dup_statelocal_id.present?
 
     { is_duplicate: duplicate_field_data.length.positive?, duplicate_field_data: duplicate_field_data }
   end
