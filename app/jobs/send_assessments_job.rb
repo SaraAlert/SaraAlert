@@ -2,7 +2,7 @@
 
 # SendAssessmentsJob: sends assessment reminder to patients
 class SendAssessmentsJob < ApplicationJob
-  queue_as :default
+  queue_as :mailers
 
   def perform(*_args)
     eligible = Patient.reminder_eligible.count
