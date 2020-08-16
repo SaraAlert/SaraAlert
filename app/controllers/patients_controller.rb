@@ -88,12 +88,13 @@ class PatientsController < ApplicationController
 
     # Check for potential duplicate
     unless params[:bypass_duplicate]
-      duplicate = current_user.viewable_patients.matches(params[:patient].permit(*allowed_params)[:first_name],
-                                                         params[:patient].permit(*allowed_params)[:last_name],
-                                                         params[:patient].permit(*allowed_params)[:sex],
-                                                         params[:patient].permit(*allowed_params)[:date_of_birth],
-                                                         params[:patient].permit(*allowed_params)[:user_defined_id_statelocal]).exists?
-      render(json: { duplicate: true }) && return if duplicate
+      duplicate_data = current_user.viewable_patients.duplicate_data(params[:patient].permit(*allowed_params)[:first_name],
+                                                                     params[:patient].permit(*allowed_params)[:last_name],
+                                                                     params[:patient].permit(*allowed_params)[:sex],
+                                                                     params[:patient].permit(*allowed_params)[:date_of_birth],
+                                                                     params[:patient].permit(*allowed_params)[:user_defined_id_statelocal])
+
+      render(json: duplicate_data) && return if duplicate_data[:is_duplicate]
     end
 
     # Add patient details that were collected from the form

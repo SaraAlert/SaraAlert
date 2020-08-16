@@ -358,15 +358,24 @@ class Patient < ApplicationRecord
     order((['CASE'] + (asc ? order_by : order_by_rev) + ['END']).join(' '))
   end
 
-  # Check for potential matches based on first and last name, sex, and date of birth
-  def self.matches(first_name, last_name, sex, date_of_birth, user_defined_id_statelocal)
-    where('first_name = ?', first_name)
-      .where('last_name = ?', last_name)
-      .where('sex = ?', sex)
-      .where('date_of_birth = ?', date_of_birth)
-      .or(
-        where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip)
-      )
+  # Check for potential duplicate records. Duplicate criteria is as follows:
+  # - matching first name, last name, sex, and DoB
+  # OR
+  # - matching state/local id
+  def self.duplicate_data(first_name, last_name, sex, date_of_birth, user_defined_id_statelocal)
+    is_dup_info = where('first_name = ?', first_name)
+                  .where('last_name = ?', last_name)
+                  .where('sex = ?', sex)
+                  .where('date_of_birth = ?', date_of_birth).present?
+
+    is_dup_statelocal_id = where('user_defined_id_statelocal = ?', user_defined_id_statelocal&.to_s&.strip).present?
+
+    # Get fields that have matching values
+    duplicate_fields = []
+    duplicate_fields.concat(['First Name', 'Last Name', 'Sex', 'Date of Birth']) if is_dup_info
+    duplicate_fields.concat(['State/Local ID']) if is_dup_statelocal_id
+
+    { is_duplicate: duplicate_fields.length.positive?, duplicate_fields: duplicate_fields }
   end
 
   # Get the patient who is responsible for responding on this phone number
