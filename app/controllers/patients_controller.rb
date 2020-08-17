@@ -21,7 +21,7 @@ class PatientsController < ApplicationController
     @jurisdiction_path = @patient.jurisdiction_path
 
     # Group members if this is HOH
-    @group_members = @patient.dependents.where(purged: false).where.not(id: @patient.id)
+    @group_members = @patient.dependents_exclude_self.where(purged: false)
 
     # All group members regardless if this is not HOH
     dependents = current_user.get_patient(@patient.responder_id)&.dependents
@@ -77,7 +77,7 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
-    @group_members = @patient.dependents.where.not(id: @patient.id)
+    @group_members = @patient.dependents_exclude_self
     @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
@@ -185,7 +185,7 @@ class PatientsController < ApplicationController
     propagated_fields = params[:propagated_fields]
     unless propagated_fields.empty?
       propagated_content = content.select { |field| propagated_fields.include?(field) && field != 'jurisdiction_id' }
-      patient.dependents.where.not(id: patient.id).update(propagated_content)
+      patient.dependents_exclude_self.update(propagated_content)
     end
 
     # If the assigned jurisdiction is updated, verify that the jurisdiction exists and that it is assignable by the current user, update history and propagate
@@ -198,7 +198,7 @@ class PatientsController < ApplicationController
         comment = "User changed jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
         history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
         if propagated_fields.include?('jurisdiction_id')
-          group_members = patient.dependents.where.not(id: patient.id)
+          group_members = patient.dependents_exclude_self
           group_members.update(jurisdiction_id: content[:jurisdiction_id])
           group_members.each do |group_member|
             propagated_history = history.dup
@@ -221,7 +221,7 @@ class PatientsController < ApplicationController
       comment = "User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"."
       history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
       if propagated_fields.include?('assigned_user')
-        group_members = patient.dependents.where.not(id: patient.id)
+        group_members = patient.dependents_exclude_self
         group_members.update(assigned_user: content[:assigned_user])
         group_members.each do |group_member|
           propagated_history = history.dup
