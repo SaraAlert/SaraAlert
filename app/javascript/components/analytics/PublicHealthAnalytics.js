@@ -66,7 +66,7 @@ class PublicHealthAnalytics extends React.Component {
         <React.Fragment>
           <Row className="mb-2 mx-0 px-0 pt-2">
             <Col md="24" className="mx-2 px-0">
-              <Button variant="primary" className="btn-square" onClick={this.exportAsPNG}>
+              <Button variant="primary" className="btn-square" onClick={this.exportAsPNG} data-testid="export_analysis_png">
                 <i className="fas fa-download"></i>&nbsp;&nbsp;EXPORT ANALYSIS AS PNG
               </Button>
             </Col>
