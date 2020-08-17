@@ -6,7 +6,6 @@ import ConfirmDialog from '../../components/util/ConfirmDialog.js'
 // TO-DO: stub out all props for this component and test open/closing
 
 test('ConfirmDialog properly opens and renders', () => {
-    ConfirmDialog('confirm');
+    ConfirmDialog();
     expect(screen.getByTestId('confirm_dialog')).toBeInTheDocument;
-    expect(screen.getByTestId('confirm_dialog_text')).toHaveTextContent('confirm');
 });

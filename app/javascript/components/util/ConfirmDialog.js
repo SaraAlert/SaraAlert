@@ -41,9 +41,7 @@ class Confirmation extends React.Component {
           <Modal.Title>{title || 'Confirm'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="mb-0" data-testid="confirm_dialog_text">
-            {confirmation}
-          </p>
+          <p className="mb-0">{confirmation}</p>
           {additionalNote && <p className="mb-0 mt-4">{additionalNote}</p>}
           {extraOption && <Form.Check type="checkbox" name="extraOption" label={extraOption} className="mt-4" onChange={this.handleChange} />}
         </Modal.Body>

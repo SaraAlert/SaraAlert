@@ -24,7 +24,7 @@ class EmailModal extends React.Component {
         aria-labelledby="contained-modal-title-vcenter"
         centered>
         <Modal.Header closeButton>
-          <Modal.Title data-testid="email_title">{this.props.title}</Modal.Title>
+          <Modal.Title>{this.props.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>Enter the message to send to {this.props.userCount} user(s):</p>
