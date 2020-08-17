@@ -17,6 +17,5 @@ const mockUser1 = {
 }
 
 export {
-  mockUser1,
-  mockAnalyticsData
+  mockUser1
 };
