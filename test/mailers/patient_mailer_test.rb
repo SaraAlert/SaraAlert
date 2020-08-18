@@ -27,10 +27,10 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   def teardown
-    ENV['TWILLIO_SENDING_NUMBER'] = nil
-    ENV['TWILLIO_API_ACCOUNT'] = nil
-    ENV['TWILLIO_API_KEY'] = nil
-    ENV['TWILLIO_STUDIO_FLOW'] = nil
+    ENV['TWILIO_SENDING_NUMBER'] = nil
+    ENV['TWILIO_API_ACCOUNT'] = nil
+    ENV['TWILIO_API_KEY'] = nil
+    ENV['TWILIO_STUDIO_FLOW'] = nil
   end
 
   test 'enrollment email contents' do
