@@ -6,7 +6,7 @@ class PurgeJob < ApplicationJob
 
   def perform(*_args)
     Patient.purge_eligible.find_each(batch_size: 5000) do |monitoree|
-      next if monitoree.dependents.where.not(id: monitoree.id).where(monitoring: true).count.positive?
+      next if monitoree.dependents_exclude_self.where(monitoring: true).count.positive?
 
       # Whitelist attributes to keep
       attributes = Patient.new.attributes.keys

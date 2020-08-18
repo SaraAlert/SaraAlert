@@ -402,6 +402,11 @@ class Patient < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
+  # Get this patient's dependents excluding itself
+  def dependents_exclude_self
+    dependents.where.not(id: id)
+  end
+
   # Single place for calculating the end of monitoring date for this subject.
   def end_of_monitoring
     return 'Continuous Exposure' if continuous_exposure
