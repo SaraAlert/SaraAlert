@@ -4,7 +4,7 @@ The React component tests in Sara Alert are unit tests that focus on rendering e
 
 ### Configuration
 
-Root directory for the tests is set in the `package.json` file here
+Root directory for the tests is set in the `package.json` file here:
 ```  
 "jest": {
     "roots": [
@@ -41,10 +41,35 @@ In addition, there is a folder for mocks (see section below) in `app/components/
 
 ### Mocks
 
-ADD ME
+Mock objects that are props for Sara Alert components are kept in `app/components/tests/mocks`.  These objects can then be imported into the test files and used as props when the tests render each component.  Each file represents a different Sara Alert object (i.e. patient, user, etc).
 
 ### Best Practices
 
-writting tests
-accessing elements
-logging - separate section?
+#### Writing tests
+ADD THESE
+describe
+test
+expect
+
+#### Accessing elements
+
+##### Variants
+add get by, etc
+
+##### Queries
+`ByLabelText` find by label or aria-label text content
+`ByPlaceholderText` find by input placeholder value
+`ByText` find by element text content
+`ByDisplayValue` find by form element current valuelue
+`ByAltText` find by img alt attribute
+`ByTitle` find by title attribute or svg title tag
+`ByRole` find by aria role
+`ByTestId` find by data-testid attribute
+
+ADD DATA TEST ID EXAMPLE/other examples
+
+`data-testid` should only be used an element cannot reliably be selected by any of the other queries. For further details on what query should be used, see this query priority list [here](https://testing-library.com/docs/guide-which-query).
+
+### Logging
+
+`screen.debug();` allows logging for the test files and will create a DOM-dump to assist with debugging.  This is essentially `console.log()` for jest.
