@@ -46,10 +46,26 @@ Mock objects that are props for Sara Alert components are kept in `app/component
 ### Best Practices
 
 #### Writing tests
-ADD THESE
-describe
-test
-expect
+
+Unit tests should each test the smallest amount of functionality as possible. For that reason, each test should be succinct.
+
+Each test should resemble the following format:
+```
+test('a descriptive test name', async () => {
+ // test code here
+})
+```
+
+Within each test, the most common testing call will probably be `expect()`
+```      
+test('TestComponent Properly Renders Header Text', async () => {
+  render(<TestComponent/>);
+  const headerText = "Test Header!"
+  expect(screen.getByText(headerText)).toBeInTheDocument();
+})
+```
+A list of functions that can be `expected()` (_e.g. toBeInTheDocument()_) can be found in the documentation [here](https://github.com/testing-library/jest-dom#custom-matchers).
+
 
 #### Accessing elements
 
