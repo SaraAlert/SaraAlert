@@ -174,10 +174,10 @@ The `SECRET_KEY_BASE` and `MYSQL_PASSWORD` variables should be changed at the ve
 
 **Twilio/Authy Environment Variables**
 The following environment variables need to be set on the enrollment instances, which are the instances that will be dispatching the SMS/Voice assessments via Twilio and performing Two-Factor Authentication using Authy. These environment variables can be set in a `config/local_env.yml` file, or via a method provided by the deployment environment.
-* `TWILLIO_API_ACCOUNT: <Account number for Twilio Account>`
-* `TWILLIO_API_KEY: <API key for Twilio Account>`
-* `TWILLIO_SENDING_NUMBER: <Phone number registered to Twilio Account for SMS/Voice>`
-* `TWILLIO_STUDIO_FLOW: <Twilio Studio Flow ID for handling SMS/Voice Assessments>`
+* `TWILIO_API_ACCOUNT: <Account number for Twilio Account>`
+* `TWILIO_API_KEY: <API key for Twilio Account>`
+* `TWILIO_SENDING_NUMBER: <Phone number registered to Twilio Account for SMS/Voice>`
+* `TWILIO_STUDIO_FLOW: <Twilio Studio Flow ID for handling SMS/Voice Assessments>`
 * `AUTHY_API_KEY: <API key for Authy project>`
 
 **Container Dependencies**

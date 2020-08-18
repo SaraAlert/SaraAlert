@@ -20,17 +20,17 @@ class PatientMailerTest < ActionMailer::TestCase
                     submission_token: patient_submission_token,
                     primary_telephone: '(555) 555-0111',
                     preferred_contact_method: 'Phone')
-    ENV['TWILLIO_SENDING_NUMBER'] = 'test'
-    ENV['TWILLIO_API_ACCOUNT'] = 'test'
-    ENV['TWILLIO_API_KEY'] = 'test'
-    ENV['TWILLIO_STUDIO_FLOW'] = 'test'
+    ENV['TWILIO_SENDING_NUMBER'] = 'test'
+    ENV['TWILIO_API_ACCOUNT'] = 'test'
+    ENV['TWILIO_API_KEY'] = 'test'
+    ENV['TWILIO_STUDIO_FLOW'] = 'test'
   end
 
   def teardown
-    ENV['TWILLIO_SENDING_NUMBER'] = nil
-    ENV['TWILLIO_API_ACCOUNT'] = nil
-    ENV['TWILLIO_API_KEY'] = nil
-    ENV['TWILLIO_STUDIO_FLOW'] = nil
+    ENV['TWILIO_SENDING_NUMBER'] = nil
+    ENV['TWILIO_API_ACCOUNT'] = nil
+    ENV['TWILIO_API_KEY'] = nil
+    ENV['TWILIO_STUDIO_FLOW'] = nil
   end
 
   test 'enrollment email contents' do
