@@ -127,6 +127,10 @@ class Import extends React.Component {
     });
   };
 
+  /**
+   * Gets rendered warning text for when duplicates are detected.
+   * @param {Object} dupFieldData - Data concerning the possible duplicates types and the specific fields in them.
+   */
   getDuplicateWarningText(dupFieldData) {
     let text = `Warning: This ${this.props.workflow === 'exposure' ? 'monitoree' : 'case'} already appears to exist in the system! `;
 
@@ -136,7 +140,6 @@ class Import extends React.Component {
       for (let i = 0; i < fieldData.fields.length; i++) {
         // parseInt() to satisfy eslint-security
         field = fieldData.fields[parseInt(i)];
-        console.log('field:', field);
         if (fieldData.fields.length > 1) {
           text += i == fieldData.fields.length - 1 ? `and ${field}. ` : `${field}, `;
         } else {
