@@ -2,6 +2,7 @@
 
 [![Actions Tests](https://github.com/SaraAlert/SaraAlert/workflows/Tests/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
 [![Actions Static Analysis](https://github.com/SaraAlert/SaraAlert/workflows/Static%20Analysis/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
+[![Actions Container Scan](https://github.com/SaraAlert/SaraAlert/workflows/Container%20Scan/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
 [![Release](https://img.shields.io/github/v/tag/SaraAlert/SaraAlert)](https://github.com/SaraAlert/SaraAlert/tags)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
 
