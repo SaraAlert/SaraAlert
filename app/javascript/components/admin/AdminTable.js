@@ -38,7 +38,6 @@ class AdminTable extends React.Component {
       entryOptions: [10, 15, 25, 50, 100],
       showEditUserModal: false,
       showAddUserModal: false,
-      showEmailModal: false,
       showEmailAllModal: false,
       actionsEnabled: false,
       cancelToken: axios.CancelToken.source(),
@@ -298,22 +297,11 @@ class AdminTable extends React.Component {
   };
 
   /**
-   * Called when the email action is selected.
-   * Updates the state appropriately to show the modal.
-   */
-  handleEmailClick = () => {
-    this.setState({
-      showEmailModal: true,
-    });
-  };
-
-  /**
    * Called when the email action modal cancel or X button is clicked.
    * Updates the state appropriately to hide the modal.
    */
   handleEmailModalClose = () => {
     this.setState({
-      showEmailModal: false,
       showEmailAllModal: false,
     });
   };
@@ -338,39 +326,6 @@ class AdminTable extends React.Component {
 
     const handleError = error => {
       toast.error('Failed to send emails.', {
-        autoClose: 2000,
-        position: toast.POSITION.TOP_CENTER,
-      });
-      console.log(error);
-    };
-
-    this.axiosAdminPostRequest(path, dataToSend, handleSuccess, handleError);
-  };
-
-  /**
-   * Closes email modal and send emails to selected users with POST request.
-   * @param {Object} data - Data submitted from the email modal.
-   */
-  handleEmailSave = data => {
-    this.handleEmailModalClose();
-
-    const path = 'email';
-    const ids = this.state.table.selectedRows.map(row => {
-      return this.state.table.rowData[parseInt(row)].id;
-    });
-    const dataToSend = {
-      ids: ids,
-      comment: data.comment,
-    };
-
-    const handleSuccess = () => {
-      toast.success('Successfully sent email(s).', {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    };
-
-    const handleError = error => {
-      toast.error('Failed to send email(s).', {
         autoClose: 2000,
         position: toast.POSITION.TOP_CENTER,
       });
@@ -606,7 +561,7 @@ class AdminTable extends React.Component {
             {this.props.is_usa_admin && (
               <Button className="mx-1" size="md" variant="secondary" onClick={this.handleEmailAllClick}>
                 <i className="fas fa-envelope"></i>
-                &nbsp;Send Email to All
+                &nbsp;Email All Unlocked Users
               </Button>
             )}
             {this.state.csvData.length > 0 ? <CSVLink data={this.state.csvData} filename={'sara-accounts.csv'} ref={this.csvLink} /> : undefined}
@@ -642,12 +597,6 @@ class AdminTable extends React.Component {
                   <i className="fas fa-key"></i>
                   <span className="ml-2">Reset 2FA</span>
                 </Dropdown.Item>
-                {this.props.is_usa_admin && (
-                  <Dropdown.Item className="px-3" onClick={this.handleEmailClick}>
-                    <i className="fas fa-envelope"></i>
-                    <span className="ml-2">Send Email</span>
-                  </Dropdown.Item>
-                )}
               </DropdownButton>
             </InputGroup>
           </div>
@@ -681,13 +630,13 @@ class AdminTable extends React.Component {
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
           />
         )}
-        {(this.state.showEmailModal || this.state.showEmailAllModal) && (
+        {this.state.showEmailAllModal && (
           <EmailModal
-            show={this.state.showEmailModal || this.state.showEmailAllModal}
-            title={this.state.showEmailModal ? 'Send Email to User(s)' : 'Send Email to All Users'}
+            show={this.state.showEmailAllModal}
+            title={'Send Email to All Unlocked Users'}
             onClose={this.handleEmailModalClose}
-            onSave={this.state.showEmailModal ? this.handleEmailSave : this.handleEmailAllSave}
-            userCount={this.state.showEmailModal ? this.state.table.selectedRows.length : this.state.table.totalRows}
+            onSave={this.handleEmailAllSave}
+            prompt={'Enter the message to send to all unlocked users:'}
           />
         )}
         <ToastContainer />

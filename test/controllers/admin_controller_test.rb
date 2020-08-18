@@ -420,45 +420,6 @@ class AdminControllerTest < ActionController::TestCase
     sign_out user
   end
 
-  test 'email' do
-    # Test redirect if not admin user
-    user = create(:public_health_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
-    sign_in user
-    post :email
-    assert_redirected_to @controller.root_url
-    sign_out user
-
-    user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
-    sign_in user
-
-    # Test for ids param validation
-    post :email, params: { ids: 'test', comment: 'Hello!' }, as: :json
-    assert_response :bad_request
-
-    # Test for comment param validation
-    post :email, params: { ids: 'test', comment: ' ' }, as: :json
-    assert_response :bad_request
-
-    # Test email is sent for all users with passed in ids
-    user_ids = [1, 2, 3]
-    assert_no_difference 'User.count' do
-      post :email, params: { ids: user_ids, comment: 'Hello!' }, as: :json
-    end
-    assert_response :success
-
-    delivered_emails = ActionMailer::Base.deliveries.sort_by(&:to)
-    users = User.where(id: user_ids).sort_by(&:email)
-    assert_equal(delivered_emails.length, users.length)
-
-    users.each_with_index do |u, index|
-      email = delivered_emails[index]
-      assert_equal(email.to, [u.email])
-      assert_equal(email.subject, 'Message from the Sara Alert system')
-    end
-
-    sign_out user
-  end
-
   test 'email_all' do
     # Test redirect if not admin user
     user = create(:public_health_user, jurisdiction: Jurisdiction.find_by(path: 'USA'))
@@ -474,14 +435,17 @@ class AdminControllerTest < ActionController::TestCase
     post :email_all, params: { comment: ' ' }, as: :json
     assert_response :bad_request
 
-    # Test email is sent for all users
+    # Lock the first user
+    User.first.update!(locked_at: Time.now)
+
+    # Test email is sent for all unlocked users
     assert_no_difference 'User.count' do
       post :email_all, params: { comment: 'Hello!' }, as: :json
     end
     assert_response :success
 
     delivered_emails = ActionMailer::Base.deliveries.sort_by(&:to)
-    users = User.all.sort_by(&:email)
+    users = User.where(locked_at: nil).sort_by(&:email)
 
     assert_equal(delivered_emails.length, users.length)
     users.each_with_index do |u, index|

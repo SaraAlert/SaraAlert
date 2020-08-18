@@ -21,7 +21,7 @@ class EmailModal extends React.Component {
           <Modal.Title>{this.props.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Enter the message to send to {this.props.userCount} user(s):</p>
+          <p>{this.props.prompt}</p>
           <Form.Group>
             <Form.Control as="textarea" rows="10" id="comment" onChange={this.handleCommentChange} />
           </Form.Group>
@@ -44,7 +44,7 @@ EmailModal.propTypes = {
   title: PropTypes.string,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
-  userCount: PropTypes.number,
+  prompt: PropTypes.string,
 };
 
 export default EmailModal;
