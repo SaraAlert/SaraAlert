@@ -6,7 +6,7 @@
 # Anchore container image scanning in general, see
 # https://docs.anchore.com.
 
-name: Anchore Container Scan
+name: Container Scan
 
 on: push
 
