@@ -6,12 +6,12 @@ require File.expand_path(File.dirname(__FILE__) + "/environment")
 set :output, "/tmp/cronlog.log"
 
 every 24.hours do
-  runner "CloseSubjectsJob.perform_now"
+  runner "CloseSubjectsJob.perform_later"
 end
 
 weekly_purge_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_date'])
 every weekly_purge_date.strftime("%A"), at: weekly_purge_date.strftime("%I:%M %p") do
-  runner "PurgeJob.perform_now"
+  runner "PurgeJob.perform_later"
 end
 
 weekly_purge_warning_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_warning_date'])
@@ -20,9 +20,9 @@ every weekly_purge_warning_date.strftime("%A"), at: weekly_purge_warning_date.st
 end
 
 every 24.hours do
-  runner "CacheAnalyticsJob.perform_now"
+  runner "CacheAnalyticsJob.perform_later"
 end
 
 every 1.hours do
-  runner "SendAssessmentsJob.perform_now"
+  runner "SendAssessmentsJob.perform_later"
 end
