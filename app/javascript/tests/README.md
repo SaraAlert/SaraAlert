@@ -14,6 +14,7 @@ Root directory for the tests is set in the `package.json` file here:
 All of the test files located in the component test folder set here will run with `yarn run test`.
 
 ### Running
+
 When running the tests for the first time, run `yarn install` to install the required libraries.
 
 To run all the react component tests:
@@ -43,12 +44,11 @@ In addition, there is a folder for mocks (see section below) in `app/javascript/
 
 Mock objects that are props for Sara Alert components are kept in `app/javascript/tests/mocks`.  These objects can then be imported into the test files and used as props when the tests render each component.  Each file represents a different Sara Alert object (i.e. patient, user, etc).
 
-### Best Practices
-
-#### Writing tests
+### Writing Tests & Best Practices
 
 Unit tests should each test the smallest amount of functionality as possible. For that reason, each test should be succinct.
 
+#### Rendering
 EnzymeJS uses three main ways of rendering components: Shallow, Full, and Static Rendering.
 
 [Shallow Rendering](https://enzymejs.github.io/enzyme/docs/api/shallow.html) is useful to constrain testing of a component as a unit, and to ensure that tests aren't indirectly asserting on behavior of child components.
@@ -57,26 +57,35 @@ EnzymeJS uses three main ways of rendering components: Shallow, Full, and Static
 
 [Static Rendering](https://enzymejs.github.io/enzyme/docs/api/render.html) is used for to generate HTML from tge React tree, and analyze the resulting HTML structure.
 
-##### Describe blocks
+#### It Blocks
+
+Each test should resemble the following format:
+```
+it('a descriptive test name', async () => {
+ // test code here
+});
+```
+
+#### Describe Blocks
 
 Because unit tests should test the smallest amount of funtionality as possible, certain components might require multiple tests.  In this case, these tests should be logically grouped using a `describe` block:
 ```
 describe('ComponentX', () => {
-  test('properly renders', () => {
+  it('properly renders', () => {
     // test code here
   });
 
-  test('contains the header text', () => {
+  it('contains the header text', () => {
     // test code here
   });
 
-  test('contains the correct data', () => {
+  it('contains the correct data', () => {
     // test code here
   });
 });
 ```
 
-##### Expect method
+#### Expect Method
 
 Within each test, the most common testing call will probably be `expect()`:
 ```
