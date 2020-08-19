@@ -1,11 +1,11 @@
 # React Component Tests
 
-The React component tests in Sara Alert are unit tests that focus on rendering each component tree in the application.  The tests are written using Jest, a JavaScript test runner that lets you access the DOM via jsdom, and the React Testing Library, a set of helpers that let you test React components without relying on their implementation details.
+The React component tests in Sara Alert are unit tests that focus on rendering each component tree in the application.  The tests are written using Jest, a JavaScript test runner that lets you access the DOM via jsdom, and Enzyme, a utility for React that makes it easier to test React Components' output by manipulating, traversing, and in some ways simulating the runtime given the output.
 
 ### Configuration
 
 Root directory for the tests is set in the `package.json` file here:
-```  
+```
 "jest": {
     "roots": [
       "<rootDir>/app/javascript/tests"
@@ -35,41 +35,53 @@ yarn test app/javascript/tests/layout/Breadcrumb.test.js
 
 ### Organization
 
-React component tests in Sara Alert are located in `app/components/tests` and are organized using the same file structure as their component counter parts.  Each react component has its own testing file, called `<react_component_name>.test.js`.
+React component tests in Sara Alert are located in `app/javascript/tests` and are organized using the same file structure as their component counter parts.  Each react component has its own testing file, called `<react_component_name>.test.js`.
 
-In addition, there is a folder for mocks (see section below) in `app/components/tests`, which is the only folder that does not contain any react component tests.
+In addition, there is a folder for mocks (see section below) in `app/javascript/tests`, which is the only folder that does not contain any react component tests.
 
 ### Mocks
 
-Mock objects that are props for Sara Alert components are kept in `app/components/tests/mocks`.  These objects can then be imported into the test files and used as props when the tests render each component.  Each file represents a different Sara Alert object (i.e. patient, user, etc).
+Mock objects that are props for Sara Alert components are kept in `app/javascript/tests/mocks`.  These objects can then be imported into the test files and used as props when the tests render each component.  Each file represents a different Sara Alert object (i.e. patient, user, etc).
 
 ### Best Practices
 
 #### Writing tests
-ADD THESE
-describe
-test
-expect
 
-#### Accessing elements
+Unit tests should each test the smallest amount of functionality as possible. For that reason, each test should be succinct.
 
-##### Variants
-add get by, etc
+EnzymeJS uses three main ways of rendering components: Shallow, Full, and Static Rendering.
 
-##### Queries
-`ByLabelText` find by label or aria-label text content
-`ByPlaceholderText` find by input placeholder value
-`ByText` find by element text content
-`ByDisplayValue` find by form element current valuelue
-`ByAltText` find by img alt attribute
-`ByTitle` find by title attribute or svg title tag
-`ByRole` find by aria role
-`ByTestId` find by data-testid attribute
+[Shallow Rendering](https://enzymejs.github.io/enzyme/docs/api/shallow.html) is useful to constrain testing of a component as a unit, and to ensure that tests aren't indirectly asserting on behavior of child components.
 
-ADD DATA TEST ID EXAMPLE/other examples
+[Full Rendering](https://enzymejs.github.io/enzyme/docs/api/mount.html) is ideal for use cases where the components may interact with DOM APIs or need to test components that are wrapped in higher order components.
 
-`data-testid` should only be used an element cannot reliably be selected by any of the other queries. For further details on what query should be used, see this query priority list [here](https://testing-library.com/docs/guide-which-query).
+[Static Rendering](https://enzymejs.github.io/enzyme/docs/api/render.html) is used for to generate HTML from tge React tree, and analyze the resulting HTML structure.
 
-### Logging
+##### Describe blocks
 
-`screen.debug();` allows logging for the test files and will create a DOM-dump to assist with debugging.  This is essentially `console.log()` for jest.
+Because unit tests should test the smallest amount of funtionality as possible, certain components might require multiple tests.  In this case, these tests should be logically grouped using a `describe` block:
+```
+describe('ComponentX', () => {
+  test('properly renders', () => {
+    // test code here
+  });
+
+  test('contains the header text', () => {
+    // test code here
+  });
+
+  test('contains the correct data', () => {
+    // test code here
+  });
+});
+```
+
+##### Expect method
+
+Within each test, the most common testing call will probably be `expect()`:
+```
+  it('properly renders', () => {
+    expect(wrapped).toMatchSnapshot();
+  });
+```
+A list of functions that can be used with `expect()` (_e.g. toMatchSnapshot()_) can be found in the documentation [here](https://jestjs.io/docs/en/expect).

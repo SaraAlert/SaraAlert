@@ -1,7 +1,6 @@
 import React from 'react'
-import { render, fireEvent, waitFor, screen } from '@testing-library/react'
-import '@testing-library/jest-dom/extend-expect'
 import MonitoreeFlow from '../../../components/analytics/widgets/MonitoreeFlow.js'
+import { shallow } from 'enzyme';
 import mockMonitoreeSnapshot from '../../mocks/mockSnapshot'
 
 const mocked_stats = {
@@ -26,18 +25,11 @@ const allExpectedDomValues = {
   'last_24_hours_transferred_out': 25,
 }
 
-describe('MonitoreeFlow properly renders', () => {
-  test('table axis labels', () => {
-    render(<MonitoreeFlow stats={mocked_stats}/>);
-    allExpectedDomStrings.forEach(domString => {
-      expect(screen.getByText(domString)).toBeInTheDocument();
-    });
-  });
+let wrapped = shallow(<MonitoreeFlow stats={mocked_stats}/>);
 
-  test('table cell content', () => {
-    render(<MonitoreeFlow stats={mocked_stats}/>);
-    for (const [key, value] of Object.entries(allExpectedDomValues)) {
-      expect(screen.getByTestId(key)).toHaveTextContent(value);
-    }
+
+describe('MonitoreeFlow', () => {
+  it('properly renders', () => {
+    expect(wrapped).toMatchSnapshot();
   });
 });
