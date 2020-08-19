@@ -131,7 +131,9 @@
                   <% symptom_value = "No"%>
                 <%end%>
                 <td>
-                  <% if passes_threshold -%>
+                  <% if passes_threshold.nil? -%>
+                    &nbsp;
+                  <% elsif passes_threshold -%>
                     <span class="concern"><%=symptom_value%></span>
                   <% else -%>
                     <%=symptom_value%>
@@ -142,13 +144,13 @@
                 <td>
                   <!-- Reported symptomatic via nonspecific means such as voice or sms -->
                   <% if passes_threshold.nil? -%>
-                    <span class="concern">-</span>
-                  <!-- Reported symptomatic via specific means such as weblink or email -->
-                  <% elsif passes_threshold -%>
-                    <span class="concern"><%=symptom_value%></span>
+                    &nbsp;
                   <!-- Reported asymptomatic via nonspecific means such as voice or sms -->
                   <% elsif symptom_value == 100_000 || symptom_value == 100_000.0 || symptom_value == 0 || symptom_value == 0.0 -%>
                     Unknown
+                  <!-- Reported symptomatic via specific means such as weblink or email -->
+                  <% elsif passes_threshold -%>
+                    <span class="concern"><%=symptom_value%></span>
                   <!-- Reported asymptomatic via specific means such as weblink or email -->
                   <% else -%>
                     <%=symptom_value%>
