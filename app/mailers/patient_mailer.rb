@@ -30,7 +30,7 @@ class PatientMailer < ApplicationMailer
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
-    from = ENV['TWILLIO_SENDING_NUMBER']
+    from = ENV['TWILIO_MESSAGING_SERVICE_SID']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     client.messages.create(
       from: from,
@@ -58,7 +58,7 @@ class PatientMailer < ApplicationMailer
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
-      from = ENV['TWILLIO_SENDING_NUMBER']
+      from = ENV['TWILIO_MESSAGING_SERVICE_SID']
       client = Twilio::REST::Client.new(account_sid, auth_token)
       client.messages.create(
         from: from,
@@ -81,7 +81,7 @@ class PatientMailer < ApplicationMailer
     contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
     account_sid = ENV['TWILIO_API_ACCOUNT']
     auth_token = ENV['TWILIO_API_KEY']
-    from = ENV['TWILIO_SENDING_NUMBER']
+    from = ENV['TWILIO_MESSAGING_SERVICE_SID']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     client.messages.create(
       from: from,
@@ -118,7 +118,7 @@ class PatientMailer < ApplicationMailer
     contents += I18n.t('assessments.sms.prompt.daily4', locale: lang)
     account_sid = ENV['TWILIO_API_ACCOUNT']
     auth_token = ENV['TWILIO_API_KEY']
-    from = ENV['TWILIO_SENDING_NUMBER']
+    from = ENV['TWILIO_MESSAGING_SERVICE_SID']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
