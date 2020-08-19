@@ -35,13 +35,13 @@ yarn test app/javascript/tests/layout/Breadcrumb.test.js
 
 ### Organization
 
-React component tests in Sara Alert are located in `app/components/tests` and are organized using the same file structure as their component counter parts.  Each react component has its own testing file, called `<react_component_name>.test.js`.
+React component tests in Sara Alert are located in `app/javascript/tests` and are organized using the same file structure as their component counter parts.  Each react component has its own testing file, called `<react_component_name>.test.js`.
 
-In addition, there is a folder for mocks (see section below) in `app/components/tests`, which is the only folder that does not contain any react component tests.
+In addition, there is a folder for mocks (see section below) in `app/javascript/tests`, which is the only folder that does not contain any react component tests.
 
 ### Mocks
 
-Mock objects that are props for Sara Alert components are kept in `app/components/tests/mocks`.  These objects can then be imported into the test files and used as props when the tests render each component.  Each file represents a different Sara Alert object (i.e. patient, user, etc).
+Mock objects that are props for Sara Alert components are kept in `app/javascript/tests/mocks`.  These objects can then be imported into the test files and used as props when the tests render each component.  Each file represents a different Sara Alert object (i.e. patient, user, etc).
 
 ### Best Practices
 
