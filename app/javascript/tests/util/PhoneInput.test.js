@@ -3,6 +3,6 @@ import PhoneInput from '../../components/util/PhoneInput.js'
 
 // TO-DO: stub out all props for this component and test different phone number cases
 
-test('PhoneInput properly opens and renders', () => {
+it('PhoneInput properly opens and renders', () => {
 
 });

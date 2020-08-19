@@ -3,6 +3,6 @@ import EmailModal from '../../components/admin/EmailModal.js'
 
 // TO-DO: stub out all props for this component and test open and closing
 
-test('EmailModal properly renders', () => {
+it('EmailModal properly renders', () => {
 
 });

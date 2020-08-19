@@ -2,6 +2,6 @@ import React from 'react'
 import DateInput from '../../components/util/DateInput.js'
 
 
-test('DateInput properly opens and renders', () => {
+it('DateInput properly opens and renders', () => {
 
 });

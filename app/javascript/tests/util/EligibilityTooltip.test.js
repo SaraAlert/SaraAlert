@@ -19,6 +19,6 @@ const eligibilityMock = {
     sent: false
 }
 
-test('EligibilityTooltip properly renders', () => {
+it('EligibilityTooltip properly renders', () => {
 
 });

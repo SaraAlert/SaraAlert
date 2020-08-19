@@ -13,9 +13,9 @@ const allExpectedDomStrings = [
 
 describe('PublicHealthAnalytics properly renders', () => {
 
-  test('PublicHealthAnalytics renders', () => {
+  it('PublicHealthAnalytics renders', () => {
   });
 
-  test('export button', () => {
+  it('export button', () => {
   });
 });
