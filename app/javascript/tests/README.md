@@ -14,7 +14,7 @@ Root directory for the tests is set in the `package.json` file here:
 All of the test files located in the component test folder set here will run with `yarn run test`.
 
 ### Running
-When running the tests for the first time, run `yarn install` to install the React Testing Library.
+When running the tests for the first time, run `yarn install` to install the required libraries.
 
 To run all the react component tests:
 ```
