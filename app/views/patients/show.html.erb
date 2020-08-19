@@ -148,7 +148,7 @@
                     <span class="concern"><%=symptom_value%></span>
                   <!-- Reported asymptomatic via nonspecific means such as voice or sms -->
                   <% elsif symptom_value == 100_000 || symptom_value == 100_000.0 || symptom_value == 0 || symptom_value == 0.0 -%>
-                    Asymptomatic
+                    Unknown
                   <!-- Reported asymptomatic via specific means such as weblink or email -->
                   <% else -%>
                     <%=symptom_value%>
