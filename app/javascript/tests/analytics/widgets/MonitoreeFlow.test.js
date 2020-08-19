@@ -1,6 +1,6 @@
 import React from 'react'
-import MonitoreeFlow from '../../../components/analytics/widgets/MonitoreeFlow.js'
 import { shallow } from 'enzyme';
+import MonitoreeFlow from '../../../components/analytics/widgets/MonitoreeFlow.js'
 import mockMonitoreeSnapshot from '../../mocks/mockSnapshot'
 
 const mocked_stats = {
