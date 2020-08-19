@@ -53,23 +53,38 @@ Each test should resemble the following format:
 ```
 test('a descriptive test name', async () => {
  // test code here
-})
+});
 ```
 
-Within each test, the most common testing call will probably be `expect()`
+Within each test, the most common testing call will probably be `expect()`:
 ```      
 test('TestComponent Properly Renders Header Text', async () => {
   render(<TestComponent/>);
   const headerText = "Test Header!"
   expect(screen.getByText(headerText)).toBeInTheDocument();
-})
+});
 ```
 A list of functions that can be `expected()` (_e.g. toBeInTheDocument()_) can be found in the documentation [here](https://github.com/testing-library/jest-dom#custom-matchers).
 
+Because unit tests should test the smallest amount of funtionality as possible, certain functions might require multiple tests.  In this case, these tests should be logically grouped using a `describe` block:
+```
+describe('ComponentX properly renders', () => {
+  test('section headers', () => {
+    // test code here
+  });
+
+  test('submit button', () => {
+    // test code here
+  });
+});
+```
 
 #### Accessing elements
 
+add something here 
+
 ##### Variants
+
 add get by, etc
 
 ##### Queries
