@@ -43,9 +43,7 @@ Rails.application.routes.draw do
   post 'admin/edit_user', to: 'admin#edit_user'
   post 'admin/reset_password', to: 'admin#reset_password'
   post 'admin/reset_2fa', to: 'admin#reset_2fa'
-  post 'admin/email', to: 'admin#email'
   post 'admin/email_all', to: 'admin#email_all'
-
 
   resources :histories, only: [:create]
 

@@ -187,7 +187,7 @@ class AdminController < ApplicationController
 
     # Verify user current jurisdiction access
     cur_jur = current_user.jurisdiction
-    redirect_to(root_url) && return unless (cur_jur.descendant_ids + [cur_jur.id]).include? user.jurisdiction.id
+    redirect_to(root_url) && return unless cur_jur.subtree_ids.include? user.jurisdiction.id
 
     # Update email
     user.email = email
@@ -259,22 +259,6 @@ class AdminController < ApplicationController
     end
   end
 
-  # Send email to the users with ids in params.
-  def email
-    redirect_to(root_url) && return unless current_user.can_send_admin_emails?
-
-    permitted_params = params[:admin].permit(:comment, { ids: [] })
-    ids = permitted_params[:ids]
-    return head :bad_request unless ids.is_a?(Array)
-
-    comment = permitted_params[:comment]
-    return head :bad_request if comment.nil? || comment.blank?
-
-    User.where(id: ids).each do |user|
-      UserMailer.admin_message_email(user, comment).deliver_later
-    end
-  end
-
   # Sends email to all users in this admin's jurisdiction.
   def email_all
     redirect_to(root_url) && return unless current_user.can_send_admin_emails?
@@ -283,8 +267,8 @@ class AdminController < ApplicationController
     comment = permitted_params[:comment]
     return head :bad_request if comment.nil? || comment.blank?
 
-    # Get all users within the current user's jurisdiction
-    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
+    # Get all users within the current user's jurisdiction that are not locked
+    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).where(locked_at: nil)
 
     users.each do |user|
       UserMailer.admin_message_email(user, comment).deliver_later
