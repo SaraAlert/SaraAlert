@@ -321,7 +321,7 @@ class PatientsController < ApplicationController
       end
     end
 
-    # Do we need to propagate to household where continuous_monitoring is true?
+    # Do we need to propagate to household where continuous_exposure is true?
     if params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only]
       # Scope lookup
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
@@ -350,6 +350,7 @@ class PatientsController < ApplicationController
                          status_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
                        end
     if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
+      patient.continuous_exposure = false
       patient.closed_at = DateTime.now
     end
     if params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]
