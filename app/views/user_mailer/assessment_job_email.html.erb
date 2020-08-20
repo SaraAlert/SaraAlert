@@ -9,7 +9,7 @@ Not sent during this job run (due to exceptions): <b><%= @not_sent.count %></b>
 <br />
 <h2>Sent</h2>
 <br />
-ID, method, reason
+ID, method
 <br />
 <% @sent.each do |s| %>
   <%= s[:id] %>, <%= s[:method] %><br />
