@@ -3,38 +3,22 @@
 <br />
 Total eligible for notifications at runtime: <%= @eligible %>
 <br />
-Sent during this job run: <%= @sent.count %>
+Sent during this job run: <b><%= @sent.count %></b>
 <br />
-Not sent during this job run (due to exception): <%= @not_sent.count %>
-<br />
+Not sent during this job run (due to exceptions): <b><%= @not_sent.count %></b>
 <br />
 <h2>Sent</h2>
-<table style="border: 1px solid black; border-collapse: collapse;">
-  <tr>
-    <th style="border: 1px solid black; border-collapse: collapse;">ID</th>
-    <th style="border: 1px solid black; border-collapse: collapse;">Method</th>
-  </tr>
-  <% @sent.each do |s| %>
-    <tr>
-      <td style="border: 1px solid black; border-collapse: collapse;"><%= s[:id] %></td>
-      <td style="border: 1px solid black; border-collapse: collapse;"><%= s[:method] %></td>
-    <tr>
-  <% end %>
-</table>
 <br />
+ID, method, reason
+<br />
+<% @sent.each do |s| %>
+  <%= s[:id] %>, <%= s[:method] %><br />
+<% end %>
 <br />
 <h2>Not Sent</h2>
-<table style="border: 1px solid black; border-collapse: collapse;">
-  <tr>
-    <th style="border: 1px solid black; border-collapse: collapse;">ID</th>
-    <th style="border: 1px solid black; border-collapse: collapse;">Method</th>
-    <th style="border: 1px solid black; border-collapse: collapse;">Reason</th>
-  </tr>
-  <% @not_sent.each do |s| %>
-    <tr>
-      <td style="border: 1px solid black; border-collapse: collapse;"><%= s[:id] %></td>
-      <td style="border: 1px solid black; border-collapse: collapse;"><%= s[:method] %></td>
-      <td style="border: 1px solid black; border-collapse: collapse;"><%= s[:reason] %></td>
-    <tr>
-  <% end %>
-</table>
+<br />
+ID, method, reason
+<br />
+<% @not_sent.each do |ns| %>
+  <%= ns[:id] %>, <%= ns[:method] %>, <%= ns[:reason] %><br />
+<% end %>
