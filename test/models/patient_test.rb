@@ -12,7 +12,7 @@ class PatientTest < ActiveSupport::TestCase
   #   - notifications not paused AND
   #   - valid preferred contact method AND
   #   - HoH or not in a household AND
-  #   - we haven't sent them in an assessment within the past 12 hours AND
+  #   - we haven't sent them an assessment within the past 12 hours AND
   #   - they haven't completed an assessment today OR they haven't completed an assessment at all
   #   - (TODO) actively monitored OR has dependents that are being actively monitored
   #

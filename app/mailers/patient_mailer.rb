@@ -8,6 +8,7 @@ class PatientMailer < ApplicationMailer
     return if patient&.email.blank?
 
     # Gather patients and jurisdictions
+    # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     @patients = patient.dependents.where(monitoring: true).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
@@ -73,6 +74,7 @@ class PatientMailer < ApplicationMailer
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     num = patient.primary_telephone
+    # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.dependents.where(monitoring: true).uniq.each do |p|
       lang = p.select_language
       patient_name = "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
@@ -130,6 +132,7 @@ class PatientMailer < ApplicationMailer
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
+    # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.dependents.where(monitoring: true).uniq.collect do |p|
       "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
     end
@@ -175,6 +178,7 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
+    # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.dependents.where(monitoring: true).uniq.collect do |p|
       "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
     end
@@ -221,6 +225,7 @@ class PatientMailer < ApplicationMailer
 
     @lang = patient.select_language
     # Gather patients and jurisdictions
+    # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     @patients = patient.dependents.where(monitoring: true).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
