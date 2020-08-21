@@ -14,9 +14,4 @@ describe('PublicHealthAnalytics properly renders', () => {
   it('export button', () => {
     expect(wrapped.find('.export-png').exists()).toBeTruthy();
   });
-
-  // You could add more to this, but these cover most bases. If all of these are there, we can say it's rendered
-  // Could add each analytics component included in this one to be sure they are there
 });
-
-// should add a test for the text shown on error as well
