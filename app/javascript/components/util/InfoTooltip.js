@@ -120,7 +120,7 @@ const TOOLTIP_TEXT = {
     <div>
       Calculated by the system based on Last Date of Exposure
       <div>
-        <i>Only relevent for Exposure Workflow</i>
+        <i>Only relevant for Exposure Workflow</i>
       </div>
     </div>
   ),

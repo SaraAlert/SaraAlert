@@ -18,7 +18,7 @@ Please list important files (meaning substantial or integral to the PR) along wi
 `example_file.js`
 - Example change (ex: refactored import function)
 
-# Testing*
+# Testing
 This fix was tested on the following browsers (submitter must check all those that apply):
 * [ ] Chrome
 * [ ] Firefox
