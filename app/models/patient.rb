@@ -89,16 +89,16 @@ class Patient < ApplicationRecord
   #   - they haven't completed an assessment today OR they haven't completed an assessment at all
   #   - (TODO in this scope rather than send_assessment) actively monitored OR has dependents that are being actively monitored
   #
-  # NOTE: This method is currently being tested to be swapped in as the new reminder_eligible scope. 
+  # NOTE: This method is currently being tested to be swapped in as the new reminder_eligible scope.
   #       Once swapped in, the send_assessment method can be cut down to remove redundant logic.
   scope :optimal_reminder_eligible, lambda {
     where(purged: false)
-    .where(pause_notifications: false)
-    .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
-    .where('patients.id = patients.responder_id')
-    .where('patients.last_assessment_reminder_sent <= ? OR patients.last_assessment_reminder_sent IS NULL', 12.hours.ago)
-    .where('patients.latest_assessment_at < ? OR patients.latest_assessment_at IS NULL', Time.now.getlocal('-04:00').beginning_of_day)  
-    .distinct
+      .where(pause_notifications: false)
+      .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+      .where('patients.id = patients.responder_id')
+      .where('last_assessment_reminder_sent <= ? OR last_assessment_reminder_sent IS NULL', 12.hours.ago)
+      .where('latest_assessment_at < ? OR latest_assessment_at IS NULL', Time.now.getlocal('-04:00').beginning_of_day)
+      .distinct
   }
 
   # All individuals currently being monitored
