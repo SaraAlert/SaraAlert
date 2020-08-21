@@ -55,7 +55,7 @@ EnzymeJS uses three main ways of rendering components: Shallow, Full, and Static
 
 [Full Rendering](https://enzymejs.github.io/enzyme/docs/api/mount.html) is ideal for use cases where the components may interact with DOM APIs or need to test components that are wrapped in higher order components.
 
-[Static Rendering](https://enzymejs.github.io/enzyme/docs/api/render.html) is used for to generate HTML from tge React tree, and analyze the resulting HTML structure.
+[Static Rendering](https://enzymejs.github.io/enzyme/docs/api/render.html) is used for to generate HTML from the React tree, and analyze the resulting HTML structure.
 
 #### It Blocks
 
