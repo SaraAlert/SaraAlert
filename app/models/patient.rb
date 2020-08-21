@@ -70,13 +70,11 @@ class Patient < ApplicationRecord
     where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where('isolation = ? OR continuous_exposure = ?', true, true)
       .where.not('latest_assessment_at >= ?', Time.now.getlocal('-04:00').beginning_of_day)
       .or(
         where(purged: false)
           .where(pause_notifications: false)
           .where('patients.id = patients.responder_id')
-          .where('isolation = ? OR continuous_exposure = ?', true, true)
           .where(latest_assessment_at: nil)
       )
       .distinct
@@ -89,7 +87,7 @@ class Patient < ApplicationRecord
   #   - HoH or not in a household AND
   #   - we haven't sent them in an assessment within the past 12 hours AND
   #   - they haven't completed an assessment today OR they haven't completed an assessment at all
-  #   - actively monitored OR has dependents that are being actively monitored
+  #   - (TODO in this scope rather than send_assessment) actively monitored OR has dependents that are being actively monitored
   #
   # NOTE: This method is currently being tested to be swapped in as the new reminder_eligible scope. 
   #       Once swapped in, the send_assessment method can be cut down to remove redundant logic.
@@ -100,7 +98,6 @@ class Patient < ApplicationRecord
     .where('patients.id = patients.responder_id')
     .where('patients.last_assessment_reminder_sent <= ? OR patients.last_assessment_reminder_sent IS NULL', 12.hours.ago)
     .where('patients.latest_assessment_at < ? OR patients.latest_assessment_at IS NULL', Time.now.getlocal('-04:00').beginning_of_day)  
-    .joins(:dependents).where(dependents_patients: { monitoring: true })
     .distinct
   }
 
