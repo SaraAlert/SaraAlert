@@ -40,6 +40,8 @@ React component tests in Sara Alert are located in `app/javascript/tests` and ar
 
 In addition, there is a folder for mocks (see section below) in `app/javascript/tests`, which is the only folder that does not contain any react component tests.
 
+Finally, Jest has the ability to create snapshots, which can be useful for ensuring that the UI does not change unexpectedly. A typical snapshot test case renders a UI component, takes a snapshot, then compares it to a reference snapshot file stored alongside the test. The test will fail if the two snapshots do not match: either the change is unexpected, or the reference snapshot needs to be updated to the new version of the UI component. According to [Jest documentation](https://jestjs.io/docs/en/snapshot-testing.html#should-snapshot-files-be-committed), snapshot files should be committed.
+
 ### Mocks
 
 Mock objects that are props for Sara Alert components are kept in `app/javascript/tests/mocks`.  These objects can then be imported into the test files and used as props when the tests render each component.  Each file represents a different Sara Alert object (i.e. patient, user, etc).
