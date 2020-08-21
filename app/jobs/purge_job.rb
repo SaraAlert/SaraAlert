@@ -11,7 +11,7 @@ class PurgeJob < ApplicationJob
       # Whitelist attributes to keep
       attributes = Patient.new.attributes.keys
       whitelist = %w[id created_at updated_at responder_id creator_id jurisdiction_id
-                     submission_token monitoring monitoring_reason exposure_risk_assessment
+                     monitoring monitoring_reason exposure_risk_assessment
                      monitoring_plan isolation symptom_onset public_health_action age sex
                      address_county symptom_onset contact_of_known_case
                      member_of_a_common_exposure_cohort travel_to_affected_country_or_area
