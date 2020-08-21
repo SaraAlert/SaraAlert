@@ -51,7 +51,10 @@ fr:
         notes: ''
       temperature:
         name: 'Temperature'
-        notes: 'Measured temperature in degrees Fahrenheit'
+        notes: 'Please enter your current temperature in degrees Fahrenheit'
+      other:
+        name: 'Other'
+        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
       no-symptoms: 'Aucun symptôme'
     threshold-op:
       less-than: 'moins que'
