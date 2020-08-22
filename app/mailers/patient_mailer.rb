@@ -9,7 +9,7 @@ class PatientMailer < ApplicationMailer
 
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    @patients = patient.dependents.where(monitoring: true).uniq.collect do |p|
+    @patients = patient.dependents.where('monitoring = ? OR continuous_exposure = ?', true, true).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
     @lang = patient.select_language
@@ -75,7 +75,7 @@ class PatientMailer < ApplicationMailer
 
     num = patient.primary_telephone
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient.dependents.where(monitoring: true).uniq.each do |p|
+    patient.dependents.where('monitoring = ? OR continuous_exposure = ?', true, true).uniq.each do |p|
       lang = p.select_language
       patient_name = "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
       intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
@@ -133,13 +133,13 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient_names = patient.dependents.where(monitoring: true).uniq.collect do |p|
+    patient_names = patient.dependents.where('monitoring = ? OR continuous_exposure = ?', true, true).uniq.collect do |p|
       "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
     end
     contents = I18n.t('assessments.sms.prompt.daily1', locale: lang) + patient_names.join(', ') + '.'
 
     # Prepare text asking about anyone in the group
-    contents += if patient.dependents.where(monitoring: true).uniq.count > 1
+    contents += if patient.dependents.where('monitoring = ? OR continuous_exposure = ?', true, true).uniq.count > 1
                   I18n.t('assessments.sms.prompt.daily2-p', locale: lang)
                 else
                   I18n.t('assessments.sms.prompt.daily2-s', locale: lang)
@@ -179,13 +179,13 @@ class PatientMailer < ApplicationMailer
     lang = patient.select_language
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient_names = patient.dependents.where(monitoring: true).uniq.collect do |p|
+    patient_names = patient.dependents.where('monitoring = ? OR continuous_exposure = ?', true, true).uniq.collect do |p|
       "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
     end
     contents = I18n.t('assessments.phone.daily1', locale: lang) + patient_names.join(', ')
 
     # Prepare text asking about anyone in the group
-    contents += if patient.dependents.where(monitoring: true).uniq.count > 1
+    contents += if patient.dependents.where('monitoring = ? OR continuous_exposure = ?', true, true).uniq.count > 1
                   I18n.t('assessments.phone.daily2-p', locale: lang)
                 else
                   I18n.t('assessments.phone.daily2-s', locale: lang)
@@ -226,7 +226,7 @@ class PatientMailer < ApplicationMailer
     @lang = patient.select_language
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    @patients = patient.dependents.where(monitoring: true).uniq.collect do |p|
+    @patients = patient.dependents.where('monitoring = ? OR continuous_exposure = ?', true, true).uniq.collect do |p|
       { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
     end
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
