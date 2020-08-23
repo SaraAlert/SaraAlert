@@ -7,6 +7,202 @@ class PatientTest < ActiveSupport::TestCase
 
   def teardown; end
 
+  # Patients who are eligible for reminders:
+  #   - not purged AND
+  #   - notifications not paused AND
+  #   - valid preferred contact method AND
+  #   - HoH or not in a household AND
+  #   - we haven't sent them an assessment within the past 12 hours AND
+  #   - they haven't completed an assessment today OR they haven't completed an assessment at all
+  #   - (TODO) actively monitored OR has dependents that are being actively monitored
+  #
+  test 'reminder eligible does not include purged records' do
+    patient = create(:patient,
+                     purged: true,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call')
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call')
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+  end
+
+  test 'reminder eligible does not include records with paused notifications' do
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: true,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call')
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call')
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+  end
+
+  test 'reminder eligible does not include records with invalid, unknown, or opt-out contact methods' do
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: '')
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: nil)
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Unknown')
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Opt-out')
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call')
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+  end
+
+  test 'reminder eligible does not include records that report through a HoH' do
+    responder = create(:patient,
+                       purged: false,
+                       pause_notifications: false,
+                       monitoring: true,
+                       preferred_contact_method: 'Telephone Call')
+
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call')
+
+    patient.update!(responder_id: responder.id)
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call')
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+  end
+
+  test 'reminder eligible does not include records have received an assessment reminder in the last 12 hours' do
+    # Assessment was sent more than 12 hours ago - should be eligible
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call',
+                     last_assessment_reminder_sent: 13.hours.ago)
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    # Assessment was not sent (nil) - should be eligible
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call',
+                     last_assessment_reminder_sent: nil)
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    # Assessment was sent exactly 12 hours ago - should be eligible
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call',
+                     last_assessment_reminder_sent: 12.hours.ago)
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    # Assessment was sent under 10 hours - should NOT be eligible
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call',
+                     last_assessment_reminder_sent: 10.hours.ago)
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+  end
+
+  test 'reminder eligible does not include records that have completed an assessment today' do
+    # Assessment was completed more than a day ago - should be eligible
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call',
+                     latest_assessment_at: 25.hours.ago)
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    # Assessment was not completed (nil) - should be eligible
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call',
+                     latest_assessment_at: nil)
+
+    assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    # Assessment was completed at the very beginning of the day - should NOT be eligible
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call',
+                     latest_assessment_at: Time.now.getlocal('-04:00').beginning_of_day)
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+
+    # Assessment was completed now - should NOT be eligible
+    patient = create(:patient,
+                     purged: false,
+                     pause_notifications: false,
+                     monitoring: true,
+                     preferred_contact_method: 'Telephone Call',
+                     latest_assessment_at: Time.now)
+
+    assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
+  end
+
   test 'create patient' do
     assert patient = create(:patient)
     assert_nil patient.symptom_onset
@@ -464,14 +660,6 @@ class PatientTest < ActiveSupport::TestCase
     assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
-  test 'exposure dont send report without continuous exposure' do
-    # patient was created more than 24 hours ago
-    Patient.destroy_all
-    patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 2.days.ago, last_date_of_exposure: 20.days.ago)
-
-    assert Patient.reminder_eligible.find_by(id: patient.id).nil?
-  end
-
   test 'exposure send report with continuous exposure' do
     # patient was created more than 24 hours ago
     Patient.destroy_all
@@ -481,14 +669,6 @@ class PatientTest < ActiveSupport::TestCase
     create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
 
     assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
-  end
-
-  test 'exposure dont send report with continuous exposure' do
-    # patient was created more than 24 hours ago
-    Patient.destroy_all
-    patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 2.days.ago, continuous_exposure: false)
-
-    assert Patient.reminder_eligible.find_by(id: patient.id).nil?
   end
 
   test 'address timezone offset' do
