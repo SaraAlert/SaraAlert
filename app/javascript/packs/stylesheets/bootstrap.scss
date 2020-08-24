@@ -12,6 +12,10 @@ body {
   background-color: #f5f5f5 !important;
 }
 
+.demo-bg {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='100px' width='100px'><text transform='translate(20, 100) rotate(-45)' fill='rgb(220,220,220)' font-size='30'>DEMO</text></svg>");
+}
+
 .btn.btn-square {
   border-radius: 0;
 }
