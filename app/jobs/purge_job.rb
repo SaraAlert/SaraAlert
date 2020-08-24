@@ -24,10 +24,12 @@ class PurgeJob < ApplicationJob
       mask[:monitoring] = false
       monitoree.update!(mask)
       monitoree.purged = true
-      monitoree.save!
+      monitoree.save
       monitoree.histories.destroy_all
       monitoree.close_contacts.destroy_all
       monitoree.laboratories.destroy_all
+    rescue StandardError
+      next
     end
     Download.where('created_at < ?', 24.hours.ago).delete_all
     AssessmentReceipt.where('created_at < ?', 24.hours.ago).delete_all
