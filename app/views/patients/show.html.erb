@@ -56,13 +56,8 @@
         <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
         <% end %>
         <%= react_component("subject/ContactAttempt", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
-        <%
-=begin%>
- <% if %i[isolation_requiring_review isolation_symp_non_test_based isolation_asymp_non_test_based isolation_test_based].include?(@patient.status) %>
-<%
-=end%>
         <% if @patient.isolation %>
-        <%= react_component("subject/ExtendIsolation", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+        <%= react_component("subject/ExtendIsolation", { authenticity_token: form_authenticity_token, patient: @patient, requiringReview: %i[isolation_requiring_review isolation_symp_non_test_based isolation_asymp_non_test_based isolation_test_based].include?(@patient.status) } ) %>
         <% end %>
       </div>
     </div>

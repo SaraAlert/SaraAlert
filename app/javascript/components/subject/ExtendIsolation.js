@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Button, Modal } from 'react-bootstrap';
+import { Form, Button, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
@@ -49,7 +49,8 @@ class ExtendIsolation extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           extended_isolation: this.state.extended_isolation,
-          message: 'User extended isolation.',
+          comment: true,
+          message: `extended isolation date to ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}.`,
           reasoning: this.state.reasoning,
           diffState: diffState,
         })
@@ -77,9 +78,9 @@ class ExtendIsolation extends React.Component {
             <DateInput
               id="extended_isolation"
               date={this.state.extended_isolation}
-              // minDate={moment()
-              //   .add(1, 'day')
-              //   .format('YYYY-MM-DD')}
+              minDate={moment()
+                .add(1, 'day')
+                .format('YYYY-MM-DD')}
               onChange={date => this.setState({ extended_isolation: date })}
               placement="bottom"
               isClearable
@@ -110,9 +111,19 @@ class ExtendIsolation extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button onClick={this.toggleExtendIsolationModal} className="ml-2">
-          <i className="fas fa-house-user"></i> Extend Isolation
-        </Button>
+        {this.props.requiringReview ? (
+          <Button onClick={this.toggleExtendIsolationModal} className="ml-2">
+            <i className="fas fa-house-user"></i> Extend Isolation
+          </Button>
+        ) : (
+          <OverlayTrigger overlay={<Tooltip>The extended isolation date has already been set, but can be modified below</Tooltip>}>
+            <span className="d-inline-block">
+              <Button disabled className="ml-2" style={{ pointerEvents: 'none' }}>
+                <i className="fas fa-house-user"></i> Extend Isolation
+              </Button>
+            </span>
+          </OverlayTrigger>
+        )}
         {this.state.showExtendIsolationModal && this.createModal('Extend Isolation', this.toggleExtendIsolationModal, this.submit)}
       </React.Fragment>
     );
@@ -122,6 +133,7 @@ class ExtendIsolation extends React.Component {
 ExtendIsolation.propTypes = {
   authenticity_token: PropTypes.string,
   patient: PropTypes.object,
+  requiringReview: PropTypes.bool,
 };
 
 export default ExtendIsolation;

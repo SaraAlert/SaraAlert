@@ -40,7 +40,7 @@ class PatientsTable extends React.Component {
           { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
           { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
           { field: 'end_of_monitoring', label: 'End of Monitoring', isSortable: true, tooltip: null, filter: this.formatEndOfMonitoring },
-          { field: 'extended_isolation', label: 'Extended Isolation', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'extended_isolation', label: 'Extended Isolation To', isSortable: true, tooltip: null, filter: this.formatDate },
           { field: 'symptom_onset', label: 'Symptom Onset', isSortable: true, tooltip: null, filter: this.formatDate },
           { field: 'risk_level', label: 'Risk Level', isSortable: true, tooltip: null },
           { field: 'monitoring_plan', label: 'Monitoring Plan', isSortable: true, tooltip: null },

@@ -7,6 +7,7 @@ import axios from 'axios';
 import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
+import ExtendedIsolation from './ExtendedIsolation';
 import SymptomOnset from './SymptomOnset';
 
 class LastDateExposure extends React.Component {
@@ -190,7 +191,9 @@ class LastDateExposure extends React.Component {
               </Col>
             </Row>
           </Col>
-          {!this.props.patient.isolation && (
+          {this.props.patient.isolation ? (
+            <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+          ) : (
             <Col>
               <Row className="reports-actions-title">
                 <Col>
