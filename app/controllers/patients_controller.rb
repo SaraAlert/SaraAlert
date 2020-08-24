@@ -651,6 +651,7 @@ class PatientsController < ApplicationController
       last_date_of_exposure
       continuous_exposure
       user_defined_symptom_onset
+      extended_isolation
     ]
   end
 end

@@ -17,11 +17,11 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
     end
 
     return :isolation_asymp_non_test_based if !latest_assessment_at.nil? && !latest_positive_lab_at.nil? && latest_positive_lab_at < 10.days.ago &&
-                                              symptom_onset.nil?
-    return :isolation_symp_non_test_based if (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 72.hours.ago) &&
-                                             !symptom_onset.nil? && symptom_onset <= 10.days.ago
+                                              symptom_onset.nil? && (!extended_isolation || extended_isolation < Date.today)
+    return :isolation_symp_non_test_based if (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 24.hours.ago) &&
+                                             !symptom_onset.nil? && symptom_onset <= 10.days.ago && (!extended_isolation || extended_isolation < Date.today)
     return :isolation_test_based if !latest_assessment_at.nil? && (latest_fever_or_fever_reducer_at.nil? || latest_fever_or_fever_reducer_at < 24.hours.ago) &&
-                                    negative_lab_count >= 2
+                                    negative_lab_count >= 2 && (!extended_isolation || extended_isolation < Date.today)
     return :isolation_reporting if (!latest_assessment_at.nil? && latest_assessment_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago) ||
                                    (!created_at.nil? && created_at >= ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
 

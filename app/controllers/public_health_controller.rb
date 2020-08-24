@@ -177,6 +177,8 @@ class PublicHealthController < ApplicationController
       patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir)
     when 'end_of_monitoring'
       patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
+    when 'extended_isolation'
+      patients = patients.order('CASE WHEN extended_isolation IS NULL THEN 1 ELSE 0 END, extended_isolation ' + dir)
     when 'symptom_onset'
       patients = patients.order('CASE WHEN symptom_onset IS NULL THEN 1 ELSE 0 END, symptom_onset ' + dir)
     when 'risk_level'
@@ -237,6 +239,8 @@ class PublicHealthController < ApplicationController
       details[:transferred_to] = patient[:jurisdiction_path] || '' if fields.include?(:transferred_to)
       details[:assigned_user] = patient[:assigned_user] || '' if fields.include?(:assigned_user)
       details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
+      details[:extended_isolation] = patient[:extended_isolation] if fields.include?(:extended_isolation)
+      details[:symptom_onset] = patient.symptom_onset if fields.include?(:symptom_onset)
       details[:risk_level] = patient[:exposure_risk_assessment] || '' if fields.include?(:risk_level)
       details[:monitoring_plan] = patient[:monitoring_plan] || '' if fields.include?(:monitoring_plan)
       details[:public_health_action] = patient[:public_health_action] || '' if fields.include?(:public_health_action)
@@ -247,7 +251,6 @@ class PublicHealthController < ApplicationController
       details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
       details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
       details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
-      details[:symptom_onset] = patient.symptom_onset if fields.include?(:symptom_onset)
 
       linelist << details
     end
@@ -259,11 +262,11 @@ class PublicHealthController < ApplicationController
     return %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
 
     if workflow == :isolation
-      return %i[jurisdiction assigned_user monitoring_plan latest_report status report_eligibility symptom_onset] if tab == :all
+      return %i[jurisdiction assigned_user extended_isolation symptom_onset monitoring_plan latest_report status report_eligibility] if tab == :all
       return %i[transferred_from monitoring_plan transferred_at] if tab == :transferred_in
       return %i[transferred_to monitoring_plan transferred_at] if tab == :transferred_out
 
-      return %i[jurisdiction assigned_user monitoring_plan latest_report report_eligibility symptom_onset]
+      return %i[jurisdiction assigned_user extended_isolation symptom_onset monitoring_plan latest_report report_eligibility]
     end
 
     return %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report status report_eligibility] if tab == :all

@@ -91,6 +91,7 @@ class HistoryComponent extends React.Component {
           { value: 'Lab Result', label: 'Lab Result' },
           { value: 'Lab Result Edit', label: 'Lab Result Edit' },
           { value: 'Monitoree Data Downloaded', label: 'Monitoree Data Downloaded' },
+          { value: 'Monitoring Action', label: 'Monitoring Action' },
           { value: 'Monitoring Change', label: 'Monitoring Change' },
           { value: 'Report Created', label: 'Report Created' },
           { value: 'Report Note', label: 'Report Note' },

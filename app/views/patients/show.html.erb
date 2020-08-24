@@ -56,6 +56,14 @@
         <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
         <% end %>
         <%= react_component("subject/ContactAttempt", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+        <%
+=begin%>
+ <% if %i[isolation_requiring_review isolation_symp_non_test_based isolation_asymp_non_test_based isolation_test_based].include?(@patient.status) %>
+<%
+=end%>
+        <% if @patient.isolation %>
+        <%= react_component("subject/ExtendIsolation", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+        <% end %>
       </div>
     </div>
     <% columns = [] %>
@@ -112,7 +120,7 @@
                 <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
                 <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
                 <% unless @patient.isolation %>
-                  <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
                 <% end %>
               </div>
             </div>

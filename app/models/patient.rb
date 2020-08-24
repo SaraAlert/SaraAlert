@@ -226,6 +226,16 @@ class Patient < ApplicationRecord
       .where(symptom_onset: nil)
       .where.not(latest_assessment_at: nil)
       .where('latest_positive_lab_at < ?', 10.days.ago)
+      .where(extended_isolation: nil)
+      .or(
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .where(symptom_onset: nil)
+        .where.not(latest_assessment_at: nil)
+        .where('latest_positive_lab_at < ?', 10.days.ago)
+        .where('extended_isolation < ?', Date.today)
+      )
       .distinct
   }
 
@@ -236,12 +246,30 @@ class Patient < ApplicationRecord
       .where(isolation: true)
       .where('symptom_onset <= ?', 10.days.ago)
       .where(latest_fever_or_fever_reducer_at: nil)
+      .where(extended_isolation: nil)
       .or(
         where(monitoring: true)
         .where(purged: false)
         .where(isolation: true)
         .where('symptom_onset <= ?', 10.days.ago)
         .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
+        .where(extended_isolation: nil)
+      )
+      .or(
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .where('symptom_onset <= ?', 10.days.ago)
+        .where(latest_fever_or_fever_reducer_at: nil)
+        .where('extended_isolation < ?', Date.today)
+      )
+      .or(
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .where('symptom_onset <= ?', 10.days.ago)
+        .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
+        .where('extended_isolation < ?', Date.today)
       )
       .distinct
   }
@@ -254,6 +282,7 @@ class Patient < ApplicationRecord
       .where.not(latest_assessment_at: nil)
       .where(latest_fever_or_fever_reducer_at: nil)
       .where('negative_lab_count >= ?', 2)
+      .where(extended_isolation: nil)
       .or(
         where(monitoring: true)
         .where(purged: false)
@@ -261,6 +290,25 @@ class Patient < ApplicationRecord
         .where.not(latest_assessment_at: nil)
         .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
         .where('negative_lab_count >= ?', 2)
+        .where(extended_isolation: nil)
+      )
+      .or(
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .where.not(latest_assessment_at: nil)
+        .where(latest_fever_or_fever_reducer_at: nil)
+        .where('negative_lab_count >= ?', 2)
+        .where('extended_isolation < ?', Date.today)
+      )
+      .or(
+        where(monitoring: true)
+        .where(purged: false)
+        .where(isolation: true)
+        .where.not(latest_assessment_at: nil)
+        .where('latest_fever_or_fever_reducer_at < ?', 24.hours.ago)
+        .where('negative_lab_count >= ?', 2)
+        .where('extended_isolation < ?', Date.today)
       )
       .distinct
   }
