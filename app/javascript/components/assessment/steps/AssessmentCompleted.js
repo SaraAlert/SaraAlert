@@ -60,7 +60,7 @@ class AssessmentCompleted extends React.Component {
                 <React.Fragment>
                   <br />
                   <i className="fa fa-desktop" aria-hidden="true"></i> {this.props.translations[this.props.lang]['web']['webpage']}:{' '}
-                  <a href={'//' + this.props.contact_info.webpage}> {this.props.contact_info.webpage}</a>
+                  <a href={this.props.contact_info.webpage}> {this.props.contact_info.webpage}</a>
                 </React.Fragment>
               )}
             </Form.Label>
