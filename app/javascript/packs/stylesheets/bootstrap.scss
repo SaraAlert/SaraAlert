@@ -12,6 +12,11 @@ body {
   background-color: #f5f5f5 !important;
 }
 
+.demo-bg {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20version%3D%271.1%27%20height%3D%27100px%27%20width%3D%27100px%27%3E%3Ctext%20transform%3D%27translate(20%2C%20100)%20rotate(-45)%27%20fill%3D%27rgb(220%2C220%2C220)%27%20font-size%3D%2730%27%3EDEMO%3C%2Ftext%3E%3C%2Fsvg%3E");
+  background-size: 100px 100px;
+}
+
 .btn.btn-square {
   border-radius: 0;
 }
