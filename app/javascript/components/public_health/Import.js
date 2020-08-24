@@ -33,7 +33,7 @@ class Import extends React.Component {
     for (let i = 0; i < this.state.patients.length; i++) {
       if (!(this.state.accepted.includes(i) || this.state.rejected.includes(i))) {
         let patient = this.state.patients[parseInt(i)];
-        if (!patient.appears_to_be_duplicate || this.state.importDuplicates) {
+        if (!patient.duplicate_data.is_duplicate || this.state.importDuplicates) {
           willCreate.push(patient);
         }
       }
@@ -110,7 +110,7 @@ class Import extends React.Component {
 
   handleConfirm = async confirmText => {
     this.setState({ acceptedAllStarted: true }, async () => {
-      let duplicateCount = this.state.patients.filter(pat => pat.appears_to_be_duplicate == true).length;
+      let duplicateCount = this.state.patients.filter(pat => pat.duplicate_data.is_duplicate).length;
       let duplicatePrompt =
         duplicateCount != 0 ? `Include the ${duplicateCount} potential duplicate ${this.props.workflow === 'exposure' ? 'monitorees' : 'cases'}` : undefined;
       if (
@@ -126,6 +126,34 @@ class Import extends React.Component {
       }
     });
   };
+
+  /**
+   * Gets rendered warning text for when duplicates are detected.
+   * @param {Object} dupFieldData - Data concerning the possible duplicates types and the specific fields in them.
+   */
+  getDuplicateWarningText(dupFieldData) {
+    let text = `Warning: This ${this.props.workflow === 'exposure' ? 'monitoree' : 'case'} already appears to exist in the system! `;
+
+    for (const fieldData of dupFieldData) {
+      text += `There ${fieldData.count > 1 ? `are ${fieldData.count} records` : 'is 1 record'}  with matching values in the following field(s): `;
+      let field;
+      for (let i = 0; i < fieldData.fields.length; i++) {
+        // parseInt() to satisfy eslint-security
+        field = fieldData.fields[parseInt(i)];
+        if (fieldData.fields.length > 1) {
+          text += i == fieldData.fields.length - 1 ? `and ${field}. ` : `${field}, `;
+        } else {
+          text += `${field}. `;
+        }
+      }
+    }
+
+    return (
+      <Alert variant="danger">
+        <span>{text}</span>
+      </Alert>
+    );
+  }
 
   render() {
     if (this.state.patients.length === this.state.accepted.length + this.state.rejected.length && this.state.errors.length == 0) {
@@ -186,11 +214,7 @@ class Import extends React.Component {
                   bg="light"
                   border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
                   <React.Fragment>
-                    {patient.appears_to_be_duplicate && (
-                      <Alert variant="danger">{`Warning: This ${
-                        this.props.workflow === 'exposure' ? 'monitoree' : 'case'
-                      } already appears to exist in the system!`}</Alert>
-                    )}
+                    {patient.duplicate_data.is_duplicate && this.getDuplicateWarningText(patient.duplicate_data.duplicate_field_data)}
                     {(patient.jurisdiction_path || patient.assigned_user) && (
                       <Alert variant="info">
                         Note:

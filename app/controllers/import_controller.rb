@@ -83,11 +83,11 @@ class ImportController < ApplicationController
           validate_required_primary_contact(patient, row_ind)
 
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
-          patient[:appears_to_be_duplicate] = current_user.viewable_patients.matches(patient[:first_name],
-                                                                                     patient[:last_name],
-                                                                                     patient[:sex],
-                                                                                     patient[:date_of_birth],
-                                                                                     patient[:user_defined_id_statelocal]).exists?
+          patient[:duplicate_data] = current_user.viewable_patients.duplicate_data(patient[:first_name],
+                                                                                   patient[:last_name],
+                                                                                   patient[:sex],
+                                                                                   patient[:date_of_birth],
+                                                                                   patient[:user_defined_id_statelocal])
 
           if format == :comprehensive_monitorees
             lab_results = []
