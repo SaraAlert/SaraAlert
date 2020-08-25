@@ -350,17 +350,28 @@ class PatientsController < ApplicationController
                        else
                          status_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
                        end
+
+    # If the monitoree record was closed, set continuous exposure to be false and set the closed at time.
     if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
       patient.continuous_exposure = false
       patient.closed_at = DateTime.now
     end
+
+    # If moving patient to exposure from isolation OR if the symptom onset was cleared by the user,
+    # set user-defined symptom onset to be false and set the symptom onset date based on latest symptomatic report.
+    # NOTE: In the case where a patient is being moved back to the exposure workflow, the symptom onset should be overwritten
+    #       because if a case is being ruled out (moved back to exposure), that patient no longer has no known symptom onset and
+    #       shouldn't immediately be put back on the symptomatic line list unless they have symptomatic reports.
     if (params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]) ||
        (params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?)
       params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
       params[:patient][:user_defined_symptom_onset] = false
       params[:patient][:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
     end
+
+    # Update the patient with updated values.
     patient.update(params.require(:patient).permit(params_to_update))
+
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
       jur = Jurisdiction.find_by_id(params.permit(:jurisdiction)[:jurisdiction])
