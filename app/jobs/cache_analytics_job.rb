@@ -9,20 +9,18 @@ class CacheAnalyticsJob < ApplicationJob
     not_cached = []
 
     Jurisdiction.find_each do |jur|
-      begin
-        Analytic.transaction do
-          analytic = Analytic.create!(jurisdiction_id: jur.id)
-          patients = jur.all_patients
-          MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
-          MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id)
-          MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
-          MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
-        end
-        cached << { id: jur.id, name: jur.path }
-      rescue StandardError => e
-        not_cached << { id: jur.id, name: jur.jurisdiction_path_string, reason: e.message }
-        next
+      Analytic.transaction do
+        analytic = Analytic.create!(jurisdiction_id: jur.id)
+        patients = jur.all_patients
+        MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
+        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id)
+        MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
+        MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
       end
+      cached << { id: jur.id, name: jur.path }
+    rescue StandardError => e
+      not_cached << { id: jur.id, name: jur.jurisdiction_path_string, reason: e.message }
+      next
     end
 
     # Send results
