@@ -85,7 +85,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
-          ([patient] + (patient&.dependents&.where(monitoring: true) || [])).uniq.each do |pat|
+          (patient.active_dependents || [])).uniq.each do |pat|
             typed_reported_symptoms = if message['experiencing_symptoms']
                                         # Remove values so that the values will appear as blank in a symptomatic report
                                         # this will indicate that the person needs to be reached out to to get the actual values
