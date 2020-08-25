@@ -16,14 +16,16 @@
             <%= enable_authy_form do %>
               <div class="form-row">
                 <div class="form-group col-md-10 mb-0">
-                  <input id="countries-input-0" class="countries-input" type="text" autocomplete="off" disabled="disabled" placeholder="United States of America (+1)">
-                  <input type="hidden" id="country-code-0" name="country_code" value="1">
+                  <select id="country-code-0" name="country_code" class="form-control form-control-sm">
+                    <option value="1">United States of America (+1)</option>
+                    <option value="680">Palau (+680)</option>
+                  </select>
                 </div>
                 <div class="form-group col-md-10 mb-0">
-                  <%= text_field_tag :cellphone, '', autocomplete: :off, placeholder: I18n.t('devise.cellphone'), id: "authy-cellphone", class: "form-control form-control-lg" %>
+                  <%= text_field_tag :cellphone, '', autocomplete: :off, placeholder: I18n.t('devise.cellphone'), id: "authy-cellphone", class: "form-control form-control-sm mt-0" %>
                 </div>
                 <div class="form-group col-md-4 mb-0">
-                  <%= submit_tag I18n.t('enable_authy', {scope: 'devise'}), class: "btn-primary", value: "Register" %>
+                  <%= submit_tag I18n.t('enable_authy', {scope: 'devise'}), class: "btn btn-primary btn-sm mt-0", value: "Register" %>
                 </div>
               </div>
             <% end %>
