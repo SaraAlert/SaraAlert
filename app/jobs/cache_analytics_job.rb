@@ -6,16 +6,12 @@ class CacheAnalyticsJob < ApplicationJob
 
   def perform(*_args)
     Jurisdiction.find_each do |jur|
-      Analytic.transaction do
-        analytic = Analytic.create!(jurisdiction_id: jur.id)
-
-        patients = jur.all_patients
-
-        MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
-        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id)
-        MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
-        MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
-      end
+      analytic = Analytic.create!(jurisdiction_id: jur.id)
+      patients = jur.all_patients
+      MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
+      MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id)
+      MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
+      MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
     end
   end
 
