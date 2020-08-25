@@ -17,7 +17,7 @@ class CacheAnalyticsJob < ApplicationJob
         MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
         MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
       end
-      cached << { id: jur.id, name: jur.path }
+      cached << { id: jur.id, name: jur.jurisdiction_path_string }
     rescue StandardError => e
       not_cached << { id: jur.id, name: jur.jurisdiction_path_string, reason: e.message }
       next
