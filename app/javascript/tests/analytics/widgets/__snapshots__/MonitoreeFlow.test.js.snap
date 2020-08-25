@@ -1,0 +1,155 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MonitoreeFlow properly renders 1`] = `
+<Fragment>
+  <Card
+    body={false}
+    className="card-square text-center"
+  >
+    <CardHeader
+      as="h5"
+      className="text-left"
+    >
+      Monitoree Flow Over Time
+    </CardHeader>
+    <CardBody
+      className="card-body"
+    >
+      <Row
+        className="mx-md-5 mx-lg-0"
+        noGutters={false}
+      >
+        <ForwardRef
+          borderless={true}
+          striped={true}
+        >
+          <thead>
+            <tr>
+              <th
+                className="py-0"
+              />
+              <th
+                className="py-0"
+              >
+                 Last 24 Hours 
+              </th>
+              <th
+                className="py-0"
+              >
+                 Last 14 Days 
+              </th>
+              <th
+                className="py-0"
+              >
+                 Total 
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              style={
+                Object {
+                  "height": "0px",
+                }
+              }
+            />
+            <tr>
+              <td
+                className="py-1 font-weight-bold text-left"
+              >
+                <u>
+                  INCOMING
+                </u>
+                 
+              </td>
+            </tr>
+            <tr>
+              <td
+                className="text-right"
+              >
+                NEW ENROLLMENTS
+              </td>
+              <td>
+                115
+              </td>
+              <td>
+                351
+              </td>
+              <td>
+                425
+              </td>
+            </tr>
+            <tr>
+              <td
+                className="text-right"
+              >
+                TRANSFERRED IN
+              </td>
+              <td>
+                14
+              </td>
+              <td>
+                36
+              </td>
+              <td>
+                42
+              </td>
+            </tr>
+            <tr
+              style={
+                Object {
+                  "height": "0px",
+                }
+              }
+            />
+            <tr>
+              <td
+                className="py-1 font-weight-bold text-left"
+              >
+                <u>
+                  OUTGOING
+                </u>
+                 
+              </td>
+            </tr>
+            <tr
+              className="pt-5"
+            >
+              <td
+                className="text-right"
+              >
+                CLOSED
+              </td>
+              <td>
+                5
+              </td>
+              <td>
+                10
+              </td>
+              <td>
+                14
+              </td>
+            </tr>
+            <tr>
+              <td
+                className="text-right"
+              >
+                TRANSFERRED OUT
+              </td>
+              <td>
+                25
+              </td>
+              <td>
+                45
+              </td>
+              <td>
+                57
+              </td>
+            </tr>
+          </tbody>
+        </ForwardRef>
+      </Row>
+    </CardBody>
+  </Card>
+</Fragment>
+`;
