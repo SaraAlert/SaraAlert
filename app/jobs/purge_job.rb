@@ -5,7 +5,13 @@ class PurgeJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    Patient.purge_eligible.find_each(batch_size: 5000) do |monitoree|
+    eligible = Patient.purge_eligible
+
+    purged = []
+    not_purged = []
+
+    # Loop through and purge
+    eligible.find_each do |monitoree|
       next if monitoree.dependents_exclude_self.where(monitoring: true).count.positive?
 
       # Whitelist attributes to keep
@@ -28,13 +34,20 @@ class PurgeJob < ApplicationJob
       monitoree.histories.destroy_all
       monitoree.close_contacts.destroy_all
       monitoree.laboratories.destroy_all
-    rescue StandardError
+      purged << { id: monitoree.id }
+    rescue StandardError => e
+      not_purged << { id: monitoree.id, reason: e.message }
       next
     end
+
+    # Additional cleanup
     Download.where('created_at < ?', 24.hours.ago).delete_all
     AssessmentReceipt.where('created_at < ?', 24.hours.ago).delete_all
     Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).ids).destroy_all
     ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).destroy_all
     Assessment.where(patient_id: Patient.where(purged: true).ids).destroy_all
+
+    # Send results
+    UserMailer.purge_job_email(purged, not_purged, eligible.count).deliver_now
   end
 end
