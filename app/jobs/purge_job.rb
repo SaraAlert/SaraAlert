@@ -33,5 +33,8 @@ class PurgeJob < ApplicationJob
     end
     Download.where('created_at < ?', 24.hours.ago).delete_all
     AssessmentReceipt.where('created_at < ?', 24.hours.ago).delete_all
+    Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged:true).ids).ids).ids).destroy_all
+    ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged:true).ids).ids).destroy_all
+    Assessment.where(patient_id: Patient.where(purged:true).ids).destroy_all
   end
 end
