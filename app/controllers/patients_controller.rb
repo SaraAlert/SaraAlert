@@ -354,7 +354,8 @@ class PatientsController < ApplicationController
       patient.continuous_exposure = false
       patient.closed_at = DateTime.now
     end
-    if params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]
+    if (params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]) ||
+       (params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?)
       params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
       params[:patient][:user_defined_symptom_onset] = false
       params[:patient][:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)

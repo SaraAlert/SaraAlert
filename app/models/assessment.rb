@@ -124,7 +124,7 @@ class Assessment < ApplicationRecord
   private
 
   def update_patient_linelist_after_save
-    if patient.user_defined_symptom_onset.present?
+    if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
       patient.update(
         latest_assessment_at: patient.assessments.maximum(:created_at)
       )
@@ -138,7 +138,7 @@ class Assessment < ApplicationRecord
 
   def update_patient_linelist_before_destroy
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
-    if patient.user_defined_symptom_onset.present?
+    if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
       patient.update(
         latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
         latest_fever_or_fever_reducer_at: patient.assessments
