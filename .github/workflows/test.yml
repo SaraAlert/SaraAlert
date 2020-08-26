@@ -59,6 +59,7 @@ jobs:
       - name: Run Rake Test
         run: bundle exec rake test
         env:
+          JOB_RUN_EMAIL: foobar@example.com
           CI_SQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           APP_IN_CI: true
       - uses: actions/upload-artifact@v1

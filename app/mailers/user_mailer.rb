@@ -13,6 +13,27 @@ class UserMailer < ApplicationMailer
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Send Assessments Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
+  def purge_job_email(purged, not_purged, eligible)
+    @purged = purged
+    @not_purged = not_purged
+    @eligible = eligible
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Purge Job Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
+  def close_job_email(closed, not_closed, eligible)
+    @closed = closed
+    @not_closed = not_closed
+    @eligible = eligible
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Close Job Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
+  def cache_analytics_job_email(cached, not_cached, eligible)
+    @cached = cached
+    @not_cached = not_cached
+    @eligible = eligible
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Cache Analytics Job Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
   def download_email(user, export_type, lookups)
     @user = user
     @export_type = export_type

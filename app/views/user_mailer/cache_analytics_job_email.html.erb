@@ -1,0 +1,24 @@
+<h1>Sara Alert Cache Analytics Job Results (<%= ActionMailer::Base.default_url_options[:host] %>)</h1>
+<h2><%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %></h2>
+<br />
+Total eligible for cache update at runtime: <%= @eligible %>
+<br />
+Cached during this job run: <b><%= @cached.count %></b>
+<br />
+Not cached during this job run (due to exceptions): <b><%= @not_cached.count %></b>
+<br />
+<h2>Cached</h2>
+<br />
+ID, Name
+<br />
+<% @cached.each do |c| %>
+  <%= c[:id] %>, <%= c[:name] %><br />
+<% end %>
+<br />
+<h2>Not Cached</h2>
+<br />
+ID, Name, Reason
+<br />
+<% @not_cached.each do |nc| %>
+  <%= nc[:id] %>, <%= c[:name] %>, <%= nc[:reason] %><br />
+<% end %>

@@ -5,6 +5,9 @@ class CacheAnalyticsJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
+    cached = []
+    not_cached = []
+
     Jurisdiction.find_each do |jur|
       Analytic.transaction do
         analytic = Analytic.create!(jurisdiction_id: jur.id)
@@ -14,7 +17,14 @@ class CacheAnalyticsJob < ApplicationJob
         MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
         MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
       end
+      cached << { id: jur.id, name: jur.jurisdiction_path_string }
+    rescue StandardError => e
+      not_cached << { id: jur.id, name: jur.jurisdiction_path_string, reason: e.message }
+      next
     end
+
+    # Send results
+    UserMailer.cache_analytics_job_email(cached, not_cached, Jurisdiction.count).deliver_now
   end
 
   MONITORING_STATUSES ||= %w[Symptomatic Non-Reporting Asymptomatic].freeze
