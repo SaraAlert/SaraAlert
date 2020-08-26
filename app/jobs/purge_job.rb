@@ -10,7 +10,7 @@ class PurgeJob < ApplicationJob
     purged = []
     not_purged = []
     eligible_count = eligible.count
-    
+
     # Loop through and purge
     eligible.find_each do |monitoree|
       next if monitoree.dependents_exclude_self.where(monitoring: true).count.positive?
