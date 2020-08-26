@@ -21,6 +21,10 @@ body {
   border-radius: 0;
 }
 
+.react-datepicker-popper {
+  z-index: 100 !important
+}
+
 .btn {
   border-radius: 0 !important;
 }
