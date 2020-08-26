@@ -19,6 +19,7 @@ class CloseSubjectsJob < ApplicationJob
 
     closed = []
     not_closed = []
+    eligible_count = eligible.count
 
     # Close subjects who are past the monitoring period (and are actually closable from above logic)
     eligible.find_each do |subject|
@@ -41,6 +42,6 @@ class CloseSubjectsJob < ApplicationJob
     end
 
     # Send results
-    UserMailer.close_job_email(closed, not_closed, eligible.count).deliver_now
+    UserMailer.close_job_email(closed, not_closed, eligible_count).deliver_now
   end
 end
