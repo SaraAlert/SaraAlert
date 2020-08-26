@@ -108,11 +108,64 @@ const TOOLTIP_TEXT = {
   ),
 
   // REPORTS
-  symptomOnset: (
+
+  exposureNeedsReviewColumn: (
     <div>
-      {' '}
-      Used by the system to determine if the non-test based recovery definition in the isolation monitoring workflow has been met. This field is auto-populated
-      with the date of the earliest symptomatic report in the system unless a user enters an earlier date.{' '}
+      The “Needs Review” column tells you which reports the system considers as symptomatic (red highlight). The “Review” and “Mark All As Reviewed” functions
+      allow a user to tell the system not to consider that report as symptomatic. This indicates that the disease of interest is not suspected after review of
+      the monitoree&apos;s symptom report(s).
+      <br></br>
+      The system will automatically generate the{' '}
+      <i>
+        <b>Symptom Onset</b>
+      </i>{' '}
+      Date as the date of the earliest symptomatic report (red highlight) that needs review unless a date has been entered by a user. Any report where “Needs
+      Review” is “Yes” is considered symptomatic. To clear the symptomatic flag on a report(s), click “Review” or “Mark all as Reviewed” as appropriate.
+    </div>
+  ),
+
+  exposureSymptomOnset: (
+    <div>
+      <b>Exposure Workflow</b>
+      <br></br>
+      <i>
+        <b>Symptom Onset</b>
+      </i>{' '}
+      date is used by the system to determine if a record should appear on the <i>Symptomatic</i> line list. This field is auto-populated with the date of the
+      earliest report flagged as symptomatic (red highlighted) in the report history table <i>unless a date has been entered by a user.</i>
+      <br></br>A{' '}
+      <i>
+        <b>Symptom Onset</b>
+      </i>{' '}
+      date should only be entered by a user in the exposure workflow if the monitoree is under investigation for the disease of interest and the monitoree
+      indicates their symptom onset date differs from what is available in the reports table. If a user entered a symptom onset date, the field will need to be
+      manually cleared by a user to move the record off of the <i>Symptomatic</i> line list.
+      <br></br>
+      To clear an auto-populated{' '}
+      <i>
+        <b>Symptom Onset</b>
+      </i>{' '}
+      date, click “Review” or “Mark all as Reviewed” as appropriate. The “Review” function tells the system not to consider a report as symptomatic.{' '}
+    </div>
+  ),
+
+  isolationSymptomOnset: (
+    <div>
+      <b>Isolation Workflow</b>
+      <br></br>
+      <i>
+        <b>Symptom Onset</b>
+      </i>{' '}
+      date is used by the system to determine if the non-test based recovery definition has been met which determines if a record should appear on the{' '}
+      <i>Records Requiring Review </i>line list. This field is auto-populated with the date of the earliest report flagged as symptomatic (red highlighted) in
+      the report history table <i>unless a date has been entered by a user.</i>
+      <br></br>
+      If a record is moved from the isolation workflow to the exposure workflow (e.g., case ruled out and returned to monitoring due to exposure), the system
+      will clear a user entered{' '}
+      <i>
+        <b>Symptom Onset</b>
+      </i>{' '}
+      date. This allows the system to place a monitoree on the appropriate monitoring line list in the exposure workflow based on the symptom reports received.{' '}
     </div>
   ),
 

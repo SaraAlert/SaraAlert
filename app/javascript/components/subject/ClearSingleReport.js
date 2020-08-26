@@ -53,8 +53,10 @@ class ClearSingleReport extends React.Component {
         <Modal.Body>
           {!this.props.patient.isolation && (
             <p>
-              This will change the selected report&apos;s &quot;Needs Review&quot; column from &quot;Yes&quot; to &quot;No&quot;. This subject will be moved
-              from the &quot;Symptomatic&quot; line list to either the asymptomatic or non reporting line list as appropriate.
+              You are about to clear the symptomatic report flag (red highlight) on this record. This indicates that the disease of interest is not suspected
+              after review of this symptomatic report. The &quot;Needs Review&quot; status will be changed to &quot;No&quot; for this report. The record will
+              move from the symptomatic line list to the asymptomatic or non-reporting line list as appropriate unless another symptomatic report is present in
+              the reports table or a symptom onset date has been entered by a user.
             </p>
           )}
           {this.props.patient.isolation && (

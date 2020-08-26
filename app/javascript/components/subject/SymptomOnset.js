@@ -59,7 +59,7 @@ class SymptomOnset extends React.Component {
             <Col>
               <Form.Label className="nav-input-label">
                 SYMPTOM ONSET
-                <InfoTooltip tooltipTextKey="symptomOnset" location="right"></InfoTooltip>
+                <InfoTooltip tooltipTextKey={this.props.patient.isolation ? 'isolationSymptomOnset' : 'exposureSymptomOnset'} location="right"></InfoTooltip>
               </Form.Label>
             </Col>
           </Row>

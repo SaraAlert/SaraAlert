@@ -66,7 +66,7 @@
         <tr>
           <th class="DataTable-table-header">ID</th>
           <% unless @patient.isolation %>
-          <th class="DataTable-table-header dt-a-w-50">Needs Review</th>
+          <th class="DataTable-table-header dt-a-w-50">Needs Review <%= react_component("util/InfoTooltip", { tooltipTextKey: 'exposureNeedsReviewColumn', location: 'right' }, { style: 'display:inline' }) %></th>
           <% end %>
           <th class="DataTable-table-header">Reporter</th>
           <th class="DataTable-table-header">Created</th>
@@ -200,7 +200,7 @@
           <th class="DataTable-table-header">Last Name</th>
           <th class="DataTable-table-header">Phone Number</th>
           <th class="DataTable-table-header">Email</th>
-          <th class="DataTable-table-header">Contact Attempts</th>
+          <th class="DataTable-table-header">Contact Attempts </th>
           <th class="DataTable-table-header">Actions</th>
         </tr>
       </thead>
