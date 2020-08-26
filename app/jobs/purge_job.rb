@@ -9,7 +9,8 @@ class PurgeJob < ApplicationJob
 
     purged = []
     not_purged = []
-
+    eligible_count = eligible.count
+    
     # Loop through and purge
     eligible.find_each do |monitoree|
       next if monitoree.dependents_exclude_self.where(monitoring: true).count.positive?
@@ -48,6 +49,6 @@ class PurgeJob < ApplicationJob
     Assessment.where(patient_id: Patient.where(purged: true).ids).destroy_all
 
     # Send results
-    UserMailer.purge_job_email(purged, not_purged, eligible.count).deliver_now
+    UserMailer.purge_job_email(purged, not_purged, eligible_count).deliver_now
   end
 end
