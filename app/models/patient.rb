@@ -430,6 +430,11 @@ class Patient < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
+  # Get all dependents (including self if id = responder_id) that are being monitored or in continuous exposure
+  def active_dependents
+    dependents.where('monitoring = ? OR continuous_exposure = ?', true, true)
+  end
+
   # Get this patient's dependents excluding itself
   def dependents_exclude_self
     dependents.where.not(id: id)
