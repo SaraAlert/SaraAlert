@@ -13,7 +13,7 @@ class PurgeJob < ApplicationJob
 
     # Loop through and purge
     eligible.find_each do |monitoree|
-      next if monitoree.dependents_exclude_self.where(monitoring: true).count.positive?
+      next if monitoree.active_dependents.count.positive?
 
       # Whitelist attributes to keep
       attributes = Patient.new.attributes.keys
