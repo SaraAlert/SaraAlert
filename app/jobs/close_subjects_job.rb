@@ -23,8 +23,8 @@ class CloseSubjectsJob < ApplicationJob
 
     # Close subjects who are past the monitoring period (and are actually closable from above logic)
     eligible.find_each do |subject|
-      if (!subject.last_date_of_exposure.nil? && subject.last_date_of_exposure <= (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago) ||
-         (subject.last_date_of_exposure.nil? && subject.created_at < (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago)
+      if (!subject.last_date_of_exposure.nil? && subject.last_date_of_exposure <= (ADMIN_OPTIONS['monitoring_period_days']).days.ago) ||
+         (subject.last_date_of_exposure.nil? && subject.created_at < (ADMIN_OPTIONS['monitoring_period_days']).days.ago)
         begin
           subject[:monitoring] = false
           subject.closed_at = DateTime.now
