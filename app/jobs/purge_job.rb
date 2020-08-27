@@ -6,7 +6,6 @@ class PurgeJob < ApplicationJob
 
   def perform(*_args)
     eligible = Patient.purge_eligible
-
     purged = []
     not_purged = []
     eligible_count = eligible.count

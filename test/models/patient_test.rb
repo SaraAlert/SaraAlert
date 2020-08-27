@@ -3,9 +3,17 @@
 require 'test_case'
 
 class PatientTest < ActiveSupport::TestCase
-  def setup; end
+  def setup
+    @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
+    @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
+    @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
+  end
 
-  def teardown; end
+  def teardown
+    ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
+    ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
+    ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
+  end
 
   # Patients who are eligible for reminders:
   #   - not purged AND

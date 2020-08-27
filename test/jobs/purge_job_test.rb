@@ -18,7 +18,7 @@ class PurgeJobTest < ActiveSupport::TestCase
 
   test 'sends an email with all purged monitorees' do
     patient = create(:patient, monitoring: false, purged: false)
-    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 1).minute.ago)
+    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 600).minutes.ago)
     email = PurgeJob.perform_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -27,7 +27,7 @@ class PurgeJobTest < ActiveSupport::TestCase
 
   test 'sends an email with all non purged monitorees' do
     patient = create(:patient, monitoring: false, purged: false)
-    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 1).minute.ago)
+    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 600).minutes.ago)
 
     allow_any_instance_of(Patient).to(receive(:update!) do
       raise StandardError, 'Test StandardError'
@@ -43,7 +43,7 @@ class PurgeJobTest < ActiveSupport::TestCase
   test 'does not purge heads of household with active dependents' do
     patient = create(:patient, monitoring: false, purged: false, address_line_1: Faker::Alphanumeric.alphanumeric(number: 10))
     dependent = create(:patient, monitoring: true, responder_id: patient)
-    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 1).minute.ago, dependents: patient.dependents << dependent)
+    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 600).minutes.ago, dependents: patient.dependents << dependent)
 
     PurgeJob.perform_now
     patient.reload
@@ -52,17 +52,17 @@ class PurgeJobTest < ActiveSupport::TestCase
   end
 
   test 'cleans up downloads' do
-    patient = create(:patient, monitoring: false, purged: false)
+    create(:patient, monitoring: false, purged: false)
     create(:download, created_at: 25.hours.ago)
     PurgeJob.perform_now
-    assert(Download.count == 0)
+    assert(Download.count.zero?)
   end
 
   test 'cleans up assessment receipts' do
-    patient = create(:patient, monitoring: false, purged: false)
+    create(:patient, monitoring: false, purged: false)
     create(:assessment_receipt, created_at: 25.hours.ago)
     PurgeJob.perform_now
-    assert(AssessmentReceipt.count == 0)
+    assert(AssessmentReceipt.count.zero?)
   end
 
   test 'cleans up symptoms, reported conditions, and assessments of purged patients' do
@@ -70,12 +70,12 @@ class PurgeJobTest < ActiveSupport::TestCase
 
     assessment = create(:assessment, patient: patient)
     reported_condition = create(:reported_condition, assessment: assessment)
-    symptom = create(:symptom, condition_id: reported_condition.id)
+    create(:symptom, condition_id: reported_condition.id)
 
-    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 1).minute.ago)
+    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 600).minutes.ago)
     PurgeJob.perform_now
-    assert(Assessment.count == 0)
-    assert(ReportedCondition.count == 0)
-    assert(Symptom.count == 0)
+    assert(Assessment.count.zero?)
+    assert(ReportedCondition.count.zero?)
+    assert(Symptom.count.zero?)
   end
 end
