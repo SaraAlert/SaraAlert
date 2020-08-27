@@ -44,9 +44,9 @@ class PurgeJob < ApplicationJob
     # Additional cleanup
     Download.where('created_at < ?', 24.hours.ago).delete_all
     AssessmentReceipt.where('created_at < ?', 24.hours.ago).delete_all
-    Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).ids).destroy_all
-    ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).destroy_all
-    Assessment.where(patient_id: Patient.where(purged: true).ids).destroy_all
+    Symptom.where(condition_id: ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).ids).delete_all
+    ReportedCondition.where(assessment_id: Assessment.where(patient_id: Patient.where(purged: true).ids).ids).delete_all
+    Assessment.where(patient_id: Patient.where(purged: true).ids).delete_all
 
     # Send results
     UserMailer.purge_job_email(purged, not_purged, eligible_count).deliver_now
