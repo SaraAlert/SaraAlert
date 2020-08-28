@@ -255,7 +255,9 @@ class PatientsController < ApplicationController
     new_hoh_id = params.permit(:new_hoh_id)[:new_hoh_id]
     current_patient_id = params.permit(:id)[:id]
     household_ids = params[:household_ids] || []
-    redirect_to(root_url) && return unless new_hoh_id
+    # update_all below does not invoke ActiveRecord callbacks and will not automatically check if this incomming
+    # id exists. Patient.exists?(nil) => false
+    redirect_to(root_url) && return unless Patient.exists?(new_hoh_id.to_i)
 
     patients_to_update = household_ids + [current_patient_id]
     current_user_patients = if current_user.has_role?(:enroller)
