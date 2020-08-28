@@ -236,6 +236,14 @@ See [API documentation](API.md) for more information.
 bundle exec rails test
 ```
 
+### Frontend Tests
+
+```
+yarn run test
+```
+
+See [frontend tests documentation](app/javascript/tests/README.md) for more information.
+
 ### System Tests
 
 By default, the `rails test` command used to execute all the other tests will not run system tests. To run all the system tests:
@@ -245,14 +253,6 @@ bundle exec rails test:system
 ```
 
 See [System tests documentation](test/system/README.md) for more information.
-
-### React Component Tests
-
-```
-yarn run test
-```
-
-See [React component tests documentation](app/javascript/tests/README.md) for more information.
 
 ## Configuration
 
