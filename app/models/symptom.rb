@@ -26,9 +26,10 @@ class Symptom < ApplicationRecord
 
   def bool_based_prompt(lang = :en)
     I18n.backend.send(:init_translations) unless I18n.backend.initialized?
-    if type == 'BoolSymptom'
+    case type
+    when 'BoolSymptom'
       I18n.t("assessments.symptoms.#{name}.name", locale: lang)
-    elsif type == 'IntegerSymptom' || type == 'FloatSymptom'
+    when 'IntegerSymptom', 'FloatSymptom'
       [
         I18n.t("assessments.symptoms.#{name}.name", locale: lang),
         I18n.t("assessments.threshold-op.#{threshold_operator.parameterize}", locale: lang), value
@@ -43,11 +44,12 @@ class Symptom < ApplicationRecord
   end
 
   def value
-    if type == 'BoolSymptom'
+    case type
+    when 'BoolSymptom'
       bool_value
-    elsif type == 'IntegerSymptom'
+    when 'IntegerSymptom'
       int_value
-    elsif type == 'FloatSymptom'
+    when 'FloatSymptom'
       float_value
     end
   end

@@ -48,14 +48,15 @@ class Assessment < ApplicationRecord
     threshold_operator = threshold_symptom&.threshold_operator&.downcase
     threshold_operator ||= 'less than'
 
-    if reported_symptom.type == 'FloatSymptom' || reported_symptom.type == 'IntegerSymptom'
+    case reported_symptom.type
+    when 'FloatSymptom', 'IntegerSymptom'
       return true if threshold_operator == 'less than' && reported_symptom.value < threshold_symptom.value
       return true if threshold_operator == 'less than or equal' && reported_symptom.value <= threshold_symptom.value
       return true if threshold_operator == 'greater than' && reported_symptom.value > threshold_symptom.value
       return true if threshold_operator == 'greater than or equal' && reported_symptom.value >= threshold_symptom.value
       return true if threshold_operator == 'equal' && reported_symptom.value == threshold_symptom.value
       return true if threshold_operator == 'not equal' && reported_symptom.value != threshold_symptom.value
-    elsif reported_symptom.type == 'BoolSymptom'
+    when 'BoolSymptom'
       return reported_symptom.value != threshold_symptom.value if threshold_operator == 'not equal'
       # Bool symptom threshold_operator will fall back to equal
       return true if reported_symptom.value == threshold_symptom.value
@@ -104,15 +105,16 @@ class Assessment < ApplicationRecord
       subject: FHIR::Reference.new(reference: "Patient/#{patient_id}"),
       status: 'completed',
       item: reported_condition.symptoms.enum_for(:each_with_index).collect do |s, index|
-        if s.type == 'IntegerSymptom'
+        case s.type
+        when 'IntegerSymptom'
           FHIR::QuestionnaireResponse::Item.new(text: s.name,
                                                 answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueInteger: s.int_value),
                                                 linkId: index.to_s)
-        elsif s.type == 'FloatSymptom'
+        when 'FloatSymptom'
           FHIR::QuestionnaireResponse::Item.new(text: s.name,
                                                 answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueDecimal: s.float_value),
                                                 linkId: index.to_s)
-        elsif s.type == 'BoolSymptom'
+        when 'BoolSymptom'
           FHIR::QuestionnaireResponse::Item.new(text: s.name,
                                                 answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueBoolean: s.bool_value),
                                                 linkId: index.to_s)

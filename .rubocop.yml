@@ -71,3 +71,15 @@ Style/RedundantRegexpEscape:
   Enabled: true
 Style/SlicingWithRange:
   Enabled: true
+Style/HashLikeCase:
+  Enabled: true
+Style/RedundantFileExtensionInRequire:
+  Enabled: true
+Style/CaseLikeIf:
+  Enabled: true
+Style/HashAsLastArrayItem:
+  Enabled: true
+Lint/DuplicateElsifCondition:
+  Enabled: true
+Style/ArrayCoercion:
+  Enabled: true

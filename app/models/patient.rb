@@ -511,11 +511,12 @@ class Patient < ApplicationRecord
       morning = (8..12)
       afternoon = (12..16)
       evening = (16..19)
-      if preferred_contact_time == 'Morning'
+      case preferred_contact_time
+      when 'Morning'
         return unless morning.include? hour
-      elsif preferred_contact_time == 'Afternoon'
+      when 'Afternoon'
         return unless afternoon.include? hour
-      elsif preferred_contact_time == 'Evening'
+      when 'Evening'
         return unless evening.include? hour
       end
     end
@@ -625,11 +626,12 @@ class Patient < ApplicationRecord
 
     # Rough estimate of next contact time
     if eligible
-      messages << if preferred_contact_time == 'Morning'
+      messages << case preferred_contact_time
+                  when 'Morning'
                     { message: '8:00 AM local time (Morning)', datetime: nil }
-                  elsif preferred_contact_time == 'Afternoon'
+                  when 'Afternoon'
                     { message: '12:00 PM local time (Afternoon)', datetime: nil }
-                  elsif preferred_contact_time == 'Evening'
+                  when 'Evening'
                     { message: '4:00 PM local time (Evening)', datetime: nil }
                   else
                     { message: 'Today', datetime: nil }

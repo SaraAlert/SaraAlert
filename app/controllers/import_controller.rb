@@ -133,7 +133,8 @@ class ImportController < ApplicationController
   private
 
   def validate_headers(format, headers)
-    if format == :comprehensive_monitorees
+    case format
+    when :comprehensive_monitorees
       COMPREHENSIVE_HEADERS.each_with_index do |field, col_num|
         next if field == headers[col_num]
 
@@ -141,7 +142,7 @@ class ImportController < ApplicationController
                   'Please make sure to use the latest format specified by the Sara Alert Format guidance doc.'
         raise ValidationError.new(err_msg, 1)
       end
-    elsif format == :epix
+    when :epix
       EPI_X_HEADERS.each_with_index do |field, col_num|
         next if field == headers[col_num]
 
