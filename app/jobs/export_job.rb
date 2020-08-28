@@ -18,67 +18,79 @@ class ExportJob < ApplicationJob
     when 'csv_exposure'
       patients = user.viewable_patients.where(isolation: false).where(purged: false)
       filename = "Sara-Alert-Linelist-Exposure-#{DateTime.now}.csv"
-      data = csv_line_list(patients)
-      lookups << { lookup: save_download(user_id, data, filename, export_type), filename: filename }
+      patients.find_in_batches(batch_size: 10_000).with_index do |group, index|
+        data = csv_line_list(group)
+        lookups << { lookup: save_download(user_id, data, "#{filename}-#{index}.csv", export_type), filename: "#{filename}-#{index}.csv" }
+      end
     when 'csv_isolation'
       patients = user.viewable_patients.where(isolation: true).where(purged: false)
       filename = "Sara-Alert-Linelist-Isolation-#{DateTime.now}.csv"
-      data = csv_line_list(patients)
-      lookups << { lookup: save_download(user_id, data, filename, export_type), filename: filename }
+      patients.find_in_batches(batch_size: 10_000).with_index do |group, index|
+        data = csv_line_list(group)
+        lookups << { lookup: save_download(user_id, data, "#{filename}-#{index}.csv", export_type), filename: "#{filename}-#{index}.csv" }
+      end
     when 'sara_format_exposure'
       patients = user.viewable_patients.where(isolation: false).where(purged: false)
       filename = "Sara-Alert-Format-Exposure-#{DateTime.now}.xlsx"
-      data = sara_alert_format(patients)
-      lookups << { lookup: save_download(user_id, data, filename, export_type), filename: filename }
+      patients.find_in_batches(batch_size: 10_000).with_index do |group, index|
+        data = sara_alert_format(group)
+        lookups << { lookup: save_download(user_id, data, "#{filename}-#{index}.xlsx", export_type), filename: "#{filename}-#{index}.csv" }
+      end
     when 'sara_format_isolation'
       patients = user.viewable_patients.where(isolation: true).where(purged: false)
       filename = "Sara-Alert-Format-Isolation-#{DateTime.now}.xlsx"
-      data = sara_alert_format(patients)
-      lookups << { lookup: save_download(user_id, data, filename, export_type), filename: filename }
+      patients.find_in_batches(batch_size: 10_000).with_index do |group, index|
+        data = sara_alert_format(group)
+        lookups << { lookup: save_download(user_id, data, "#{filename}-#{index}.xlsx", export_type), filename: "#{filename}-#{index}.csv" }
+      end
     when 'full_history_all'
       patients = user.viewable_patients.where(purged: false)
-      lookups << { lookup: save_download(user_id,
-                                         excel_export_monitorees(patients),
-                                         "Sara-Alert-Full-Export-Monitorees-#{DateTime.now}.xlsx",
-                                         export_type),
-                   filename: "Sara-Alert-Full-Export-Monitorees-#{DateTime.now}.xlsx" }
-      lookups << { lookup: save_download(user_id,
-                                         excel_export_assessments(patients),
-                                         "Sara-Alert-Full-Export-Assessments-#{DateTime.now}.xlsx",
-                                         export_type),
-                   filename: "Sara-Alert-Full-Export-Assessments-#{DateTime.now}.xlsx" }
-      lookups << { lookup: save_download(user_id,
-                                         excel_export_lab_results(patients),
-                                         "Sara-Alert-Full-Export-Lab-Results-#{DateTime.now}.xlsx",
-                                         export_type),
-                   filename: "Sara-Alert-Full-Export-Lab-Results-#{DateTime.now}.xlsx" }
-      lookups << { lookup: save_download(user_id,
-                                         excel_export_histories(patients),
-                                         "Sara-Alert-Full-Export-Histories-#{DateTime.now}.xlsx",
-                                         export_type),
-                   filename: "Sara-Alert-Full-Export-Histories-#{DateTime.now}.xlsx" }
+      patients.find_in_batches(batch_size: 10_000).with_index do |group, index|
+        lookups << { lookup: save_download(user_id,
+                                          excel_export_monitorees(group),
+                                          "Sara-Alert-Full-Export-Monitorees-#{DateTime.now}-#{index}.xlsx",
+                                          export_type),
+                    filename: "Sara-Alert-Full-Export-Monitorees-#{DateTime.now}-#{index}.xlsx" }
+        lookups << { lookup: save_download(user_id,
+                                          excel_export_assessments(group),
+                                          "Sara-Alert-Full-Export-Assessments-#{DateTime.now}-#{index}.xlsx",
+                                          export_type),
+                    filename: "Sara-Alert-Full-Export-Assessments-#{DateTime.now}-#{index}.xlsx" }
+        lookups << { lookup: save_download(user_id,
+                                          excel_export_lab_results(group),
+                                          "Sara-Alert-Full-Export-Lab-Results-#{DateTime.now}-#{index}.xlsx",
+                                          export_type),
+                    filename: "Sara-Alert-Full-Export-Lab-Results-#{DateTime.now}-#{index}.xlsx" }
+        lookups << { lookup: save_download(user_id,
+                                          excel_export_histories(group),
+                                          "Sara-Alert-Full-Export-Histories-#{DateTime.now}-#{index}.xlsx",
+                                          export_type),
+                    filename: "Sara-Alert-Full-Export-Histories-#{DateTime.now}-#{index}.xlsx" }
+      end
     when 'full_history_purgeable'
       patients = user.viewable_patients.purge_eligible
-      lookups << { lookup: save_download(user_id,
-                                         excel_export_monitorees(patients),
-                                         "Sara-Alert-Purge-Eligible-Export-Monitorees-#{DateTime.now}.xlsx",
-                                         export_type),
-                   filename: "Sara-Alert-Purge-Eligible-Export-Monitorees-#{DateTime.now}.xlsx" }
-      lookups << { lookup: save_download(user_id,
-                                         excel_export_assessments(patients),
-                                         "Sara-Alert-Purge-Eligible-Export-Assessments-#{DateTime.now}.xlsx",
-                                         export_type),
-                   filename: "Sara-Alert-Purge-Eligible-Export-Assessments-#{DateTime.now}.xlsx" }
-      lookups << { lookup: save_download(user_id,
-                                         excel_export_lab_results(patients),
-                                         "Sara-Alert-Purge-Eligible-Export-Lab-Results-#{DateTime.now}.xlsx",
-                                         export_type),
-                   filename: "Sara-Alert-Purge-Eligible-Export-Lab-Results-#{DateTime.now}.xlsx" }
-      lookups << { lookup: save_download(user_id,
-                                         excel_export_histories(patients),
-                                         "Sara-Alert-Purge-Eligible-Export-Histories-#{DateTime.now}.xlsx",
-                                         export_type),
-                   filename: "Sara-Alert-Purge-Eligible-Export-Histories-#{DateTime.now}.xlsx" }
+      patients.find_in_batches(batch_size: 10_000).with_index do |group, index|
+        lookups << { lookup: save_download(user_id,
+                                          excel_export_monitorees(group),
+                                          "Sara-Alert-Purge-Eligible-Export-Monitorees-#{DateTime.now}-#{index}.xlsx",
+                                          export_type),
+                    filename: "Sara-Alert-Purge-Eligible-Export-Monitorees-#{DateTime.now}-#{index}.xlsx" }
+        lookups << { lookup: save_download(user_id,
+                                          excel_export_assessments(group),
+                                          "Sara-Alert-Purge-Eligible-Export-Assessments-#{DateTime.now}-#{index}.xlsx",
+                                          export_type),
+                    filename: "Sara-Alert-Purge-Eligible-Export-Assessments-#{DateTime.now}-#{index}.xlsx" }
+        lookups << { lookup: save_download(user_id,
+                                          excel_export_lab_results(group),
+                                          "Sara-Alert-Purge-Eligible-Export-Lab-Results-#{DateTime.now}-#{index}.xlsx",
+                                          export_type),
+                    filename: "Sara-Alert-Purge-Eligible-Export-Lab-Results-#{DateTime.now}-#{index}.xlsx" }
+        lookups << { lookup: save_download(user_id,
+                                          excel_export_histories(group),
+                                          "Sara-Alert-Purge-Eligible-Export-Histories-#{DateTime.now}-#{index}.xlsx",
+                                          export_type),
+                    filename: "Sara-Alert-Purge-Eligible-Export-Histories-#{DateTime.now}-#{index}.xlsx" }
+      end
     end
     return if lookups.empty?
 
