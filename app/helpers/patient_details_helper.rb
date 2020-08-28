@@ -49,7 +49,8 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       closed_at: closed_at&.rfc2822 || '',
       transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || '',
-      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || '')
+      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''),
+      extended_isolation: extended_isolation || ''
     }
   end
 
