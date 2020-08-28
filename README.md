@@ -246,6 +246,14 @@ bundle exec rails test:system
 
 See [System tests documentation](test/system/README.md) for more information.
 
+### React Component Tests
+
+```
+yarn run test
+```
+
+See [React component tests documentation](app/javascript/tests/README.md) for more information.
+
 ## Configuration
 
 ### Jurisdiction and Symptom Configuration
