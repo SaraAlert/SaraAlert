@@ -101,7 +101,7 @@ class PublicHealthController < ApplicationController
     patients = patients_by_type(workflow, tab)
 
     # Cache tab sizes
-    cache_key = "#{current_user.jurisdiction.id.to_s}-#{workflow.to_s}-#{tab.to_s}"
+    cache_key = "#{current_user.jurisdiction.id}-#{workflow}-#{tab}"
     total = Rails.cache.fetch(cache_key, expires_in: 5.minutes, race_condition_ttl: 30.seconds) { patients.size }
 
     render json: { total: total }
