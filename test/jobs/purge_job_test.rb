@@ -18,7 +18,7 @@ class PurgeJobTest < ActiveSupport::TestCase
 
   test 'sends an email with all purged monitorees' do
     patient = create(:patient, monitoring: false, purged: false)
-    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 600).minutes.ago)
+    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
     email = PurgeJob.perform_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -27,7 +27,7 @@ class PurgeJobTest < ActiveSupport::TestCase
 
   test 'sends an email with all non purged monitorees' do
     patient = create(:patient, monitoring: false, purged: false)
-    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 600).minutes.ago)
+    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
 
     allow_any_instance_of(Patient).to(receive(:update!) do
       raise StandardError, 'Test StandardError'
@@ -43,7 +43,7 @@ class PurgeJobTest < ActiveSupport::TestCase
   test 'does not purge heads of household with active dependents' do
     patient = create(:patient, monitoring: false, purged: false, address_line_1: Faker::Alphanumeric.alphanumeric(number: 10))
     dependent = create(:patient, monitoring: true, responder_id: patient)
-    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 600).minutes.ago, dependents: patient.dependents << dependent)
+    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago, dependents: patient.dependents << dependent)
 
     PurgeJob.perform_now
     patient.reload
@@ -72,7 +72,7 @@ class PurgeJobTest < ActiveSupport::TestCase
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id)
 
-    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'] + 600).minutes.ago)
+    patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
     PurgeJob.perform_now
     assert(Assessment.count.zero?)
     assert(ReportedCondition.count.zero?)
