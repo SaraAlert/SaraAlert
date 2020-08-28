@@ -20,12 +20,14 @@ class PatientsController < ApplicationController
 
     @jurisdiction_path = @patient.jurisdiction_path
 
-    # Group members if this is HOH
-    @group_members = @patient.dependents_exclude_self.where(purged: false)
-
-    # All group members regardless if this is not HOH
-    dependents = current_user.get_patient(@patient.responder_id)&.dependents
-    @all_group_members = ([@patient] + (dependents.nil? ? [] : dependents)).uniq
+    if @patient.self_reporter_or_proxy?
+      # Group members if this is HOH
+      @group_members = @patient.dependents_exclude_self.where(purged: false)
+      @all_group_members = @patient.dependents + [@patient]
+    else
+      # All group members regardless if this is not HOH
+      @all_group_members = current_user.get_patient(@patient.responder_id)&.dependents
+    end
 
     @translations = Assessment.new.translations
 

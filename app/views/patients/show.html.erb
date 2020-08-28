@@ -16,8 +16,8 @@
   <%= react_component("subject/MonitoringStatus", {
       current_user: current_user,
       authenticity_token: form_authenticity_token,
-      has_group_members: @group_members.exists?,
-      in_a_group: @all_group_members.count > 1,
+      has_group_members: @group_members.nil? || @group_members.size > 1,
+      in_a_group: @all_group_members.size > 1,
       patient: @patient,
       jurisdictionPaths: Hash[Jurisdiction.all.where.not(name: "USA").pluck(:id, :path).map {|id, path| [id, path]}],
       assignedUsers: @patient.jurisdiction.assigned_users,
@@ -121,7 +121,7 @@
         <% end -%>
       </tbody>
     </table>
-    <%= react_component("subject/LastDateExposure", { authenticity_token: form_authenticity_token, patient: @patient, has_group_members: @all_group_members.count > 1 } ) %>
+    <%= react_component("subject/LastDateExposure", { authenticity_token: form_authenticity_token, patient: @patient, has_group_members: @all_group_members.size > 1 } ) %>
   </div>
 </div>
 <% @patient.assessments.order('created_at').each do |assessment| -%>
