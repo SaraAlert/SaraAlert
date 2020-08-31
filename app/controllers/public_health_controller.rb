@@ -183,7 +183,7 @@ class PublicHealthController < ApplicationController
     when 'symptom_onset'
       patients = patients.order('CASE WHEN symptom_onset IS NULL THEN 1 ELSE 0 END, symptom_onset ' + dir)
     when 'risk_level'
-      patients = patients.order_by_risk(dir == 'asc')
+      patients = patients.order_by_risk(asc: dir == 'asc')
     when 'monitoring_plan'
       patients = patients.order('CASE WHEN monitoring_plan IS NULL THEN 1 ELSE 0 END, monitoring_plan ' + dir)
     when 'public_health_action'

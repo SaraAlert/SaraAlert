@@ -9,7 +9,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
   @@public_health_dashboard = PublicHealthDashboard.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_patients_on_dashboard(jurisdiction_id, verify_scope = false)
+  def verify_patients_on_dashboard(jurisdiction_id, verify_scope: false)
     jurisdiction = Jurisdiction.find(jurisdiction_id)
     patients = jurisdiction.all_patients
     verify_workflow_count(:exposure, patients.where(isolation: false).count)

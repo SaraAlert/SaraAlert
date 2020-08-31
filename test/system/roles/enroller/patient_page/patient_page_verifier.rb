@@ -10,14 +10,14 @@ class EnrollerPatientPageVerifier < ApplicationSystemTestCase
   @@enrollment_form_steps = EnrollmentFormSteps.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_monitoree_info(monitoree, is_epi = false)
+  def verify_monitoree_info(monitoree, is_epi: false)
     find('#patient-info-header').click if is_epi
     @@enrollment_form_steps.steps.each do |enrollment_step, enrollment_fields|
       verify_enrollment_step(monitoree[enrollment_step.to_s], enrollment_fields)
     end
   end
 
-  def verify_group_member_info(existing_monitoree, new_monitoree, is_epi = false)
+  def verify_group_member_info(existing_monitoree, new_monitoree, is_epi: false)
     find('#patient-info-header').click if is_epi
     verify_enrollment_step(new_monitoree['identification'], @@enrollment_form_steps.steps[:identification])
     verify_enrollment_step(existing_monitoree['address'], @@enrollment_form_steps.steps[:address])

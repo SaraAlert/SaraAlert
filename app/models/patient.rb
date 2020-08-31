@@ -417,7 +417,7 @@ class Patient < ApplicationRecord
   end
 
   # Order individuals based on their public health assigned risk assessment
-  def self.order_by_risk(asc = true)
+  def self.order_by_risk(asc: true)
     order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
                 "WHEN exposure_risk_assessment='Medium' THEN 1",
                 "WHEN exposure_risk_assessment='Low' THEN 2",
@@ -531,7 +531,7 @@ class Patient < ApplicationRecord
   end
 
   # Send a daily assessment to this monitoree
-  def send_assessment(force = false)
+  def send_assessment(force: false)
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
 
     unless last_assessment_reminder_sent.nil?
