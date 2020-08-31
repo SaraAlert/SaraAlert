@@ -2,7 +2,7 @@
 
 # SendPurgeWarningsJob: sends purge warning reminder to admins
 class SendPurgeWarningsJob < ApplicationJob
-  queue_as :default
+  queue_as :mailers
 
   def perform(*_args)
     UserMailer.purge_notification.deliver_later
