@@ -30,7 +30,7 @@ class SystemTestUtils < ApplicationSystemTestCase
     click_on 'Logout'
   end
 
-  def return_to_dashboard(workflow, is_epi = true)
+  def return_to_dashboard(workflow, is_epi: true)
     if !is_epi
       click_on 'Return To Dashboard'
     elsif !workflow.nil?
@@ -48,12 +48,12 @@ class SystemTestUtils < ApplicationSystemTestCase
     find("##{tab}_tab").click
   end
 
-  def go_to_next_page(wait = true)
+  def go_to_next_page(wait: true)
     wait_for_enrollment_page_transition if wait
     click_on 'Next'
   end
 
-  def go_to_prev_page(wait = true)
+  def go_to_prev_page(wait: true)
     wait_for_enrollment_page_transition if wait
     click_on 'Previous'
   end
