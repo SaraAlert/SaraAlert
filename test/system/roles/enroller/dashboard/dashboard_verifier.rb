@@ -39,31 +39,34 @@ class EnrollerDashboardVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_monitoree_info_on_dashboard(monitoree, is_epi = false, go_back = true)
+  def verify_monitoree_info_on_dashboard(monitoree, is_epi: false, go_back: true)
     displayed_name = search_for_monitoree(monitoree, is_epi)
     click_on displayed_name
-    @@enroller_patient_page_verifier.verify_monitoree_info(monitoree, is_epi)
-    @@system_test_utils.return_to_dashboard('exposure', is_epi) if go_back
+    @@enroller_patient_page_verifier.verify_monitoree_info(monitoree, is_epi: is_epi)
+    @@system_test_utils.return_to_dashboard('exposure', is_epi: is_epi) if go_back
   end
 
-  def verify_group_member_on_dashboard(existing_monitoree, new_monitoree, is_epi = false)
+  def verify_group_member_on_dashboard(existing_monitoree, new_monitoree, is_epi: false)
     displayed_name = search_for_monitoree(new_monitoree, is_epi)
     click_on displayed_name
-    @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, is_epi)
+    @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, is_epi: is_epi)
     click_on 'Click here to view that monitoree'
-    @@enroller_patient_page_verifier.verify_monitoree_info(existing_monitoree, is_epi)
-    @@system_test_utils.return_to_dashboard('exposure', is_epi)
+    @@enroller_patient_page_verifier.verify_monitoree_info(existing_monitoree, is_epi: is_epi)
+    @@system_test_utils.return_to_dashboard('exposure', is_epi: is_epi)
   end
 
-  def verify_monitoree_info_not_on_dashboard(monitoree, is_epi = false)
+  def verify_monitoree_info_not_on_dashboard(monitoree, is_epi: false)
     displayed_birthday = monitoree['identification']['date_of_birth']
-    search_and_verify_nonexistence("#{monitoree['identification']['first_name']} #{monitoree['identification']['last_name']} #{displayed_birthday}", is_epi)
+    search_and_verify_nonexistence("#{monitoree['identification']['first_name']} #{monitoree['identification']['last_name']} #{displayed_birthday}",
+                                   is_epi)
   end
 
   def search_for_monitoree(monitoree, is_epi)
     displayed_name = @@system_test_utils.get_displayed_name(monitoree)
-    search_and_verify_existence(monitoree['identification']['first_name'], displayed_name, monitoree['identification']['date_of_birth'], is_epi)
-    search_and_verify_existence(monitoree['identification']['last_name'], displayed_name, monitoree['identification']['date_of_birth'], is_epi)
+    search_and_verify_existence(monitoree['identification']['first_name'], displayed_name, monitoree['identification']['date_of_birth'],
+                                is_epi)
+    search_and_verify_existence(monitoree['identification']['last_name'], displayed_name, monitoree['identification']['date_of_birth'],
+                                is_epi)
     displayed_name
   end
 

@@ -454,7 +454,7 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
-    patient.send_assessment(true)
+    patient.send_assessment(force: true)
 
     History.report_reminder(patient: patient, created_by: current_user)
   end
