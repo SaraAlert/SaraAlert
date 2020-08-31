@@ -2,7 +2,7 @@
 
 # ExportJob: prepare an export for a user
 class ExportJob < ApplicationJob
-  queue_as :default
+  queue_as :exports
   include ImportExport
 
   def perform(user_id, export_type)

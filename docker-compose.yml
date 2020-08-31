@@ -82,6 +82,20 @@ services:
       - redis-enrollment
       - sara-alert-enrollment
       - mysql-enrollment
+  sidekiq-enrollment-export:
+    image: "${SARA_ALERT_IMAGE}:development-test"
+    environment:
+      - REDIS_URL=redis://redis-enrollment:6379/1
+    env_file:
+      - .env-prod-enrollment
+    restart: unless-stopped
+    networks:
+      - dt-net-enrollment
+    command: "bin/bundle exec sidekiq -q exports"
+    depends_on:
+      - redis-enrollment
+      - sara-alert-enrollment
+      - mysql-enrollment
   sidekiq-enrollment-default:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
