@@ -14,8 +14,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
                    contact_of_known_case travel_to_affected_country_or_area was_in_health_care_facility_with_known_cases laboratory_personnel
                    healthcare_personnel crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort].freeze
   STATE_FIELDS = %i[address_state foreign_monitored_address_state additional_planned_travel_destination_state].freeze
-  MONIOTRED_ADDRESS_FIELDS = %i[monitored_address_line_1 monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip].freeze
-  ISOLATION_FIELDS = %i[symptom_onset case_status].freeze
+  MONITORED_ADDRESS_FIELDS = %i[monitored_address_line_1 monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip].freeze
+  ISOLATION_FIELDS = %i[symptom_onset extended_isolation case_status].freeze
   ENUM_FIELDS = %i[ethnicity preferred_contact_method primary_telephone_type secondary_telephone_type preferred_contact_time additional_planned_travel_type
                    exposure_risk_assessment monitoring_plan case_status].freeze
   RISK_FACTOR_FIELDS = %i[contact_of_known_case was_in_health_care_facility_with_known_cases].freeze
@@ -128,7 +128,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(normalize_state_field(row[index].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :monitored_address_state && row[index].nil? # copy over monitored address state if state is nil
             assert_equal(normalize_state_field(row[index - 4].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif MONIOTRED_ADDRESS_FIELDS.include?(field) && row[index].nil? # copy over address fields if address is nil
+          elsif MONITORED_ADDRESS_FIELDS.include?(field) && row[index].nil? # copy over address fields if address is nil
             assert_equal(row[index - 4].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :potential_exposure_location # copy over potential exposure country to location
             assert_equal(row[index + 1].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
@@ -166,9 +166,11 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(normalize_state_field(row[index].to_s).to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :monitored_address_state && row[index].nil? # copy over monitored address state if state is nil
             assert_equal(normalize_state_field(row[index - 13].to_s), patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif MONIOTRED_ADDRESS_FIELDS.include?(field) & row[index].nil? # copy over address fields if address is nil
+          elsif MONITORED_ADDRESS_FIELDS.include?(field) & row[index].nil? # copy over address fields if address is nil
             assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :symptom_onset # isolation workflow specific field
+            assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif field == :extended_isolation # isolation workflow specific field
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :case_status # isolation workflow specific enum field
             normalized_cell_value = NORMALIZED_ENUMS[field][unformat_enum_field(row[index])].to_s
@@ -189,7 +191,7 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   end
 
   def verify_validation(jurisdiction_id, workflow, field, value)
-    return if workflow != :isolation && %i[symptom_onset case_status].include?(field)
+    return if workflow != :isolation && ISOLATION_FIELDS.include?(field)
 
     if VALIDATION[field]
       # TODO: Un-comment when required fields are to be checked upon import
