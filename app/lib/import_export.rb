@@ -4,7 +4,7 @@
 module ImportExport # rubocop:todo Metrics/ModuleLength
   LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
-                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Extended Isolation'].freeze
+                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation'].freeze
 
   COMPREHENSIVE_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                            'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -25,7 +25,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                            'Was in Health Care Facility With Known Cases?', 'Health Care Facility with Known Cases Name', 'Laboratory Personnel?',
                            'Laboratory Personnel Facility Name', 'Health Care Personnel?', 'Health Care Personnel Facility Name',
                            'Crew on Passenger or Cargo Flight?', 'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name',
-                           'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type',
+                           'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date', 'Extended Isolation Date', 'Case Status', 'Lab 1 Test Type',
                            'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date',
                            'Lab 2 Report Date', 'Lab 2 Result', 'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity',
                            'Sexual Orientation'].freeze
@@ -66,7 +66,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                           :contact_of_known_case, :contact_of_known_case_id, :travel_to_affected_country_or_area, :was_in_health_care_facility_with_known_cases,
                           :was_in_health_care_facility_with_known_cases_facility_name, :laboratory_personnel, :laboratory_personnel_facility_name,
                           :healthcare_personnel, :healthcare_personnel_facility_name, :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort,
-                          :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes, nil, :symptom_onset,
+                          :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes, nil, :symptom_onset, :extended_isolation,
                           :case_status, nil, nil, nil, nil, nil, nil, nil, nil, :jurisdiction_path, :assigned_user, :gender_identity,
                           :sexual_orientation].freeze
 
@@ -205,6 +205,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     exposure_risk_assessment: { label: 'Exposure Risk Assessment', checks: [:enum] },
     monitoring_plan: { label: 'Monitoring Plan', checks: [:enum] },
     symptom_onset: { label: 'Symptom Onset', checks: [:date] },
+    extended_isolation: { label: 'Extended Isolation', checks: [:date] },
     case_status: { label: 'Case Status', checks: [:enum] },
     specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
     report: { label: 'Lab Report Date', checks: [:date] }
@@ -645,6 +646,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         exposure_notes: patient[:exposure_notes] || '',
         status: '',
         symptom_onset: patient[:symptom_onset]&.strftime('%F') || '',
+        extended_isolation: patient[:extended_isolation]&.strftime('%F') || '',
         case_status: patient[:case_status] || '',
         lab_1_type: '',
         lab_1_specimen_collection: '',

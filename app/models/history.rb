@@ -11,7 +11,6 @@ class History < ApplicationRecord
     report_updated: 'Report Updated',
     comment: 'Comment',
     enrollment: 'Enrollment',
-    monitoring_action: 'Monitoring Action',
     monitoring_change: 'Monitoring Change',
     monitoree_data_downloaded: 'Monitoree Data Downloaded',
     reports_reviewed: 'Reports Reviewed',
