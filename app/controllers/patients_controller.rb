@@ -373,8 +373,8 @@ class PatientsController < ApplicationController
 
     # If the symptom onset was cleared by the user
     if params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?
-     reset_symptom_onset(params_to_update, params, patient)
-   end
+      reset_symptom_onset(params_to_update, params, patient)
+    end
 
     # Update the patient with updated values.
     patient.update(params.require(:patient).permit(params_to_update))
