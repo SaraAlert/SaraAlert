@@ -97,12 +97,9 @@ class PublicHealthController < ApplicationController
       return head :bad_request unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
     end
 
-    # Get patients by workflow and tab
-    patients = patients_by_type(workflow, tab)
-
     # Cache tab sizes
     cache_key = "#{current_user.jurisdiction.id}-#{workflow}-#{tab}"
-    total = Rails.cache.fetch(cache_key, expires_in: 5.minutes, race_condition_ttl: 30.seconds) { patients.size }
+    total = Rails.cache.fetch(cache_key, expires_in: 5.minutes, race_condition_ttl: 30.seconds) { patients_by_type(workflow, tab).size }
 
     render json: { total: total }
   end
