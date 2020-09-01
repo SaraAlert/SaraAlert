@@ -366,7 +366,12 @@ var schema = yup.object().shape({
     .string()
     .phone()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
-    .nullable(),
+    .nullable()
+    .when('preferred_contact_method', pcm => {
+      if (pcm && ['Telephone call', 'SMS Text-message', 'SMS Texted Weblink'].includes(pcm)) {
+        return yup.string().required('Please provide a primary telephone number, or change Preferred Contact Method.');
+      }
+    }),
   secondary_telephone: yup
     .string()
     .phone()
