@@ -5,7 +5,8 @@ class PatientMailer < ApplicationMailer
   default from: 'notifications@saraalert.org'
 
   def enrollment_email(patient)
-    return if patient&.email.blank?
+    # Should not be sending enrollment email if no valid email or this patient is not a responder
+    return if patient&.email.blank? || patient.id != patient.responder_id
 
     # Gather patients and jurisdictions
     @patients = ([patient] + patient.dependents.where(monitoring: true)).uniq.collect do |p|
@@ -19,7 +20,8 @@ class PatientMailer < ApplicationMailer
   end
 
   def enrollment_sms_weblink(patient)
-    return if patient&.primary_telephone.blank?
+    # Should not be sending enrollment sms if no valid number or this patient is not a responder
+    return if patient&.primary_telephone.blank? || patient.id != patient.responder_id
 
     lang = patient.select_language
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
@@ -48,7 +50,8 @@ class PatientMailer < ApplicationMailer
   end
 
   def enrollment_sms_text_based(patient)
-    return if patient&.primary_telephone.blank?
+    # Should not be sending enrollment sms if no valid number or this patient is not a responder
+    return if patient&.primary_telephone.blank? || patient.id != patient.responder_id
 
     lang = patient.select_language
     patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
