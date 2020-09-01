@@ -13,6 +13,7 @@ class PurgeJob < ApplicationJob
     # Loop through and purge
     eligible.find_each do |monitoree|
       next if monitoree.active_dependents.count.positive?
+
       monitoree.histories.destroy_all
       monitoree.close_contacts.destroy_all
       monitoree.laboratories.destroy_all
@@ -39,8 +40,6 @@ class PurgeJob < ApplicationJob
     # Send results
     UserMailer.purge_job_email(purged, not_purged, eligible_count).deliver_now
   end
-
-  private
 
   # Everything except these will be set to nil
   def self.attributes_to_keep
