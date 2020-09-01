@@ -70,7 +70,10 @@ class Contact extends React.Component {
           .nullable()
           .when('preferred_contact_method', pcm => {
             if (pcm && ['Telephone call', 'SMS Text-message', 'SMS Texted Weblink'].includes(pcm)) {
-              return yup.string().required('Please provide a primary telephone number, or change Preferred Contact Method.');
+              return yup
+                .string()
+                .phone()
+                .required('Please provide a primary telephone number, or change Preferred Contact Method.');
             }
           }),
         secondary_telephone: yup
