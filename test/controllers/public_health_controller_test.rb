@@ -322,34 +322,6 @@ class PublicHealthControllerTest < ActionController::TestCase
     sign_out user
   end
 
-  test 'workflow counts' do
-    get :workflow_counts
-    assert_redirected_to(new_user_session_path)
-
-    %i[admin_user analyst_user enroller_user].each do |role|
-      user = create(role)
-      sign_in user
-      get :workflow_counts
-      assert_redirected_to @controller.root_url
-      sign_out user
-    end
-
-    %i[public_health_user public_health_enroller_user].each do |role|
-      Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
-        user = create(role, jurisdiction: user_jur)
-        sign_in user
-
-        get :workflow_counts
-        json_response = JSON.parse(response.body)
-
-        assert_equal user.viewable_patients.where(isolation: false, purged: false).size, json_response['exposure']
-        assert_equal user.viewable_patients.where(isolation: true, purged: false).size, json_response['isolation']
-
-        sign_out user
-      end
-    end
-  end
-
   test 'tab counts' do
     get :tab_counts, params: { workflow: 'exposure', tab: 'all' }
     assert_redirected_to(new_user_session_path)
