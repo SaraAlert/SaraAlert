@@ -4,6 +4,7 @@
 class PatientsController < ApplicationController
   include WorkflowTabCacheInvalidator
   before_action :authenticate_user!
+  after_action :invalidate_tab_counts_cache, only: [:bulk_update_status]
 
   # Enroller view to see enrolled subjects and button to enroll new subjects
   def index
@@ -167,7 +168,7 @@ class PatientsController < ApplicationController
         end
       end
 
-      WorkflowTabCacheInvalidator.invalidate_tab_counts_cache(current_user.jurisdiction_id) if params[:invalidate_cache]
+      invalidate_tab_counts_cache if params[:invalidate_cache]
       render(json: patient) && return
     else
       render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
@@ -652,5 +653,11 @@ class PatientsController < ApplicationController
       continuous_exposure
       user_defined_symptom_onset
     ]
+  end
+
+  private
+
+  def invalidate_tab_counts_cache
+    WorkflowTabCacheInvalidator.invalidate_tab_counts_cache(current_user.jurisdiction_id)
   end
 end
