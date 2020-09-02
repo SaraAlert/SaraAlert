@@ -63,7 +63,7 @@ class Import extends React.Component {
     axios({
       method: 'post',
       url: window.BASE_PATH + '/patients',
-      data: { ...patient, bypass_duplicate: bypass },
+      data: { ...patient, bypass_duplicate: bypass, invalidate_cache: num + 1 === this.state.phased.length },
     })
       .then(() => {
         let next = [...this.state.accepted, num];

@@ -2,6 +2,7 @@
 
 # PatientsController: handles all subject actions
 class PatientsController < ApplicationController
+  include WorkflowTabCacheInvalidator
   before_action :authenticate_user!
 
   # Enroller view to see enrolled subjects and button to enroll new subjects
@@ -166,6 +167,7 @@ class PatientsController < ApplicationController
         end
       end
 
+      WorkflowTabCacheInvalidator.invalidate_tab_counts_cache(current_user.jurisdiction_id) if params[:invalidate_cache]
       render(json: patient) && return
     else
       render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
