@@ -1,10 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Row, Col } from 'react-bootstrap';
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment';
 
-import confirmDialog from '../util/ConfirmDialog';
 import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
@@ -13,26 +12,13 @@ class ExtendedIsolation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      showExtendIsolationModal: false,
       extended_isolation: this.props.patient.extended_isolation,
-      extended_isolation_old: this.props.patient.extended_isolation,
+      reasoning: '',
       loading: false,
     };
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.submit = this.submit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
-
-  handleChange(event) {
-    this.setState({ extended_isolation_old: this.state.extended_isolation, [event.target.id]: event.target.value });
-  }
-
-  handleSubmit = async confirmText => {
-    if (await confirmDialog(confirmText)) {
-      this.submit();
-    } else {
-      this.setState({ extended_isolation: this.state.extended_isolation_old });
-    }
-  };
 
   submit() {
     this.setState({ loading: true }, () => {
@@ -42,6 +28,7 @@ class ExtendedIsolation extends React.Component {
           extended_isolation: this.state.extended_isolation,
           comment: true,
           message: `extended isolation date to ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}.`,
+          reasoning: this.state.reasoning,
           diffState: ['extended_isolation'],
         })
         .then(() => {
@@ -70,13 +57,7 @@ class ExtendedIsolation extends React.Component {
               <DateInput
                 id="extended_isolation"
                 date={this.state.extended_isolation}
-                onChange={date =>
-                  this.setState({ extended_isolation: date }, () => {
-                    this.handleSubmit(
-                      `Are you sure you want to modify the extended isolation date to ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}?`
-                    );
-                  })
-                }
+                onChange={date => this.setState({ extended_isolation: date, showExtendIsolationModal: true, reasoning: '' })}
                 placement="bottom"
               />
             </Col>
@@ -85,6 +66,45 @@ class ExtendedIsolation extends React.Component {
             <Col></Col>
           </Row>
         </Col>
+        {this.state.showExtendIsolationModal && (
+          <Modal
+            size="lg"
+            show
+            centered
+            onHide={() => this.setState({ showExtendIsolationModal: false, extended_isolation: this.props.patient.extended_isolation })}>
+            <Modal.Header>
+              <Modal.Title>Extend Isolation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Group>
+                <Form.Label className="mb-2">
+                  {`Are you sure you want to extend this case’s isolation through ${this.state.extended_isolation}?
+                  The case will not appear on the Records Requiring Review List until after ${this.state.extended_isolation} AND a recovery definition is met.
+                  The case will move to the "Reporting" or "Non-Reporting" line list.`}
+                </Form.Label>
+              </Form.Group>
+              <p>Please include any additional details:</p>
+              <Form.Group>
+                <Form.Control as="textarea" rows="2" id="reasoning" onChange={event => this.setState({ reasoning: event.target.value })} />
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary btn-square"
+                onClick={() => this.setState({ showExtendIsolationModal: false, extended_isolation: this.props.patient.extended_isolation })}>
+                Cancel
+              </Button>
+              <Button variant="primary btn-square" onClick={this.submit} disabled={this.state.loading}>
+                {this.state.loading && (
+                  <React.Fragment>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                  </React.Fragment>
+                )}
+                Submit
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        )}
       </React.Fragment>
     );
   }
