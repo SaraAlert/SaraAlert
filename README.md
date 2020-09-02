@@ -73,12 +73,19 @@ To start Redis:
 redis-server
 ```
 
+To use the application in development mode with low-level Rails/Redis cache enabled:
+
+```
+rails dev:cache # enable development mode cache
+export REDIS_URL=redis://127.0.0.1:6379/1 # inform Rails of Redis' location
+```
+
 ##### Sidekiq
 
 Sidekiq is the queueing system that ActiveJob interfaces with. Sidekiq should be installed when you ran `bundle install` in the application installation instructions. To start Sidekiq, and make it aware that it is responsible for the mailers queue, execute the following:
 
 ```
-bundle exec sidekiq -q default -q mailers
+bundle exec sidekiq -q default -q mailers -q exports
 ```
 
 ##### Whenever
