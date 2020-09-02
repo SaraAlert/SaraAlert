@@ -484,12 +484,26 @@ class Patient < ApplicationRecord
 
     # Do not allow messages to go to household members
     return unless responder_id == id
+    
+    # This  check is necessary as we do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
+    # and we want to guarantee they they are not receiving messages past their monitoring period.
+    # Return if:
+    # - out of monitoring period AND
+    # - not in isolation (as patients on RRR linelist should receive notifications) AND
+    # - NOT in continuous exposure AND
+    # - is not a HoH with actively monitored dependents
+    return if last_date_of_exposure <= (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago &&
+              !isolation &&
+              !continuous_exposure &&
+              !dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
 
     # Return if closed, UNLESS there are still group members who need to be reported on
     return unless monitoring ||
                   continuous_exposure ||
                   dependents.where(monitoring: true).exists? ||
                   dependents.where(continuous_exposure: true).exists?
+
+
 
     # If force is set, the preferred contact time will be ignored
     unless force
@@ -528,6 +542,7 @@ class Patient < ApplicationRecord
     elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && email.present?
       PatientMailer.assessment_email(self).deliver_later
     end
+
   end
 
   # Return the calculated age based on the date of birth
