@@ -54,7 +54,8 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
-  unless ADMIN_OPTIONS['report_mode']
+  # Only use low-level Redis cache for enrollment
+  unless ENV['SARA_ALERT_REPORT_MODE'] == 'false'
     config.cache_store = :redis_cache_store, { url: ENV['REDIS_URL'] }
   end
 
