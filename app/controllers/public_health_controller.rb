@@ -75,14 +75,6 @@ class PublicHealthController < ApplicationController
     render json: linelist(patients, workflow, tab)
   end
 
-  # Get patient counts by workflow
-  def workflow_counts
-    render json: {
-      exposure: current_user.viewable_patients.where(isolation: false, purged: false).size,
-      isolation: current_user.viewable_patients.where(isolation: true, purged: false).size
-    }
-  end
-
   # Get counts for patients under the given workflow and tab
   def tab_counts
     # Validate workflow param
@@ -100,7 +92,6 @@ class PublicHealthController < ApplicationController
     # Cache tab sizes
     cache_key = "#{current_user.jurisdiction.id}-#{workflow}-#{tab}"
     total = Rails.cache.fetch(cache_key, expires_in: 5.minutes, race_condition_ttl: 30.seconds) { patients_by_type(workflow, tab).size }
-
     render json: { total: total }
   end
 

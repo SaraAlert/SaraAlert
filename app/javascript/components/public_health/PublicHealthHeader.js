@@ -20,9 +20,22 @@ class PublicHealthHeader extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/public_health/patients/counts/workflow').then(response => {
+    axios.get('/public_health/patients/counts/isolation/all').then(response => {
       if (response && response.data) {
-        this.setState({ counts: response.data });
+        this.setState(state => {
+          return {
+            counts: { ...state.counts, isolation: response.data.total },
+          };
+        });
+      }
+    });
+    axios.get('/public_health/patients/counts/exposure/all').then(response => {
+      if (response && response.data) {
+        this.setState(state => {
+          return {
+            counts: { ...state.counts, exposure: response.data.total },
+          };
+        });
       }
     });
   }
