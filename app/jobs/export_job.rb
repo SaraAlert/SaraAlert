@@ -98,7 +98,7 @@ class ExportJob < ApplicationJob
     return if lookups.empty?
 
     # Sort lookups by filename so that they are grouped together accordingly after batching
-    lookups = lookups.sort_by{|lookup| lookup[:filename]}
+    lookups = lookups.sort_by { |lookup| lookup[:filename] }
 
     # Send an email to user
     UserMailer.download_email(user, export_type, lookups, RECORD_BATCH_SIZE).deliver_later
