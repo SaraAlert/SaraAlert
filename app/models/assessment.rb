@@ -16,6 +16,8 @@ class Assessment < ApplicationRecord
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
 
+  default_scope { order(created_at: :desc) }
+
   def symptomatic?
     symptom_groups = []
     reported_condition.symptoms.each do |reported_symptom|

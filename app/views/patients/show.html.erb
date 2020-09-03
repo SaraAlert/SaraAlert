@@ -260,7 +260,7 @@
 <% end %>
 
 <% if @able_to_perform_action %>
-  <%= react_component("history/HistoryComponent", { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token } ) %>
+  <%= react_component("history/HistoryComponent", { patient_id: @patient.id, histories: @histories, authenticity_token: form_authenticity_token } ) %>
 <% end %>
 
 <script>

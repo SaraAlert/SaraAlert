@@ -37,6 +37,8 @@ class History < ApplicationRecord
 
   belongs_to :patient
 
+  default_scope { order(created_at: :desc) }
+
   # All histories within the given time frame
   scope :in_time_frame, lambda { |time_frame|
     case time_frame

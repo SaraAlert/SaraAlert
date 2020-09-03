@@ -11,9 +11,15 @@ class PatientsController < ApplicationController
 
   # The single subject view
   def show
-    redirect_to(root_url) && return unless current_user.can_view_patient?
+    @current_user_role = current_user.roles.first.name
 
-    @patient = current_user.get_patient(params.permit(:id)[:id])
+    redirect_to(root_url) && return unless %w[enroller public_health_enroller public_health].include?(@current_user_role)
+
+    if @current_user_role == 'enroller'
+      @patient = current_user.enrolled_patients.includes({assessments: :reported_condition}, :jurisdiction, :histories, :dependents).find_by_id(params.permit(:id)[:id])
+    else
+      @patient = current_user.viewable_patients.includes({assessments: :reported_condition}, :jurisdiction, :histories, :dependents).find_by_id(params.permit(:id)[:id])
+    end
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -26,7 +32,11 @@ class PatientsController < ApplicationController
       @all_group_members = @patient.dependents + [@patient]
     else
       # All group members regardless if this is not HOH
-      @all_group_members = current_user.get_patient(@patient.responder_id)&.dependents
+      if @current_user_role == 'enroller'
+        @all_group_members = current_user.enrolled_patients.find_by_id(@patient.responder_id)&.dependents
+      else
+        @all_group_members = current_user.viewable_patients.find_by_id(@patient.responder_id)&.dependents
+      end
     end
 
     @translations = Assessment.new.translations
@@ -40,10 +50,10 @@ class PatientsController < ApplicationController
     # current_user.can_modify_subject_status?
     # Issue: CloseContact.js requires the current user
     # Solution: Bypass role methods for string match to save 1 query role lookup
-    @current_user_role = current_user.roles.first.name
     @able_to_perform_action = @current_user_role == 'public_health_enroller' || @current_user_role == 'public_health'
     @current_user_jurisdiction = current_user.jurisdiction_path
 
+    # Todo, expire this key in the jurisdiction update rake task.
     @jurisdiction_paths = Rails.cache.fetch('all_jurisdiction_ids_and_paths', expires_in: 24.hours, race_condition_ttl: 30.seconds) do
       Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
     end
@@ -54,7 +64,7 @@ class PatientsController < ApplicationController
     @threshold_hash = hierarchical_condition_unpopulated_symptoms.threshold_condition_hash
 
     # Assessments table =====
-    @assessments = @patient.assessments.includes([:reported_condition]).order('created_at')
+    @assessments = @patient.assessments
     @symptom_names = @symptoms.collect { |s| s.name }
     @columns = {}
     @assessments.each do |assessment|
@@ -66,6 +76,8 @@ class PatientsController < ApplicationController
         }
       end
     end
+
+    @histories = @patient.histories
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
