@@ -491,7 +491,8 @@ class Patient < ApplicationRecord
     # - in continuous exposure OR
     # - is a HoH with actively monitored dependents
     # NOTE: We do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
-    # so we also have to check that someone receiving messages is not past their monitoring period unless their in isolation, continuous exposure, or have active dependents.
+    # so we also have to check that someone receiving messages is not past they're monitoring period unless they're  in isolation,
+    # continuous exposure, or have active dependents.
     return unless (monitoring && last_date_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day) ||
                   (monitoring && isolation) ||
                   continuous_exposure ||
