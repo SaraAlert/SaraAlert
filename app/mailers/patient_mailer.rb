@@ -32,7 +32,8 @@ class PatientMailer < ApplicationMailer
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
-    messaging_service_sid = ENV['TWILIO_MESSAGING_SERVICE_SID']
+    from = ENV['TWILLIO_SENDING_NUMBER']
+    messaging_service_sid = ENV['TWILLIO_MESSAGING_SERVICE_SID']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     client.messages.create(
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
@@ -60,7 +61,8 @@ class PatientMailer < ApplicationMailer
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
-      messaging_service_sid = ENV['TWILIO_MESSAGING_SERVICE_SID']
+      from = ENV['TWILLIO_SENDING_NUMBER']
+      messaging_service_sid = ENV['TWILLIO_MESSAGING_SERVICE_SID']
       client = Twilio::REST::Client.new(account_sid, auth_token)
       client.messages.create(
         to: Phonelib.parse(num, 'US').full_e164,
@@ -82,9 +84,10 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
-    account_sid = ENV['TWILIO_API_ACCOUNT']
-    auth_token = ENV['TWILIO_API_KEY']
-    messaging_service_sid = ENV['TWILIO_MESSAGING_SERVICE_SID']
+    account_sid = ENV['TWILLIO_API_ACCOUNT']
+    auth_token = ENV['TWILLIO_API_KEY']
+    from = ENV['TWILLIO_SENDING_NUMBER']
+    messaging_service_sid = ENV['TWILLIO_MESSAGING_SERVICE_SID']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     client.messages.create(
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
@@ -119,9 +122,10 @@ class PatientMailer < ApplicationMailer
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
     contents += I18n.t('assessments.sms.prompt.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '.'
     contents += I18n.t('assessments.sms.prompt.daily4', locale: lang)
-    account_sid = ENV['TWILIO_API_ACCOUNT']
-    auth_token = ENV['TWILIO_API_KEY']
-    messaging_service_sid = ENV['TWILIO_MESSAGING_SERVICE_SID']
+    account_sid = ENV['TWILLIO_API_ACCOUNT']
+    auth_token = ENV['TWILLIO_API_KEY']
+    from = ENV['TWILLIO_SENDING_NUMBER']
+    messaging_service_sid = ENV['TWILLIO_MESSAGING_SERVICE_SID']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
@@ -129,7 +133,7 @@ class PatientMailer < ApplicationMailer
                threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
                try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
-    client.studio.v1.flows(ENV['TWILIO_STUDIO_FLOW']).executions.create(
+    client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params,
       messaging_service_sid: messaging_service_sid
@@ -166,9 +170,9 @@ class PatientMailer < ApplicationMailer
     # If the dependets are in a different jurisdiction they may end up with too many or too few symptoms in their response
     contents += I18n.t('assessments.phone.daily3', locale: lang) + patient.jurisdiction.hierarchical_condition_bool_symptoms_string(lang) + '?'
     contents += I18n.t('assessments.phone.daily4', locale: lang)
-    account_sid = ENV['TWILIO_API_ACCOUNT']
-    auth_token = ENV['TWILIO_API_KEY']
-    from = ENV['TWILIO_SENDING_NUMBER']
+    account_sid = ENV['TWILLIO_API_ACCOUNT']
+    auth_token = ENV['TWILLIO_API_KEY']
+    from = ENV['TWILLIO_SENDING_NUMBER']
     client = Twilio::REST::Client.new(account_sid, auth_token)
     threshold_hash = patient.jurisdiction.jurisdiction_path_threshold_hash
     # The medium parameter will either be SMS or VOICE
@@ -177,7 +181,7 @@ class PatientMailer < ApplicationMailer
                intro: I18n.t('assessments.phone.intro', locale: lang),
                try_again: I18n.t('assessments.phone.try-again', locale: lang),
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
-    client.studio.v1.flows(ENV['TWILIO_STUDIO_FLOW']).executions.create(
+    client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
       from: from,
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
       parameters: params
