@@ -1,8 +1,8 @@
 <% content_for :assets do %>
   <%= javascript_pack_tag "datatables" %>
   <%= javascript_pack_tag "moment" %>
+  <%= javascript_pack_tag "patients_show_datatable" %>
 <% end %>
-<% byebug %>
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: @jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
 
 <% if @can_view_assessments %>
@@ -11,7 +11,7 @@
 
 <%= react_component("patient/PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: @hide_body, jurisdictionPath: @patient.jurisdiction[:path] }) %>
 
-<% if current_user.can_modify_subject_status? %>
+<% if @can_modify_subject_status %>
   <div class="card mx-2 mt-4 mb-4 card-square">
     <h5 class="card-header">Monitoring Actions</h5>
     <%= react_component("subject/MonitoringStatus", {
@@ -21,7 +21,7 @@
         in_a_group: @all_group_members.size > 1,
         patient: @patient,
         jurisdictionPaths: @jurisdiction_paths,
-        assignedUsers: @patient.jurisdiction.assigned_users,
+        assignedUsers: @assigned_users,
         isolation: @patient.isolation
         }) %>
   </div>
@@ -37,8 +37,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
-          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, threshold_hash: reporting_condition.threshold_condition_hash, symptoms: reporting_condition.symptoms, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: Assessment.new.translations, lang: 'en' }) %>
+          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, threshold_hash: @threshold_hash, symptoms: @symptoms, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: @translations, lang: 'en' }) %>
         </div>
       </div>
     </div>
@@ -51,58 +50,87 @@
         <div class="btn-group" role="group">
           <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New Report</button>
           <% unless @patient.isolation %>
-          <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+            <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
           <% end %>
           <% if @patient.monitoring %>
-          <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+            <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
           <% end %>
           <%= react_component("subject/ContactAttempt", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
         </div>
       </div>
-      <% columns = [] %>
-      <% @patient.assessments.includes([:reported_condition]).each do |assessment| columns.concat(assessment.all_symptom_names) end %>
-      <% columns = columns.uniq %>
       <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
         <thead>
           <tr>
             <th class="DataTable-table-header">ID</th>
             <% unless @patient.isolation %>
-            <th class="DataTable-table-header dt-a-w-50">Needs Review <%= react_component("util/InfoTooltip", { tooltipTextKey: 'exposureNeedsReviewColumn', location: 'right' }, { style: 'display:inline' }) %></th>
+              <th class="DataTable-table-header dt-a-w-50">
+                Needs Review <%= react_component("util/InfoTooltip", { tooltipTextKey: 'exposureNeedsReviewColumn', location: 'right' }, { style: 'display:inline' }) %>
+              </th>
             <% end %>
-            <th class="DataTable-table-header">Reporter</th>
-            <th class="DataTable-table-header">Created</th>
-            <% columns.each do |column| -%>
-            <th class="DataTable-table-header dt-a-w-75"><%= column&.titleize %></th>
+            <th class="DataTable-table-header">
+              Reporter
+            </th>
+            <th class="DataTable-table-header">
+              Created
+            </th>
+            <% @symptom_names.each do |symptom| -%>
+              <th class="DataTable-table-header dt-a-w-75">
+                <%= symptom&.titleize %>
+              </th>
             <% end -%>
-            <th class="DataTable-table-header">Actions</th>
+            <th class="DataTable-table-header">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
-          <% @patient.assessments.order('created_at').each do |assessment| -%>
+        <% @ordered_assessments.each do |assessment| -%>
           <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
-            <td><%= assessment.id %></td>
+            <td>
+              <%= assessment.id %>
+            </td>
             <% unless @patient.isolation %>
-            <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
+              <td>
+                <% if assessment.symptomatic %>
+                  Yes
+                <% else %>
+                  No
+                <% end %>
+              </td>
             <% end %>
-            <td><%= assessment.who_reported %></td>
-            <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
-            <% columns.each do |column| -%>
-            <% if assessment.get_reported_symptom_by_name(column) == nil %>
-            <td></td>
-            <% end %>
-            <%passes_threshold = assessment.symptom_passes_threshold(column)%>
-            <%symptom_value = assessment.get_reported_symptom_value(column)%>
-            <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
-            <% if symptom_value == true %>
-            <% symptom_value = "Yes" %>
-            <% elsif symptom_value == false %>
-            <% symptom_value = "No"%>
-            <%end%>
-            <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
-            <% end %>
-            <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
-            <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
-            <% end %>
+            <td>
+              <%= assessment.who_reported %>
+            </td>
+            <td>
+              <%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %>
+            </td>
+            <% @columns.keys.each do |symptom| -%>
+              <% if @columns[symptom][:reported_symptom] == nil %>
+                <td></td>
+              <% end %>
+              <% if @columns[symptom][:reported_symptom]&.type == "BoolSymptom"%>
+                <% if @columns[symptom][:reported_value] %>
+                  <% symptom_value = "Yes" %>
+                <% else %>
+                  <% symptom_value = "No"%>
+                <%end%>
+                <td>
+                  <% if @columns[symptom][:passes_threshold] -%>
+                    <span class="concern"><%=symptom_value%></span>
+                  <% else -%>
+                    <%=symptom_value%>
+                  <% end -%>
+                </td>
+              <% end %>
+              <% if @columns[symptom][:reported_symptom]&.type == "FloatSymptom" || @columns[symptom][:reported_symptom]&.type == "IntegerSymptom"%>
+                <td>
+                  <% if @columns[symptom][:passes_threshold] -%>
+                    <span class="concern"><%=symptom_value%></span>
+                  <% else -%>
+                    <%=symptom_value%>
+                  <% end -%>
+                </td>
+              <% end %>
             <% end -%>
             <td>
               <div class="dropdown">
@@ -119,9 +147,9 @@
               </div>
             </td>
           </tr>
-          <% end -%>
-        </tbody>
-      </table>
+        <% end -%>
+      </tbody>
+    </table>
       <%= react_component("subject/LastDateExposure", { authenticity_token: form_authenticity_token, patient: @patient, has_group_members: @all_group_members.size > 1 } ) %>
     </div>
   </div>
@@ -188,51 +216,51 @@
 <% end %>
 
 <% if @can_view_close_contacts %>
-<div class="card mx-2 mt-3 mb-4 card-square">
-  <h5 class="card-header">
-    Close Contacts
-    <%= react_component("util/InfoTooltip", { tooltipTextKey: 'closeContacts', location: 'right' }, { style: 'display:inline' }) %>
-  </h5>
-  <div class="m-4">
-    <table class="cc_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
-      <thead>
-        <tr>
-          <th class="DataTable-table-header">First Name</th>
-          <th class="DataTable-table-header">Last Name</th>
-          <th class="DataTable-table-header">Phone Number</th>
-          <th class="DataTable-table-header">Email</th>
-          <th class="DataTable-table-header">Contact Attempts</th>
-          <th class="DataTable-table-header">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @patient.close_contacts.order('created_at').each do |cc| -%>
-        <tr>
-          <td><%= cc.first_name %></td>
-          <td><%= cc.last_name %></td>
-          <td><%= cc.primary_telephone %></td>
-          <td><%= cc.email %></td>
-          <td><%= cc.contact_attempts %></td>
-          <td>
-            <div class="btn-group btn-group-sm" role="group">
-              <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, user_role: current_user.roles.first } ) %>
-            </div>
-          </td>
-        </tr>
-        <% end -%>
-      </tbody>
-    </table>
-    <div class="pb-1">
-      <div class="btn-group" role="group">
-        <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, user_role: current_user.roles.first } ) %>
+  <div class="card mx-2 mt-3 mb-4 card-square">
+    <h5 class="card-header">
+      Close Contacts
+      <%= react_component("util/InfoTooltip", { tooltipTextKey: 'closeContacts', location: 'right' }, { style: 'display:inline' }) %>
+    </h5>
+    <div class="m-4">
+      <table class="cc_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
+        <thead>
+          <tr>
+            <th class="DataTable-table-header">First Name</th>
+            <th class="DataTable-table-header">Last Name</th>
+            <th class="DataTable-table-header">Phone Number</th>
+            <th class="DataTable-table-header">Email</th>
+            <th class="DataTable-table-header">Contact Attempts</th>
+            <th class="DataTable-table-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @patient.close_contacts.order('created_at').each do |cc| -%>
+            <tr>
+              <td><%= cc.first_name %></td>
+              <td><%= cc.last_name %></td>
+              <td><%= cc.primary_telephone %></td>
+              <td><%= cc.email %></td>
+              <td><%= cc.contact_attempts %></td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, user_role: current_user.roles.first } ) %>
+                </div>
+              </td>
+            </tr>
+          <% end -%>
+        </tbody>
+      </table>
+      <div class="pb-1">
+        <div class="btn-group" role="group">
+          <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, user_role: current_user.roles.first } ) %>
+        </div>
       </div>
     </div>
   </div>
-</div>
 <% end %>
 
 <% if current_user.can_modify_subject_status? %>
-<%= react_component("history/HistoryComponent", { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token } ) %>
+  <%= react_component("history/HistoryComponent", { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token } ) %>
 <% end %>
 
 <script>

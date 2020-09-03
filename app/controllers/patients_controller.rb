@@ -13,7 +13,7 @@ class PatientsController < ApplicationController
   def show
     redirect_to(root_url) && return unless current_user.can_view_patient?
 
-    @patient = current_user.get_patient(params.permit(:id)[:id]).includes(:jurisdiction)
+    @patient = current_user.get_patient(params.permit(:id)[:id])
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -36,8 +36,29 @@ class PatientsController < ApplicationController
     @jurisdiction_path = current_user.jurisdiction_path
     @can_view_laboratories = current_user.can_view_patient_laboratories?
     @can_view_close_contacts = current_user.can_view_patient_close_contacts?
+    @can_modify_subject_status = current_user.can_modify_subject_status?
     # New Straight up Query in the view ====
     @jurisdiction_paths = Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
+    @assigned_users = @patient.jurisdiction.assigned_users
+    @symptoms = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms.symptoms
+    @threshold_hash = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms.threshold_condition_hash
+    # Query + manipulations =====
+    @assessments = @patient.assessments.includes([:reported_condition])
+    # Assessments table =====
+    @ordered_assessments = @patient.assessments.order('created_at')
+    @symptom_names = []
+    @assessments.each { |assessment| @symptom_names.concat(assessment.all_symptom_names) }
+    @symptom_names.uniq
+    @columns = {}
+    @ordered_assessments.each do |assessment|
+      @symptom_names.each do |symptom|
+        @columns[symptom] = {
+          reported_symptom: assessment.get_reported_symptom_by_name(symptom),
+          reported_value: assessment.get_reported_symptom_value(symptom),
+          passes_threshold: assessment.symptom_passes_threshold(symptom)
+        }
+      end
+    end
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
