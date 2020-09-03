@@ -63,6 +63,8 @@ class Import extends React.Component {
     axios({
       method: 'post',
       url: window.BASE_PATH + '/patients',
+      // on the last patient that is updated, invalidate the cache for tab & workflow counts
+      // (num + 1 == this.state.phased.length), invalidate_cache: true
       data: { ...patient, bypass_duplicate: bypass, invalidate_cache: num + 1 === this.state.phased.length },
     })
       .then(() => {
