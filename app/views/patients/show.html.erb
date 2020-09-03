@@ -3,13 +3,13 @@
   <%= javascript_pack_tag "moment" %>
   <%= javascript_pack_tag "patients_show_datatable" %>
 <% end %>
-<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: @jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: @current_user_jurisdiction, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
 
 <% if @able_to_perform_action %>
   <%= react_component("subject/DownloadMonitoreeExcel", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
 <% end %>
 
-<%= react_component("patient/PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: @able_to_perform_action, jurisdictionPath: @patient.jurisdiction[:path] }) %>
+<%= react_component("patient/PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: @able_to_perform_action, jurisdictionPath: @jurisdiction_path }) %>
 
 <% if @able_to_perform_action %>
   <div class="card mx-2 mt-4 mb-4 card-square">

@@ -42,6 +42,7 @@ class PatientsController < ApplicationController
     # Solution: Bypass role methods for string match to save 1 query role lookup
     @current_user_role = current_user.roles.first.name
     @able_to_perform_action = @current_user_role == 'public_health_enroller' || @current_user_role == 'public_health'
+    @current_user_jurisdiction = current_user.jurisdiction_path
 
     # New Straight up Query in the view ====
     @jurisdiction_paths = Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
