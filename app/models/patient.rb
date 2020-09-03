@@ -486,8 +486,8 @@ class Patient < ApplicationRecord
     return unless responder_id == id
 
     # Return UNLESS:
-    # - being monitored AND within monitoring period OR
-    # - in isolation and NOT closed (as patients on RRR linelist should receive notifications) OR
+    # - in exposure: NOT closed AND within monitoring period OR
+    # - in isolation: NOT closed (as patients on RRR linelist should receive notifications) OR
     # - in continuous exposure OR
     # - is a HoH with actively monitored dependents
     # NOTE: We do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
@@ -598,7 +598,7 @@ class Patient < ApplicationRecord
       # Monitoring period has elapsed
       if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
         eligible = false
-        messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: end_of_monitoring }
+        messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
       end
     end
 
