@@ -492,7 +492,7 @@ class Patient < ApplicationRecord
     # - not in isolation (as patients on RRR linelist should receive notifications) AND
     # - NOT in continuous exposure AND
     # - is not a HoH with actively monitored dependents
-    return if last_date_of_exposure <= (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago &&
+    return if last_date_of_exposure < (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago &&
               !isolation &&
               !continuous_exposure &&
               !dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
