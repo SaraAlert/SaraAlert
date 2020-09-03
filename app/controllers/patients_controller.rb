@@ -44,20 +44,20 @@ class PatientsController < ApplicationController
     @able_to_perform_action = @current_user_role == 'public_health_enroller' || @current_user_role == 'public_health'
     @current_user_jurisdiction = current_user.jurisdiction_path
 
-    # New Straight up Query in the view ====
-    @jurisdiction_paths = Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
+    @jurisdiction_paths = Rails.cache.fetch('all_jurisdiction_ids_and_paths', expires_in: 24.hours, race_condition_ttl: 30.seconds) do
+      Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
+    end
+
     @assigned_users = @patient.jurisdiction.assigned_users
-    @symptoms = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms.symptoms
-    @threshold_hash = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms.threshold_condition_hash
-    # Query + manipulations =====
-    @assessments = @patient.assessments.includes([:reported_condition])
+    hierarchical_condition_unpopulated_symptoms = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
+    @symptoms = hierarchical_condition_unpopulated_symptoms.symptoms
+    @threshold_hash = hierarchical_condition_unpopulated_symptoms.threshold_condition_hash
+
     # Assessments table =====
-    @ordered_assessments = @patient.assessments.order('created_at')
-    @symptom_names = []
-    @assessments.each { |assessment| @symptom_names.concat(assessment.all_symptom_names) }
-    @symptom_names.uniq
+    @assessments = @patient.assessments.includes([:reported_condition]).order('created_at')
+    @symptom_names = @symptoms.collect { |s| s.name }
     @columns = {}
-    @ordered_assessments.each do |assessment|
+    @assessments.each do |assessment|
       @symptom_names.each do |symptom|
         @columns[symptom] = {
           reported_symptom: assessment.get_reported_symptom_by_name(symptom),

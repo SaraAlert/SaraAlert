@@ -84,7 +84,7 @@
           </tr>
         </thead>
         <tbody>
-        <% @ordered_assessments.each do |assessment| -%>
+        <% @assessments.each do |assessment| -%>
           <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
             <td>
               <%= assessment.id %>
