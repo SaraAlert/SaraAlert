@@ -5,7 +5,13 @@ import { Card, Button, Form } from 'react-bootstrap';
 class SymptomsAssessment extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, noSymptomsCheckbox: false, selectedBoolSymptomCount: 0 };
+    this.state = {
+      ...this.props,
+      current: { ...this.props.currentState },
+      loading: false,
+      noSymptomsCheckbox: false,
+      selectedBoolSymptomCount: 0,
+    };
     this.handleChange = this.handleChange.bind(this);
     this.handleNoSymptomChange = this.handleNoSymptomChange.bind(this);
     this.updateBoolSymptomCount = this.updateBoolSymptomCount.bind(this);
@@ -47,6 +53,7 @@ class SymptomsAssessment extends React.Component {
   }
 
   navigate() {
+    this.setState({ loading: true });
     this.props.submit();
   }
 
@@ -144,7 +151,12 @@ class SymptomsAssessment extends React.Component {
               </Form.Group>
             </Form.Row>
             <Form.Row className="pt-4">
-              <Button variant="primary" block size="lg" className="btn-block btn-square" onClick={this.navigate}>
+              <Button variant="primary" block size="lg" className="btn-block btn-square" disabled={this.state.loading} onClick={this.navigate}>
+                {this.state.loading && (
+                  <React.Fragment>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                  </React.Fragment>
+                )}
                 {this.props.translations[this.props.lang]['web']['submit']}
               </Button>
             </Form.Row>
