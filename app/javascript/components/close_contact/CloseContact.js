@@ -11,6 +11,7 @@ class CloseContact extends React.Component {
     super(props);
     this.state = {
       showModal: false,
+      loading: false,
       first_name: this.props.close_contact.first_name || '',
       last_name: this.props.close_contact.last_name || '',
       primary_telephone: this.props.close_contact.primary_telephone || '',
@@ -46,24 +47,26 @@ class CloseContact extends React.Component {
   };
 
   submit() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/close_contacts' + (this.props.close_contact.id ? '/' + this.props.close_contact.id : ''), {
-        patient_id: this.props.patient.id,
-        first_name: this.state.first_name || '',
-        last_name: this.state.last_name || '',
-        primary_telephone: this.state.primary_telephone || '',
-        email: this.state.email || '',
-        notes: this.state.notes || '',
-        enrolled_id: this.state.enrolled_id || null,
-        contact_attempts: this.state.contact_attempts || 0,
-      })
-      .then(() => {
-        location.reload(true);
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/close_contacts' + (this.props.close_contact.id ? '/' + this.props.close_contact.id : ''), {
+          patient_id: this.props.patient.id,
+          first_name: this.state.first_name || '',
+          last_name: this.state.last_name || '',
+          primary_telephone: this.state.primary_telephone || '',
+          email: this.state.email || '',
+          notes: this.state.notes || '',
+          enrolled_id: this.state.enrolled_id || null,
+          contact_attempts: this.state.contact_attempts || 0,
+        })
+        .then(() => {
+          location.reload(true);
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   createModal(title, toggle, submit) {
@@ -119,7 +122,9 @@ class CloseContact extends React.Component {
           <Button
             variant="primary btn-square"
             onClick={submit}
-            disabled={!(this.state.first_name || this.state.last_name || this.state.email || this.state.primary_telephone || this.state.notes)}>
+            disabled={
+              !(this.state.first_name || this.state.last_name || this.state.email || this.state.primary_telephone || this.state.notes) || this.state.loading
+            }>
             {this.props.close_contact.id ? 'Update' : 'Create'}
           </Button>
         </Modal.Footer>
