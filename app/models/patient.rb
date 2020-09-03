@@ -484,7 +484,7 @@ class Patient < ApplicationRecord
 
     # Do not allow messages to go to household members
     return unless responder_id == id
-    
+
     # This  check is necessary as we do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
     # and we want to guarantee they they are not receiving messages past their monitoring period.
     # Return if:
@@ -502,8 +502,6 @@ class Patient < ApplicationRecord
                   continuous_exposure ||
                   dependents.where(monitoring: true).exists? ||
                   dependents.where(continuous_exposure: true).exists?
-
-
 
     # If force is set, the preferred contact time will be ignored
     unless force
@@ -542,7 +540,6 @@ class Patient < ApplicationRecord
     elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && email.present?
       PatientMailer.assessment_email(self).deliver_later
     end
-
   end
 
   # Return the calculated age based on the date of birth
