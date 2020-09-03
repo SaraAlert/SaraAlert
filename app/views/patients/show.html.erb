@@ -1,192 +1,193 @@
 <% content_for :assets do %>
-<%= javascript_pack_tag "datatables" %>
-<%= javascript_pack_tag "moment" %>
+  <%= javascript_pack_tag "datatables" %>
+  <%= javascript_pack_tag "moment" %>
 <% end %>
-<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
+<% byebug %>
+<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: @jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
 
-<% if current_user.can_view_patient_assessments? %>
-<%= react_component("subject/DownloadMonitoreeExcel", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+<% if @can_view_assessments %>
+  <%= react_component("subject/DownloadMonitoreeExcel", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
 <% end %>
 
-<%= react_component("patient/PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: current_user.can_modify_subject_status?, jurisdictionPath: @patient.jurisdiction[:path] }) %>
+<%= react_component("patient/PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: @hide_body, jurisdictionPath: @patient.jurisdiction[:path] }) %>
 
 <% if current_user.can_modify_subject_status? %>
-<div class="card mx-2 mt-4 mb-4 card-square">
-  <h5 class="card-header">Monitoring Actions</h5>
-  <%= react_component("subject/MonitoringStatus", {
-      current_user: current_user,
-      authenticity_token: form_authenticity_token,
-      has_group_members: @group_members.nil? || @group_members.size > 1,
-      in_a_group: @all_group_members.size > 1,
-      patient: @patient,
-      jurisdictionPaths: Hash[Jurisdiction.all.where.not(name: "USA").pluck(:id, :path).map {|id, path| [id, path]}],
-      assignedUsers: @patient.jurisdiction.assigned_users,
-      isolation: @patient.isolation
-      }) %>
-</div>
+  <div class="card mx-2 mt-4 mb-4 card-square">
+    <h5 class="card-header">Monitoring Actions</h5>
+    <%= react_component("subject/MonitoringStatus", {
+        current_user: current_user,
+        authenticity_token: form_authenticity_token,
+        has_group_members: @group_members.nil? || @group_members.size > 1,
+        in_a_group: @all_group_members.size > 1,
+        patient: @patient,
+        jurisdictionPaths: @jurisdiction_paths,
+        assignedUsers: @patient.jurisdiction.assigned_users,
+        isolation: @patient.isolation
+        }) %>
+  </div>
 <% end %>
 
-<% if current_user.can_view_patient_assessments? %>
-<div class="modal fade" tabindex="-1" role="dialog" id="modal-new">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
-        <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, threshold_hash: reporting_condition.threshold_condition_hash, symptoms: reporting_condition.symptoms, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: Assessment.new.translations, lang: 'en' }) %>
+<% if @can_view_assessments %>
+  <div class="modal fade" tabindex="-1" role="dialog" id="modal-new">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
+          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, threshold_hash: reporting_condition.threshold_condition_hash, symptoms: reporting_condition.symptoms, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: Assessment.new.translations, lang: 'en' }) %>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div class="card mx-2 mt-3 mb-4 card-square">
-  <h5 class="card-header"> Reports</h5>
-  <div class="m-4">
-    <%= react_component("subject/CurrentStatus", { report_eligibility: @patient.report_eligibility, status: @patient.status, isolation: @patient.isolation } ) %>
-    <div class="pb-4 pt-2">
-      <div class="btn-group" role="group">
-        <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New Report</button>
-        <% unless @patient.isolation %>
-        <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
-        <% end %>
-        <% if @patient.monitoring %>
-        <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
-        <% end %>
-        <%= react_component("subject/ContactAttempt", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+  <div class="card mx-2 mt-3 mb-4 card-square">
+    <h5 class="card-header"> Reports</h5>
+    <div class="m-4">
+      <%= react_component("subject/CurrentStatus", { report_eligibility: @patient.report_eligibility, status: @patient.status, isolation: @patient.isolation } ) %>
+      <div class="pb-4 pt-2">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New Report</button>
+          <% unless @patient.isolation %>
+          <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <% end %>
+          <% if @patient.monitoring %>
+          <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <% end %>
+          <%= react_component("subject/ContactAttempt", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+        </div>
       </div>
-    </div>
-    <% columns = [] %>
-    <% @patient.assessments.includes([:reported_condition]).each do |assessment| columns.concat(assessment.all_symptom_names) end %>
-    <% columns = columns.uniq.sort %>
-    <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font">
-      <thead>
-        <tr>
-          <th class="DataTable-table-header">ID</th>
-          <% unless @patient.isolation %>
-          <th class="DataTable-table-header dt-a-w-50">Needs Review <%= react_component("util/InfoTooltip", { tooltipTextKey: 'exposureNeedsReviewColumn', location: 'right' }, { style: 'display:inline' }) %></th>
-          <% end %>
-          <th class="DataTable-table-header">Reporter</th>
-          <th class="DataTable-table-header">Created</th>
-          <% columns.each do |column| -%>
-          <th class="DataTable-table-header dt-a-w-75"><%= column&.titleize %></th>
-          <% end -%>
-          <th class="DataTable-table-header">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @patient.assessments.order('created_at').each do |assessment| -%>
-        <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
-          <td><%= assessment.id %></td>
-          <% unless @patient.isolation %>
-          <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
-          <% end %>
-          <td><%= assessment.who_reported %></td>
-          <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
-          <% columns.each do |column| -%>
-          <% if assessment.get_reported_symptom_by_name(column) == nil %>
-          <td></td>
-          <% end %>
-          <%passes_threshold = assessment.symptom_passes_threshold(column)%>
-          <%symptom_value = assessment.get_reported_symptom_value(column)%>
-          <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
-          <% if symptom_value == true %>
-          <% symptom_value = "Yes" %>
-          <% elsif symptom_value == false %>
-          <% symptom_value = "No"%>
-          <%end%>
-          <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
-          <% end %>
-          <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
-          <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
-          <% end %>
-          <% end -%>
-          <td>
-            <div class="dropdown">
-              <button class="btn btn-sm btn-outline-primary dropdown-toggle btn-block a-dropdown" type="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-cogs fw"></i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton">
-                <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
-                <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
-                <% unless @patient.isolation %>
-                <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
-                <% end %>
+      <% columns = [] %>
+      <% @patient.assessments.includes([:reported_condition]).each do |assessment| columns.concat(assessment.all_symptom_names) end %>
+      <% columns = columns.uniq %>
+      <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
+        <thead>
+          <tr>
+            <th class="DataTable-table-header">ID</th>
+            <% unless @patient.isolation %>
+            <th class="DataTable-table-header dt-a-w-50">Needs Review <%= react_component("util/InfoTooltip", { tooltipTextKey: 'exposureNeedsReviewColumn', location: 'right' }, { style: 'display:inline' }) %></th>
+            <% end %>
+            <th class="DataTable-table-header">Reporter</th>
+            <th class="DataTable-table-header">Created</th>
+            <% columns.each do |column| -%>
+            <th class="DataTable-table-header dt-a-w-75"><%= column&.titleize %></th>
+            <% end -%>
+            <th class="DataTable-table-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @patient.assessments.order('created_at').each do |assessment| -%>
+          <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
+            <td><%= assessment.id %></td>
+            <% unless @patient.isolation %>
+            <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
+            <% end %>
+            <td><%= assessment.who_reported %></td>
+            <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
+            <% columns.each do |column| -%>
+            <% if assessment.get_reported_symptom_by_name(column) == nil %>
+            <td></td>
+            <% end %>
+            <%passes_threshold = assessment.symptom_passes_threshold(column)%>
+            <%symptom_value = assessment.get_reported_symptom_value(column)%>
+            <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
+            <% if symptom_value == true %>
+            <% symptom_value = "Yes" %>
+            <% elsif symptom_value == false %>
+            <% symptom_value = "No"%>
+            <%end%>
+            <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
+            <% end %>
+            <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
+            <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
+            <% end %>
+            <% end -%>
+            <td>
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-primary dropdown-toggle btn-block a-dropdown" type="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-cogs fw"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton">
+                  <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
+                  <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                  <% unless @patient.isolation %>
+                    <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                  <% end %>
+                </div>
               </div>
-            </div>
-          </td>
-        </tr>
-        <% end -%>
-      </tbody>
-    </table>
-    <%= react_component("subject/LastDateExposure", { authenticity_token: form_authenticity_token, patient: @patient, has_group_members: @all_group_members.size > 1 } ) %>
-  </div>
-</div>
-<% @patient.assessments.order('created_at').each do |assessment| -%>
-<div class="modal fade" tabindex="-1" role="dialog" id="<%= 'modal-' + assessment.id.to_s %>" key="<%= 'modal-' + assessment.id.to_s %>">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, threshold_hash: assessment&.reported_condition&.threshold_condition_hash, symptoms: assessment&.reported_condition&.symptoms, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: assessment.translations, lang: 'en' }) %>
-      </div>
+            </td>
+          </tr>
+          <% end -%>
+        </tbody>
+      </table>
+      <%= react_component("subject/LastDateExposure", { authenticity_token: form_authenticity_token, patient: @patient, has_group_members: @all_group_members.size > 1 } ) %>
     </div>
   </div>
-</div>
-<% end -%>
+  <% @patient.assessments.order('created_at').each do |assessment| -%>
+    <div class="modal fade" tabindex="-1" role="dialog" id="<%= 'modal-' + assessment.id.to_s %>" key="<%= 'modal-' + assessment.id.to_s %>">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, threshold_hash: assessment&.reported_condition&.threshold_condition_hash, symptoms: assessment&.reported_condition&.symptoms, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: assessment.translations, lang: 'en' }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end -%>
 <% end %>
 
 <% if current_user.can_view_patient_laboratories? %>
-<div class="card mx-2 mt-3 mb-4 card-square">
-  <h5 class="card-header">
-    Lab Results
-    <%= react_component("util/InfoTooltip", { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
-  </h5>
-  <div class="m-4">
-    <table class="lab_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
-      <thead>
-        <tr>
-          <th class="DataTable-table-header">ID</th>
-          <th class="DataTable-table-header">Type</th>
-          <th class="DataTable-table-header">Specimen Collected</th>
-          <th class="DataTable-table-header">Report</th>
-          <th class="DataTable-table-header">Result</th>
-          <th class="DataTable-table-header">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @patient.laboratories.order('created_at').each do |lab| -%>
-        <tr>
-          <td><%= lab.id %></td>
-          <td><%= lab.lab_type %></td>
-          <td><%= lab.specimen_collection %></td>
-          <td><%= lab.report %></td>
-          <td><%= lab.result %></td>
-          <td>
-            <div class="btn-group btn-group-sm" role="group">
-              <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: lab } ) %>
-            </div>
-          </td>
-        </tr>
-        <% end -%>
-      </tbody>
-    </table>
-    <div class="pb-1">
-      <div class="btn-group" role="group">
-        <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new } ) %>
+  <div class="card mx-2 mt-3 mb-4 card-square">
+    <h5 class="card-header">
+      Lab Results
+      <%= react_component("util/InfoTooltip", { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
+    </h5>
+    <div class="m-4">
+      <table class="lab_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
+        <thead>
+          <tr>
+            <th class="DataTable-table-header">ID</th>
+            <th class="DataTable-table-header">Type</th>
+            <th class="DataTable-table-header">Specimen Collected</th>
+            <th class="DataTable-table-header">Report</th>
+            <th class="DataTable-table-header">Result</th>
+            <th class="DataTable-table-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @patient.laboratories.order('created_at').each do |lab| -%>
+            <tr>
+              <td><%= lab.id %></td>
+              <td><%= lab.lab_type %></td>
+              <td><%= lab.specimen_collection %></td>
+              <td><%= lab.report %></td>
+              <td><%= lab.result %></td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: lab } ) %>
+                </div>
+              </td>
+            </tr>
+          <% end -%>
+        </tbody>
+      </table>
+      <div class="pb-1">
+        <div class="btn-group" role="group">
+          <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new } ) %>
+        </div>
       </div>
     </div>
   </div>
-</div>
 <% end %>
 
-<% if current_user.can_view_patient_close_contacts? %>
+<% if @can_view_close_contacts %>
 <div class="card mx-2 mt-3 mb-4 card-square">
   <h5 class="card-header">
     Close Contacts

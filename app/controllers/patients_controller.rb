@@ -13,7 +13,7 @@ class PatientsController < ApplicationController
   def show
     redirect_to(root_url) && return unless current_user.can_view_patient?
 
-    @patient = current_user.get_patient(params.permit(:id)[:id])
+    @patient = current_user.get_patient(params.permit(:id)[:id]).includes(:jurisdiction)
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -30,6 +30,14 @@ class PatientsController < ApplicationController
     end
 
     @translations = Assessment.new.translations
+    # New current_user stuff====
+    @hide_body = current_user.can_modify_subject_status?
+    @can_view_assessments = current_user.can_view_patient_assessments?
+    @jurisdiction_path = current_user.jurisdiction_path
+    @can_view_laboratories = current_user.can_view_patient_laboratories?
+    @can_view_close_contacts = current_user.can_view_patient_close_contacts?
+    # New Straight up Query in the view ====
+    @jurisdiction_paths = Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
