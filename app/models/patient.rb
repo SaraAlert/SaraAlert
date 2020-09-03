@@ -498,7 +498,7 @@ class Patient < ApplicationRecord
                   dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
 
     # Return if closed, UNLESS there are still group members who need to be reported on
-    return unless (monitoring && ||
+    return unless monitoring ||
                   continuous_exposure ||
                   dependents.where(monitoring: true).exists? ||
                   dependents.where(continuous_exposure: true).exists?
