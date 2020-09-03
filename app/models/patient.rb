@@ -485,11 +485,17 @@ class Patient < ApplicationRecord
     # Do not allow messages to go to household members
     return unless responder_id == id
 
-    # Return if closed, UNLESS there are still group members who need to be reported on
-    return unless monitoring ||
+    # Return UNLESS:
+    # - in exposure: NOT closed AND within monitoring period OR
+    # - in isolation: NOT closed (as patients on RRR linelist should receive notifications) OR
+    # - in continuous exposure OR
+    # - is a HoH with actively monitored dependents
+    # NOTE: We do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
+    # so we also have to check that someone receiving messages is not past their monitoring period unless their in isolation, continuous exposure, or have active dependents.
+    return unless (monitoring && last_date_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day) ||
+                  (monitoring && isolation) ||
                   continuous_exposure ||
-                  dependents.where(monitoring: true).exists? ||
-                  dependents.where(continuous_exposure: true).exists?
+                  dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
 
     # If force is set, the preferred contact time will be ignored
     unless force
@@ -592,7 +598,7 @@ class Patient < ApplicationRecord
       # Monitoring period has elapsed
       if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
         eligible = false
-        messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: end_of_monitoring }
+        messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
       end
     end
 
