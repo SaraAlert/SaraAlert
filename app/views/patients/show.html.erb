@@ -5,13 +5,13 @@
 <% end %>
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: @jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
 
-<% if @can_view_assessments %>
+<% if @able_to_perform_action %>
   <%= react_component("subject/DownloadMonitoreeExcel", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
 <% end %>
 
-<%= react_component("patient/PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: @hide_body, jurisdictionPath: @patient.jurisdiction[:path] }) %>
+<%= react_component("patient/PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: @able_to_perform_action, jurisdictionPath: @patient.jurisdiction[:path] }) %>
 
-<% if @can_modify_subject_status %>
+<% if @able_to_perform_action %>
   <div class="card mx-2 mt-4 mb-4 card-square">
     <h5 class="card-header">Monitoring Actions</h5>
     <%= react_component("subject/MonitoringStatus", {
@@ -27,7 +27,7 @@
   </div>
 <% end %>
 
-<% if @can_view_assessments %>
+<% if @able_to_perform_action %>
   <div class="modal fade" tabindex="-1" role="dialog" id="modal-new">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -171,7 +171,7 @@
   <% end -%>
 <% end %>
 
-<% if current_user.can_view_patient_laboratories? %>
+<% if @able_to_perform_action %>
   <div class="card mx-2 mt-3 mb-4 card-square">
     <h5 class="card-header">
       Lab Results
@@ -215,7 +215,7 @@
   </div>
 <% end %>
 
-<% if @can_view_close_contacts %>
+<% if @able_to_perform_action %>
   <div class="card mx-2 mt-3 mb-4 card-square">
     <h5 class="card-header">
       Close Contacts
@@ -252,14 +252,14 @@
       </table>
       <div class="pb-1">
         <div class="btn-group" role="group">
-          <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, user_role: current_user.roles.first } ) %>
+          <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, user_role: @current_user_role } ) %>
         </div>
       </div>
     </div>
   </div>
 <% end %>
 
-<% if current_user.can_modify_subject_status? %>
+<% if @able_to_perform_action %>
   <%= react_component("history/HistoryComponent", { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token } ) %>
 <% end %>
 

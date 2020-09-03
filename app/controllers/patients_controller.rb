@@ -30,13 +30,19 @@ class PatientsController < ApplicationController
     end
 
     @translations = Assessment.new.translations
-    # New current_user stuff====
-    @hide_body = current_user.can_modify_subject_status?
-    @can_view_assessments = current_user.can_view_patient_assessments?
-    @jurisdiction_path = current_user.jurisdiction_path
-    @can_view_laboratories = current_user.can_view_patient_laboratories?
-    @can_view_close_contacts = current_user.can_view_patient_close_contacts?
-    @can_modify_subject_status = current_user.can_modify_subject_status?
+
+    # All actions on this page are done by either a public health or public health enroller
+    # so all the role queries can be wrapped up into this.
+    # current_user.can_modify_subject_status?
+    # current_user.can_view_patient_assessments?
+    # current_user.can_view_patient_laboratories?
+    # current_user.can_view_patient_close_contacts?
+    # current_user.can_modify_subject_status?
+    # Issue: CloseContact.js requires the current user
+    # Solution: Bypass role methods for string match to save 1 query role lookup
+    @current_user_role = current_user.roles.first.name
+    @able_to_perform_action = @current_user_role == 'public_health_enroller' || @current_user_role == 'public_health'
+
     # New Straight up Query in the view ====
     @jurisdiction_paths = Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
     @assigned_users = @patient.jurisdiction.assigned_users
