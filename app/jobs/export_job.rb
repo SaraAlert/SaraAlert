@@ -75,6 +75,7 @@ class ExportJob < ApplicationJob
       end
     when 'full_history_purgeable'
       patients = user.viewable_patients.purge_eligible
+      file_extension = 'xlsx'
       patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
         file_index = index + 1
         lookups << get_file(user_id,
