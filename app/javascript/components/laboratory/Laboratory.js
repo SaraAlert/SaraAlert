@@ -11,6 +11,7 @@ class Laboratory extends React.Component {
     super(props);
     this.state = {
       showModal: false,
+      loading: false,
       lab_type: this.props.lab.lab_type || '',
       specimen_collection: this.props.lab.specimen_collection,
       report: this.props.lab.report,
@@ -33,21 +34,23 @@ class Laboratory extends React.Component {
   }
 
   submit() {
-    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios
-      .post(window.BASE_PATH + '/laboratories' + (this.props.lab.id ? '/' + this.props.lab.id : ''), {
-        patient_id: this.props.patient.id,
-        lab_type: this.state.lab_type,
-        specimen_collection: this.state.specimen_collection,
-        report: this.state.report,
-        result: this.state.result,
-      })
-      .then(() => {
-        location.reload(true);
-      })
-      .catch(error => {
-        reportError(error);
-      });
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/laboratories' + (this.props.lab.id ? '/' + this.props.lab.id : ''), {
+          patient_id: this.props.patient.id,
+          lab_type: this.state.lab_type,
+          specimen_collection: this.state.specimen_collection,
+          report: this.state.report,
+          result: this.state.result,
+        })
+        .then(() => {
+          location.reload(true);
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
   }
 
   createModal(title, toggle, submit) {
@@ -108,7 +111,7 @@ class Laboratory extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit}>
+          <Button variant="primary btn-square" disabled={this.state.loading} onClick={submit}>
             Create
           </Button>
         </Modal.Footer>
