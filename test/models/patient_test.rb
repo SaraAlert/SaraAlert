@@ -375,6 +375,12 @@ class PatientTest < ActiveSupport::TestCase
     assert Patient.purge_eligible.count.zero?
   end
 
+  test 'purge eligible continuous_exposure' do
+    patient = create(:patient, purged: false, monitoring: false, continuous_exposure: true)
+    patient.update!(updated_at: (2 * ADMIN_OPTIONS['purgeable_after']).minutes.ago)
+    assert Patient.purge_eligible.size == 1
+  end
+
   test 'purged' do
     patient = create(:patient, purged: false)
     assert_equal 0, Patient.purged.where(id: patient.id).count

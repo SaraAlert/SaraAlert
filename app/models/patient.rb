@@ -130,6 +130,7 @@ class Patient < ApplicationRecord
   scope :purge_eligible, lambda {
     where(monitoring: false)
       .where(purged: false)
+      .where(continuous_exposure: false)
       .where('patients.updated_at < ?',
              ADMIN_OPTIONS['purgeable_after'].minutes.before(
                Chronic.parse('last ' + ADMIN_OPTIONS['weekly_purge_warning_date'], now:
