@@ -16,9 +16,9 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless %w[enroller public_health_enroller public_health].include?(@current_user_role)
 
     if @current_user_role == 'enroller'
-      @patient = current_user.enrolled_patients.includes({assessments: :reported_condition}, :jurisdiction, :histories, :dependents).find_by_id(params.permit(:id)[:id])
+      @patient = current_user.enrolled_patients.includes({assessments: [{reported_condition: [:symptoms, {threshold_condition: [:symptoms]}]}]}, :jurisdiction, :histories, :dependents, :laboratories, :close_contacts).find_by_id(params.permit(:id)[:id])
     else
-      @patient = current_user.viewable_patients.includes({assessments: :reported_condition}, :jurisdiction, :histories, :dependents).find_by_id(params.permit(:id)[:id])
+      @patient = current_user.viewable_patients.includes({assessments: [{reported_condition: [:symptoms, {threshold_condition: [:symptoms]}]}]}, :jurisdiction, :histories, :dependents, :laboratories, :close_contacts).find_by_id(params.permit(:id)[:id])
     end
 
     # If we failed to find a subject given the id, redirect to index
@@ -54,10 +54,14 @@ class PatientsController < ApplicationController
     @current_user_jurisdiction = current_user.jurisdiction_path
 
     @jurisdiction_paths = Rails.cache.fetch('all_jurisdiction_ids_and_paths', expires_in: 24.hours, race_condition_ttl: 30.seconds) do
-      Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
+      Hash[Jurisdiction.all.where.not(name: "USA").pluck(:id, :path).map {|id, path| [id, path]}]
     end
 
+    # Very slow in worst-case
     @assigned_users = @patient.jurisdiction.assigned_users
+
+    # Get the symptoms & threshold_hash for the current set of symptoms in case user needs to submit a manual
+    # assessment for the patient
     hierarchical_condition_unpopulated_symptoms = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms
     @symptoms = hierarchical_condition_unpopulated_symptoms.symptoms
     @threshold_hash = hierarchical_condition_unpopulated_symptoms.threshold_condition_hash
@@ -67,6 +71,8 @@ class PatientsController < ApplicationController
     @symptom_names = @symptoms.collect { |s| s.name }
     @columns = {}
     @assessments.each do |assessment|
+      # Get the threshold hash for the set of symptoms at the time of this assessment
+      # threshold_condition = assessment.reported_condition.threshold_condition
       @symptom_names.each do |symptom|
         @columns[symptom] = {
           reported_symptom: assessment.get_reported_symptom_by_name(symptom),
@@ -78,6 +84,8 @@ class PatientsController < ApplicationController
 
     @histories = @patient.histories
     @laboratories = @patient.laboratories
+    @close_contacts = @patient.close_contacts
+    @patient_hash = @patient.to_h
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?

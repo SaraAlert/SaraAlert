@@ -47,11 +47,34 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       public_health_action: public_health_action || '',
       status: status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '',
       closed_at: closed_at&.rfc2822 || '',
-      transferred_from: latest_transfer&.from_path || '',
+      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''),
       transferred_to: latest_transfer&.to_path || '',
       expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''),
       extended_isolation: extended_isolation || ''
+      transferred_from: latest_transfer&.from_path || ''
     }
+  end
+
+  def to_h
+    attributes.merge({
+      id: id,
+      name: first_name.present? || last_name.present? ? "#{last_name}#{first_name.blank? ? '' : ', ' + first_name}" : 'NAME NOT PROVIDED',
+      jurisdiction: jurisdiction&.name || '',
+      assigned_user: assigned_user || '',
+      state_local_id: user_defined_id_statelocal || '',
+      sex: sex || '',
+      dob: date_of_birth&.strftime('%F') || '',
+      end_of_monitoring: (continuous_exposure ? 'Continuous Exposure' : end_of_monitoring) || '',
+      risk_level: exposure_risk_assessment || '',
+      monitoring_plan: monitoring_plan || '',
+      latest_report: latest_assessment_at&.rfc2822 || '',
+      transferred_at: latest_transfer_at&.rfc2822 || '',
+      reason_for_closure: monitoring_reason || '',
+      public_health_action: public_health_action || '',
+      status: status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '',
+      closed_at: closed_at&.rfc2822 || '',
+      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || '')
+    })
   end
 
   # All information about this subject

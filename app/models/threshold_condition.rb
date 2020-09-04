@@ -2,6 +2,8 @@
 
 # ThresholdCondition
 class ThresholdCondition < Condition
+  has_many :reported_conditions
+
   # When someone answers that they are 'experiencing symptoms' and does not
   # fill out a complete report, we use this function to generate a list of
   # symptoms with nil values to build a ReportedCondition with nil values

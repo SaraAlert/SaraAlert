@@ -6,20 +6,20 @@
 <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: @current_user_jurisdiction, crumbs: [ {value: "Return to Exposure Dashboard", href: '/'}, {value: "Monitoree Details", href: nil} ], isolation: @patient&.isolation || false } %>
 
 <% if @able_to_perform_action %>
-  <%= react_component("subject/DownloadMonitoreeExcel", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+  <%= react_component("subject/DownloadMonitoreeExcel", { authenticity_token: form_authenticity_token, patient: @patient_hash} ) %>
 <% end %>
 
-<%= react_component("patient/PatientPage", { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: @able_to_perform_action, jurisdictionPath: @jurisdiction_path }) %>
+<%= react_component("patient/PatientPage", { patient: @patient_hash, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: @able_to_perform_action, jurisdictionPath: @jurisdiction_path }) %>
 
 <% if @able_to_perform_action %>
   <div class="card mx-2 mt-4 mb-4 card-square">
     <h5 class="card-header">Monitoring Actions</h5>
     <%= react_component("subject/MonitoringStatus", {
-        current_user: current_user,
+        current_user_jurisdiction_path: @current_user_jurisdiction,
         authenticity_token: form_authenticity_token,
         has_group_members: @group_members.nil? || @group_members.size > 1,
         in_a_group: @all_group_members.size > 1,
-        patient: @patient,
+        patient: @patient_hash,
         jurisdictionPaths: @jurisdiction_paths,
         assignedUsers: @assigned_users,
         isolation: @patient.isolation
@@ -37,7 +37,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <%= react_component("assessment/Assessment", { current_user: current_user, assessment: {}, threshold_hash: @threshold_hash, symptoms: @symptoms, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: @translations, lang: 'en' }) %>
+          <%= react_component("assessment/Assessment", { signed_in: current_user.nil?, assessment: {}, threshold_hash: @threshold_hash, symptoms: @symptoms, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: @translations, lang: 'en' }) %>
         </div>
       </div>
     </div>
@@ -50,12 +50,12 @@
         <div class="btn-group" role="group">
           <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#modal-new"><i class="fas fa-plus"></i> Add New Report</button>
           <% unless @patient.isolation %>
-            <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+            <%= react_component("subject/ClearReports", { authenticity_token: form_authenticity_token, patient: @patient_hash } ) %>
           <% end %>
           <% if @patient.monitoring %>
-            <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+            <%= react_component("subject/PauseNotifications", { authenticity_token: form_authenticity_token, patient: @patient_hash } ) %>
           <% end %>
-          <%= react_component("subject/ContactAttempt", { authenticity_token: form_authenticity_token, patient: @patient } ) %>
+          <%= react_component("subject/ContactAttempt", { authenticity_token: form_authenticity_token, patient: @patient_hash } ) %>
         </div>
       </div>
       <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
@@ -139,9 +139,9 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton">
                   <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
-                  <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                  <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient_hash, authenticity_token: form_authenticity_token }) %>
                   <% unless @patient.isolation %>
-                    <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                    <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient_hash, authenticity_token: form_authenticity_token }) %>
                   <% end %>
                 </div>
               </div>
@@ -150,10 +150,11 @@
         <% end -%>
       </tbody>
     </table>
-      <%= react_component("subject/LastDateExposure", { authenticity_token: form_authenticity_token, patient: @patient, has_group_members: @all_group_members.size > 1 } ) %>
+    <%= react_component("subject/LastDateExposure", { authenticity_token: form_authenticity_token, patient: @patient_hash, has_group_members: @all_group_members.size > 1 } ) %>
     </div>
   </div>
-  <% @patient.assessments.order('created_at').each do |assessment| -%>
+
+  <% @assessments.each do |assessment| -%>
     <div class="modal fade" tabindex="-1" role="dialog" id="<%= 'modal-' + assessment.id.to_s %>" key="<%= 'modal-' + assessment.id.to_s %>">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -163,7 +164,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <%= react_component("assessment/Assessment", { current_user: current_user, assessment: assessment, threshold_hash: assessment&.reported_condition&.threshold_condition_hash, symptoms: assessment&.reported_condition&.symptoms, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: assessment.translations, lang: 'en' }) %>
+            <%= react_component("assessment/Assessment", { signed_in: current_user.nil?, assessment: assessment, threshold_hash: assessment&.reported_condition&.threshold_condition_hash, symptoms: assessment&.reported_condition&.symptoms, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: assessment.translations, lang: 'en' }) %>
           </div>
         </div>
       </div>
@@ -190,7 +191,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @patient.laboratories.order('created_at').each do |lab| -%>
+          <% @laboratories.each do |lab| -%>
             <tr>
               <td><%= lab.id %></td>
               <td><%= lab.lab_type %></td>
@@ -199,7 +200,7 @@
               <td><%= lab.result %></td>
               <td>
                 <div class="btn-group btn-group-sm" role="group">
-                  <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: lab } ) %>
+                  <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient_hash, lab: lab } ) %>
                 </div>
               </td>
             </tr>
@@ -208,7 +209,7 @@
       </table>
       <div class="pb-1">
         <div class="btn-group" role="group">
-          <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new } ) %>
+          <%= react_component("laboratory/Laboratory", { authenticity_token: form_authenticity_token, patient: @patient_hash, lab: Laboratory.new } ) %>
         </div>
       </div>
     </div>
@@ -234,7 +235,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @patient.close_contacts.order('created_at').each do |cc| -%>
+          <% @close_contacts.each do |cc| -%>
             <tr>
               <td><%= cc.first_name %></td>
               <td><%= cc.last_name %></td>
@@ -243,7 +244,7 @@
               <td><%= cc.contact_attempts %></td>
               <td>
                 <div class="btn-group btn-group-sm" role="group">
-                  <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, user_role: current_user.roles.first } ) %>
+                  <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient_hash, close_contact: cc, user_role: @current_user_role } ) %>
                 </div>
               </td>
             </tr>
@@ -252,7 +253,7 @@
       </table>
       <div class="pb-1">
         <div class="btn-group" role="group">
-          <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, user_role: @current_user_role } ) %>
+          <%= react_component("close_contact/CloseContact", { authenticity_token: form_authenticity_token, patient: @patient_hash, close_contact: CloseContact.new, user_role: @current_user_role } ) %>
         </div>
       </div>
     </div>

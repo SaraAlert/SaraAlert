@@ -291,7 +291,7 @@ class MonitoringStatus extends React.Component {
         })
         .then(() => {
           if (diffState.includes('jurisdiction_path')) {
-            const currentUserJurisdictionString = this.props.current_user.jurisdiction_path.join(', ');
+            const currentUserJurisdictionString = this.props.current_user_jurisdiction_path.join(', ');
             // check if current_user has access to the changed jurisdiction
             // if so, reload the page, if not, redirect to exposure or isolation dashboard
             if (!this.state.jurisdiction_path.startsWith(currentUserJurisdictionString)) {
@@ -572,7 +572,7 @@ class MonitoringStatus extends React.Component {
 }
 
 MonitoringStatus.propTypes = {
-  current_user: PropTypes.object,
+  current_user_jurisdiction_path: PropTypes.array,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   jurisdictionPaths: PropTypes.object,

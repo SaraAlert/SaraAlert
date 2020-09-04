@@ -97,7 +97,7 @@ class Assessment extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
-      url: `${window.BASE_PATH}${this.props.current_user ? '' : '/report'}/patients/${this.props.patient_submission_token}/assessments${
+      url: `${window.BASE_PATH}${this.props.signed_in ? '' : '/report'}/patients/${this.props.patient_submission_token}/assessments${
         this.props.updateId ? '/' + this.props.updateId : ''
       }`,
       data: submitData,
@@ -184,7 +184,7 @@ Assessment.propTypes = {
   updateId: PropTypes.number,
   reload: PropTypes.bool,
   idPre: PropTypes.string,
-  current_user: PropTypes.object,
+  signed_in: PropTypes.bool,
 };
 
 export default Assessment;

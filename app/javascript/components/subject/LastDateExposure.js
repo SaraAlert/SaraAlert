@@ -226,7 +226,7 @@ class LastDateExposure extends React.Component {
                 </Col>
               </Row>
               <Row>
-                <Col>{this.props.patient.linelist.end_of_monitoring}</Col>
+                <Col>{this.props.patient.end_of_monitoring}</Col>
               </Row>
               <Row>
                 <Col></Col>
