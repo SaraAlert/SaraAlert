@@ -78,7 +78,7 @@ redis-server
 Sidekiq is the queueing system that ActiveJob interfaces with. Sidekiq should be installed when you ran `bundle install` in the application installation instructions. To start Sidekiq, and make it aware that it is responsible for the mailers queue, execute the following:
 
 ```
-bundle exec sidekiq -q default -q mailers
+bundle exec sidekiq -q default -q mailers -q exports
 ```
 
 ##### Whenever
