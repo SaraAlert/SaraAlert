@@ -9,6 +9,8 @@ class Laboratory < ApplicationRecord
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
 
+  default_scope { order(created_at: :desc) }
+
   # Returns a representative FHIR::Observation for an instance of a Sara Alert Laboratory.
   # https://www.hl7.org/fhir/observation.html
   def as_fhir

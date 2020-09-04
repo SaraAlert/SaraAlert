@@ -77,6 +77,7 @@ class PatientsController < ApplicationController
     end
 
     @histories = @patient.histories
+    @laboratories = @patient.laboratories
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
