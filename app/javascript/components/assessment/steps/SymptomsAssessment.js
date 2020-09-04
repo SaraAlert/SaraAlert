@@ -53,8 +53,9 @@ class SymptomsAssessment extends React.Component {
   }
 
   navigate() {
-    this.setState({ loading: true });
-    this.props.submit();
+    this.setState({ loading: true }, () => {
+      this.props.submit();
+    });
   }
 
   noSymptom() {
