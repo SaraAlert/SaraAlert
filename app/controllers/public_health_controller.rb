@@ -211,7 +211,9 @@ class PublicHealthController < ApplicationController
                                'patients.continuous_exposure, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path')
 
     # execute query and get total count
-    total = patients.total_entries
+    # total = patients.total_entries
+    cache_key = "#{current_user.jurisdiction.id}-#{workflow}-#{tab}"
+    total = Rails.cache.fetch(cache_key, expires_in: 5.minutes, race_condition_ttl: 30.seconds) { patients.total_entries }
 
     linelist = []
     patients.each do |patient|
