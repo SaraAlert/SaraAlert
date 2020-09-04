@@ -53,7 +53,6 @@ class PatientsController < ApplicationController
     @able_to_perform_action = @current_user_role == 'public_health_enroller' || @current_user_role == 'public_health'
     @current_user_jurisdiction = current_user.jurisdiction_path
 
-    # Todo, expire this key in the jurisdiction update rake task.
     @jurisdiction_paths = Rails.cache.fetch('all_jurisdiction_ids_and_paths', expires_in: 24.hours, race_condition_ttl: 30.seconds) do
       Hash[Jurisdiction.all.pluck(:id, :path).map {|id, path| [id, path]}]
     end

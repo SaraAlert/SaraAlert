@@ -6,6 +6,7 @@ namespace :admin do
 
   desc "Import/Update Jurisdictions"
   task import_or_update_jurisdictions: :environment do
+    include JurisdictionIdsAndPathsCacheInvalidator
     ActiveRecord::Base.transaction do
       config_contents = YAML.load_file('config/sara/jurisdictions.yml')
 
@@ -32,6 +33,8 @@ namespace :admin do
         combined_hash += jur.jurisdiction_path_threshold_hash
       end
 
+      JurisdictionIdsAndPathsCacheInvalidator.invalidate
+
       unique_identifier_check = if Jurisdiction.where(unique_identifier: nil).count.zero?
                                   "\e[42mChecking Jurisdictions for nil unique identifiers... no nil unique identifiers found, no further action is needed.\e[0m"
                                 else
@@ -52,6 +55,7 @@ namespace :admin do
   # Example Usage: rake admin:delete_jurisdiction_with_id ID=3
   desc "Delete Jurisdiction"
   task delete_jurisdiction_with_id: :environment do
+    include JurisdictionIdsAndPathsCacheInvalidator
     jur_id = ENV['ID']
     unless Jurisdiction.exists?(jur_id)
       puts "Error: Jurisdiction with id #{jur_id} not found"
@@ -88,6 +92,7 @@ namespace :admin do
       Analytic.where(jurisdiction_id: jur_id).delete_all
       jur.delete
     end
+    JurisdictionIdsAndPathsCacheInvalidator.invalidate
     rescue ActiveRecord::RecordInvalid
       puts "Jurisdiction transfer failed"
     puts "Complete"
@@ -113,7 +118,7 @@ namespace :admin do
     # Parse and add symptoms list to jurisdiction if included
     jur_symps = nil
     if jur_values != nil
-      jur_symps = jur_values['symptoms'] 
+      jur_symps = jur_values['symptoms']
       jurisdiction.email = jur_values['email'] || ''
       jurisdiction.phone = jur_values['phone'] || ''
       jurisdiction.webpage = jur_values['webpage'] || ''
@@ -129,7 +134,7 @@ namespace :admin do
 
     threshold_condition = ThresholdCondition.create(symptoms: threshold_condition_symptoms)
     jurisdiction.threshold_conditions.push(threshold_condition)
-  
+
     jurisdiction.save
 
 
@@ -143,12 +148,14 @@ namespace :admin do
         parse_jurisdiction(jurisdiction, child_jur_name, child_jur_vals)
       end
     end
-
+    JurisdictionIdsAndPathsCacheInvalidator.invalidate
   end
 
   desc "Transfer Jurisdiction Resources To Another Jurisdiction"
   # Example Usage: rake admin:transfer_jurisdiction_resources FROM=3 TO=4
   task transfer_jurisdiction_resources: :environment do
+    include include JurisdictionIdsAndPathsCacheInvalidator
+
     from_id = ENV['FROM']
     to_id = ENV['TO']
     from_patients = Patient.where(jurisdiction_id: from_id)
@@ -163,6 +170,7 @@ namespace :admin do
       from_patients.each do |p| p.update!(jurisdiction_id: to_id) end
       from_users.each do |u| u.update!(jurisdiction_id: to_id) end
     end
+    JurisdictionIdsAndPathsCacheInvalidator.invalidate
     rescue ActiveRecord::RecordInvalid
       puts "Jurisdiction transfer failed"
   end
