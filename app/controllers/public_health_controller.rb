@@ -176,7 +176,9 @@ class PublicHealthController < ApplicationController
     when 'dob'
       patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir)
     when 'end_of_monitoring'
-      patients = patients.order('CASE WHEN continuous_exposure = 1 THEN now() WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
+      patients = patients.order('CASE WHEN continuous_exposure = 1 THEN now()
+        WHEN last_date_of_exposure IS NULL
+        THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
     when 'symptom_onset'
       patients = patients.order('CASE WHEN symptom_onset IS NULL THEN 1 ELSE 0 END, symptom_onset ' + dir)
     when 'risk_level'
@@ -186,7 +188,9 @@ class PublicHealthController < ApplicationController
     when 'public_health_action'
       patients = patients.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir)
     when 'expected_purge_date'
-      patients = patients.order('CASE WHEN continuous_exposure = 1 THEN now() WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
+      patients = patients.order('CASE WHEN continuous_exposure = 1 THEN now()
+        WHEN last_date_of_exposure IS NULL
+        THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
     when 'reason_for_closure'
       patients = patients.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + dir)
     when 'closed_at'
