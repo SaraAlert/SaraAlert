@@ -170,8 +170,6 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :symptom_onset # isolation workflow specific field
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif field == :extended_isolation # isolation workflow specific field
-            assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :case_status # isolation workflow specific enum field
             normalized_cell_value = NORMALIZED_ENUMS[field][unformat_enum_field(row[index])].to_s
             assert_equal(workflow == :isolation ? normalized_cell_value : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
