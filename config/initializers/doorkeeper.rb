@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../credential_handler'
+
 Doorkeeper.configure do
   # Change the ORM that doorkeeper will use (requires ORM extensions installed).
   # Check the list of supported ORMs here: https://github.com/doorkeeper-gem/doorkeeper#orms
@@ -53,7 +55,8 @@ Doorkeeper.configure do
   #     destroy
   #   end
   # end
-
+  #
+  #
   # Enables polymorphic Resource Owner association for Access Tokens and Access Grants.
   # By default this option is disabled.
   #
@@ -245,8 +248,9 @@ Doorkeeper.configure do
   # falls back to the `:client_id` and `:client_secret` params from the `params` object.
   # Check out https://github.com/doorkeeper-gem/doorkeeper/wiki/Changing-how-clients-are-authenticated
   # for more information on customization
-  #
-  # client_credentials :from_basic, :from_params
+  
+  # Custom flow for retrieving client credentials for all supported grant flows
+  client_credentials CredentialHandler, :from_params
 
   # Change the way access token is authenticated from the request object.
   # By default it retrieves first from the `HTTP_AUTHORIZATION` header, then

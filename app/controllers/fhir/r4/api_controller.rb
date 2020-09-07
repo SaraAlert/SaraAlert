@@ -4,12 +4,10 @@
 class Fhir::R4::ApiController < ActionController::API
   include ActionController::MimeResponds
   before_action only: %i[create update] do
-    doorkeeper_authorize! :'user/*.write', :'user/*.*'
-    check_api_access
+    doorkeeper_authorize! :'user/*.write', :'user/*.*', :'system/*.write', :'system/*.*'
   end
   before_action only: %i[show search all] do
-    doorkeeper_authorize! :'user/*.read', :'user/*.*'
-    check_api_access
+    doorkeeper_authorize! :'user/*.read', :'user/*.*', :'system/*.read', :'system/*.*'
   end
   before_action :cors_headers
 
@@ -19,8 +17,9 @@ class Fhir::R4::ApiController < ActionController::API
   #
   # GET /[:resource_type]/[:id]
   def show
+    puts "HERE!!"
     status_not_acceptable && return unless accept_header?
-
+    puts "PASSED HEADER?"
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
@@ -310,20 +309,31 @@ class Fhir::R4::ApiController < ActionController::API
 
   private
 
-  # Current user account as authenticated via doorkeeper
+  # Current user account as authenticated via doorkeeper for authorization code flow
   def current_resource_owner
-    User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
+    User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token && doorkeeper_token.resource_owner_id
   end
 
-  # Current user account can use api
-  def check_api_access
-    current_resource_owner&.can_use_api?
+  # Determine the patient data that is accessable by either the current resource owner
+  # (authorization code flow) or the current client application (client credentials flow).
+  def accessable_patients
+    # If there is a current resource owner (user)
+    if current_resource_owner.present? && current_resource_owner&.can_use_api?
+      current_resource_owner.patients
+    # Otherwise if there is a jurisdiction with the registered client application
+    elsif doorkeeper_token.application_id && Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)]
+      jurisdiction_id = Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)[:jurisdiction_id]
+      status_forbidden if jurisdiction_id.nil?
+      Jurisdiction.find_by(id: jurisdiction_id).all_patients
+    else
+      # If there is no associated resource owner or jurisdiction - no access.
+      status_forbidden
+    end
   end
 
   # Check accept header for correct mime type (or allow fhir _format)
   def accept_header?
     return request.headers['Accept']&.include?('application/fhir+json') if params.permit(:_format)[:_format].nil?
-
     ['json', 'application/json', 'application/fhir+json'].include?(params.permit(:_format)[:_format]&.downcase)
   end
 
@@ -378,12 +388,13 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Get a patient by id
   def get_patient(id)
-    current_resource_owner.viewable_patients.find_by(id: id)
+    puts "call to get patient"
+    accessable_patients.find_by(id: id)
   end
 
   # Search for patients
   def search_patients(options)
-    query = current_resource_owner.viewable_patients
+    query = accessable_patients
     options.each do |option, search|
       case option
       when 'family'
@@ -405,11 +416,11 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Search for laboratories
   def search_laboratories(options)
-    query = Laboratory.where(patient: current_resource_owner.viewable_patients)
+    query = Laboratory.where(patient: accessable_patients)
     options.each do |option, search|
       case option
       when 'subject'
-        query = current_resource_owner.viewable_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
+        query = accessable_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
       when '_id'
         query = query.where(id: search) if search.present?
       end
@@ -419,11 +430,11 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Search for assessments
   def search_assessments(options)
-    query = Assessment.where(patient: current_resource_owner.viewable_patients)
+    query = Assessment.where(patient: accessable_patients)
     options.each do |option, search|
       case option
       when 'subject'
-        query = current_resource_owner.viewable_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
+        query = accessable_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
       when '_id'
         query = query.where(id: search) if search.present?
       end
@@ -433,12 +444,12 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Get a lab result by id
   def get_laboratory(id)
-    Laboratory.where(patient_id: current_resource_owner.viewable_patients).find_by(id: id)
+    Laboratory.where(patient_id: accessable_patients).find_by(id: id)
   end
 
   # Get an assessment by id
   def get_assessment(id)
-    Assessment.where(patient_id: current_resource_owner.viewable_patients).find_by(id: id)
+    Assessment.where(patient_id: accessable_patients).find_by(id: id)
   end
 
   # Construct a full url via a request and resource

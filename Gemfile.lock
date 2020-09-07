@@ -288,6 +288,7 @@ GEM
     ruby-progressbar (1.10.1)
     ruby_dep (1.5.0)
     rubyzip (2.3.0)
+    safe_yaml (1.0.5)
     sara-schema (1.1.2)
       json_schemer (~> 0.2)
     sass-rails (6.0.0)
@@ -406,6 +407,7 @@ DEPENDENCIES
   roo
   rspec-mocks
   rubocop
+  safe_yaml
   sara-schema
   sass-rails (>= 6)
   sassc (~> 2.3.0)

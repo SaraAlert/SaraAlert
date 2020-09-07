@@ -89,6 +89,10 @@ gem 'local_time'
 # FHIR models
 gem 'fhir_models'
 
+# Safe YAML loading
+gem "safe_yaml"
+
+
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
