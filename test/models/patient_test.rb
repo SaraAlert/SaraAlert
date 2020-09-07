@@ -3,9 +3,17 @@
 require 'test_case'
 
 class PatientTest < ActiveSupport::TestCase
-  def setup; end
+  def setup
+    @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
+    @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
+    @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
+  end
 
-  def teardown; end
+  def teardown
+    ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
+    ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
+    ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
+  end
 
   # Patients who are eligible for reminders:
   #   - not purged AND
@@ -365,6 +373,12 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute) - 2).minutes.ago)
     assert Patient.purge_eligible.count.zero?
+  end
+
+  test 'purge eligible continuous_exposure' do
+    patient = create(:patient, purged: false, monitoring: false, continuous_exposure: true)
+    patient.update!(updated_at: (2 * ADMIN_OPTIONS['purgeable_after']).minutes.ago)
+    assert Patient.purge_eligible.size == 1
   end
 
   test 'purged' do
