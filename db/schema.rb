@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(version: 2020_09_02_213827) do
-=======
 ActiveRecord::Schema.define(version: 2020_09_05_194603) do
->>>>>>> 5c4af010... Added and handled new client credentials workflow using SMART on FHIR Backend Services protocol.
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -206,7 +202,6 @@ ActiveRecord::Schema.define(version: 2020_09_05_194603) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.text "public_key_set"
-    t.text "public_key_url"
     t.integer "jurisdiction_id"
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
