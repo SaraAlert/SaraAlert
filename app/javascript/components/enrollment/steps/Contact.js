@@ -27,6 +27,9 @@ class Contact extends React.Component {
           value: this.state.current.patient.preferred_contact_method,
         },
       });
+      let current = { ...this.state.current };
+      current.patient.confirm_email = this.state.current.patient.email;
+      this.setState({ current });
     }
   }
 
@@ -350,7 +353,7 @@ class Contact extends React.Component {
                     isInvalid={this.state.errors['confirm_email']}
                     size="lg"
                     className="form-square"
-                    value={(this.state.isEditMode ? this.state.current.patient.email : this.state.current.patient.confirm_email) || ''}
+                    value={this.state.current.patient.confirm_email || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
