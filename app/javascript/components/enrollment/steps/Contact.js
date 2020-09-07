@@ -13,13 +13,24 @@ const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
-    this.handleChange = this.handleChange.bind(this);
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, isEditMode: window.location.href.includes('edit') };
     this.validate = this.validate.bind(this);
-    this.updatePrimaryContactMethodValidations = this.updatePrimaryContactMethodValidations.bind(this);
   }
 
-  handleChange(event) {
+  componentDidMount() {
+    if (this.state.isEditMode) {
+      // Update the Schema Validator by simulating the user changing their preferred_contant_method
+      // to what their actual preferred_contant_method really is
+      this.updatePrimaryContactMethodValidations({
+        currentTarget: {
+          id: 'preferred_contact_method',
+          value: this.state.current.patient.preferred_contact_method,
+        },
+      });
+    }
+  }
+
+  handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     if (event.target.id === 'primary_telephone' || event.target.id === 'secondary_telephone') {
       value = value.replace(/-/g, '');
@@ -36,9 +47,9 @@ class Contact extends React.Component {
       }
     );
     this.updatePrimaryContactMethodValidations(event);
-  }
+  };
 
-  updatePrimaryContactMethodValidations(event) {
+  updatePrimaryContactMethodValidations = event => {
     if (event?.currentTarget.id == 'preferred_contact_method') {
       if (
         event?.currentTarget.value === 'Telephone call' ||
@@ -339,7 +350,7 @@ class Contact extends React.Component {
                     isInvalid={this.state.errors['confirm_email']}
                     size="lg"
                     className="form-square"
-                    value={this.state.current.patient.confirm_email || ''}
+                    value={(this.state.isEditMode ? this.state.current.patient.email : this.state.current.patient.confirm_email) || ''}
                     onChange={this.handleChange}
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
