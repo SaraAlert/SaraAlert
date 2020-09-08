@@ -78,13 +78,13 @@ Before going further, it is highly recommended to read the profile for this work
 #### Registration
 The registration process for this workflow is fairly straightforward. 
 
-**The client must have the following information first before taking any additional steps:**
+The client must have the following information first before taking any additional steps:
 
 * Which environment to register the client application for (demo or production)
 * What scopes the application needs access to. See list of supported scopes [here](#supported-scopes).
 * The redirect uri (used for redirecting back to the client application after authorization)
 
-**Steps:**
+Steps:
 
 1. Contact Sara Alert administrators at `sara-api@mitre.org` with a request to register a client application for API use using this workflow. At this time, the client must provide the information listed above.
 1. Once Sara Alert administrators approve the request, they will pass along an assigned client ID and client secret specific to the newly registered client application. The client should make sure to store the client secret securely.
@@ -174,7 +174,7 @@ The registration step of this workflow requires more information up front. It is
 The key takeaway is the following:
 > Before a SMART client can run against a FHIR server, the client SHALL generate or obtain an asymmetric key pair and SHALL register its public key set with that FHIR server’s authorization service...No matter how a client registers with a FHIR authorization service, the client SHALL register the public key the client will use to authenticate itself to the SMART FHIR authorization server. The public key SHALL be conveyed to the FHIR authorization server in a JSON Web Key (JWK) structure presented within a JWK Set, as defined in JSON Web Key Set (JWKS). The client SHALL protect the associated private key from unauthorized disclosure and corruption.
 
-**Generating JWKS**
+*Generating JWKS*
 
 From here:
 > A JSON Web Key (JWK) [JWK] is a JSON data structure that represents a
@@ -191,14 +191,14 @@ JWKS can be easily generated with tools such as [this](https://mkjwk.org/), whic
 The client is then entirely responsible for securely storing the private key as it is never shared. In the future, the Sara Alert API may support storing urls to public JWKS hosted by the client as discussed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#registering-a-smart-backend-service-communicating-public-keys).
 
 
-**The client must have the following information first before taking any additional steps:**
+The client must have the following information first before taking any additional steps:
 
 * Which environment to register the client application for (demo or production)
 * What scopes the application needs access to. See list of supported scopes [here](#supported-scopes).
 * The jurisdiction this client application will have access to. 
 * The generated *public* key set in the form of a JSON Web Key Set (JWKS). 
 
-**Steps:**
+Steps:
 
 1. Contact Sara Alert administrators at `sara-api@mitre.org` with a request to register a client application for API use using this workflow. At this time, the client must provide the information listed above.
 2. Once Sara Alert administrators approve the request, they will pass along a client ID specific to the newly registered client application.
