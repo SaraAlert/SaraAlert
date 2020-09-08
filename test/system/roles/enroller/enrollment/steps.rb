@@ -85,7 +85,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'additional_planned_travel_related_notes', type: 'text', required: false, info_page: false }
       ],
       potential_exposure_info: [
-        { id: 'last_date_of_exposure', type: 'date', required: true, info_page: true },
+        { id: 'last_date_of_exposure', type: 'current_date', required: true, info_page: true },
         { id: 'potential_exposure_location', type: 'text', required: false, info_page: true },
         { id: 'potential_exposure_country', type: 'select', required: false, info_page: true },
         { id: 'contact_of_known_case', type: 'risk_factor', required: false, info_page: true, label: 'CLOSE CONTACT WITH A KNOWN CASE' },

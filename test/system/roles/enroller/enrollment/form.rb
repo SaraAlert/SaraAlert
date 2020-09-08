@@ -43,6 +43,8 @@ class EnrollmentForm < ApplicationSystemTestCase
           input_element = page.find_by_id("#{field[:id]}_wrapper").first(:xpath, './/div//div//div//div//div//input')
           input_element.set data[field[:id]]
           input_element.send_keys :enter
+        elsif field[:type] == 'current_date'
+          fill_in field[:id], with: rand(30).days.ago.strftime('%m/%d/%Y') if data[field[:id]]
         end
         jurisdiction_change = true if field[:id] == 'jurisdiction_id'
       end
