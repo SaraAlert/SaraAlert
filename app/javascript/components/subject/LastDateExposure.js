@@ -108,20 +108,17 @@ class LastDateExposure extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>{message}</p>
-          <Form.Group className="mt-2">
-            {this.props.has_group_members && (
-              <Form.Group className="mt-3">
-                <Form.Check
-                  type="radio"
-                  id="apply_to_monitoree_only"
-                  label="This monitoree only"
-                  onChange={this.handleChange}
-                  checked={this.state.apply_to_group === false && this.state.apply_to_group_cm_only === false}
-                  disabled={!this.props.has_group_members}
-                />
-              </Form.Group>
-            )}
-          </Form.Group>
+          {this.props.has_group_members && (
+            <Form.Group className="mt-3">
+              <Form.Check
+                type="radio"
+                id="apply_to_monitoree_only"
+                label="This monitoree only"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group === false && this.state.apply_to_group_cm_only === false}
+              />
+            </Form.Group>
+          )}
           {this.props.has_group_members && this.state.showExposureDateModal && (
             <Form.Group className="mt-3">
               <Form.Check
