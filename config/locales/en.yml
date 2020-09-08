@@ -56,6 +56,18 @@ en:
         name: 'Other'
         notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
       no-symptoms: 'I am not experiencing any symptoms'
+      new-loss-of-smell:
+        name: 'New Loss of Smell'
+        notes: ''
+      new-loss-of-taste:
+        name: 'New Loss of Taste'
+        notes: ''
+      shortness-of-breath:
+        name: 'Shortness of Breath'
+        notes: ''
+      congestion-or-runny-nose:
+        name: 'Congestion or Runny Nose'
+        notes: ''
     threshold-op:
       less-than: 'Less Than'
       less-than-or-equal: 'Less Than Or Equal to'
