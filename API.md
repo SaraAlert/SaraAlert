@@ -1,6 +1,7 @@
 # Sara Alert API
 
 <a name="overview"/>
+
 ## Overview
 Sara Alert strives to support interopability standards in public health, and as a result provides a [FHIR](https://www.hl7.org/fhir/overview.html) RESTful API for reading, writing, and updating monitoree data. The data format accepted and returned by the API corresponds to [FHIR version R4](https://hl7.org/fhir/R4/).
 
@@ -37,6 +38,7 @@ This API is intended for use by public health organizations using Sara Alert, an
 	  - [GET [base]/Patient?_count=2](#search-all)
 	
 <a name="get-started"/>
+
 ## Get Started Using the Sara Alert API
 No matter the workflow, in order to use the Sara Alert API and ensure security of application data, the client must go through a three-step process before reading or writing any data.
 
@@ -47,6 +49,7 @@ No matter the workflow, in order to use the Sara Alert API and ensure security o
 While each of these steps must be followed, they vary depending on the client workflow to support different use cases. Therefore, this documentation will describe these steps per workflow.
 
 <a name="workflows"/>
+
 ### Supported Workflows
 Sara Alert currently supports two different workflows for API use. Both of these workflows are [SMART-on-FHIR standards](http://docs.smarthealthit.org/).
 
@@ -56,6 +59,7 @@ Sara Alert currently supports two different workflows for API use. Both of these
 In theory, a client application can be registered to support both workflows if it provides the needed registration information for both workflows up front. This is not an expected or understood use case, however, so please notify admins about the need for this upon registration request. In this case, the client application cannot access the API through both workflows simultaneously: i.e. if there is a logged in user who does not have API access enabled, they still cannot access the API even if the client application is registered for the system flow. 
 
 <a name="standalone-launch"/>
+
 ### SMART on FHIR App Launch Framework "Standalone Launch" Workflow
 This workflow supports user-facing client applications launched by a user to access the Sara Alert API and requires a Sara Alert user to give explicit permission for their registered client application to use their Sara Alert user account for authentication purposes when using the API. If you are looking for server-to-server API use, the [SMART on FHIR Backend Services Workflow](#backend-services) may better suit your needs.
 
@@ -107,7 +111,7 @@ Once a client application is registered, a user must authorize the client applic
 	  "client_secret": "<CLIENT_SECRET>",
 	  "code": "<AUTHORIZATION_CODE>",
 	  "grant_type": "authorization_code",
-	  "redirect_uri": <CLIENT_REDIRECT_URI>
+	  "redirect_uri": "<CLIENT_REDIRECT_URI>"
 	}
 	```
 	
@@ -118,7 +122,7 @@ Once a client application is registered, a user must authorize the client applic
 	  "access_token": "<TOKEN>",
 	  "token_type": "Bearer",
 	  "expires_in": 7200,
-	  "scope": <CLIENT_SCOPES>,
+	  "scope": "<CLIENT_SCOPES>",
 	  "created_at": 1589830122
 	}
 	```
@@ -151,6 +155,7 @@ http://localhost:3000/oauth/authorize?client_id=demo-oauth-app-uid&redirect_uri=
 ```
 
 <a name="backend-services"/>
+
 ### SMART on FHIR Backend Services Workflow
 This workflow supports backend client applications to use the Sara Alert API without an end-user in the loop. It is ideal for automated workflows that do not require a user-facing application launch.
 
@@ -221,7 +226,7 @@ Details about each of these steps and the expected parameter is clearly outlined
 	  "client_id": "<CLIENT_ID>",
 	  "client_assertion": "<CLIENT_SIGNED_JWT_ASSERTION>",
 	  "grant_type": "client_credentials",
-	  "scope": <CLIENT_SCOPES>
+	  "scope": "<CLIENT_SCOPES>"
 	}
 	```
 	
@@ -232,7 +237,7 @@ Details about each of these steps and the expected parameter is clearly outlined
 	  "access_token": "<TOKEN>",
 	  "token_type": "Bearer",
 	  "expires_in": 7200,
-	  "scope": <CLIENT_SCOPES>,
+	  "scope": "<CLIENT_SCOPES>",
 	  "created_at": 1589830122
 	}
 	```
@@ -267,12 +272,14 @@ Fortunately, there are many tools available and is easy to generate JWKS at http
 It is also recommended to use a tool such as Postman to interact with the Sara Alert API for testing this workflow.
 
 <a name="api-spec"/>
+
 ## API Specification
 
 For the purposes of this documentation, when describing an API route, [base] includes `/fhir/r4`.
 JSON is currently the only supported format. Please make use of the `application/fhir+json` mime type for the Accept header. The Content-Type header must also correspond to this mime type.
 
 <a name="data-representation"/>
+
 ### Data Representation
 Because the Sara Alert API follows the FHIR specification, there is a mapping between known kinds of Sara Alert data and their associated FHIR resources.
 
@@ -283,6 +290,7 @@ Because the Sara Alert API follows the FHIR specification, there is a mapping be
 | Monotoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)|
 
 <a name="supported-scopes"/>
+
 ### Supported Scopes
 For applications following the [SMART-on-FHIR App Launch Framework "Standalone Launch" Workflow](#standalone-launch), these are the available scopes:
 
@@ -297,6 +305,7 @@ For applications following the [SMART on FHIR Backend Services Workflow](#backen
 * `system/*.*` (for both read and write access)
 
 <a name="cap"/>
+
 ### CapabilityStatement and Well-Known Uniform Resource Identifiers
 
 <a name="cap-get"/>
