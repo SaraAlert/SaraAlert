@@ -239,21 +239,21 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'household'
 
-    patient = create(:patient, latest_assessment_at: 1.hour.ago)
-    assert_not patient.report_eligibility[:eligible]
-    assert patient.report_eligibility[:messages].join(' ').include? 'already reported'
-
-    patient = create(:patient, last_assessment_reminder_sent: 1.hour.ago)
-    assert_not patient.report_eligibility[:eligible]
-    assert patient.report_eligibility[:messages].join(' ').include? 'contacted recently'
-
     patient = create(:patient, preferred_contact_method: 'Unknown')
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'ineligible preferred contact method'
 
-    patient = create(:patient, isolation: false, last_date_of_exposure: 30.days.ago, continuous_exposure: false)
+    patient = create(:patient, isolation: false, last_date_of_exposure: 30.days.ago, continuous_exposure: false, preferred_contact_method: 'Telephone call')
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'monitoring period has elapsed'
+
+    patient = create(:patient, preferred_contact_method: 'Telephone call', last_assessment_reminder_sent: Time.now.getlocal('-04:00').beginning_of_day + 1.hour)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'contacted recently'
+
+    patient = create(:patient, preferred_contact_method: 'Telephone call', latest_assessment_at: Time.now.getlocal('-04:00').beginning_of_day + 1.hour)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'already reported'
 
     patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Morning')
     assert patient.report_eligibility[:eligible]
