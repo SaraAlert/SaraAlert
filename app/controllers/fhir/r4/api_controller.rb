@@ -325,6 +325,7 @@ class Fhir::R4::ApiController < ActionController::API
     elsif !current_resource_owner.present? && doorkeeper_token.application_id && Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)
       jurisdiction_id = Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)[:jurisdiction_id]
       return if jurisdiction_id.nil? || !Jurisdiction.find_by(id: jurisdiction_id).present?
+
       Jurisdiction.find_by(id: jurisdiction_id).all_patients
       # If there is no associated resource owner or jurisdiction - nil.
     end
