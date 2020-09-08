@@ -13,13 +13,30 @@ const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 class Contact extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {} };
-    this.handleChange = this.handleChange.bind(this);
+    this.state = { ...this.props, current: { ...this.props.currentState }, errors: {}, modified: {}, isEditMode: window.location.href.includes('edit') };
     this.validate = this.validate.bind(this);
-    this.updatePrimaryContactMethodValidations = this.updatePrimaryContactMethodValidations.bind(this);
   }
 
-  handleChange(event) {
+  componentDidMount() {
+    if (this.state.isEditMode) {
+      // Update the Schema Validator by simulating the user changing their preferred_contact_method
+      // to what their actual preferred_contact_method really is. This is to trigger schema validation when
+      // editing.
+      this.updatePrimaryContactMethodValidations({
+        currentTarget: {
+          id: 'preferred_contact_method',
+          value: this.state.current.patient.preferred_contact_method,
+        },
+      });
+      this.setState(state => {
+        const current = { ...state.current };
+        current.patient.confirm_email = state.current.patient.email;
+        return { current };
+      });
+    }
+  }
+
+  handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     if (event.target.id === 'primary_telephone' || event.target.id === 'secondary_telephone') {
       value = value.replace(/-/g, '');
@@ -36,9 +53,9 @@ class Contact extends React.Component {
       }
     );
     this.updatePrimaryContactMethodValidations(event);
-  }
+  };
 
-  updatePrimaryContactMethodValidations(event) {
+  updatePrimaryContactMethodValidations = event => {
     if (event?.currentTarget.id == 'preferred_contact_method') {
       if (
         event?.currentTarget.value === 'Telephone call' ||
@@ -137,7 +154,7 @@ class Contact extends React.Component {
       });
     }
     this.setState({ errors: {} });
-  }
+  };
 
   validate(callback) {
     let self = this;
