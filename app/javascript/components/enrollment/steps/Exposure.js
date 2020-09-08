@@ -678,14 +678,19 @@ class Exposure extends React.Component {
           moment()
             .add(30, 'days')
             .toDate(),
-          'Date can not be in the future.'
+          'Date can not be more than 30 days in the future.'
         )
         .required('Please enter a symptom onset date.')
         .nullable();
     } else {
       schema['last_date_of_exposure'] = yup
         .date('Date must correspond to the "mm/dd/yyyy" format.')
-        .max(new Date(), 'Date can not be in the future.')
+        .max(
+          moment()
+            .add(30, 'days')
+            .toDate(),
+          'Date can not be more than 30 days in the future.'
+        )
         .required('Please enter a last date of exposure.')
         .nullable();
     }
