@@ -20,16 +20,19 @@ class Contact extends React.Component {
   componentDidMount() {
     if (this.state.isEditMode) {
       // Update the Schema Validator by simulating the user changing their preferred_contact_method
-      // to what their actual preferred_contact_method really is
+      // to what their actual preferred_contact_method really is. This is to trigger schema validation when
+      // editing.
       this.updatePrimaryContactMethodValidations({
         currentTarget: {
           id: 'preferred_contact_method',
           value: this.state.current.patient.preferred_contact_method,
         },
       });
-      let current = { ...this.state.current };
-      current.patient.confirm_email = this.state.current.patient.email;
-      this.setState({ current });
+      this.setState(state => {
+        const current = { ...state.current };
+        current.patient.confirm_email = state.current.patient.email;
+        return { current };
+      });
     }
   }
 
@@ -151,7 +154,7 @@ class Contact extends React.Component {
       });
     }
     this.setState({ errors: {} });
-  }
+  };
 
   validate(callback) {
     let self = this;
