@@ -48,12 +48,12 @@ While each of these steps must be followed, they vary depending on the client wo
 
 <a name="workflows"/>
 ### Supported Workflows
-Sara Alert currently supports two different workflows for API use. Both of these workflows are [SMART-on-FHIR standards](http://docs.smarthealthit.org/). 
+Sara Alert currently supports two different workflows for API use. Both of these workflows are [SMART-on-FHIR standards](http://docs.smarthealthit.org/).
 
 1. [**SMART on FHIR App Launch Framework "standalone launch"**](http://hl7.org/fhir/smart-app-launch/index.html). This expects and requires a user in the loop.
 2. [**SMART on FHIR Backend Services**](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). This is complementary to the above flow, and does not require a user in the loop.
 
-In theory, a client application can be registered to support both workflows if it provides the needed registration information for both workflows up front.
+In theory, a client application can be registered to support both workflows if it provides the needed registration information for both workflows up front. This is not an expected or understood use case, however, so please notify admins about the need for this upon registration request. In this case, the client application cannot access the API through both workflows simultaneously: i.e. if there is a logged in user who does not have API access enabled, they still cannot access the API even if the client application is registered for the system flow. 
 
 <a name="standalone-launch"/>
 ### SMART on FHIR App Launch Framework "Standalone Launch" Workflow

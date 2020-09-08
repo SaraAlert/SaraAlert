@@ -35,6 +35,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     status_ok(resource.as_fhir) && return
   rescue StandardError
+    puts "I'm getting here and I don't know why..."
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
 
@@ -308,26 +309,27 @@ class Fhir::R4::ApiController < ActionController::API
 
   private
 
-  # Current user account as authenticated via doorkeeper for authorization code flow
+  # Current user account as authenticated via doorkeeper for user flow
   def current_resource_owner
     User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token&.resource_owner_id
   end
 
   # Determine the patient data that is accessable by either the current resource owner
-  # (authorization code flow) or the current client application (client credentials flow).
+  # (user flow) or the current client application (system flow).
   def accessable_patients
-    # If there is a current resource owner (user)
+    # If there is a current resource owner (end user) that has api access enabled
     if current_resource_owner.present? && current_resource_owner&.can_use_api?
+      # This will access all patients that the role has access to, if any
       current_resource_owner.patients
     # Otherwise if there is a jurisdiction with the registered client application
-    elsif doorkeeper_token.application_id && Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)
+    # NOTE: This means the client application cannot access the API using both workflows at once.
+    # This is to prevent unauthorized users from using it if they should not and the application happens to be registered for both.
+    elsif !current_resource_owner.present? && doorkeeper_token.application_id && Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)
       jurisdiction_id = Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)[:jurisdiction_id]
-      status_forbidden && return if jurisdiction_id.nil? || !Jurisdiction.find_by(id: jurisdiction_id).present?
+      return if jurisdiction_id.nil? || !Jurisdiction.find_by(id: jurisdiction_id).present?
 
       Jurisdiction.find_by(id: jurisdiction_id).all_patients
-    else
-      # If there is no associated resource owner or jurisdiction - no access.
-      status_forbidden && return
+      # If there is no associated resource owner or jurisdiction - nil.
     end
   end
 
@@ -387,9 +389,9 @@ class Fhir::R4::ApiController < ActionController::API
     end
   end
 
-  # Get a patient by id
+  # Get a patient by id (if any patients, otherwise nil)
   def get_patient(id)
-    accessable_patients.find_by(id: id)
+    accessable_patients&.find_by(id: id)
   end
 
   # Search for patients
