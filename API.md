@@ -136,14 +136,14 @@ Example request using access token:
 
 ##### GET `[base]/Patient/[:id]`	
 	
-	**Request** Headers
+**Request Headers**
 	
-	```json
-	{
-		Content-Type: application/x-www-form-urlencoded
-		Authorization: Bearer <ACCESS_TOKEN>
-	}
-	```
+```json
+{
+  Content-Type: application/x-www-form-urlencoded
+  Authorization: Bearer <ACCESS_TOKEN>
+}
+```
 
 #### Testing
 Sara Alert has a script that generates demo data for testing provided in the source code [here](https://github.com/SaraAlert/SaraAlert/blob/master/lib/tasks/demo.rake). This demo data includes a read/write OAuth 2.0 application for testing this workflow. The client id is `demo-oauth-app-uid` and the client secret is `demo-oauth-app-secret`. User accounts `state1_epi@example.com` and `state1_epi_enroller@example.com` both have API access enabled.
@@ -252,14 +252,14 @@ Example request using access token:
 
 ##### GET `[base]/Patient/[:id]`	
 	
-	**Request** Headers
-	
-	```json
-	{
-		Content-Type: application/x-www-form-urlencoded
-		Authorization: Bearer <ACCESS_TOKEN>
-	}
-	```
+**Request Headers**
+
+```json
+{
+  Content-Type: application/x-www-form-urlencoded
+  Authorization: Bearer <ACCESS_TOKEN>
+}
+```
 
 #### Testing
 Sara Alert has a script that generates demo data for testing provided in the source code [here](https://github.com/SaraAlert/SaraAlert/blob/master/lib/tasks/demo.rake). This demo data includes a read/write OAuth 2.0 application for testing this workflow. 
