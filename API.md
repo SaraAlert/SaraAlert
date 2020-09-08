@@ -140,8 +140,8 @@ Example request using access token:
 	
 ```json
 {
-  Content-Type: application/x-www-form-urlencoded
-  Authorization: Bearer <ACCESS_TOKEN>
+  "Content-Type": "application/x-www-form-urlencoded",
+  "Authorization": "Bearer <ACCESS_TOKEN>"
 }
 ```
 
@@ -256,8 +256,8 @@ Example request using access token:
 
 ```json
 {
-  Content-Type: application/x-www-form-urlencoded
-  Authorization: Bearer <ACCESS_TOKEN>
+  "Content-Type": "application/x-www-form-urlencoded",
+  "Authorization": "Bearer <ACCESS_TOKEN>"
 }
 ```
 
