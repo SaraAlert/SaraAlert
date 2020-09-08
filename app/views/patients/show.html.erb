@@ -42,7 +42,7 @@
     </div>
   </div>
 </div>
-<div class="card mx-2 mt-3 mb-4 card-square">
+<div class="card mx-2 mt-3 mb-4 card-square reports-container">
   <h5 class="card-header"> Reports</h5>
   <div class="m-4">
     <%= react_component("subject/CurrentStatus", { report_eligibility: @patient.report_eligibility, status: @patient.status, isolation: @patient.isolation } ) %>

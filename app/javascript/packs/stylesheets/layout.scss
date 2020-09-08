@@ -11,3 +11,15 @@
 .tooltip-container {
   width: 300px;
 }
+
+.reports-container {
+  #DataTables_Table_0_wrapper {
+    .row {
+      .col-sm-24 {
+        width:100% !important;
+        max-width:100% !important;
+        overflow-x: scroll !important;
+      }
+    }
+  }
+}
