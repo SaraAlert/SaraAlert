@@ -19,8 +19,8 @@ class Contact extends React.Component {
 
   componentDidMount() {
     if (this.state.isEditMode) {
-      // Update the Schema Validator by simulating the user changing their preferred_contant_method
-      // to what their actual preferred_contant_method really is
+      // Update the Schema Validator by simulating the user changing their preferred_contact_method
+      // to what their actual preferred_contact_method really is
       this.updatePrimaryContactMethodValidations({
         currentTarget: {
           id: 'preferred_contact_method',
