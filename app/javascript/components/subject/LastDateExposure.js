@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
+import moment from 'moment';
 
 import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
@@ -175,7 +176,18 @@ class LastDateExposure extends React.Component {
             </Row>
             <Row>
               <Col>
-                <DateInput id="last_date_of_exposure" date={this.state.last_date_of_exposure} onChange={this.handleDateChange} placement="top" />
+                <DateInput
+                  id="last_date_of_exposure"
+                  date={this.state.last_date_of_exposure}
+                  minDate={moment()
+                    .subtract(30, 'days')
+                    .format('YYYY-MM-DD')}
+                  maxDate={moment()
+                    .add(30, 'days')
+                    .format('YYYY-MM-DD')}
+                  onChange={this.handleDateChange}
+                  placement="top"
+                />
               </Col>
             </Row>
             <Row className="pt-2">

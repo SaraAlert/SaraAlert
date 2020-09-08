@@ -57,8 +57,15 @@ class ExtendedIsolation extends React.Component {
               <DateInput
                 id="extended_isolation"
                 date={this.state.extended_isolation}
+                minDate={moment()
+                  .subtract(30, 'days')
+                  .format('YYYY-MM-DD')}
+                maxDate={moment()
+                  .add(30, 'days')
+                  .format('YYYY-MM-DD')}
                 onChange={date => this.setState({ extended_isolation: date, showExtendIsolationModal: true, reasoning: '' })}
                 placement="bottom"
+                isClearable
               />
             </Col>
           </Row>
@@ -77,11 +84,31 @@ class ExtendedIsolation extends React.Component {
             </Modal.Header>
             <Modal.Body>
               <Form.Group>
-                <Form.Label className="mb-2">
-                  {`Are you sure you want to extend this case’s isolation through ${this.state.extended_isolation}?
-                  The case will not appear on the Records Requiring Review List until after ${this.state.extended_isolation} AND a recovery definition is met.
-                  The case will move to the "Reporting" or "Non-Reporting" line list.`}
-                </Form.Label>
+                {this.state.extended_isolation ? (
+                  <React.Fragment>
+                    {moment(this.state.extended_isolation).isSameOrAfter(moment().format('MM/DD/YYYY')) ? (
+                      <Form.Label className="mb-2">
+                        {`Are you sure you want to extend this case’s isolation through ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}?
+                        The case will not appear on the Records Requiring Review List until after ${moment(this.state.extended_isolation).format(
+                          'MM/DD/YYYY'
+                        )} AND a recovery definition is met.
+                        The case will move to the "Reporting" or "Non-Reporting" line list.`}
+                      </Form.Label>
+                    ) : (
+                      <Form.Label className="mb-2">
+                        {`The date you have entered has already passed. Are you sure you want to update the "Extend Isolation To" date to ${moment(
+                          this.state.extended_isolation
+                        ).format(
+                          'MM/DD/YYYY'
+                        )}? Since the specified date has already passed, this case is eligible to appear on the Records Requiring Review Line List if a recovery definition is met.`}
+                      </Form.Label>
+                    )}
+                  </React.Fragment>
+                ) : (
+                  <Form.Label className="mb-2">
+                    {`Are you sure you want to clear the "Extend Isolation To" date? Since the date is cleared, this case is eligible to appear on the Records Requiring Review Line List if a recovery definition is met.`}
+                  </Form.Label>
+                )}
               </Form.Group>
               <p>Please include any additional details:</p>
               <Form.Group>

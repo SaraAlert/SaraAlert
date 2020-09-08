@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
+import moment from 'moment';
 
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
@@ -146,6 +147,12 @@ class Exposure extends React.Component {
             <DateInput
               id="symptom_onset"
               date={this.state.current.patient.symptom_onset}
+              minDate={moment()
+                .subtract(30, 'days')
+                .format('YYYY-MM-DD')}
+              maxDate={moment()
+                .add(30, 'days')
+                .format('YYYY-MM-DD')}
               onChange={date => this.handleDateChange('symptom_onset', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['symptom_onset']}
@@ -206,6 +213,12 @@ class Exposure extends React.Component {
             <DateInput
               id="last_date_of_exposure"
               date={this.state.current.patient.last_date_of_exposure}
+              minDate={moment()
+                .subtract(30, 'days')
+                .format('YYYY-MM-DD')}
+              maxDate={moment()
+                .add(30, 'days')
+                .format('YYYY-MM-DD')}
               onChange={date => this.handleDateChange('last_date_of_exposure', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
