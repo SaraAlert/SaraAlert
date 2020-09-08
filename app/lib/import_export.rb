@@ -254,7 +254,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
           comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
           patients_group.each do |patient|
             extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
-            sheet.add_row [patient.id] + comprehensive_details[patient.id].values, { types: Array.new(MONITOREES_LIST_HEADERS.length, :string) } + [extended_isolation]
+            values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
+            sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
           end
         end
       end
@@ -318,7 +319,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         patients.find_in_batches(batch_size: 500) do |patients_group|
           comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
           patients_group.each do |patient|
-            sheet.add_row [patient.id] + comprehensive_details[patient.id].values, { types: Array.new(MONITOREES_LIST_HEADERS.length, :string) }
+            extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
+            values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
+            sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
           end
         end
       end
