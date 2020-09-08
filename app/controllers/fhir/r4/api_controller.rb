@@ -321,9 +321,8 @@ class Fhir::R4::ApiController < ActionController::API
     if current_resource_owner.present? && current_resource_owner&.can_use_api?
       # This will access all patients that the role has access to, if any
       current_resource_owner.patients
-    # Otherwise if there is a jurisdiction with the registered client application
-    # NOTE: This means the client application cannot access the API using both workflows at once.
-    # This is to prevent unauthorized users from using it if they should not and the application happens to be registered for both.
+    # Otherwise if there NO resource owner and there is a found application, check for a valid associated jurisdiction id.
+    # The current resource owner check is to prevent unauthorized users from using it if the application happens to be registered for both workflows.
     elsif !current_resource_owner.present? && doorkeeper_token.application_id && Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)
       jurisdiction_id = Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)[:jurisdiction_id]
       return if jurisdiction_id.nil? || !Jurisdiction.find_by(id: jurisdiction_id).present?
