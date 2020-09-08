@@ -3,10 +3,12 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
+import moment from 'moment';
 
 import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
+import ExtendedIsolation from './ExtendedIsolation';
 import SymptomOnset from './SymptomOnset';
 
 class LastDateExposure extends React.Component {
@@ -174,7 +176,18 @@ class LastDateExposure extends React.Component {
             </Row>
             <Row>
               <Col>
-                <DateInput id="last_date_of_exposure" date={this.state.last_date_of_exposure} onChange={this.handleDateChange} placement="top" />
+                <DateInput
+                  id="last_date_of_exposure"
+                  date={this.state.last_date_of_exposure}
+                  minDate={moment()
+                    .subtract(30, 'days')
+                    .format('YYYY-MM-DD')}
+                  maxDate={moment()
+                    .add(30, 'days')
+                    .format('YYYY-MM-DD')}
+                  onChange={this.handleDateChange}
+                  placement="top"
+                />
               </Col>
             </Row>
             <Row className="pt-2">
@@ -190,7 +203,9 @@ class LastDateExposure extends React.Component {
               </Col>
             </Row>
           </Col>
-          {!this.props.patient.isolation && (
+          {this.props.patient.isolation ? (
+            <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+          ) : (
             <Col>
               <Row className="reports-actions-title">
                 <Col>

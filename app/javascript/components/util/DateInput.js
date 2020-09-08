@@ -42,6 +42,8 @@ class DateInput extends React.Component {
         <DatePicker
           id={this.props.id}
           selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
+          minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
+          maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
           onChange={this.handleDateChange}
           popperPlacement={this.props.placement || 'auto'}
           placeholderText="mm/dd/yyyy"
@@ -65,6 +67,16 @@ DateInput.propTypes = {
   date: function(props) {
     if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
       return new Error('Invalid prop `date` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
+    }
+  },
+  minDate: function(props) {
+    if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
+      return new Error('Invalid prop `minDate` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
+    }
+  },
+  maxDate: function(props) {
+    if (props.date && !moment(props.date, 'YYYY-MM-DD').isValid()) {
+      return new Error('Invalid prop `maxDate` supplied to `DateInput`, `date` must be a valid date string in the `YYYY-MM-DD` format.');
     }
   },
   onChange: PropTypes.func.isRequired,

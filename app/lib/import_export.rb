@@ -4,7 +4,7 @@
 module ImportExport # rubocop:todo Metrics/ModuleLength
   LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
-                      'Transferred From', 'Transferred To', 'Expected Purge Date'].freeze
+                      'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation'].freeze
 
   COMPREHENSIVE_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
                            'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
@@ -25,12 +25,12 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                            'Was in Health Care Facility With Known Cases?', 'Health Care Facility with Known Cases Name', 'Laboratory Personnel?',
                            'Laboratory Personnel Facility Name', 'Health Care Personnel?', 'Health Care Personnel Facility Name',
                            'Crew on Passenger or Cargo Flight?', 'Member of a Common Exposure Cohort?', 'Common Exposure Cohort Name',
-                           'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date', 'Case Status', 'Lab 1 Test Type',
-                           'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type', 'Lab 2 Specimen Collection Date',
-                           'Lab 2 Report Date', 'Lab 2 Result', 'Full Assigned Jurisdiction Path', 'Assigned User', 'Gender Identity',
-                           'Sexual Orientation'].freeze
+                           'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date',
+                           'Case Status', 'Lab 1 Test Type', 'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type',
+                           'Lab 2 Specimen Collection Date', 'Lab 2 Report Date', 'Lab 2 Result', 'Full Assigned Jurisdiction Path', 'Assigned User',
+                           'Gender Identity', 'Sexual Orientation'].freeze
 
-  MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS.freeze
+  MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS + ['Extended Isolation Date'].freeze
 
   EPI_X_HEADERS = ['Local-ID', 'Flight No', 'Date of notice', 'MDH Assignee', 'DGMQ ID', 'CARE ID', 'CARE Cell Number', 'Language', 'Arrival Date and Time',
                    'Arrival City', 'Last Name', 'First Name', 'Date of Birth', 'Gender', 'Passport Country', 'Passport Number', 'Permanent Street Address',
@@ -253,7 +253,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         patients.find_in_batches(batch_size: 500) do |patients_group|
           comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
           patients_group.each do |patient|
-            sheet.add_row [patient.id] + comprehensive_details[patient.id].values, { types: Array.new(MONITOREES_LIST_HEADERS.length, :string) }
+            extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
+            values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
+            sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
           end
         end
       end
@@ -317,7 +319,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         patients.find_in_batches(batch_size: 500) do |patients_group|
           comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
           patients_group.each do |patient|
-            sheet.add_row [patient.id] + comprehensive_details[patient.id].values, { types: Array.new(MONITOREES_LIST_HEADERS.length, :string) }
+            extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
+            values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
+            sheet.add_row values, { types: Array.new(MONITOREES_LIST_HEADERS.length + 2, :string) }
           end
         end
       end
@@ -547,7 +551,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         closed_at: patient[:closed_at]&.rfc2822 || '',
         transferred_from: '',
         transferred_to: '',
-        expected_purge_date: patient[:updated_at].nil? ? '' : ((patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || '')
+        expected_purge_date: patient[:updated_at].nil? ? '' : ((patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''),
+        extended_isolation: patient[:extended_isolation] || ''
       }
     end
     linelists

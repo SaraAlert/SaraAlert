@@ -112,7 +112,7 @@
                 <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
                 <%= react_component("subject/AddReportNote", { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
                 <% unless @patient.isolation %>
-                  <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                <%= react_component("subject/ClearSingleReport", { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
                 <% end %>
               </div>
             </div>

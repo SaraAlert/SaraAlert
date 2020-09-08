@@ -359,16 +359,21 @@ class PatientsController < ApplicationController
       patient.closed_at = DateTime.now
     end
 
-    # If moving patient to exposure from isolation OR if the symptom onset was cleared by the user,
-    # set user-defined symptom onset to be false and set the symptom onset date based on latest symptomatic report.
-    # NOTE: In the case where a patient is being moved back to the exposure workflow, the symptom onset should be overwritten
-    #       because if a case is being ruled out (moved back to exposure), that patient no longer has no known symptom onset and
-    #       shouldn't immediately be put back on the symptomatic line list unless they have symptomatic reports.
-    if (params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]) ||
-       (params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?)
-      params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
-      params[:patient][:user_defined_symptom_onset] = false
-      params[:patient][:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
+    # If moving patient to exposure from isolation
+    if params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]
+      # NOTE: In the case where a patient is being moved back to the exposure workflow, the symptom onset should be overwritten
+      #       because if a case is being ruled out (moved back to exposure), that patient no longer has no known symptom onset and
+      #       shouldn't immediately be put back on the symptomatic line list unless they have symptomatic reports.
+      reset_symptom_onset(params_to_update, params, patient)
+
+      # Set extended isolation to nil.
+      params_to_update << :extended_isolation
+      params[:patient][:extended_isolation] = nil
+    end
+
+    # If the symptom onset was cleared by the user
+    if params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?
+      reset_symptom_onset(params_to_update, params, patient)
     end
 
     # Update the patient with updated values.
@@ -384,6 +389,13 @@ class PatientsController < ApplicationController
       end
     end
     patient.save
+  end
+
+  def reset_symptom_onset(params_to_update, params, patient)
+    # Set user-defined symptom onset to be false and set the symptom onset date based on latest symptomatic report
+    params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
+    params[:patient][:user_defined_symptom_onset] = false
+    params[:patient][:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
   end
 
   def update_history(patient, params)
@@ -551,6 +563,7 @@ class PatientsController < ApplicationController
       jurisdiction_id
       assigned_user
       symptom_onset
+      extended_isolation
       case_status
       continuous_exposure
       gender_identity
@@ -651,6 +664,7 @@ class PatientsController < ApplicationController
       last_date_of_exposure
       continuous_exposure
       user_defined_symptom_onset
+      extended_isolation
     ]
   end
 end
