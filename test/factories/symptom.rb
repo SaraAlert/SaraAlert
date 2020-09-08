@@ -6,6 +6,7 @@ FactoryBot.define do
     name { Faker::Alphanumeric.alphanumeric(number: 10) }
     label { Faker::Alphanumeric.alphanumeric(number: 10) }
     notes { Faker::Alphanumeric.alphanumeric(number: 10) }
+    condition_id { Faker::Alphanumeric.alphanumeric(number: 10) }
 
     initialize_with { type.constantize.new }
 

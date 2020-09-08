@@ -8,6 +8,14 @@ class AnalyticsJobTest < ActiveSupport::TestCase
   @@monitorees_by_exposure_week = Patient.where(jurisdiction_id: 8)
   @@monitorees_by_exposure_month = Patient.where(jurisdiction_id: 9)
 
+  def setup
+    ADMIN_OPTIONS['job_run_email'] = 'test@test.com'
+  end
+
+  def teardown
+    ADMIN_OPTIONS['job_run_email'] = nil
+  end
+
   test 'cache analytics job' do
     Analytic.delete_all
     MonitoreeCount.delete_all
