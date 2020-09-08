@@ -90,7 +90,7 @@ gem 'local_time'
 gem 'fhir_models'
 
 # Safe YAML loading
-gem "safe_yaml"
+gem 'safe_yaml'
 
 group :development, :test do
   gem 'brakeman'

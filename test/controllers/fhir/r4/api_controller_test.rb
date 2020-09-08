@@ -7,6 +7,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = User.find_by(email: 'state1_epi@example.com')
+    # Make sure API access is enabled for this user.
+    @user.update!(api_enabled: true)
     read_write_app = Doorkeeper::Application.create(name: 'test-rw',
                                                     redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
                                                     scopes: 'user/*.*')
@@ -26,6 +28,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
                                   symptom_onset: 3.days.ago,
                                   isolation: true)
     @patient_2 = Patient.find_by(id: 2).as_fhir
+  end
+
+  test 'should be 406 when user does not have api access enabled' do
+    @user.update!(api_enabled: false)
+    get '/fhir/r4/Patient/1', headers: { 'Authorization': "Bearer #{@token_rw.token}", 'Accept': 'foo/bar' }
+    assert_response :not_acceptable
   end
 
   test 'should be 406 when bad accept header via show' do

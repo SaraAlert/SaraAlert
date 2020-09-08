@@ -18,6 +18,7 @@ class Fhir::R4::ApiController < ActionController::API
   # GET /[:resource_type]/[:id]
   def show
     status_not_acceptable && return unless accept_header?
+
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
@@ -309,7 +310,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Current user account as authenticated via doorkeeper for authorization code flow
   def current_resource_owner
-    User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token && doorkeeper_token.resource_owner_id
+    User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token&.resource_owner_id
   end
 
   # Determine the patient data that is accessable by either the current resource owner
@@ -319,19 +320,21 @@ class Fhir::R4::ApiController < ActionController::API
     if current_resource_owner.present? && current_resource_owner&.can_use_api?
       current_resource_owner.patients
     # Otherwise if there is a jurisdiction with the registered client application
-    elsif doorkeeper_token.application_id && Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)]
+    elsif doorkeeper_token.application_id && Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)
       jurisdiction_id = Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)[:jurisdiction_id]
-      status_forbidden if jurisdiction_id.nil?
+      status_forbidden && return if jurisdiction_id.nil? || !Jurisdiction.find_by(id: jurisdiction_id).present?
+
       Jurisdiction.find_by(id: jurisdiction_id).all_patients
     else
       # If there is no associated resource owner or jurisdiction - no access.
-      status_forbidden
+      status_forbidden && return
     end
   end
 
   # Check accept header for correct mime type (or allow fhir _format)
   def accept_header?
     return request.headers['Accept']&.include?('application/fhir+json') if params.permit(:_format)[:_format].nil?
+
     ['json', 'application/json', 'application/fhir+json'].include?(params.permit(:_format)[:_format]&.downcase)
   end
 
