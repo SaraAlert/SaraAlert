@@ -100,6 +100,7 @@ class LastDateExposure extends React.Component {
   }
 
   createModal(title, message, toggle, submit) {
+    message += this.props.has_group_members ? '(s):' : '.';
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
@@ -108,13 +109,18 @@ class LastDateExposure extends React.Component {
         <Modal.Body>
           <p>{message}</p>
           <Form.Group className="mt-2">
-            <Form.Check
-              type="radio"
-              id="apply_to_monitoree_only"
-              label="This monitoree only"
-              onChange={this.handleChange}
-              checked={this.state.apply_to_group === false && this.state.apply_to_group_cm_only === false}
-            />
+            {this.props.has_group_members && (
+              <Form.Group className="mt-3">
+                <Form.Check
+                  type="radio"
+                  id="apply_to_monitoree_only"
+                  label="This monitoree only"
+                  onChange={this.handleChange}
+                  checked={this.state.apply_to_group === false && this.state.apply_to_group_cm_only === false}
+                  disabled={!this.props.has_group_members}
+                />
+              </Form.Group>
+            )}
           </Form.Group>
           {this.props.has_group_members && this.state.showExposureDateModal && (
             <Form.Group className="mt-3">
@@ -162,14 +168,14 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be toggled off for any selected record(s):`,
+            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be toggled off for any selected record`,
             this.closeExposureDateModal,
             () => this.submit(true)
           )}
         {this.state.showContinuousMonitoringModal &&
           this.createModal(
             'Continuous Exposure',
-            'Are you sure you want to modify Continuous Exposure? Continuous Exposure will be toggled for the selected record(s):',
+            'Are you sure you want to modify Continuous Exposure? Continuous Exposure will be toggled for the selected record',
             this.toggleContinuousMonitoringModal,
             () => this.submit(false)
           )}
