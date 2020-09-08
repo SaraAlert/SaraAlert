@@ -1,4 +1,4 @@
-# For usage instructions see /config/sara/README.md
+# For usage instructions see config/sara/README.md
 'USA':
     symptoms:
         # Key is the symptom name as it will appear to the user
@@ -9,81 +9,972 @@
             # The expected threshold value for bool_values should always be true
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 1
         'Difficulty Breathing':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'New Loss of Smell':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'New Loss of Taste':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'Shortness of Breath':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
             group: 1
         'Fever':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
+            notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Used A Fever Reducer':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
+            notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
             required: false
+            threshold_operator: 'Equal'
             group: 2
         'Chills':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Repeated Shaking with Chills':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Muscle Pain':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Headache':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Sore Throat':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
-        'New Loss of Taste or Smell':
+        'Nausea or Vomiting':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Diarrhea':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Fatigue':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Congestion or Runny Nose':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
             group: 2
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
     # in the children: field
     children:
-        'State 1':
-            phone: '+13455555555'
-            webpage: 'www.example.com'
-            email: 'contact@example.com'
-            message: 'This Is a Custom Jurisdiction Message'
-            symptoms:
+        'Connecticut':
+            children:
+                'Fairfield':
+                    children:
+                        'Danbury':
+                            phone: '(203) 797-4625'
+                            webpage: 'https://www.danbury-ct.gov/health'
+                            message: 'https://www.danbury-ct.gov/health'
+                            email: 'healthdept@danbury-ct.gov'
+                        'Bridgeport':
+        'CNMI':
+            children:
+                'Saipan':
+                'Rota':
+                'Tinian':
+        'Arkansas':
+            children:
+                'Arkansas':
+                'Ashley':
+                'Baxter':
+                'Benton':
+                'Boone':
+                'Bradley':
+                'Calhoun':
+                'Carroll':
+                'Chicot':
+                'Clark':
+                'Clay':
+                'Cleburne':
+                'Cleveland':
+                'Columbia':
+                'Conway':
+                'Craighead':
+                'Crawford':
+                'Crittenden':
+                'Cross':
+                'Dallas':
+                'Desha':
+                'Drew':
+                'Faulkner':
+                'Franklin':
+                'Fulton':
+                'Garland':
+                'Grant':
+                'Greene':
+                'Hempstead':
+                'Hot Spring':
+                'Howard':
+                'Independence':
+                'Izard':
+                'Jackson':
+                'Jefferson':
+                'Johnson':
+                'Lafayette':
+                'Lawrence':
+                'Lee':
+                'Lincoln':
+                'Little River':
+                'Logan':
+                'Lonoke':
+                'Madison':
+                'Marion':
+                'Miller':
+                'Mississippi':
+                'Monroe':
+                'Montgomery':
+                'Nevada':
+                'Newton':
+                'Ouachita':
+                'Perry':
+                'Phillips':
+                'Pike':
+                'Poinsett':
+                'Polk':
+                'Pope':
+                'Prairie':
+                'Pulaski':
+                'Randolph':
+                'St. Francis':
+                'Saline':
+                'Scott':
+                'Searcy':
+                'Sebastian':
+                'Sevier':
+                'Sharp':
+                'Stone':
+                'Union':
+                'Van Buren':
+                'Washington':
+                'White':
+                'Woodruff':
+                'Yell':
+        'Washington':
+            children:
+                'Adams':
+                'Asotin':
+                'Benton-Franklin':
+                'Chelan-Douglas':
+                'Clallam':
+                'Clark':
+                'Columbia':
+                'Cowlitz':
+                'Northeast Tri':
+                'Garfield':
+                'Grant':
+                'Grays Harbor':
+                'Island':
+                'Jefferson':
+                'Seattle and King':
+                'Kitsap':
+                'Kittitas':
+                'Klickitat':
+                'Lewis':
+                'Lincoln':
+                'Mason':
+                'Okanogan':
+                'Pacific':
+                'Tacoma–Pierce':
+                'San Juan':
+                'Skagit':
+                'Skamania':
+                'Snohomish':
+                'Spokane':
+                'Thurston':
+                'Wahkiakum':
+                'Walla Walla':
+                'Whatcom':
+                    phone: '360-778-6073'
+                    symptoms:
+                        'Other':
+                            value: true
+                            type: 'BoolSymptom'
+                            required: true
+                            threshold_operator: 'Equal'
+                            group: 1
+                'Whitman':
+                'Yakima':
+        'Vermont':
+            phone: '(802) 863-7240 (opt 3)'
+            webpage: 'https://www.healthvermont.gov/covid'
+            message: 'https://www.healthvermont.gov/covid'
+            email: 'COVID19.CommunityContactTracing@vermont.gov'
+            children:
                 'Pulse Ox':
-                    value: 90
-                    threshold_operator: 'Less Than'
-                    type: 'FloatSymptom'
-                    required: true
+                    symptoms:
+                        'Pulse Ox':
+                            value: 90
+                            type: 'FloatSymptom'
+                            notes: 'What was your lowest oxygen level in the past 24 hours?'
+                            required: true
+                            threshold_operator: 'Less Than'
+                            group: 1
+                    children:
+                        'Manual Pulse Ox':
+                'Returning Travelers':
+                    phone: '(802) 863-7240 (opt 6)'
+                    webpage: 'https://www.healthvermont.gov/covid19-travel'
+                    message: 'https://www.healthvermont.gov/covid19-travel'
+                    email: 'ahs.vdhcovid19returntravelerinquiries@vermont.gov'
+        'Pennsylvania':
             children:
-                'County 1':
-                'County 2':
-        'State 2':
+                'Northcentral':
+                    children:
+                        'Bradford':
+                        'Centre':
+                        'Clinton':
+                        'Columbia':
+                            children:
+                                'Bloomsburg University':
+                        'Lycoming':
+                        'Montour':
+                        'Northumberland':
+                        'Potter':
+                        'Snyder':
+                            children:
+                                'Susquehanna University':
+                        'Sullivan':
+                        'Tioga':
+                            children:
+                                'Mansfield University':
+                        'Union':
+                'Northeast':
+                    children:
+                        'Carbon':
+                        'Lackawanna':
+                            children:
+                                'Scranton University':
+                                'Marywood University':
+                        'Lehigh':
+                            children:
+                                'Allentown City':
+                        'Luzerne':
+                            children:
+                                'Wilkes-Barre City':
+                                    children:
+                                        'Kings College':
+                        'Monroe':
+                        'Northampton':
+                            children:
+                                'Bethlehem City':
+                                'Lafayette College':
+                        'Pike':
+                        'Susquehanna':
+                        'Wayne':
+                        'Wyoming':
+                'Northwest':
+                    children:
+                        'Cameron':
+                        'Clarion':
+                        'Clearfield':
+                        'Crawford':
+                        'Elk':
+                        'Erie':
+                        'Forest':
+                        'Jefferson':
+                        'Lawrence':
+                        'McKean':
+                        'Mercer':
+                        'Venango':
+                        'Warren':
+                'Southcentral':
+                    children:
+                        'Adams':
+                        'Bedford':
+                        'Blair':
+                        'Cumberland':
+                        'Dauphin':
+                        'Franklin':
+                        'Fulton':
+                        'Huntingdon':
+                        'Juniata':
+                        'Lebanon':
+                        'Mifflin':
+                        'Perry':
+                        'York':
+                            children:
+                                'York City':
+                'Southeast':
+                    children:
+                        'Berks':
+                        'Chester':
+                            children:
+                                'Delaware':
+                                'Lincoln University':
+                        'Lancaster':
+                            children:
+                                'Lancaster City':
+                        'Schuylkill':
+                'Southwest':
+                    children:
+                        'Armstrong':
+                        'Beaver':
+                        'Butler':
+                        'Cambria':
+                        'Fayette':
+                        'Greene':
+                        'Indiana':
+                            children:
+                                'Indiana University of Pennsylvania':
+                        'Somerset':
+                        'Washington':
+                        'Westmoreland':
+                'Allegheny':
+                    children:
+                        'University of Pittsburgh':
+                            phone: '412-687-2243'
+                            webpage: 'https://www.alleghenycounty.us/Health-Department/Resources/COVID-19/COVID-19.aspx'
+                            message: 'https://www.alleghenycounty.us/Health-Department/Resources/COVID-19/COVID-19.aspx'
+                        'Carnegie Mellon University':
+                            phone: '412-268-2157'
+                            webpage: 'https://www.cmu.edu/health-services/'
+                            message: 'https://www.cmu.edu/health-services/'
+                            email: 'health@andrew.cmu.edu'
+                        'Duquesne University':
+                        'Chatham University':
+                        'Point Park University':
+                'Penn State University':
+                    children:
+                        'Abington Campus':
+                        'Altoona Campus':
+                        'Beaver Campus':
+                        'Behrend Campus':
+                        'Berks Campus':
+                        'Brandywine Campus':
+                        'Dickenson Law Campus':
+                        'Dubois Campus':
+                        'Fayette Campus':
+                        'Great Valley Campus':
+                        'Greater Allegheny Campus':
+                        'Harrisburg Campus':
+                        'Hazleton Campus':
+                        'College of Medicine Campus':
+                        'Lehigh Valley Campus':
+                        'Mont Alto Campus':
+                        'New Kensington Campus':
+                        'Schuylkill Campus':
+                        'Scranton Campus':
+                        'Shenango Campus':
+                        'University Park Campus':
+                        'Wilkes-Barre Campus':
+                        'York Campus':
+        'Arizona':
+            phone: '1-844-542-8201'
+            webpage: 'azhealth.gov/COVID-19'
+            message: 'azhealth.gov/COVID-19'
             children:
-                'County 3':
-                'County 4':
+                'Northern Region':
+                    children:
+                        'Mohave County':
+                        'Coconino County':
+                        'Navajo County':
+                        'Apache County':
+                        'Yavapai County':
+                'Central Region':
+                    children:
+                        'La Paz County':
+                        'Maricopa County':
+                            phone: '1-855-414-4673'
+                            webpage: 'maricopa.gov/COVIDtracing'
+                            message: 'maricopa.gov/COVIDtracing'
+                        'Greenlee County':
+                        'Gila County':
+                        'Graham County':
+                'Southern Region':
+                    children:
+                        'Yuma County':
+                        'Pima County':
+                        'Pinal County':
+                        'Santa Cruz County':
+                        'Cochise County':
+        'Idaho':
+            children:
+                'Panhandle Health District':
+                    webpage: 'https://www.panhandlehealthdistrict.org'
+                    message: 'https://www.panhandlehealthdistrict.org'
+                'Public Health - Idaho North Central District':
+                    phone: '866-736-6632'
+                    webpage: 'https://www.idahopublichealth.com'
+                    message: 'https://www.idahopublichealth.com'
+                'Southwest District Health':
+                    phone: '208-455-5442'
+                    webpage: 'https://www.phd3.idaho.gov'
+                    message: 'https://www.phd3.idaho.gov'
+                'Central District Health':
+                    phone: '208-321-2222'
+                    webpage: 'https://www.cdh.idaho.gov'
+                    message: 'https://www.cdh.idaho.gov'
+                'South Central Public Health District':
+                    phone: '208-737-5966'
+                    webpage: 'https://www.phd5.idaho.gov'
+                    message: 'https://www.phd5.idaho.gov'
+                'Southeastern Idaho Public Health':
+                    phone: '208-239-5232'
+                    webpage: 'https://www.siphidaho.org'
+                    message: 'https://www.siphidaho.org'
+                    children:
+                        'Fort Hall Reservation':
+                'Eastern Idaho Public Health':
+                    phone: '208-533-3219'
+                    webpage: 'https://www.eiph.idaho.gov'
+                    message: 'https://www.eiph.idaho.gov'
+        'Maine':
+            children:
+                'North':
+                    children:
+                        'Aroostook':
+                        'Penobscot':
+                        'Piscataquis':
+                        'Hancock':
+                        'Washington':
+                'Central':
+                    children:
+                        'Franklin':
+                        'Androscoggin':
+                        'Oxford':
+                        'Somerset':
+                        'Kennebec':
+                        'Waldo':
+                        'Knox':
+                        'Lincoln':
+                        'Sagadahoc':
+                'South':
+                    children:
+                        'Cumberland':
+                        'York':
+                'Tribes':
+                'Industry':
+                    children:
+                        'Migrant Health':
+                'Healthcare':
+                    children:
+                        'Northern Light Health':
+                            children:
+                                'AR Gould':
+                                'Blue Hill':
+                                'CA Dean':
+                                'Eastern Maine Medical Center':
+                                'Inland':
+                                'Maine Coast':
+                                'Mayo':
+                                'Mercy':
+                                'Sebasticook Valley':
+                        'Maine Health':
+                            children:
+                                'Maine Medical Center':
+                                'Southern Maine Healthcare':
+                                'LincolnHealth':
+                                'Stephens Memorial':
+                                'Franklin Memorial':
+                                'Pen Bay Medical Center':
+                                'Waldo County':
+                        'Central Maine Health':
+                            children:
+                                'Central Maine Medical Center':
+                                'Rumford':
+                                'Bridgton':
+                        'MaineGeneral Medical Center':
+                        'Calais Regional':
+                        'Cary Medical Center':
+                        'Down East Community':
+                        'Houlton Regional':
+                        'Mid Coast':
+                        'Millinocket Regional':
+                        'Mount Desert Island':
+                        'Northern Maine Medical Center':
+                        'Penobscot Valley':
+                        'Redington Fairview':
+                        'St Joseph':
+                        'St Marys Regional Medical Center':
+                        'York':
+                        'FQHC':
+                        'EMS':
+                'Higher Ed':
+                    children:
+                        'Bates':
+                'PK-12 Ed':
+        'Virginia':
+            webpage: 'https://www.vdh.virginia.gov/coronavirus/#COVID-19-resources'
+            message: 'https://www.vdh.virginia.gov/coronavirus/#COVID-19-resources'
+            children:
+                'Central':
+                    children:
+                        'Chesterfield':
+                            webpage: 'https://www.vdh.virginia.gov/chesterfield/'
+                            message: 'https://www.vdh.virginia.gov/chesterfield/'
+                        'Chickahominy':
+                            phone: '804-365-3340'
+                            webpage: 'https://www.vdh.virginia.gov/chickahominy/'
+                            message: 'https://www.vdh.virginia.gov/chickahominy/'
+                            email: 'Chickahominycovid19@vdh.virginia.gov'
+                        'Crater':
+                            phone: '804-862-8989'
+                            webpage: 'https://www.vdh.virginia.gov/crater/'
+                            message: 'https://www.vdh.virginia.gov/crater/'
+                            email: 'cratercdcovid19@vdh.virginia.gov'
+                        'Henrico':
+                        'Piedmont':
+                        'Richmond':
+                        'Southside':
+                'Eastern':
+                    children:
+                        'Chesapeake':
+                        'Eastern Shore':
+                        'Hampton':
+                            phone: '757-594-7008'
+                            webpage: 'https://www.vdh.virginia.gov/hampton/'
+                            message: 'https://www.vdh.virginia.gov/hampton/'
+                            email: 'hamptonhealthdepartment@vdh.virginia.gov'
+                        'Norfolk':
+                        'Peninsula':
+                            phone: '757-594-7008'
+                            webpage: 'https://www.vdh.virginia.gov/peninsula/'
+                            message: 'https://www.vdh.virginia.gov/peninsula/'
+                            email: 'peninsula@vdh.virginia.gov'
+                        'Portsmouth':
+                            phone: '757-393-8585'
+                            webpage: 'https://www.vdh.virginia.gov/portsmouth/'
+                            message: 'https://www.vdh.virginia.gov/portsmouth/'
+                        'Three Rivers':
+                            webpage: 'https://www.vdh.virginia.gov/three-rivers/'
+                            message: 'https://www.vdh.virginia.gov/three-rivers/'
+                        'Virginia Beach':
+                        'Western Tidewater':
+                'Northern':
+                    children:
+                        'Alexandria':
+                            phone: '703-746-4895'
+                            webpage: 'https://www.alexandriava.gov/Coronavirus'
+                            message: 'https://www.alexandriava.gov/Coronavirus'
+                            email: 'ahd.nursing@vdh.virginia.gov'
+                        'Arlington':
+                            phone: '703-228-5200 (opt 1)'
+                            webpage: 'https://health.arlingtonva.us/contact-tracing-faq-covid-19/'
+                            message: 'https://health.arlingtonva.us/contact-tracing-faq-covid-19/'
+                            email: 'riskassessment@arlingtonva.us'
+                        'Fairfax':
+                            phone: '703-267-3511'
+                            webpage: 'https://www.fairfaxcounty.gov/health/novel-coronavirus/contact-investigations'
+                            message: 'https://www.fairfaxcounty.gov/health/novel-coronavirus/contact-investigations'
+                            email: 'hdsaraalerts@fairfaxcounty.gov'
+                        'Loudoun':
+                        'Prince William':
+                            phone: '703-792-6300'
+                            webpage: 'https://www.vdh.virginia.gov/prince-william/'
+                            message: 'https://www.vdh.virginia.gov/prince-william/'
+                            email: 'PWHDCD@vdh.virginia.gov'
+                'Northwest':
+                    children:
+                        'Central Shenandoah':
+                            phone: '855-949-8378'
+                            webpage: 'http://www.vdh.virginia.gov/central-shenandoah/'
+                            message: 'http://www.vdh.virginia.gov/central-shenandoah/'
+                            email: 'cshdinfo@vdh.virginia.gov'
+                        'Lord Fairfax':
+                            phone: '540-722-3470'
+                            webpage: 'https://www.vdh.virginia.gov/lord-fairfax/'
+                            message: 'https://www.vdh.virginia.gov/lord-fairfax/'
+                        'Rappahannock':
+                            phone: '540-899-4749'
+                            webpage: 'https://www.vdh.virginia.gov/rappahannock/'
+                            message: 'https://www.vdh.virginia.gov/rappahannock/'
+                        'Rappahannock Rapidan':
+                        'Thomas Jefferson':
+                            phone: '434-972-6261'
+                            webpage: 'https://www.TJHD.org'
+                            message: 'https://www.TJHD.org'
+                            email: 'TJHDCD@vdh.virginia.gov'
+                'Southwest':
+                    children:
+                        'Alleghany':
+                            webpage: 'https://www.vdh.virginia.gov/alleghany/'
+                            message: 'https://www.vdh.virginia.gov/alleghany/'
+                        'Central Virginia':
+                            phone: '434-477-5965'
+                            webpage: 'https://www.vdh.virginia.gov/central-virginia/'
+                            message: 'https://www.vdh.virginia.gov/central-virginia/'
+                        'Cumberland Plateau':
+                            phone: '276-701-7325'
+                            webpage: 'https://www.vdh.virginia.gov/cumberland-plateau/'
+                            message: 'https://www.vdh.virginia.gov/cumberland-plateau/'
+                            email: 'paige.lucas@vdh.virginia.gov'
+                        'Lenowisco':
+                            phone: '276-708-6251'
+                            webpage: 'https://www.vdh.virginia.gov/lenowisco/'
+                            message: 'https://www.vdh.virginia.gov/lenowisco/'
+                            email: 'sydney.manis@vdh.virginia.gov'
+                        'Mount Rogers':
+                        'New River':
+                        'Pittsylvania-Danville':
+                        'Roanoke':
+                            webpage: 'https://www.vdh.virginia.gov/roanoke/'
+                            message: 'https://www.vdh.virginia.gov/roanoke/'
+                        'West Piedmont':
+                            phone: '276-638-2311 x.166'
+                            webpage: 'https://www.vdh.virginia.gov/west-piedmont/'
+                            message: 'https://www.vdh.virginia.gov/west-piedmont/'
+        'Alabama':
+            children:
+                'Alabama Department of Public Health':
+                    children:
+                        'Team 1':
+                        'Team 2':
+                        'Team 3':
+                        'Team 4':
+                        'Team 5':
+                        'Team 6':
+                        'Team 7':
+                        'Team 8':
+                        'Team 9':
+                        'Team 10':
+                        'Northern':
+                        'Northeastern':
+                        'East Central':
+                        'West Central':
+                        'Southeastern':
+                        'Southwestern':
+                'Jefferson County Department of Health':
+                    children:
+                        'Team 1':
+                        'Team 2':
+                        'Team 3':
+                        'Team 4':
+                        'Team 5':
+                        'Team 6':
+                        'Team 7':
+                        'Team 8':
+                        'Team 9':
+                        'Team 10':
+                'Mobile County Health Department':
+                    children:
+                        'Team 1':
+                        'Team 2':
+                        'Team 3':
+                        'Team 4':
+                        'Team 5':
+                        'Team 6':
+                        'Team 7':
+                        'Team 8':
+                        'Team 9':
+                        'Team 10':
+        'Kansas':
+            children:
+                'Wyandotte County':
+        'PR DOH':
+            children:
+                'Travelers':
+                'Region Mayaguez':
+                    children:
+                        'Isabela':
+                        'Aguadilla':
+                        'Moca':
+                        'San Sebastian':
+                        'Rincon':
+                        'Aguada':
+                        'Anasco':
+                        'Las Marias':
+                        'Mayaguez':
+                        'Maricao':
+                        'Hormigueros':
+                        'San German':
+                        'Cabo Rojo':
+                        'Sabana Grande':
+                        'Lajas':
+                'Region Ponce':
+                    children:
+                        'Yauco':
+                        'Guanica':
+                        'Adjuntas':
+                        'Guayanilla':
+                        'Penuelas':
+                        'Ponce':
+                        'Jayuya':
+                        'Villalba':
+                        'Juana Diaz':
+                        'Coamo':
+                        'Santa Isabel':
+                        'Salinas':
+                        'Guayama':
+                        'Arroyo':
+                        'Patillas':
+                'Region Caguas':
+                    children:
+                        'Aibonito':
+                        'Cidra':
+                        'Cayey':
+                        'Aguas Buenas':
+                        'Caguas':
+                        'Gurabo':
+                        'San Lorenzo':
+                        'Juncos':
+                        'Las Piedras':
+                        'Yabucoa':
+                        'Maunabo':
+                        'Naguabo':
+                        'Humacao':
+                'Region Fajardo':
+                    children:
+                        'Rio Grande':
+                        'Luquillo':
+                        'Fajardo':
+                        'Ceiba':
+                        'Culebra':
+                        'Vieques':
+                'Region Metro':
+                    children:
+                        'Guaynabo':
+                        'San Juan':
+                        'Trujillo Alto':
+                        'Carolina':
+                        'Loiza':
+                        'Canovanas':
+                'Region Bayamon':
+                    children:
+                        'Vega Alta':
+                        'Dorado':
+                        'Toa Baja':
+                        'Catano':
+                        'Bayamon':
+                        'Toa Alta':
+                        'Corozal':
+                        'Naranjito':
+                        'Comerio':
+                        'Barranquitas':
+                        'Orocovis':
+                'Region Arecibo':
+                    children:
+                        'Quebradillas':
+                        'Camuy':
+                        'Hatillo':
+                        'Arecibo':
+                        'Barceloneta':
+                        'Florida':
+                        'Manati':
+                        'Vega Baja':
+                        'Morovis':
+                        'Ciales':
+                        'Utuado':
+                        'Lares':
+        'GLITC':
+            children:
+                'Tribe 1':
+                    symptoms:
+                        'Temperature':
+                            value: 99.8
+                            type: 'FloatSymptom'
+                            notes: 'Please enter your current temperature in degrees Fahrenheit'
+                            required: true
+                            threshold_operator: 'GreaterThan'
+                            group: 1
+                    children:
+                        'Community':
+                        'Tribal Employees':
+                        'Casino Employees':
+                        'Health Center Patients':
+                'Tribe 2':
+                    symptoms:
+                        'Temperature':
+                            value: 99.8
+                            type: 'FloatSymptom'
+                            notes: 'Please enter your current temperature in degrees Fahrenheit'
+                            required: true
+                            threshold_operator: 'GreaterThan'
+                            group: 1
+                    children:
+                        'Tribal Government':
+                            children:
+                                'Accounting':
+                                'Finance':
+                                'Administration1':
+                                'Administration2':
+                                'Administration3':
+                                'ChildSupport':
+                                'Courthouse':
+                                'DomesticViolence':
+                                'ECC1':
+                                'ECC2':
+                                'ECC3':
+                                'ECC4':
+                                'ECC5':
+                                'ChildCareCenter':
+                                'Education':
+                                'Elderly':
+                                'Enrollment':
+                                'Environmental':
+                                'FamilyServices1':
+                                'FamilyServices2':
+                                'FamilyServices3':
+                                'FamilyServices4':
+                                'FamilyServices5':
+                                'Farm':
+                                'FoodDistribution':
+                                'Gaming':
+                                'Hatchery1':
+                                'Hatchery2':
+                                'ICW':
+                                'ITDepartment':
+                                'Legal1':
+                                'Legal2':
+                                'Maintenance':
+                                'Planning':
+                                'Police':
+                                'Property and Procurement':
+                                'TAL':
+                                'THPO':
+                                'Transit':
+                                'Transportation':
+                                'Wardens':
+                        'Health Care Center Employees':
+                            children:
+                                'Clinic1':
+                                'Clinic2':
+                                'Clinic3':
+                                'Clinic4':
+                                'Clinic5':
+                                'Clinic6':
+                                'Clinic7':
+                                'Clinic8':
+                                'Clinic9':
+                                'Clinic10':
+                                'Clinic11':
+                                'Clinic12':
+                                'ClinicIT':
+                        'Casino':
+                            children:
+                                'Gaming':
+                                'Slots':
+                                'Accounting':
+                                'Administration':
+                                'Marketing':
+                                'FoodService':
+                                'Security':
+                                'Hotel':
+                        'Housing Authority':
+                        'Business Development Board':
+                        'Health Care Center Patients':
+                'Tribe 3':
+                    children:
+                        'County 1':
+                        'County 2':
+                        'County 3':
+                        'County 4':
+                        'County 5':
+                        'County 6':
+        'Missouri':
+            children:
+                'Cass County':
+                'Clay County':
+                    webpage: 'https://www.clayhealth.com/'
+                    message: 'https://www.clayhealth.com/'
+                    email: 'epi@clayhealth.com'
+                    children:
+                        'Oak Hill':
+                            children:
+                                'School 1':
+                                'School 2':
+                        'Diocese KC SJ':
+                            children:
+                                'St. James':
+        'Montana':
+            children:
+                'Gallatin County':
+                    phone: '406-548-0123'
+                    webpage: 'https://www.healthygallatin.org'
+                    message: 'https://www.healthygallatin.org'
+                    email: 'callcenter@readygallatin.com'
+                    symptoms:
+                        'Other':
+                            value: true
+                            type: 'BoolSymptom'
+                            notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
+                            required: true
+                            threshold_operator: 'Equal'
+                            group: 1
+                    children:
+                        'Bozeman Health':
+                        'Montana State University':
+                        'Gallatin County Detention Center':
+                'Flathead County':
+                'Hill County':
+                    children:
+                        'Montana State University':
+                        'Havre Public Schools':
+                'Lake County':
+        'Texas':
+            children:
+                'Tarrant County':
+                    phone: '817-248-6299'
+                    webpage: 'http://www.tarrantcounty.com/answerthecall'
+                    message: 'http://www.tarrantcounty.com/answerthecall'
+                    email: 'COVID19@tarrantcounty.com'
+        'Michigan':
+            children:
+                'Berrien County':
+        'Palau':
+            children:
+                'Koror':
+                'Airai':
+                'Aimeliik':
+                'Ngatpang':
+                'Ngardmau':
+                'Ngaremlengui':
+                'Ngarchelong':
+                'Ngaraard':
+                'Ngiwal':
+                'Melekeok':
+                'Ngchesar':
+                'Kayangel':
+                'Angaur':
+                'Peleliu':
+                'Sonsorol':
+                'Hatohobei':
