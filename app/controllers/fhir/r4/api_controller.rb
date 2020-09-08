@@ -17,9 +17,7 @@ class Fhir::R4::ApiController < ActionController::API
   #
   # GET /[:resource_type]/[:id]
   def show
-    puts "HERE!!"
     status_not_acceptable && return unless accept_header?
-    puts "PASSED HEADER?"
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
@@ -388,7 +386,6 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Get a patient by id
   def get_patient(id)
-    puts "call to get patient"
     accessable_patients.find_by(id: id)
   end
 

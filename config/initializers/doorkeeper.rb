@@ -55,8 +55,7 @@ Doorkeeper.configure do
   #     destroy
   #   end
   # end
-  #
-  #
+
   # Enables polymorphic Resource Owner association for Access Tokens and Access Grants.
   # By default this option is disabled.
   #
@@ -226,7 +225,7 @@ Doorkeeper.configure do
   # For more information go to
   # https://doorkeeper.gitbook.io/guides/ruby-on-rails/scopes
   #
-  optional_scopes 'user/*.read', 'user/*.write', 'user/*.*'
+  optional_scopes 'user/*.read', 'user/*.write', 'user/*.*', 'system/*.read', 'system/*.write', 'system/*.*'
 
   # Allows to restrict only certain scopes for grant_type.
   # By default, all the scopes will be available for all the grant types.
@@ -343,7 +342,7 @@ Doorkeeper.configure do
   #   http://tools.ietf.org/html/rfc6819#section-4.4.2
   #   http://tools.ietf.org/html/rfc6819#section-4.4.3
   #
-  grant_flows %w[authorization_code]
+  grant_flows %w[authorization_code client_credentials]
 
   # Allows to customize OAuth grant flows that +each+ application support.
   # You can configure a custom block (or use a class respond to `#call`) that must
