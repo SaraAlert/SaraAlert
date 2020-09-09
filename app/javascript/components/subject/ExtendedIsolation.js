@@ -88,8 +88,10 @@ class ExtendedIsolation extends React.Component {
                   <React.Fragment>
                     {moment(this.state.extended_isolation).isSameOrAfter(moment().format('MM/DD/YYYY')) ? (
                       <Form.Label className="mb-2">
-                        {`Are you sure you want to extend this case’s isolation through ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}?
-                          After clicking “Submit”, the case will be moved to the "Reporting" or "Non-Reporting" line list. 
+                        {`Are you sure you want to extend this case’s isolation through ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}?`}
+                        <br></br>
+                        <br></br>
+                        {`After clicking “Submit”, the case will be moved to the "Reporting" or "Non-Reporting" line list. 
                           This case cannot appear on the records Requiring Review Line List until after ${moment(this.state.extended_isolation).format(
                             'MM/DD/YYYY'
                           )}.
