@@ -317,9 +317,22 @@ class MonitoringStatus extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {/* CHANGE ME */}
           <p>
             You are about to change this monitoree&apos;s {this.state.message} {this.state.message_warning && <b>{this.state.message_warning}</b>}
           </p>
+          {/* CHANGE ME */}
+          {this.props.has_group_members && (
+            <Form.Group className="mt-2">
+              <Form.Check
+                type="switch"
+                id="apply_to_group"
+                label="Apply this change to the entire household that this monitoree is responsible for"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group === true || false}
+              />
+            </Form.Group>
+          )}
           {this.state.monitoring_reasons && (
             <Form.Group>
               <Form.Label>Please select reason for status change:</Form.Label>
@@ -335,42 +348,39 @@ class MonitoringStatus extends React.Component {
               </Form.Control>
             </Form.Group>
           )}
-          {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && (
-            <Form.Group>
-              <Form.Check
-                type="switch"
-                id="apply_to_group_cm_only"
-                label='Update Last Date of Exposure for all household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group_cm_only}
-              />
-            </Form.Group>
-          )}
-          {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && this.state.apply_to_group_cm_only && (
-            <Form.Group>
-              <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
-              <DateInput
-                id="apply_to_group_cm_only_date"
-                date={this.state.apply_to_group_cm_only_date}
-                onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
-                placement="bottom"
-              />
-            </Form.Group>
-          )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
-          {this.props.has_group_members && (
-            <Form.Group className="mt-2">
-              <Form.Check
-                type="switch"
-                id="apply_to_group"
-                label="Apply this change to the entire household that this monitoree is responsible for"
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group}
-              />
-            </Form.Group>
+          {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && (
+            <React.Fragment>
+              <hr />
+              <p>
+                Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure toggled ON and are being
+                monitored in the Exposure Workflow?
+              </p>
+              {/* CHANGE ME */}
+              <Form.Group>
+                <Form.Check
+                  type="switch"
+                  id="apply_to_group_cm_only"
+                  label='Update Last Date of Exposure for all household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
+                  onChange={this.handleChange}
+                  checked={this.state.apply_to_group_cm_only === true || false}
+                />
+              </Form.Group>
+              {this.state.apply_to_group_cm_only && (
+                <Form.Group>
+                  <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
+                  <DateInput
+                    id="apply_to_group_cm_only_date"
+                    date={this.state.apply_to_group_cm_only_date}
+                    onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
+                    placement="bottom"
+                  />
+                </Form.Group>
+              )}
+            </React.Fragment>
           )}
         </Modal.Body>
         <Modal.Footer>
