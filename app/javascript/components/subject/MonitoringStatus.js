@@ -372,22 +372,22 @@ class MonitoringStatus extends React.Component {
                       onChange={this.handleChange}
                       checked={this.state.apply_to_group_cm_only}
                     />
-                    <p>Yes, household members are no longer being exposed to a case.</p>
+                    <p>Yes, household members are no longer being exposed to a case</p>
                   </Form.Check.Label>
-                  {/* FIX MY PLACEMENT */}
-                  {this.state.apply_to_group_cm_only && (
-                    <div>
-                      Update their <b>Last Date of Exposure</b> to:
-                      <DateInput
-                        id="apply_to_group_cm_only_date"
-                        date={this.state.apply_to_group_cm_only_date}
-                        onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
-                        placement="bottom"
-                      />
-                      <br />
-                    </div>
-                  )}
                 </Form.Check>
+                {/* FIX MY PLACEMENT */}
+                {this.state.apply_to_group_cm_only && (
+                  <React.Fragment>
+                    Update their <b>Last Date of Exposure</b> to:
+                    <DateInput
+                      id="apply_to_group_cm_only_date"
+                      date={this.state.apply_to_group_cm_only_date}
+                      onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
+                      placement="bottom"
+                    />
+                    <br />
+                  </React.Fragment>
+                )}
                 <Form.Check
                   type="radio"
                   name="apply_to_group_cm_only"
