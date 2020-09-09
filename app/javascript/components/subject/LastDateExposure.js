@@ -167,7 +167,7 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be toggled off for any selected record`,
+            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be toggled off for the selected record`,
             this.closeExposureDateModal,
             () => this.submit(true)
           )}
@@ -194,9 +194,6 @@ class LastDateExposure extends React.Component {
                 <DateInput
                   id="last_date_of_exposure"
                   date={this.state.last_date_of_exposure}
-                  minDate={moment()
-                    .subtract(30, 'days')
-                    .format('YYYY-MM-DD')}
                   maxDate={moment()
                     .add(30, 'days')
                     .format('YYYY-MM-DD')}

@@ -9,62 +9,100 @@
             # The expected threshold value for bool_values should always be true
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 1
         'Difficulty Breathing':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'New Loss of Smell':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'New Loss of Taste':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 1
+        'Shortness of Breath':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
             group: 1
         'Fever':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
+            notes: 'Feeling feverish or have a measured temperature at or above 100.4°F/38°C'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Used A Fever Reducer':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
+            notes: 'In the past 24 hours, have you used any medicine that reduces fevers?'
             required: false
+            threshold_operator: 'Equal'
             group: 2
         'Chills':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Repeated Shaking with Chills':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Muscle Pain':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Headache':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
         'Sore Throat':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
             group: 2
-        'New Loss of Taste or Smell':
+        'Nausea or Vomiting':
             value: true
             type: 'BoolSymptom'
-            threshold_operator: 'Equal'
             required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Diarrhea':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Fatigue':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
+            group: 2
+        'Congestion or Runny Nose':
+            value: true
+            type: 'BoolSymptom'
+            required: true
+            threshold_operator: 'Equal'
             group: 2
     # Jurisdictions follow a hierarchy, the hierarchy is defined by nesting jurisdictions
     # in the children: field

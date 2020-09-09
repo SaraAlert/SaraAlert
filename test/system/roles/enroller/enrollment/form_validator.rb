@@ -61,28 +61,28 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
   def verify_input_validation_for_contact_info(contact_info)
     select 'Telephone call', from: 'preferred_contact_method'
     click_on 'Next'
-    verify_text_not_displayed('Please provide an email')
+    verify_text_not_displayed('Please provide an email or change Preferred Reporting Method')
     verify_text_not_displayed('Please confirm email')
-    verify_text_displayed('Please provide a primary telephone number')
+    verify_text_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
     select 'SMS Text-message', from: 'preferred_contact_method'
     click_on 'Next'
-    verify_text_not_displayed('Please provide an email')
+    verify_text_not_displayed('Please provide an email or change Preferred Reporting Method')
     verify_text_not_displayed('Please confirm email')
-    verify_text_displayed('Please provide a primary telephone number')
+    verify_text_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
     select 'E-mailed Web Link', from: 'preferred_contact_method'
     click_on 'Next'
-    verify_text_displayed('Please provide an email')
+    verify_text_displayed('Please provide an email or change Preferred Reporting Method')
     verify_text_displayed('Please confirm email')
-    verify_text_not_displayed('Please provide a primary telephone number')
+    verify_text_not_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
     fill_in 'email', with: 'email@eample.com'
     click_on 'Next'
-    verify_text_not_displayed('Please provide an email')
+    verify_text_not_displayed('Please provide an email or change Preferred Reporting Method')
     verify_text_displayed('Please confirm email')
-    verify_text_not_displayed('Please provide a primary telephone number')
+    verify_text_not_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
     @@enrollment_form.populate_enrollment_step(:contact_info, contact_info)
-    verify_text_not_displayed('Please provide an email')
+    verify_text_not_displayed('Please provide an email or change Preferred Reporting Method')
     verify_text_not_displayed('Please confirm email')
-    verify_text_not_displayed('Please provide a primary telephone number')
+    verify_text_not_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
   end
 
   def verify_input_validation_for_arrival_info(arrival_info)
