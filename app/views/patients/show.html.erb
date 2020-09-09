@@ -60,8 +60,8 @@
     </div>
     <% columns = [] %>
     <% @patient.assessments.includes([:reported_condition]).each do |assessment| columns.concat(assessment.all_symptom_names) end %>
-    <% columns = columns.uniq %>
-    <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
+    <% columns = columns.uniq.sort %>
+    <table class="assessment_table table table-sm table-striped table-bordered table-hover table-smaller-font">
       <thead>
         <tr>
           <th class="DataTable-table-header">ID</th>
@@ -251,7 +251,7 @@
       "order": [
         [0, "desc"]
       ],
-      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'col-sm-24'tr>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
+      "dom": "<'row'<'col-sm-24 col-md-12'l><'col-sm-24 col-md-12'f>>" + "<'row'<'table-responsive'<'col-sm-24'tr>>>" + "<'row'<'col-sm-24 col-md-10'i><'col-sm-24 col-md-14'p>>"
     });
     $('.lab_table').DataTable({
       "search": false,
