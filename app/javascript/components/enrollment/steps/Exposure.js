@@ -147,9 +147,6 @@ class Exposure extends React.Component {
             <DateInput
               id="symptom_onset"
               date={this.state.current.patient.symptom_onset}
-              minDate={moment()
-                .subtract(30, 'days')
-                .format('YYYY-MM-DD')}
               maxDate={moment()
                 .add(30, 'days')
                 .format('YYYY-MM-DD')}
@@ -213,9 +210,6 @@ class Exposure extends React.Component {
             <DateInput
               id="last_date_of_exposure"
               date={this.state.current.patient.last_date_of_exposure}
-              minDate={moment()
-                .subtract(30, 'days')
-                .format('YYYY-MM-DD')}
               maxDate={moment()
                 .add(30, 'days')
                 .format('YYYY-MM-DD')}

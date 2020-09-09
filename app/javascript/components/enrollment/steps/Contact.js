@@ -66,7 +66,7 @@ class Contact extends React.Component {
           primary_telephone: yup
             .string()
             .phone()
-            .required('Please provide a primary telephone number')
+            .required('Please provide a primary telephone number, or change Preferred Reporting Method.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone: yup
             .string()
@@ -96,7 +96,7 @@ class Contact extends React.Component {
           email: yup
             .string()
             .email('Please enter a valid email.')
-            .required('Please provide an email')
+            .required('Please provide an email or change Preferred Reporting Method')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           confirm_email: yup
             .string()
@@ -136,7 +136,7 @@ class Contact extends React.Component {
               return yup
                 .string()
                 .phone()
-                .required('Please provide a primary telephone number, or change Preferred Contact Method.');
+                .required('Please provide a primary telephone number, or change Preferred Reporting Method.');
             }
           }),
         secondary_telephone: yup

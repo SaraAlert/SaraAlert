@@ -177,16 +177,12 @@ const TOOLTIP_TEXT = {
       </div>
     </div>
   ),
-
   extendedIsolation: (
     <div>
-      Used to move records from &quot;Records Requiring Review&quot; to either the &quot;Reporting&quot; or &quot;Non-Reporting&quot; line list
-      <div>
-        <i>Only relevant for Isolation Workflow</i>
-      </div>
+      Used by the system to determine eligibility to appear on the <i>Records Requiring Review</i> line list. A case cannot appear on the{' '}
+      <i>Records Requiring Review</i> line list until after the user-specified date. This field may be blank.
     </div>
   ),
-
   // REQUIRES REVIEW RECOVERY LOGIC
   asymptomaticNonTestBased: (
     <div>At least 10 days have passed since the specimen collection date of a positive laboratory test and the monitoree has never reported symptoms.</div>

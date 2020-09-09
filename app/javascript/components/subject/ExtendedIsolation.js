@@ -89,10 +89,12 @@ class ExtendedIsolation extends React.Component {
                     {moment(this.state.extended_isolation).isSameOrAfter(moment().format('MM/DD/YYYY')) ? (
                       <Form.Label className="mb-2">
                         {`Are you sure you want to extend this case’s isolation through ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}?
-                        The case will not appear on the Records Requiring Review List until after ${moment(this.state.extended_isolation).format(
-                          'MM/DD/YYYY'
-                        )} AND a recovery definition is met.
-                        The case will move to the "Reporting" or "Non-Reporting" line list.`}
+                          After clicking “Submit”, the case will be moved to the "Reporting" or "Non-Reporting" line list. 
+                          This case cannot appear on the records Requiring Review Line List until after ${moment(this.state.extended_isolation).format(
+                            'MM/DD/YYYY'
+                          )}.
+                          If the record meets a recovery definition after ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}, it will appear on the 
+                          Records Requiring Review Line List for review by public health to determine if it is safe to discontinue isolation.`}
                       </Form.Label>
                     ) : (
                       <Form.Label className="mb-2">
