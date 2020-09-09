@@ -162,6 +162,9 @@ class MonitoringStatus extends React.Component {
               ]
             : null,
       });
+    } else if (event?.target?.name && event.target.name === 'apply_to_group_cm_only') {
+      let applyToGroup = event.target.id === 'lde_radio_yes' ? true : false;
+      this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
       this.setState({ [event.target.id]: event?.target?.value ? value : '' });
@@ -359,27 +362,41 @@ class MonitoringStatus extends React.Component {
                 Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure toggled ON and are being
                 monitored in the Exposure Workflow?
               </p>
-              {/* CHANGE ME */}
               <Form.Group>
+                <Form.Check>
+                  <Form.Check.Label>
+                    <Form.Check.Input
+                      type="radio"
+                      name="apply_to_group_cm_only"
+                      id="lde_radio_yes"
+                      onChange={this.handleChange}
+                      checked={this.state.apply_to_group_cm_only}
+                    />
+                    <p>Yes, household members are no longer being exposed to a case.</p>
+                  </Form.Check.Label>
+                  {/* FIX MY PLACEMENT */}
+                  {this.state.apply_to_group_cm_only && (
+                    <div>
+                      Update their <b>Last Date of Exposure</b> to:
+                      <DateInput
+                        id="apply_to_group_cm_only_date"
+                        date={this.state.apply_to_group_cm_only_date}
+                        onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
+                        placement="bottom"
+                      />
+                      <br />
+                    </div>
+                  )}
+                </Form.Check>
                 <Form.Check
-                  type="switch"
-                  id="apply_to_group_cm_only"
-                  label='Update Last Date of Exposure for all household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
+                  type="radio"
+                  name="apply_to_group_cm_only"
+                  id="lde_radio_no"
+                  label="No, household members still have continuous exposure to another case"
                   onChange={this.handleChange}
-                  checked={this.state.apply_to_group_cm_only === true || false}
+                  checked={!this.state.apply_to_group_cm_only}
                 />
               </Form.Group>
-              {this.state.apply_to_group_cm_only && (
-                <Form.Group>
-                  <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
-                  <DateInput
-                    id="apply_to_group_cm_only_date"
-                    date={this.state.apply_to_group_cm_only_date}
-                    onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
-                    placement="bottom"
-                  />
-                </Form.Group>
-              )}
             </React.Fragment>
           )}
         </Modal.Body>
