@@ -35,13 +35,13 @@ es:
         name: 'oxímetro de pulso'
         notes: 'Ingrese la lectura más baja del oxímetro de pulso en las últimas 24 horas'
       fatigue:
-        name: 'Fatigue'
+        name: 'Fatiga'
         notes: ''
       nausea-or-vomiting:
-        name: 'Nausea Or Vomiting'
+        name: 'Náuseas o vómitos'
         notes: ''
       diarrhea:
-        name: 'Diarrhea'
+        name: 'Diarrea'
         notes: ''
       nasal-congestion:
         name: 'Nasal Congestion'
@@ -56,6 +56,18 @@ es:
         name: 'Other'
         notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
       no-symptoms: 'No tengo ningún síntoma.'
+      new-loss-of-smell:
+        name: 'Pérdida reciente el olfato'
+        notes: ''
+      new-loss-of-taste:
+        name: 'Pérdida reciente el gusto'
+        notes: ''
+      shortness-of-breath:
+        name: 'Falta de aire'
+        notes: ''
+      congestion-or-runny-nose:
+        name: 'Congestión o nariz que moquea'
+        notes: ''
     threshold-op:
       less-than: 'Menos que'
       less-than-or-equal: 'Menor o igual a'

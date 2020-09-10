@@ -90,11 +90,21 @@ class Fhir::R4::ApiController < ActionController::API
       # Responder is self
       resource.responder = resource
 
-      # Creator is authenticated user
-      resource.creator = current_resource_owner
+      # Determine resource creator
+      if current_resource_owner.present?
+        # Creator is authenticated user
+        resource.creator = current_resource_owner
+      else
+        # Creator is client application - need to get created shadow user
+        curr_client_app = current_client_application
+        status_bad_request && return if curr_client_app&.user_id.nil?
+        shadow_user = User.find_by(id: current_client_application.user_id)
+        status_bad_request && return if !shadow_user.present?
+        resource.creator = shadow_user
+      end
 
       # Jurisdiction is the authenticated user's jurisdiction
-      resource.jurisdiction = current_resource_owner.jurisdiction
+      resource.jurisdiction = resource.creator.jurisdiction
 
       # Generate a submission token for the new monitoree
       resource.submission_token = SecureRandom.hex(20) # 160 bits
@@ -109,7 +119,7 @@ class Fhir::R4::ApiController < ActionController::API
       resource.send_enrollment_notification
 
       # Create a history for the enrollment
-      History.enrollment(patient: resource, created_by: current_resource_owner.email, comment: 'User enrolled monitoree via API.')
+      History.enrollment(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree enrolled via API.')
     end
     status_created(resource.as_fhir) && return
   rescue StandardError
@@ -313,6 +323,11 @@ class Fhir::R4::ApiController < ActionController::API
     User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token&.resource_owner_id
   end
 
+  # Client application that is currently using the API
+  def current_client_application
+    Doorkeeper::Application.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?      
+  end
+
   # Determine the patient data that is accessable by either the current resource owner
   # (user flow) or the current client application (system flow).
   def accessable_patients
@@ -322,8 +337,8 @@ class Fhir::R4::ApiController < ActionController::API
       current_resource_owner.patients
     # Otherwise if there NO resource owner and there is a found application, check for a valid associated jurisdiction id.
     # The current resource owner check is to prevent unauthorized users from using it if the application happens to be registered for both workflows.
-    elsif !current_resource_owner.present? && doorkeeper_token.application_id && Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)
-      jurisdiction_id = Doorkeeper::Application.find_by(id: doorkeeper_token.application_id)[:jurisdiction_id]
+    elsif !current_resource_owner.present? && current_client_application.present?
+      jurisdiction_id = current_client_application[:jurisdiction_id]
       return if jurisdiction_id.nil? || !Jurisdiction.find_by(id: jurisdiction_id).present?
 
       Jurisdiction.find_by(id: jurisdiction_id).all_patients

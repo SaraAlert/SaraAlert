@@ -3,10 +3,12 @@ import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
+import moment from 'moment';
 
 import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
+import ExtendedIsolation from './ExtendedIsolation';
 import SymptomOnset from './SymptomOnset';
 
 class LastDateExposure extends React.Component {
@@ -67,11 +69,12 @@ class LastDateExposure extends React.Component {
     event.persist();
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     this.setState({ [event.target.id]: value }, () => {
-      // Make sure other toggle is reset (these need to act like radio buttons)
-      if (event.target.id === 'apply_to_group' && this.state.apply_to_group) {
-        this.setState({ apply_to_group_cm_only: false });
-      } else if (event.target.id === 'apply_to_group_cm_only' && this.state.apply_to_group_cm_only) {
-        this.setState({ apply_to_group: false });
+      if (event.target.id === 'apply_to_monitoree_only') {
+        this.setState({ apply_to_group_cm_only: false, apply_to_group: false });
+      } else if (event.target.id === 'apply_to_group') {
+        this.setState({ apply_to_group_cm_only: false, apply_to_group: true });
+      } else if (event.target.id === 'apply_to_group_cm_only') {
+        this.setState({ apply_to_group_cm_only: true, apply_to_group: false });
       }
     });
   }
@@ -99,6 +102,7 @@ class LastDateExposure extends React.Component {
   }
 
   createModal(title, message, toggle, submit) {
+    message += this.props.has_group_members ? '(s):' : '.';
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
@@ -107,25 +111,35 @@ class LastDateExposure extends React.Component {
         <Modal.Body>
           <p>{message}</p>
           {this.props.has_group_members && (
-            <Form.Group className="mt-2">
+            <Form.Group className="mt-3">
               <Form.Check
-                type="switch"
-                id="apply_to_group"
-                label="Update Last Date of Exposure for all household members"
+                type="radio"
+                id="apply_to_monitoree_only"
+                label="This monitoree only"
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group === true || false}
+                checked={this.state.apply_to_group === false && this.state.apply_to_group_cm_only === false}
               />
             </Form.Group>
           )}
-          {this.props.has_group_members && this.state.showExposureDateModal && <b>OR</b>}
           {this.props.has_group_members && this.state.showExposureDateModal && (
             <Form.Group className="mt-3">
               <Form.Check
-                type="switch"
+                type="radio"
                 id="apply_to_group_cm_only"
-                label="Update Last Date of Exposure only for household members with Continuous Exposure"
+                label="This monitoree and only household members where Continuous Exposure is toggled ON"
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group_cm_only === true || false}
+                checked={this.state.apply_to_group_cm_only === true}
+              />
+            </Form.Group>
+          )}
+          {this.props.has_group_members && (
+            <Form.Group className="mt-2">
+              <Form.Check
+                type="radio"
+                id="apply_to_group"
+                label="This monitoree and all household members"
+                onChange={this.handleChange}
+                checked={this.state.apply_to_group === true}
               />
             </Form.Group>
           )}
@@ -153,13 +167,16 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the last date of exposure to ${this.state.last_date_of_exposure}? This will reset the continuous monitoring status for this monitoree.`,
+            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be toggled off for the selected record`,
             this.closeExposureDateModal,
             () => this.submit(true)
           )}
         {this.state.showContinuousMonitoringModal &&
-          this.createModal('Continuous Exposure', 'Are you sure you want to modify continuous monitoring?', this.toggleContinuousMonitoringModal, () =>
-            this.submit(false)
+          this.createModal(
+            'Continuous Exposure',
+            'Are you sure you want to modify Continuous Exposure? Continuous Exposure will be toggled for the selected record',
+            this.toggleContinuousMonitoringModal,
+            () => this.submit(false)
           )}
         <Row>
           <SymptomOnset authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
@@ -174,7 +191,15 @@ class LastDateExposure extends React.Component {
             </Row>
             <Row>
               <Col>
-                <DateInput id="last_date_of_exposure" date={this.state.last_date_of_exposure} onChange={this.handleDateChange} placement="top" />
+                <DateInput
+                  id="last_date_of_exposure"
+                  date={this.state.last_date_of_exposure}
+                  maxDate={moment()
+                    .add(30, 'days')
+                    .format('YYYY-MM-DD')}
+                  onChange={this.handleDateChange}
+                  placement="top"
+                />
               </Col>
             </Row>
             <Row className="pt-2">
@@ -190,7 +215,9 @@ class LastDateExposure extends React.Component {
               </Col>
             </Row>
           </Col>
-          {!this.props.patient.isolation && (
+          {this.props.patient.isolation ? (
+            <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
+          ) : (
             <Col>
               <Row className="reports-actions-title">
                 <Col>

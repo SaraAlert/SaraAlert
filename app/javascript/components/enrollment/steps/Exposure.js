@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
+import moment from 'moment';
 
 import confirmDialog from '../../util/ConfirmDialog';
 import DateInput from '../../util/DateInput';
@@ -146,6 +147,9 @@ class Exposure extends React.Component {
             <DateInput
               id="symptom_onset"
               date={this.state.current.patient.symptom_onset}
+              maxDate={moment()
+                .add(30, 'days')
+                .format('YYYY-MM-DD')}
               onChange={date => this.handleDateChange('symptom_onset', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['symptom_onset']}
@@ -206,6 +210,9 @@ class Exposure extends React.Component {
             <DateInput
               id="last_date_of_exposure"
               date={this.state.current.patient.last_date_of_exposure}
+              maxDate={moment()
+                .add(30, 'days')
+                .format('YYYY-MM-DD')}
               onChange={date => this.handleDateChange('last_date_of_exposure', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
@@ -661,13 +668,23 @@ class Exposure extends React.Component {
     if (isolation) {
       schema['symptom_onset'] = yup
         .date('Date must correspond to the "mm/dd/yyyy" format.')
-        .max(new Date(), 'Date can not be in the future.')
+        .max(
+          moment()
+            .add(30, 'days')
+            .toDate(),
+          'Date can not be more than 30 days in the future.'
+        )
         .required('Please enter a symptom onset date.')
         .nullable();
     } else {
       schema['last_date_of_exposure'] = yup
         .date('Date must correspond to the "mm/dd/yyyy" format.')
-        .max(new Date(), 'Date can not be in the future.')
+        .max(
+          moment()
+            .add(30, 'days')
+            .toDate(),
+          'Date can not be more than 30 days in the future.'
+        )
         .required('Please enter a last date of exposure.')
         .nullable();
     }

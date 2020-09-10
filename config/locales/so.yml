@@ -35,13 +35,13 @@ so:
         name: 'Aksijiinta Dhiiggaaga'
         notes: 'Geli cabbirka aksijiinta dhiiggaaga ee ugu hooseeya ee la qaaday 24-kii saac ee la soo dhaafay'
       fatigue:
-        name: 'Fatigue'
+        name: 'Daal'
         notes: ''
       nausea-or-vomiting:
-        name: 'Nausea Or Vomiting'
+        name: 'Lalabbo ama matagid'
         notes: ''
       diarrhea:
-        name: 'Diarrhea'
+        name: 'Shuban'
         notes: ''
       nasal-congestion:
         name: 'Nasal Congestion'
@@ -56,6 +56,18 @@ so:
         name: 'Other'
         notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
       no-symptoms: 'Astaamo ma laha'
+      new-loss-of-smell:
+        name: 'ur cusub kaa lunta'
+        notes: ''
+      new-loss-of-taste:
+        name: 'Dhadhan kaa lunta'
+        notes: ''
+      shortness-of-breath:
+        name: 'Neef qabatin'
+        notes: ''
+      congestion-or-runny-nose:
+        name: 'San xidhan ama duuf leh'
+        notes: ''
     threshold-op:
       less-than: 'Ka yar'
       less-than-or-equal: 'Kayar ama Sinnaansho'

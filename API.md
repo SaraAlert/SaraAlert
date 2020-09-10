@@ -8,7 +8,7 @@ Sara Alert strives to support interopability standards in public health, and as 
 The Sara Alert API does this by following SMART on FHIR API [standards and profiles](http://docs.smarthealthit.org/), as described [here](https://smarthealthit.org/smart-on-fhir-api/):
 > A key innovation in the SMART on FHIR platform is the use of a standards-based data layer building on the emerging FHIR API and resource definitions. SMART on FHIR, provides a health app interface based on open standards including HL7’s FHIR, OAuth2, and OpenID Connect. FHIR provides a detailed set of “core” data models, but leaves many fields optional and vocabularies under-constrained, in order to support diverse requirements across varied regions and use cases. But to enable substitutable health apps as well as third-party application services, developers need stronger contracts. To this end, SMART on FHIR applies a set of “profiles” that provide developers with expectations about the vocabularies that will be used to express medications, problems, labs, and other clinical data.
  
-This API is intended for use by public health organizations using Sara Alert, and thus Sara  Alert admins maintain a registered list of supported client applications. For access to a live production or demonstration environment, please contact system administrators at `sara-api@mitre.org` to discuss adding your client application to the approved list. 
+This API is intended for use by public health organizations using Sara Alert, and thus Sara  Alert admins maintain a registered list of supported client applications. For access to a live production or demonstration environment, please contact system administrators at `sarasupport@aimsplatform.com` to discuss adding your client application to the approved list. 
 
 ## Contents
 - [Overview](#overview)
@@ -86,7 +86,7 @@ The client must have the following information first before taking any additiona
 
 Steps:
 
-1. Contact Sara Alert administrators at `sara-api@mitre.org` with a request to register a client application for API use using this workflow. At this time, the client must provide the information listed above.
+1. Contact Sara Alert administrators at `sarasupport@aimsplatform.com` with a request to register a client application for API use using this workflow. At this time, the client must provide the information listed above.
 1. Once Sara Alert administrators approve the request, they will pass along an assigned client ID and client secret specific to the newly registered client application. The client should make sure to store the client secret securely.
 
 #### Authorization
@@ -161,6 +161,8 @@ This workflow supports backend client applications to use the Sara Alert API wit
 
 The data that is accessable by this workflow is determined by jurisdiction provided upon registration. For example, if the client application is registered with access to "USA, State 1" then it will have access to all patients in "USA, State 1" and its subjurisdictions.
 
+This workflow does not require an authenticated end user, but when creating monitoree records it is expected that there is an associated "creator" user. As a result, upon registration a user accouont will be created that is associated with the client application. The email associated with this user (provided upon registration) will be shown in the History if edits to the monitoree data are made via this workflow. This user account is solely for associating a user creator of the monitoree and cannot be logged into. 
+
 Because of the nature of this workflow, there is a lot of flexibility when implementing the client-side of this workflow. It only really requires the following capabilities:
 - For registration: Generate and store JWKS (NOTE: generation can be done with a third-party tool if need be)
 - For authorization: Make POST authorization requests and receive access token responses
@@ -197,10 +199,11 @@ The client must have the following information first before taking any additiona
 * What scopes the application needs access to. See list of supported scopes [here](#supported-scopes).
 * The jurisdiction this client application will have access to. 
 * The generated *public* key set in the form of a JSON Web Key Set (JWKS). 
+* The email the client would like associated with this application for logging monitoree updates in the system
 
 Steps:
 
-1. Contact Sara Alert administrators at `sara-api@mitre.org` with a request to register a client application for API use using this workflow. At this time, the client must provide the information listed above.
+1. Contact Sara Alert administrators at `sarasupport@aimsplatform.com` with a request to register a client application for API use using this workflow. At this time, the client must provide the information listed above.
 2. Once Sara Alert administrators approve the request, they will pass along a client ID specific to the newly registered client application.
 
 #### Authorization

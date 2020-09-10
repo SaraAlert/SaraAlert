@@ -1,7 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Row, Col } from 'react-bootstrap';
+import { Col, Form, Row } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
+import moment from 'moment';
 
 import confirmDialog from '../util/ConfirmDialog';
 import DateInput from '../util/DateInput';
@@ -60,6 +62,21 @@ class SymptomOnset extends React.Component {
               <Form.Label className="nav-input-label">
                 SYMPTOM ONSET
                 <InfoTooltip tooltipTextKey={this.props.patient.isolation ? 'isolationSymptomOnset' : 'exposureSymptomOnset'} location="right"></InfoTooltip>
+                <div style={{ display: 'inline' }}>
+                  <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-1">
+                    {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
+                  </span>
+                  <ReactTooltip id="user_defined_symptom_onset_tooltip" multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
+                    {this.props.patient.user_defined_symptom_onset ? (
+                      <span>This date was set by a user</span>
+                    ) : (
+                      <span>
+                        This date is auto-populated by the system as the date of the earliest report flagged as symptomatic (red highlight) in the reports
+                        table. Field is blank when there are no symptomatic reports.
+                      </span>
+                    )}
+                  </ReactTooltip>
+                </div>
               </Form.Label>
             </Col>
           </Row>
@@ -68,12 +85,26 @@ class SymptomOnset extends React.Component {
               <DateInput
                 id="symptom_onset"
                 date={this.state.symptom_onset}
+                maxDate={moment()
+                  .add(30, 'days')
+                  .format('YYYY-MM-DD')}
                 onChange={date =>
                   this.setState({ symptom_onset: date }, () => {
-                    this.handleSubmit('Are you sure you want to modify the symptom onset date?');
+                    if (date && this.props.patient.user_defined_symptom_onset) {
+                      this.handleSubmit('Are you sure you want to manually update the symptom onset date?');
+                    } else if (date && !this.props.patient.user_defined_symptom_onset) {
+                      this.handleSubmit(
+                        'Are you sure you want to manually update the symptom onset date? Doing so will result in the symptom onset date no longer being auto-populated by the system.'
+                      );
+                    } else {
+                      this.handleSubmit(
+                        'Are you sure you want to clear the symptom onset date? Doing so will result in the symptom onset date being auto-populated by the system.'
+                      );
+                    }
                   })
                 }
                 placement="bottom"
+                isClearable={this.props.patient.user_defined_symptom_onset}
               />
             </Col>
           </Row>

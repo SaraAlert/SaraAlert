@@ -38,7 +38,7 @@ fr:
         name: 'Fatigue'
         notes: ''
       nausea-or-vomiting:
-        name: 'Nausea Or Vomiting'
+        name: 'Nausée ou vomissements'
         notes: ''
       diarrhea:
         name: 'Diarrhea'
@@ -56,6 +56,18 @@ fr:
         name: 'Other'
         notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
       no-symptoms: 'Aucun symptôme'
+      new-loss-of-smell:
+        name: 'Nouvelle perte de l’odorat'
+        notes: ''
+      new-loss-of-taste:
+        name: 'Nouvelle perte de goût'
+        notes: ''
+      shortness-of-breath:
+        name: 'Essoufflement'
+        notes: ''
+      congestion-or-runny-nose:
+        name: 'Congestion nasale ou ecoulement nasal'
+        notes: ''
     threshold-op:
       less-than: 'moins que'
       less-than-or-equal: 'inférieur ou égal à'
