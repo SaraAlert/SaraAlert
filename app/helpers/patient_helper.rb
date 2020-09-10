@@ -166,11 +166,159 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       valueBoolean: isolation
     )
   end
+   
+  def to_state_or_local_extension( state_or_local_id )
+    FHIR::Extension.new(
+      url: 'http://saraalert.org/StructureDefinition/state-or-local-id',
+      valueString: state_or_local_id
+    )
+  end
+
+  def to_contact_of_known_case_extension( contact_of_known_case )
+    FHIR::Extension.new(
+      url: 'http://saraalert.org/StructureDefinition/contact-of-known-cas',
+      valueBoolean: contact_of_known_case
+    )
+  end
+
+  def to_contact_of_known_case_id_extension( contact_of_known_case_id )
+    FHIR::Extension.new(
+      url: 'http://saraalert.org/StructureDefinition/contact-of-known-case-id',
+      valueString: contact_of_known_case_id
+    )
+  end
+
 
   # Helper to understand an extension for last exposure date
   def self.from_isolation_extension(patient)
     patient&.extension&.select { |e| e.url.include?('isolation') }&.first&.valueBoolean == true
   end
+
+  # Helper to understand state or local
+  def self.from_id_statelocal_extension(patient)
+    id_statelocal = patient&.extension&.select { |e| e.url.include?('state-or-local-id') }&.first&.valueString
+    id_statelocal
+
+  end
+
+  # Helper to understand contact_of_known_case
+  def self.from_contact_of_known_case_extension(patient)
+    contact_of_known_case = patient&.extension&.select { |e| e.url.include?('contact-of-known-case') }&.first&.valueString
+    contact_of_known_case
+
+  end
+
+  # Helper to understand contact_of_known_case_id
+  def self.from_contact_of_known_case_id_extension(patient)
+    contact_of_known_case_id = patient&.extension&.select { |e| e.url.include?('contact-of-known-case-id') }&.first&.valueString
+    contact_of_known_case_id
+
+  end
+
+  # Helper to understand contact_of_known_case_id
+  def self.from_jurisdiction_extension(patient)
+    jurisdiction = patient&.extension&.select { |e| e.url.include?('jurisdiction') }&.first&.valueString
+    Jurisdiction.where(id: jurisdiction).first
+  end
+
+  def to_jurisdiction_extension(jurisdiction)
+    FHIR::Extension.new( url: 'http://saraalert.org/StructureDefinition/jurisdiction', valueString: jurisdiction.id)
+  end
+
+
+  def self.from_exposure_risk_assessment_extension(patient)
+    exposure_risk_assessment = patient&.extension&.select { |e| e.url.include?('exposure-risk-assessment') }&.first&.valueString
+    exposure_risk_assessment
+  end
+
+  def to_exposure_risk_assessment_extension(exposure_risk_assessment)
+    FHIR::Extension.new(
+        url: 'http://saraalert.org/StructureDefinition/exposure-risk-assessment',
+        valueString: exposure_risk_assessment
+    )
+  end
+
+  def self.from_monitoring_status_extension(patient)
+    monitoring_status = patient&.extension&.select { |e| e.url.include?('monitoring-status') }&.first&.valueString
+    monitoring_status
+  end
+
+  def to_monitoring_status_extension( monitoring_status )
+    FHIR::Extension.new(
+        url: 'http://saraalert.org/StructureDefinition/monitoring-status',
+        valueString: monitoring_status
+    )
+  end
+
+  def self.from_monitoring_plan_extension(patient)
+    monitoring_plan = patient&.extension&.select { |e| e.url.include?('monitoring-plan') }&.first&.valueString
+    monitoring_plan
+  end
+
+  def to_monitoring_plan_extension( monitoring_plan )
+    FHIR::Extension.new(
+        url: 'http://saraalert.org/StructureDefinition/monitoring-plan',
+        valueString: monitoring_plan
+    )
+  end
+
+  def self.from_case_status_extension(patient)
+    case_status = patient&.extension&.select { |e| e.url.include?('case-status') }&.first&.valueString
+    # logger.info("case_status: " + case_status)
+    case_status
+  end
+
+  def to_case_status_extension( case_status )
+    FHIR::Extension.new(
+        url: 'http://saraalert.org/StructureDefinition/case-status',
+        valueString: case_status
+    )
+  end
+
+  def self.from_assigned_user_extension(patient)
+    assigned_user = patient&.extension&.select { |e| e.url.include?('assigned-user') }&.first&.valueInteger
+    assigned_user
+  end
+
+  def to_assigned_user_extension( assigned_user )
+    FHIR::Extension.new(
+        url: 'http://saraalert.org/StructureDefinition/assigned-user',
+        valueInteger: assigned_user
+    )
+  end
+
+  def to_status_extension( status )
+    FHIR::Extension.new(
+        url: 'http://saraalert.org/StructureDefinition/status',
+        valueString: status
+    )
+  end
+
+  def self.from_user_defined_id_nndss_extension(patient)
+    user_defined_id_nndss = patient&.extension&.select { |e| e.url.include?('user-defined-id-nndss') }&.first&.valueString
+    user_defined_id_nndss
+  end
+
+
+  def to_user_defined_id_nndss_extension(user_defined_id_nndss)
+    FHIR::Extension.new(
+        url: 'http://saraalert.org/StructureDefinition/user-defined-id-nndss',
+        valueString: user_defined_id_nndss
+    )
+  end
+
+  def self.from_public_health_action_extension(patient)
+    public_health_action = patient&.extension&.select { |e| e.url.include?('public-health-action') }&.first&.valueString
+    public_health_action
+  end
+
+  def to_public_health_action_extension(public_health_action)
+    FHIR::Extension.new(
+        url: 'http://saraalert.org/StructureDefinition/public-health-action',
+        valueString: assigned_user
+    )
+  end
+
 
   def normalize_state_names(pat)
     pat.monitored_address_state = normalize_and_get_state_name(pat.monitored_address_state) || pat.monitored_address_state
@@ -361,4 +509,5 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     }
     languages[language&.downcase&.to_sym].present? ? languages[language&.downcase&.to_sym] : nil
   end
+
 end
