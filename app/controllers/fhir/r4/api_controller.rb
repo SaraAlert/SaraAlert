@@ -98,8 +98,10 @@ class Fhir::R4::ApiController < ActionController::API
         # Creator is client application - need to get created shadow user
         curr_client_app = current_client_application
         status_bad_request && return if curr_client_app&.user_id.nil?
+
         shadow_user = User.find_by(id: current_client_application.user_id)
-        status_bad_request && return if !shadow_user.present?
+        status_bad_request && return unless shadow_user.present?
+
         resource.creator = shadow_user
       end
 
@@ -325,7 +327,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Client application that is currently using the API
   def current_client_application
-    Doorkeeper::Application.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?      
+    Doorkeeper::Application.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
   end
 
   # Determine the patient data that is accessable by either the current resource owner

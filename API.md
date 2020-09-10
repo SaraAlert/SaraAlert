@@ -161,7 +161,7 @@ This workflow supports backend client applications to use the Sara Alert API wit
 
 The data that is accessable by this workflow is determined by jurisdiction provided upon registration. For example, if the client application is registered with access to "USA, State 1" then it will have access to all patients in "USA, State 1" and its subjurisdictions.
 
-This workflow does not require an authenticated end user, but when creating monitoree records it is expected that there is an associated "creator" user. As a result, upon registration a user accouont will be created that is associated with the client application. The email associated with this user (provided upon registration) will be shown in the History if edits to the monitoree data are made via this workflow. This user account is solely for associating a user creator of the monitoree and cannot be logged into. 
+This workflow does not require an authenticated end user, but when creating monitoree records it is expected that there is an associated "creator" user. As a result, upon registration a user account will be created that is associated with the client application. The email associated with this user (provided upon registration) will be shown in the History if edits to the monitoree data are made via this workflow. This user account is solely for associating a user creator of the monitoree and cannot be logged into. 
 
 Because of the nature of this workflow, there is a lot of flexibility when implementing the client-side of this workflow. It only really requires the following capabilities:
 - For registration: Generate and store JWKS (NOTE: generation can be done with a third-party tool if need be)

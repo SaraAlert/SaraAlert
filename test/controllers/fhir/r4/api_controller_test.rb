@@ -32,11 +32,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   # Sets up applications registered for system flow
   def setup_system_applications
-
-    shadow_user = User.create!(email: "test@example.com", 
-                               password: User.rand_gen, 
-                               jurisdiction: Jurisdiction.find_by(id: 2), 
-                               force_password_change: false, 
+    shadow_user = User.create!(email: 'test@example.com',
+                               password: User.rand_gen,
+                               jurisdiction: Jurisdiction.find_by(id: 2),
+                               force_password_change: false,
                                api_enabled: true)
     @system_read_write_app = Doorkeeper::Application.create(name: 'system-test-rw',
                                                             redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
@@ -49,7 +48,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
                                                       scopes: 'system/*.read',
                                                       jurisdiction_id: 2,
                                                       user_id: shadow_user.id)
-
 
     @system_write_app = Doorkeeper::Application.create(name: 'system-test-w',
                                                        redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
@@ -183,7 +181,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'SYSTEM FLOW: should create Patient via create' do
-    post '/fhir/r4/Patient', params: @patient_1.to_json, headers: { 'Authorization': "Bearer #{@system_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
     assert_response :created
     json_response = JSON.parse(response.body)
     id = json_response['id']
@@ -304,7 +306,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'SYSTEM FLOW: should find no QuestionnaireResponses for an invalid Patient via search' do
-    get '/fhir/r4/QuestionnaireResponse?subject=Patient/blah', headers: { 'Authorization': "Bearer #{@system_token_rw.token}", 'Accept': 'application/fhir+json' }
+    get(
+      '/fhir/r4/QuestionnaireResponse?subject=Patient/blah',
+      headers: { 'Authorization': "Bearer #{@system_token_rw.token}", 'Accept': 'application/fhir+json' }
+    )
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal 'Bundle', json_response['resourceType']
