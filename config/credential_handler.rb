@@ -117,10 +117,11 @@ module CredentialHandler
       raise_standard_doorkeeper_error(
         "JWT iat is invalid."
       )
-    rescue JWT::DecodeError
+    rescue JWT::DecodeError => e
       # Handle other decode related issues e.g. no kid in header, no matching public key found etc.
       raise_standard_doorkeeper_error(
-        "Issue decoding JWT assertion. Please verify there is a kid value in the JWT header and matching public keys have been registered."
+        "Issue decoding JWT assertion. Please verify the correct private key is being used to sign the JWT, and
+        that the correct public key(s) are registered with the application. Error message: #{e&.message}"
       )
     end
 
