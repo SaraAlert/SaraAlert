@@ -677,7 +677,19 @@ class Patient < ApplicationRecord
         to_preferred_contact_time_extension(preferred_contact_time),
         to_symptom_onset_date_extension(symptom_onset),
         to_last_exposure_date_extension(last_date_of_exposure),
-        to_isolation_extension(isolation)
+        to_isolation_extension(isolation),
+        to_state_or_local_extension(user_defined_id_statelocal),
+        to_contact_of_known_case_extension(contact_of_known_case),
+        to_contact_of_known_case_id_extension(contact_of_known_case_id),
+        to_jurisdiction_extension(jurisdiction),
+        to_exposure_risk_assessment_extension(exposure_risk_assessment),
+        to_monitoring_plan_extension(monitoring_plan),
+        to_monitoring_status_extension(monitoring),
+        to_case_status_extension(case_status),
+        to_assigned_user_extension(assigned_user),
+        to_public_health_action_extension(public_health_action),
+        to_user_defined_id_nndss_extension(user_defined_id_nndss),
+        to_status_extension( status )
       ].reject(&:nil?)
     )
   end
@@ -719,7 +731,18 @@ class Patient < ApplicationRecord
       preferred_contact_time: PatientHelper.from_preferred_contact_time_extension(patient),
       symptom_onset: PatientHelper.from_symptom_onset_date_extension(patient),
       last_date_of_exposure: PatientHelper.from_last_exposure_date_extension(patient),
-      isolation: PatientHelper.from_isolation_extension(patient)
+      isolation: PatientHelper.from_isolation_extension(patient),
+      user_defined_id_statelocal: PatientHelper.from_id_statelocal_extension(patient),
+      contact_of_known_case: PatientHelper.from_contact_of_known_case_extension(patient),
+      contact_of_known_case_id: PatientHelper.from_contact_of_known_case_id_extension(patient),
+      jurisdiction: PatientHelper.from_jurisdiction_extension(patient),
+      exposure_risk_assessment: PatientHelper.from_exposure_risk_assessment_extension(patient),
+      monitoring: PatientHelper.from_monitoring_status_extension(patient),
+      monitoring_plan: PatientHelper.from_monitoring_plan_extension(patient),
+      case_status: PatientHelper.from_case_status_extension(patient),
+      public_health_action: PatientHelper.from_public_health_action_extension(patient),
+      assigned_user: PatientHelper.from_assigned_user_extension(patient),
+      user_defined_id_nndss: PatientHelper.from_user_defined_id_nndss_extension(patient)
     }
   end
 
