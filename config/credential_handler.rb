@@ -75,7 +75,6 @@ module CredentialHandler
           verify_sub: true,
           aud: aud,
           verify_aud: true,
-          verify_iat: true,
           verify_jti: true
         }
       )
