@@ -168,11 +168,11 @@ Because of the nature of this workflow, there is a lot of flexibility when imple
 - For authorization: Make POST authorization requests with a signed JWT and receive access token responses
 - For authentication and API interaction: Make API requests
 
-Before going further, it is highly recommended to read the profile for this workflow detailed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). Specifically, the [worked example](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#worked-example) is particular useful. 
+Before going further, it is highly recommended to read the profile for this workflow detailed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). Specifically, the [worked example](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#worked-example) is particularly useful. 
 
 Additionally, we have provided the following resources for this workflow:
--Step-by-step process for using this new workflow with a local version of Sara Alert [here](https://github.com/SaraAlert/saraalert-fhir-ig/wiki/Step-by-Step-Instructions-For-Local-Testing:-SMART-on-FHIR-Backend-Services-Workflow).
--Example Ruby client for interacting with the API via this new workflow can be found [here](https://github.com/SaraAlert/saraalert-fhir-ig/tree/master/examples/ruby).
+- Step-by-step process for using this new workflow with a local version of Sara Alert [here](https://github.com/SaraAlert/saraalert-fhir-ig/wiki/Step-by-Step-Instructions-For-Local-Testing:-SMART-on-FHIR-Backend-Services-Workflow).
+- Example Ruby client for interacting with the API via this new workflow can be found [here](https://github.com/SaraAlert/saraalert-fhir-ig/tree/master/examples/ruby).
 
 #### Registration
 The registration step of this workflow requires more information up front. It is recommended that the details of this step in the process first be read in the formal SMART on FHIR profile [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#registering-a-smart-backend-service-communicating-public-keys).
@@ -182,19 +182,15 @@ The key takeaway is the following:
 
 *Generating JWKS*
 
-From here:
-> A JSON Web Key (JWK) [JWK] is a JSON data structure that represents a
-cryptographic key.  These keys can be either asymmetric or symmetric.
-They can hold both public and private information about the key.
+A JSON Web Key (JWK) is a JSON data structure that represents a cryptographic key or keypair. They can hold both public and private information about the key.
 
-
-The client must generate an assymetric public/private key pair and then provide the *public* key in the form of a JSON Web Key Set. Read more about JWK and JWKS [here](https://tools.ietf.org/html/rfc7517), and see an example of this what a public JWKS looks like [here](https://hl7.org/fhir/uv/bulkdata/authorization/sample-jwks/RS384.public.json). 
+The client must generate an assymetric public/private key pair and then provide the *public* key in the form of a JSON Web Key Set. Read more about JWK and JWKS [here](https://tools.ietf.org/html/rfc7517), and see an example of this what a JWKS with public keys looks like [here](https://hl7.org/fhir/uv/bulkdata/authorization/sample-jwks/RS384.public.json). 
 
 The JSON Web Algorithm (JWA) for generating the JWKS must be RS384, as that is the only algorithm currently supported by the Sara Alert API. This may be enhanced to include ES384 in the future.
 
 JWKS can be easily generated with tools such as [this](https://mkjwk.org/), which allow you to specify an algorithm, use (signature), and more. See a Javascript example of generating a JWKS on the official SMART on FHIR GitHub [here](https://github.com/smart-on-fhir/bulk-data-server/blob/master/generator.js).
 
-The client is then entirely responsible for securely storing the private key as it is never shared. In the future, the Sara Alert API may support storing urls to public JWKS hosted by the client as discussed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#registering-a-smart-backend-service-communicating-public-keys).
+The client is then entirely responsible for securely storing the private key, as it is never shared with Sara Alert. In the future, the Sara Alert API may support storing urls to public JWKS hosted by the client as discussed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#registering-a-smart-backend-service-communicating-public-keys).
 
 
 The client must have the following information first before taking any additional steps:
@@ -214,7 +210,7 @@ Steps:
 Once the client is securely registered, it does not require a manual authorization step. Instead, it must do the following to request an access token for the Sara Alert API. 
 Details about each of these steps and the expected parameter is clearly outlined in the protocol [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#protocol-details).
 
-1. Generate an authentication JSON Web Token (JWT). 
+1. Generate an authentication JSON Web Token (JWT).
   - First, this JWT must container the headers and body parameters shown [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#protocol-details).
 	- A recommended Ruby library for generating JWT assertions is [ruby-jwt](https://github.com/jwt/ruby-jwt).
 	- The `client_id` referenced in the protocol documentation for both the `sub` and `iss` values should be the `client_id` issued to the client upon registration.
