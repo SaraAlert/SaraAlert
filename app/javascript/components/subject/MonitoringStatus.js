@@ -162,8 +162,11 @@ class MonitoringStatus extends React.Component {
               ]
             : null,
       });
+    } else if (event?.target?.name && event.target.name === 'apply_to_group') {
+      let applyToGroup = event.target.id === 'apply_to_group_yes' ? true : false;
+      this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.name && event.target.name === 'apply_to_group_cm_only') {
-      let applyToGroup = event.target.id === 'lde_radio_yes' ? true : false;
+      let applyToGroup = event.target.id === 'apply_to_group_cm_only_yes' ? true : false;
       this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -324,17 +327,29 @@ class MonitoringStatus extends React.Component {
           <p>
             You are about to change this monitoree&apos;s {this.state.message} {this.state.message_warning && <b>{this.state.message_warning}</b>}
           </p>
-          {/* CHANGE ME */}
           {this.props.has_group_members && (
-            <Form.Group className="mt-2">
-              <Form.Check
-                type="switch"
-                id="apply_to_group"
-                label="Apply this change to the entire household that this monitoree is responsible for"
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group === true || false}
-              />
-            </Form.Group>
+            <React.Fragment>
+              <Form.Group className="mt-2">
+                <Form.Check
+                  type="radio"
+                  name="apply_to_group"
+                  id="apply_to_group_no"
+                  label="This monitoree only"
+                  onChange={this.handleChange}
+                  checked={!this.state.apply_to_group}
+                />
+              </Form.Group>
+              <Form.Group className="mt-2">
+                <Form.Check
+                  type="radio"
+                  name="apply_to_group"
+                  id="apply_to_group_yes"
+                  label="This monitoree and all household members"
+                  onChange={this.handleChange}
+                  checked={this.state.apply_to_group}
+                />
+              </Form.Group>
+            </React.Fragment>
           )}
           {this.state.monitoring_reasons && (
             <Form.Group>
@@ -366,7 +381,7 @@ class MonitoringStatus extends React.Component {
                 <Form.Check
                   type="radio"
                   name="apply_to_group_cm_only"
-                  id="lde_radio_no"
+                  id="apply_to_group_cm_only_no"
                   label="No, household members still have continuous exposure to another case"
                   onChange={this.handleChange}
                   checked={!this.state.apply_to_group_cm_only}
@@ -378,7 +393,7 @@ class MonitoringStatus extends React.Component {
                     <Form.Check.Input
                       type="radio"
                       name="apply_to_group_cm_only"
-                      id="lde_radio_yes"
+                      id="apply_to_group_cm_only_yes"
                       onChange={this.handleChange}
                       checked={this.state.apply_to_group_cm_only}
                     />
