@@ -63,6 +63,11 @@ class Fhir::R4::ApiController < ActionController::API
 
     # Try to update the resource
     status_bad_request && return if updates.nil? || !resource.update(updates)
+    
+    if resource_type == 'patient'
+      # Create a history for the record update
+      History.record_edit(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree updated via API.')
+    end
 
     status_ok(resource.as_fhir) && return
   rescue StandardError

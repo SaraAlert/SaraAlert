@@ -92,7 +92,7 @@ Steps:
 #### Authorization
 Once a client application is registered, a user must authorize the client application to use the API and obtain an authorization code. This process is also decribed in detail [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization).
 
-1. The registered client application must build a request for an authorization code. The request parameters are detailed in the specification for this flow [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization). This will cause the app to be redirected to the authorization endpoint and require the user to login to Sara Alert. For example, the following once populated with the appropriate params, would navigate the client application to the Sara Alert demo server's authorization endpoint:
+1. The registered client application must build a request for an authorization code. The request parameters are detailed in the specification for this flow [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization). This will cause the app to be redirected to the authorization endpoint and require the user to login to Sara Alert. For example, the following (once populated with the appropriate params), would navigate the client application to the Sara Alert demo server's authorization endpoint:
 
 	```
 	https://demo.saraalert.org//oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD
@@ -165,7 +165,7 @@ This workflow does not require an authenticated end user, but when creating moni
 
 Because of the nature of this workflow, there is a lot of flexibility when implementing the client-side of this workflow. It only really requires the following capabilities:
 - For registration: Generate and store JWKS (NOTE: generation can be done with a third-party tool if need be)
-- For authorization: Make POST authorization requests and receive access token responses
+- For authorization: Make POST authorization requests with a signed JWT and receive access token responses
 - For authentication and API interaction: Make API requests
 
 Before going further, it is highly recommended to read the profile for this workflow detailed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). Specifically, the [worked example](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#worked-example) is particular useful. 
@@ -211,6 +211,7 @@ Once the client is securely registered, it does not require a manual authorizati
 Details about each of these steps and the expected parameter is clearly outlined in the protocol [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#protocol-details).
 
 1. Generate an authentication JSON Web Token (JWT). 
+  - First, this JWT must container the headers and body parameters shown [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#protocol-details).
 	- A recommended Ruby library for generating JWT assertions is [ruby-jwt](https://github.com/jwt/ruby-jwt).
 	- The `client_id` referenced in the protocol documentation for both the `sub` and `iss` values should be the `client_id` issued to the client upon registration.
 	- The `aud` value that is expected in incoming JWT assertions is the Sara Alert token endpoint.
@@ -267,7 +268,7 @@ Example request using access token:
 #### Testing
 Sara Alert has a script that generates demo data for testing provided in the source code [here](https://github.com/SaraAlert/SaraAlert/blob/master/lib/tasks/demo.rake). This demo data includes a read/write OAuth 2.0 application for testing this workflow. 
 
-Developers can use the same syntax to create a test application with a `jurisdiction_id` and `public_key_set`.  
+Developers can use the same syntax to create a test application with a `jurisdiction_id`, a `user_id` and a `public_key_set`.  
 NOTE: The public_key_set *must* be serialized using `.to_yaml`. Make sure that the serialized version has stringified keys. If need be, `.deep_stringify_keys` can be called before calling `.to_yaml` on the public key set.
 
 Fortunately, there are many tools available and is easy to generate JWKS at https://mkjwk.org/ for the public key set, which also then be used to create a JWT at https://jwt.io.
