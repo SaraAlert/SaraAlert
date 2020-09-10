@@ -53,8 +53,8 @@ While each of these steps must be followed, they vary depending on the client wo
 ### Supported Workflows
 Sara Alert currently supports two different workflows for API use. Both of these workflows are [SMART-on-FHIR standards](http://docs.smarthealthit.org/).
 
-1. [**SMART on FHIR App Launch Framework "standalone launch"**](http://hl7.org/fhir/smart-app-launch/index.html). This expects and requires a user in the loop.
-2. [**SMART on FHIR Backend Services**](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). This is complementary to the above flow, and does not require a user in the loop.
+1. [**SMART on FHIR App Launch Framework "standalone launch"**](#standalone-launch). This expects and requires a user in the loop.
+2. [**SMART on FHIR Backend Services**](#backend-services). This is complementary to the above flow, and does not require a user in the loop.
 
 In theory, a client application can be registered to support both workflows if it provides the needed registration information for both workflows up front. This is not an expected or understood use case, however, so please notify admins about the need for this upon registration request. In this case, the client application cannot access the API through both workflows simultaneously: i.e. if there is a logged in user who does not have API access enabled, they still cannot access the API even if the client application is registered for the system flow. 
 
@@ -169,6 +169,10 @@ Because of the nature of this workflow, there is a lot of flexibility when imple
 - For authentication and API interaction: Make API requests
 
 Before going further, it is highly recommended to read the profile for this workflow detailed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). Specifically, the [worked example](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#worked-example) is particular useful. 
+
+Additionally, we have provided the following resources for this workflow:
+-Step-by-step process for using this new workflow with a local version of Sara Alert [here](https://github.com/SaraAlert/saraalert-fhir-ig/wiki/Step-by-Step-Instructions-For-Local-Testing:-SMART-on-FHIR-Backend-Services-Workflow).
+-Example Ruby client for interacting with the API via this new workflow can be found [here](https://github.com/SaraAlert/saraalert-fhir-ig/tree/master/examples/ruby).
 
 #### Registration
 The registration step of this workflow requires more information up front. It is recommended that the details of this step in the process first be read in the formal SMART on FHIR profile [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#registering-a-smart-backend-service-communicating-public-keys).
