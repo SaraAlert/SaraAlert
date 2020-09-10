@@ -112,7 +112,7 @@ class LastDateExposure extends React.Component {
         <Modal.Body>
           <p>{message}</p>
           {this.props.has_group_members && (
-            <Form.Group className="mt-3">
+            <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
                 id="apply_to_monitoree_only"
@@ -123,7 +123,7 @@ class LastDateExposure extends React.Component {
             </Form.Group>
           )}
           {this.props.has_group_members && this.state.showExposureDateModal && (
-            <Form.Group className="mt-3">
+            <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
                 id="apply_to_group_cm_only"
@@ -134,7 +134,7 @@ class LastDateExposure extends React.Component {
             </Form.Group>
           )}
           {this.props.has_group_members && (
-            <Form.Group className="mt-2">
+            <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
                 id="apply_to_group"

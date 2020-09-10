@@ -329,19 +329,19 @@ class MonitoringStatus extends React.Component {
           </p>
           {this.props.has_group_members && (
             <React.Fragment>
-              <Form.Group className="mt-2">
+              <Form.Group className="px-4">
                 <Form.Check
                   type="radio"
+                  className="mb-1"
                   name="apply_to_group"
                   id="apply_to_group_no"
                   label="This monitoree only"
                   onChange={this.handleChange}
                   checked={!this.state.apply_to_group}
                 />
-              </Form.Group>
-              <Form.Group className="mt-2">
                 <Form.Check
                   type="radio"
+                  className="mb-3"
                   name="apply_to_group"
                   id="apply_to_group_yes"
                   label="This monitoree and all household members"
@@ -377,17 +377,16 @@ class MonitoringStatus extends React.Component {
                 Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure toggled ON and are being
                 monitored in the Exposure Workflow?
               </p>
-              <Form.Group>
+              <Form.Group className="px-4">
                 <Form.Check
                   type="radio"
+                  className="mb-2"
                   name="apply_to_group_cm_only"
                   id="apply_to_group_cm_only_no"
                   label="No, household members still have continuous exposure to another case"
                   onChange={this.handleChange}
                   checked={!this.state.apply_to_group_cm_only}
                 />
-              </Form.Group>
-              <Form.Group>
                 <Form.Check>
                   <Form.Check.Label>
                     <Form.Check.Input
@@ -397,10 +396,10 @@ class MonitoringStatus extends React.Component {
                       onChange={this.handleChange}
                       checked={this.state.apply_to_group_cm_only}
                     />
-                    <p>Yes, household members are no longer being exposed to a case</p>
+                    Yes, household members are no longer being exposed to a case
                     {/* FIX MY PLACEMENT */}
                     {this.state.apply_to_group_cm_only && (
-                      <React.Fragment>
+                      <div className="mt-1">
                         Update their <b>Last Date of Exposure</b> to:
                         <DateInput
                           id="apply_to_group_cm_only_date"
@@ -408,7 +407,7 @@ class MonitoringStatus extends React.Component {
                           onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
                           placement="bottom"
                         />
-                      </React.Fragment>
+                      </div>
                     )}
                   </Form.Check.Label>
                 </Form.Check>
