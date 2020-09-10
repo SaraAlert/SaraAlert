@@ -27,7 +27,9 @@ class ExtendedIsolation extends React.Component {
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           extended_isolation: this.state.extended_isolation,
           comment: true,
-          message: `extended isolation date to ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}.`,
+          message: this.state.extended_isolation
+            ? `User changed extended isolation date to ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}.`
+            : 'User cleared extended isolation date.',
           reasoning: this.state.reasoning,
           diffState: ['extended_isolation'],
         })
@@ -91,11 +93,11 @@ class ExtendedIsolation extends React.Component {
                         {`Are you sure you want to extend this case’s isolation through ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}?`}
                         <br></br>
                         <br></br>
-                        {`After clicking “Submit”, the case will be moved to the "Reporting" or "Non-Reporting" line list. 
+                        {`After clicking “Submit”, the case will be moved to the "Reporting" or "Non-Reporting" line list.
                           This case cannot appear on the records Requiring Review Line List until after ${moment(this.state.extended_isolation).format(
                             'MM/DD/YYYY'
                           )}.
-                          If the record meets a recovery definition after ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}, it will appear on the 
+                          If the record meets a recovery definition after ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}, it will appear on the
                           Records Requiring Review Line List for review by public health to determine if it is safe to discontinue isolation.`}
                       </Form.Label>
                     ) : (

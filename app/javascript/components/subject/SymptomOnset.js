@@ -42,6 +42,10 @@ class SymptomOnset extends React.Component {
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           symptom_onset: this.state.symptom_onset,
           user_defined_symptom_onset: true,
+          comment: true,
+          message: this.state.symptom_onset
+            ? `User changed symptom onset date to ${moment(this.state.symptom_onset).format('MM/DD/YYYY')}.`
+            : 'User cleared symptom onset date.',
           diffState: ['symptom_onset', 'user_defined_symptom_onset'],
         })
         .then(() => {
@@ -63,7 +67,7 @@ class SymptomOnset extends React.Component {
                 SYMPTOM ONSET
                 <InfoTooltip tooltipTextKey={this.props.patient.isolation ? 'isolationSymptomOnset' : 'exposureSymptomOnset'} location="right"></InfoTooltip>
                 <div style={{ display: 'inline' }}>
-                  <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-1">
+                  <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-2">
                     {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
                   </span>
                   <ReactTooltip id="user_defined_symptom_onset_tooltip" multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">

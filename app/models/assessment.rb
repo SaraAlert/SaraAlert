@@ -129,9 +129,18 @@ class Assessment < ApplicationRecord
         latest_assessment_at: patient.assessments.maximum(:created_at)
       )
     else
+      new_symptom_onset = patient.assessments.where(symptomatic: true).minimum(:created_at)
+      unless new_symptom_onset == patient[:symptom_onset]
+        comment = if new_symptom_onset.nil?
+                    'System cleared symptom onset date because there are no longer any symptomatic reports.'
+                  else
+                    "System changed symptom onset date to #{new_symptom_onset.strftime('%m/%d/%Y')} because a symptomatic report was created or updated."
+                  end
+        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
+      end
       patient.update(
         latest_assessment_at: patient.assessments.maximum(:created_at),
-        symptom_onset: patient.assessments.where(symptomatic: true).minimum(:created_at)
+        symptom_onset: new_symptom_onset
       )
     end
   end
@@ -147,8 +156,13 @@ class Assessment < ApplicationRecord
                                                  .maximum(:created_at)
       )
     else
+      new_symptom_onset = patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at)
+      unless new_symptom_onset == patient[:symptom_onset] || !new_symptom_onset.nil?
+        comment = 'System cleared symptom onset date because a symptomatic report was removed.'
+        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
+      end
       patient.update(
-        symptom_onset: patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at),
+        symptom_onset: new_symptom_onset,
         latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
         latest_fever_or_fever_reducer_at: patient.assessments
                                                  .where.not(id: id)

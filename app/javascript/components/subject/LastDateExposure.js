@@ -82,6 +82,13 @@ class LastDateExposure extends React.Component {
 
   submit(isLDE) {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    let message = '';
+    if (diffState.includes('last_date_of_exposure')) {
+      message = `User changed last date of exposure to ${moment(this.state.last_date_of_exposure).format('MM/DD/YYYY')}.`;
+    }
+    if (diffState.includes('continuous_exposure')) {
+      message = `User turned ${this.state.continuous_exposure ? 'on' : 'off'} continous exposure.`;
+    }
     diffState.push('continuous_exposure'); // Since exposure date updates change CE, always make sure this gets changed
     this.setState({ loading: true, continuous_exposure: diffState.includes('last_date_of_exposure') || isLDE ? false : this.state.continuous_exposure }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -91,6 +98,8 @@ class LastDateExposure extends React.Component {
           continuous_exposure: this.state.continuous_exposure,
           apply_to_group: this.state.apply_to_group,
           apply_to_group_cm_only: this.state.apply_to_group_cm_only,
+          comment: true,
+          message: message,
           diffState: diffState,
         })
         .then(() => {

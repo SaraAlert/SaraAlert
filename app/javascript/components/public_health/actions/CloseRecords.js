@@ -50,7 +50,7 @@ class CloseRecords extends React.Component {
         .post(window.BASE_PATH + '/patients/bulk_edit/status', {
           ids: idArray,
           comment: true,
-          message: 'monitoring status to "Not Monitoring".',
+          message: 'User changed monitoring status to "Not Monitoring".',
           monitoring: false,
           monitoring_reason: this.state.monitoring_reason,
           reasoning: this.state.monitoring_reason + (this.state.monitoring_reason !== '' && this.state.reasoning !== '' ? ', ' : '') + this.state.reasoning,

@@ -39,7 +39,7 @@ class CaseStatus extends React.Component {
     this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal, confirmedOrProbable }, () => {
       // specific case where case status is just changed with no modal
       if (hideModal) {
-        this.setState({ message: 'case status to "' + this.state.case_status + '".' });
+        this.setState({ message: 'User changed case status to "' + this.state.case_status + '".' });
         this.submit();
       }
 
@@ -49,7 +49,7 @@ class CaseStatus extends React.Component {
           this.setState({
             monitoring: false,
             monitoring_reason: 'Meets Case Definition',
-            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+            message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
         if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
@@ -57,7 +57,7 @@ class CaseStatus extends React.Component {
             monitoring: true,
             isolation: true,
             monitoring_reason: 'Meets Case Definition',
-            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+            message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
       } else if (!confirmedOrProbable) {
@@ -65,7 +65,7 @@ class CaseStatus extends React.Component {
           monitoring: true,
           isolation: false,
           public_health_action: 'None',
-          message: 'case status to "' + this.state.case_status + '".',
+          message: 'User changed case status to "' + this.state.case_status + '".',
         });
       }
     });

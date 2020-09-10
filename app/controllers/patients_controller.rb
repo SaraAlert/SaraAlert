@@ -234,10 +234,8 @@ class PatientsController < ApplicationController
       end
     end
 
-    if !content[:isolation].nil? && !content[:isolation]
-      content[:user_defined_symptom_onset] = false
-      content[:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
-    end
+    # Reset symptom onset date if moving from isolation to exposure
+    reset_symptom_onset(content, patient, :system) if !content[:isolation].nil? && !content[:isolation]
 
     # Grab diff, attempt to update, else return to index if failed
     patient_before = patient.dup
@@ -366,7 +364,8 @@ class PatientsController < ApplicationController
       # NOTE: In the case where a patient is being moved back to the exposure workflow, the symptom onset should be overwritten
       #       because if a case is being ruled out (moved back to exposure), that patient no longer has no known symptom onset and
       #       shouldn't immediately be put back on the symptomatic line list unless they have symptomatic reports.
-      reset_symptom_onset(params_to_update, params, patient)
+      params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
+      reset_symptom_onset(params[:patient], patient, :system)
 
       # Set extended isolation to nil.
       params_to_update << :extended_isolation
@@ -375,7 +374,8 @@ class PatientsController < ApplicationController
 
     # If the symptom onset was cleared by the user
     if params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?
-      reset_symptom_onset(params_to_update, params, patient)
+      params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
+      reset_symptom_onset(params[:patient], patient, :user)
     end
 
     # Update the patient with updated values.
@@ -393,15 +393,24 @@ class PatientsController < ApplicationController
     patient.save
   end
 
-  def reset_symptom_onset(params_to_update, params, patient)
+  def reset_symptom_onset(content, patient, initiator)
     # Set user-defined symptom onset to be false and set the symptom onset date based on latest symptomatic report
-    params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
-    params[:patient][:user_defined_symptom_onset] = false
-    params[:patient][:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
+    content[:user_defined_symptom_onset] = false
+    content[:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)
+
+    # Log system onset change in history if initiated by system (user initiated changes are logged separately)
+    return if content[:symptom_onset] == patient[:symptom_onset] || initiator != :system
+
+    comment = if content[:symptom_onset].nil?
+                'System cleared symptom onset date because patient was moved from isolation to exposure.'
+              else
+                "System changed symptom onset date to #{content[:symptom_onset].strftime('%m/%d/%Y')} because patient was moved from isolation to exposure."
+              end
+    History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
   end
 
   def update_history(patient, params)
-    comment = 'User changed '
+    comment = ''
     comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
     History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)

@@ -58,7 +58,7 @@ class UpdateCaseStatus extends React.Component {
             monitoring: false,
             isolation: undefined, // Make sure not to alter the existing isolation
             monitoring_reason: 'Meets Case Definition',
-            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+            message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
         if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
@@ -66,7 +66,7 @@ class UpdateCaseStatus extends React.Component {
             monitoring: true,
             isolation: true,
             monitoring_reason: 'Meets Case Definition',
-            message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+            message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
       } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
@@ -79,7 +79,7 @@ class UpdateCaseStatus extends React.Component {
           monitoring: this.state.initialMonitoring,
           isolation: this.state.initialIsolation,
           monitoring_reason: 'Meets Case Definition',
-          message: 'case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
+          message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
         });
       }
     });
