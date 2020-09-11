@@ -34,6 +34,10 @@ class EnrollerTest < ApplicationSystemTestCase
     @@enroller_test_helper.verify_input_validation('state2_enroller', 'monitoree_11')
   end
 
+  test 'edit monitoree enrollment' do
+    @@enroller_test_helper.enroll_monitoree_and_edit('state1_enroller', 'monitoree_11', 'monitoree_12')
+  end
+
   test 'cancel enrollment' do
     @@enroller_test_helper.enroll_monitoree_and_cancel('locals2c3_enroller', 'monitoree_10')
   end

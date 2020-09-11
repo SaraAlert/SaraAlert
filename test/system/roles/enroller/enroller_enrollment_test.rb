@@ -32,8 +32,4 @@ class EnrollerTest < ApplicationSystemTestCase
   test 'add group member with foreign address and international additional planned travel' do
     @@enroller_test_helper.enroll_group_member('locals2c3_enroller', 'monitoree_4', 'monitoree_9')
   end
-
-  test 'enroll monitoree and edit' do
-    @@enroller_test_helper.enroll_monitoree_and_edit('state1_enroller', 'monitoree_11', 'monitoree_12')
-  end
 end
