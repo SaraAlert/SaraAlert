@@ -62,7 +62,7 @@ class MonitoringStatus extends React.Component {
     if (event?.target?.name && event.target.name === 'jurisdictionId') {
       // Jurisdiction is a weird case; the datalist and input work differently together
       this.setState({
-        message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + event.target.value + '".',
+        message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + event.target.value + '"',
         message_warning: this.state.assigned_user === '' ? '' : 'Please also consider removing or updating the assigned user if it is no longer applicable.',
         jurisdiction_path: event?.target?.value ? event.target.value : '',
         monitoring_reasons: null,
@@ -74,7 +74,7 @@ class MonitoringStatus extends React.Component {
         (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
       ) {
         this.setState({
-          message: 'assigned user from "' + this.state.original_assigned_user + '"to"' + event.target.value + '".',
+          message: 'assigned user from "' + this.state.original_assigned_user + '"to"' + event.target.value + '"',
           message_warning: '',
           assigned_user: event?.target?.value ? parseInt(event.target.value) : '',
           monitoring_reasons: null,
@@ -83,7 +83,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
         showExposureRiskAssessmentModal: true,
-        message: 'exposure risk assessment to "' + event.target.value + '".',
+        message: 'exposure risk assessment to "' + event.target.value + '"',
         message_warning: '',
         exposure_risk_assessment: event?.target?.value ? event.target.value : '',
         monitoring_reasons: null,
@@ -91,7 +91,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
       this.setState({
         showMonitoringPlanModal: true,
-        message: 'monitoring plan to "' + event.target.value + '".',
+        message: 'monitoring plan to "' + event.target.value + '"',
         message_warning: '',
         monitoring_plan: event?.target?.value ? event.target.value : '',
         monitoring_reasons: null,
@@ -99,7 +99,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'pause_notifications') {
       this.setState({
         showNotificationsModal: true,
-        message: 'notification status to ' + (!this.state.pause_notifications ? 'paused.' : 'resumed.'),
+        message: 'notification status to ' + (!this.state.pause_notifications ? 'paused' : 'resumed'),
         message_warning: '',
         pause_notifications: !this.state.pause_notifications,
         monitoring_reasons: null,
@@ -108,7 +108,7 @@ class MonitoringStatus extends React.Component {
       if (this.state.patient.isolation) {
         this.setState({
           showPublicHealthActionModal: true,
-          message: 'latest public health action to "' + event.target.value + '".',
+          message: 'latest public health action to "' + event.target.value + '"',
           message_warning:
             'The monitoree will be moved to the "Records Requiring Review" line list if they meet a recovery definition or will remain on the "Reporting" or "Non-Reporting" line list as appropriate until a recovery definition is met.',
           public_health_action: event?.target?.value ? event.target.value : '',
@@ -117,7 +117,7 @@ class MonitoringStatus extends React.Component {
       } else {
         this.setState({
           showPublicHealthActionModal: true,
-          message: 'latest public health action to "' + event.target.value + '".',
+          message: 'latest public health action to "' + event.target.value + '"',
           message_warning:
             event.target.value === 'None'
               ? 'The monitoree will be moved back into the primary status line lists.'
@@ -129,7 +129,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'isolation_status') {
       this.setState({
         showIsolationModal: true,
-        message: 'workflow from the "' + this.state.isolation_status + '" workflow to the "' + event.target.value + '" workflow.',
+        message: 'workflow from the "' + this.state.isolation_status + '" workflow to the "' + event.target.value + '" workflow',
         message_warning:
           event.target.value === 'Isolation'
             ? 'This should only be done for cases you wish to monitor with Sara Alert to determine when they meet the recovery definition to discontinue isolation. The monitoree will be moved onto the Isolation workflow dashboard.'
@@ -141,8 +141,9 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
         showMonitoringStatusModal: true,
-        message: 'monitoring status to "' + event.target.value + '".',
-        message_warning: event.target.value === 'Not Monitoring' ? 'This record will be moved to the closed line list.' : '',
+        message: 'monitoring status to "' + event.target.value + '"',
+        message_warning:
+          event.target.value === 'Not Monitoring' ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.' : '',
         monitoring: event.target.value === 'Actively Monitoring' ? true : false,
         monitoring_status: event?.target?.value ? event.target.value : '',
         monitoring_reasons:
@@ -229,7 +230,7 @@ class MonitoringStatus extends React.Component {
   toggleJurisdictionModal() {
     let current = this.state.showJurisdictionModal;
     this.setState({
-      message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + this.state.jurisdiction_path + '".',
+      message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + this.state.jurisdiction_path + '"',
       showJurisdictionModal: !current,
       jurisdiction_path: current ? this.props.jurisdictionPaths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
       apply_to_group: false,
@@ -240,7 +241,7 @@ class MonitoringStatus extends React.Component {
   toggleAssignedUserModal() {
     let current = this.state.showassignedUserModal;
     this.setState({
-      message: 'assigned user from "' + this.state.original_assigned_user + '" to "' + this.state.assigned_user + '".',
+      message: 'assigned user from "' + this.state.original_assigned_user + '" to "' + this.state.assigned_user + '"',
       showassignedUserModal: !current,
       assigned_user: current ? this.state.original_assigned_user : this.state.assigned_user,
       apply_to_group: false,
@@ -323,9 +324,8 @@ class MonitoringStatus extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* CHANGE ME */}
           <p>
-            You are about to change this monitoree&apos;s {this.state.message} {this.state.message_warning && <b>{this.state.message_warning}</b>}
+            Are you sure you want to change this monitoree&apos;s {this.state.message}? {this.state.message_warning && <b>{this.state.message_warning}</b>}
           </p>
           {this.props.has_group_members && (
             <React.Fragment>
