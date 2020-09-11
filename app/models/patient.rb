@@ -694,6 +694,7 @@ class Patient < ApplicationRecord
       secondary_telephone: Phonelib.parse(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value, 'US').full_e164,
       email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
       date_of_birth: patient&.birthDate,
+      age: ((Time.zone.now - patient&.birthDate.to_time) / 1.year.seconds).floor,
       address_line_1: patient&.address&.first&.line&.first,
       address_line_2: patient&.address&.first&.line&.second,
       address_city: patient&.address&.first&.city,
