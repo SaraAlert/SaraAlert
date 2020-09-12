@@ -41,5 +41,4 @@ class EnrollerTest < ApplicationSystemTestCase
   test 'cancel enrollment' do
     @@enroller_test_helper.enroll_monitoree_and_cancel('locals2c3_enroller', 'monitoree_10')
   end
-
 end
