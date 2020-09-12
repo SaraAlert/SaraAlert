@@ -31,9 +31,4 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_test_helper.verify_patients_on_dashboard('locals2c3_epi', false)
     @@public_health_test_helper.verify_patients_on_dashboard('locals2c4_epi', false)
   end
-
-  test 'verify patient details and reports' do
-    @@public_health_test_helper.view_patients_details_and_reports('state1_epi')
-    @@public_health_test_helper.view_patients_details_and_reports('state2_epi')
-  end
 end

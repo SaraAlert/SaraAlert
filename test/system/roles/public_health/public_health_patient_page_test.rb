@@ -13,7 +13,10 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   ASSESSMENTS = @@system_test_utils.assessments
 
-  ## Patient page
+  test 'verify patient details and reports' do
+    @@public_health_test_helper.view_patients_details_and_reports('state1_epi')
+    @@public_health_test_helper.view_patients_details_and_reports('state2_epi')
+  end
 
   test 'update monitoring status to not monitoring' do
     @@public_health_test_helper.update_monitoring_status('state1_epi', 'patient_2', 'non_reporting', 'closed',
