@@ -141,7 +141,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
         showMonitoringStatusModal: true,
-        message: 'Monitoring Status to "' + event.target.value + '"',
+        message: 'monitoring status to "' + event.target.value + '"',
         message_warning:
           event.target.value === 'Not Monitoring' ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.' : '',
         monitoring: event.target.value === 'Actively Monitoring' ? true : false,
