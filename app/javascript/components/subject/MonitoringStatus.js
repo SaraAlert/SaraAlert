@@ -397,7 +397,6 @@ class MonitoringStatus extends React.Component {
                       checked={this.state.apply_to_group_cm_only}
                     />
                     Yes, household members are no longer being exposed to a case
-                    {/* FIX MY PLACEMENT */}
                     {this.state.apply_to_group_cm_only && (
                       <div className="mt-1">
                         Update their <b>Last Date of Exposure</b> to:
