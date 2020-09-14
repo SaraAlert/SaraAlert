@@ -73,12 +73,12 @@ class PurgeJobTest < ActiveSupport::TestCase
     assessment = create(:assessment, patient: patient)
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id)
-
     patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
     PurgeJob.perform_now
     assert(Assessment.count.zero?)
     assert(ReportedCondition.count.zero?)
-    assert(Symptom.count.zero?)
+    assert_equal(Symptom.count, 1)
+    assert_equal(Symptom.first, patient.jurisdiction.threshold_conditions.first.symptoms.first)
   end
 
   test 'nils out everything but kept attributes' do
