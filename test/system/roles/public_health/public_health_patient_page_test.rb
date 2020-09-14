@@ -42,28 +42,28 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'update assigned jurisdiction' do
-    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'USA, State 2, County 4', 'details', true, true)
-    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_10', 'pui', 'USA, State 1', 'details', true, false)
+    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'USA, State 2, County 4', 'details', valid_jurisdiction: true, under_hierarchy: true)
+    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_10', 'pui', 'USA, State 1', 'details', valid_jurisdiction: true, under_hierarchy: false)
   end
 
   test 'update assigned jurisdiction validation' do
-    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'Fake Jurisdiction', 'details', false, true)
+    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'Fake Jurisdiction', 'details', valid_jurisdiction: false, under_hierarchy: true)
   end
 
   test 'update assigned user' do
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '9', 'reasoning', true, true)
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reasoning', true, true)
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', 'reason', true, true)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '9', 'reasoning', valid_assigned_user: true, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reasoning', valid_assigned_user: true, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', 'reason', valid_assigned_user: true, changed: true)
   end
 
   test 'update assigned user validation' do
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reason', false, false)
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', '', false, false)
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '0', 'reason', false, true)
-    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '10000', '', false, true)
-    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_4', 'all', '-8', 'reason', false, true)
-    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', '1.5', '', false, true)
-    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', 'not valid', 'reason', false, true)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_2', 'all', '', 'reason', valid_assigned_user: false, changed: false)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '1444', '', valid_assigned_user: false, changed: false)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '0', 'reason', valid_assigned_user: false, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '10000', '', valid_assigned_user: false, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_4', 'all', '-8', 'reason', valid_assigned_user: false, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', '1.5', '', valid_assigned_user: false, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', 'not valid', 'reason', valid_assigned_user: false, changed: true)
   end
 
   test 'add report' do
