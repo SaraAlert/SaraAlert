@@ -111,3 +111,5 @@ Style/GlobalStdStream:
   Enabled: true
 Style/ExplicitBlockArgument:
   Enabled: true
+Style/SoleNestedConditional:
+  Enabled: true

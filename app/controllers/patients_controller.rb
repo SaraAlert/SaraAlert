@@ -127,9 +127,7 @@ class PatientsController < ApplicationController
     # Default responder to self if no responder condition met
     patient.responder = patient if patient.responder.nil?
 
-    if params.permit(:responder_id)[:responder_id]
-      patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
-    end
+    patient.responder = patient.responder.responder if params.permit(:responder_id)[:responder_id] && (patient.responder.responder_id != patient.responder.id)
 
     # Set the creator as the current user
     patient.creator = current_user

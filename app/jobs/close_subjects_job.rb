@@ -29,9 +29,9 @@ class CloseSubjectsJob < ApplicationJob
           subject[:monitoring] = false
           subject.closed_at = DateTime.now
           subject[:monitoring_reason] = 'Completed Monitoring'
-          if subject.save! && subject.email.present?
-            PatientMailer.closed_email(subject).deliver_later if subject.self_reporter_or_proxy?
-          end
+
+          PatientMailer.closed_email(subject).deliver_later if subject.save! && subject.email.present? && subject.self_reporter_or_proxy?
+
           History.record_automatically_closed(patient: subject)
           closed << { id: subject.id }
         rescue StandardError => e

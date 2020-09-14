@@ -484,9 +484,7 @@ class Patient < ApplicationRecord
   def send_assessment(force: false)
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
 
-    unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent > 12.hours.ago
-    end
+    return if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent > 12.hours.ago
 
     # Do not allow messages to go to household members
     return unless responder_id == id
@@ -602,12 +600,10 @@ class Patient < ApplicationRecord
     end
 
     # Exposure workflow specific conditions
-    unless isolation
-      # Monitoring period has elapsed
-      if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
-        eligible = false
-        messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
-      end
+    # Monitoring period has elapsed
+    if !isolation && (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
+      eligible = false
+      messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
     end
 
     # Has already been contacted today
