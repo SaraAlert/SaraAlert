@@ -87,7 +87,7 @@ class LastDateExposure extends React.Component {
       message = `User changed last date of exposure to ${moment(this.state.last_date_of_exposure).format('MM/DD/YYYY')}.`;
     }
     if (diffState.includes('continuous_exposure')) {
-      message = `User turned ${this.state.continuous_exposure ? 'on' : 'off'} continous exposure.`;
+      message = `User turned ${this.state.continuous_exposure ? 'on' : 'off'} continuous exposure.`;
     }
     diffState.push('continuous_exposure'); // Since exposure date updates change CE, always make sure this gets changed
     this.setState({ loading: true, continuous_exposure: diffState.includes('last_date_of_exposure') || isLDE ? false : this.state.continuous_exposure }, () => {
