@@ -20,9 +20,8 @@ class ConsumeAssessmentsJob < ApplicationJob
         next if patient.nil?
 
         # Prevent duplicate patient assessment spam
-        unless patient.latest_assessment.nil? # Only check for latest assessment if there is one
-          next if patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago
-        end
+        # Only check for latest assessment if there is one
+        next if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
 
         # Get list of dependents excluding the patient itself.
         dependents = patient.dependents_exclude_self
