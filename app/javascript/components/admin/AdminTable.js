@@ -340,10 +340,14 @@ class AdminTable extends React.Component {
    * @param {Object} query - sorting components of query from custom table
    */
   handleTableUpdate = query => {
-    const previous = this.state.query;
-    this.setState({ query: { ...previous, ...query } }, () => {
-      this.getTableData(this.state.query);
-    });
+    this.setState(
+      state => ({
+        query: { ...state, ...query },
+      }),
+      () => {
+        this.getTableData(this.state.query);
+      }
+    );
   };
 
   /**
