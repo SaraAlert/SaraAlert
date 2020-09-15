@@ -329,6 +329,7 @@ class MonitoringStatus extends React.Component {
           </p>
           {this.props.has_group_members && (
             <React.Fragment>
+              <p className="mb-2">Please select the records that you would like to apply this change to:</p>
               <Form.Group className="px-4">
                 <Form.Check
                   type="radio"
@@ -373,7 +374,7 @@ class MonitoringStatus extends React.Component {
           {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && (
             <React.Fragment>
               <hr />
-              <p>
+              <p className="mb-2">
                 Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure toggled ON and are being
                 monitored in the Exposure Workflow?
               </p>
@@ -396,17 +397,19 @@ class MonitoringStatus extends React.Component {
                       onChange={this.handleChange}
                       checked={this.state.apply_to_group_cm_only}
                     />
-                    Yes, household members are no longer being exposed to a case
+                    <p className="mb-1">Yes, household members are no longer being exposed to a case</p>
                     {this.state.apply_to_group_cm_only && (
-                      <div className="mt-1">
-                        Update their <b>Last Date of Exposure</b> to:
+                      <React.Fragment>
+                        <p className="mb-2">
+                          Update their <b>Last Date of Exposure</b> to:
+                        </p>
                         <DateInput
                           id="apply_to_group_cm_only_date"
                           date={this.state.apply_to_group_cm_only_date}
                           onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
                           placement="bottom"
                         />
-                      </div>
+                      </React.Fragment>
                     )}
                   </Form.Check.Label>
                 </Form.Check>
