@@ -418,8 +418,7 @@ class PatientsController < ApplicationController
   end
 
   def update_history(patient, params)
-    comment = ''
-    comment += params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
+    comment = params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
     History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
   end
