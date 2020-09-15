@@ -17,6 +17,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does not include purged records' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -28,6 +29,7 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
+    # Test with purged set to true
     patient = create(:patient,
                      purged: true,
                      isolation: false,
@@ -41,6 +43,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does not include records in isolation' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -52,6 +55,7 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
+    # Test with isolation set to true
     patient = create(:patient,
                      purged: false,
                      isolation: true,
@@ -65,6 +69,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does not include symptomatic records' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -76,6 +81,7 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
+    # Test with non-nil symptom onset
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -89,6 +95,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does not include already closed records' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -98,8 +105,9 @@ class PatientTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
+    # Test with monitoring set to false
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -113,6 +121,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does not include records in continuous exposure' do
+    # Control test
     patient = create(:patient,
                      continuous_exposure: false,
                      purged: false,
@@ -125,6 +134,7 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
+    # Test with continuous exposure set to true
     patient = create(:patient,
                      continuous_exposure: true,
                      purged: false,
@@ -139,6 +149,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does not include records that have NOT reported in the last 24 hours and were created more than 24 hours ago' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -151,6 +162,7 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
+    # Test with latest_assessment_at set to two days ago and create_at set to two days ago
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -165,6 +177,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does include records that have NOT reported in the last 24 hours and were created within the past 24 hours' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -177,6 +190,7 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
+    # Test with latest_assessment_at set to two days ago and created_at set to 5 hours ago
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -191,6 +205,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does include records that have reported in the last 24 hours' do
+    # This was tested in most control tests, but testing when latest_assessment_at was 23 hours ago
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -205,6 +220,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible does not include records still within their monitoring period' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -216,6 +232,7 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
+    # Test where patient is still within their monitoring period
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -229,6 +246,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible includes records on their last day of monitoring' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -240,6 +258,7 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
+    # Test where patient is on the last day of their monitoring period
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -253,6 +272,7 @@ class PatientTest < ActiveSupport::TestCase
   end
 
   test 'close eligible includes records past their last day of monitoring' do
+    # This was tested in most control tests, but testing when last date of exposure is 15 days ago and the record was created only 5 days ago
     patient = create(:patient,
                      purged: false,
                      isolation: false,
@@ -260,7 +280,8 @@ class PatientTest < ActiveSupport::TestCase
                      symptom_onset: nil,
                      public_health_action: 'None',
                      latest_assessment_at: Time.now,
-                     last_date_of_exposure: 20.days.ago)
+                     last_date_of_exposure: 15.days.ago,
+                     created_at: 5.days.ago)
 
     assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
