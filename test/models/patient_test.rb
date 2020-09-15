@@ -2,6 +2,7 @@
 
 require 'test_case'
 
+# rubocop:disable Metrics/ClassLength
 class PatientTest < ActiveSupport::TestCase
   def setup
     @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
@@ -15,257 +16,253 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
   end
 
-
   test 'close eligible does not include purged records' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
     patient = create(:patient,
-                      purged: true,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
-    
-    assert_equal(0, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+                     purged: true,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
+
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible does not include records in isolation' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
     patient = create(:patient,
-                      purged: false,
-                      isolation: true,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: true,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select {|p| p.id == patient.id}.count)
-    
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible does not include symptomatic records' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: 1.day.ago,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: 1.day.ago,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select {|p| p.id == patient.id}.count)  
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible does not include already closed records' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: false,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: false,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select {|p| p.id == patient.id}.count)  
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
 
   test 'close eligible does not include records in continuous exposure' do
     patient = create(:patient,
-                      continuous_exposure: false,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     continuous_exposure: false,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
     patient = create(:patient,
-                      continuous_exposure: true,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     continuous_exposure: true,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select {|p| p.id == patient.id}.count)  
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
 
   test 'close eligible does not include records that have NOT reported in the last 24 hours and were created more than 24 hours ago' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      created_at: 2.days.ago,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     created_at: 2.days.ago,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: 2.days.ago,
-                      created_at: 2.days.ago,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: 2.days.ago,
+                     created_at: 2.days.ago,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select {|p| p.id == patient.id}.count)    
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
 
   test 'close eligible does include records that have NOT reported in the last 24 hours and were created within the past 24 hours' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      created_at: 2.days.ago,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     created_at: 2.days.ago,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: 2.days.ago,
-                      created_at: 5.hours.ago,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: 2.days.ago,
+                     created_at: 5.hours.ago,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)     
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
 
   test 'close eligible does include records that have reported in the last 24 hours' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: 23.hours.ago,
-                      created_at: 2.days.ago,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: 23.hours.ago,
+                     created_at: 2.days.ago,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)    
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
 
   test 'close eligible does not include records still within their monitoring period' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
-
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 2.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 2.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
 
   test 'close eligible includes records on their last day of monitoring' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
-
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
 
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 14.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 14.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
 
   test 'close eligible includes records past their last day of monitoring' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select {|p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
   end
 
   # Patients who are eligible for reminders:
@@ -1047,3 +1044,4 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal status, patient.status
   end
 end
+# rubocop:enable Metrics/ClassLength

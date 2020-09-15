@@ -383,11 +383,11 @@ class Patient < ApplicationRecord
     monitoring_period_days = ADMIN_OPTIONS['monitoring_period_days'].days
     monitoring_end_date = nil
 
-    # If there is a last date of exposure - based monitoring period off of that date
+    # If there is a last date of exposure - base monitoring period off of that date
     if !last_date_of_exposure.nil?
       monitoring_end_date = last_date_of_exposure.beginning_of_day + monitoring_period_days
     elsif !created_at.nil?
-      # Otherwise, if there is no last date of exposure - based monitoring period off of creation date
+      # Otherwise, if there is no last date of exposure - base monitoring period off of creation date
       monitoring_end_date = created_at.beginning_of_day + monitoring_period_days
     end
 
@@ -409,7 +409,7 @@ class Patient < ApplicationRecord
   def self.close_eligible
     exposure_asymptomatic
       .where(continuous_exposure: false)
-      .select { |patient| patient.end_of_monitoring_period? }
+      .select(&:end_of_monitoring_period?)
   end
 
   # Order individuals based on their public health assigned risk assessment

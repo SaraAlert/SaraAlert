@@ -14,13 +14,13 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
   test 'updates appropriate fields on each closed record' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
     ClosePatientsJob.perform_now
 
@@ -32,13 +32,13 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
   test 'creates expected History item for each record' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
@@ -47,81 +47,79 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
   test 'creates correct monitoring reason when record has normally completed monitoring period' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago,
-                      created_at: 7.days.ago
-                    )
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago,
+                     created_at: 7.days.ago)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
-    assert_equal(updated_patient.monitoring_reason, "Completed Monitoring (system)")
+    assert_equal(updated_patient.monitoring_reason, 'Completed Monitoring (system)')
   end
 
   test 'creates correct monitoring reason when record was enrolled past their monitoring period' do
-      patient = create(:patient,
-                        purged: false,
-                        isolation: false,
-                        monitoring: true,
-                        symptom_onset: nil,
-                        public_health_action: 'None',
-                        latest_assessment_at: Time.now,
-                        last_date_of_exposure: 20.days.ago,
-                        created_at: Time.now
-                      )
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago,
+                     created_at: Time.now)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
-    assert_equal(updated_patient.monitoring_reason, "Enrolled more than 14 days after last date of exposure (system)")
+    assert_equal(updated_patient.monitoring_reason, 'Enrolled more than 14 days after last date of exposure (system)')
   end
 
   test 'creates correct monitoring reason when record was enrolled on their last day of monitoring' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 14.days.ago,
-                      created_at: Time.now
-                    )
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 14.days.ago,
+                     created_at: Time.now)
 
     ClosePatientsJob.perform_now
     updated_patient = Patient.find_by(id: patient.id)
-    assert_equal(updated_patient.monitoring_reason, "Enrolled on last day of monitoring period (system)")
+    assert_equal(updated_patient.monitoring_reason, 'Enrolled on last day of monitoring period (system)')
   end
 
   test 'sends closed email if closed record is a reporter' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago,
-                      email: "testpatient@example.com"
-                    )
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago,
+                     email: 'testpatient@example.com')
 
     ClosePatientsJob.perform_now
     assert_equal(ActionMailer::Base.deliveries.count, 2)
-    assert_includes(ActionMailer::Base.deliveries[-2].to_s, "Sara Alert Reporting Complete")
+    close_email = ActionMailer::Base.deliveries[-2]
+    assert_includes(close_email.to_s, 'Sara Alert Reporting Complete')
+    assert_equal(close_email.to[0], patient.email)
   end
 
   test 'sends an admin email with all closed monitorees' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
     email = ClosePatientsJob.perform_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -130,13 +128,13 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
 
   test 'sends an admin email with all monitorees not closed due to an exception' do
     patient = create(:patient,
-                      purged: false,
-                      isolation: false,
-                      monitoring: true,
-                      symptom_onset: nil,
-                      public_health_action: 'None',
-                      latest_assessment_at: Time.now,
-                      last_date_of_exposure: 20.days.ago)
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: 20.days.ago)
 
     allow_any_instance_of(Patient).to(receive(:save!) do
       raise StandardError, 'Test StandardError'
