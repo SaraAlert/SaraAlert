@@ -132,7 +132,7 @@ class PatientTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
     # Test with continuous exposure set to true
     patient = create(:patient,
@@ -145,7 +145,7 @@ class PatientTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible does not include records that have NOT reported in the last 24 hours and were created more than 24 hours ago' do
@@ -160,7 +160,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
     # Test with latest_assessment_at set to two days ago and create_at set to two days ago
     patient = create(:patient,
@@ -173,7 +173,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible does include records that have NOT reported in the last 24 hours and were created within the past 24 hours' do
@@ -188,7 +188,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
     # Test with latest_assessment_at set to two days ago and created_at set to 5 hours ago
     patient = create(:patient,
@@ -201,7 +201,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 5.hours.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible does include records that have reported in the last 24 hours' do
@@ -216,7 +216,7 @@ class PatientTest < ActiveSupport::TestCase
                      created_at: 2.days.ago,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible does not include records still within their monitoring period' do
@@ -230,7 +230,7 @@ class PatientTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
     # Test where patient is still within their monitoring period
     patient = create(:patient,
@@ -242,7 +242,7 @@ class PatientTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 2.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible includes records on their last day of monitoring' do
@@ -256,7 +256,7 @@ class PatientTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
 
     # Test where patient is on the last day of their monitoring period
     patient = create(:patient,
@@ -268,7 +268,7 @@ class PatientTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 14.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible includes records past their last day of monitoring' do
@@ -283,7 +283,7 @@ class PatientTest < ActiveSupport::TestCase
                      last_date_of_exposure: 15.days.ago,
                      created_at: 5.days.ago)
 
-    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   # Patients who are eligible for reminders:
