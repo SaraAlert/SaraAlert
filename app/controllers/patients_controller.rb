@@ -737,7 +737,7 @@ class PatientsController < ApplicationController
   end
 
   def get_all_group_members_for(role)
-    current_user.get_method_for(role).find_by_id(@patient.responder_id)&.dependents
+    current_user.send(get_method_for(role)).find_by_id(@patient.responder_id)&.dependents
   end
 
   def get_method_for(role)
