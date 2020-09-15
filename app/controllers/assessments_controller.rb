@@ -133,7 +133,7 @@ class AssessmentsController < ApplicationController
     typed_reported_symptoms.each do |symptom|
       new_val = symptom.bool_value
       old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
-      if (!new_val.nil? || !old_val.nil?) && new_val != old_val
+      if new_val.present? && old_val.present? && new_val != old_val
         delta << symptom.name + '=' + (new_val ? 'Yes' : 'No')
       end
     end
