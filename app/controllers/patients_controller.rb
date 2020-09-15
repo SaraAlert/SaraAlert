@@ -15,11 +15,7 @@ class PatientsController < ApplicationController
 
     redirect_to(root_url) && return unless %w[enroller public_health_enroller public_health].include?(@current_user_role)
 
-    if @current_user_role == 'enroller'
-      @patient = current_user.enrolled_patients.includes({assessments: [{reported_condition: [:symptoms, {threshold_condition: [:symptoms]}]}]}, :jurisdiction, :histories, :dependents, :laboratories, :close_contacts).find_by_id(params.permit(:id)[:id])
-    else
-      @patient = current_user.viewable_patients.includes({assessments: [{reported_condition: [:symptoms, {threshold_condition: [:symptoms]}]}]}, :jurisdiction, :histories, :dependents, :laboratories, :close_contacts).find_by_id(params.permit(:id)[:id])
-    end
+    @patient = get_patient_for(@current_user_role)
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -32,14 +28,8 @@ class PatientsController < ApplicationController
       @all_group_members = @patient.dependents + [@patient]
     else
       # All group members regardless if this is not HOH
-      if @current_user_role == 'enroller'
-        @all_group_members = current_user.enrolled_patients.find_by_id(@patient.responder_id)&.dependents
-      else
-        @all_group_members = current_user.viewable_patients.find_by_id(@patient.responder_id)&.dependents
-      end
+      @all_group_members = get_all_group_members_for(@current_user_role)
     end
-
-    @translations = Assessment.new.translations
 
     # All actions on this page are done by either a public health or public health enroller
     # so all the role queries can be wrapped up into this.
@@ -54,7 +44,7 @@ class PatientsController < ApplicationController
     @current_user_jurisdiction = current_user.jurisdiction_path
 
     @jurisdiction_paths = Rails.cache.fetch('all_jurisdiction_ids_and_paths', expires_in: 24.hours, race_condition_ttl: 30.seconds) do
-      Hash[Jurisdiction.all.where.not(name: "USA").pluck(:id, :path).map {|id, path| [id, path]}]
+      Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
     end
 
     # Very slow in worst-case
@@ -68,7 +58,7 @@ class PatientsController < ApplicationController
 
     # Assessments table =====
     @assessments = @patient.assessments
-    @symptom_names = @symptoms.collect { |s| s.name }
+    @symptom_names = @symptoms.collect(&:name)
     @columns = {}
     @assessments.each do |assessment|
       # Get the threshold hash for the set of symptoms at the time of this assessment
@@ -86,9 +76,7 @@ class PatientsController < ApplicationController
     @laboratories = @patient.laboratories
     @close_contacts = @patient.close_contacts
     @patient_hash = @patient.to_h
-
-    # If we failed to find a subject given the id, redirect to index
-    redirect_to(root_url) && return if @patient.nil?
+    @translations = Assessment.new.translations
   end
 
   # Returns a new (unsaved) subject, for creating a new subject
@@ -724,5 +712,37 @@ class PatientsController < ApplicationController
       user_defined_symptom_onset
       extended_isolation
     ]
+  end
+
+  private
+
+  def get_patient_for(role)
+    @patient = current_user.send(get_method_for(role)).includes(
+      {
+        assessments: [{
+          reported_condition: [
+            :symptoms,
+            {
+              threshold_condition: [:symptoms]
+            }
+          ]
+        }]
+      },
+      :jurisdiction,
+      :histories,
+      :dependents,
+      :laboratories,
+      :close_contacts
+    ).find_by_id(params.permit(:id)[:id])
+  end
+
+  def get_all_group_members_for(role)
+    current_user.get_method_for(role).find_by_id(@patient.responder_id)&.dependents
+  end
+
+  def get_method_for(role)
+    return :enrolled_patients if role == 'enroller'
+
+    :viewable_patients
   end
 end
