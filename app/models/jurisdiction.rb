@@ -92,7 +92,8 @@ class Jurisdiction < ApplicationRecord
 
   def hierarchical_condition_unpopulated_symptoms
     threshold_condition = hierarchical_symptomatic_condition
-    new_cond = ReportedCondition.new(threshold_condition_hash: threshold_condition.threshold_condition_hash)
+    new_cond = ReportedCondition.new(threshold_condition: threshold_condition,
+                                     threshold_condition_hash: threshold_condition.threshold_condition_hash)
     # Get array of arrays of symptoms, sorted top-down ie: usa set of symptoms first, state next etc...
     threshold_condition.symptoms&.each do |symptom|
       new_symptom = symptom.dup

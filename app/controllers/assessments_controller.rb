@@ -88,7 +88,9 @@ class AssessmentsController < ApplicationController
 
       typed_reported_symptoms = Condition.build_symptoms(reported_symptoms_array)
 
-      reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: threshold_condition_hash)
+      reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms,
+                                                 threshold_condition: threshold_condition,
+                                                 threshold_condition_hash: threshold_condition_hash)
 
       @assessment = Assessment.new(reported_condition: reported_condition)
       @assessment.symptomatic = @assessment.symptomatic?

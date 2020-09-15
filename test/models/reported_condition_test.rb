@@ -20,7 +20,9 @@ class ReportedConditionTest < ActiveSupport::TestCase
   test 'threshold condition' do
     threshold_condition_hash = Faker::Alphanumeric.alphanumeric(number: 64)
     threshold_condition_1 = create(:threshold_condition, threshold_condition_hash: threshold_condition_hash)
-    reported_condition = create(:reported_condition, threshold_condition_hash: threshold_condition_hash)
+    reported_condition = create(:reported_condition,
+                                threshold_condition_hash: threshold_condition_hash,
+                                threshold_condition: threshold_condition_1)
 
     # Single ThresholdCondition matches
     assert_equal(threshold_condition_1, reported_condition.threshold_condition)
@@ -29,10 +31,6 @@ class ReportedConditionTest < ActiveSupport::TestCase
     create(:threshold_condition, threshold_condition_hash: threshold_condition_hash)
     # Uses the default sort order, we expect the threshold_condition with a lower id.
     assert_equal(threshold_condition_1, reported_condition.threshold_condition)
-
-    # No ThresholdCondition matches
-    assert_nil(create(:reported_condition,
-                      threshold_condition_hash: Faker::Alphanumeric.alphanumeric(number: 64)).threshold_condition)
   end
 
   test 'reported condition fever or fever reducer' do

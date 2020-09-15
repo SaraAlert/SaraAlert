@@ -78,7 +78,9 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         if message['reported_symptoms_array']
           typed_reported_symptoms = Condition.build_symptoms(message['reported_symptoms_array'])
-          reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
+          reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms,
+                                                     threshold_condition: threshold_condition,
+                                                     threshold_condition_hash: message['threshold_condition_hash'])
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
           assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
           assessment.save
@@ -95,7 +97,9 @@ class ConsumeAssessmentsJob < ApplicationJob
                                         # of the threshold values that represent symptomatic
                                         threshold_condition.clone_symptoms_negate_bool_values
                                       end
-            reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
+            reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms,
+                                                       threshold_condition: threshold_condition,
+                                                       threshold_condition_hash: message['threshold_condition_hash'])
             assessment = Assessment.new(reported_condition: reported_condition, patient: pat)
             assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
             # If current user in the collection of patient + patient dependents is the patient, then that means

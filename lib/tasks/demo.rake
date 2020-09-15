@@ -516,6 +516,7 @@ namespace :demo do
       printf("\rGenerating condition for assessment #{index+1} of #{new_assessments.length}...")
       reported_conditions << ReportedCondition.new(
         assessment_id: assessment[:id],
+        threshold_condition: threshold_conditions[assessment.patient.jurisdiction_id],
         threshold_condition_hash: threshold_conditions[assessment.patient.jurisdiction_id][:hash],
         created_at: assessment[:created_at],
         updated_at: assessment[:updated_at]
