@@ -6,7 +6,7 @@ class PublicHealthController < ApplicationController
   before_action :authenticate_user_role
 
   def patients
-    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction)
+    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :filter)
 
     # Validate workflow param
     workflow = permitted_params.require(:workflow).to_sym
@@ -65,6 +65,18 @@ class PublicHealthController < ApplicationController
 
     # Filter by search text
     patients = filter(patients, search)
+
+    # Filter by advanced filter (if present)
+    if params[:filter].present?
+      advanced = params.require(:filter).collect do |filter|
+        {
+          filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
+          value: filter.require(:value),
+          dateOption: filter.permit(:dateOption)[:dateOption]
+        }
+      end
+      patients = advanced_filter(patients, advanced) unless advanced.nil?
+    end
 
     # Sort
     patients = sort(patients, order, direction)
@@ -262,6 +274,100 @@ class PublicHealthController < ApplicationController
     return %i[transferred_to end_of_monitoring risk_level monitoring_plan transferred_at] if tab == :transferred_out
 
     %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
+  end
+
+  def advanced_filter(patients, filters)
+    filters.each do |filter|
+      case filter[:filterOption]['name']
+      when 'sent-today'
+        patients = patients.where("last_assessment_reminder_sent #{filter[:value] ? '>' : '<'} ?", DateTime.now.beginning_of_day)
+      when 'responded-today'
+        patients = patients.where("latest_assessment_at #{filter[:value] ? '>' : '<'} ?", DateTime.now.beginning_of_day)
+      when 'paused'
+        patients = patients.where('pause_notifications = ?', filter[:value])
+      when 'preferred-contact-method'
+        patients = patients.where('preferred_contact_method = ?', filter[:value])
+      when 'latest-report'
+        if filter[:dateOption] == 'before'
+          compare_date = Chronic.parse(filter[:value])
+          patients = patients.where('latest_assessment_at < ?', compare_date)
+        elsif filter[:dateOption] == 'after'
+          compare_date = Chronic.parse(filter[:value])
+          patients = patients.where('latest_assessment_at > ?', compare_date)
+        elsif filter[:dateOption] == 'within'
+          compare_date_start = Chronic.parse(filter[:value][:start])
+          compare_date_end = Chronic.parse(filter[:value][:end])
+          patients = patients.where('latest_assessment_at > ?', compare_date_start).where('latest_assessment_at < ?', compare_date_end)
+        end
+      when 'hoh'
+        patients = if filter[:value]
+                     patients.where('responder_id == id')
+                   else
+                     patients.where.not('responder_id == id')
+                   end
+      when 'enrolled'
+        if filter[:dateOption] == 'before'
+          compare_date = Chronic.parse(filter[:value])
+          patients = patients.where('created_at < ?', compare_date)
+        elsif filter[:dateOption] == 'after'
+          compare_date = Chronic.parse(filter[:value])
+          patients = patients.where('created_at > ?', compare_date)
+        elsif filter[:dateOption] == 'within'
+          compare_date_start = Chronic.parse(filter[:value][:start])
+          compare_date_end = Chronic.parse(filter[:value][:end])
+          patients = patients.where('created_at > ?', compare_date_start).where('created_at < ?', compare_date_end)
+        end
+      when 'last-date-exposure'
+        if filter[:dateOption] == 'before'
+          compare_date = Chronic.parse(filter[:value])
+          patients = patients.where('last_date_of_exposure < ?', compare_date)
+        elsif filter[:dateOption] == 'after'
+          compare_date = Chronic.parse(filter[:value])
+          patients = patients.where('last_date_of_exposure > ?', compare_date)
+        elsif filter[:dateOption] == 'within'
+          compare_date_start = Chronic.parse(filter[:value][:start])
+          compare_date_end = Chronic.parse(filter[:value][:end])
+          patients = patients.where('last_date_of_exposure > ?', compare_date_start).where('last_date_of_exposure < ?', compare_date_end)
+        end
+      when 'symptom-onset'
+        if filter[:dateOption] == 'before'
+          compare_date = Chronic.parse(filter[:value])
+          patients = patients.where('symptom_onset < ?', compare_date)
+        elsif filter[:dateOption] == 'after'
+          compare_date = Chronic.parse(filter[:value])
+          patients = patients.where('symptom_onset > ?', compare_date)
+        elsif filter[:dateOption] == 'within'
+          compare_date_start = Chronic.parse(filter[:value][:start])
+          compare_date_end = Chronic.parse(filter[:value][:end])
+          patients = patients.where('symptom_onset > ?', compare_date_start).where('symptom_onset < ?', compare_date_end)
+        end
+      when 'continous-exposure'
+        patients = patients.where('continuous_exposure = ?', filter[:value])
+      when 'telephone-number'
+        patients = patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
+      when 'email'
+        patients = patients.where('patients.email like ?', filter[:value])
+      when 'sara-id'
+        patients = patients.where(id: filter[:value])
+      when 'first-name'
+        patients = patients.where('patients.first_name like ?', filter[:value])
+      when 'middle-name'
+        patients = patients.where('patients.middle_name like ?', filter[:value])
+      when 'last-name'
+        patients = patients.where('patients.last_name like ?', filter[:value])
+      when 'monitoring-plan'
+        patients = patients.where('monitoring_plan = ?', filter[:value])
+      when 'never-responded'
+        patients = patients.where('last_assessment_at = ?', nil)
+      when 'risk-exposure'
+        patients = patients.where('exposure_risk_assessment = ?', filter[:value])
+      when 'require-interpretation'
+        patients = patients.where('interpretation_required = ?', filter[:value])
+      when 'preferred-contact-time'
+        patients = patients.where('preferred_contact_time = ?', filter[:value])
+      end
+    end
+    patients
   end
 
   private

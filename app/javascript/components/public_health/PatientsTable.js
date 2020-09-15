@@ -19,6 +19,7 @@ import {
 import axios from 'axios';
 import moment from 'moment-timezone';
 
+import AdvancedFilter from './AdvancedFilter';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import InfoTooltip from '../util/InfoTooltip';
@@ -29,6 +30,7 @@ class PatientsTable extends React.Component {
   constructor(props) {
     super(props);
     this.handleTabSelect = this.handleTabSelect.bind(this);
+    this.advancedUpdate = this.advancedUpdate.bind(this);
     this.state = {
       table: {
         colData: [
@@ -78,6 +80,7 @@ class PatientsTable extends React.Component {
       },
       entryOptions: [10, 15, 25, 50, 100],
       cancelToken: axios.CancelToken.source(),
+      filter: null,
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
   }
@@ -233,8 +236,10 @@ class PatientsTable extends React.Component {
 
     this.setState({ query, cancelToken, loading: true }, () => {
       axios
-        .get('/public_health/patients', {
-          params: { workflow: this.props.workflow, ...query },
+        .post('/public_health/patients', {
+          workflow: this.props.workflow,
+          ...query,
+          filter: this.state.filter,
           cancelToken: this.state.cancelToken.token,
         })
 
@@ -271,6 +276,12 @@ class PatientsTable extends React.Component {
         });
     });
   };
+
+  advancedUpdate(filter) {
+    this.setState({ filter: filter }, () => {
+      this.updateTable(this.state.query);
+    });
+  }
 
   updateJurisdictionPaths() {
     axios.get('/jurisdictions/paths').then(response => {
@@ -471,6 +482,7 @@ class PatientsTable extends React.Component {
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}
                   />
+                  <AdvancedFilter advancedUpdate={this.advancedUpdate} authenticity_token={this.props.authenticity_token} />
                   {this.state.query !== 'transferred_out' && (
                     <DropdownButton
                       as={ButtonGroup}
