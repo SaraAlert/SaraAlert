@@ -117,7 +117,7 @@ class PatientTest < ActiveSupport::TestCase
                      latest_assessment_at: Time.now,
                      last_date_of_exposure: 20.days.ago)
 
-    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id}.count)
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
   test 'close eligible does not include records in continuous exposure' do
