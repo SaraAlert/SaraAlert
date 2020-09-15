@@ -37,15 +37,25 @@ class SymptomOnset extends React.Component {
 
   submit() {
     this.setState({ loading: true }, () => {
+      let message = '';
+      if (this.props.patient.symptom_onset && this.state.symptom_onset) {
+        message = `User changed symptom onset date from ${moment(this.props.patient.symptom_onset).format('MM/DD/YYYY')} to ${moment(
+          this.state.symptom_onset
+        ).format('MM/DD/YYYY')}.`;
+      } else if (!this.props.patient.symptom_onset && this.state.symptom_onset) {
+        message = `User changed symptom onset date from blank to ${moment(this.state.symptom_onset).format('MM/DD/YYYY')}.`;
+      } else if (this.props.patient.symptom_onset && !this.state.symptom_onset) {
+        message = `User cleared symptom onset date from ${moment(this.props.patient.symptom_onset).format(
+          'MM/DD/YYYY'
+        )} to blank. The system will now populate this date.`;
+      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           symptom_onset: this.state.symptom_onset,
           user_defined_symptom_onset: true,
           comment: true,
-          message: this.state.symptom_onset
-            ? `User changed symptom onset date to ${moment(this.state.symptom_onset).format('MM/DD/YYYY')}.`
-            : 'User cleared symptom onset date.',
+          message: message,
           diffState: ['symptom_onset', 'user_defined_symptom_onset'],
         })
         .then(() => {

@@ -84,7 +84,9 @@ class LastDateExposure extends React.Component {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     let message = '';
     if (diffState.includes('last_date_of_exposure')) {
-      message = `User changed last date of exposure to ${moment(this.state.last_date_of_exposure).format('MM/DD/YYYY')}.`;
+      message = `User changed last date of exposure from ${moment(this.props.patient.last_date_of_exposure).format('MM/DD/YYYY')} to ${moment(
+        this.state.last_date_of_exposure
+      ).format('MM/DD/YYYY')}.`;
     }
     if (diffState.includes('continuous_exposure')) {
       message = `User turned ${this.state.continuous_exposure ? 'on' : 'off'} continuous exposure.`;

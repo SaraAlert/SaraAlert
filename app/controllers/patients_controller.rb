@@ -401,10 +401,18 @@ class PatientsController < ApplicationController
     # Log system onset change in history if initiated by system (user initiated changes are logged separately)
     return if content[:symptom_onset] == patient[:symptom_onset] || initiator != :system
 
-    comment = if content[:symptom_onset].nil?
-                'System cleared symptom onset date because patient was moved from isolation to exposure.'
+    comment = if !patient[:symptom_onset].nil? && !content[:symptom_onset].nil?
+                "System changed symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{content[:symptom_onset].strftime('%m/%d/%Y')}
+                 because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on
+                 daily reports."
+              elsif patient[:symptom_onset].nil? && !content[:symptom_onset].nil?
+                "System changed symptom onset date from blank to #{content[:symptom_onset].strftime('%m/%d/%Y')} because monitoree was moved from isolation to
+                 exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
+              elsif !patient[:symptom_onset].nil? && content[:symptom_onset].nil?
+                "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from isolation to
+                 exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
               else
-                "System changed symptom onset date to #{content[:symptom_onset].strftime('%m/%d/%Y')} because patient was moved from isolation to exposure."
+                'System changed symptom onset date. This allows the system to show monitoree on appropriate line list based on daily reports.'
               end
     History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
   end

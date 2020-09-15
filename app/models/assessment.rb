@@ -131,10 +131,15 @@ class Assessment < ApplicationRecord
     else
       new_symptom_onset = patient.assessments.where(symptomatic: true).minimum(:created_at)
       unless new_symptom_onset == patient[:symptom_onset]
-        comment = if new_symptom_onset.nil?
-                    'System cleared symptom onset date because there are no longer any symptomatic reports.'
-                  else
-                    "System changed symptom onset date to #{new_symptom_onset.strftime('%m/%d/%Y')} because a symptomatic report was created or updated."
+        comment = if !patient[:symptom_onset].nil? && !new_symptom_onset.nil?
+                    "System changed symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                     because a report meeting the symptomatic logic was created or updated."
+                  elsif patient[:symptom_onset].nil? && !new_symptom_onset.nil?
+                    "System changed symptom onset date from blank to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                     because a report meeting the symptomatic logic was created or updated."
+                  elsif !patient[:symptom_onset].nil? && new_symptom_onset.nil?
+                    "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank
+                     because a report meeting the symptomatic logic was created or updated."
                   end
         History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
       end
@@ -158,7 +163,7 @@ class Assessment < ApplicationRecord
     else
       new_symptom_onset = patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at)
       unless new_symptom_onset == patient[:symptom_onset] || !new_symptom_onset.nil?
-        comment = 'System cleared symptom onset date because a symptomatic report was removed.'
+        comment = "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank because a symptomatic report was removed."
         History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
       end
       patient.update(
