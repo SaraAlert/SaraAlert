@@ -42,12 +42,30 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'update assigned jurisdiction' do
-    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'USA, State 2, County 4', 'details', valid_jurisdiction: true, under_hierarchy: true)
-    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_10', 'pui', 'USA, State 1', 'details', valid_jurisdiction: true, under_hierarchy: false)
+    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi',
+                                                             'patient_11',
+                                                             'pui',
+                                                             'USA, State 2, County 4',
+                                                             'details',
+                                                             valid_jurisdiction: true,
+                                                             under_hierarchy: true)
+    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi',
+                                                             'patient_10',
+                                                             'pui',
+                                                             'USA, State 1',
+                                                             'details',
+                                                             valid_jurisdiction: true,
+                                                             under_hierarchy: false)
   end
 
   test 'update assigned jurisdiction validation' do
-    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi', 'patient_11', 'pui', 'Fake Jurisdiction', 'details', valid_jurisdiction: false, under_hierarchy: true)
+    @@public_health_test_helper.update_assigned_jurisdiction('state2_epi',
+                                                             'patient_11',
+                                                             'pui',
+                                                             'Fake Jurisdiction',
+                                                             'details',
+                                                             valid_jurisdiction: false,
+                                                             under_hierarchy: true)
   end
 
   test 'update assigned user' do
@@ -63,7 +81,13 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_test_helper.update_assigned_user('state1_epi', 'patient_4', 'all', '10000', '', valid_assigned_user: false, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_4', 'all', '-8', 'reason', valid_assigned_user: false, changed: true)
     @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', '1.5', '', valid_assigned_user: false, changed: true)
-    @@public_health_test_helper.update_assigned_user('state1_epi_enroller', 'patient_2', 'all', 'not valid', 'reason', valid_assigned_user: false, changed: true)
+    @@public_health_test_helper.update_assigned_user('state1_epi_enroller',
+                                                     'patient_2',
+                                                     'all',
+                                                     'not valid',
+                                                     'reason',
+                                                     valid_assigned_user: false,
+                                                     changed: true)
   end
 
   test 'add report' do
