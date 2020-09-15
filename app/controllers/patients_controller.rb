@@ -331,6 +331,9 @@ class PatientsController < ApplicationController
         update_fields(member, params)
         if params[:apply_to_group_cm_only_date].present?
           lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
+          if member[:continuous_exposure]
+            History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure.')
+          end
           member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
         end
         next unless params[:comment]
@@ -355,6 +358,9 @@ class PatientsController < ApplicationController
 
     # If the monitoree record was closed, set continuous exposure to be false and set the closed at time.
     if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
+      if patient[:continuous_exposure]
+        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure.')
+      end
       patient.continuous_exposure = false
       patient.closed_at = DateTime.now
     end
