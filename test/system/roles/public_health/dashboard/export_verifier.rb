@@ -156,7 +156,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
             end
 
     lab_results = xlsx_lab_results.sheet('Lab Results')
-    labs = Laboratory.where(patient_id: patient_ids)
+    labs = Laboratory.unscoped.where(patient_id: patient_ids)
     assert_equal(labs.size, lab_results.last_row - 1, 'Number of results in Lab Results')
     lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
     lab_headers.each_with_index do |header, col|
@@ -171,7 +171,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     end
 
     edit_histories = xlsx_histories.sheet('Edit Histories')
-    histories = History.where(patient_id: patient_ids)
+    histories = History.unscoped.where(patient_id: patient_ids)
     assert_equal(histories.size, edit_histories.last_row - 1, 'Number of histories in Edit Histories')
     history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
     history_headers.each_with_index do |header, col|

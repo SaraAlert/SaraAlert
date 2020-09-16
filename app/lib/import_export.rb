@@ -266,9 +266,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
         # assessments sorted by patients
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          assessments = Assessment.where(patient_id: patients_group.pluck(:id))
-          conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
-          symptoms = Symptom.where(condition_id: conditions.pluck(:id))
+          assessments = Assessment.unscoped.where(patient_id: patients_group.pluck(:id))
+          conditions = ReportedCondition.unscoped.where(assessment_id: assessments.pluck(:id))
+          symptoms = Symptom.unscoped.where(condition_id: conditions.pluck(:id))
 
           # construct hash containing symptoms by assessment_id
           conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
@@ -291,7 +291,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         end
       end
       p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
-        labs = Laboratory.where(patient_id: patients.pluck(:id))
+        labs = Laboratory.unscoped.where(patient_id: patients.pluck(:id))
         lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
         sheet.add_row lab_headers
         labs.find_each(batch_size: 500) do |lab|
@@ -299,7 +299,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         end
       end
       p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
-        histories = History.where(patient_id: patients.pluck(:id))
+        histories = History.unscoped.where(patient_id: patients.pluck(:id))
         history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
         sheet.add_row history_headers
         histories.find_each(batch_size: 500) do |history|
@@ -338,9 +338,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
         # assessments sorted by patients
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          assessments = Assessment.where(patient_id: patients_group.pluck(:id))
-          conditions = ReportedCondition.where(assessment_id: assessments.pluck(:id))
-          symptoms = Symptom.where(condition_id: conditions.pluck(:id))
+          assessments = Assessment.unscoped.where(patient_id: patients_group.pluck(:id))
+          conditions = ReportedCondition.unscoped.where(assessment_id: assessments.pluck(:id))
+          symptoms = Symptom.unscoped.where(condition_id: conditions.pluck(:id))
 
           # construct hash containing symptoms by assessment_id
           conditions_hash = Hash[conditions.pluck(:id, :assessment_id).map { |id, assessment_id| [id, assessment_id] }]
@@ -369,7 +369,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   def excel_export_lab_results(patients)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Lab Results') do |sheet|
-        labs = Laboratory.where(patient_id: patients.pluck(:id))
+        labs = Laboratory.unscoped.where(patient_id: patients.pluck(:id))
         lab_headers = ['Patient ID', 'Lab Type', 'Specimen Collection Date', 'Report Date', 'Result Date', 'Created At', 'Updated At']
         sheet.add_row lab_headers
         labs.find_each(batch_size: 500) do |lab|
@@ -383,7 +383,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   def excel_export_histories(patients)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Edit Histories') do |sheet|
-        histories = History.where(patient_id: patients.pluck(:id))
+        histories = History.unscoped.where(patient_id: patients.pluck(:id))
         history_headers = ['Patient ID', 'Comment', 'Created By', 'History Type', 'Created At', 'Updated At']
         sheet.add_row history_headers
         histories.find_each(batch_size: 500) do |history|
@@ -463,7 +463,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   # Latest transfer of each patient
   def latest_transfers(patients)
     latest_transfers = patients.pluck(:id, :latest_transfer_at)
-    transfers = Transfer.where(patient_id: latest_transfers.map { |lt| lt[0] }, created_at: latest_transfers.map { |lt| lt[1] })
+    transfers = Transfer.unscoped.where(patient_id: latest_transfers.map { |lt| lt[0] }, created_at: latest_transfers.map { |lt| lt[1] })
     jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
     Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)
@@ -480,7 +480,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   # 2 Latest laboratories of each patient
   def latest_laboratories(patients)
     latest_labs = Hash[patients.pluck(:id).map { |id| [id, {}] }]
-    Laboratory.where(patient_id: patients.pluck(:id)).order(report: :desc).each do |lab|
+    Laboratory.unscoped.where(patient_id: patients.pluck(:id)).order(report: :desc).each do |lab|
       if !latest_labs[lab.patient_id].key?(:first)
         latest_labs[lab.patient_id][:first] = {
           lab_type: lab[:lab_type],
