@@ -47,10 +47,10 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       public_health_action: public_health_action || '',
       status: status&.to_s&.humanize&.downcase&.gsub('exposure ', '')&.gsub('isolation ', '') || '',
       closed_at: closed_at&.rfc2822 || '',
-      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''),
+      transferred_from: latest_transfer&.from_path || '',
       transferred_to: latest_transfer&.to_path || '',
-      extended_isolation: extended_isolation || '',
-      transferred_from: latest_transfer&.from_path || ''
+      expected_purge_date: updated_at.nil? ? '' : ((updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''),
+      extended_isolation: extended_isolation || ''
     }
   end
 
@@ -78,7 +78,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
 
   # All information about this subject
   def comprehensive_details
-    labs = Laboratory.where(patient_id: id).order(report: :desc)
+    labs = Laboratory.unscoped.where(patient_id: id).order(report: :desc)
     {
       first_name: first_name || '',
       middle_name: middle_name || '',
