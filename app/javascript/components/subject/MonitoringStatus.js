@@ -342,7 +342,7 @@ class MonitoringStatus extends React.Component {
                 id="apply_to_group_cm_only"
                 label='Update Last Date of Exposure for all household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group_cm_only === true || false}
+                checked={this.state.apply_to_group_cm_only}
               />
             </Form.Group>
           )}
@@ -368,7 +368,7 @@ class MonitoringStatus extends React.Component {
                 id="apply_to_group"
                 label="Apply this change to the entire household that this monitoree is responsible for"
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group === true || false}
+                checked={this.state.apply_to_group}
               />
             </Form.Group>
           )}
