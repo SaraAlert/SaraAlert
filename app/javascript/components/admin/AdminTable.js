@@ -336,6 +336,21 @@ class AdminTable extends React.Component {
   };
 
   /**
+   * Called when table is to be updated because of a search or sorting change.
+   * @param {Object} query - Updated query for table data after change.
+   */
+  handleTableUpdate = query => {
+    this.setState(
+      state => ({
+        query: { ...state.query, ...query },
+      }),
+      () => {
+        this.getTableData(this.state.query);
+      }
+    );
+  };
+
+  /**
    * Callback called when child Table component detects a selection change.
    * Updates the selected rows and enables/disables actions accordingly.
    * @param {Number[]} selectedRows - Array of selected row indices.
@@ -605,7 +620,7 @@ class AdminTable extends React.Component {
           columnData={this.state.table.colData}
           rowData={this.state.table.rowData}
           totalRows={this.state.table.totalRows}
-          handleTableUpdate={query => this.getTableData({ ...this.state.query, ...query })}
+          handleTableUpdate={this.handleTableUpdate}
           handleSelect={this.handleSelect}
           handleEdit={this.handleEditClick}
           handleEntriesChange={this.handleEntriesChange}

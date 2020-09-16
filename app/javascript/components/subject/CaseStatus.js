@@ -127,7 +127,7 @@ class CaseStatus extends React.Component {
                   id="apply_to_group"
                   label="Apply this change to the entire household that this monitoree is responsible for"
                   onChange={this.handleChange}
-                  checked={this.state.apply_to_group === true || false}
+                  checked={this.state.apply_to_group}
                 />
               </Form.Group>
             )}
@@ -173,7 +173,7 @@ class CaseStatus extends React.Component {
                   id="apply_to_group"
                   label="Apply this change to the entire household that this monitoree is responsible for"
                   onChange={this.handleChange}
-                  checked={this.state.apply_to_group === true || false}
+                  checked={this.state.apply_to_group}
                 />
               </Form.Group>
             )}
@@ -208,7 +208,7 @@ class CaseStatus extends React.Component {
                   id="apply_to_group"
                   label="Apply this change to the entire household that this monitoree is responsible for"
                   onChange={this.handleChange}
-                  checked={this.state.apply_to_group === true || false}
+                  checked={this.state.apply_to_group}
                 />
               </Form.Group>
             )}

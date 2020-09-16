@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Form, Row, Col, Button, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
@@ -30,6 +30,7 @@ class LastDateExposure extends React.Component {
     this.closeExposureDateModal = this.closeExposureDateModal.bind(this);
     this.toggleContinuousMonitoringModal = this.toggleContinuousMonitoringModal.bind(this);
     this.createModal = this.createModal.bind(this);
+    this.createCEToggle = this.createCEToggle.bind(this);
   }
 
   toggleContinuousMonitoringModal() {
@@ -111,7 +112,7 @@ class LastDateExposure extends React.Component {
         <Modal.Body>
           <p>{message}</p>
           {this.props.has_group_members && (
-            <Form.Group className="mt-3">
+            <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
                 id="apply_to_monitoree_only"
@@ -122,7 +123,7 @@ class LastDateExposure extends React.Component {
             </Form.Group>
           )}
           {this.props.has_group_members && this.state.showExposureDateModal && (
-            <Form.Group className="mt-3">
+            <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
                 id="apply_to_group_cm_only"
@@ -133,7 +134,7 @@ class LastDateExposure extends React.Component {
             </Form.Group>
           )}
           {this.props.has_group_members && (
-            <Form.Group className="mt-2">
+            <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
                 id="apply_to_group"
@@ -158,6 +159,19 @@ class LastDateExposure extends React.Component {
           </Button>
         </Modal.Footer>
       </Modal>
+    );
+  }
+
+  createCEToggle() {
+    return (
+      <Form.Check
+        size="lg"
+        label="CONTINUOUS EXPOSURE"
+        id="continuous_exposure"
+        disabled={!this.props.patient.monitoring}
+        checked={this.state.continuous_exposure}
+        onChange={() => this.toggleContinuousMonitoringModal()}
+      />
     );
   }
 
@@ -204,14 +218,21 @@ class LastDateExposure extends React.Component {
             </Row>
             <Row className="pt-2">
               <Col>
-                <Form.Check
-                  size="lg"
-                  label="CONTINUOUS EXPOSURE"
-                  type="switch"
-                  id="continuous_exposure"
-                  checked={this.state.continuous_exposure === true || false}
-                  onChange={() => this.toggleContinuousMonitoringModal()}
-                />
+                {!this.props.patient.monitoring && (
+                  <OverlayTrigger
+                    key="tooltip-ot-ce"
+                    placement="left"
+                    overlay={
+                      <Tooltip id="tooltip-ce">
+                        Continuous Exposure cannot be toggled for records on the Closed line list. If this monitoree requires monitoring due to a Continuous
+                        Exposure, you may update this field after changing Monitoring Status to &quot;Actively Monitoring&quot;
+                      </Tooltip>
+                    }>
+                    <span className="d-inline-block">{this.createCEToggle()}</span>
+                  </OverlayTrigger>
+                )}
+                {this.props.patient.monitoring && <span className="d-inline-block">{this.createCEToggle()}</span>}
+                <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
               </Col>
             </Row>
           </Col>
