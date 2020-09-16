@@ -96,7 +96,7 @@ class CloseRecords extends React.Component {
               type="switch"
               id="apply_to_group"
               label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
-              checked={this.state.apply_to_group === true || false}
+              checked={this.state.apply_to_group}
               onChange={this.handleChange}
             />
           </Form.Group>

@@ -107,6 +107,13 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  continuousExposure: (
+    <div>
+      Allows a user to indicate that a monitoree has an ongoing exposure to one or more cases. If checked, the monitoring period will be extended indefinitely
+      until unchecked or the <i>Last Date of Exposure</i> is updated.
+    </div>
+  ),
+
   // REPORTS
 
   exposureNeedsReviewColumn: (
