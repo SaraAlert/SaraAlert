@@ -270,7 +270,7 @@ Example request using access token:
 Sara Alert has a script that generates demo data for testing provided in the source code [here](https://github.com/SaraAlert/SaraAlert/blob/master/lib/tasks/demo.rake). This demo data includes a read/write OAuth 2.0 application for testing this workflow. 
 
 Developers can use the same syntax to create a test application with a `jurisdiction_id`, a `user_id` and a `public_key_set`.  
-NOTE: The public_key_set *must* be serialized using `.to_yaml`. Make sure that the serialized version has stringified keys. If need be, `.deep_stringify_keys` can be called before calling `.to_yaml` on the public key set.
+NOTE: The public_key_set *must* be valid JSON object.
 
 Fortunately, there are many tools available and is easy to generate JWKS at https://mkjwk.org/ for the public key set, which also then be used to create a JWT at https://jwt.io.
 

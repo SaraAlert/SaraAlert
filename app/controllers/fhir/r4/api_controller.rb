@@ -63,7 +63,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     # Try to update the resource
     status_bad_request && return if updates.nil? || !resource.update(updates)
-    
+
     if resource_type == 'patient'
       # Create a history for the record update
       History.record_edit(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree updated via API.')
@@ -346,7 +346,7 @@ class Fhir::R4::ApiController < ActionController::API
     # The current resource owner check is to prevent unauthorized users from using it if the application happens to be registered for both workflows.
     elsif !current_resource_owner.present? && current_client_application.present?
       jurisdiction_id = current_client_application[:jurisdiction_id]
-      return if jurisdiction_id.nil? || !Jurisdiction.find_by(id: jurisdiction_id).present?
+      return if Jurisdiction.exists?(jurisdiction_id)
 
       Jurisdiction.find_by(id: jurisdiction_id).all_patients
       # If there is no associated resource owner or jurisdiction - nil.
