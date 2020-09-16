@@ -62,7 +62,7 @@ class MonitoringStatus extends React.Component {
     if (event?.target?.name && event.target.name === 'jurisdictionId') {
       // Jurisdiction is a weird case; the datalist and input work differently together
       this.setState({
-        message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + event.target.value + '".',
+        message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + event.target.value + '"',
         message_warning: this.state.assigned_user === '' ? '' : 'Please also consider removing or updating the assigned user if it is no longer applicable.',
         jurisdiction_path: event?.target?.value ? event.target.value : '',
         monitoring_reasons: null,
@@ -74,7 +74,7 @@ class MonitoringStatus extends React.Component {
         (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
       ) {
         this.setState({
-          message: 'assigned user from "' + this.state.original_assigned_user + '"to"' + event.target.value + '".',
+          message: 'assigned user from "' + this.state.original_assigned_user + '"to"' + event.target.value + '"',
           message_warning: '',
           assigned_user: event?.target?.value ? parseInt(event.target.value) : '',
           monitoring_reasons: null,
@@ -83,7 +83,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
       this.setState({
         showExposureRiskAssessmentModal: true,
-        message: 'exposure risk assessment to "' + event.target.value + '".',
+        message: 'exposure risk assessment to "' + event.target.value + '"',
         message_warning: '',
         exposure_risk_assessment: event?.target?.value ? event.target.value : '',
         monitoring_reasons: null,
@@ -91,7 +91,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
       this.setState({
         showMonitoringPlanModal: true,
-        message: 'monitoring plan to "' + event.target.value + '".',
+        message: 'monitoring plan to "' + event.target.value + '"',
         message_warning: '',
         monitoring_plan: event?.target?.value ? event.target.value : '',
         monitoring_reasons: null,
@@ -99,7 +99,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'pause_notifications') {
       this.setState({
         showNotificationsModal: true,
-        message: 'notification status to ' + (!this.state.pause_notifications ? 'paused.' : 'resumed.'),
+        message: 'notification status to ' + (!this.state.pause_notifications ? 'paused' : 'resumed'),
         message_warning: '',
         pause_notifications: !this.state.pause_notifications,
         monitoring_reasons: null,
@@ -108,7 +108,7 @@ class MonitoringStatus extends React.Component {
       if (this.state.patient.isolation) {
         this.setState({
           showPublicHealthActionModal: true,
-          message: 'latest public health action to "' + event.target.value + '".',
+          message: 'latest public health action to "' + event.target.value + '"',
           message_warning:
             'The monitoree will be moved to the "Records Requiring Review" line list if they meet a recovery definition or will remain on the "Reporting" or "Non-Reporting" line list as appropriate until a recovery definition is met.',
           public_health_action: event?.target?.value ? event.target.value : '',
@@ -117,7 +117,7 @@ class MonitoringStatus extends React.Component {
       } else {
         this.setState({
           showPublicHealthActionModal: true,
-          message: 'latest public health action to "' + event.target.value + '".',
+          message: 'latest public health action to "' + event.target.value + '"',
           message_warning:
             event.target.value === 'None'
               ? 'The monitoree will be moved back into the primary status line lists.'
@@ -129,7 +129,7 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'isolation_status') {
       this.setState({
         showIsolationModal: true,
-        message: 'workflow from the "' + this.state.isolation_status + '" workflow to the "' + event.target.value + '" workflow.',
+        message: 'workflow from the "' + this.state.isolation_status + '" workflow to the "' + event.target.value + '" workflow',
         message_warning:
           event.target.value === 'Isolation'
             ? 'This should only be done for cases you wish to monitor with Sara Alert to determine when they meet the recovery definition to discontinue isolation. The monitoree will be moved onto the Isolation workflow dashboard.'
@@ -141,9 +141,10 @@ class MonitoringStatus extends React.Component {
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
         showMonitoringStatusModal: true,
-        message: 'monitoring status to "' + event.target.value + '".',
-        message_warning: event.target.value === 'Not Monitoring' ? 'This record will be moved to the closed line list.' : '',
-        monitoring: event.target.value === 'Actively Monitoring' ? true : false,
+        message: 'monitoring status to "' + event.target.value + '"',
+        message_warning:
+          event.target.value === 'Not Monitoring' ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.' : '',
+        monitoring: event.target.value === 'Actively Monitoring',
         monitoring_status: event?.target?.value ? event.target.value : '',
         monitoring_reasons:
           event.target.value === 'Not Monitoring'
@@ -162,6 +163,12 @@ class MonitoringStatus extends React.Component {
               ]
             : null,
       });
+    } else if (event?.target?.name && event.target.name === 'apply_to_group') {
+      let applyToGroup = event.target.id === 'apply_to_group_yes';
+      this.setState({ [event.target.name]: applyToGroup });
+    } else if (event?.target?.name && event.target.name === 'apply_to_group_cm_only') {
+      let applyToGroup = event.target.id === 'apply_to_group_cm_only_yes';
+      this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
       this.setState({ [event.target.id]: event?.target?.value ? value : '' });
@@ -223,7 +230,7 @@ class MonitoringStatus extends React.Component {
   toggleJurisdictionModal() {
     let current = this.state.showJurisdictionModal;
     this.setState({
-      message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + this.state.jurisdiction_path + '".',
+      message: 'jurisdiction from "' + this.props.jurisdictionPaths[this.state.original_jurisdiction_id] + '" to "' + this.state.jurisdiction_path + '"',
       showJurisdictionModal: !current,
       jurisdiction_path: current ? this.props.jurisdictionPaths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
       apply_to_group: false,
@@ -234,7 +241,7 @@ class MonitoringStatus extends React.Component {
   toggleAssignedUserModal() {
     let current = this.state.showassignedUserModal;
     this.setState({
-      message: 'assigned user from "' + this.state.original_assigned_user + '" to "' + this.state.assigned_user + '".',
+      message: 'assigned user from "' + this.state.original_assigned_user + '" to "' + this.state.assigned_user + '"',
       showassignedUserModal: !current,
       assigned_user: current ? this.state.original_assigned_user : this.state.assigned_user,
       apply_to_group: false,
@@ -270,7 +277,7 @@ class MonitoringStatus extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           comment: true,
-          monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
+          monitoring: this.state.monitoring_status === 'Actively Monitoring',
           exposure_risk_assessment: this.state.exposure_risk_assessment,
           monitoring_plan: this.state.monitoring_plan,
           public_health_action: this.state.public_health_action,
@@ -318,8 +325,33 @@ class MonitoringStatus extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            You are about to change this monitoree&apos;s {this.state.message} {this.state.message_warning && <b>{this.state.message_warning}</b>}
+            Are you sure you want to change {this.state.message}? {this.state.message_warning && <b>{this.state.message_warning}</b>}
           </p>
+          {this.props.has_group_members && (
+            <React.Fragment>
+              <p className="mb-2">Please select the records that you would like to apply this change to:</p>
+              <Form.Group className="px-4">
+                <Form.Check
+                  type="radio"
+                  className="mb-1"
+                  name="apply_to_group"
+                  id="apply_to_group_no"
+                  label="This monitoree only"
+                  onChange={this.handleChange}
+                  checked={!this.state.apply_to_group}
+                />
+                <Form.Check
+                  type="radio"
+                  className="mb-3"
+                  name="apply_to_group"
+                  id="apply_to_group_yes"
+                  label="This monitoree and all household members"
+                  onChange={this.handleChange}
+                  checked={this.state.apply_to_group}
+                />
+              </Form.Group>
+            </React.Fragment>
+          )}
           {this.state.monitoring_reasons && (
             <Form.Group>
               <Form.Label>Please select reason for status change:</Form.Label>
@@ -335,42 +367,54 @@ class MonitoringStatus extends React.Component {
               </Form.Control>
             </Form.Group>
           )}
-          {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && (
-            <Form.Group>
-              <Form.Check
-                type="switch"
-                id="apply_to_group_cm_only"
-                label='Update Last Date of Exposure for all household members with Continuous Exposure whose Monitoring Status is "Actively Monitoring" in the Exposure workflow'
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group_cm_only}
-              />
-            </Form.Group>
-          )}
-          {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && this.state.apply_to_group_cm_only && (
-            <Form.Group>
-              <Form.Label className="nav-input-label">LAST DATE OF EXPOSURE</Form.Label>
-              <DateInput
-                id="apply_to_group_cm_only_date"
-                date={this.state.apply_to_group_cm_only_date}
-                onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
-                placement="bottom"
-              />
-            </Form.Group>
-          )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
-          {this.props.has_group_members && (
-            <Form.Group className="mt-2">
-              <Form.Check
-                type="switch"
-                id="apply_to_group"
-                label="Apply this change to the entire household that this monitoree is responsible for"
-                onChange={this.handleChange}
-                checked={this.state.apply_to_group}
-              />
-            </Form.Group>
+          {this.props.isolation && this.state.monitoring_reasons && this.props.in_a_group && (
+            <React.Fragment>
+              <hr />
+              <p className="mb-2">
+                Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure toggled ON and are being
+                monitored in the Exposure Workflow?
+              </p>
+              <Form.Group className="px-4">
+                <Form.Check
+                  type="radio"
+                  className="mb-2"
+                  name="apply_to_group_cm_only"
+                  id="apply_to_group_cm_only_no"
+                  label="No, household members still have continuous exposure to another case"
+                  onChange={this.handleChange}
+                  checked={!this.state.apply_to_group_cm_only}
+                />
+                <Form.Check>
+                  <Form.Check.Label>
+                    <Form.Check.Input
+                      type="radio"
+                      name="apply_to_group_cm_only"
+                      id="apply_to_group_cm_only_yes"
+                      onChange={this.handleChange}
+                      checked={this.state.apply_to_group_cm_only}
+                    />
+                    <p className="mb-1">Yes, household members are no longer being exposed to a case</p>
+                    {this.state.apply_to_group_cm_only && (
+                      <React.Fragment>
+                        <p className="mb-2">
+                          Update their <b>Last Date of Exposure</b> to:
+                        </p>
+                        <DateInput
+                          id="apply_to_group_cm_only_date"
+                          date={this.state.apply_to_group_cm_only_date}
+                          onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
+                          placement="bottom"
+                        />
+                      </React.Fragment>
+                    )}
+                  </Form.Check.Label>
+                </Form.Check>
+              </Form.Group>
+            </React.Fragment>
           )}
         </Modal.Body>
         <Modal.Footer>
