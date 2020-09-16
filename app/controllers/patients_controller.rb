@@ -318,7 +318,7 @@ class PatientsController < ApplicationController
     if params.permit(:apply_to_group)[:apply_to_group]
       current_user.get_patient(patient.responder_id)&.dependents&.each do |member|
         update_fields(member, params)
-        next unless params[:comment]
+        next unless params[:comment] && member[:id] != patient[:id]
 
         update_history(member, params)
       end
@@ -337,7 +337,7 @@ class PatientsController < ApplicationController
           end
           member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
         end
-        next unless params[:comment]
+        next unless params[:comment] && member[:id] != patient[:id]
 
         update_history(member, params)
       end
