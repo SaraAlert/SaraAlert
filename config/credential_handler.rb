@@ -1,5 +1,4 @@
 require 'jwt'
-require "safe_yaml/load"
 
 # This module is used in the Doorkeeper initializer for extracting client credentials upon
 # access token request.
@@ -49,8 +48,7 @@ module CredentialHandler
     
     # Find the registered public key set for this client application to decode the JWT assertion.
     if client_application[:public_key_set].present?
-      # Public key set is a stored serialized object that needs to be loaded first.
-      public_key_set = HashWithIndifferentAccess.new(SafeYAML.load(client_application[:public_key_set]))
+      public_key_set = HashWithIndifferentAccess.new(client_application[:public_key_set])
       raise_invalid_JWK_error unless public_key_set.present? && public_key_set[:keys].present?
     else
       raise_invalid_JWK_error
