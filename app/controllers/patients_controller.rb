@@ -407,7 +407,7 @@ class PatientsController < ApplicationController
   def reset_symptom_onset(content, patient, initiator)
     # Set user-defined symptom onset to be false and set the symptom onset date based on latest symptomatic report
     content[:user_defined_symptom_onset] = false
-    content[:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at).to_date
+    content[:symptom_onset] = patient.assessments.where(symptomatic: true).minimum(:created_at)&.to_date
 
     # Log system onset change in history if initiated by system (user initiated changes are logged separately)
     return if content[:symptom_onset] == patient[:symptom_onset] || initiator != :system
