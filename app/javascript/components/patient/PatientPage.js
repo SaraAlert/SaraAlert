@@ -35,7 +35,7 @@ class PatientPage extends React.Component {
           <Card.Body>
             <Patient
               details={{ ...this.props.patient }}
-              jurisdictionPath={this.props.jurisdictionPath.join(' ')}
+              jurisdictionPath={this.props.jurisdictionPath.join(', ')}
               groupMembers={this.props.group_members || []}
               hideBody={this.state.hideBody}
               authenticity_token={this.props.authenticity_token}
