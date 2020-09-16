@@ -144,7 +144,7 @@ class MonitoringStatus extends React.Component {
         message: 'monitoring status to "' + event.target.value + '"',
         message_warning:
           event.target.value === 'Not Monitoring' ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.' : '',
-        monitoring: event.target.value === 'Actively Monitoring' ? true : false,
+        monitoring: event.target.value === 'Actively Monitoring',
         monitoring_status: event?.target?.value ? event.target.value : '',
         monitoring_reasons:
           event.target.value === 'Not Monitoring'
@@ -164,10 +164,10 @@ class MonitoringStatus extends React.Component {
             : null,
       });
     } else if (event?.target?.name && event.target.name === 'apply_to_group') {
-      let applyToGroup = event.target.id === 'apply_to_group_yes' ? true : false;
+      let applyToGroup = event.target.id === 'apply_to_group_yes';
       this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.name && event.target.name === 'apply_to_group_cm_only') {
-      let applyToGroup = event.target.id === 'apply_to_group_cm_only_yes' ? true : false;
+      let applyToGroup = event.target.id === 'apply_to_group_cm_only_yes';
       this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -277,7 +277,7 @@ class MonitoringStatus extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           comment: true,
-          monitoring: this.state.monitoring_status === 'Actively Monitoring' ? true : false,
+          monitoring: this.state.monitoring_status === 'Actively Monitoring',
           exposure_risk_assessment: this.state.exposure_risk_assessment,
           monitoring_plan: this.state.monitoring_plan,
           public_health_action: this.state.public_health_action,
