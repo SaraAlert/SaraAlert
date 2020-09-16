@@ -83,6 +83,7 @@ patient_1_assessment_1_condition:
   created_at: <%= 38.days.ago %>
   updated_at: <%= 32.days.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_1_assessment_2_condition:
   id: 1002
@@ -90,6 +91,7 @@ patient_1_assessment_2_condition:
   created_at: <%= 36.days.ago %>
   updated_at: <%= 32.days.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_2_assessment_1_condition:
   id: 1003
@@ -97,6 +99,7 @@ patient_2_assessment_1_condition:
   created_at: <%= 38.days.ago %>
   updated_at: <%= 32.days.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_2_assessment_2_condition:
   id: 1004
@@ -104,6 +107,7 @@ patient_2_assessment_2_condition:
   created_at: <%= 36.days.ago %>
   updated_at: <%= 32.days.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_3_assessment_1_condition:
   id: 1005
@@ -111,6 +115,7 @@ patient_3_assessment_1_condition:
   created_at: <%= 23.days.ago %>
   updated_at: <%= 23.days.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_3_assessment_2_condition:
   id: 1006
@@ -118,6 +123,7 @@ patient_3_assessment_2_condition:
   created_at: <%= 23.days.ago %>
   updated_at: <%= 23.days.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_4_assessment_1_condition:
   id: 1007
@@ -125,6 +131,7 @@ patient_4_assessment_1_condition:
   created_at: <%= 6.hours.ago %>
   updated_at: <%= 6.hours.ago %>
   threshold_condition_id: 44
+  threshold_condition_hash: 'e5a3d6462ea5288c75e273cd3246432f1d3ec4534692148d2a913110555287fa'
   type: 'ReportedCondition'
 patient_5_assessment_1_condition:
   id: 1008
@@ -132,6 +139,7 @@ patient_5_assessment_1_condition:
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_8_assessment_1_condition:
   id: 1009
@@ -139,6 +147,7 @@ patient_8_assessment_1_condition:
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_8_assessment_2_condition:
   id: 1010
@@ -146,6 +155,7 @@ patient_8_assessment_2_condition:
   created_at: <%= 5.hours.ago %>
   updated_at: <%= 5.hours.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
 patient_9_assessment_1_condition:
   id: 1011
@@ -153,6 +163,7 @@ patient_9_assessment_1_condition:
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   threshold_condition_id: 10
+  threshold_condition_hash: 'b1c270d7119f39a8f71cd83be6a76ba77951845df41ed54cd8243d0794e6ecf4'
   type: 'ReportedCondition'
 patient_9_assessment_2_condition:
   id: 1012
@@ -160,6 +171,7 @@ patient_9_assessment_2_condition:
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   threshold_condition_id: 10
+  threshold_condition_hash: 'b1c270d7119f39a8f71cd83be6a76ba77951845df41ed54cd8243d0794e6ecf4'
   type: 'ReportedCondition'
 patient_9_assessment_3_condition:
   id: 1013
@@ -167,6 +179,7 @@ patient_9_assessment_3_condition:
   created_at: <%= 22.days.ago %>
   updated_at: <%= 22.days.ago %>
   threshold_condition_id: 10
+  threshold_condition_hash: 'b1c270d7119f39a8f71cd83be6a76ba77951845df41ed54cd8243d0794e6ecf4'
   type: 'ReportedCondition'
 patient_9_assessment_4_condition:
   id: 1014
@@ -174,6 +187,7 @@ patient_9_assessment_4_condition:
   created_at: <%= 10.hours.ago %>
   updated_at: <%= 10.hours.ago %>
   threshold_condition_id: 10
+  threshold_condition_hash: 'b1c270d7119f39a8f71cd83be6a76ba77951845df41ed54cd8243d0794e6ecf4'
   type: 'ReportedCondition'
 patient_10_assessment_1_condition:
   id: 1015
@@ -181,6 +195,7 @@ patient_10_assessment_1_condition:
   created_at: <%= 26.days.ago %>
   updated_at: <%= 26.days.ago %>
   threshold_condition_id: 14
+  threshold_condition_hash: 'f6c5c310f2626d43bd8cecdc53ad60536fca56b28d75d674ee66d3e63b8aff12'
   type: 'ReportedCondition'
 patient_10_assessment_2_condition:
   id: 1016
@@ -188,6 +203,7 @@ patient_10_assessment_2_condition:
   created_at: <%= 24.days.ago %>
   updated_at: <%= 24.days.ago %>
   threshold_condition_id: 14
+  threshold_condition_hash: 'f6c5c310f2626d43bd8cecdc53ad60536fca56b28d75d674ee66d3e63b8aff12'
   type: 'ReportedCondition'
 patient_10_assessment_3_condition:
   id: 1017
@@ -195,6 +211,7 @@ patient_10_assessment_3_condition:
   created_at: <%= 18.hours.ago %>
   updated_at: <%= 18.hours.ago %>
   threshold_condition_id: 14
+  threshold_condition_hash: 'f6c5c310f2626d43bd8cecdc53ad60536fca56b28d75d674ee66d3e63b8aff12'
   type: 'ReportedCondition'
 patient_50_assessment_1_condition:
   id: 1018
@@ -202,4 +219,5 @@ patient_50_assessment_1_condition:
   created_at: <%= 1.hour.ago %>
   updated_at: <%= 1.hour.ago %>
   threshold_condition_id: 8
+  threshold_condition_hash: '6287ac3ebfc5ee8404cff93d96c9b06567767e2903deec22047f34083666f8df'
   type: 'ReportedCondition'
