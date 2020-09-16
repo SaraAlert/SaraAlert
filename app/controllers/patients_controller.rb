@@ -145,9 +145,7 @@ class PatientsController < ApplicationController
     if patient.save
 
       # Send enrollment notification only to responders
-      if patient.self_reporter_or_proxy?
-        patient.send_enrollment_notification
-      end
+      patient.send_enrollment_notification if patient.self_reporter_or_proxy?
 
       # Create a history for the enrollment
       History.enrollment(patient: patient, created_by: current_user.email)
