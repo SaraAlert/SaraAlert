@@ -299,9 +299,7 @@ class PatientsController < ApplicationController
     patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
-      # Also updates jurisdiction if required
-      update_fields(patient, params)
-      update_history(patient, params)
+      update_fields(patient, params, false, true)
     end
   end
 
@@ -312,43 +310,33 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
-    update_fields(patient, params)
+    update_fields(patient, params, false, true)
 
     # Do we need to propagate to household?
     if params.permit(:apply_to_group)[:apply_to_group]
       current_user.get_patient(patient.responder_id)&.dependents&.each do |member|
-        update_fields(member, params)
-        next unless params[:comment] && member[:id] != patient[:id]
-
-        update_history(member, params)
+        update_fields(member, params, true, member[:id] != patient[:id])
       end
     end
 
     # Do we need to propagate to household where continuous_exposure is true?
-    if params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only]
-      # Scope lookup
-      ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
-        update_fields(member, params)
-        if params[:apply_to_group_cm_only_date].present?
-          lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
-          if member[:continuous_exposure]
-            History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
-            longer being exposed to a case.')
-          end
-          member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
-        end
-        next unless params[:comment] && member[:id] != patient[:id]
+    return unless params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only]
 
-        update_history(member, params)
+    # Scope lookup
+    ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
+      update_fields(member, params, true)
+      next unless params[:apply_to_group_cm_only_date].present?
+
+      lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
+      if member[:continuous_exposure]
+        History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
+        longer being exposed to a case.')
       end
+      member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
     end
-
-    return unless params[:comment]
-
-    update_history(patient, params)
   end
 
-  def update_fields(patient, params)
+  def update_fields(patient, params, is_dependent, log_to_history)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
     params_to_update = if diff_state.nil?
@@ -356,6 +344,16 @@ class PatientsController < ApplicationController
                        else
                          status_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
                        end
+
+    # Update history before fields are changed
+    if log_to_history
+      diff_state.each do |field|
+        if field == :last_date_of_exposure
+          History.last_date_of_exposure(patient: patient, created_by: current_user.email, old_value: patient[field.to_sym], new_value: params[field.to_sym],
+                                        is_dependent: is_dependent)
+        end
+      end
+    end
 
     # If the monitoree record was closed, set continuous exposure to be false and set the closed at time.
     if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
@@ -427,12 +425,6 @@ class PatientsController < ApplicationController
                 'System changed symptom onset date. This allows the system to show monitoree on appropriate line list based on daily reports.'
               end
     History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
-  end
-
-  def update_history(patient, params)
-    comment = params.permit(:message)[:message] unless params.permit(:message)[:message].blank?
-    comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
-    History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
   end
 
   def clear_assessments

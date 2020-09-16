@@ -107,6 +107,19 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment)
   end
 
+  def self.last_date_of_exposure(patient: nil, created_by: 'Sara Alert System', old_value: nil, new_value: nil, is_dependent: false)
+    return if old_value == new_value
+
+    comment = if old_value.present? && new_value.present?
+                "User changed last date of exposure from #{old_value.to_date.strftime('%m/%d/%Y')} to #{new_value.to_date.strftime('%m/%d/%Y')}."
+              elsif old_value.present? && new_value.nil?
+                "User cleared last date of exposure from #{old_value.to_date.strftime('%m/%d/%Y')} to blank."
+              elsif old_value.nil? && new_value.present?
+                "User changed last date of exposure from blank to #{new_value.to_date.strftime('%m/%d/%Y')}."
+              end
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
+  end
+
   # Information about this history
   def details
     {
