@@ -5,7 +5,7 @@ import { mockPatient1 } from '../../mocks/mockPatients'
 
 const newEnrollmentState = {
   isolation: false,
-  patient: {},
+  patient: { },
   propagatedFields: {}
 }
 
@@ -29,7 +29,7 @@ const requiredStrings = [
   'NNDSS LOC. REC. ID/CASE ID'
 ]
 
-describe('Identification', () => {
+describe('Monitoree Identification', () => {
   it('Properly renders all main components', () => {
     const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
     requiredStrings.forEach(requiredString => {
@@ -53,12 +53,12 @@ describe('Identification', () => {
     expect(wrapper.find('#user_defined_id_nndss').instance().value).toBeFalsy()
     wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
       expect(wrapper.find('#first_name').instance().value).toEqual(mockPatient1.first_name)
-      expect(wrapper.find('#middle_name').instance().value).toEqual(mockPatient1.middle_name)
+      expect(wrapper.find('#middle_name').instance().value).toBeFalsy()
       expect(wrapper.find('#last_name').instance().value).toEqual(mockPatient1.last_name)
       expect(wrapper.find('#age').instance().value).toEqual(mockPatient1.age.toString()) // the input casts it to a string
       expect(wrapper.find('#sex').instance().value).toEqual(mockPatient1.sex)
-      expect(wrapper.find('#gender_identity').instance().value).toEqual(mockPatient1.gender_identity)
-      expect(wrapper.find('#sexual_orientation').instance().value).toEqual(mockPatient1.sexual_orientation)
+      expect(wrapper.find('#gender_identity').instance().value).toBeFalsy()
+      expect(wrapper.find('#sexual_orientation').instance().value).toBeFalsy()
       expect(wrapper.find('#ethnicity').instance().value).toEqual(mockPatient1.ethnicity )
       expect(wrapper.find('#nationality').instance().value).toEqual(mockPatient1.nationality)
       expect(wrapper.find('#user_defined_id_statelocal').instance().value).toEqual(mockPatient1.user_defined_id_statelocal)

@@ -25,7 +25,6 @@ const requiredStrings = [
 ]
 
 describe('Monitoree Address', () => {
-  // There's very little state-dependent code in this component
   it('Properly renders all main components', () => {
     const wrapper = mount(<Address goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
     requiredStrings.forEach(requiredString => {

@@ -375,13 +375,13 @@ class Identification extends React.Component {
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
-                  <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.patient.white} onChange={this.handleChange} />
+                  <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.patient.white || false} onChange={this.handleChange} />
                   <Form.Check
                     className="pt-2"
                     type="switch"
                     id="black_or_african_american"
                     label="BLACK OR AFRICAN AMERICAN"
-                    checked={this.state.current.patient.black_or_african_american}
+                    checked={this.state.current.patient.black_or_african_american || false}
                     onChange={this.handleChange}
                   />
                   <Form.Check
@@ -389,16 +389,23 @@ class Identification extends React.Component {
                     type="switch"
                     id="american_indian_or_alaska_native"
                     label="AMERICAN INDIAN OR ALASKA NATIVE"
-                    checked={this.state.current.patient.american_indian_or_alaska_native}
+                    checked={this.state.current.patient.american_indian_or_alaska_native || false}
                     onChange={this.handleChange}
                   />
-                  <Form.Check className="pt-2" type="switch" id="asian" label="ASIAN" checked={this.state.current.patient.asian} onChange={this.handleChange} />
+                  <Form.Check
+                    className="pt-2"
+                    type="switch"
+                    id="asian"
+                    label="ASIAN"
+                    checked={this.state.current.patient.asian || false}
+                    onChange={this.handleChange}
+                  />
                   <Form.Check
                     className="pt-2"
                     type="switch"
                     id="native_hawaiian_or_other_pacific_islander"
                     label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER"
-                    checked={this.state.current.patient.native_hawaiian_or_other_pacific_islander}
+                    checked={this.state.current.patient.native_hawaiian_or_other_pacific_islander || false}
                     onChange={this.handleChange}
                   />
                 </Form.Group>
