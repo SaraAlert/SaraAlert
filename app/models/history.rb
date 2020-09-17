@@ -107,16 +107,24 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment)
   end
 
-  def self.last_date_of_exposure(patient: nil, created_by: 'Sara Alert System', old_value: nil, new_value: nil, is_dependent: false)
+  def self.last_date_of_exposure(patient: nil, created_by: 'Sara Alert System', household: :patient, propagation: :none, old_value: nil, new_value: nil)
     return if old_value == new_value
 
-    comment = if old_value.present? && new_value.present?
-                "User changed last date of exposure from #{old_value.to_date.strftime('%m/%d/%Y')} to #{new_value.to_date.strftime('%m/%d/%Y')}."
-              elsif old_value.present? && new_value.nil?
-                "User cleared last date of exposure from #{old_value.to_date.strftime('%m/%d/%Y')} to blank."
-              elsif old_value.nil? && new_value.present?
-                "User changed last date of exposure from blank to #{new_value.to_date.strftime('%m/%d/%Y')}."
-              end
+    formatted_old_value = old_value&.to_date&.strftime('%m/%d/%Y')
+    formatted_new_value = new_value&.to_date&.strftime('%m/%d/%Y')
+    comment = compose_message(formatted_old_value, formatted_new_value, household, propagation, 'Last Date of Exposure', 'date')
+
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
+  end
+
+  def self.continuous_exposure(patient: nil, created_by: 'Sara Alert System', household: :patient, propagation: :none, old_value: nil, new_value: nil)
+    return if old_value == new_value
+
+    creator = household == :patient ? 'User' : 'System'
+    field = 'Continuous Exposure'
+    formatted_new_value = new_value ? 'on' : 'off'
+    comment = "#{creator} turned #{formatted_new_value} #{field}#{compose_explanation(household, propagation, field, 'field')}"
+
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
   end
 
@@ -138,5 +146,29 @@ class History < ApplicationRecord
     patient = patient.id if patient.respond_to?(:id)
 
     History.create!(created_by: created_by, comment: comment, patient_id: patient, history_type: type)
+  end
+
+  private_class_method def self.compose_message(formatted_old_value, formatted_new_value, household, propagation, field, field_type)
+    creator = household == :patient ? 'User' : 'System'
+    verb = formatted_new_value.nil? ? 'cleared' : 'changed'
+    from_text = formatted_old_value.nil? ? 'blank' : formatted_old_value
+    to_text = formatted_new_value.nil? ? 'blank' : formatted_new_value
+
+    "#{creator} #{verb} #{field} from #{from_text} to #{to_text}#{compose_explanation(household, propagation, field, field_type)}."
+  end
+
+  private_class_method def self.compose_explanation(household, propagation, field, field_type)
+    explanation = ''
+    explanation = " and chose to update this #{field_type} for all household members" if household == :patient && propagation == :group
+    explanation = " and chose to update this #{field_type} for household members under continuous exposure" if household == :patient && propagation == :group_cm
+    if household != :patient && propagation == :group
+      explanation = " because User updated #{field} for another member in this monitoree's household and chose to update this #{field_type} for all household
+                      members"
+    end
+    if household != :patient && propagation == :group_cm
+      explanation = " because User updated #{field} for another member in this monitoree's household and chose to update this #{field_type} for household
+                      members under continuous exposure"
+    end
+    explanation
   end
 end

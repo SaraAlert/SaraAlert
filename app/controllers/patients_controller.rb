@@ -299,7 +299,7 @@ class PatientsController < ApplicationController
     patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
-      update_fields(patient, params, false, true)
+      update_fields(patient, params, :patient, :none) # separate dependents in the future
     end
   end
 
@@ -310,33 +310,29 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
-    update_fields(patient, params, false, true)
-
-    # Do we need to propagate to household?
-    if params.permit(:apply_to_group)[:apply_to_group]
-      current_user.get_patient(patient.responder_id)&.dependents&.each do |member|
-        update_fields(member, params, true, member[:id] != patient[:id])
+    if params.permit(:apply_to_group)[:apply_to_group] # update patient and all group members
+      ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
+        update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
       end
-    end
+    elsif params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only] # update patient and group members only with continuous exposure on
+      ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
+        update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group_cm)
+        next unless params[:apply_to_group_cm_only_date].present?
 
-    # Do we need to propagate to household where continuous_exposure is true?
-    return unless params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only]
-
-    # Scope lookup
-    ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
-      update_fields(member, params, true)
-      next unless params[:apply_to_group_cm_only_date].present?
-
-      lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
-      if member[:continuous_exposure]
-        History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
-        longer being exposed to a case.')
+        # turn off continuous exposure if LDE is updated
+        lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
+        if member[:continuous_exposure]
+          History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
+          longer being exposed to a case.')
+        end
+        member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
       end
-      member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
+    else # update patient
+      update_fields(patient, params, :patient, :none)
     end
   end
 
-  def update_fields(patient, params, is_dependent, log_to_history)
+  def update_fields(patient, params, household, propagation)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
     params_to_update = if diff_state.nil?
@@ -346,14 +342,7 @@ class PatientsController < ApplicationController
                        end
 
     # Update history before fields are changed
-    if log_to_history
-      diff_state.each do |field|
-        if field == :last_date_of_exposure
-          History.last_date_of_exposure(patient: patient, created_by: current_user.email, old_value: patient[field.to_sym], new_value: params[field.to_sym],
-                                        is_dependent: is_dependent)
-        end
-      end
-    end
+    update_history(patient, params, household, propagation)
 
     # If the monitoree record was closed, set continuous exposure to be false and set the closed at time.
     if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
@@ -401,6 +390,20 @@ class PatientsController < ApplicationController
       end
     end
     patient.save
+  end
+
+  def update_history(patient, params, household, propagation)
+    diff_state = params[:diffState]&.map(&:to_sym)
+
+    if diff_state.include?(:last_date_of_exposure)
+      History.last_date_of_exposure(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
+                                    old_value: patient[:last_date_of_exposure], new_value: params[:last_date_of_exposure])
+    end
+
+    if diff_state.include?(:continuous_exposure)
+      History.continuous_exposure(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
+                                  old_value: patient[:continuous_exposure], new_value: params[:continuous_exposure])
+    end
   end
 
   def reset_symptom_onset(content, patient, initiator)
