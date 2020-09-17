@@ -269,6 +269,7 @@ const mockPatient2 = {
     travel_related_notes: null,
     travel_to_affected_country_or_area: false,
     updated_at: "2020-09-13T20:32:02.000Z",
+    user_defined_id: "00000-1",
     user_defined_id_cdc: "4677015425",
     user_defined_id_nndss: "38966610-6",
     user_defined_id_statelocal: "EX-771721",

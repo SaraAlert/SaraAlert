@@ -21,7 +21,7 @@ describe('PatientPage properly renders', () => {
     });
 
     it('edit details href', () => {
-        expect(wrapper.find('#patient-info-header a').exists()).toBeTruthy();
+        expect(wrapper.find('#patient-info-header a').prop('href')).toEqual('undefined/patients/17/edit');
     });
 
     it('expand hamburger menu', () => {
@@ -30,6 +30,16 @@ describe('PatientPage properly renders', () => {
 
     it('child component Patient', () => {
         expect(wrapper.containsMatchingElement(<Patient />)).toBeTruthy();
+    });
+});
+
+// this block gets run with the above block, just has a different wrapper
+describe('PatientPage properly renders', () => {
+    let wrapper = shallow(<PatientPage patient_id="EX-771721" patient={mockPatient2} current_user={mockUser1} group_members={groupMembers} hideBody={true}
+        jurisdictionPath="USA, State 1, County 2" dashboardUrl="/public_health" authenticity_token={authyToken} />);
+    
+    it('card header title with user defined id', () => {
+        expect(wrapper.find('#patient-info-header').text()).toEqual('Monitoree Details (ID: 00000-1) (edit details)');
     });
 });
 
@@ -47,6 +57,3 @@ describe('clicking card header', () => {
         expect(wrapper.state('hideBody')).toBeTruthy();
     });
 });
-
-// user definded id stuff
-// clicking edit details
