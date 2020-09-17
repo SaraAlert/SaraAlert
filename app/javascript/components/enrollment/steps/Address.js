@@ -14,12 +14,9 @@ class Address extends React.Component {
       // When viewing existing patients, the `monitored_address_state` needs to be reverse mapped back to the abbreviation
       this.state.current.patient.monitored_address_state = stateOptions.find(state => state.name === this.props.currentState.monitored_address_state)?.abbrv;
     }
-    this.handleChange = this.handleChange.bind(this);
-    this.whereMonitoredSameAsHome = this.whereMonitoredSameAsHome.bind(this);
-    this.validate = this.validate.bind(this);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
@@ -32,9 +29,9 @@ class Address extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
-  }
+  };
 
-  whereMonitoredSameAsHome() {
+  whereMonitoredSameAsHome = () => {
     let current = this.state.current;
     this.setState(
       {
@@ -55,9 +52,9 @@ class Address extends React.Component {
         this.props.setEnrollmentState({ ...this.state.current });
       }
     );
-  }
+  };
 
-  validate(callback) {
+  validate = callback => {
     let self = this;
     if (this.state.selectedTab === 'domestic') {
       schemaDomestic
@@ -98,7 +95,7 @@ class Address extends React.Component {
           }
         });
     }
-  }
+  };
 
   render() {
     return (
@@ -218,7 +215,12 @@ class Address extends React.Component {
                     <Form.Group as={Col} className="my-auto">
                       <h5>
                         Address at Destination in USA Where Monitored
-                        <Button size="md" variant="outline-primary" className="ml-4 btn-square px-3" onClick={this.whereMonitoredSameAsHome}>
+                        <Button
+                          id="copy_home_address"
+                          size="md"
+                          variant="outline-primary"
+                          className="ml-4 btn-square px-3"
+                          onClick={this.whereMonitoredSameAsHome}>
                           Copy from Home Address
                         </Button>
                       </h5>

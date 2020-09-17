@@ -24,17 +24,13 @@ class Identification extends React.Component {
       modified: {},
       languageOptions: this.getLanguageOptions(),
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleDateChange = this.handleDateChange.bind(this);
-    this.handleLanguageChange = this.handleLanguageChange.bind(this);
-    this.validate = this.validate.bind(this);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    let self = this;
+    const self = this;
     event.persist();
     this.setState(
       {
@@ -45,7 +41,7 @@ class Identification extends React.Component {
         self.props.setEnrollmentState({ ...self.state.modified });
       }
     );
-  }
+  };
 
   handleWorkflowChange = event => {
     const value = event.value;
@@ -66,8 +62,8 @@ class Identification extends React.Component {
 
   getWorkflowValue = () => (this.state.current.isolation ? WORKFLOW_OPTIONS[1] : WORKFLOW_OPTIONS[0]);
 
-  handleDateChange(field, date) {
-    let self = this;
+  handleDateChange = (field, date) => {
+    const self = this;
     this.setState(
       state => {
         return {
@@ -97,9 +93,9 @@ class Identification extends React.Component {
         );
       }
     );
-  }
+  };
 
-  handleLanguageChange(languageType, event) {
+  handleLanguageChange = (languageType, event) => {
     const value = event.value;
     const current = this.state.current;
     const modified = this.state.modified;
@@ -113,10 +109,10 @@ class Identification extends React.Component {
         self.props.setEnrollmentState({ ...self.state.modified });
       }
     );
-  }
+  };
 
-  validate(callback) {
-    let self = this;
+  validate = callback => {
+    const self = this;
     schema
       .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
@@ -135,7 +131,7 @@ class Identification extends React.Component {
           self.setState({ errors: issues });
         }
       });
-  }
+  };
 
   getLanguageOptions() {
     const langOptions = supportedLanguages.languages.map(lang => {
@@ -146,11 +142,11 @@ class Identification extends React.Component {
     return langOptions;
   }
 
-  getLanguageValue(language) {
+  getLanguageValue = language => {
     return this.state.languageOptions.find(lang => lang.value === language);
-  }
+  };
 
-  renderLanguageSupportMessage(selectedLanguage, languageType) {
+  renderLanguageSupportMessage = (selectedLanguage, languageType) => {
     if (selectedLanguage) {
       const languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
 
@@ -206,7 +202,7 @@ class Identification extends React.Component {
         }
       }
     }
-  }
+  };
 
   render() {
     const cursorPointerStyle = {
