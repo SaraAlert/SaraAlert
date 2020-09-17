@@ -140,6 +140,23 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
+  def self.case_status(history)
+    field = {
+      name: 'Case Status',
+      old_value: history[:patient][:case_status],
+      new_value: history[:params][:case_status]
+    }
+    return if field[:old_value] == field[:new_value]
+
+    if !history[:params][:monitoring].nil? && !history[:params][:monitoring]
+      history[:note] = ', and chose to "End Monitoring"'
+    elsif !history[:patient][:isolation].present? && history[:params][:isolation].present?
+      history[:note] = ', and chose to "Continue Monitoring in Isolation Workflow"'
+    end
+
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
+  end
+
   def self.public_health_action(history)
     field = {
       name: 'Public Health Action',
@@ -167,6 +184,17 @@ class History < ApplicationRecord
       name: 'Assigned User',
       old_value: history[:patient][:assigned_user],
       new_value: history[:params][:assigned_user]
+    }
+    return if field[:old_value] == field[:new_value]
+
+    create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
+  end
+
+  def self.pause_notifications(history)
+    field = {
+      name: 'notification status',
+      old_value: history[:patient][:pause_notifications] ? 'paused' : 'resumed',
+      new_value: history[:params][:pause_notifications] ? 'paused' : 'resumed'
     }
     return if field[:old_value] == field[:new_value]
 
@@ -208,7 +236,6 @@ class History < ApplicationRecord
     return if field[:old_value] == field[:new_value]
 
     creator = history[:household] == :patient ? 'User' : 'System'
-    field_name = 'Continuous Exposure'
     formatted_new_value = new_value ? 'on' : 'off'
     comment = "#{creator} turned #{formatted_new_value} #{field}#{compose_explanation(history, field)}"
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
@@ -254,6 +281,7 @@ class History < ApplicationRecord
 
     comment = "#{creator} #{verb} #{field[:name]} from #{from_text} to #{to_text}"
     comment += compose_explanation(history, field)
+    comment += history[:note] unless history[:note].blank?
     comment += '.'
     comment += " Reason: #{history[:reason]}" unless history[:reason].blank?
     comment

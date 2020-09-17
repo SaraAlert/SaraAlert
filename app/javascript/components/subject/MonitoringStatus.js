@@ -276,12 +276,10 @@ class MonitoringStatus extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
-          comment: true,
           monitoring: this.state.monitoring_status === 'Actively Monitoring',
           exposure_risk_assessment: this.state.exposure_risk_assessment,
           monitoring_plan: this.state.monitoring_plan,
           public_health_action: this.state.public_health_action,
-          message: `User changed ${this.state.message}.`,
           reasoning:
             (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
               ? this.state.monitoring_reason + (this.state.reasoning !== '' ? ', ' : '')

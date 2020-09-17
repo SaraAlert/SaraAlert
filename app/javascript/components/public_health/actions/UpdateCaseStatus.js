@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Modal, Form } from 'react-bootstrap';
+import _ from 'lodash';
 import axios from 'axios';
 
 import reportError from '../../util/ReportError';
@@ -10,7 +11,6 @@ class UpdateCaseStatus extends React.Component {
     super(props);
     this.state = {
       case_status: '',
-      message: '',
       follow_up: '',
       isolation: undefined,
       initialCaseStatus: undefined,
@@ -58,7 +58,6 @@ class UpdateCaseStatus extends React.Component {
             monitoring: false,
             isolation: undefined, // Make sure not to alter the existing isolation
             monitoring_reason: 'Meets Case Definition',
-            message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
         if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
@@ -66,11 +65,10 @@ class UpdateCaseStatus extends React.Component {
             monitoring: true,
             isolation: true,
             monitoring_reason: 'Meets Case Definition',
-            message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
       } else if (event.target.value === 'Suspect' || event.target.value === 'Unknown' || event.target.value === 'Not a Case' || event.target.value === '') {
-        this.setState({ monitoring: true, isolation: false, message: 'case status to "' + this.state.case_status + '".' });
+        this.setState({ monitoring: true, isolation: false });
       }
 
       // If in isolation the follow up will not be displayed, ensure changed properties do not carry over
@@ -79,7 +77,6 @@ class UpdateCaseStatus extends React.Component {
           monitoring: this.state.initialMonitoring,
           isolation: this.state.initialIsolation,
           monitoring_reason: 'Meets Case Definition',
-          message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
         });
       }
     });
@@ -87,19 +84,19 @@ class UpdateCaseStatus extends React.Component {
 
   submit() {
     let idArray = this.props.patients.map(x => x['id']);
+    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
 
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/bulk_edit/status', {
           ids: idArray,
-          comment: true,
-          message: this.state.message,
           case_status: this.state.case_status,
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
           apply_to_group: this.state.apply_to_group,
+          diffState: diffState,
         })
         .then(() => {
           location.href = window.BASE_PATH;
@@ -167,7 +164,7 @@ class UpdateCaseStatus extends React.Component {
                   type="switch"
                   id="apply_to_group"
                   label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
-                  checked={this.state.apply_to_group}
+                  checked={this.state.apply_to_group === true || false}
                   onChange={this.handleChange}
                 />
               </Form.Group>

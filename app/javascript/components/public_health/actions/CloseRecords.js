@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Form, Modal } from 'react-bootstrap';
+import _ from 'lodash';
 import axios from 'axios';
 
 import reportError from '../../util/ReportError';
@@ -11,6 +12,7 @@ class CloseRecords extends React.Component {
     this.state = {
       apply_to_group: false,
       loading: false,
+      monitoring: false,
       monitoring_reasons: [
         'Completed Monitoring',
         'Meets Case Definition',
@@ -43,20 +45,21 @@ class CloseRecords extends React.Component {
 
   submit() {
     let idArray = this.props.patients.map(x => x['id']);
+    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
 
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/bulk_edit/status', {
           ids: idArray,
-          comment: true,
-          message: 'User changed monitoring status to "Not Monitoring".',
-          monitoring: false,
+          monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
           reasoning: this.state.monitoring_reason + (this.state.monitoring_reason !== '' && this.state.reasoning !== '' ? ', ' : '') + this.state.reasoning,
           apply_to_group: this.state.apply_to_group,
+          diffState: diffState,
         })
         .then(() => {
+          console.log(diffState);
           location.href = window.BASE_PATH;
         })
         .catch(error => {

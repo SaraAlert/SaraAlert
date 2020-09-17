@@ -14,7 +14,6 @@ class CaseStatus extends React.Component {
       showCaseStatusModal: false,
       confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
       case_status: this.props.patient.case_status || '',
-      message: '',
       confirmed: '',
       isolation: this.props.patient.isolation,
       monitoring: this.props.patient.monitoring,
@@ -39,7 +38,6 @@ class CaseStatus extends React.Component {
     this.setState({ [event.target.id]: value, showCaseStatusModal: !hideModal, confirmedOrProbable }, () => {
       // specific case where case status is just changed with no modal
       if (hideModal) {
-        this.setState({ message: 'User changed case status to "' + this.state.case_status + '".' });
         this.submit();
       }
 
@@ -49,7 +47,6 @@ class CaseStatus extends React.Component {
           this.setState({
             monitoring: false,
             monitoring_reason: 'Meets Case Definition',
-            message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
         if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
@@ -57,7 +54,6 @@ class CaseStatus extends React.Component {
             monitoring: true,
             isolation: true,
             monitoring_reason: 'Meets Case Definition',
-            message: 'User changed case status to "' + this.state.case_status + '", and chose to "' + event.target.value + '".',
           });
         }
       } else if (!confirmedOrProbable) {
@@ -65,7 +61,6 @@ class CaseStatus extends React.Component {
           monitoring: true,
           isolation: false,
           public_health_action: 'None',
-          message: 'User changed case status to "' + this.state.case_status + '".',
         });
       }
     });
@@ -85,8 +80,6 @@ class CaseStatus extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
-          comment: true,
-          message: this.state.message,
           case_status: this.state.case_status,
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,

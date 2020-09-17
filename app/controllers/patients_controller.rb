@@ -294,12 +294,12 @@ class PatientsController < ApplicationController
                        patients: responders }, status: 401
       end
 
-      patient_ids = patient_ids.union(dependent_ids)
+      patient_and_dependent_ids = patient_ids.union(dependent_ids)
     end
-    patients = current_user.get_patients(patient_ids)
+    patients = current_user.get_patients(patient_and_dependent_ids)
 
     patients.each do |patient|
-      update_fields(patient, params, :patient, :none) # separate dependents in the future
+      update_fields(patient, params, patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_group] ? :group : :none)
     end
   end
 
@@ -394,6 +394,8 @@ class PatientsController < ApplicationController
 
   def update_history(patient, params, household, propagation)
     diff_state = params[:diffState]&.map(&:to_sym)
+    return if diff_state.nil?
+
     history = {
       created_by: current_user.email,
       patient: patient,
@@ -405,12 +407,11 @@ class PatientsController < ApplicationController
     History.monitoring_status(history) if diff_state.include?(:monitoring)
     History.exposure_risk_assessment(history) if diff_state.include?(:exposure_risk_assessment)
     History.monitoring_plan(history) if diff_state.include?(:monitoring_plan)
-    # History.case_status(history) if diff_state.include?(:case_status)
-    # History.workflow(history) if diff_state.include?(:isolation)
+    History.case_status(history) if diff_state.include?(:case_status)
     History.public_health_action(history) if diff_state.include?(:public_health_action)
     History.jurisdiction(history) if diff_state.include?(:jurisdiction_path)
     History.assigned_user(history) if diff_state.include?(:assigned_user)
-    # History.pause_notifications(history) if diff_state.include?(:pause_notifications)
+    History.pause_notifications(history) if diff_state.include?(:pause_notifications)
     History.symptom_onset(history) if diff_state.include?(:symptom_onset)
     History.last_date_of_exposure(history) if diff_state.include?(:last_date_of_exposure)
     History.continuous_exposure(history) if diff_state.include?(:continuous_exposure)
