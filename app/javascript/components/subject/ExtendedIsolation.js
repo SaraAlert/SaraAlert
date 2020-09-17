@@ -22,22 +22,10 @@ class ExtendedIsolation extends React.Component {
 
   submit() {
     this.setState({ loading: true }, () => {
-      let message = '';
-      if (this.props.patient.extended_isolation && this.state.extended_isolation) {
-        message = `User changed extended isolation date from ${moment(this.props.patient.extended_isolation).format('MM/DD/YYYY')} to ${moment(
-          this.state.extended_isolation
-        ).format('MM/DD/YYYY')}.`;
-      } else if (!this.props.patient.extended_isolation && this.state.extended_isolation) {
-        message = `User changed extended isolation date from blank to ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}.`;
-      } else if (this.props.patient.extended_isolation && !this.state.extended_isolation) {
-        message = `User cleared extended isolation date from ${moment(this.props.patient.extended_isolation).format('MM/DD/YYYY')} to blank.`;
-      }
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           extended_isolation: this.state.extended_isolation,
-          comment: true,
-          message: message,
           reasoning: this.state.reasoning,
           diffState: ['extended_isolation'],
         })

@@ -107,12 +107,23 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment)
   end
 
+  def self.symptom_onset(patient: nil, created_by: 'Sara Alert System', household: :patient, propagation: :none, old_value: nil, new_value: nil)
+    return if old_value == new_value
+
+    formatted_old_value = old_value&.to_date&.strftime('%m/%d/%Y')
+    formatted_new_value = new_value&.to_date&.strftime('%m/%d/%Y')
+    comment = compose_message(formatted_old_value, formatted_new_value, household, propagation, 'Symptom Onset Date', 'date', nil)
+    comment += ' The system will now populate this date.' if new_value.nil?
+
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
+  end
+
   def self.last_date_of_exposure(patient: nil, created_by: 'Sara Alert System', household: :patient, propagation: :none, old_value: nil, new_value: nil)
     return if old_value == new_value
 
     formatted_old_value = old_value&.to_date&.strftime('%m/%d/%Y')
     formatted_new_value = new_value&.to_date&.strftime('%m/%d/%Y')
-    comment = compose_message(formatted_old_value, formatted_new_value, household, propagation, 'Last Date of Exposure', 'date')
+    comment = compose_message(formatted_old_value, formatted_new_value, household, propagation, 'Last Date of Exposure', 'date', nil)
 
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
   end
@@ -124,6 +135,16 @@ class History < ApplicationRecord
     field = 'Continuous Exposure'
     formatted_new_value = new_value ? 'on' : 'off'
     comment = "#{creator} turned #{formatted_new_value} #{field}#{compose_explanation(household, propagation, field, 'field')}"
+
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
+  end
+
+  def self.extended_isolation(patient: nil, created_by: 'Sara Alert System', household: :patient, propagation: :none, old_value: nil, new_value: nil, reason: nil)
+    return if old_value == new_value
+
+    formatted_old_value = old_value&.to_date&.strftime('%m/%d/%Y')
+    formatted_new_value = new_value&.to_date&.strftime('%m/%d/%Y')
+    comment = compose_message(formatted_old_value, formatted_new_value, household, propagation, 'Extended Isolation Date', 'date', reason)
 
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
   end
@@ -148,13 +169,15 @@ class History < ApplicationRecord
     History.create!(created_by: created_by, comment: comment, patient_id: patient, history_type: type)
   end
 
-  private_class_method def self.compose_message(formatted_old_value, formatted_new_value, household, propagation, field, field_type)
+  private_class_method def self.compose_message(formatted_old_value, formatted_new_value, household, propagation, field, field_type, reason)
     creator = household == :patient ? 'User' : 'System'
     verb = formatted_new_value.nil? ? 'cleared' : 'changed'
     from_text = formatted_old_value.nil? ? 'blank' : formatted_old_value
     to_text = formatted_new_value.nil? ? 'blank' : formatted_new_value
 
-    "#{creator} #{verb} #{field} from #{from_text} to #{to_text}#{compose_explanation(household, propagation, field, field_type)}."
+    comment = "#{creator} #{verb} #{field} from #{from_text} to #{to_text}#{compose_explanation(household, propagation, field, field_type)}."
+    comment += " Reason: #{reason}" unless reason.nil?
+    comment
   end
 
   private_class_method def self.compose_explanation(household, propagation, field, field_type)

@@ -395,6 +395,12 @@ class PatientsController < ApplicationController
   def update_history(patient, params, household, propagation)
     diff_state = params[:diffState]&.map(&:to_sym)
 
+
+    if diff_state.include?(:symptom_onset)
+      History.symptom_onset(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
+                                    old_value: patient[:symptom_onset], new_value: params[:symptom_onset])
+    end
+
     if diff_state.include?(:last_date_of_exposure)
       History.last_date_of_exposure(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
                                     old_value: patient[:last_date_of_exposure], new_value: params[:last_date_of_exposure])
@@ -403,6 +409,11 @@ class PatientsController < ApplicationController
     if diff_state.include?(:continuous_exposure)
       History.continuous_exposure(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
                                   old_value: patient[:continuous_exposure], new_value: params[:continuous_exposure])
+    end
+
+    if diff_state.include?(:extended_isolation)
+      History.extended_isolation(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
+                                 old_value: patient[:extended_isolation], new_value: params[:extended_isolation], reason: params[:reasoning])
     end
   end
 
