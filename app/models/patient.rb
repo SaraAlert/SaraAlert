@@ -492,7 +492,8 @@ class Patient < ApplicationRecord
     return 'Continuous Exposure' if continuous_exposure
     return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
 
-    (created_at.to_date + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
+    # Check for created_at is necessary here because custom as_json is automatically called when enrolling a new patient, which calls this method indirectly.
+    return (created_at.to_date + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end
 
   # Date when patient is expected to be purged
