@@ -381,14 +381,14 @@ class Patient < ApplicationRecord
     return false if continuous_exposure
 
     monitoring_period_days = ADMIN_OPTIONS['monitoring_period_days'].days
-    
+
     # If there is a last date of exposure - base monitoring period off of that date
-    if !last_date_of_exposure.nil?
-      monitoring_end_date = last_date_of_exposure.beginning_of_day + monitoring_period_days
-    else
-      # Otherwise, if there is no last date of exposure - base monitoring period off of creation date
-      monitoring_end_date = created_at.beginning_of_day + monitoring_period_days
-    end
+    monitoring_end_date = if !last_date_of_exposure.nil?
+                            last_date_of_exposure.beginning_of_day + monitoring_period_days
+                          else
+                            # Otherwise, if there is no last date of exposure - base monitoring period off of creation date
+                            created_at.beginning_of_day + monitoring_period_days
+                          end
 
     # If it is the last day of or past the monitoring period
     # NOTE: beginning_of_day is used as monitoring period is based of date not the specific time
@@ -491,6 +491,7 @@ class Patient < ApplicationRecord
   def end_of_monitoring
     return 'Continuous Exposure' if continuous_exposure
     return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
+
     (created_at.to_date + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s
   end
 
