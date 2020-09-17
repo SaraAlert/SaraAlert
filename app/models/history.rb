@@ -107,6 +107,16 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment)
   end
 
+  def self.monitoring_status(patient: nil, created_by: 'Sara Alert System', household: :patient, propagation: :none, old_value: nil, new_value: nil, reason: nil)
+    return if old_value == new_value
+
+    formatted_old_value = old_value ? 'Monitoring' : 'Not Monitoring'
+    formatted_new_value = new_value ? 'Monitoring' : 'Not Monitoring'
+    comment = compose_message(formatted_old_value, formatted_new_value, household, propagation, 'Monitoring Status', 'date', reason)
+
+    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
+  end
+
   def self.symptom_onset(patient: nil, created_by: 'Sara Alert System', household: :patient, propagation: :none, old_value: nil, new_value: nil)
     return if old_value == new_value
 
@@ -175,8 +185,10 @@ class History < ApplicationRecord
     from_text = formatted_old_value.nil? ? 'blank' : formatted_old_value
     to_text = formatted_new_value.nil? ? 'blank' : formatted_new_value
 
-    comment = "#{creator} #{verb} #{field} from #{from_text} to #{to_text}#{compose_explanation(household, propagation, field, field_type)}."
-    comment += " Reason: #{reason}" unless reason.nil?
+    comment = "#{creator} #{verb} #{field} from \"#{from_text}\" to \"#{to_text}\""
+    comment += compose_explanation(household, propagation, field, field_type)
+    comment += "."
+    comment += " Reason: #{reason}" unless reason.blank?
     comment
   end
 

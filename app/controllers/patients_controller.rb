@@ -395,6 +395,19 @@ class PatientsController < ApplicationController
   def update_history(patient, params, household, propagation)
     diff_state = params[:diffState]&.map(&:to_sym)
 
+    if diff_state.include?(:monitoring)
+      History.monitoring_status(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
+                                old_value: patient[:monitoring], new_value: params[:monitoring], reason: params[:reasoning])
+    end
+
+    # exposure risk assessment
+    # monitoring plan
+    # case status
+    # workflow
+    # public health action
+    # jurisdiction
+    # assigned_user
+    # notification status
 
     if diff_state.include?(:symptom_onset)
       History.symptom_onset(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
