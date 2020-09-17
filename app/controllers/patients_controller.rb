@@ -143,7 +143,9 @@ class PatientsController < ApplicationController
     patient.submission_token = SecureRandom.hex(20) # 160 bits
     # Attempt to save and continue; else if failed redirect to index
     if patient.save
-      patient.send_enrollment_notification
+
+      # Send enrollment notification only to responders
+      patient.send_enrollment_notification if patient.self_reporter_or_proxy?
 
       # Create a history for the enrollment
       History.enrollment(patient: patient, created_by: current_user.email)
