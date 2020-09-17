@@ -394,40 +394,27 @@ class PatientsController < ApplicationController
 
   def update_history(patient, params, household, propagation)
     diff_state = params[:diffState]&.map(&:to_sym)
-
-    if diff_state.include?(:monitoring)
-      History.monitoring_status(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
-                                old_value: patient[:monitoring], new_value: params[:monitoring], reason: params[:reasoning])
-    end
-
-    # exposure risk assessment
-    # monitoring plan
-    # case status
-    # workflow
-    # public health action
-    # jurisdiction
-    # assigned_user
-    # notification status
-
-    if diff_state.include?(:symptom_onset)
-      History.symptom_onset(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
-                                    old_value: patient[:symptom_onset], new_value: params[:symptom_onset])
-    end
-
-    if diff_state.include?(:last_date_of_exposure)
-      History.last_date_of_exposure(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
-                                    old_value: patient[:last_date_of_exposure], new_value: params[:last_date_of_exposure])
-    end
-
-    if diff_state.include?(:continuous_exposure)
-      History.continuous_exposure(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
-                                  old_value: patient[:continuous_exposure], new_value: params[:continuous_exposure])
-    end
-
-    if diff_state.include?(:extended_isolation)
-      History.extended_isolation(patient: patient, created_by: current_user.email, household: household, propagation: propagation,
-                                 old_value: patient[:extended_isolation], new_value: params[:extended_isolation], reason: params[:reasoning])
-    end
+    history = {
+      created_by: current_user.email,
+      patient: patient,
+      params: params,
+      household: household,
+      propagation: propagation,
+      reason: params[:reasoning]
+    }
+    History.monitoring_status(history) if diff_state.include?(:monitoring)
+    History.exposure_risk_assessment(history) if diff_state.include?(:exposure_risk_assessment)
+    History.monitoring_plan(history) if diff_state.include?(:monitoring_plan)
+    # History.case_status(history) if diff_state.include?(:case_status)
+    # History.workflow(history) if diff_state.include?(:isolation)
+    History.public_health_action(history) if diff_state.include?(:public_health_action)
+    History.jurisdiction(history) if diff_state.include?(:jurisdiction_path)
+    History.assigned_user(history) if diff_state.include?(:assigned_user)
+    # History.pause_notifications(history) if diff_state.include?(:pause_notifications)
+    History.symptom_onset(history) if diff_state.include?(:symptom_onset)
+    History.last_date_of_exposure(history) if diff_state.include?(:last_date_of_exposure)
+    History.continuous_exposure(history) if diff_state.include?(:continuous_exposure)
+    History.extended_isolation(history) if diff_state.include?(:extended_isolation)
   end
 
   def reset_symptom_onset(content, patient, initiator)
