@@ -159,7 +159,7 @@ class History < ApplicationRecord
 
   def self.public_health_action(history)
     field = {
-      name: 'Public Health Action',
+      name: 'Latest Public Health Action',
       old_value: history[:patient][:public_health_action],
       new_value: history[:params][:public_health_action]
     }

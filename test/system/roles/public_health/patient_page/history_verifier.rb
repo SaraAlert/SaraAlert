@@ -10,35 +10,35 @@ class PublicHealthPatientPageHistoryVerifier < ApplicationSystemTestCase
   USERS = @@system_test_utils.users
 
   def verify_monitoring_status(user_label, monitoring_status, monitoring_reason, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed monitoring status', monitoring_status, monitoring_reason, reasoning])
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed Monitoring Status', monitoring_status, monitoring_reason, reasoning])
   end
 
   def verify_exposure_risk_assessment(user_label, exposure_risk_assessment, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed exposure risk assessment', exposure_risk_assessment, reasoning])
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed Exposure Risk Assessment', exposure_risk_assessment, reasoning])
   end
 
   def verify_monitoring_plan(user_label, monitoring_plan, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed monitoring plan', monitoring_plan, reasoning])
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed Monitoring Plan', monitoring_plan, reasoning])
   end
 
   def verify_latest_public_health_action(user_label, latest_public_health_action, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed latest public health action', latest_public_health_action, reasoning])
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed Latest Public Health Action', latest_public_health_action, reasoning])
   end
 
   def verify_additional_public_health_action(user_label)
-    verify_historical_event(user_label, 'Monitoring Change', ['User added an additional public health action'])
+    verify_historical_event(user_label, 'Monitoring Change', ['User added an additional Public Health Action'])
   end
 
   def verify_current_workflow(user_label, current_workflow, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed workflow', current_workflow, reasoning])
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed Workflow', current_workflow, reasoning])
   end
 
   def verify_assigned_jurisdiction(user_label, jurisdiction, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed jurisdiction', jurisdiction, reasoning])
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed Jurisdiction', jurisdiction, reasoning])
   end
 
   def verify_assigned_user(user_label, assigned_user, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed assigned user', assigned_user, reasoning])
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed Assigned user', assigned_user, reasoning])
   end
 
   def verify_add_report(user_label)

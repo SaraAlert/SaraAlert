@@ -59,7 +59,6 @@ class CloseRecords extends React.Component {
           diffState: diffState,
         })
         .then(() => {
-          console.log(diffState);
           location.href = window.BASE_PATH;
         })
         .catch(error => {
