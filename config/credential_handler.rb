@@ -48,7 +48,8 @@ module CredentialHandler
     
     # Find the registered public key set for this client application to decode the JWT assertion.
     if client_application[:public_key_set].present?
-      public_key_set = HashWithIndifferentAccess.new(client_application[:public_key_set])
+      # Public key is stored as JSON, so must be parsed upon retrieval.
+      public_key_set = HashWithIndifferentAccess.new(JSON.parse(client_application[:public_key_set]))
       raise_invalid_JWK_error unless public_key_set.present? && public_key_set[:keys].present?
     else
       raise_invalid_JWK_error
