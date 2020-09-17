@@ -5,12 +5,17 @@ import Patient from '../../components/patient/Patient.js'
 import { mockUser1 } from '../mocks/mockUsers'
 import { mockPatient1, mockPatient2 } from '../mocks/mockPatients'
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
-const groupMembers = [ mockPatient2 ]
+function getWrapper(mockPatient) {
+    const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+    const groupMembers = [ mockPatient2 ]
+    const wrapper = shallow(<PatientPage patient_id="EX-771721" patient={mockPatient} current_user={mockUser1} group_members={groupMembers} hideBody={true}
+        jurisdictionPath="USA, State 1, County 2" dashboardUrl="/public_health" authenticity_token={authyToken} />);
+    return wrapper;
+}
 
 describe('PatientPage properly renders', () => {
-    let wrapper = shallow(<PatientPage patient_id="EX-771721" patient={mockPatient1} current_user={mockUser1} group_members={groupMembers} hideBody={true}
-        jurisdictionPath="USA, State 1, County 2" dashboardUrl="/public_health" authenticity_token={authyToken} />);
+    const wrapper = getWrapper(mockPatient1); // uses mockPatient1 as patient
+    const wrapper2 = getWrapper(mockPatient2); // uses mockPatient2 as patient
 
     it('card header', () => {
         expect(wrapper.find('#patient-info-header').exists()).toBeTruthy();
@@ -31,21 +36,14 @@ describe('PatientPage properly renders', () => {
     it('child component Patient', () => {
         expect(wrapper.containsMatchingElement(<Patient />)).toBeTruthy();
     });
-});
-
-// this block gets run with the above block, just has a different wrapper
-describe('PatientPage properly renders', () => {
-    let wrapper = shallow(<PatientPage patient_id="EX-771721" patient={mockPatient2} current_user={mockUser1} group_members={groupMembers} hideBody={true}
-        jurisdictionPath="USA, State 1, County 2" dashboardUrl="/public_health" authenticity_token={authyToken} />);
     
     it('card header title with user defined id', () => {
-        expect(wrapper.find('#patient-info-header').text()).toEqual('Monitoree Details (ID: 00000-1) (edit details)');
+        expect(wrapper2.find('#patient-info-header').text()).toEqual('Monitoree Details (ID: 00000-1) (edit details)');
     });
 });
 
 describe('clicking card header', () => {
-    let wrapper = shallow(<PatientPage patient_id="EX-771721" patient={mockPatient1} current_user={mockUser1} group_members={groupMembers} hideBody={true}
-        jurisdictionPath="USA, State 1, County 2" dashboardUrl="/public_health" authenticity_token={authyToken} />);
+    const wrapper = getWrapper(mockPatient1);
     
     it('updates this.state.hideBody to false', () => {
         wrapper.find('#patient-info-header').simulate('click');
