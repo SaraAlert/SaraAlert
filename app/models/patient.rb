@@ -17,6 +17,9 @@ class Patient < ApplicationRecord
   end
 
   validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
+                                                  'Enrolled more than 14 days after last date of exposure (system)',
+                                                  'Enrolled on last day of monitoring period (system)',
+                                                  'Completed Monitoring (system)',
                                                   'Meets Case Definition',
                                                   'Lost to follow-up during monitoring period',
                                                   'Lost to follow-up (contact never established)',
@@ -368,6 +371,44 @@ class Patient < ApplicationRecord
     end
   }
 
+  # Gets the current date in the patient's timezone
+  def curr_date_in_timezone
+    Time.now.getlocal(address_timezone_offset)
+  end
+
+  # Checks is at the end of or past their monitoring period
+  def end_of_monitoring_period?
+    return false if continuous_exposure
+
+    monitoring_period_days = ADMIN_OPTIONS['monitoring_period_days'].days
+
+    # If there is a last date of exposure - base monitoring period off of that date
+    monitoring_end_date = if !last_date_of_exposure.nil?
+                            last_date_of_exposure.beginning_of_day + monitoring_period_days
+                          else
+                            # Otherwise, if there is no last date of exposure - base monitoring period off of creation date
+                            created_at.beginning_of_day + monitoring_period_days
+                          end
+
+    # If it is the last day of or past the monitoring period
+    # NOTE: beginning_of_day is used as monitoring period is based of date not the specific time
+    curr_date_in_timezone.beginning_of_day >= monitoring_end_date
+  end
+
+  # Patients are eligible to be automatically closed by the system IF:
+  #  - in exposure workflow
+  #     AND
+  #  - asymptomatic (this also checks that last assessment was completed within the <reporting_period_minutes>)
+  #     AND
+  #  - not in continuous exposure
+  #     AND
+  #  - on the last day of or past their monitoring period
+  def self.close_eligible
+    exposure_asymptomatic
+      .where(continuous_exposure: false)
+      .select(&:end_of_monitoring_period?)
+  end
+
   # Order individuals based on their public health assigned risk assessment
   def self.order_by_risk(asc = true)
     order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
@@ -450,6 +491,8 @@ class Patient < ApplicationRecord
   def end_of_monitoring
     return 'Continuous Exposure' if continuous_exposure
     return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
+
+    # Check for created_at is necessary here because custom as_json is automatically called when enrolling a new patient, which calls this method indirectly.
     return (created_at.to_date + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end
 
