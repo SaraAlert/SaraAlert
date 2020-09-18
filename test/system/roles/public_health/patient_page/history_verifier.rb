@@ -38,7 +38,7 @@ class PublicHealthPatientPageHistoryVerifier < ApplicationSystemTestCase
   end
 
   def verify_assigned_user(user_label, assigned_user, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed Assigned user', assigned_user, reasoning])
+    verify_historical_event(user_label, 'Monitoring Change', ['User changed Assigned User', assigned_user, reasoning])
   end
 
   def verify_add_report(user_label)

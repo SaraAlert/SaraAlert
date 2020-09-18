@@ -279,6 +279,7 @@ class PatientsController < ApplicationController
 
     # Nothing to do in this function if there isn't a list of patient ids.
     patient_ids = params.require(:ids)
+    non_dependent_patient_ids = patient_ids
 
     # If apply to group, find dependents ids and add to id array before user accessor for validation of access
     if ActiveModel::Type::Boolean.new.cast(params.require(:apply_to_group))
@@ -294,12 +295,12 @@ class PatientsController < ApplicationController
                        patients: responders }, status: 401
       end
 
-      patient_and_dependent_ids = patient_ids.union(dependent_ids)
+      patient_ids = patient_ids.union(dependent_ids)
     end
-    patients = current_user.get_patients(patient_and_dependent_ids)
+    patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
-      update_fields(patient, params, patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_group] ? :group : :none)
+      update_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_group] ? :group : :none)
     end
   end
 
