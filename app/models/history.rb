@@ -107,6 +107,23 @@ class History < ApplicationRecord
     create_history(patient, created_by, HISTORY_TYPES[:record_automatically_closed], comment)
   end
 
+  def self.monitoring_actions(history, diff_state)
+    return if diff_state.nil?
+
+    History.monitoring_status(history) if diff_state.include?(:monitoring)
+    History.exposure_risk_assessment(history) if diff_state.include?(:exposure_risk_assessment)
+    History.monitoring_plan(history) if diff_state.include?(:monitoring_plan)
+    History.case_status(history) if diff_state.include?(:case_status)
+    History.public_health_action(history) if diff_state.include?(:public_health_action)
+    History.jurisdiction(history) if diff_state.include?(:jurisdiction_path)
+    History.assigned_user(history) if diff_state.include?(:assigned_user)
+    History.pause_notifications(history) if diff_state.include?(:pause_notifications)
+    History.symptom_onset(history) if diff_state.include?(:symptom_onset)
+    History.last_date_of_exposure(history) if diff_state.include?(:last_date_of_exposure)
+    History.continuous_exposure(history) if diff_state.include?(:continuous_exposure)
+    History.extended_isolation(history) if diff_state.include?(:extended_isolation)
+  end
+
   def self.monitoring_status(history)
     field = {
       name: 'Monitoring Status',
