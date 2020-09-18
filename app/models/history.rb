@@ -255,7 +255,7 @@ class History < ApplicationRecord
     creator = history[:household] == :patient ? 'User' : 'System'
     formatted_new_value = field[:new_value] ? 'on' : 'off'
     comment = "#{creator} turned #{formatted_new_value} #{field}#{compose_explanation(history, field)}"
-    create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
+    create_history(history[:patient], created_by, HISTORY_TYPES[:monitoring_change], comment)
   end
 
   def self.extended_isolation(history)
