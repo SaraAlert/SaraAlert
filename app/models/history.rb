@@ -228,7 +228,7 @@ class History < ApplicationRecord
     return if field[:old_value] == field[:new_value]
 
     comment = compose_message(history, field)
-    comment += ' The system will now populate this date.' if new_value.nil?
+    comment += ' The system will now populate this date.' if field[:new_value].nil?
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
   end
 
@@ -253,7 +253,7 @@ class History < ApplicationRecord
     return if field[:old_value] == field[:new_value]
 
     creator = history[:household] == :patient ? 'User' : 'System'
-    formatted_new_value = new_value ? 'on' : 'off'
+    formatted_new_value = field[:new_value] ? 'on' : 'off'
     comment = "#{creator} turned #{formatted_new_value} #{field}#{compose_explanation(history, field)}"
     create_history(patient, created_by, HISTORY_TYPES[:monitoring_change], comment)
   end
