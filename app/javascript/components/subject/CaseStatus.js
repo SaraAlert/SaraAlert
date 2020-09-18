@@ -56,9 +56,10 @@ class CaseStatus extends React.Component {
     let current = this.state.showCaseStatusModal;
     this.setState({
       showCaseStatusModal: !current,
+      apply_to_group: false,
       case_status: this.props.patient.case_status || '',
-      monitoring_option: '',
       isolation: this.props.patient.isolation,
+      monitoring_option: '',
     });
   };
 
