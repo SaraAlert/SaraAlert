@@ -26,18 +26,7 @@ class PauseNotifications extends React.Component {
           diffState: ['pause_notifications'],
         })
         .then(() => {
-          axios
-            .post(window.BASE_PATH + '/histories', {
-              patient_id: this.props.patient.id,
-              type: 'Monitoring Change',
-              comment: 'User ' + (this.props.patient.pause_notifications ? 'resumed' : 'paused') + ' notifications for this monitoree.',
-            })
-            .then(() => {
-              location.reload(true);
-            })
-            .catch(error => {
-              reportError(error);
-            });
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);
