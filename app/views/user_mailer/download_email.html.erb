@@ -21,7 +21,8 @@
     Please note that this export is one-time use only. The system will delete an export file once you've downloaded that file.
     These downloads will be invalid if you attempt another export of this type before retrieving the file(s). Exports will not work if forwarded to another user. You must be logged into Sara Alert to access exports.
     <br />
-    If your export exceeded <%=@batch_size%> records, you will see separate files below with each containing data for no more than <%=@batch_size%> monitorees. 
+    <br />
+    If your export exceeded <%= number_with_delimiter(@batch_size) %> records, you will see separate files below with each containing data for no more than <%= number_with_delimiter(@batch_size) %> monitorees. 
     Each file (e.g., monitorees, assessments, etc) belonging to the same batch will have the same number at the end of the filename.
     </p>
   </p>

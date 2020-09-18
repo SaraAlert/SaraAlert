@@ -6,7 +6,7 @@ require File.expand_path(File.dirname(__FILE__) + "/environment")
 set :output, "/tmp/cronlog.log"
 
 every 24.hours do
-  runner "CloseSubjectsJob.perform_later"
+  runner "ClosePatientsJob.perform_later"
 end
 
 weekly_purge_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_date'])
