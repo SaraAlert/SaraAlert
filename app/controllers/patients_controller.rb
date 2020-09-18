@@ -489,7 +489,11 @@ class PatientsController < ApplicationController
     diffs = []
     allowed_params.each do |attribute|
       if patient_before[attribute] != patient_after[attribute]
-        diffs << { attribute: attribute, before: patient_before[attribute], after: patient_after[attribute] }
+        diffs << {
+          attribute: attribute,
+          before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
+          after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
+        }
       end
     end
     diffs
