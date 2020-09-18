@@ -83,7 +83,7 @@ class CaseStatus extends React.Component {
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           case_status: this.state.case_status,
           isolation: this.state.isolation,
-          // monitoring: this.state.monitoring,
+          monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
           apply_to_group: this.state.apply_to_group,
           public_health_action: this.state.public_health_action,
