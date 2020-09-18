@@ -1,11 +1,11 @@
 import React from 'react'
 import { shallow, mount } from 'enzyme';
 import Identification from '../../../components/enrollment/steps/Identification.js'
-import { mockPatient1 } from '../../mocks/mockPatients'
+import { blankMockPatient, mockPatient1 } from '../../mocks/mockPatients'
 
 const newEnrollmentState = {
   isolation: false,
-  patient: { },
+  patient: blankMockPatient,
   propagatedFields: {}
 }
 

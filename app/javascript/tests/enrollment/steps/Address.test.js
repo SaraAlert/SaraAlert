@@ -1,11 +1,11 @@
 import React from 'react'
 import { shallow, mount } from 'enzyme';
 import Address from '../../../components/enrollment/steps/Address.js'
-import { mockPatient1 } from '../../mocks/mockPatients'
+import { blankMockPatient, mockPatient1 } from '../../mocks/mockPatients'
 
 const newEnrollmentState = {
   isolation: false,
-  patient: {},
+  patient: blankMockPatient,
   propagatedFields: {}
 }
 
@@ -41,12 +41,12 @@ describe('Monitoree Address', () => {
 
   it('Properly allows setting of the main address', () => {
     const wrapper = mount(<Address goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
-    expect(wrapper.find('#address_line_1').instance().value).toBeFalsy()
-    expect(wrapper.find('#address_city').instance().value).toBeFalsy()
-    expect(wrapper.find('#address_state').instance().value).toBeFalsy()
-    expect(wrapper.find('#address_line_2').instance().value).toBeFalsy()
-    expect(wrapper.find('#address_zip').instance().value).toBeFalsy()
-    expect(wrapper.find('#address_county').instance().value).toBeFalsy()
+    expect(wrapper.find('#address_line_1').instance().value).toEqual('')
+    expect(wrapper.find('#address_city').instance().value).toEqual('')
+    expect(wrapper.find('#address_state').instance().value).toEqual('')
+    expect(wrapper.find('#address_line_2').instance().value).toEqual('')
+    expect(wrapper.find('#address_zip').instance().value).toEqual('')
+    expect(wrapper.find('#address_county').instance().value).toEqual('')
     wrapper.setState({ current: { ...wrapper.state.current, patient: mockPatient1 } }, () => {
       expect(wrapper.find('#address_line_1').instance().value).toEqual(mockPatient1.address_line_1)
       expect(wrapper.find('#address_city').instance().value).toEqual(mockPatient1.address_city)
