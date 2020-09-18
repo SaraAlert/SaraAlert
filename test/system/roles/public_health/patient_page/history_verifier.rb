@@ -33,12 +33,12 @@ class PublicHealthPatientPageHistoryVerifier < ApplicationSystemTestCase
     verify_historical_event(user_label, 'Monitoring Change', ['User changed Workflow', current_workflow, reasoning])
   end
 
-  def verify_assigned_jurisdiction(user_label, jurisdiction, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed Jurisdiction', jurisdiction, reasoning])
+  def verify_assigned_jurisdiction(user_label, jurisdiction, reasoning, creator = 'User')
+    verify_historical_event(user_label, 'Monitoring Change', ["#{creator} changed Jurisdiction", jurisdiction, reasoning])
   end
 
-  def verify_assigned_user(user_label, assigned_user, reasoning)
-    verify_historical_event(user_label, 'Monitoring Change', ['User changed Assigned User', assigned_user, reasoning])
+  def verify_assigned_user(user_label, assigned_user, reasoning, creator = 'User')
+    verify_historical_event(user_label, 'Monitoring Change', ["#{creator} changed Assigned User", assigned_user, reasoning])
   end
 
   def verify_add_report(user_label)

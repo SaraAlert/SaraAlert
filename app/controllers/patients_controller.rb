@@ -198,17 +198,19 @@ class PatientsController < ApplicationController
         new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id])[:path]
         transfer = Transfer.new(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
         transfer.save!
-        comment = "User changed jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
+        comment = "User changed Jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
         history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
         if propagated_fields.include?('jurisdiction_id')
           group_members = patient.dependents_exclude_self
           group_members.update(jurisdiction_id: content[:jurisdiction_id])
           group_members.each do |group_member|
             propagated_history = history.dup
-            propagated_transfer = transfer.dup
             propagated_history.patient = group_member
-            propagated_transfer.patient = group_member
+            propagated_history.comment = "System changed Jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\" because User updated Jurisdiction
+                                          for another member in this monitoree's household and chose to update this field for all household members."
             propagated_history.save
+            propagated_transfer = transfer.dup
+            propagated_transfer.patient = group_member
             propagated_transfer.save
           end
         end
@@ -221,7 +223,7 @@ class PatientsController < ApplicationController
     if content[:assigned_user] && content[:assigned_user] != patient.assigned_user
       old_assigned_user = patient.assigned_user || ''
       new_assigned_user = content[:assigned_user] || ''
-      comment = "User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"."
+      comment = "User changed Assigned User from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"."
       history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
       if propagated_fields.include?('assigned_user')
         group_members = patient.dependents_exclude_self
@@ -229,6 +231,8 @@ class PatientsController < ApplicationController
         group_members.each do |group_member|
           propagated_history = history.dup
           propagated_history.patient = group_member
+          propagated_history.comment = "System changed Assigned User from \"#{old_assigned_user}\" to \"#{new_assigned_user}\" because User updated Assigned
+                                        User for another member in this monitoree's household and chose to update this field for all household members."
           propagated_history.save
         end
       end

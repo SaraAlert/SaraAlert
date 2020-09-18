@@ -136,7 +136,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_patient_page_history_verifier.verify_assigned_jurisdiction(enroller_user_label, newer_jurisdiction, '')
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_dashboard.search_for_and_view_monitoree('transferred_in', group_member_label)
-    @@public_health_patient_page_history_verifier.verify_assigned_jurisdiction(enroller_user_label, newer_jurisdiction, '')
+    @@public_health_patient_page_history_verifier.verify_assigned_jurisdiction(enroller_user_label, newer_jurisdiction, '', 'System')
     @@system_test_utils.logout
   end
 
@@ -161,7 +161,7 @@ class WorkflowTest < ApplicationSystemTestCase
     assert page.has_content?(new_assigned_user)
     @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, new_assigned_user, '')
     click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])
-    assert page.has_no_content?("User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"")
+    assert page.has_no_content?("System changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"")
 
     # edit parent assigned user and propagate to group member
     edited_monitoree_with_propogation_label = 'monitoree_16'
@@ -176,7 +176,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '')
     click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])
     assert page.has_content?(newer_assigned_user)
-    @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '')
+    @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '', 'System')
     @@system_test_utils.logout
   end
 end
