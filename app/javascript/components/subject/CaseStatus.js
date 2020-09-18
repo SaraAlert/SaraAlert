@@ -15,6 +15,8 @@ class CaseStatus extends React.Component {
       confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
       case_status: this.props.patient.case_status || '',
       isolation: this.props.patient.isolation,
+      monitoring: this.props.patient.monitoring,
+      monitoring_reason: this.props.patient.monitoring_reason,
       monitoring_option: '',
       public_health_action: this.props.patient.public_health_action,
       apply_to_group: false,
@@ -43,10 +45,18 @@ class CaseStatus extends React.Component {
         });
       } else if (event.target.id === 'monitoring_option') {
         if (event.target.value === 'End Monitoring') {
-          this.setState({ isolation: this.props.patient.isolation });
+          this.setState({
+            isolation: this.props.patient.isolation,
+            monitoring: false,
+            monitoring_reason: 'Meets Case Definition',
+          });
         }
         if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
-          this.setState({ isolation: true });
+          this.setState({
+            isolation: true,
+            monitoring: true,
+            monitoring_reason: 'Meets Case Definition',
+          });
         }
       }
     });
@@ -59,6 +69,8 @@ class CaseStatus extends React.Component {
       apply_to_group: false,
       case_status: this.props.patient.case_status || '',
       isolation: this.props.patient.isolation,
+      monitoring: this.props.patient.monitoring,
+      monitoring_reason: this.props.patient.monitoring_reason,
       monitoring_option: '',
     });
   };
