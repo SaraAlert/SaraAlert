@@ -13,44 +13,23 @@ function getWrapper(mockPatient) {
     return wrapper;
 }
 
-describe('PatientPage properly renders', () => {
+describe('PatientPage', () => {
     const wrapper = getWrapper(mockPatient1); // uses mockPatient1 as patient
     const wrapper2 = getWrapper(mockPatient2); // uses mockPatient2 as patient
 
-    it('card header', () => {
+    it('Properly renders all main components', () => {
         expect(wrapper.find('#patient-info-header').exists()).toBeTruthy();
-    });
-
-    it('card header title', () => {
         expect(wrapper.find('#patient-info-header').text()).toEqual('Monitoree Details  (edit details)');
-    });
-
-    it('edit details href', () => {
         expect(wrapper.find('#patient-info-header a').prop('href')).toEqual('undefined/patients/17/edit');
-    });
-
-    it('expand hamburger menu', () => {
         expect(wrapper.find('.collapse-hover .fa-bars').exists()).toBeTruthy();
-    });
-
-    it('child component Patient', () => {
         expect(wrapper.containsMatchingElement(<Patient />)).toBeTruthy();
-    });
-    
-    it('card header title with user defined id', () => {
         expect(wrapper2.find('#patient-info-header').text()).toEqual('Monitoree Details (ID: 00000-1) (edit details)');
     });
-});
 
-describe('clicking card header', () => {
-    const wrapper = getWrapper(mockPatient1);
-    
-    it('updates this.state.hideBody to false', () => {
+    it('Updates this.state.hideBody by clicking card header', () => {
         wrapper.find('#patient-info-header').simulate('click');
         expect(wrapper.state('hideBody')).toBeFalsy();
-    });
 
-    it('updates this.state.hideBody to true', () => {
         wrapper.find('#patient-info-header').simulate('click');
         expect(wrapper.state('hideBody')).toBeTruthy();
     });
