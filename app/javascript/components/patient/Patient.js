@@ -476,7 +476,6 @@ class Patient extends React.Component {
 
 Patient.propTypes = {
   patient: PropTypes.object,
-  group_members: PropTypes.array,
   groupMembers: PropTypes.array,
   details: PropTypes.object,
   jurisdictionPath: PropTypes.string,
