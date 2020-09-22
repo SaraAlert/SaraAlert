@@ -28,6 +28,10 @@ class Contact extends React.Component {
           value: this.state.current.patient.preferred_contact_method,
         },
       });
+    }
+    // There are two instances when a user might already have an email that we'd want to prefill the confirm email field
+    // One is editing an existing monitoree. The other is when enrolling a close contact
+    if (this.state.current.patient.email) {
       this.setState(state => {
         const current = { ...state.current };
         current.patient.confirm_email = state.current.patient.email;
