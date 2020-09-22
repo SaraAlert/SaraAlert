@@ -20,6 +20,10 @@ class CloseContact extends React.Component {
       enrolled_id: this.props.close_contact.enrolled_id || null,
       contact_attempts: this.props.close_contact.contact_attempts || 0,
     };
+    console.log('this.state');
+    console.log(this.state);
+    console.log('this.props');
+    console.log(this.props);
     this.closeContactNotePlaceholder = this.props.patient.isolation
       ? 'enter additional information about case'
       : 'enter additional information about monitoree’s potential exposure';
