@@ -85,6 +85,9 @@ class SymptomOnset extends React.Component {
               <DateInput
                 id="symptom_onset"
                 date={this.state.symptom_onset}
+                minDate={moment()
+                  .subtract(1, 'year')
+                  .format('YYYY-MM-DD')}
                 maxDate={moment()
                   .add(30, 'days')
                   .format('YYYY-MM-DD')}

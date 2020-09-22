@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
+import moment from 'moment';
 
 import DateInput from '../../util/DateInput';
 
@@ -90,6 +91,12 @@ class Arrival extends React.Component {
                   <DateInput
                     id="date_of_departure"
                     date={this.state.current.patient.date_of_departure}
+                    minDate={moment()
+                      .subtract(1, 'year')
+                      .format('YYYY-MM-DD')}
+                    maxDate={moment()
+                      .add(1, 'year')
+                      .format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_departure', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_departure']}
@@ -151,6 +158,12 @@ class Arrival extends React.Component {
                   <DateInput
                     id="date_of_arrival"
                     date={this.state.current.patient.date_of_arrival}
+                    minDate={moment()
+                      .subtract(1, 'year')
+                      .format('YYYY-MM-DD')}
+                    maxDate={moment()
+                      .add(1, 'year')
+                      .format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_arrival', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_arrival']}

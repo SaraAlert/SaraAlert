@@ -373,7 +373,7 @@ class MonitoringStatus extends React.Component {
             <React.Fragment>
               <hr />
               <p className="mb-2">
-                Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure toggled ON and are being
+                Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure turned ON and are being
                 monitored in the Exposure Workflow?
               </p>
               <Form.Group className="px-4">
@@ -404,6 +404,12 @@ class MonitoringStatus extends React.Component {
                         <DateInput
                           id="apply_to_group_cm_only_date"
                           date={this.state.apply_to_group_cm_only_date}
+                          minDate={moment()
+                            .subtract(1, 'year')
+                            .format('YYYY-MM-DD')}
+                          maxDate={moment()
+                            .add(30, 'days')
+                            .format('YYYY-MM-DD')}
                           onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
                           placement="bottom"
                         />

@@ -127,7 +127,7 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="radio"
                 id="apply_to_group_cm_only"
-                label="This monitoree and only household members where Continuous Exposure is toggled ON"
+                label="This monitoree and only household members where Continuous Exposure is turned ON"
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group_cm_only === true}
               />
@@ -181,14 +181,14 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be toggled off for the selected record`,
+            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be turned off for the selected record`,
             this.closeExposureDateModal,
             () => this.submit(true)
           )}
         {this.state.showContinuousMonitoringModal &&
           this.createModal(
             'Continuous Exposure',
-            'Are you sure you want to modify Continuous Exposure? Continuous Exposure will be toggled for the selected record',
+            'Are you sure you want to modify Continuous Exposure? Continuous Exposure will be turned for the selected record',
             this.toggleContinuousMonitoringModal,
             () => this.submit(false)
           )}
@@ -208,6 +208,9 @@ class LastDateExposure extends React.Component {
                 <DateInput
                   id="last_date_of_exposure"
                   date={this.state.last_date_of_exposure}
+                  minDate={moment()
+                    .subtract(1, 'year')
+                    .format('YYYY-MM-DD')}
                   maxDate={moment()
                     .add(30, 'days')
                     .format('YYYY-MM-DD')}
@@ -224,7 +227,7 @@ class LastDateExposure extends React.Component {
                     placement="left"
                     overlay={
                       <Tooltip id="tooltip-ce">
-                        Continuous Exposure cannot be toggled for records on the Closed line list. If this monitoree requires monitoring due to a Continuous
+                        Continuous Exposure cannot be turned for records on the Closed line list. If this monitoree requires monitoring due to a Continuous
                         Exposure, you may update this field after changing Monitoring Status to &quot;Actively Monitoring&quot;
                       </Tooltip>
                     }>
