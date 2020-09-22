@@ -109,8 +109,9 @@ class MonitoringStatus extends React.Component {
         this.setState({
           showPublicHealthActionModal: true,
           message: `latest public health action to "${event.target.value}"`,
-          message_warning:
-            'The monitoree will be moved to the "Records Requiring Review" line list if they meet a recovery definition or will remain on the "Reporting" or "Non-Reporting" line list as appropriate until a recovery definition is met.',
+          message_warning: 'This will not impact the line list on which this record appears.',
+          household_warning:
+            'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
           public_health_action: event?.target?.value ? event.target.value : '',
           monitoring_reasons: null,
         });
@@ -118,11 +119,13 @@ class MonitoringStatus extends React.Component {
         this.setState({
           showPublicHealthActionModal: true,
           message: `latest public health action to "${event.target.value}"`,
-          message_warning: this.props.isolation
-            ? 'This will not impact line list placement in the Isolation workflow.'
-            : event.target.value === 'None'
-            ? 'The monitoree will be moved back into the primary status line lists.'
-            : 'The monitoree will be moved into the PUI line list.',
+          message_warning:
+            event.target.value === 'None'
+              ? 'The monitoree will be moved back into the primary status line lists.'
+              : 'The monitoree will be moved into the PUI line list.',
+          household_warning:
+            'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
+
           public_health_action: event?.target?.value ? event.target.value : '',
           monitoring_reasons: null,
         });
@@ -348,6 +351,9 @@ class MonitoringStatus extends React.Component {
                   onChange={this.handleChange}
                   checked={this.state.apply_to_group}
                 />
+              </Form.Group>
+              <Form.Group>
+                {(this.state.apply_to_group || this.state.apply_to_group_cm_only) && this.state.household_warning && <i>{this.state.household_warning}</i>}
               </Form.Group>
             </React.Fragment>
           )}
