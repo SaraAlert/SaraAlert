@@ -39,7 +39,7 @@ class CaseStatus extends React.Component {
           if (hideModal) {
             this.submit();
           }
-          if (!confirmedOrProbable) {
+          if (!confirmedOrProbable && this.state.case_status !== '') {
             this.setState({ isolation: false, public_health_action: 'None' });
           }
         });
