@@ -128,9 +128,7 @@ class PatientsController < ApplicationController
     # Default responder to self if no responder condition met
     patient.responder = patient if patient.responder.nil?
 
-    if params.permit(:responder_id)[:responder_id]
-      patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
-    end
+    patient.responder = patient.responder.responder if params.permit(:responder_id)[:responder_id] && (patient.responder.responder_id != patient.responder.id)
 
     # Set the creator as the current user
     patient.creator = current_user
@@ -480,7 +478,7 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
-    patient.send_assessment(true)
+    patient.send_assessment(force: true)
 
     History.report_reminder(patient: patient, created_by: current_user)
   end

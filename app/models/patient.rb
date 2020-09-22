@@ -410,7 +410,7 @@ class Patient < ApplicationRecord
   end
 
   # Order individuals based on their public health assigned risk assessment
-  def self.order_by_risk(asc = true)
+  def self.order_by_risk(asc: true)
     order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
                 "WHEN exposure_risk_assessment='Medium' THEN 1",
                 "WHEN exposure_risk_assessment='Low' THEN 2",
@@ -524,12 +524,10 @@ class Patient < ApplicationRecord
   end
 
   # Send a daily assessment to this monitoree
-  def send_assessment(force = false)
+  def send_assessment(force: false)
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
 
-    unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent > 12.hours.ago
-    end
+    return if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent > 12.hours.ago
 
     # Do not allow messages to go to household members
     return unless responder_id == id
@@ -554,11 +552,12 @@ class Patient < ApplicationRecord
       morning = (8..12)
       afternoon = (12..16)
       evening = (16..19)
-      if preferred_contact_time == 'Morning'
+      case preferred_contact_time
+      when 'Morning'
         return unless morning.include? hour
-      elsif preferred_contact_time == 'Afternoon'
+      when 'Afternoon'
         return unless afternoon.include? hour
-      elsif preferred_contact_time == 'Evening'
+      when 'Evening'
         return unless evening.include? hour
       end
     end
@@ -644,12 +643,10 @@ class Patient < ApplicationRecord
     end
 
     # Exposure workflow specific conditions
-    unless isolation
-      # Monitoring period has elapsed
-      if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
-        eligible = false
-        messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
-      end
+    # Monitoring period has elapsed
+    if !isolation && (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
+      eligible = false
+      messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
     end
 
     # Has already been contacted today
@@ -668,11 +665,12 @@ class Patient < ApplicationRecord
 
     # Rough estimate of next contact time
     if eligible
-      messages << if preferred_contact_time == 'Morning'
+      messages << case preferred_contact_time
+                  when 'Morning'
                     { message: '8:00 AM local time (Morning)', datetime: nil }
-                  elsif preferred_contact_time == 'Afternoon'
+                  when 'Afternoon'
                     { message: '12:00 PM local time (Afternoon)', datetime: nil }
-                  elsif preferred_contact_time == 'Evening'
+                  when 'Evening'
                     { message: '4:00 PM local time (Evening)', datetime: nil }
                   else
                     { message: 'Today', datetime: nil }

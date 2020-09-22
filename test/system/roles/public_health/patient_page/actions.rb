@@ -58,7 +58,7 @@ class PublicHealthPatientPageActions < ApplicationSystemTestCase
     assert_equal latest_public_health_action, @@system_test_utils.get_patient_by_label(patient_label)[:public_health_action]
   end
 
-  def update_assigned_jurisdiction(user_label, patient_label, jurisdiction, reasoning, valid_jurisdiction = true, under_hierarchy = true)
+  def update_assigned_jurisdiction(user_label, patient_label, jurisdiction, reasoning, valid_jurisdiction: true, under_hierarchy: true)
     assert page.has_button?('Change Jurisdiction', disabled: true)
     fill_in 'jurisdictionId', with: jurisdiction
     if valid_jurisdiction
@@ -77,7 +77,7 @@ class PublicHealthPatientPageActions < ApplicationSystemTestCase
     end
   end
 
-  def update_assigned_user(user_label, patient_label, assigned_user, reasoning, valid_assigned_user = true, changed = true)
+  def update_assigned_user(user_label, patient_label, assigned_user, reasoning, valid_assigned_user: true, changed: true)
     assert page.has_button?('Change User', disabled: true)
     fill_in 'assignedUser', with: assigned_user
     if valid_assigned_user && changed

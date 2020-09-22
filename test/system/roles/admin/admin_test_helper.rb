@@ -15,21 +15,21 @@ class AdminTestHelper < ApplicationSystemTestCase
     jurisdiction_id = @@system_test_utils.login(user_label)
     User.where(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each do |user|
       @@admin_dashboard.search_for_user(user.email)
-      @@admin_dashboard_verifier.verify_user(user, true)
+      @@admin_dashboard_verifier.verify_user(user, should_exist: true)
     end
     User.where.not(jurisdiction_id: Jurisdiction.find(jurisdiction_id).subtree_ids).each do |user|
       @@admin_dashboard.search_for_user(user.email)
-      @@admin_dashboard_verifier.verify_user(user, false)
+      @@admin_dashboard_verifier.verify_user(user, should_exist: false)
     end
     @@system_test_utils.logout
   end
 
-  def add_user(user_data, submit = true)
+  def add_user(user_data, submit: true)
     @@system_test_utils.login(user_data[:label])
     Capybara.using_wait_time(4) do
-      @@admin_dashboard.add_user(user_data, submit)
+      @@admin_dashboard.add_user(user_data, submit: submit)
       @@admin_dashboard.search_for_user(user_data[:email])
-      @@admin_dashboard_verifier.verify_add_user(user_data, submit)
+      @@admin_dashboard_verifier.verify_add_user(user_data, submit: submit)
     end
     @@system_test_utils.logout
   end

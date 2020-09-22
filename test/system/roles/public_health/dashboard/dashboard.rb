@@ -74,23 +74,24 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     find('a', text: "Epi-X (#{workflow})").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
-    if validity == :valid
+    case validity
+    when :valid
       @@public_health_import_verifier.verify_epi_x_import_page(jurisdiction_id, workflow, file_name)
       select_monitorees_to_import(rejects, accept_duplicates)
       @@public_health_import_verifier.verify_epi_x_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
-    elsif validity == :invalid_file
+    when :invalid_file
       assert_content('Please make sure that your import file is a .xlsx file.')
       find('.modal-header').find('.close').click
-    elsif validity == :invalid_format
+    when :invalid_format
       assert_content('Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.')
       find('.modal-header').find('.close').click
-    elsif validity == :invalid_headers
+    when :invalid_headers
       assert_content('Please make sure to use the latest Epi-X format.')
       find('.modal-header').find('.close').click
-    elsif validity == :invalid_monitorees
+    when :invalid_monitorees
       assert_content('File must contain at least one monitoree to import')
       find('.modal-header').find('.close').click
-    elsif validity == :invalid_fields
+    when :invalid_fields
       @@public_health_import_verifier.verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
       find('.modal-header').find('.close').click
     end
@@ -102,23 +103,24 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     find('a', text: "Sara Alert Format (#{workflow})").click
     page.attach_file(file_fixture(file_name))
     click_on 'Upload'
-    if validity == :valid
+    case validity
+    when :valid
       @@public_health_import_verifier.verify_sara_alert_format_import_page(jurisdiction_id, workflow, file_name)
       select_monitorees_to_import(rejects, accept_duplicates)
       @@public_health_import_verifier.verify_sara_alert_format_import_data(jurisdiction_id, workflow, file_name, rejects, accept_duplicates)
-    elsif validity == :invalid_file
+    when :invalid_file
       assert_content('Please make sure that your import file is a .xlsx file.')
       find('.modal-header').find('.close').click
-    elsif validity == :invalid_format
+    when :invalid_format
       assert_content('Please make sure that .xlsx import file is formatted in accordance with the formatting guidance.')
       find('.modal-header').find('.close').click
-    elsif validity == :invalid_headers
+    when :invalid_headers
       assert_content('Please make sure to use the latest format specified by the Sara Alert Format guidance doc.')
       find('.modal-header').find('.close').click
-    elsif validity == :invalid_monitorees
+    when :invalid_monitorees
       assert_content('File must contain at least one monitoree to import')
       find('.modal-header').find('.close').click
-    elsif validity == :invalid_fields
+    when :invalid_fields
       @@public_health_import_verifier.verify_sara_alert_format_field_validation(jurisdiction_id, workflow, file_name)
       find('.modal-header').find('.close').click
     end
