@@ -118,10 +118,11 @@ class MonitoringStatus extends React.Component {
         this.setState({
           showPublicHealthActionModal: true,
           message: `latest public health action to "${event.target.value}"`,
-          message_warning:
-            event.target.value === 'None'
-              ? 'The monitoree will be moved back into the primary status line lists.'
-              : 'The monitoree will be moved into the PUI line list.',
+          message_warning: this.props.isolation
+            ? 'This will not impact line list placement in the Isolation workflow.'
+            : event.target.value === 'None'
+            ? 'The monitoree will be moved back into the primary status line lists.'
+            : 'The monitoree will be moved into the PUI line list.',
           public_health_action: event?.target?.value ? event.target.value : '',
           monitoring_reasons: null,
         });
@@ -514,7 +515,10 @@ class MonitoringStatus extends React.Component {
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <Form.Label className="nav-input-label">
                     LATEST PUBLIC HEALTH ACTION
-                    <InfoTooltip tooltipTextKey="latestPublicHealthAction" location="right"></InfoTooltip>
+                    <InfoTooltip
+                      tooltipTextKey={this.props.isolation ? 'latestPublicHealthActionInIsolation' : 'latestPublicHealthActionInExposure'}
+                      location="right"
+                    />
                   </Form.Label>
                   <Form.Control
                     as="select"
