@@ -91,11 +91,9 @@ class Arrival extends React.Component {
                   <DateInput
                     id="date_of_departure"
                     date={this.state.current.patient.date_of_departure}
-                    minDate={moment()
-                      .subtract(1, 'year')
-                      .format('YYYY-MM-DD')}
+                    minDate={'2020-01-01'}
                     maxDate={moment()
-                      .add(1, 'year')
+                      .add(30, 'days')
                       .format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_departure', date)}
                     placement="bottom"
@@ -158,11 +156,9 @@ class Arrival extends React.Component {
                   <DateInput
                     id="date_of_arrival"
                     date={this.state.current.patient.date_of_arrival}
-                    minDate={moment()
-                      .subtract(1, 'year')
-                      .format('YYYY-MM-DD')}
+                    minDate={'2020-01-01'}
                     maxDate={moment()
-                      .add(1, 'year')
+                      .add(30, 'days')
                       .format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_arrival', date)}
                     placement="bottom"

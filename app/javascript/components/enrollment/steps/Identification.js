@@ -78,7 +78,7 @@ class Identification extends React.Component {
         // If date is undefined, age will stay undefined (which nulls out the age field)
         if (dateOfBirth) {
           age = 0 - moment(dateOfBirth).diff(moment.now(), 'years');
-          age = age < 200 && age > 0 ? age : self.state.current.patient.age;
+          age = age > 0 ? age : self.state.current.patient.age;
         }
         self.setState(
           state => {
@@ -266,9 +266,7 @@ class Identification extends React.Component {
                   <DateInput
                     id="date_of_birth"
                     date={this.state.current.patient.date_of_birth}
-                    minDate={moment()
-                      .subtract(200, 'year')
-                      .format('YYYY-MM-DD')}
+                    minDate={'1900-01-01'}
                     maxDate={moment().format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_birth', date)}
                     placement="bottom"

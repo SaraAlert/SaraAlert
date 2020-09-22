@@ -180,11 +180,9 @@ class AdditionalPlannedTravel extends React.Component {
                   <DateInput
                     id="additional_planned_travel_start_date"
                     date={this.state.current.patient.additional_planned_travel_start_date}
-                    minDate={moment()
-                      .subtract(1, 'year')
-                      .format('YYYY-MM-DD')}
+                    minDate={'2020-01-01'}
                     maxDate={moment()
-                      .add(1, 'year')
+                      .add(30, 'days')
                       .format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('additional_planned_travel_start_date', date)}
                     placement="bottom"
@@ -202,11 +200,9 @@ class AdditionalPlannedTravel extends React.Component {
                   <DateInput
                     id="additional_planned_travel_end_date"
                     date={this.state.current.patient.additional_planned_travel_end_date}
-                    minDate={moment()
-                      .subtract(1, 'year')
-                      .format('YYYY-MM-DD')}
+                    minDate={'2020-01-01'}
                     maxDate={moment()
-                      .add(1, 'year')
+                      .add(30, 'days')
                       .format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('additional_planned_travel_end_date', date)}
                     placement="bottom"

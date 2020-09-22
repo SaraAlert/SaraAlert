@@ -101,9 +101,7 @@ class Laboratory extends React.Component {
                 <DateInput
                   id="specimen_collection"
                   date={this.state.specimen_collection}
-                  minDate={moment()
-                    .subtract(1, 'year')
-                    .format('YYYY-MM-DD')}
+                  minDate={'2020-01-01'}
                   maxDate={moment().format('YYYY-MM-DD')}
                   onChange={date => this.handleDateChange('specimen_collection', date)}
                   placement="bottom"
@@ -116,9 +114,7 @@ class Laboratory extends React.Component {
                 <DateInput
                   id="report"
                   date={this.state.report}
-                  minDate={moment()
-                    .subtract(1, 'year')
-                    .format('YYYY-MM-DD')}
+                  minDate={'2020-01-01'}
                   maxDate={moment().format('YYYY-MM-DD')}
                   onChange={date => this.handleDateChange('report', date)}
                   placement="bottom"

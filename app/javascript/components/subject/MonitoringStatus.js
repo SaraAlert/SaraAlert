@@ -404,9 +404,7 @@ class MonitoringStatus extends React.Component {
                         <DateInput
                           id="apply_to_group_cm_only_date"
                           date={this.state.apply_to_group_cm_only_date}
-                          minDate={moment()
-                            .subtract(1, 'year')
-                            .format('YYYY-MM-DD')}
+                          minDate={'2020-01-01'}
                           maxDate={moment()
                             .add(30, 'days')
                             .format('YYYY-MM-DD')}
