@@ -43,7 +43,7 @@ class CaseStatus extends React.Component {
             if (hideModal) {
               this.submit();
             }
-            if (!confirmedOrProbable  && this.state.case_status !== '') {
+            if (!confirmedOrProbable && this.state.case_status !== '') {
               this.setState({ isolation: false, public_health_action: 'None' });
             }
           });
@@ -103,6 +103,34 @@ class CaseStatus extends React.Component {
     });
   };
 
+  renderRadioButtons() {
+    return (
+      <React.Fragment>
+        <p className="mb-2">Please select the records that you would like to apply this change to:</p>
+        <Form.Group className="px-4">
+          <Form.Check
+            type="radio"
+            className="mb-1"
+            name="apply_to_group"
+            id="apply_to_group_no"
+            label="This monitoree only"
+            onChange={this.handleChange}
+            checked={!this.state.apply_to_group}
+          />
+          <Form.Check
+            type="radio"
+            className="mb-3"
+            name="apply_to_group"
+            id="apply_to_group_yes"
+            label="This monitoree and all household members"
+            onChange={this.handleChange}
+            checked={this.state.apply_to_group}
+          />
+        </Form.Group>
+      </React.Fragment>
+    );
+  }
+
   createModal(title, toggle, submit) {
     if (this.state.case_status === '') {
       return (
@@ -112,31 +140,7 @@ class CaseStatus extends React.Component {
           </Modal.Header>
           <Modal.Body>
             <p>Are you sure you want to change case status from {this.props.patient.case_status} to blank? The monitoree will remain in the same workflow.</p>
-            {this.props.has_group_members && (
-              <React.Fragment>
-                <p className="mb-2">Please select the records that you would like to apply this change to:</p>
-                <Form.Group className="px-4">
-                  <Form.Check
-                    type="radio"
-                    className="mb-1"
-                    name="apply_to_group"
-                    id="apply_to_group_no"
-                    label="This monitoree only"
-                    onChange={this.handleChange}
-                    checked={!this.state.apply_to_group}
-                  />
-                  <Form.Check
-                    type="radio"
-                    className="mb-3"
-                    name="apply_to_group"
-                    id="apply_to_group_yes"
-                    label="This monitoree and all household members"
-                    onChange={this.handleChange}
-                    checked={this.state.apply_to_group}
-                  />
-                </Form.Group>
-              </React.Fragment>
-            )}
+            {this.props.has_group_members && this.renderRadioButtons()}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary btn-square" onClick={toggle}>
@@ -168,31 +172,7 @@ class CaseStatus extends React.Component {
               This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to
               continue exposure monitoring.
             </p>
-            {this.props.has_group_members && (
-              <React.Fragment>
-                <p className="mb-2">Please select the records that you would like to apply this change to:</p>
-                <Form.Group className="px-4">
-                  <Form.Check
-                    type="radio"
-                    className="mb-1"
-                    name="apply_to_group"
-                    id="apply_to_group_no"
-                    label="This monitoree only"
-                    onChange={this.handleChange}
-                    checked={!this.state.apply_to_group}
-                  />
-                  <Form.Check
-                    type="radio"
-                    className="mb-3"
-                    name="apply_to_group"
-                    id="apply_to_group_yes"
-                    label="This monitoree and all household members"
-                    onChange={this.handleChange}
-                    checked={this.state.apply_to_group}
-                  />
-                </Form.Group>
-              </React.Fragment>
-            )}
+            {this.props.has_group_members && this.renderRadioButtons()}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary btn-square" onClick={toggle}>
@@ -233,31 +213,7 @@ class CaseStatus extends React.Component {
                 Workflow.
               </p>
             )}
-            {this.props.has_group_members && (
-              <React.Fragment>
-                <p className="mt-3 mb-2">Please select the records that you would like to apply this change to:</p>
-                <Form.Group className="px-4">
-                  <Form.Check
-                    type="radio"
-                    className="mb-1"
-                    name="apply_to_group"
-                    id="apply_to_group_no"
-                    label="This monitoree only"
-                    onChange={this.handleChange}
-                    checked={!this.state.apply_to_group}
-                  />
-                  <Form.Check
-                    type="radio"
-                    className="mb-3"
-                    name="apply_to_group"
-                    id="apply_to_group_yes"
-                    label="This monitoree and all household members"
-                    onChange={this.handleChange}
-                    checked={this.state.apply_to_group}
-                  />
-                </Form.Group>
-              </React.Fragment>
-            )}
+            {this.props.has_group_members && this.renderRadioButtons()}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary btn-square" onClick={toggle}>
@@ -285,31 +241,7 @@ class CaseStatus extends React.Component {
               The case status for the selected record will be updated to {this.state.case_status} and moved to the appropriate line list in the Exposure
               Workflow.
             </p>
-            {this.props.has_group_members && (
-              <React.Fragment>
-                <p className="mb-2">Please select the records that you would like to apply this change to:</p>
-                <Form.Group className="px-4">
-                  <Form.Check
-                    type="radio"
-                    className="mb-1"
-                    name="apply_to_group"
-                    id="apply_to_group_no"
-                    label="This monitoree only"
-                    onChange={this.handleChange}
-                    checked={!this.state.apply_to_group}
-                  />
-                  <Form.Check
-                    type="radio"
-                    className="mb-3"
-                    name="apply_to_group"
-                    id="apply_to_group_yes"
-                    label="This monitoree and all household members"
-                    onChange={this.handleChange}
-                    checked={this.state.apply_to_group}
-                  />
-                </Form.Group>
-              </React.Fragment>
-            )}
+            {this.props.has_group_members && this.renderRadioButtons()}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary btn-square" onClick={toggle}>
