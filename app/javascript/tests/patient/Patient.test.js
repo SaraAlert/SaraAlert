@@ -76,10 +76,13 @@ describe('Patient', () => {
         expect(section.find(Row).first().text()).toEqual('Arrival Information');
         expect(section.find(Button).length).toEqual(0);
         expect(section.find('h6').at(0).text()).toEqual('DEPARTED');
+        expect(section.find('.font-weight-light').at(0).text()).toEqual('Cabo');
+        expect(section.find('.font-weight-light').at(1).text()).toEqual('09/08/2020');
         expect(section.find('h6').at(1).text()).toEqual('ARRIVAL');
-
-        // console.log(section.debug())
-        // UPDATE MOCK TO HAVE THESE FIELDS FILLED IN
+        expect(section.find('.font-weight-light').at(2).text()).toEqual('Orlando');
+        expect(section.find('.font-weight-light').at(3).text()).toEqual('09/10/2020');
+        expect(section.find('.font-weight-light').at(4).text()).toEqual('Spirit');
+        expect(section.find('.font-weight-light').at(5).text()).toEqual('1515');
     });
 
     it('Properly renders additional planned travel section', () => {
@@ -111,7 +114,7 @@ describe('Patient', () => {
         expect(section.find(Row).first().text()).toEqual('Potential Exposure Information');
         expect(section.find(Button).length).toEqual(0);
         expect(section.find('h6').text()).toEqual('LAST EXPOSURE');
-        expect(section.find('.font-weight-light').at(0).text()).toEqual(' Mexico'); // fix me
+        expect(section.find('.font-weight-light').at(0).text()).toEqual(' Mexico');
         expect(section.find('.font-weight-light').at(1).text()).toEqual('09/13/2020');
         potentialExposureFields.forEach(function(field, index) {
             expect(section.find('.text-danger').at(index).text().includes(field)).toBeTruthy();
