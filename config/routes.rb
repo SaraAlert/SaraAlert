@@ -38,7 +38,7 @@ Rails.application.routes.draw do
 
   resources :admin, only: [:index]
   get 'admin/users', to: 'admin#users'
-  
+
   post 'admin/create_user', to: 'admin#create_user'
   post 'admin/edit_user', to: 'admin#edit_user'
   post 'admin/reset_password', to: 'admin#reset_password'
@@ -67,6 +67,7 @@ Rails.application.routes.draw do
   post '/import/:workflow/:format', to: 'import#import'
   get '/import/download_guidance', to: 'import#download_guidance'
 
+  get '/patients/households/self_reporting', to: 'patients#self_reporting'
   get '/patients/:id/household_removeable', to: 'patients#household_removeable'
   post '/patients/bulk_edit/status', to: 'patients#bulk_update_status'
   post '/patients/:id/status', to: 'patients#update_status'
@@ -97,7 +98,6 @@ Rails.application.routes.draw do
   get '/public_health/patients', to: 'public_health#patients', as: :public_health_patients
   get '/public_health/patients/counts/workflow', to: 'public_health#workflow_counts', as: :workflow_counts
   get '/public_health/patients/counts/:workflow/:tab', to: 'public_health#tab_counts', as: :tab_counts
-  get '/public_health/patients/self_reporting', to: 'public_health#self_reporting', as: :self_reporting
 
   get '/analytics', to: 'analytics#index', as: :analytics
   get '/county_level_maps/:mapFile', to: 'analytics#clm_geo_json'
