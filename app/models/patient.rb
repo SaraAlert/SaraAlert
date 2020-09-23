@@ -624,17 +624,23 @@ class Patient < ApplicationRecord
       messages << { message: 'Monitoree was purged', datetime: nil }
     end
 
-    # Can't send messages if notifications are paused
-    if pause_notifications
-      eligible = false
-      messages << { message: 'Monitoree\'s notifications are paused', datetime: nil }
-    end
-
     # Can't send to household members
     if id != responder_id
       eligible = false
       household = true
       messages << { message: 'Monitoree is within a household, so the HoH will receive notifications instead', datetime: nil }
+    end
+
+    # Can't send messages to monitorees that are on the closed line list and have no active dependents.
+    if !monitoring && active_dependents.empty?
+      eligible = false
+      messages << { message: 'Monitoree is not currently being monitored and has no actively monitored household members', datetime: closed_at }
+    end
+
+    # Can't send messages if notifications are paused
+    if pause_notifications
+      eligible = false
+      messages << { message: 'Monitoree\'s notifications are paused', datetime: nil }
     end
 
     # Has an ineligible preferred contact method
