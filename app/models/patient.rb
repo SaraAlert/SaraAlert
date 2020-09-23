@@ -411,7 +411,7 @@ class Patient < ApplicationRecord
       .select do |patient|
         # Submitted an assessment today AND is at the end of or past their monitoring period
         (!patient.latest_assessment_at.nil? &&
-          patient.latest_assessment_at >= patient.curr_date_in_timezone.beginning_of_day &&
+          patient.latest_assessment_at.getlocal(patient.address_timezone_offset) >= patient.curr_date_in_timezone.beginning_of_day &&
           patient.end_of_monitoring_period?)
       end
   end
