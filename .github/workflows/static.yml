@@ -52,7 +52,7 @@ jobs:
       - name: Run Rubocop
         run: bundle exec rubocop
       - name: Run ERB Lint
-        run: bundle exec erb-lint --lint-all
+        run: bundle exec erblint --lint-all
       - name: Run ESLint
         run: ./node_modules/.bin/eslint app/javascript/components
 
