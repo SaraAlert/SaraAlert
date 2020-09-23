@@ -176,7 +176,35 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
   end
 
-  test 'close eligible does include records that have NOT reported today (based on their timezone)' do
+  test 'close eligible does NOT include records that have never reported' do
+    # Control test
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now.getlocal('-05:00'),
+                     created_at: 2.days.ago,
+                     last_date_of_exposure: 20.days.ago)
+
+    assert_equal(1, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: nil,
+                     created_at: 2.days.ago,
+                     last_date_of_exposure: 20.days.ago)
+
+    assert_equal(0, Patient.close_eligible.select { |p| p.id == patient.id }.count)
+  end
+
+  test 'close eligible does NOT include records that have NOT reported today (based on their timezone)' do
+    # Control test
     patient = create(:patient,
                      purged: false,
                      isolation: false,
