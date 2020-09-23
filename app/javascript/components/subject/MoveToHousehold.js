@@ -44,7 +44,7 @@ class MoveToHousehold extends React.Component {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'get',
-      url: window.BASE_PATH + '/public_health/patients/self_reporting',
+      url: window.BASE_PATH + '/patients/households/self_reporting',
       params: {},
     })
       .then(response => {

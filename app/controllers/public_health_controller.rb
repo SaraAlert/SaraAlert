@@ -104,21 +104,6 @@ class PublicHealthController < ApplicationController
     render json: { total: patients.size }
   end
 
-  # Get all individuals whose responder_id = id, these people are "HOH eligible"
-  def self_reporting
-    redirect_to(root_url) && return unless current_user.can_edit_patient?
-
-    patients = if current_user.has_role?(:enroller)
-                 current_user.enrolled_patients.where('patients.responder_id = patients.id')
-               else
-                 current_user.viewable_patients.where('patients.responder_id = patients.id')
-               end
-    patients = patients.pluck(:id, :first_name, :last_name, :age, :user_defined_id_statelocal).map do |p|
-      { id: p[0], first_name: p[1], last_name: p[2], age: p[3], state_id: p[4] }
-    end
-    render json: { self_reporting: patients.sort_by { |p| p[:last_name] || 'ZZZ' }.to_json }
-  end
-
   protected
 
   def patients_by_type(workflow, tab)
