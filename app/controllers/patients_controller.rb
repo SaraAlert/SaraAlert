@@ -25,7 +25,7 @@ class PatientsController < ApplicationController
     if @patient.self_reporter_or_proxy?
       # Group members if this is HOH
       @group_members = @patient.dependents_exclude_self.where(purged: false)
-      @all_group_members = @patient.dependents + [@patient]
+      @all_group_members = @patient.dependents
     else
       # All group members regardless if this is not HOH
       @all_group_members = get_all_group_members_for(@current_user_role)
