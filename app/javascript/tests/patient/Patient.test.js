@@ -7,12 +7,7 @@ import MoveToHousehold from '../../components/subject/MoveToHousehold';
 import RemoveFromHousehold from '../../components/subject/RemoveFromHousehold';
 import { mockPatient1, mockPatient2, blankMockPatient } from '../mocks/mockPatients'
 
-const tableHeaders = [
-    'Name',
-    'Workflow',
-    'Monitoring Status',
-    'Continuous Exposure?'
-]
+const hohTableHeaders = [ 'Name', 'Workflow', 'Monitoring Status', 'Continuous Exposure?' ]
 
 function getWrapper(mockPatient, groupMembers) {
     const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
@@ -42,8 +37,8 @@ describe('Patient', () => {
         expect(wrapper.containsMatchingElement(<ChangeHOH />)).toBeTruthy();
         expect(wrapper.containsMatchingElement(<RemoveFromHousehold />)).toBeFalsy();
         expect(wrapper.containsMatchingElement(<MoveToHousehold />)).toBeFalsy();
-        tableHeaders.forEach(function(tableHeader, index) {
-            expect(wrapper.find('thead th').at(index).text()).toEqual(tableHeader);
+        hohTableHeaders.forEach(function(header, index) {
+            expect(wrapper.find('thead th').at(index).text()).toEqual(header);
         })
         expect(wrapper.find('tbody tr').length).toEqual(2);
     });
@@ -78,7 +73,6 @@ describe('Patient', () => {
     // case info section iso vs exp 
 
     // hide body shows different details
-    // iso vs exposure details
     // clicking change HoH shows modal
     // clicking remove from household shows modal
     // clicking move to household shows modal
