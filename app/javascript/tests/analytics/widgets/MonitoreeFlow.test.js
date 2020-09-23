@@ -28,7 +28,7 @@ const allExpectedDomValues = {
 let wrapped = shallow(<MonitoreeFlow stats={mocked_stats}/>);
 
 describe('MonitoreeFlow', () => {
-  it('properly renders', () => {
+  it('Properly renders', () => {
     expect(wrapped).toMatchSnapshot();
   });
 });
