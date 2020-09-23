@@ -398,7 +398,9 @@ class Patient < ApplicationRecord
   # Patients are eligible to be automatically closed by the system IF:
   #  - in exposure workflow
   #     AND
-  #  - asymptomatic (this also checks that last assessment was completed within the <reporting_period_minutes>)
+  #  - asymptomatic
+  #     AND
+  #  - submitted an assessment today already (based on their timezone)
   #     AND
   #  - not in continuous exposure
   #     AND
@@ -406,7 +408,12 @@ class Patient < ApplicationRecord
   def self.close_eligible
     exposure_asymptomatic
       .where(continuous_exposure: false)
-      .select(&:end_of_monitoring_period?)
+      .select do |patient|
+        # Submitted an assessment today AND is at the end of or past their monitoring period
+        (!patient.latest_assessment_at.nil? &&
+          patient.latest_assessment_at >= patient.curr_date_in_timezone.beginning_of_day &&
+          patient.end_of_monitoring_period?)
+      end
   end
 
   # Order individuals based on their public health assigned risk assessment
