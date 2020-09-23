@@ -7,7 +7,7 @@ linters:
     enabled: false
   RightTrim:
     enabled: true
-    enforced_style: '='
+    enforced_style: '-'
   NoJavascriptTagHelper:
     enabled: true
     correction_style: 'plain'
