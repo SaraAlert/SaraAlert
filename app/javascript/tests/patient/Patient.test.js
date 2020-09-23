@@ -1,24 +1,24 @@
 import React from 'react'
 import { shallow } from 'enzyme';
-import { Row } from 'react-bootstrap';
+import { Button, Collapse, Row } from 'react-bootstrap';
 import Patient from '../../components/patient/Patient.js'
 import ChangeHOH from '../../components/subject/ChangeHOH';
 import MoveToHousehold from '../../components/subject/MoveToHousehold';
 import RemoveFromHousehold from '../../components/subject/RemoveFromHousehold';
 import { mockPatient1, mockPatient2, blankMockPatient } from '../mocks/mockPatients'
 
+const goToMock = jest.fn();
+const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 const hohTableHeaders = [ 'Name', 'Workflow', 'Monitoring Status', 'Continuous Exposure?' ]
 
-function getWrapper(mockPatient, groupMembers) {
-    const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
-    const wrapper = shallow(<Patient details={mockPatient} groupMembers={groupMembers} goto={() => {}} hideBody={true}
+function getWrapper(mockPatient, groupMembers, hideBody) {
+    return shallow(<Patient details={mockPatient} groupMembers={groupMembers} goto={goToMock} hideBody={hideBody}
         jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
-    return wrapper;
 }
 
 describe('Patient', () => {
     it('Properly renders all main components', () => {
-        const wrapper = getWrapper(mockPatient1, [ mockPatient2 ]);
+        const wrapper = getWrapper(mockPatient1, [ mockPatient2 ], true);
         expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
         expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: 21');
         expect(wrapper.find('#identification').exists()).toBeTruthy();
@@ -30,7 +30,7 @@ describe('Patient', () => {
     });
 
     it('Properly renders HoH section', () => {
-        const wrapper = getWrapper(mockPatient1, [ mockPatient2, blankMockPatient ]);
+        const wrapper = getWrapper(mockPatient1, [ mockPatient2, blankMockPatient ], true);
         expect(wrapper.find('#head-of-household').exists()).toBeTruthy();
         expect(wrapper.find('#head-of-household').find(Row).at(1).text())
             .toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
@@ -44,7 +44,7 @@ describe('Patient', () => {
     });
 
     it('Properly renders household member section', () => {
-        const wrapper = getWrapper(mockPatient2, []);
+        const wrapper = getWrapper(mockPatient2, [], true);
         expect(wrapper.find('#household-member-not-hoh').exists()).toBeTruthy();
         expect(wrapper.find('#household-member-not-hoh').find(Row).first().text())
             .toEqual('The reporting responsibility for this monitoree is handled by another monitoree. Click here to view that monitoree.');
@@ -55,7 +55,7 @@ describe('Patient', () => {
     });
 
     it('Properly renders single member (not in household) section', () => {
-        const wrapper = getWrapper(mockPatient1, []);
+        const wrapper = getWrapper(mockPatient1, [], true);
         expect(wrapper.find('#no-household').exists()).toBeTruthy();
         expect(wrapper.find('#no-household').find(Row).at(1).text()).toEqual('This monitoree is not a member of a household:');
         expect(wrapper.containsMatchingElement(<MoveToHousehold />)).toBeTruthy();
@@ -63,18 +63,50 @@ describe('Patient', () => {
         expect(wrapper.containsMatchingElement(<RemoveFromHousehold />)).toBeFalsy();
     });
 
+    // it('Properly renders identification section', () => {
+
+    // });
+
+    // it('Properly renders contact information section', () => {
+
+    // });
+
+    // it('Properly renders address section', () => {
+
+    // });
+
+    // it('Properly renders arrival information section', () => {
+    // arrival and departure
+    // });
+
+    // it('Properly renders additional planned travel section', () => {
+
+    // });
+
+    // it('Properly renders potential exposure/case information section', () => {
+    // isolation vs exposure
+    // });
+
     it('Properly renders no details message', () => {
         const blankWrapper = getWrapper();
         expect(blankWrapper.text()).toEqual('No monitoree details to show.');
     });
 
-    // test detail sections in more depth
-    // arrival info section (arrival and dept)
-    // case info section iso vs exp 
+    it('Expands/collapses details with this.props.hideBody', () => {
+        const collapsedWrapper = getWrapper(mockPatient1, [ mockPatient2 ], true);
+        expect(collapsedWrapper.find(Collapse).prop('in')).toBeFalsy();
 
-    // hide body shows different details
-    // clicking change HoH shows modal
-    // clicking remove from household shows modal
-    // clicking move to household shows modal
-    // test go to functionality
+        const expandedWrapper = getWrapper(mockPatient1, [ mockPatient2 ], false);
+        expect(expandedWrapper.find(Collapse).prop('in')).toBeTruthy();
+    });
+
+    it('Calls props goto method when the edit buttons are clicked', () => {
+        const wrapper = getWrapper(mockPatient1, [ mockPatient2 ], false);
+        expect(wrapper.find(Button).length).toEqual(6);
+        expect(goToMock).toHaveBeenCalledTimes(0);
+        wrapper.find(Button).forEach(function(btn, index) {
+            btn.simulate('click');
+            expect(goToMock).toHaveBeenCalledTimes(index+1);
+        })
+    });
 });
