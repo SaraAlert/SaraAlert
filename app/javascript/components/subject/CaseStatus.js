@@ -168,10 +168,17 @@ class CaseStatus extends React.Component {
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to
-              continue exposure monitoring.
-            </p>
+            {this.props.patient.monitoring ? (
+              <p>
+                This case will be moved to the exposure workflow and will be placed in the Symptomatic, Non-Reporting, or Asymptomatic line list as appropriate
+                to continue exposure monitoring.
+              </p>
+            ) : (
+              <p>
+                This case will be moved to the exposure workflow and will be placed in the Closed line list. If this individual should be actively monitored,
+                please update the record’s Monitoring Status.
+              </p>
+            )}
             {this.props.has_group_members && this.renderRadioButtons()}
           </Modal.Body>
           <Modal.Footer>

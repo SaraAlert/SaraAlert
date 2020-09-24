@@ -105,7 +105,16 @@ class MonitoringStatus extends React.Component {
         monitoring_reasons: null,
       });
     } else if (event?.target?.id && event.target.id === 'public_health_action') {
-      if (this.state.patient.isolation) {
+      if (!this.state.patient.monitoring) {
+        this.setState({
+          showPublicHealthActionModal: true,
+          message: `latest public health action to "${event.target.value}"`,
+          message_warning:
+            'Since this record is on the "Closed" line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record\'s Monitoring Status.',
+          public_health_action: event?.target?.value ? event.target.value : '',
+          monitoring_reasons: null,
+        });
+      } else if (this.state.patient.isolation) {
         this.setState({
           showPublicHealthActionModal: true,
           message: `latest public health action to "${event.target.value}"`,
@@ -143,7 +152,9 @@ class MonitoringStatus extends React.Component {
         showMonitoringStatusModal: true,
         message: `monitoring status to "${event.target.value}"`,
         message_warning:
-          event.target.value === 'Not Monitoring' ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.' : '',
+          event.target.value === 'Not Monitoring'
+            ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.'
+            : 'This will move the selected record(s) from the Closed line list to the appropriate Active Monitoring line list',
         monitoring: event.target.value === 'Actively Monitoring',
         monitoring_status: event?.target?.value ? event.target.value : '',
         monitoring_reasons:
@@ -373,7 +384,7 @@ class MonitoringStatus extends React.Component {
             <React.Fragment>
               <hr />
               <p className="mb-2">
-                Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure toggled ON and are being
+                Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure turned ON and are being
                 monitored in the Exposure Workflow?
               </p>
               <Form.Group className="px-4">
