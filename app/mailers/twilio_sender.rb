@@ -39,7 +39,6 @@ class TwilioSender
     begin
       client = Twilio::REST::Client.new(account_sid, auth_token)
 
-      byebug
       if messaging_service_sid.present? || params[:medium] != 'VOICE'
         client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
           to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
