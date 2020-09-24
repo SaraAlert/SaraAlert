@@ -78,7 +78,11 @@
       </thead>
       <tbody>
         <% @patient.assessments.order('created_at').each do |assessment| -%>
-        <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
+        <% if assessment.symptomatic %>
+          <tr class="table-danger">
+        <% else %>
+          <tr>
+        <% end %>
           <td><%= assessment.id %></td>
           <% unless @patient.isolation %>
           <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
