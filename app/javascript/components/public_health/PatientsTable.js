@@ -30,7 +30,7 @@ class PatientsTable extends React.Component {
   constructor(props) {
     super(props);
     this.handleTabSelect = this.handleTabSelect.bind(this);
-    this.advancedUpdate = this.advancedUpdate.bind(this);
+    this.advancedFilterUpdate = this.advancedFilterUpdate.bind(this);
     this.state = {
       table: {
         colData: [
@@ -277,7 +277,7 @@ class PatientsTable extends React.Component {
     });
   };
 
-  advancedUpdate(filter) {
+  advancedFilterUpdate(filter) {
     this.setState({ filter: filter }, () => {
       this.updateTable(this.state.query);
     });
@@ -482,7 +482,7 @@ class PatientsTable extends React.Component {
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}
                   />
-                  <AdvancedFilter advancedUpdate={this.advancedUpdate} authenticity_token={this.props.authenticity_token} />
+                  <AdvancedFilter advancedFilterUpdate={this.advancedFilterUpdate} authenticity_token={this.props.authenticity_token} />
                   {this.state.query !== 'transferred_out' && (
                     <DropdownButton
                       as={ButtonGroup}

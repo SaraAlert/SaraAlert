@@ -288,13 +288,14 @@ class PublicHealthController < ApplicationController
       when 'preferred-contact-method'
         patients = patients.where('preferred_contact_method = ?', filter[:value])
       when 'latest-report'
-        if filter[:dateOption] == 'before'
+        case filter[:dateOption]
+        when 'before'
           compare_date = Chronic.parse(filter[:value])
           patients = patients.where('latest_assessment_at < ?', compare_date)
-        elsif filter[:dateOption] == 'after'
+        when 'after'
           compare_date = Chronic.parse(filter[:value])
           patients = patients.where('latest_assessment_at > ?', compare_date)
-        elsif filter[:dateOption] == 'within'
+        when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
           patients = patients.where('latest_assessment_at > ?', compare_date_start).where('latest_assessment_at < ?', compare_date_end)
@@ -306,37 +307,40 @@ class PublicHealthController < ApplicationController
                      patients.where.not('patients.id = patients.responder_id')
                    end
       when 'enrolled'
-        if filter[:dateOption] == 'before'
+        case filter[:dateOption]
+        when 'before'
           compare_date = Chronic.parse(filter[:value])
           patients = patients.where('created_at < ?', compare_date)
-        elsif filter[:dateOption] == 'after'
+        when 'after'
           compare_date = Chronic.parse(filter[:value])
           patients = patients.where('created_at > ?', compare_date)
-        elsif filter[:dateOption] == 'within'
+        when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
           patients = patients.where('created_at > ?', compare_date_start).where('created_at < ?', compare_date_end)
         end
       when 'last-date-exposure'
-        if filter[:dateOption] == 'before'
+        case filter[:dateOption]
+        when 'before'
           compare_date = Chronic.parse(filter[:value])
           patients = patients.where('last_date_of_exposure < ?', compare_date)
-        elsif filter[:dateOption] == 'after'
+        when 'after'
           compare_date = Chronic.parse(filter[:value])
           patients = patients.where('last_date_of_exposure > ?', compare_date)
-        elsif filter[:dateOption] == 'within'
+        when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
           patients = patients.where('last_date_of_exposure > ?', compare_date_start).where('last_date_of_exposure < ?', compare_date_end)
         end
       when 'symptom-onset'
-        if filter[:dateOption] == 'before'
+        case filter[:dateOption]
+        when 'before'
           compare_date = Chronic.parse(filter[:value])
           patients = patients.where('symptom_onset < ?', compare_date)
-        elsif filter[:dateOption] == 'after'
+        when 'after'
           compare_date = Chronic.parse(filter[:value])
           patients = patients.where('symptom_onset > ?', compare_date)
-        elsif filter[:dateOption] == 'within'
+        when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
           patients = patients.where('symptom_onset > ?', compare_date_start).where('symptom_onset < ?', compare_date_end)
@@ -358,7 +362,11 @@ class PublicHealthController < ApplicationController
       when 'monitoring-plan'
         patients = patients.where('monitoring_plan = ?', filter[:value])
       when 'never-responded'
-        patients = patients.where('last_assessment_at = ?', nil)
+        patients = if filter[:value]
+                     patients.where('lastest_assessment_at = ?', nil)
+                   else
+                     patients.where.not('lastest_assessment_at = ?', nil)
+                   end
       when 'risk-exposure'
         patients = patients.where('exposure_risk_assessment = ?', filter[:value])
       when 'require-interpretation'

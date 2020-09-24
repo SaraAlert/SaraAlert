@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_05_194603) do
+ActiveRecord::Schema.define(version: 2020_09_23_172958) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -406,6 +406,15 @@ ActiveRecord::Schema.define(version: 2020_09_05_194603) do
     t.index ["patient_id"], name: "index_transfers_on_patient_id"
     t.index ["to_jurisdiction_id"], name: "index_transfers_on_to_jurisdiction_id"
     t.index ["who_id"], name: "index_transfers_on_who_id"
+  end
+
+  create_table "user_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.json "contents", null: false
+    t.string "name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_user_filters_on_user_id"
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

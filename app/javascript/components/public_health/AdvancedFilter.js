@@ -14,7 +14,7 @@ class AdvancedFilter extends React.Component {
       show: false,
       showFilterNameModal: false,
       filterName: null,
-      active: [],
+      activeFilterOptions: [],
       filterOptions: [
         { name: 'blank', title: 'Select Field...', description: '', type: 'blank' },
         { name: 'sent-today', title: 'Sent Notification Today', description: 'Monitorees who have been sent a notification so far today', type: 'boolean' },
@@ -25,7 +25,7 @@ class AdvancedFilter extends React.Component {
           title: 'Preferred Contact Method',
           description: 'Monitorees preferred contact method',
           type: 'option',
-          options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out'],
+          options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
         },
         { name: 'latest-report', title: 'Latest Report', description: 'Monitorees with latest report', type: 'date' },
         { name: 'hoh', title: 'Head of Household', description: 'Monitorees that are a head of household', type: 'boolean' },
@@ -55,6 +55,7 @@ class AdvancedFilter extends React.Component {
             'Self-monitoring with public health supervision',
             'Self-monitoring with delegated supervision',
             'Self-observation',
+            '',
           ],
         },
         { name: 'never-responded', title: 'Never Responded', description: 'Monitorees who have never reported', type: 'boolean' },
@@ -63,7 +64,7 @@ class AdvancedFilter extends React.Component {
           title: 'Risk Exposure',
           description: 'Monitoree risk exposure',
           type: 'option',
-          options: ['High', 'Medium', 'Low', 'No Identified Risk'],
+          options: ['High', 'Medium', 'Low', 'No Identified Risk', ''],
         },
         { name: 'require-interpretation', title: 'Requires Interpretation', description: 'Monitorees who require interpretation', type: 'boolean' },
         {
@@ -71,7 +72,7 @@ class AdvancedFilter extends React.Component {
           title: 'Preferred Contact Time',
           description: 'Monitoree preferred contact time',
           type: 'option',
-          options: ['Morning', 'Afternoon', 'Evening'],
+          options: ['Morning', 'Afternoon', 'Evening', ''],
         },
       ],
       savedFilters: [],
@@ -96,7 +97,7 @@ class AdvancedFilter extends React.Component {
   }
 
   componentDidMount() {
-    if (this.state.active.length === 0) {
+    if (this.state.activeFilterOptions.length === 0) {
       // Start with empty default
       this.add();
     }
@@ -110,17 +111,16 @@ class AdvancedFilter extends React.Component {
 
   // Add dummy active (default to first option which is a boolean type). User can then edit as needed.
   add() {
-    let active = [...this.state.active];
-    let dummyEntry = { filterOption: this.state.filterOptions[0], value: true };
-    active.push(dummyEntry);
-    this.setState({ active });
+    this.setState(state => ({
+      activeFilterOptions: [...state.activeFilterOptions, { filterOption: state.filterOptions[0], value: true }],
+    }));
   }
 
   // Completely remove a statement from the active list
   remove(index) {
-    let active = [...this.state.active];
-    let activeWithoutIndex = active.slice(0, index).concat(active.slice(index + 1, active.length));
-    this.setState({ active: activeWithoutIndex });
+    this.setState(state => ({
+      activeFilterOptions: state.activeFilterOptions.slice(0, index).concat(state.activeFilterOptions.slice(index + 1, state.activeFilterOptions.length)),
+    }));
   }
 
   // Reset state back to fresh start
@@ -133,32 +133,32 @@ class AdvancedFilter extends React.Component {
   // Apply the current filter
   apply() {
     this.setState({ show: false, applied: true }, () => {
-      this.props.advancedUpdate(this.state.active);
+      this.props.advancedFilterUpdate(this.state.activeFilterOptions);
     });
   }
 
   // Clear the current filter
   clear() {
     this.setState({ activeFilter: null, applied: false }, () => {
-      this.props.advancedUpdate(this.state.activeFilter);
+      this.props.advancedFilterUpdate(this.state.activeFilter);
     });
   }
 
   // Start a new filter
   newFilter() {
-    this.setState({ active: [], show: true, activeFilter: null, applied: false }, () => {
+    this.setState({ activeFilterOptions: [], show: true, activeFilter: null, applied: false }, () => {
       this.add();
     });
   }
 
   // Set the active filter
   setFilter(filter) {
-    this.setState({ activeFilter: filter, show: true, active: filter.contents });
+    this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter.contents });
   }
 
   // Change an index filter option
   changeFilterOption(index, name) {
-    let active = [...this.state.active];
+    let activeFilterOptions = [...this.state.activeFilterOptions];
     let filterOption = this.state.filterOptions.find(filterOption => {
       return filterOption.name === name;
     });
@@ -176,28 +176,28 @@ class AdvancedFilter extends React.Component {
       value = '';
     }
 
-    active[parseInt(index)] = { filterOption, value, dateOption: filterOption.type === 'date' ? 'within' : null };
-    this.setState({ active });
+    activeFilterOptions[parseInt(index)] = { filterOption, value, dateOption: filterOption.type === 'date' ? 'within' : null };
+    this.setState({ activeFilterOptions });
   }
 
   // Change an index filter option for date
   changeFilterDateOption(index, value) {
-    let active = [...this.state.active];
+    let activeFilterOptions = [...this.state.activeFilterOptions];
     let defaultValue = null;
     if (value === 'within') {
       defaultValue = { start: moment().add(-72, 'hours'), end: moment() };
     } else {
       defaultValue = moment();
     }
-    active[parseInt(index)] = { filterOption: active[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
-    this.setState({ active });
+    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
+    this.setState({ activeFilterOptions });
   }
 
   // Change an index value
   changeValue(index, value) {
-    let active = [...this.state.active];
-    active[parseInt(index)]['value'] = value;
-    this.setState({ active });
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    activeFilterOptions[parseInt(index)]['value'] = value;
+    this.setState({ activeFilterOptions });
   }
 
   // Save a new filter
@@ -205,13 +205,15 @@ class AdvancedFilter extends React.Component {
     let self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .post(window.BASE_PATH + '/user_filters', { active: this.state.active, name: this.state.filterName })
+      .post(window.BASE_PATH + '/user_filters', { activeFilterOptions: this.state.activeFilterOptions, name: this.state.filterName })
       .catch(() => {
         toast.error('Failed to save filter.');
       })
       .then(response => {
-        toast.success('Filter successfully saved.');
-        this.setState({ activeFilter: response.data, savedFilters: [...self.state.savedFilters, response.data] });
+        if (response?.data) {
+          toast.success('Filter successfully saved.');
+          this.setState({ activeFilter: response?.data, savedFilters: [...self.state.savedFilters, response.data] });
+        }
       });
   }
 
@@ -220,21 +222,23 @@ class AdvancedFilter extends React.Component {
     let self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
-      .put(window.BASE_PATH + '/user_filters/' + this.state.activeFilter.id, { active: this.state.active })
+      .put(window.BASE_PATH + '/user_filters/' + this.state.activeFilter.id, { activeFilterOptions: this.state.activeFilterOptions })
       .catch(() => {
         toast.error('Failed to update filter.');
       })
       .then(response => {
-        toast.success('Filter successfully updated.');
-        this.setState({
-          activeFilter: response.data,
-          savedFilters: [
-            ...self.state.savedFilters.filter(filter => {
-              return filter.id != response.data.id;
-            }),
-            response.data,
-          ],
-        });
+        if (response?.data) {
+          toast.success('Filter successfully updated.');
+          this.setState({
+            activeFilter: response.data,
+            savedFilters: [
+              ...self.state.savedFilters.filter(filter => {
+                return filter.id != response.data.id;
+              }),
+              response.data,
+            ],
+          });
+        }
       });
   }
 
@@ -427,6 +431,10 @@ class AdvancedFilter extends React.Component {
                   }}
                   placement="bottom"
                   customClass="form-control-sm"
+                  minDate={'1900-01-01'}
+                  maxDate={moment()
+                    .add(30, 'days')
+                    .format('YYYY-MM-DD')}
                 />
               </Form.Group>
             )}
@@ -441,6 +449,10 @@ class AdvancedFilter extends React.Component {
                       }}
                       placement="bottom"
                       customClass="form-control-sm"
+                      minDate={'1900-01-01'}
+                      maxDate={moment()
+                        .add(30, 'days')
+                        .format('YYYY-MM-DD')}
                     />
                   </Col>
                   <Col className="py-0 px-0 text-center my-auto" md="2">
@@ -454,6 +466,10 @@ class AdvancedFilter extends React.Component {
                       }}
                       placement="bottom"
                       customClass="form-control-sm"
+                      minDate={'1900-01-01'}
+                      maxDate={moment()
+                        .add(30, 'days')
+                        .format('YYYY-MM-DD')}
                     />
                   </Col>
                 </Row>
@@ -534,12 +550,12 @@ class AdvancedFilter extends React.Component {
                 <div className="g-border-bottom-2"></div>
               </Col>
             </Row>
-            {this.state.active.map((statement, index) => {
-              return this.renderStatement(statement.filterOption, statement.value, index, this.state.active.length, statement.dateOption);
+            {this.state.activeFilterOptions.map((statement, index) => {
+              return this.renderStatement(statement.filterOption, statement.value, index, this.state.activeFilterOptions.length, statement.dateOption);
             })}
             <Row className="pt-2 pb-1">
               <Col>
-                <Button variant="primary" disabled={this.state.active.length > 4} onClick={() => this.add()} size="sm">
+                <Button variant="primary" disabled={this.state.activeFilterOptions.length > 4} onClick={() => this.add()} size="sm">
                   <i className="fas fa-plus"></i>
                 </Button>
               </Col>
@@ -602,7 +618,7 @@ class AdvancedFilter extends React.Component {
 
 AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
-  advancedUpdate: PropTypes.func,
+  advancedFilterUpdate: PropTypes.func,
 };
 
 export default AdvancedFilter;
