@@ -23,6 +23,7 @@ class Identification extends React.Component {
       errors: {},
       modified: {},
       languageOptions: this.getLanguageOptions(),
+      age: '',
     };
   }
 
@@ -73,18 +74,19 @@ class Identification extends React.Component {
       },
       () => {
         // Automatically calculate age field once a date of birth is entered.
-        let age;
+        let age = '';
         const dateOfBirth = self.state.current.patient.date_of_birth;
         // If date is undefined, age will stay undefined (which nulls out the age field)
         if (dateOfBirth) {
-          age = 0 - moment(dateOfBirth).diff(moment.now(), 'years');
-          age = age > 0 ? age : self.state.current.patient.age;
+          age = moment().diff(moment(dateOfBirth), 'years');
+          age = age >= 0 ? age : self.state.age;
         }
         self.setState(
           state => {
             return {
-              current: { ...state.current, patient: { ...state.current.patient, age } },
-              modified: { ...state.modified, patient: { ...state.modified.patient, age } },
+              current: { ...state.current, patient: { ...state.current.patient } },
+              modified: { ...state.modified, patient: { ...state.modified.patient } },
+              age,
             };
           },
           () => {
@@ -284,7 +286,7 @@ class Identification extends React.Component {
                     placeholder=""
                     size="lg"
                     className="form-square"
-                    value={this.state.current.patient.age || ''}
+                    value={this.state.age}
                     onChange={this.handleChange}
                     disabled
                   />
