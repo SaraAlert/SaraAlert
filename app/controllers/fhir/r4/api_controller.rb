@@ -4,12 +4,10 @@
 class Fhir::R4::ApiController < ActionController::API
   include ActionController::MimeResponds
   before_action only: %i[create update] do
-    doorkeeper_authorize! :'user/*.write', :'user/*.*'
-    check_api_access
+    doorkeeper_authorize! :'user/*.write', :'user/*.*', :'system/*.write', :'system/*.*'
   end
   before_action only: %i[show search all] do
-    doorkeeper_authorize! :'user/*.read', :'user/*.*'
-    check_api_access
+    doorkeeper_authorize! :'user/*.read', :'user/*.*', :'system/*.read', :'system/*.*'
   end
   before_action :cors_headers
 
@@ -66,6 +64,11 @@ class Fhir::R4::ApiController < ActionController::API
     # Try to update the resource
     status_bad_request && return if updates.nil? || !resource.update(updates)
 
+    if resource_type == 'patient'
+      # Create a history for the record update
+      History.record_edit(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree updated via API.')
+    end
+
     status_ok(resource.as_fhir) && return
   rescue StandardError
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
@@ -92,11 +95,23 @@ class Fhir::R4::ApiController < ActionController::API
       # Responder is self
       resource.responder = resource
 
-      # Creator is authenticated user
-      resource.creator = current_resource_owner
+      # Determine resource creator
+      if current_resource_owner.present?
+        # Creator is authenticated user
+        resource.creator = current_resource_owner
+      else
+        # Creator is client application - need to get created shadow user
+        curr_client_app = current_client_application
+        status_bad_request && return if curr_client_app&.user_id.nil?
+
+        shadow_user = User.find_by(id: current_client_application.user_id)
+        status_bad_request && return unless shadow_user.present?
+
+        resource.creator = shadow_user
+      end
 
       # Jurisdiction is the authenticated user's jurisdiction
-      resource.jurisdiction = current_resource_owner.jurisdiction
+      resource.jurisdiction = resource.creator.jurisdiction
 
       # Generate a submission token for the new monitoree
       resource.submission_token = SecureRandom.hex(20) # 160 bits
@@ -111,7 +126,7 @@ class Fhir::R4::ApiController < ActionController::API
       resource.send_enrollment_notification
 
       # Create a history for the enrollment
-      History.enrollment(patient: resource, created_by: current_resource_owner.email, comment: 'User enrolled monitoree via API.')
+      History.enrollment(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree enrolled via API.')
     end
     status_created(resource.as_fhir) && return
   rescue StandardError
@@ -310,14 +325,31 @@ class Fhir::R4::ApiController < ActionController::API
 
   private
 
-  # Current user account as authenticated via doorkeeper
+  # Current user account as authenticated via doorkeeper for user flow
   def current_resource_owner
-    User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
+    User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token&.resource_owner_id
   end
 
-  # Current user account can use api
-  def check_api_access
-    current_resource_owner&.can_use_api?
+  # Client application that is currently using the API
+  def current_client_application
+    Doorkeeper::Application.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
+  end
+
+  # Determine the patient data that is accessable by either the current resource owner
+  # (user flow) or the current client application (system flow).
+  def accessable_patients
+    # If there is a current resource owner (end user) that has api access enabled
+    if current_resource_owner.present? && current_resource_owner&.can_use_api?
+      # This will access all patients that the role has access to, if any
+      current_resource_owner.patients
+    # Otherwise if there NO resource owner and there is a found application, check for a valid associated jurisdiction id.
+    # The current resource owner check is to prevent unauthorized users from using it if the application happens to be registered for both workflows.
+    elsif !current_resource_owner.present? && current_client_application.present?
+      jurisdiction_id = current_client_application[:jurisdiction_id]
+      return unless Jurisdiction.exists?(jurisdiction_id)
+
+      Jurisdiction.find_by(id: jurisdiction_id).all_patients
+    end
   end
 
   # Check accept header for correct mime type (or allow fhir _format)
@@ -376,14 +408,14 @@ class Fhir::R4::ApiController < ActionController::API
     end
   end
 
-  # Get a patient by id
+  # Get a patient by id (if any patients, otherwise nil)
   def get_patient(id)
-    current_resource_owner.viewable_patients.find_by(id: id)
+    accessable_patients&.find_by(id: id)
   end
 
   # Search for patients
   def search_patients(options)
-    query = current_resource_owner.viewable_patients
+    query = accessable_patients
     options.each do |option, search|
       case option
       when 'family'
@@ -405,11 +437,11 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Search for laboratories
   def search_laboratories(options)
-    query = Laboratory.where(patient: current_resource_owner.viewable_patients)
+    query = Laboratory.where(patient: accessable_patients)
     options.each do |option, search|
       case option
       when 'subject'
-        query = current_resource_owner.viewable_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
+        query = accessable_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
       when '_id'
         query = query.where(id: search) if search.present?
       end
@@ -419,11 +451,11 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Search for assessments
   def search_assessments(options)
-    query = Assessment.where(patient: current_resource_owner.viewable_patients)
+    query = Assessment.where(patient: accessable_patients)
     options.each do |option, search|
       case option
       when 'subject'
-        query = current_resource_owner.viewable_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
+        query = accessable_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
       when '_id'
         query = query.where(id: search) if search.present?
       end
@@ -433,12 +465,12 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Get a lab result by id
   def get_laboratory(id)
-    Laboratory.where(patient_id: current_resource_owner.viewable_patients).find_by(id: id)
+    Laboratory.where(patient_id: accessable_patients).find_by(id: id)
   end
 
   # Get an assessment by id
   def get_assessment(id)
-    Assessment.where(patient_id: current_resource_owner.viewable_patients).find_by(id: id)
+    Assessment.where(patient_id: accessable_patients).find_by(id: id)
   end
 
   # Construct a full url via a request and resource
