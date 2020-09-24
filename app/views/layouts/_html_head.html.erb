@@ -6,11 +6,11 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <script>
-    window.BASE_PATH = "<%= ADMIN_OPTIONS['base_path'].to_json %>";
-    window.SENTRY_URL = "<%= ADMIN_OPTIONS['sentry_url'].to_json %>";
-    window.SARA_VERSION = "<%= ADMIN_OPTIONS['version'].to_json %>";
-    window.USER_EMAIL = "<%= (current_user&.email || 'NONE').to_json %>";
-    window.USER_ID = "<%= (current_user&.id || 'NONE').to_json %>";
+    window.BASE_PATH = "<%= ADMIN_OPTIONS['base_path'] %>";
+    window.SENTRY_URL = "<%= ADMIN_OPTIONS['sentry_url'] %>";
+    window.SARA_VERSION = "<%= ADMIN_OPTIONS['version'] %>";
+    window.USER_EMAIL = "<%= current_user&.email || 'NONE' %>";
+    window.USER_ID = "<%= current_user&.id || 'NONE' %>";
   </script>
   <%= stylesheet_pack_tag 'application', media: 'all' %>
   <%= javascript_pack_tag 'application' %>
