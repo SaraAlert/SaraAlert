@@ -301,9 +301,9 @@ class PublicHealthController < ApplicationController
         end
       when 'hoh'
         patients = if filter[:value]
-                     patients.where('responder_id == id')
+                     patients.where('patients.id = patients.responder_id')
                    else
-                     patients.where.not('responder_id == id')
+                     patients.where.not('patients.id = patients.responder_id')
                    end
       when 'enrolled'
         if filter[:dateOption] == 'before'

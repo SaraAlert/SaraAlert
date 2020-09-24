@@ -563,15 +563,23 @@ class AdvancedFilter extends React.Component {
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item href="#" onClick={this.newFilter}>
-              <i className="fas fa-plus"></i>
+              <i className="fas fa-plus fa-fw"></i>
               <span className="ml-2">New filter</span>
             </Dropdown.Item>
             {this.state.applied && (
               <React.Fragment>
                 <Dropdown.Divider />
                 <Dropdown.Item href="#" onClick={this.clear}>
-                  <i className="fas fa-times"></i>
+                  <i className="fas fa-times fa-fw"></i>
                   <span className="ml-2">Clear current filter</span>
+                </Dropdown.Item>
+                <Dropdown.Item
+                  href="#"
+                  onClick={() => {
+                    this.setState({ show: true });
+                  }}>
+                  <i className="fas fa-search fa-fw"></i>
+                  <span className="ml-2">View current filter</span>
                 </Dropdown.Item>
               </React.Fragment>
             )}
