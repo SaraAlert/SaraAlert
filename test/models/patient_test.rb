@@ -529,11 +529,11 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'monitoring period has elapsed'
 
-    patient = create(:patient, preferred_contact_method: 'Telephone call', last_assessment_reminder_sent: Time.now.getlocal('-04:00').beginning_of_day + 1.hour)
+    patient = create(:patient, preferred_contact_method: 'Telephone call', last_assessment_reminder_sent: 1.hour.ago)
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'contacted recently'
 
-    patient = create(:patient, preferred_contact_method: 'Telephone call', latest_assessment_at: Time.now.getlocal('-04:00').beginning_of_day + 1.hour)
+    patient = create(:patient, preferred_contact_method: 'Telephone call', latest_assessment_at: 1.hour.ago)
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'already reported'
 
