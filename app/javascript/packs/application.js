@@ -4,10 +4,11 @@ require('core-js');
 
 // Sentry
 import * as Sentry from '@sentry/browser';
-if (!!window.SENTRY_URL) {
+if (window.SENTRY_URL !== "null") {
   Sentry.init({
     dsn: window.SENTRY_URL,
-    release: window.SARA_VERSION
+    // Because the ERB should use to_json in all <script> tags, the version will be HTML escaped.
+    release: window.SARA_VERSION.replace(/&quot;/g, '')
   });
   Sentry.setUser({'id': window.USER_ID, 'username': window.USER_EMAIL});
 }
