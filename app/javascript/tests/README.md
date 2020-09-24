@@ -28,6 +28,8 @@ To run individual react test files:
 yarn test <test_file_path>
 ```
 
+You may also use add the `--watch` flag at the end to have tests automatically re-run on file save. This can be useful for development.
+
 Example:
 
 ```

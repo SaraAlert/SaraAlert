@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MonitoreeFlow properly renders 1`] = `
+exports[`MonitoreeFlow Properly renders 1`] = `
 <Fragment>
   <Card
     body={false}
