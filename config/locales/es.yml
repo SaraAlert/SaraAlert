@@ -44,29 +44,29 @@ es:
         name: 'Diarrea'
         notes: ''
       nasal-congestion:
-        name: 'Nasal Congestion'
+        name: 'Congestión nasal'
         notes: ''
       runny-nose:
-        name: 'Runny Nose'
+        name: 'Exceso de moco en la nariz'
         notes: ''
       temperature:
-        name: 'Temperature'
-        notes: 'Please enter your current temperature in degrees Fahrenheit'
+        name: 'Temperatura'
+        notes: 'Por favor ingrese su temperatura actual en grados Fahrenheit'
       other:
-        name: 'Other'
-        notes: 'I would like someone to call me to follow-up on other symptoms or additional needs'
+        name: 'Otro'
+        notes: 'Me gustaría que alguien me llamara para hacer un seguimiento de otros síntomas o necesidades adicionales'
       no-symptoms: 'No tengo ningún síntoma.'
       new-loss-of-smell:
         name: 'Pérdida reciente el olfato'
         notes: ''
       new-loss-of-taste:
-        name: 'Pérdida reciente el gusto'
+        name: 'Pérdida reciente del gusto'
         notes: ''
       shortness-of-breath:
         name: 'Falta de aire'
         notes: ''
       congestion-or-runny-nose:
-        name: 'Congestión o nariz que moquea'
+        name: 'Congestión nasal o un exceso de moco en la nariz'
         notes: ''
     threshold-op:
       less-than: 'Menos que'
@@ -83,10 +83,10 @@ es:
       instruction1: 'Si Usted no reportó ningún síntoma, por favor siga las recomendaciones proveídas por su departamento de salud local.'
       instruction2: 'Si Usted reportó algún síntoma, su departamento de salud local se comunicará pronto con Usted. Si tiene alguna inquietud inmediata, llame a su proveedor médico o al departamento de salud local. Evite el contacto cercano con otras personas y quédese en casa por favor.'
       instruction3: 'Si tiene una emergencia médica, por favor llame al 911 e infórmeles que el departamento de salud lo está monitoreando.'
-      instruction4: 'Please use the contact information below to get into contact with a public health official managing your case.'
-      email: 'Email'
-      phone: 'Phone'
-      webpage: 'Webpage'
+      instruction4: 'Por favor utilice la información de contacto a continuación para ponerse en contacto con un funcionario de salud pública que esté a cargo de su caso'
+      email: 'Correo electrónico'
+      phone: 'Teléfono'
+      webpage: 'Página web'
     email:
       reminder:
         subject: 'Recordatorio del reporte de Sara Alert'
