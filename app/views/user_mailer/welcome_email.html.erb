@@ -10,14 +10,14 @@
   </p>
   <p>
     <b>Username:</b> <%= @user.email %>
-    <br/>
+    <br />
     <b>Temporary password:</b> <%= @password %>
   </p>
   <p style="margin-bottom: none">
     Please log in to the Sara Alert application to change your password as soon as possible.
   </p>
 
-  <%= render partial: 'main_mailer/responsive_button', locals: {link: root_url , text: 'Sara Alert'} %>
+  <%= render partial: 'main_mailer/responsive_button', locals: { link: root_url, text: 'Sara Alert' } %>
 <% end %>
 
 <% content_for :footer do %>
