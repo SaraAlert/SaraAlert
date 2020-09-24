@@ -346,10 +346,9 @@ class Fhir::R4::ApiController < ActionController::API
     # The current resource owner check is to prevent unauthorized users from using it if the application happens to be registered for both workflows.
     elsif !current_resource_owner.present? && current_client_application.present?
       jurisdiction_id = current_client_application[:jurisdiction_id]
-      return if Jurisdiction.exists?(jurisdiction_id)
+      return unless Jurisdiction.exists?(jurisdiction_id)
 
       Jurisdiction.find_by(id: jurisdiction_id).all_patients
-      # If there is no associated resource owner or jurisdiction - nil.
     end
   end
 

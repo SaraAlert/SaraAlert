@@ -37,6 +37,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
                                jurisdiction: Jurisdiction.find_by(id: 2),
                                force_password_change: false,
                                api_enabled: true)
+    shadow_user.add_role 'Public Health Enroller'
+    shadow_user.save!
     @system_read_write_app = Doorkeeper::Application.create(name: 'system-test-rw',
                                                             redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
                                                             scopes: 'system/*.*',
@@ -54,7 +56,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
                                                        scopes: 'system/*.write',
                                                        jurisdiction_id: 2,
                                                        user_id: shadow_user.id)
-    @system_token_rw = Doorkeeper::AccessToken.create(application: @system_read_write_app, scopes: 'system/*.read system/*.write')
+    @system_token_rw = Doorkeeper::AccessToken.create(application: @system_read_write_app, scopes: 'system/*.*')
     @system_token_r = Doorkeeper::AccessToken.create(application: @system_read_app, scopes: 'system/*.read')
     @system_token_w = Doorkeeper::AccessToken.create(application: @system_write_app, scopes: 'system/*.write')
   end
