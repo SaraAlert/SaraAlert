@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-primary">
   <% link = ADMIN_OPTIONS['report_mode'] ? '#' : root_path %>
-  <%= link_to(link, {class: "navbar-brand text-white"}) do %>
+  <%= link_to(link, { class: 'navbar-brand text-white' }) do %>
     Sara Alert<small class="nav-version ml-1"><%= ADMIN_OPTIONS['version'] %></small>
   <% end %>
   <% unless current_user.nil? %>
