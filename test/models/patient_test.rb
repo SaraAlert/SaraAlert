@@ -516,6 +516,10 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'paused'
 
+    patient = create(:patient, monitoring: false)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'Monitoree is not currently being monitored'
+
     patient = create(:patient, id: 100)
     patient.update(responder_id: 42)
     assert_not patient.report_eligibility[:eligible]
