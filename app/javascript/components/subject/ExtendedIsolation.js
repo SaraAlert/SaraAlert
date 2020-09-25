@@ -82,34 +82,54 @@ class ExtendedIsolation extends React.Component {
             </Modal.Header>
             <Modal.Body>
               <Form.Group>
-                {this.state.extended_isolation ? (
+                {this.props.patient.monitoring ? (
                   <React.Fragment>
-                    {moment(this.state.extended_isolation).isSameOrAfter(moment().format('MM/DD/YYYY')) ? (
-                      <Form.Label className="mb-2">
-                        {`Are you sure you want to extend this case’s isolation through ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}?`}
-                        <br></br>
-                        <br></br>
-                        {`After clicking “Submit”, the case will be moved to the "Reporting" or "Non-Reporting" line list.
-                          This case cannot appear on the records Requiring Review Line List until after ${moment(this.state.extended_isolation).format(
-                            'MM/DD/YYYY'
-                          )}.
-                          If the record meets a recovery definition after ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}, it will appear on the
-                          Records Requiring Review Line List for review by public health to determine if it is safe to discontinue isolation.`}
-                      </Form.Label>
+                    {this.state.extended_isolation ? (
+                      <React.Fragment>
+                        {moment(this.state.extended_isolation).isSameOrAfter(moment().format('MM/DD/YYYY')) ? (
+                          <Form.Label className="mb-2">
+                            {`Are you sure you want to extend this case’s isolation through ${moment(this.state.extended_isolation).format('MM/DD/YYYY')}?`}
+                            <br></br>
+                            <br></br>
+                            {`After clicking “Submit”, the case will be moved to the "Reporting" or "Non-Reporting" line list.
+                              This case cannot appear on the records Requiring Review Line List until after ${moment(this.state.extended_isolation).format(
+                                'MM/DD/YYYY'
+                              )}.
+                              If the record meets a recovery definition after ${moment(this.state.extended_isolation).format(
+                                'MM/DD/YYYY'
+                              )}, it will appear on the
+                              Records Requiring Review Line List for review by public health to determine if it is safe to discontinue isolation.`}
+                          </Form.Label>
+                        ) : (
+                          <Form.Label className="mb-2">
+                            {`The date you have entered has already passed. Are you sure you want to update the "Extend Isolation To" date to ${moment(
+                              this.state.extended_isolation
+                            ).format(
+                              'MM/DD/YYYY'
+                            )}? Since the specified date has already passed, this case is eligible to appear on the Records Requiring Review Line List if a recovery definition is met.`}
+                          </Form.Label>
+                        )}
+                      </React.Fragment>
                     ) : (
                       <Form.Label className="mb-2">
-                        {`The date you have entered has already passed. Are you sure you want to update the "Extend Isolation To" date to ${moment(
-                          this.state.extended_isolation
-                        ).format(
-                          'MM/DD/YYYY'
-                        )}? Since the specified date has already passed, this case is eligible to appear on the Records Requiring Review Line List if a recovery definition is met.`}
+                        {`Are you sure you want to clear the "Extend Isolation To" date? Since the date is cleared, this case is eligible to appear on the Records Requiring Review Line List if a recovery definition is met.`}
                       </Form.Label>
                     )}
                   </React.Fragment>
                 ) : (
-                  <Form.Label className="mb-2">
-                    {`Are you sure you want to clear the "Extend Isolation To" date? Since the date is cleared, this case is eligible to appear on the Records Requiring Review Line List if a recovery definition is met.`}
-                  </Form.Label>
+                  <React.Fragment>
+                    {this.state.extended_isolation ? (
+                      <Form.Label className="mb-2">
+                        {`Are you sure you want to change the Extend Isolation Date to ${moment(this.state.extended_isolation).format(
+                          'MM/DD/YYYY'
+                        )}? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`}
+                      </Form.Label>
+                    ) : (
+                      <Form.Label className="mb-2">
+                        {`Are you sure you want to clear the "Extend Isolation To" date? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`}
+                      </Form.Label>
+                    )}
+                  </React.Fragment>
                 )}
               </Form.Group>
               <p>Please include any additional details:</p>

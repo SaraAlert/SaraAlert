@@ -181,14 +181,16 @@ class LastDateExposure extends React.Component {
         {this.state.showExposureDateModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be turned off for the selected record`,
+            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be turned OFF for the selected record`,
             this.closeExposureDateModal,
             () => this.submit(true)
           )}
         {this.state.showContinuousMonitoringModal &&
           this.createModal(
             'Continuous Exposure',
-            'Are you sure you want to modify Continuous Exposure? Continuous Exposure will be turned for the selected record',
+            `Are you sure you want to modify Continuous Exposure? Continuous Exposure will be turned ${
+              this.state.continuous_exposure ? 'ON' : 'OFF'
+            } for the selected record`,
             this.toggleContinuousMonitoringModal,
             () => this.submit(false)
           )}

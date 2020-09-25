@@ -34,7 +34,7 @@ class MonitoringStatus extends React.Component {
       assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
       original_assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
       monitoring_reasons: null,
-      monitoring_reason: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
+      monitoring_reason: '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
       apply_to_group: false,
       isolation: props.patient.isolation,
@@ -105,7 +105,16 @@ class MonitoringStatus extends React.Component {
         monitoring_reasons: null,
       });
     } else if (event?.target?.id && event.target.id === 'public_health_action') {
-      if (this.state.patient.isolation) {
+      if (!this.state.patient.monitoring) {
+        this.setState({
+          showPublicHealthActionModal: true,
+          message: `latest public health action to "${event.target.value}"`,
+          message_warning:
+            'Since this record is on the "Closed" line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record\'s Monitoring Status.',
+          public_health_action: event?.target?.value ? event.target.value : '',
+          monitoring_reasons: null,
+        });
+      } else if (this.state.patient.isolation) {
         this.setState({
           showPublicHealthActionModal: true,
           message: `latest public health action to "${event.target.value}"`,
@@ -147,7 +156,9 @@ class MonitoringStatus extends React.Component {
         showMonitoringStatusModal: true,
         message: `monitoring status to "${event.target.value}"`,
         message_warning:
-          event.target.value === 'Not Monitoring' ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.' : '',
+          event.target.value === 'Not Monitoring'
+            ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.'
+            : 'This will move the selected record(s) from the Closed line list to the appropriate Active Monitoring line list',
         monitoring: event.target.value === 'Actively Monitoring',
         monitoring_status: event?.target?.value ? event.target.value : '',
         monitoring_reasons:
@@ -430,20 +441,14 @@ class MonitoringStatus extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          {this.state.monitoring_reasons && !this.state.monitoring_reason ? (
-            <Button variant="primary btn-square" disabled>
-              Submit
-            </Button>
-          ) : (
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              Submit
-            </Button>
-          )}
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
+            Submit
+          </Button>
         </Modal.Footer>
       </Modal>
     );
