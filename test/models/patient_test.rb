@@ -1075,5 +1075,25 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_equal status, patient.status
   end
+
+  test 'calc current age (instance)' do
+    number = rand(100)
+    patient = create(:patient, date_of_birth: number.years.ago)
+    assert_equal number, patient.calc_current_age
+  end
+
+  test 'calc current age fhir' do
+    number = rand(100)
+    patient = create(:patient, date_of_birth: number.years.ago)
+    age = patient.calc_current_age
+
+    birth_year = Date.today.year - age
+
+    assert_equal age, Patient.calc_current_age_fhir("#{birth_year}-01-01")
+    assert_equal age, Patient.calc_current_age_fhir("#{birth_year}-01")
+    assert_equal age, Patient.calc_current_age_fhir(birth_year.to_s)
+
+    assert_nil Patient.calc_current_age_fhir(nil)
+  end
 end
 # rubocop:enable Metrics/ClassLength

@@ -595,7 +595,27 @@ class Patient < ApplicationRecord
 
   # Return the calculated age based on the date of birth
   def calc_current_age
-    dob = date_of_birth || Date.today
+    Patient.calc_current_age_base(provided_date_of_birth: date_of_birth)
+  end
+
+  def self.calc_current_age_fhir(birth_date)
+    return nil if birth_date.nil?
+
+    begin
+      date_of_birth = DateTime.strptime(birth_date, '%Y-%m-%d')
+    rescue ArgumentError
+      begin
+        date_of_birth = DateTime.strptime(birth_date, '%Y-%m')
+      rescue ArgumentError
+        # Raise if this fails because provided date of birth is not in the valid FHIR date format
+        date_of_birth = DateTime.strptime(birth_date, '%Y')
+      end
+    end
+    Patient.calc_current_age_base(provided_date_of_birth: date_of_birth)
+  end
+
+  def self.calc_current_age_base(provided_date_of_birth: nil)
+    dob = provided_date_of_birth || Date.today
     today = Date.today
     age = today.year - dob.year
     age -= 1 if
@@ -750,6 +770,7 @@ class Patient < ApplicationRecord
       secondary_telephone: Phonelib.parse(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value, 'US').full_e164,
       email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
       date_of_birth: patient&.birthDate,
+      age: Patient.calc_current_age_fhir(patient&.birthDate),
       address_line_1: patient&.address&.first&.line&.first,
       address_line_2: patient&.address&.first&.line&.second,
       address_city: patient&.address&.first&.city,
