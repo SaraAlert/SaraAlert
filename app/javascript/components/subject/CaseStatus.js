@@ -18,7 +18,6 @@ class CaseStatus extends React.Component {
       monitoring: this.props.patient.monitoring,
       monitoring_reason: this.props.patient.monitoring_reason,
       monitoring_option: '',
-      public_health_action: this.props.patient.public_health_action,
       apply_to_group: false,
       loading: false,
     };
@@ -44,7 +43,7 @@ class CaseStatus extends React.Component {
               this.submit();
             }
             if (!confirmedOrProbable && this.state.case_status !== '') {
-              this.setState({ isolation: false, public_health_action: 'None' });
+              this.setState({ isolation: false });
             }
           });
         } else if (event.target.id === 'monitoring_option') {
@@ -91,7 +90,6 @@ class CaseStatus extends React.Component {
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
           apply_to_group: this.state.apply_to_group,
-          public_health_action: this.state.public_health_action,
           diffState: diffState,
         })
         .then(() => {

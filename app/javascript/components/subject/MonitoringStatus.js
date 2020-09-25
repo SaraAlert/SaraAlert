@@ -34,7 +34,7 @@ class MonitoringStatus extends React.Component {
       assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
       original_assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
       monitoring_reasons: null,
-      monitoring_reason: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
+      monitoring_reason: '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
       apply_to_group: false,
       isolation: props.patient.isolation,

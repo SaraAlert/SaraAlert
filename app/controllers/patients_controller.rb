@@ -384,6 +384,17 @@ class PatientsController < ApplicationController
       end
     end
 
+    # Reset public health action if case status is change to suspect, unknown, not a case
+    if params_to_update.include?(:case_status) && ['Suspect', 'Unknown', 'Not a Case'].include?(params.require(:patient).permit(:case_status)[:case_status]) &&
+       patient[:public_health_action] != 'None'
+      History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: "System changed Latest Public Health Action from
+                                                                                             \"#{patient[:public_health_action]}\" to \"None\" so that
+                                                                                             the monitoree will appear on the appropriate line list in the
+                                                                                             exposure workflow to continue monitoring.")
+      params_to_update << :public_health_action
+      params[:patient][:public_health_action] = 'None'
+    end
+
     # If the symptom onset was cleared by the user
     if params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?
       params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
