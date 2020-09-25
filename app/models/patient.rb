@@ -549,7 +549,8 @@ class Patient < ApplicationRecord
     # NOTE: We do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
     # so we also have to check that someone receiving messages is not past they're monitoring period unless they're  in isolation,
     # continuous exposure, or have active dependents.
-    return unless (monitoring && (!last_date_of_exposure.nil? && last_date_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day)) ||
+    start_of_exposure = last_date_of_exposure || created_at
+    return unless (monitoring && start_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day) ||
                   (monitoring && isolation) ||
                   continuous_exposure ||
                   dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
@@ -683,8 +684,9 @@ class Patient < ApplicationRecord
     # Exposure workflow specific conditions
     unless isolation
       # Monitoring period has elapsed
+      start_of_exposure = last_date_of_exposure || created_at
       no_active_dependents = !dependents_exclude_self.where(monitoring: true).exists?
-      if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure && no_active_dependents
+      if start_of_exposure < reporting_period && !continuous_exposure && no_active_dependents
         eligible = false
         messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
       end
