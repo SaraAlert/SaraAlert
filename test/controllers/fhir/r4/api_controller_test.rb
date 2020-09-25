@@ -203,7 +203,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'SYSTEM FLOW: should calculate Patient age via create' do
-    post '/fhir/r4/Patient', params: @patient_1.to_json, headers: { 'Authorization': "Bearer #{@system_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
     assert_response :created
     json_response = JSON.parse(response.body)
     patient = Patient.find(json_response['id'])
