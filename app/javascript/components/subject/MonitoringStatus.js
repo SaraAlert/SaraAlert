@@ -430,20 +430,14 @@ class MonitoringStatus extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          {this.state.monitoring_reasons && !this.state.monitoring_reason ? (
-            <Button variant="primary btn-square" disabled>
-              Submit
-            </Button>
-          ) : (
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              Submit
-            </Button>
-          )}
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
+            Submit
+          </Button>
         </Modal.Footer>
       </Modal>
     );
