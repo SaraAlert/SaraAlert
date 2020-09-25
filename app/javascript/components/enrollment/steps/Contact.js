@@ -85,7 +85,7 @@ class Contact extends React.Component {
           confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
           preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
-      } else if (event?.currentTarget.value == 'E-mailed Web Link') {
+      } else if (event?.currentTarget.value === 'E-mailed Web Link') {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
@@ -128,7 +128,7 @@ class Contact extends React.Component {
           preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       }
-    } else if (event?.currentTarget.id == 'primary_telephone') {
+    } else if (event?.currentTarget.id === 'primary_telephone') {
       schema = yup.object().shape({
         primary_telephone: yup
           .string()
@@ -322,6 +322,29 @@ class Contact extends React.Component {
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['secondary_telephone_type']}
                   </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} controlId="primary_phone_type_warning_message">
+                  {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
+                    this.state.current.patient.primary_telephone_type == 'Plain Cell' && (
+                      <i>
+                        <b>* Warning:</b> Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this
+                        type of message.
+                      </i>
+                    )}
+                  {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
+                    this.state.current.patient.primary_telephone_type == 'Landline' && (
+                      <i>
+                        <b>* Warning:</b> Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type
+                        of message.
+                      </i>
+                    )}
+                  {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
+                    this.state.current.patient.primary_telephone_type === 'Landline' && (
+                      <i>
+                        <b>* Warning:</b> Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this
+                        type of message.
+                      </i>
+                    )}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-2">

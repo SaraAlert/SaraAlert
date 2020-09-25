@@ -77,8 +77,8 @@ class Identification extends React.Component {
         const dateOfBirth = self.state.current.patient.date_of_birth;
         // If date is undefined, age will stay undefined (which nulls out the age field)
         if (dateOfBirth) {
-          age = 0 - moment(dateOfBirth).diff(moment.now(), 'years');
-          age = age < 200 && age > 0 ? age : self.state.current.patient.age;
+          age = moment().diff(moment(dateOfBirth), 'years');
+          age = age >= 0 ? age : self.state.age;
         }
         self.setState(
           state => {
@@ -146,7 +146,7 @@ class Identification extends React.Component {
     return this.state.languageOptions.find(lang => lang.value === language);
   };
 
-  renderLanguageSupportMessage = (selectedLanguage, languageType) => {
+  renderPrimaryLanguageSupportMessage(selectedLanguage) {
     if (selectedLanguage) {
       const languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
 
@@ -159,40 +159,25 @@ class Identification extends React.Component {
         if (!fullySupported) {
           let message = languageJson.name;
           if (!sms && !email && !phone) {
-            message += ' is not currently supported by Sara Alert.';
-            if (languageType === 'primary') {
-              message += ' Any messages sent to this monitoree will be in English.';
-            }
+            message += ' is not currently supported by Sara Alert. Any messages sent to this monitoree will be in English.';
           } else if (!sms && !email && phone) {
-            message += ' is supported for the telephone call method only.';
-            if (languageType === 'primary') {
-              message += ' If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
-            }
+            message +=
+              ' is supported for the telephone call method only. If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
           } else if (!sms && email && !phone) {
-            message += ' is supported for the email weblink method only.';
-            if (languageType === 'primary') {
-              message += ' If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
-            }
+            message +=
+              ' is supported for the email weblink method only. If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
           } else if (!sms && email && phone) {
-            message += ' is supported for telephone call and email reporting methods only.';
-            if (languageType === 'primary') {
-              message += ' If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
-            }
+            message +=
+              ' is supported for telephone call and email reporting methods only. If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
           } else if (sms && !email && !phone) {
-            message += ' is supported for the SMS text weblink method only.';
-            if (languageType === 'primary') {
-              message += ' If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
-            }
+            message +=
+              ' is supported for the SMS text weblink method only. If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
           } else if (sms && !email && phone) {
-            message += ' is supported for telephone call and SMS text reporting methods only.';
-            if (languageType === 'primary') {
-              message += ' If email is selected as the preferred reporting method, the email will be in English.';
-            }
+            message +=
+              ' is supported for telephone call and SMS text reporting methods only. If email is selected as the preferred reporting method, the email will be in English.';
           } else if (sms && email && !phone) {
-            message += ' is supported for email and SMS text reporting methods only.';
-            if (languageType === 'primary') {
-              message += ' If telephone call is selected as the preferred reporting method, the call will be in English.';
-            }
+            message +=
+              ' is supported for email and SMS text reporting methods only. If telephone call is selected as the preferred reporting method, the call will be in English.';
           }
           return (
             <i>
@@ -202,7 +187,7 @@ class Identification extends React.Component {
         }
       }
     }
-  };
+  }
 
   render() {
     const cursorPointerStyle = {
@@ -281,6 +266,8 @@ class Identification extends React.Component {
                   <DateInput
                     id="date_of_birth"
                     date={this.state.current.patient.date_of_birth}
+                    minDate={'1900-01-01'}
+                    maxDate={moment().format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_birth', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_birth']}
@@ -297,8 +284,9 @@ class Identification extends React.Component {
                     placeholder=""
                     size="lg"
                     className="form-square"
-                    value={this.state.current.patient.age || ''}
+                    value={this.state.current.patient.age === undefined ? '' : this.state.current.patient.age}
                     onChange={this.handleChange}
+                    disabled
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['age']}
@@ -456,12 +444,16 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col} controlId="secondary_language_support_message">
-                  {this.renderLanguageSupportMessage(this.state.current.patient.primary_language, 'primary')}
+                <Form.Group as={Col} controlId="primary_language_support_message">
+                  {this.renderPrimaryLanguageSupportMessage(this.state.current.patient.primary_language)}
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language_support_message">
-                  {this.renderLanguageSupportMessage(this.state.current.patient.secondary_language, 'secondary')}
+                  {this.state.current.patient.secondary_language && (
+                    <i>
+                      <b>* Warning:</b> Not used to determine which language the system sends messages to the monitoree in.
+                    </i>
+                  )}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">

@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
+import moment from 'moment';
 
 import DateInput from '../util/DateInput';
 import reportError from '../util/ReportError';
@@ -16,6 +17,7 @@ class Laboratory extends React.Component {
       specimen_collection: this.props.lab.specimen_collection,
       report: this.props.lab.report,
       result: this.props.lab.result || '',
+      reportInvalid: false,
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -23,14 +25,31 @@ class Laboratory extends React.Component {
   }
 
   toggleModal() {
-    let current = this.state.showModal;
-    this.setState({
-      showModal: !current,
+    this.setState(state => {
+      return {
+        showModal: !state.showModal,
+        loading: false,
+        lab_type: this.props.lab.lab_type || '',
+        specimen_collection: this.props.lab.specimen_collection,
+        report: this.props.lab.report,
+        result: this.props.lab.result || '',
+        reportInvalid: false,
+      };
     });
   }
 
   handleChange(event) {
     this.setState({ [event.target.id]: event.target.value });
+  }
+
+  handleDateChange(field, date) {
+    this.setState({ [field]: date }, () => {
+      this.setState(state => {
+        return {
+          reportInvalid: moment(state.report).isBefore(state.specimen_collection, 'day'),
+        };
+      });
+    });
   }
 
   submit() {
@@ -82,7 +101,9 @@ class Laboratory extends React.Component {
                 <DateInput
                   id="specimen_collection"
                   date={this.state.specimen_collection}
-                  onChange={date => this.setState({ specimen_collection: date })}
+                  minDate={'2020-01-01'}
+                  maxDate={moment().format('YYYY-MM-DD')}
+                  onChange={date => this.handleDateChange('specimen_collection', date)}
                   placement="bottom"
                 />
               </Form.Group>
@@ -90,7 +111,18 @@ class Laboratory extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Report Date</Form.Label>
-                <DateInput id="report" date={this.state.report} onChange={date => this.setState({ report: date })} placement="bottom" />
+                <DateInput
+                  id="report"
+                  date={this.state.report}
+                  minDate={'2020-01-01'}
+                  maxDate={moment().format('YYYY-MM-DD')}
+                  onChange={date => this.handleDateChange('report', date)}
+                  placement="bottom"
+                  isInvalid={this.state.reportInvalid}
+                />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.reportInvalid && <span>Report Date cannot be before Specimen Collection Date.</span>}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
@@ -111,7 +143,7 @@ class Laboratory extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" disabled={this.state.loading} onClick={submit}>
+          <Button variant="primary btn-square" disabled={this.state.loading || this.state.reportInvalid} onClick={submit}>
             Create
           </Button>
         </Modal.Footer>

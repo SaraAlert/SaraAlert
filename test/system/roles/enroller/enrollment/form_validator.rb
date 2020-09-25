@@ -24,15 +24,10 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     verify_text_displayed('Please enter a First Name')
     verify_text_displayed('Please enter a Last Name')
     verify_text_displayed('Please enter a date of birth')
-    fill_in 'date_of_birth', with: '01/05/3099'
-    @@system_test_utils.go_to_next_page(wait: false)
-    verify_text_displayed('Date can not be in the future')
-    verify_text_not_displayed('Please enter a date of birth')
     @@enrollment_form.populate_enrollment_step(:identification, identification)
     verify_text_not_displayed('Please enter a First Name')
     verify_text_not_displayed('Please enter a Last Name')
     verify_text_not_displayed('Please enter a date of birth')
-    verify_text_not_displayed('Date can not be in the future')
   end
 
   def verify_input_validation_for_address(address)
@@ -120,7 +115,6 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     assert_not_equal('W(#*&R#(W&', page.find_field('assignedUser').value)
     @@enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
     verify_text_not_displayed('Please enter a last date of exposure')
-    verify_text_not_displayed('Date can not be in the future')
   end
 
   def verify_text_displayed(text)
