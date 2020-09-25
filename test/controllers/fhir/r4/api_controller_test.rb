@@ -202,6 +202,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
   end
 
+  test 'SYSTEM FLOW: should calculate Patient age via create' do
+    post '/fhir/r4/Patient', params: @patient_1.to_json, headers: { 'Authorization': "Bearer #{@system_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    patient = Patient.find(json_response['id'])
+    assert_equal 25, patient.age
+  end
+
   test 'SYSTEM FLOW: should be 415 when bad content type header via create' do
     post '/fhir/r4/Patient', params: @patient_1.to_json, headers: { 'Authorization': "Bearer #{@system_token_rw.token}", 'Content-Type': 'foo/bar' }
     assert_response :unsupported_media_type
@@ -599,6 +607,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 3, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
+  end
+
+  test 'USER FLOW: should calculate Patient age via create' do
+    post '/fhir/r4/Patient', params: @patient_1.to_json, headers: { 'Authorization': "Bearer #{@user_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    patient = Patient.find(json_response['id'])
+    assert_equal 25, patient.age
   end
 
   test 'USER FLOW: should be 415 when bad content type header via create' do
