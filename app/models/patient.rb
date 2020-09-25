@@ -641,7 +641,11 @@ class Patient < ApplicationRecord
     # Can't send messages to monitorees that are on the closed line list and have no active dependents.
     if !monitoring && active_dependents.empty?
       eligible = false
-      messages << { message: 'Monitoree is not currently being monitored and has no actively monitored household members', datetime: closed_at }
+
+      # If this person has dependents (is a HoH)
+      is_hoh = !dependents_exclude_self.empty?
+      message = "Monitoree is not currently being monitored #{is_hoh ? 'and has no actively monitored household members' : ''}"
+      messages << { message: message, datetime: nil }
     end
 
     # Can't send messages if notifications are paused
@@ -659,7 +663,7 @@ class Patient < ApplicationRecord
     # Exposure workflow specific conditions
     unless isolation
       # Monitoring period has elapsed
-      if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
+      if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure && active_dependents.empty?
         eligible = false
         messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
       end
