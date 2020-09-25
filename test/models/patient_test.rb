@@ -810,5 +810,7 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal age, Patient.calc_current_age_fhir("#{birth_year}-01-01")
     assert_equal age, Patient.calc_current_age_fhir("#{birth_year}-01")
     assert_equal age, Patient.calc_current_age_fhir("#{birth_year}")
+
+    assert_nil Patient.calc_current_age_fhir(nil)
   end
 end

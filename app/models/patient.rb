@@ -549,6 +549,8 @@ class Patient < ApplicationRecord
   end
 
   def self.calc_current_age_fhir(birth_date)
+    return nil if birth_date.nil?
+
     begin
       date_of_birth = DateTime.strptime(birth_date, '%Y-%m-%d')
     rescue ArgumentError
