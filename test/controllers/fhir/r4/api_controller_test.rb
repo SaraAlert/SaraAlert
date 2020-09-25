@@ -116,6 +116,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
   end
 
+  test 'should calculate Patient age via create' do
+    post '/fhir/r4/Patient', params: @patient_1.to_json, headers: { 'Authorization': "Bearer #{@token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    patient = Patient.find(json_response['id'])
+    assert_equal 25, patient.age
+  end
+
   test 'should be 415 when bad content type header via create' do
     post '/fhir/r4/Patient', params: @patient_1.to_json, headers: { 'Authorization': "Bearer #{@token_rw.token}", 'Content-Type': 'foo/bar' }
     assert_response :unsupported_media_type

@@ -596,7 +596,27 @@ class Patient < ApplicationRecord
 
   # Return the calculated age based on the date of birth
   def calc_current_age
-    dob = date_of_birth || Date.today
+    Patient.calc_current_age_base(provided_date_of_birth: date_of_birth)
+  end
+
+  def self.calc_current_age_fhir(birth_date)
+    return nil if birth_date.nil?
+
+    begin
+      date_of_birth = DateTime.strptime(birth_date, '%Y-%m-%d')
+    rescue ArgumentError
+      begin
+        date_of_birth = DateTime.strptime(birth_date, '%Y-%m')
+      rescue ArgumentError
+        # Raise if this fails because provided date of birth is not in the valid FHIR date format
+        date_of_birth = DateTime.strptime(birth_date, '%Y')
+      end
+    end
+    Patient.calc_current_age_base(provided_date_of_birth: date_of_birth)
+  end
+
+  def self.calc_current_age_base(provided_date_of_birth: nil)
+    dob = provided_date_of_birth || Date.today
     today = Date.today
     age = today.year - dob.year
     age -= 1 if
@@ -642,7 +662,11 @@ class Patient < ApplicationRecord
     # Can't send messages to monitorees that are on the closed line list and have no active dependents.
     if !monitoring && active_dependents.empty?
       eligible = false
-      messages << { message: 'Monitoree is not currently being monitored and has no actively monitored household members', datetime: closed_at }
+
+      # If this person has dependents (is a HoH)
+      is_hoh = dependents_exclude_self.exists?
+      message = "Monitoree is not currently being monitored #{is_hoh ? 'and has no actively monitored household members' : ''}"
+      messages << { message: message, datetime: nil }
     end
 
     # Can't send messages if notifications are paused
@@ -661,7 +685,8 @@ class Patient < ApplicationRecord
     unless isolation
       # Monitoring period has elapsed
       start_of_exposure = last_date_of_exposure || created_at
-      if start_of_exposure < reporting_period && !continuous_exposure
+      no_active_dependents = !dependents_exclude_self.where(monitoring: true).exists?
+      if start_of_exposure < reporting_period && !continuous_exposure && no_active_dependents
         eligible = false
         messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
       end
@@ -752,6 +777,7 @@ class Patient < ApplicationRecord
       secondary_telephone: Phonelib.parse(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value, 'US').full_e164,
       email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
       date_of_birth: patient&.birthDate,
+      age: Patient.calc_current_age_fhir(patient&.birthDate),
       address_line_1: patient&.address&.first&.line&.first,
       address_line_2: patient&.address&.first&.line&.second,
       address_city: patient&.address&.first&.city,

@@ -516,6 +516,10 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'paused'
 
+    patient = create(:patient, monitoring: false)
+    assert_not patient.report_eligibility[:eligible]
+    assert patient.report_eligibility[:messages].join(' ').include? 'Monitoree is not currently being monitored'
+
     patient = create(:patient, id: 100)
     patient.update(responder_id: 42)
     assert_not patient.report_eligibility[:eligible]
@@ -1074,6 +1078,26 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal status == :isolation_non_reporting, patients.isolation_non_reporting.exists?
 
     assert_equal status, patient.status
+  end
+
+  test 'calc current age (instance)' do
+    number = rand(100)
+    patient = create(:patient, date_of_birth: number.years.ago)
+    assert_equal number, patient.calc_current_age
+  end
+
+  test 'calc current age fhir' do
+    number = rand(100)
+    patient = create(:patient, date_of_birth: number.years.ago)
+    age = patient.calc_current_age
+
+    birth_year = Date.today.year - age
+
+    assert_equal age, Patient.calc_current_age_fhir("#{birth_year}-01-01")
+    assert_equal age, Patient.calc_current_age_fhir("#{birth_year}-01")
+    assert_equal age, Patient.calc_current_age_fhir(birth_year.to_s)
+
+    assert_nil Patient.calc_current_age_fhir(nil)
   end
 end
 # rubocop:enable Metrics/ClassLength
