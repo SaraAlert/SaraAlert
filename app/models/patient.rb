@@ -659,7 +659,8 @@ class Patient < ApplicationRecord
     # Exposure workflow specific conditions
     unless isolation
       # Monitoring period has elapsed
-      if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
+      start_of_exposure = last_date_of_exposure || created_at
+      if start_of_exposure < reporting_period && !continuous_exposure
         eligible = false
         messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
       end
