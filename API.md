@@ -222,7 +222,14 @@ Details about each of these steps and the expected parameter is clearly outlined
 3. Once the end-user has authorized the request, Sara Alert will respond with an access token.  
 
 	##### POST `/oauth/token`
-	
+
+	**Request** Headers
+
+  ```json
+  {
+    "Content-Type": "application/x-www-form-urlencoded"
+  }
+  ```
 	**Request** Body
 	
 	```json
