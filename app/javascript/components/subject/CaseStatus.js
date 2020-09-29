@@ -130,7 +130,36 @@ class CaseStatus extends React.Component {
   }
 
   createModal(title, toggle, submit) {
-    if (this.state.case_status === '') {
+    if (!this.props.patient.monitoring) {
+      return (
+        <Modal size="lg" show centered onHide={toggle}>
+          <Modal.Header>
+            <Modal.Title>{title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              Are you sure you want to change case status from {this.props.patient.case_status} to {this.state.case_status}? Since this record is on the Closed
+              line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the
+              record’s Monitoring Status.
+            </p>
+            {this.props.has_group_members && this.renderRadioButtons()}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary btn-square" onClick={toggle}>
+              Cancel
+            </Button>
+            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+              {this.state.loading && (
+                <React.Fragment>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+                </React.Fragment>
+              )}
+              Submit
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      );
+    } else if (this.state.case_status === '') {
       return (
         <Modal size="lg" show centered onHide={toggle}>
           <Modal.Header>
