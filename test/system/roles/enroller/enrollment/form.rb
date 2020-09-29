@@ -26,7 +26,7 @@ class EnrollmentForm < ApplicationSystemTestCase
     end
   end
 
-  def populate_enrollment_step(step, data, continue = true)
+  def populate_enrollment_step(step, data, continue: true)
     jurisdiction_change = false
     if data
       @@enrollment_form_steps.steps[step].each do |field|

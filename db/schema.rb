@@ -202,6 +202,9 @@ ActiveRecord::Schema.define(version: 2020_09_16_154852) do
     t.boolean "confidential", default: true, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.json "public_key_set"
+    t.integer "jurisdiction_id"
+    t.bigint "user_id"
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 

@@ -17,6 +17,9 @@ class Patient < ApplicationRecord
   end
 
   validates :monitoring_reason, inclusion: { in: ['Completed Monitoring',
+                                                  'Enrolled more than 14 days after last date of exposure (system)',
+                                                  'Enrolled on last day of monitoring period (system)',
+                                                  'Completed Monitoring (system)',
                                                   'Meets Case Definition',
                                                   'Lost to follow-up during monitoring period',
                                                   'Lost to follow-up (contact never established)',
@@ -368,8 +371,53 @@ class Patient < ApplicationRecord
     end
   }
 
+  # Gets the current date in the patient's timezone
+  def curr_date_in_timezone
+    Time.now.getlocal(address_timezone_offset)
+  end
+
+  # Checks is at the end of or past their monitoring period
+  def end_of_monitoring_period?
+    return false if continuous_exposure
+
+    monitoring_period_days = ADMIN_OPTIONS['monitoring_period_days'].days
+
+    # If there is a last date of exposure - base monitoring period off of that date
+    monitoring_end_date = if !last_date_of_exposure.nil?
+                            last_date_of_exposure.beginning_of_day + monitoring_period_days
+                          else
+                            # Otherwise, if there is no last date of exposure - base monitoring period off of creation date
+                            created_at.beginning_of_day + monitoring_period_days
+                          end
+
+    # If it is the last day of or past the monitoring period
+    # NOTE: beginning_of_day is used as monitoring period is based of date not the specific time
+    curr_date_in_timezone.beginning_of_day >= monitoring_end_date
+  end
+
+  # Patients are eligible to be automatically closed by the system IF:
+  #  - in exposure workflow
+  #     AND
+  #  - asymptomatic
+  #     AND
+  #  - submitted an assessment today already (based on their timezone)
+  #     AND
+  #  - not in continuous exposure
+  #     AND
+  #  - on the last day of or past their monitoring period
+  def self.close_eligible
+    exposure_asymptomatic
+      .where(continuous_exposure: false)
+      .select do |patient|
+        # Submitted an assessment today AND is at the end of or past their monitoring period
+        (!patient.latest_assessment_at.nil? &&
+          patient.latest_assessment_at.getlocal(patient.address_timezone_offset) >= patient.curr_date_in_timezone.beginning_of_day &&
+          patient.end_of_monitoring_period?)
+      end
+  end
+
   # Order individuals based on their public health assigned risk assessment
-  def self.order_by_risk(asc = true)
+  def self.order_by_risk(asc: true)
     order_by = ["WHEN exposure_risk_assessment='High' THEN 0",
                 "WHEN exposure_risk_assessment='Medium' THEN 1",
                 "WHEN exposure_risk_assessment='Low' THEN 2",
@@ -450,6 +498,8 @@ class Patient < ApplicationRecord
   def end_of_monitoring
     return 'Continuous Exposure' if continuous_exposure
     return (last_date_of_exposure + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if last_date_of_exposure.present?
+
+    # Check for created_at is necessary here because custom as_json is automatically called when enrolling a new patient, which calls this method indirectly.
     return (created_at.to_date + ADMIN_OPTIONS['monitoring_period_days'].days)&.to_s if created_at.present?
   end
 
@@ -481,12 +531,10 @@ class Patient < ApplicationRecord
   end
 
   # Send a daily assessment to this monitoree
-  def send_assessment(force = false)
+  def send_assessment(force: false)
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
 
-    unless last_assessment_reminder_sent.nil?
-      return if last_assessment_reminder_sent > 12.hours.ago
-    end
+    return if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent > 12.hours.ago
 
     # Do not allow messages to go to household members
     return unless responder_id == id
@@ -499,7 +547,8 @@ class Patient < ApplicationRecord
     # NOTE: We do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
     # so we also have to check that someone receiving messages is not past they're monitoring period unless they're  in isolation,
     # continuous exposure, or have active dependents.
-    return unless (monitoring && (!last_date_of_exposure.nil? && last_date_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day)) ||
+    start_of_exposure = last_date_of_exposure || created_at
+    return unless (monitoring && start_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day) ||
                   (monitoring && isolation) ||
                   continuous_exposure ||
                   dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
@@ -511,11 +560,12 @@ class Patient < ApplicationRecord
       morning = (8..12)
       afternoon = (12..16)
       evening = (16..19)
-      if preferred_contact_time == 'Morning'
+      case preferred_contact_time
+      when 'Morning'
         return unless morning.include? hour
-      elsif preferred_contact_time == 'Afternoon'
+      when 'Afternoon'
         return unless afternoon.include? hour
-      elsif preferred_contact_time == 'Evening'
+      when 'Evening'
         return unless evening.include? hour
       end
     end
@@ -545,7 +595,27 @@ class Patient < ApplicationRecord
 
   # Return the calculated age based on the date of birth
   def calc_current_age
-    dob = date_of_birth || Date.today
+    Patient.calc_current_age_base(provided_date_of_birth: date_of_birth)
+  end
+
+  def self.calc_current_age_fhir(birth_date)
+    return nil if birth_date.nil?
+
+    begin
+      date_of_birth = DateTime.strptime(birth_date, '%Y-%m-%d')
+    rescue ArgumentError
+      begin
+        date_of_birth = DateTime.strptime(birth_date, '%Y-%m')
+      rescue ArgumentError
+        # Raise if this fails because provided date of birth is not in the valid FHIR date format
+        date_of_birth = DateTime.strptime(birth_date, '%Y')
+      end
+    end
+    Patient.calc_current_age_base(provided_date_of_birth: date_of_birth)
+  end
+
+  def self.calc_current_age_base(provided_date_of_birth: nil)
+    dob = provided_date_of_birth || Date.today
     today = Date.today
     age = today.year - dob.year
     age -= 1 if
@@ -581,17 +651,27 @@ class Patient < ApplicationRecord
       messages << { message: 'Monitoree was purged', datetime: nil }
     end
 
-    # Can't send messages if notifications are paused
-    if pause_notifications
-      eligible = false
-      messages << { message: 'Monitoree\'s notifications are paused', datetime: nil }
-    end
-
     # Can't send to household members
     if id != responder_id
       eligible = false
       household = true
       messages << { message: 'Monitoree is within a household, so the HoH will receive notifications instead', datetime: nil }
+    end
+
+    # Can't send messages to monitorees that are on the closed line list and have no active dependents.
+    if !monitoring && active_dependents.empty?
+      eligible = false
+
+      # If this person has dependents (is a HoH)
+      is_hoh = dependents_exclude_self.exists?
+      message = "Monitoree is not currently being monitored #{is_hoh ? 'and has no actively monitored household members' : ''}"
+      messages << { message: message, datetime: nil }
+    end
+
+    # Can't send messages if notifications are paused
+    if pause_notifications
+      eligible = false
+      messages << { message: 'Monitoree\'s notifications are paused', datetime: nil }
     end
 
     # Has an ineligible preferred contact method
@@ -603,7 +683,9 @@ class Patient < ApplicationRecord
     # Exposure workflow specific conditions
     unless isolation
       # Monitoring period has elapsed
-      if (!last_date_of_exposure.nil? && last_date_of_exposure < reporting_period) && !continuous_exposure
+      start_of_exposure = last_date_of_exposure || created_at
+      no_active_dependents = !dependents_exclude_self.where(monitoring: true).exists?
+      if start_of_exposure < reporting_period && !continuous_exposure && no_active_dependents
         eligible = false
         messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
       end
@@ -625,11 +707,12 @@ class Patient < ApplicationRecord
 
     # Rough estimate of next contact time
     if eligible
-      messages << if preferred_contact_time == 'Morning'
+      messages << case preferred_contact_time
+                  when 'Morning'
                     { message: '8:00 AM local time (Morning)', datetime: nil }
-                  elsif preferred_contact_time == 'Afternoon'
+                  when 'Afternoon'
                     { message: '12:00 PM local time (Afternoon)', datetime: nil }
-                  elsif preferred_contact_time == 'Evening'
+                  when 'Evening'
                     { message: '4:00 PM local time (Evening)', datetime: nil }
                   else
                     { message: 'Today', datetime: nil }
@@ -694,6 +777,7 @@ class Patient < ApplicationRecord
       secondary_telephone: Phonelib.parse(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value, 'US').full_e164,
       email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
       date_of_birth: patient&.birthDate,
+      age: Patient.calc_current_age_fhir(patient&.birthDate),
       address_line_1: patient&.address&.first&.line&.first,
       address_line_2: patient&.address&.first&.line&.second,
       address_city: patient&.address&.first&.city,

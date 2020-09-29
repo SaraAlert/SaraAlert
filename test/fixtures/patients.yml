@@ -552,6 +552,8 @@ patient_20:
   public_health_action: 'Recommended medical evaluation of symptoms'
 patient_21:
   id: 21
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'American Samoa'
@@ -559,6 +561,8 @@ patient_21:
   last_date_of_exposure: <%= 1.week.ago %>
 patient_22:
   id: 22
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'American Samoa'
@@ -566,6 +570,8 @@ patient_22:
   last_date_of_exposure: <%= 3.weeks.ago %>
 patient_23:
   id: 23
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: false
   address_state: 'American Samoa'
@@ -575,6 +581,8 @@ patient_23:
   last_date_of_exposure: <%= 3.weeks.ago %>
 patient_24:
   id: 24
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: false
   address_state: 'American Samoa'
@@ -584,6 +592,8 @@ patient_24:
   last_date_of_exposure: <%= 11.weeks.ago %>
 patient_25:
   id: 25
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Puerto Rico'
@@ -591,6 +601,8 @@ patient_25:
   last_date_of_exposure: <%= 19.weeks.ago %>
 patient_26:
   id: 26
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: false
   address_state: 'Puerto Rico'
@@ -599,6 +611,8 @@ patient_26:
   last_date_of_exposure: <%= 21.weeks.ago %>
 patient_27:
   id: 27
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Puerto Rico'
@@ -607,6 +621,8 @@ patient_27:
   last_date_of_exposure: <%= 25.weeks.ago %>
 patient_28:
   id: 28
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Puerto Rico'
@@ -615,6 +631,8 @@ patient_28:
   last_date_of_exposure: <%= 25.weeks.ago %>
 patient_29:
   id: 29
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Guam'
@@ -622,12 +640,16 @@ patient_29:
   last_date_of_exposure: <%= 52.weeks.ago %>
 patient_30:
   id: 30
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Guam'
   last_date_of_exposure: <%= 54.weeks.ago %>
 patient_31:
   id: 31
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Guam'
@@ -636,6 +658,8 @@ patient_31:
   last_date_of_exposure: <%= 1.month.ago %>
 patient_32:
   id: 32
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Alaska'
@@ -644,6 +668,8 @@ patient_32:
   last_date_of_exposure: <%= 1.month.ago %>
 patient_33:
   id: 33
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: false
   address_state: 'Alaska'
@@ -653,6 +679,8 @@ patient_33:
   last_date_of_exposure: <%= 2.months.ago %>
 patient_34:
   id: 34
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Alaska'
@@ -661,6 +689,8 @@ patient_34:
   last_date_of_exposure: <%= 2.months.ago %>
 patient_35:
   id: 35
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Alaska'
@@ -669,6 +699,8 @@ patient_35:
   last_date_of_exposure: <%= 5.months.ago %>
 patient_36:
   id: 36
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Indiana'
@@ -677,6 +709,8 @@ patient_36:
   last_date_of_exposure: <%= 5.months.ago %>
 patient_37:
   id: 37
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Indiana'
@@ -685,6 +719,8 @@ patient_37:
   last_date_of_exposure: <%= 11.months.ago %>
 patient_38:
   id: 38
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: false
   address_state: 'Indiana'
@@ -693,6 +729,8 @@ patient_38:
   last_date_of_exposure: <%= 11.months.ago %>
 patient_39:
   id: 39
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Indiana'
@@ -701,6 +739,8 @@ patient_39:
   last_date_of_exposure: <%= 13.months.ago %>
 patient_40:
   id: 40
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Indiana'

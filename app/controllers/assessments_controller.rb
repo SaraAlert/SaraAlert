@@ -16,13 +16,13 @@ class AssessmentsController < ApplicationController
     @assessment = Assessment.new
 
     # If monitoree, limit number of reports per time period
-    if current_user.nil?
-      if AssessmentReceipt.where(submission_token: @patient_submission_token)
-                          .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists?
-        redirect_to(already_reported_report_url) && return if ADMIN_OPTIONS['report_mode']
+    if current_user.nil? && AssessmentReceipt.where(submission_token: @patient_submission_token)
+                                             .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+                                             .exists?
 
-        redirect_to(already_reported_url) && return
-      end
+      redirect_to(already_reported_report_url) && return if ADMIN_OPTIONS['report_mode']
+
+      redirect_to(already_reported_url) && return
     end
 
     # Figure out the jurisdiction to know which symptoms to render
@@ -135,8 +135,8 @@ class AssessmentsController < ApplicationController
     typed_reported_symptoms.each do |symptom|
       new_val = symptom.bool_value
       old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
-      unless new_val.nil? || old_val.nil?
-        delta << symptom.name + '=' + (new_val ? 'Yes' : 'No') if new_val != old_val
+      if new_val.present? && old_val.present? && new_val != old_val
+        delta << symptom.name + '=' + (new_val ? 'Yes' : 'No')
       end
     end
 

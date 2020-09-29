@@ -20,9 +20,9 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   # rubocop:disable Metrics/ParameterLists
-  def verify_patients_on_dashboard(user_label, verify_scope = false)
+  def verify_patients_on_dashboard(user_label, verify_scope: false)
     jurisdiction_id = @@system_test_utils.login(user_label)
-    @@public_health_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id, verify_scope)
+    @@public_health_dashboard_verifier.verify_patients_on_dashboard(jurisdiction_id, verify_scope: verify_scope)
     @@system_test_utils.logout
   end
 
@@ -32,28 +32,30 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def bulk_edit_update_case_status(user_label, patient_labels, workflow, tab, case_status, next_step, apply_to_group = false)
+  def bulk_edit_update_case_status(user_label, patient_labels, workflow, tab, case_status, next_step, apply_to_group: false)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
-    @@public_health_dashboard.bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_group)
+    @@public_health_dashboard.bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_group: apply_to_group)
     assertions = {
       case_status: case_status,
       isolation: %w[Confirmed Probable].include?(case_status) && next_step == 'Continue Monitoring in Isolation Workflow',
       monitoring: next_step != 'End Monitoring'
     }
     patient_labels.each do |label|
-      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions, apply_to_group)
+      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions,
+                                                                                          apply_to_group: apply_to_group)
     end
     @@system_test_utils.logout
   end
 
-  def bulk_edit_close_records(user_label, patient_labels, workflow, tab, monitoring_reason, reasoning, apply_to_group = false)
+  def bulk_edit_close_records(user_label, patient_labels, workflow, tab, monitoring_reason, reasoning, apply_to_group: false)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
-    @@public_health_dashboard.bulk_edit_close_records(monitoring_reason, reasoning, apply_to_group)
+    @@public_health_dashboard.bulk_edit_close_records(monitoring_reason, reasoning, apply_to_group: apply_to_group)
     assertions = { monitoring: false, monitoring_reason: monitoring_reason }
     patient_labels.each do |label|
-      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions, apply_to_group)
+      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions,
+                                                                                          apply_to_group: apply_to_group)
     end
     @@system_test_utils.logout
   end
@@ -88,17 +90,19 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def update_assigned_jurisdiction(user_label, patient_label, tab, jurisdiction, reasoning, valid_jurisdiction = true, under_hierarchy = true)
+  def update_assigned_jurisdiction(user_label, patient_label, tab, jurisdiction, reasoning, valid_jurisdiction: true, under_hierarchy: true)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_actions.update_assigned_jurisdiction(user_label, patient_label, jurisdiction, reasoning, valid_jurisdiction, under_hierarchy)
+    @@public_health_patient_page_actions.update_assigned_jurisdiction(user_label, patient_label, jurisdiction, reasoning,
+                                                                      valid_jurisdiction: valid_jurisdiction, under_hierarchy: under_hierarchy)
     @@system_test_utils.logout
   end
 
-  def update_assigned_user(user_label, patient_label, tab, assigned_user, reasoning, valid_assigned_user = true, changed = true)
+  def update_assigned_user(user_label, patient_label, tab, assigned_user, reasoning, valid_assigned_user: true, changed: true)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_actions.update_assigned_user(user_label, patient_label, assigned_user, reasoning, valid_assigned_user, changed)
+    @@public_health_patient_page_actions.update_assigned_user(user_label, patient_label, assigned_user, reasoning,
+                                                              valid_assigned_user: valid_assigned_user, changed: changed)
     @@system_test_utils.logout
   end
 
@@ -112,15 +116,15 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   def edit_report(user_label, patient_label, old_tab, assessment_id, assessment)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(old_tab, patient_label)
-    @@public_health_patient_page_reports.edit_report(user_label, assessment_id, assessment, true)
+    @@public_health_patient_page_reports.edit_report(user_label, assessment_id, assessment, submit: true)
     @@system_test_utils.logout
   end
 
   def add_note_to_report(user_label, patient_label, tab, assessment_id, note)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_reports.add_note_to_report(user_label, assessment_id, note, false)
-    @@public_health_patient_page_reports.add_note_to_report(user_label, assessment_id, note, true)
+    @@public_health_patient_page_reports.add_note_to_report(user_label, assessment_id, note, submit: false)
+    @@public_health_patient_page_reports.add_note_to_report(user_label, assessment_id, note, submit: true)
   end
 
   def mark_all_as_reviewed(user_label, patient_label, tab, reasoning)
@@ -133,8 +137,8 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
   def pause_notifications(user_label, patient_label, tab)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(tab, patient_label)
-    @@public_health_patient_page_reports.pause_notifications(user_label, true)
-    @@public_health_patient_page_reports.pause_notifications(user_label, false)
+    @@public_health_patient_page_reports.pause_notifications(user_label, submit: true)
+    @@public_health_patient_page_reports.pause_notifications(user_label, submit: false)
     @@system_test_utils.logout
   end
 
@@ -175,13 +179,13 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def import_epi_x(user_label, workflow, file_name, validity, rejects, accept_duplicates = false)
+  def import_epi_x(user_label, workflow, file_name, validity, rejects, accept_duplicates: false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard.import_epi_x(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     @@system_test_utils.logout
   end
 
-  def import_sara_alert_format(user_label, workflow, file_name, validity, rejects, accept_duplicates = false)
+  def import_sara_alert_format(user_label, workflow, file_name, validity, rejects, accept_duplicates: false)
     jurisdiction_id = @@system_test_utils.login(user_label)
     @@public_health_dashboard.import_sara_alert_format(jurisdiction_id, workflow, file_name, validity, rejects, accept_duplicates)
     @@system_test_utils.logout

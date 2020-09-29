@@ -92,7 +92,7 @@ bundle exec whenever --update-crontab
 
 ##### Periodic Jobs
   These jobs are configured to run periodically. Their run timing parameters are specified in `config/schedule.rb`.
-  * `CloseSubjectsJob`
+  * `ClosePatientsJob`
       - Closes (stops active monitoring of) monitorees that meet duration/symptomatic conditions
   * `PurgeJob`
       - Purges eligible records

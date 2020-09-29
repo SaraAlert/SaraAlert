@@ -8,13 +8,12 @@ class PatientPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = { showAddAssessment: false, hideBody: props.hideBody };
-    this.reloadHook = this.reloadHook.bind(this);
   }
 
-  reloadHook() {
+  reloadHook = () => {
     // Optional reload, specifically for assessments
     location.href = '/patients/' + this.props.patient.id;
-  }
+  };
 
   render() {
     return (

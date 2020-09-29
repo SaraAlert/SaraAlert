@@ -89,11 +89,15 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
-  latestPublicHealthAction: (
+  latestPublicHealthActionInExposure: (
     <div>
       Selecting any option other than <i>none</i> moves record from the symptomatic line list to the Person Under Investigation (PUI) line list in the exposure
       workflow. To move a record off the PUI line list, update <i>Case Status</i> based on the findings of the investigation.
     </div>
+  ),
+
+  latestPublicHealthActionInIsolation: (
+    <div>Used to note the public health recommendation provided to a monitoree. This element does not impact the line list on which this record appears.</div>
   ),
 
   assignedUser: (
@@ -104,6 +108,13 @@ const TOOLTIP_TEXT = {
     <div>
       This controls which users have access to records. Users can access records associated with their assigned jurisdiction and records assigned to any
       jurisdictions below theirs in the jurisdictional hierarchy defined by each agency before onboarding.
+    </div>
+  ),
+
+  continuousExposure: (
+    <div>
+      Allows a user to indicate that a monitoree has an ongoing exposure to one or more cases. If checked, the monitoring period will be extended indefinitely
+      until unchecked or the <i>Last Date of Exposure</i> is updated.
     </div>
   ),
 

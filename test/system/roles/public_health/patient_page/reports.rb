@@ -21,7 +21,7 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
     @@public_health_patient_page_history_verifier.verify_add_report(user_label)
   end
 
-  def edit_report(user_label, assessment_id, assessment, submit = true)
+  def edit_report(user_label, assessment_id, assessment, submit: true)
     search_for_report(assessment_id)
     find('button', class: 'a-dropdown').click
     click_on 'Edit'
@@ -38,7 +38,7 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
     end
   end
 
-  def add_note_to_report(user_label, assessment_id, note, submit = true)
+  def add_note_to_report(user_label, assessment_id, note, submit: true)
     search_for_report(assessment_id)
     find('button', class: 'a-dropdown').click
     click_on 'Add Note'
@@ -51,7 +51,7 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
     end
   end
 
-  def mark_all_as_reviewed(user_label, reasoning, submit = true)
+  def mark_all_as_reviewed(user_label, reasoning, submit: true)
     click_on 'Mark All As Reviewed'
     fill_in 'reasoning', with: reasoning
     if submit
@@ -63,7 +63,7 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
     @@system_test_utils.wait_for_modal_animation
   end
 
-  def pause_notifications(user_label, submit = true)
+  def pause_notifications(user_label, submit: true)
     pause_notifications = find('#pause_notifications').text == 'Resume Notifications'
     find('#pause_notifications').click
     if submit

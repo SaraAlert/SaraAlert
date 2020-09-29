@@ -40,7 +40,7 @@ class WorkflowTest < ApplicationSystemTestCase
     # enroll monitoree, should be asymptomatic
     epi_enroller_user_label = 'state1_epi_enroller'
     monitoree_label = 'monitoree_3'
-    @@enroller_test_helper.enroll_monitoree(epi_enroller_user_label, monitoree_label, true)
+    @@enroller_test_helper.enroll_monitoree(epi_enroller_user_label, monitoree_label, is_epi: true)
     @@system_test_utils.login(epi_enroller_user_label)
     @@public_health_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
     @@public_health_patient_page_reports_verifier.verify_current_status('asymptomatic')
@@ -52,7 +52,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_dashboard.search_for_and_view_monitoree('symptomatic', monitoree_label)
 
     # mark all reports as reviewed, should be symptomatic again
-    @@public_health_patient_page_reports.mark_all_as_reviewed(epi_enroller_user_label, 'reason', true)
+    @@public_health_patient_page_reports.mark_all_as_reviewed(epi_enroller_user_label, 'reason', submit: true)
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
 
@@ -63,7 +63,8 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_dashboard.search_for_and_view_monitoree('pui', monitoree_label)
 
     # update assigned jurisdiction, should be transferred out of old jurisdiction and transferred into new one
-    @@public_health_patient_page_actions.update_assigned_jurisdiction(epi_enroller_user_label, monitoree_label, 'USA, State 2', 'reason', true, false)
+    @@public_health_patient_page_actions.update_assigned_jurisdiction(epi_enroller_user_label, monitoree_label, 'USA, State 2', 'reason',
+                                                                      valid_jurisdiction: true, under_hierarchy: false)
     @@public_health_dashboard_verifier.verify_monitoree_under_tab('transferred_out', monitoree_label)
     @@system_test_utils.logout
     @@system_test_utils.login('state2_epi')
@@ -98,7 +99,7 @@ class WorkflowTest < ApplicationSystemTestCase
     # edit parent jurisdiction but do not propagate to group member
     edited_monitoree_without_propogation_label = 'monitoree_13'
     @@system_test_utils.login(enroller_user_label)
-    @@enroller_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[monitoree_label], false, false)
+    @@enroller_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[monitoree_label], is_epi: false, go_back: false)
     @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_without_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
@@ -119,7 +120,7 @@ class WorkflowTest < ApplicationSystemTestCase
     # edit parent jurisdiction and propagate to group member
     edited_monitoree_with_propogation_label = 'monitoree_14'
     @@system_test_utils.login(enroller_user_label)
-    @@enroller_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[monitoree_label], false, false)
+    @@enroller_dashboard_verifier.verify_monitoree_info_on_dashboard(MONITOREES[monitoree_label], is_epi: false, go_back: false)
     @@enrollment_form.edit_monitoree_info(MONITOREES[edited_monitoree_with_propogation_label])
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
@@ -136,7 +137,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_patient_page_history_verifier.verify_assigned_jurisdiction(enroller_user_label, newer_jurisdiction, '')
     @@system_test_utils.return_to_dashboard('exposure')
     @@public_health_dashboard.search_for_and_view_monitoree('transferred_in', group_member_label)
-    @@public_health_patient_page_history_verifier.verify_assigned_jurisdiction(enroller_user_label, newer_jurisdiction, '')
+    @@public_health_patient_page_history_verifier.verify_assigned_jurisdiction(enroller_user_label, newer_jurisdiction, '', 'System')
     @@system_test_utils.logout
   end
 
@@ -145,7 +146,7 @@ class WorkflowTest < ApplicationSystemTestCase
     epi_enroller_user_label = 'state1_epi_enroller'
     monitoree_label = 'monitoree_3'
     group_member_label = 'monitoree_8'
-    @@enroller_test_helper.enroll_group_member(epi_enroller_user_label, monitoree_label, group_member_label, true)
+    @@enroller_test_helper.enroll_group_member(epi_enroller_user_label, monitoree_label, group_member_label, is_epi: true)
 
     # edit parent assigned user but do not propagate to group member
     @@system_test_utils.login(epi_enroller_user_label)
@@ -161,7 +162,7 @@ class WorkflowTest < ApplicationSystemTestCase
     assert page.has_content?(new_assigned_user)
     @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, new_assigned_user, '')
     click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])
-    assert page.has_no_content?("User changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"")
+    assert page.has_no_content?("System changed assigned user from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"")
 
     # edit parent assigned user and propagate to group member
     edited_monitoree_with_propogation_label = 'monitoree_16'
@@ -176,7 +177,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '')
     click_on @@system_test_utils.get_displayed_name(MONITOREES[group_member_label])
     assert page.has_content?(newer_assigned_user)
-    @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '')
+    @@public_health_patient_page_history_verifier.verify_assigned_user(epi_enroller_user_label, newer_assigned_user, '', 'System')
     @@system_test_utils.logout
   end
 end

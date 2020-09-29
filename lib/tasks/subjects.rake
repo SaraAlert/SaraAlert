@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 namespace :subject do
-  desc 'Run the close subjects rake task'
-  task close_subjects: :environment do
-    CloseSubjectsJob.perform_later
+  desc 'Run the close patients rake task'
+  task close_patients: :environment do
+    ClosePatientsJob.perform_later
   end
 end

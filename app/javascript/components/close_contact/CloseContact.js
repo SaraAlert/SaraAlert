@@ -20,6 +20,9 @@ class CloseContact extends React.Component {
       enrolled_id: this.props.close_contact.enrolled_id || null,
       contact_attempts: this.props.close_contact.contact_attempts || 0,
     };
+    this.closeContactNotePlaceholder = this.props.patient.isolation
+      ? 'enter additional information about case'
+      : 'enter additional information about monitoree’s potential exposure';
     this.toggleModal = this.toggleModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -110,7 +113,15 @@ class CloseContact extends React.Component {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Notes</Form.Label>
-                <Form.Control as="textarea" rows="5" id="notes" className="form-square" value={this.state.notes || ''} onChange={this.handleChange} />
+                <Form.Control
+                  as="textarea"
+                  rows="5"
+                  id="notes"
+                  className="form-square"
+                  value={this.state.notes || ''}
+                  placeholder={this.closeContactNotePlaceholder}
+                  onChange={this.handleChange}
+                />
               </Form.Group>
             </Row>
           </Form>

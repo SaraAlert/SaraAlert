@@ -25,37 +25,37 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def enroll_monitoree(user_label, monitoree_label, is_epi = false)
+  def enroll_monitoree(user_label, monitoree_label, is_epi: false)
     monitoree = MONITOREES[monitoree_label]
     @@system_test_utils.login(user_label)
     click_on 'Enroll New Monitoree'
     @@enrollment_form.populate_monitoree_info(monitoree)
-    @@enroller_patient_page_verifier.verify_monitoree_info(monitoree, false)
+    @@enroller_patient_page_verifier.verify_monitoree_info(monitoree, is_epi: false)
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
-    @@enroller_patient_page_verifier.verify_monitoree_info(monitoree, is_epi)
+    @@enroller_patient_page_verifier.verify_monitoree_info(monitoree, is_epi: is_epi)
     visit '/'
-    @@enroller_dashboard_verifier.verify_monitoree_info_on_dashboard(monitoree, is_epi)
+    @@enroller_dashboard_verifier.verify_monitoree_info_on_dashboard(monitoree, is_epi: is_epi)
     @@system_test_utils.logout
   end
 
-  def enroll_group_member(user_label, existing_monitoree_label, new_monitoree_label, is_epi = false)
+  def enroll_group_member(user_label, existing_monitoree_label, new_monitoree_label, is_epi: false)
     existing_monitoree = MONITOREES[existing_monitoree_label]
     new_monitoree = MONITOREES[new_monitoree_label]
     @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
     @@enrollment_form.populate_monitoree_info(existing_monitoree)
-    @@enroller_patient_page_verifier.verify_monitoree_info(existing_monitoree, false)
+    @@enroller_patient_page_verifier.verify_monitoree_info(existing_monitoree)
     click_on 'Finish and Add a Household Member'
     click_on 'Continue'
     @@system_test_utils.wait_for_enrollment_submission
     @@enrollment_form.populate_monitoree_info(new_monitoree)
-    @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, false)
+    @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree)
     click_on 'Finish'
     @@system_test_utils.wait_for_enrollment_submission
-    @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, is_epi)
+    @@enroller_patient_page_verifier.verify_group_member_info(existing_monitoree, new_monitoree, is_epi: is_epi)
     visit '/'
-    @@enroller_dashboard_verifier.verify_group_member_on_dashboard(existing_monitoree, new_monitoree, is_epi)
+    @@enroller_dashboard_verifier.verify_group_member_on_dashboard(existing_monitoree, new_monitoree, is_epi: is_epi)
     @@system_test_utils.logout
   end
 
@@ -64,7 +64,7 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
     @@enrollment_form.populate_enrollment_step(:identification, monitoree['identification'])
-    @@enrollment_form.populate_enrollment_step(:address, monitoree['address'], false)
+    @@enrollment_form.populate_enrollment_step(:address, monitoree['address'], continue: false)
     click_on 'Copy from Home Address'
     @@enrollment_form_verifier.verify_home_address_copied(monitoree)
     @@system_test_utils.logout
@@ -90,7 +90,7 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def enroll_monitoree_and_cancel(user_label, monitoree_label, is_epi = false)
+  def enroll_monitoree_and_cancel(user_label, monitoree_label, is_epi: false)
     monitoree = MONITOREES[monitoree_label]
     @@system_test_utils.login(user_label)
     click_link 'Enroll New Monitoree'
@@ -103,7 +103,7 @@ class EnrollerTestHelper < ApplicationSystemTestCase
     click_on 'Cancel'
     @@system_test_utils.wait_for_pop_up_alert
     page.driver.browser.switch_to.alert.accept
-    @@enroller_dashboard_verifier.verify_monitoree_info_not_on_dashboard(monitoree, is_epi)
+    @@enroller_dashboard_verifier.verify_monitoree_info_not_on_dashboard(monitoree, is_epi: is_epi)
     @@system_test_utils.logout
   end
 
