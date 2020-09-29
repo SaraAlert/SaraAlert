@@ -22,10 +22,14 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         end
 
-        patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
+        if !message['response_status'].in? ['opt_out', 'opt_out']
+          patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
+        end
 
-        # Perform patient lookup for old submission tokens
-        if patient.nil?
+        if message['response_status'].in? ['opt_out', 'opt_out']
+          patient = TwilioSender.get_responder_from_flow_execution(message['patient_submission_token'])
+        elsif patient.nil?
+          # Perform patient lookup for old submission tokens
           patient_lookup = PatientLookup.find_by(old_submission_token: message['patient_submission_token'])
           patient = Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
         end
@@ -97,7 +101,22 @@ class ConsumeAssessmentsJob < ApplicationJob
 
           queue.commit
           next
-        end
+        elsif message['response_status'] == 'opt_out'
+          histories = []
+          patient.dependents.uniq.each do |pat|
+            pat.update(pause_notifications: true)
+            histories << History.monitoree_pause_notifications(pat,'paused')
+          end
+          History.import! histories
+
+          next
+        elsif message['response_status'] == 'opt_in'
+          histories = []
+          patient.dependents.uniq.each do |pat|
+            pat.update(pause_notifications: false)
+            histories << History.monitoree_pause_notifications(pat,'resumed')
+          end
+          History.import! histories
 
         threshold_condition = ThresholdCondition.where(type: 'ThresholdCondition').find_by(threshold_condition_hash: message['threshold_condition_hash'])
 
@@ -163,4 +182,5 @@ class ConsumeAssessmentsJob < ApplicationJob
     end
     History.import! histories
   end
+
 end
