@@ -72,6 +72,7 @@ class Exposure extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
+    this.schema = this.getSchema(this.props.currentState.isolation);
   }
 
   handleDateChange(field, date) {
@@ -143,7 +144,7 @@ class Exposure extends React.Component {
       <React.Fragment>
         <Form.Row>
           <Form.Group as={Col} md="7" controlId="symptom_onset">
-            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required || ' *'}</Form.Label>
             <DateInput
               id="symptom_onset"
               date={this.state.current.patient.symptom_onset}
