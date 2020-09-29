@@ -8,7 +8,7 @@
 
 name: Container Scan
 
-on: push
+on: [push, pull_request]
 
 jobs:
   Anchore-Build-Scan:
