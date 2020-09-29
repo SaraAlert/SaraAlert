@@ -530,14 +530,18 @@ class Patient < ApplicationRecord
     end
   end
 
-  # Send a daily assessment to this monitoree
-  def send_assessment(force: false)
+  # Send a daily assessment to this monitoree (if currently eligible). By setting send_now to true, an assessment
+  # will be sent immediately without any consideration of the monitoree's preferred_contact_time.
+  def send_assessment(send_now = false)
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
 
     return if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent > 12.hours.ago
 
     # Do not allow messages to go to household members
     return unless responder_id == id
+
+    # Stop execution if in CI
+    return if Rails.env.test?
 
     # Return UNLESS:
     # - in exposure: NOT closed AND within monitoring period OR
@@ -553,43 +557,36 @@ class Patient < ApplicationRecord
                   continuous_exposure ||
                   dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
 
-    # If force is set, the preferred contact time will be ignored
-    unless force
+    # Determine if it is yet an appropriate time to send this person a message.
+    unless send_now
+      # Local "hour" (defaults to eastern if timezone cannot be determined)
       hour = Time.now.getlocal(address_timezone_offset).hour
+
       # These are the hours that we consider to be morning, afternoon and evening
       morning = (8..12)
       afternoon = (12..16)
       evening = (16..19)
-      case preferred_contact_time
-      when 'Morning'
+      case preferred_contact_time&.downcase 
+      when 'morning'
         return unless morning.include? hour
-      when 'Afternoon'
+      when 'afternoon'
         return unless afternoon.include? hour
-      when 'Evening'
+      when 'evening'
         return unless evening.include? hour
-      end
-    end
-
-    # Default calling to afternoon if not specified
-    if (preferred_contact_method&.downcase == 'telephone call' ||
-        preferred_contact_method&.downcase == 'sms texted weblink' ||
-        preferred_contact_method&.downcase == 'sms text-message') && responder.id == id && preferred_contact_time.blank?
-      hour = Time.now.getlocal(address_timezone_offset).hour
-      return unless (11..17).include? hour
-    end
-
-    if preferred_contact_method&.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-      if !force
-        PatientMailer.assessment_sms(self).deliver_later
       else
-        PatientMailer.assessment_sms_reminder(self).deliver_later
+        # Default to roughly afternoon if preferred contact time is not specified
+        return unless (11..17).include? hour
       end
-    elsif preferred_contact_method&.downcase == 'sms texted weblink' && responder.id == id
-      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-    elsif preferred_contact_method&.downcase == 'telephone call' && responder.id == id
-      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
-    elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && email.present?
-      PatientMailer.assessment_email(self).deliver_later
+    end
+
+    if preferred_contact_method&.downcase == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
+      PatientMailer.assessment_sms(self).deliver_later
+    elsif preferred_contact_method&.downcase == 'sms texted weblink' && ADMIN_OPTIONS['enable_sms']
+      PatientMailer.assessment_sms_weblink(self).deliver_later
+    elsif preferred_contact_method&.downcase == 'telephone call' && ADMIN_OPTIONS['enable_voice']
+      PatientMailer.assessment_voice(self).deliver_later
+    elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email']
+      PatientMailer.assessment_email(self).deliver_later if email.present?
     end
   end
 
