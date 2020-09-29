@@ -104,7 +104,7 @@ class CaseStatus extends React.Component {
   renderRadioButtons() {
     return (
       <React.Fragment>
-        <p className="mb-2">Please select the records that you would like to apply this change to:</p>
+        <p className="mt-3 mb-2">Please select the records that you would like to apply this change to:</p>
         <Form.Group className="px-4">
           <Form.Check
             type="radio"
