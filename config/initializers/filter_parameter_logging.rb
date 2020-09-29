@@ -1,6 +1,8 @@
 # Be sure to restart your server when you modify this file.
 
 # Configure sensitive parameters which will be filtered from the log file.
+# The application just looks for the presence of these symbols. They are simply organized by table/model.
+
 # Patient filters
 Rails.application.config.filter_parameters += %i[password first_name middle_name last_name date_of_birth age sex white
                                                  black_or_african_american american_indian_or_alaska_native  asian
@@ -25,7 +27,7 @@ Rails.application.config.filter_parameters += %i[password first_name middle_name
                                                  additional_planned_travel_related_notes last_date_of_exposure
                                                  potential_exposure_location potential_exposure_country
                                                  contact_of_known_case member_of_a_common_exposure_cohort
-                                                 member_of_a_common_exposure_cohort_type
+                                                 member_of_a_common_exposure_cohort_type exposure_risk_assessment
                                                  travel_to_affected_country_or_area laboratory_personnel
                                                  laboratory_personnel_facility_name healthcare_personnel
                                                  healthcare_personnel_facility_name crew_on_passenger_or_cargo_flight
@@ -34,7 +36,7 @@ Rails.application.config.filter_parameters += %i[password first_name middle_name
                                                  exposure_notes symptom_onset continuous_exposure latest_assessment_at
                                                  latest_fever_or_fever_reducer_at latest_positive_lab_at
                                                  negative_lab_count gender_identity sexual_orientation
-                                                 extended_isolation isolation ]
+                                                 extended_isolation isolation dob status]
 
 # CloseContact filters
 Rails.application.config.filter_parameters += %i[first_name last_name primary_telephone email notes]
