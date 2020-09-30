@@ -389,7 +389,7 @@ const mockPatient2 = {
     port_of_entry_into_usa: null,
     port_of_origin: null,
     potential_exposure_country: "Mexico",
-    potential_exposure_location: null,
+    potential_exposure_location: "Tulum",
     preferred_contact_method: "SMS Texted Weblink",
     preferred_contact_time: null,
     primary_language: "English",

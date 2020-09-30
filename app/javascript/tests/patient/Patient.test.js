@@ -6,6 +6,7 @@ import ChangeHOH from '../../components/subject/ChangeHOH';
 import MoveToHousehold from '../../components/subject/MoveToHousehold';
 import RemoveFromHousehold from '../../components/subject/RemoveFromHousehold';
 import { mockPatient1, mockPatient2, blankMockPatient } from '../mocks/mockPatients'
+import { nameFormatter, addressLine1Formatter, addressLine2Formatter, dateFormatter } from '../util.js'
 
 const goToMock = jest.fn();
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
@@ -28,7 +29,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ mockPatient2 ]} goto={goToMock} hideBody={true}
             jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
         expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
-        expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: 21');
+        expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient1.assigned_user);
         expect(wrapper.find('#identification').exists()).toBeTruthy();
         expect(wrapper.find('#contact-information').exists()).toBeTruthy();
         expect(wrapper.find('#address').exists()).toBeTruthy();
@@ -41,7 +42,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} hideBody={true}
             jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#identification');
-        expect(section.find(Row).first().text()).toEqual('Identification: Minnie M Mouse');
+        expect(section.find(Row).first().text()).toEqual('Identification: ' + nameFormatter(mockPatient1));
         expect(section.find(Button).length).toEqual(0);
         identificationFields.forEach(function(field, index) {
             expect(section.find('.font-weight-normal').at(index).text()).toEqual(field+':');
@@ -65,8 +66,8 @@ describe('Patient', () => {
         const section = wrapper.find('#address');
         expect(section.find(Row).first().text()).toEqual('Address');
         expect(section.find(Button).length).toEqual(0);
-        expect(section.find('.font-weight-light').at(0).text()).toEqual('1 Hartford Drive');
-        expect(section.find('.font-weight-light').at(1).text()).toEqual('Springfield Connecticut Fairfield 00000-0000');
+        expect(section.find('.font-weight-light').at(0).text()).toEqual(addressLine1Formatter(mockPatient1));
+        expect(section.find('.font-weight-light').at(1).text()).toEqual(addressLine2Formatter(mockPatient1));
     });
 
     it('Properly renders arrival information section', () => {
@@ -76,13 +77,13 @@ describe('Patient', () => {
         expect(section.find(Row).first().text()).toEqual('Arrival Information');
         expect(section.find(Button).length).toEqual(0);
         expect(section.find('h6').at(0).text()).toEqual('DEPARTED');
-        expect(section.find('.font-weight-light').at(0).text()).toEqual('Cabo');
-        expect(section.find('.font-weight-light').at(1).text()).toEqual('09/08/2020');
+        expect(section.find('.font-weight-light').at(0).text()).toEqual(mockPatient1.port_of_origin);
+        expect(section.find('.font-weight-light').at(1).text()).toEqual(dateFormatter(mockPatient1.date_of_departure));
         expect(section.find('h6').at(1).text()).toEqual('ARRIVAL');
-        expect(section.find('.font-weight-light').at(2).text()).toEqual('Orlando');
-        expect(section.find('.font-weight-light').at(3).text()).toEqual('09/10/2020');
-        expect(section.find('.font-weight-light').at(4).text()).toEqual('Spirit');
-        expect(section.find('.font-weight-light').at(5).text()).toEqual('1515');
+        expect(section.find('.font-weight-light').at(2).text()).toEqual(mockPatient1.port_of_entry_into_usa);
+        expect(section.find('.font-weight-light').at(3).text()).toEqual(dateFormatter(mockPatient1.date_of_arrival));
+        expect(section.find('.font-weight-light').at(4).text()).toEqual(mockPatient1.flight_or_vessel_carrier);
+        expect(section.find('.font-weight-light').at(5).text()).toEqual(mockPatient1.flight_or_vessel_number);
     });
 
     it('Properly renders additional planned travel section', () => {
@@ -102,8 +103,8 @@ describe('Patient', () => {
         const section = wrapper.find('#exposure-case-information');
         expect(section.find(Row).first().text()).toEqual('Case Information');
         expect(section.find(Button).length).toEqual(0);
-        expect(section.find('.font-weight-light').at(0).text()).toEqual('Symptom Onset: 09/27/2020');
-        expect(section.find('.font-weight-light').at(1).text()).toEqual('Case Status: Suspect');
+        expect(section.find('.font-weight-light').at(0).text()).toEqual('Symptom Onset: ' + dateFormatter(mockPatient1.symptom_onset));
+        expect(section.find('.font-weight-light').at(1).text()).toEqual('Case Status: ' + mockPatient1.case_status);
 
     });
 
@@ -114,8 +115,8 @@ describe('Patient', () => {
         expect(section.find(Row).first().text()).toEqual('Potential Exposure Information');
         expect(section.find(Button).length).toEqual(0);
         expect(section.find('h6').text()).toEqual('LAST EXPOSURE');
-        expect(section.find('.font-weight-light').at(0).text()).toEqual(' Mexico');
-        expect(section.find('.font-weight-light').at(1).text()).toEqual('09/13/2020');
+        expect(section.find('.font-weight-light').at(0).text()).toEqual(`${mockPatient2.potential_exposure_location} ${mockPatient2.potential_exposure_country}`);
+        expect(section.find('.font-weight-light').at(1).text()).toEqual(dateFormatter(mockPatient2.last_date_of_exposure));
         potentialExposureFields.forEach(function(field, index) {
             expect(section.find('.text-danger').at(index).text().includes(field)).toBeTruthy();
         });
