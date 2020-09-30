@@ -97,7 +97,7 @@ describe('Patient', () => {
         });
     });
 
-    it('Properly renders case information section', () => {
+    it('Properly renders case information section (isolation workflow only)', () => {
         const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} hideBody={true}
             jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#exposure-case-information');
@@ -108,7 +108,7 @@ describe('Patient', () => {
 
     });
 
-    it('Properly renders potential exposure information section', () => {
+    it('Properly renders potential exposure information section (exposure workflow only)', () => {
         const wrapper = shallow(<Patient details={mockPatient2} groupMembers={[ ]} hideBody={true}
             jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#exposure-case-information');
