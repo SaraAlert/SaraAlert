@@ -3,11 +3,11 @@
 require 'test_case'
 
 class AdminControllerTest < ActionController::TestCase
-  def setup; end
-
-  def teardown
+  def setup
     ActionMailer::Base.deliveries.clear
   end
+
+  def teardown; end
 
   test 'admin authorization' do
     # Shouldn't be able to see admin page without first signing in
@@ -408,7 +408,7 @@ class AdminControllerTest < ActionController::TestCase
     # Test welcome emails were sent for all three users
     delivered_emails = ActionMailer::Base.deliveries.sort_by(&:to)
     users = User.where(id: user_ids).sort_by(&:email)
-    assert_equal(delivered_emails.length, users.length)
+    assert_equal(users.length, delivered_emails.length)
     users.each_with_index do |u, index|
       assert u.force_password_change
       # Test that the welcome email is queued
