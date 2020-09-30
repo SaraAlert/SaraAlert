@@ -13,7 +13,7 @@ function getWrapper(mockPatient) {
     return wrapper;
 }
 
-describe('PatientPage', () => {
+describe('Patient Page', () => {
     const wrapper = getWrapper(mockPatient1); // uses mockPatient1 as patient
     const wrapper2 = getWrapper(mockPatient2); // uses mockPatient2 as patient
 

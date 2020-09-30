@@ -27,7 +27,7 @@ class Patient extends React.Component {
     return (
       <React.Fragment>
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
-          <div>
+          <div id="household-member-not-hoh">
             <Row className="mx-3">
               The reporting responsibility for this monitoree is handled by another monitoree.&nbsp;
               <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
@@ -38,7 +38,7 @@ class Patient extends React.Component {
           </div>
         )}
         {this.props?.groupMembers && this.props?.groupMembers?.length > 0 && (
-          <Row className="pb-3 mx-3">
+          <Row id="head-of-household" className="pb-3 mx-3">
             <Col>
               <Row className="pb-2">This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
               <Row>
@@ -79,7 +79,7 @@ class Patient extends React.Component {
           this.props?.groupMembers?.length == 0 &&
           this.props?.details?.responder_id &&
           this.props.details.responder_id == this.props.details.id && (
-            <Row className="pb-3 mx-3">
+            <Row id="no-household" className="pb-3 mx-3">
               <Col>
                 <Row>This monitoree is not a member of a household:</Row>
                 {this.props?.groupMembers?.map((member, index) => {
@@ -98,21 +98,21 @@ class Patient extends React.Component {
             </Row>
           )}
         {this.props.jurisdictionPath && (
-          <Row className="mx-1">
+          <Row id="jurisdiction-path" className="mx-1">
             <Col className="text-truncate">
               <span className="font-weight-normal">Assigned Jurisdiction:</span> <span className="font-weight-light">{this.props.jurisdictionPath}</span>
             </Col>
           </Row>
         )}
         {this.props.details.assigned_user && (
-          <Row className="mx-1">
+          <Row id="assigned-user" className="mx-1">
             <Col className="text-truncate">
               <span className="font-weight-normal">Assigned User:</span> <span className="font-weight-light">{this.props.details.assigned_user}</span>
             </Col>
           </Row>
         )}
         <Row className="pt-4 mx-1 mb-4">
-          <Col md="11">
+          <Col id="identification" md="11">
             <Row>
               <Col>
                 <div className="float-left">
@@ -184,7 +184,7 @@ class Patient extends React.Component {
             </Row>
           </Col>
           <Col md="2"></Col>
-          <Col md="11">
+          <Col id="contact-information" md="11">
             <Row>
               <Col>
                 <div className="float-left">
@@ -228,7 +228,7 @@ class Patient extends React.Component {
           <Card.Body className="mx-0 px-0 my-0 py-0">
             <Row className="g-border-bottom-2 mx-2 pb-4 mb-2"></Row>
             <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
-              <Col md="11">
+              <Col id="address" md="11">
                 <Row>
                   <Col>
                     <div className="float-left">
@@ -269,7 +269,7 @@ class Patient extends React.Component {
                 </Row>
               </Col>
               <Col md="2"></Col>
-              <Col md="11">
+              <Col id="arrival-information" md="11">
                 <Row>
                   <Col>
                     <div className="float-left">
@@ -315,7 +315,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
             <Row className="pb-2 mb-2 mt-4 mx-1">
-              <Col md="11">
+              <Col id="additional-planned-travel" md="11">
                 <Row>
                   <Col>
                     <div className="float-left">
@@ -372,7 +372,7 @@ class Patient extends React.Component {
                 </Row>
               </Col>
               <Col md="2"></Col>
-              <Col md="11">
+              <Col id="exposure-case-information" md="11">
                 <Row>
                   <Col>
                     <div className="float-left">
@@ -475,8 +475,6 @@ class Patient extends React.Component {
 }
 
 Patient.propTypes = {
-  patient: PropTypes.object,
-  group_members: PropTypes.array,
   groupMembers: PropTypes.array,
   details: PropTypes.object,
   jurisdictionPath: PropTypes.string,
