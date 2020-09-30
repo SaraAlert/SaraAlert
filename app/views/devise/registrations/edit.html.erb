@@ -13,20 +13,20 @@
             <div class="card-body">
               <p>Password must include characters from at least three groups (lower case, upper case, numbers, special characters), and be ten characters or more in length. Passwords can not be re-used.</p>
               <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-              <%= render "devise/shared/error_messages", resource: resource %>
-              <div class="form-group">
-                <label>Current (or Temporary) Password</label>
-                <input type="password" autocomplete="current-password" class="form-control form-control-lg rounded-0" name="user[current_password]" id="user_password" required="" >
-              </div>
-              <div class="form-group">
-                <label>New Password</label>
-                <input type="password" autocomplete="new-password" class="form-control form-control-lg rounded-0" name="user[password]" id="user_password" required="" >
-              </div>
-              <div class="form-group">
-                <label>Confirm Password</label>
-                <input type="password" autocomplete="new-password" class="form-control form-control-lg rounded-0" name="user[password_confirmation]" id="user_password" required="" >
-              </div>
-              <button type="submit" class="btn btn-outline-primary btn-lg float-right btn-square px-5" id="login">Update</button>
+                <%= render 'devise/shared/error_messages', resource: resource %>
+                <div class="form-group">
+                  <label>Current (or Temporary) Password</label>
+                  <input type="password" autocomplete="current-password" class="form-control form-control-lg rounded-0" name="user[current_password]" id="user_password" required="" />
+                </div>
+                <div class="form-group">
+                  <label>New Password</label>
+                  <input type="password" autocomplete="new-password" class="form-control form-control-lg rounded-0" name="user[password]" id="user_password" required="" />
+                </div>
+                <div class="form-group">
+                  <label>Confirm Password</label>
+                  <input type="password" autocomplete="new-password" class="form-control form-control-lg rounded-0" name="user[password_confirmation]" id="user_password" required="" />
+                </div>
+                <button type="submit" class="btn btn-outline-primary btn-lg float-right btn-square px-5" id="login">Update</button>
               <% end %>
             </div>
           </div>

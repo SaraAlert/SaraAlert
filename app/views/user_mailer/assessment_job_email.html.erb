@@ -1,24 +1,34 @@
-<h1>Sara Alert Send Assessments Job Results (<%= ActionMailer::Base.default_url_options[:host] %>)</h1>
-<h2><%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %></h2>
+<h1>
+  Sara Alert Send Assessments Job Results (<%= ActionMailer::Base.default_url_options[:host] %>)
+</h1>
+<h2>
+  <%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %>
+</h2>
 <br />
-Total eligible for notifications at runtime: <%= @eligible %>
+  Total eligible for notifications at runtime: <%= @eligible %>
 <br />
 Sent during this job run: <b><%= @sent.count %></b>
 <br />
 Not sent during this job run (due to exceptions): <b><%= @not_sent.count %></b>
 <br />
-<h2>Sent</h2>
+<h2>
+  Sent
+</h2>
 <br />
 ID, Method
 <br />
 <% @sent.each do |s| %>
-  <%= s[:id] %>, <%= s[:method] %><br />
+  <%= s[:id] %>, <%= s[:method] %>
+  <br />
 <% end %>
 <br />
-<h2>Not Sent</h2>
+<h2>
+  Not Sent
+</h2>
 <br />
 ID, Method, Reason
 <br />
 <% @not_sent.each do |ns| %>
-  <%= ns[:id] %>, <%= ns[:method] %>, <%= ns[:reason] %><br />
+  <%= ns[:id] %>, <%= ns[:method] %>, <%= ns[:reason] %>
+  <br />
 <% end %>

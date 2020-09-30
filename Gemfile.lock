@@ -80,6 +80,14 @@ GEM
     bcp47 (0.3.3)
       i18n
     bcrypt (3.1.16)
+    better_html (1.0.15)
+      actionview (>= 4.0)
+      activesupport (>= 4.0)
+      ast (~> 2.0)
+      erubi (~> 1.4)
+      html_tokenizer (~> 0.0.6)
+      parser (>= 2.4)
+      smart_properties
     bindex (0.8.1)
     bootsnap (1.4.8)
       msgpack (~> 1.0)
@@ -128,6 +136,14 @@ GEM
       railties (>= 5)
     ecma-re-validator (0.2.1)
       regexp_parser (~> 1.2)
+    erb_lint (0.0.35)
+      activesupport
+      better_html (~> 1.0.7)
+      html_tokenizer
+      parser (>= 2.7.1.4)
+      rainbow
+      rubocop (~> 0.79)
+      smart_properties
     erubi (1.9.0)
     execjs (2.7.0)
     factory_bot (6.1.0)
@@ -155,6 +171,7 @@ GEM
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     hana (1.3.6)
+    html_tokenizer (0.0.7)
     htmlentities (4.3.4)
     httpclient (2.8.3)
     i18n (1.8.5)
@@ -314,6 +331,7 @@ GEM
       simplecov-html (~> 0.11)
     simplecov-html (0.12.2)
     simplecov-lcov (0.8.0)
+    smart_properties (1.15.0)
     spring (2.1.1)
     spring-watcher-listen (2.0.1)
       listen (>= 2.7, < 4.0)
@@ -384,6 +402,7 @@ DEPENDENCIES
   devise-authy
   devise-security
   doorkeeper
+  erb_lint
   factory_bot_rails
   faker
   fhir_models
