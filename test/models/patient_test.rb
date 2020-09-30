@@ -121,6 +121,34 @@ class PatientTest < ActiveSupport::TestCase
     assert_not responder.active_dependents_exclude_self.pluck(:id).include?(responder.id)
   end
 
+  test 'validates last date of exposure is not more than 30 days in the future' do
+    patient = build(:patient, last_date_of_exposure: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: nil)
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Time.now + 30.days)
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Time.now + 31.days)
+    assert_not patient.valid?
+  end
+
+  test 'validates symptom onset is not more than 30 days in the future' do
+    patient = build(:patient, symptom_onset: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: nil)
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: Time.now + 30.days)
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: Time.now + 31.days)
+    assert_not patient.valid?
+  end
+
   test 'close eligible does not include purged records' do
     # Control test
     patient = create(:patient,
