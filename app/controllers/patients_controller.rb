@@ -62,7 +62,6 @@ class PatientsController < ApplicationController
     @columns = {}
     @assessments.each do |assessment|
       # Get the threshold hash for the set of symptoms at the time of this assessment
-      # threshold_condition = assessment.reported_condition.threshold_condition
       @symptom_names.each do |symptom|
         @columns[symptom] = {
           reported_symptom: assessment.get_reported_symptom_by_name(symptom),
