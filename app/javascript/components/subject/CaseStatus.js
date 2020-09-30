@@ -14,7 +14,9 @@ class CaseStatus extends React.Component {
       showCaseStatusModal: false,
       confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
       case_status: this.props.patient.case_status || '',
+      disabled: false,
       isolation: this.props.patient.isolation,
+      modal_text: '',
       monitoring: this.props.patient.monitoring,
       monitoring_reason: this.props.patient.monitoring_reason,
       monitoring_option: '',
@@ -35,31 +37,58 @@ class CaseStatus extends React.Component {
       this.setState({ [event.target.id]: value }, () => {
         if (event.target.id === 'case_status') {
           const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
-          const hideModal = this.state.isolation && confirmedOrProbable && this.props.patient.case_status !== '';
-
-          this.setState({ showCaseStatusModal: !hideModal, confirmedOrProbable }, () => {
-            // specific case where case status is just changed with no modal
-            if (hideModal) {
-              this.submit();
-            }
-            if (!confirmedOrProbable && this.state.case_status !== '') {
-              this.setState({ isolation: false });
+          this.setState({ showCaseStatusModal: true, confirmedOrProbable }, () => {
+            if (!this.props.patient.monitoring) {
+              this.setState({
+                modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to ${value ||
+                  'blank'}? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`,
+              });
+            } else if (value === '') {
+              this.setState({
+                modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to blank? The monitoree will remain in the same workflow.`,
+              });
+            } else if (
+              this.props.patient.isolation &&
+              !confirmedOrProbable &&
+              (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')
+            ) {
+              // console.log('ISO TO NOT CONFIRMED OR PROBABLE')
+              this.setState({
+                modal_text: `This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.`,
+              });
+            } else if (confirmedOrProbable) {
+              // console.log('CASE STATUS CONFIRMED OR PROBABLE')
+              this.setState({ disabled: true });
+            } else {
+              // console.log('ELSE CASE: NOT CONFIRMED OR PROBABLE AND NOT BLANK')
+              this.setState({
+                isolation: false,
+                public_health_action: 'None',
+                modal_text: `The case status for the selected record will be updated to ${value} and moved to the appropriate line list in the Exposure Workflow.`,
+              });
             }
           });
         } else if (event.target.id === 'monitoring_option') {
           if (event.target.value === 'End Monitoring') {
             this.setState({
+              disabled: false,
               isolation: this.props.patient.isolation,
               monitoring: false,
               monitoring_reason: 'Meets Case Definition',
+              modal_text: `The case status for the selected record will be updated to ${this.state.case_status} and moved to the closed line list in the current workflow.`,
             });
           }
           if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
             this.setState({
+              disabled: false,
               isolation: true,
               monitoring: true,
               monitoring_reason: 'Meets Case Definition',
+              modal_text: `The case status for the selected record will be updated to ${this.state.case_status} and moved to the appropriate line list in the Isolation Workflow.`,
             });
+          }
+          if (event.target.value === '') {
+            this.setState({ disabled: true });
           }
         }
       });
@@ -72,7 +101,9 @@ class CaseStatus extends React.Component {
       showCaseStatusModal: !current,
       apply_to_group: false,
       case_status: this.props.patient.case_status || '',
+      disabled: false,
       isolation: this.props.patient.isolation,
+      modal_text: '',
       monitoring: this.props.patient.monitoring,
       monitoring_reason: this.props.patient.monitoring_reason,
       monitoring_option: '',
@@ -101,198 +132,67 @@ class CaseStatus extends React.Component {
     });
   };
 
-  renderRadioButtons() {
-    return (
-      <React.Fragment>
-        <p className="mt-3 mb-2">Please select the records that you would like to apply this change to:</p>
-        <Form.Group className="px-4">
-          <Form.Check
-            type="radio"
-            className="mb-1"
-            name="apply_to_group"
-            id="apply_to_group_no"
-            label="This monitoree only"
-            onChange={this.handleChange}
-            checked={!this.state.apply_to_group}
-          />
-          <Form.Check
-            type="radio"
-            className="mb-3"
-            name="apply_to_group"
-            id="apply_to_group_yes"
-            label="This monitoree and all household members"
-            onChange={this.handleChange}
-            checked={this.state.apply_to_group}
-          />
-        </Form.Group>
-      </React.Fragment>
-    );
-  }
-
   createModal(title, toggle, submit) {
-    if (!this.props.patient.monitoring) {
-      return (
-        <Modal size="lg" show centered onHide={toggle}>
-          <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              Are you sure you want to change case status from {this.props.patient.case_status} to {this.state.case_status}? Since this record is on the Closed
-              line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the
-              record’s Monitoring Status.
-            </p>
-            {this.props.has_group_members && this.renderRadioButtons()}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary btn-square" onClick={toggle}>
-              Cancel
-            </Button>
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              Submit
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      );
-    } else if (this.state.case_status === '') {
-      return (
-        <Modal size="lg" show centered onHide={toggle}>
-          <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>Are you sure you want to change case status from {this.props.patient.case_status} to blank? The monitoree will remain in the same workflow.</p>
-            {this.props.has_group_members && this.renderRadioButtons()}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary btn-square" onClick={toggle}>
-              Cancel
-            </Button>
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              Submit
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      );
-    } else if (
-      this.props.patient.isolation &&
-      !this.state.confirmedOrProbable &&
-      (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')
-    ) {
-      return (
-        <Modal size="lg" show centered onHide={toggle}>
-          <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {this.props.patient.monitoring ? (
-              <p>
-                This case will be moved to the exposure workflow and will be placed in the Symptomatic, Non-Reporting, or Asymptomatic line list as appropriate
-                to continue exposure monitoring.
-              </p>
-            ) : (
-              <p>
-                This case will be moved to the exposure workflow and will be placed in the Closed line list. If this individual should be actively monitored,
-                please update the record’s Monitoring Status.
-              </p>
+    return (
+      <Modal size="lg" show centered onHide={toggle}>
+        <Modal.Header>
+          <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {/* check me for cases where modal was hidden */}
+          {this.state.confirmedOrProbable && this.props.patient.monitoring && (
+            <React.Fragment>
+              <p>Please select what you would like to do:</p>
+              <Form.Control as="select" className="form-control-lg" id="monitoring_option" onChange={this.handleChange} value={this.state.monitoring_option}>
+                <option></option>
+                <option>End Monitoring</option>
+                <option>Continue Monitoring in Isolation Workflow</option>
+              </Form.Control>
+            </React.Fragment>
+          )}
+          {/* fix padding classes/add conditional here??? */}
+          <p className="pt-2">{this.state.modal_text}</p>
+          {this.props.has_group_members && (
+            <React.Fragment>
+              <p className="mt-3 mb-2">Please select the records that you would like to apply this change to:</p>
+              <Form.Group className="px-4">
+                <Form.Check
+                  type="radio"
+                  className="mb-1"
+                  name="apply_to_group"
+                  id="apply_to_group_no"
+                  label="This monitoree only"
+                  onChange={this.handleChange}
+                  checked={!this.state.apply_to_group}
+                />
+                <Form.Check
+                  type="radio"
+                  className="mb-3"
+                  name="apply_to_group"
+                  id="apply_to_group_yes"
+                  label="This monitoree and all household members"
+                  onChange={this.handleChange}
+                  checked={this.state.apply_to_group}
+                />
+              </Form.Group>
+            </React.Fragment>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.disabled || this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
             )}
-            {this.props.has_group_members && this.renderRadioButtons()}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary btn-square" onClick={toggle}>
-              Cancel
-            </Button>
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              Submit
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      );
-    } else if (this.state.confirmedOrProbable) {
-      return (
-        <Modal size="lg" show centered onHide={toggle}>
-          <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>Please select what you would like to do:</p>
-            <Form.Control as="select" className="form-control-lg" id="monitoring_option" onChange={this.handleChange} value={this.state.monitoring_option}>
-              <option></option>
-              <option>End Monitoring</option>
-              <option>Continue Monitoring in Isolation Workflow</option>
-            </Form.Control>
-            {this.state.monitoring_option === 'End Monitoring' && (
-              <p className="pt-4 mb-0">
-                The case status for the selected record will be updated to {this.state.case_status} and moved to the closed line list in the current workflow.
-              </p>
-            )}
-            {this.state.monitoring_option === 'Continue Monitoring in Isolation Workflow' && (
-              <p className="pt-4 mb-0">
-                The case status for the selected record will be updated to {this.state.case_status} and moved to the appropriate line list in the Isolation
-                Workflow.
-              </p>
-            )}
-            {this.props.has_group_members && this.renderRadioButtons()}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary btn-square" onClick={toggle}>
-              Cancel
-            </Button>
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.monitoring_option === '' || this.state.loading}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              Submit
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      );
-    } else if (!this.state.confirmedOrProbable) {
-      return (
-        <Modal size="lg" show centered onHide={toggle}>
-          <Modal.Header>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              The case status for the selected record will be updated to {this.state.case_status} and moved to the appropriate line list in the Exposure
-              Workflow.
-            </p>
-            {this.props.has_group_members && this.renderRadioButtons()}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary btn-square" onClick={toggle}>
-              Cancel
-            </Button>
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              Submit
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      );
-    }
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
   }
 
   render() {
