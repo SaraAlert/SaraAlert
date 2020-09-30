@@ -36,7 +36,8 @@ Rails.application.config.filter_parameters += %i[password first_name middle_name
                                                  exposure_notes symptom_onset continuous_exposure latest_assessment_at
                                                  latest_fever_or_fever_reducer_at latest_positive_lab_at
                                                  negative_lab_count gender_identity sexual_orientation
-                                                 extended_isolation isolation dob status]
+                                                 extended_isolation isolation dob status user_defined_id_statelocal
+                                                 user_defined_id_cdc user_defined_id_nndss]
 
 # CloseContact filters
 Rails.application.config.filter_parameters += %i[first_name last_name primary_telephone email notes]
