@@ -48,19 +48,20 @@ class CaseStatus extends React.Component {
                 modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to blank? The monitoree will remain in the same workflow.`,
               });
             } else if (
-              this.props.patient.isolation &&
+              this.state.isolation &&
               !confirmedOrProbable &&
               (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')
             ) {
-              // console.log('ISO TO NOT CONFIRMED OR PROBABLE')
               this.setState({
                 modal_text: `This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.`,
               });
+            } else if (confirmedOrProbable && (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')) {
+              this.setState({
+                modal_text: `Are you sure you want to change the case status from ${this.props.patient.case_status} to ${value}? The record will remain in the isolation workflow.`,
+              });
             } else if (confirmedOrProbable) {
-              // console.log('CASE STATUS CONFIRMED OR PROBABLE')
               this.setState({ disabled: true });
             } else {
-              // console.log('ELSE CASE: NOT CONFIRMED OR PROBABLE AND NOT BLANK')
               this.setState({
                 isolation: false,
                 public_health_action: 'None',
@@ -88,7 +89,7 @@ class CaseStatus extends React.Component {
             });
           }
           if (event.target.value === '') {
-            this.setState({ disabled: true });
+            this.setState({ disabled: true, modal_text: '' });
           }
         }
       });
@@ -139,22 +140,28 @@ class CaseStatus extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* check me for cases where modal was hidden */}
-          {this.state.confirmedOrProbable && this.props.patient.monitoring && (
-            <React.Fragment>
-              <p>Please select what you would like to do:</p>
-              <Form.Control as="select" className="form-control-lg" id="monitoring_option" onChange={this.handleChange} value={this.state.monitoring_option}>
-                <option></option>
-                <option>End Monitoring</option>
-                <option>Continue Monitoring in Isolation Workflow</option>
-              </Form.Control>
-            </React.Fragment>
-          )}
-          {/* fix padding classes/add conditional here??? */}
-          <p className="pt-2">{this.state.modal_text}</p>
+          {this.state.confirmedOrProbable &&
+            this.props.patient.monitoring &&
+            this.props.patient.case_status !== 'Confirmed' &&
+            this.props.patient.case_status !== 'Probable' && (
+              <React.Fragment>
+                <p>Please select what you would like to do:</p>
+                <Form.Control
+                  as="select"
+                  className="form-control-lg mb-3"
+                  id="monitoring_option"
+                  onChange={this.handleChange}
+                  value={this.state.monitoring_option}>
+                  <option></option>
+                  <option>End Monitoring</option>
+                  <option>Continue Monitoring in Isolation Workflow</option>
+                </Form.Control>
+              </React.Fragment>
+            )}
+          {this.state.modal_text !== '' && <p>{this.state.modal_text}</p>}
           {this.props.has_group_members && (
             <React.Fragment>
-              <p className="mt-3 mb-2">Please select the records that you would like to apply this change to:</p>
+              <p className="mb-2">Please select the records that you would like to apply this change to:</p>
               <Form.Group className="px-4">
                 <Form.Check
                   type="radio"
