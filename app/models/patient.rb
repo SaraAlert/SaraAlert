@@ -98,6 +98,8 @@ class Patient < ApplicationRecord
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
 
   validates_with PrimaryContactValidator, on: :api
+  validates :last_date_of_exposure, last_date_of_exposure_and_symptom_onset: true
+  validates :symptom_onset, last_date_of_exposure_and_symptom_onset: true
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
