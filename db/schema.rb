@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_16_154852) do
+ActiveRecord::Schema.define(version: 2020_09_30_143455) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -60,6 +60,7 @@ ActiveRecord::Schema.define(version: 2020_09_16_154852) do
     t.string "type"
     t.integer "threshold_condition_id"
     t.index ["assessment_id"], name: "index_conditions_on_assessment_id"
+    t.index ["threshold_condition_id"], name: "index_conditions_on_threshold_condition_id"
     t.index ["type", "assessment_id"], name: "conditions_index_chain_1"
     t.index ["type", "jurisdiction_id"], name: "conditions_index_chain_3"
     t.index ["type", "threshold_condition_hash", "id"], name: "conditions_index_chain_2"
