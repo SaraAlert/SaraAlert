@@ -4,10 +4,24 @@
 class Fhir::R4::ApiController < ActionController::API
   include ActionController::MimeResponds
   before_action only: %i[create update] do
-    doorkeeper_authorize! :'user/*.write', :'user/*.*', :'system/*.write', :'system/*.*'
+    doorkeeper_authorize!(
+      :'user/Patient.write',
+      :'user/Patient.*',
+      :'system/Patient.write',
+      :'system/Patient.*'
+    )
   end
   before_action only: %i[show search all] do
-    doorkeeper_authorize! :'user/*.read', :'user/*.*', :'system/*.read', :'system/*.*'
+    doorkeeper_authorize!(
+      :'user/Patient.read',
+      :'user/Patient.*',
+      :'user/Observation.read',
+      :'user/QuestionnaireResponse.read',
+      :'system/Patient.read',
+      :'system/Patient.*',
+      :'system/Observation.read',
+      :'system/QuestionnaireResponse.read'
+    )
   end
   before_action :cors_headers
 
@@ -311,9 +325,22 @@ class Fhir::R4::ApiController < ActionController::API
     render json: {
       authorization_endpoint: "#{root_url}oauth/authorize",
       token_endpoint: "#{root_url}oauth/token",
+      token_endpoint_auth_methods_supported: %w[client_secret_basic private_key_jwt],
+      token_endpoint_auth_signing_alg_values_supported: ['RS384'],
       introspection_endpoint: "#{root_url}oauth/introspect",
       revocation_endpoint: "#{root_url}oauth/revoke",
-      scopes_supported: ['user/*.read', 'user/*.write', 'user/*.*'],
+      scopes_supported: [
+        'user/Patient.read',
+        'user/Patient.write',
+        'user/Patient.*',
+        'user/Observation.read',
+        'user/QuestionnaireResponse.read',
+        'system/Patient.read',
+        'system/Patient.write',
+        'system/Patient.*',
+        'system/Observation.read',
+        'system/QuestionnaireResponse.read'
+      ],
       capabilities: ['launch-standalone']
     }
   end

@@ -305,15 +305,19 @@ Because the Sara Alert API follows the FHIR specification, there is a mapping be
 ### Supported Scopes
 For applications following the [SMART-on-FHIR App Launch Framework "Standalone Launch" Workflow](#standalone-launch), these are the available scopes:
 
-* `user/*.read`
-* `user/*.write`
-* `user/*.*` (for both read and write access)
+* `user/Patient.read`,
+* `user/Patient.write`,
+* `user/Patient.*`, (for both read and write access to this resource)
+* `user/Observation.read`,
+* `user/QuestionnaireResponse.read`,
 
 For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
 
-* `system/*.read`
-* `system/*.write`
-* `system/*.*` (for both read and write access)
+* `system/Patient.read`,
+* `system/Patient.write`,
+* `system/Patient.*`, (for both read and write access to this resource)
+* `system/Observation.read`,
+* `system/QuestionnaireResponse.read`,
 
 <a name="cap"/>
 
