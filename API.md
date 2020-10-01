@@ -234,7 +234,6 @@ Details about each of these steps and the expected parameter is clearly outlined
 	
 	```json
 	{
-	  "client_id": "<CLIENT_ID>",
 	  "client_assertion": "<CLIENT_SIGNED_JWT_ASSERTION>",
 	  "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
 	  "grant_type": "client_credentials",

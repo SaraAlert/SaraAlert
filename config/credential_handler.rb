@@ -32,14 +32,22 @@ module CredentialHandler
   # This requires the use client_credentials grant flow with JWT assertions.
   # This method handles authorizing the client by decoding the JWT assertion for the supported client credentials flow. 
   def self.handle_client_credentials_flow(request)
-    # Extract the shared client ID.
-    client_id = request.parameters[:client_id]
-    raise_missing_param_error('client_id') unless client_id.present?
-
     # Extract signed JWT assertion from client_assertion param.
     # This is what is signed with the client secret and will be used to authorize this request.
     signed_token = request.parameters[:client_assertion]
     raise_missing_param_error('client_assertion') unless signed_token.present?
+
+    # Extract shared client ID.
+    if request.parameters[:client_id].present?
+      # Check to see if client_id included in params (optional)
+      client_id = request.parameters[:client_id]
+    else
+      # If not, decode the signed token first without validation to obtain the client ID.
+      decoded_assertion = JWT.decode(signed_token, nil, false)
+      # Both the iss and sub fields should contain the client ID.
+      client_id = decoded_assertion.iss ? decoded_assertion.iss : decoded_assertion.sub
+    end
+    raise_standard_doorkeeper_error("JWT is invalid. Could not extract client ID from iss or sub fields.") unless client_id.present?
 
     # Find the associated client application. 
     # Return if not found - Doorkeeper will automatically throw invalid_client error in this case.
