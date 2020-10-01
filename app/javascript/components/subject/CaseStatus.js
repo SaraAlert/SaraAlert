@@ -64,7 +64,6 @@ class CaseStatus extends React.Component {
             } else {
               this.setState({
                 isolation: false,
-                public_health_action: 'None',
                 modal_text: `The case status for the selected record will be updated to ${value} and moved to the appropriate line list in the Exposure Workflow.`,
               });
             }
