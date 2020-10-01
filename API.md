@@ -151,7 +151,7 @@ Sara Alert has a script that generates demo data for testing provided in the sou
 For testing locally (developers), the following url can be used to get to the authorization endpoint and retrieve the authroization code if the Sara Alert application is running locally at `localhost:3000`:
 
 ```
-http://localhost:3000/oauth/authorize?client_id=demo-oauth-app-uid&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fredirect&response_type=code&scope=user%2F%2A.write+user%2F%2A.read&state=blah&aud=http%3A%2F%2Flocalhost%3A3000%2Ffhir%2Fr4
+http://localhost:3000/oauth/authorize?client_id=demo-oauth-app-uid&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fredirect&response_type=code&scope=user%2FPatient.%2A+user%2FObservation.read+user%2FQuestionnaireResponse.read&state=blah&aud=http%3A%2F%2Flocalhost%3A3000%2Ffhir%2Fr4
 ```
 
 <a name="backend-services"/>

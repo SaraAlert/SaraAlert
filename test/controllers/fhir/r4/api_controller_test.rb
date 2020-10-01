@@ -2,6 +2,7 @@
 
 require 'test_helper'
 
+# rubocop:disable Metrics/ClassLength
 class ApiControllerTest < ActionDispatch::IntegrationTest
   fixtures :all
 
@@ -34,11 +35,31 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
                                                              redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
                                                              scopes: 'user/QuestionnaireResponse.read')
 
-    @user_patient_token_rw = Doorkeeper::AccessToken.create(resource_owner_id: @user.id, application: @user_patient_read_write_app, scopes: 'user/Patient.*')
-    @user_patient_token_r = Doorkeeper::AccessToken.create(resource_owner_id: @user.id, application: @user_patient_read_app, scopes: 'user/Patient.read')
-    @user_patient_token_w = Doorkeeper::AccessToken.create(resource_owner_id: @user.id, application: @user_patient_write_app, scopes: 'user/Patient.write')
-    @user_observation_token_r = Doorkeeper::AccessToken.create(resource_owner_id: @user.id, application: @user_observation_read_app, scopes: 'user/Observation.read')
-    @user_response_token_r = Doorkeeper::AccessToken.create(resource_owner_id: @user.id, application: @user_response_read_app, scopes: 'user/QuestionnaireResponse.read')
+    @user_patient_token_rw = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_patient_read_write_app,
+      scopes: 'user/Patient.*'
+    )
+    @user_patient_token_r = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_patient_read_app,
+      scopes: 'user/Patient.read'
+    )
+    @user_patient_token_w = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_patient_write_app,
+      scopes: 'user/Patient.write'
+    )
+    @user_observation_token_r = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_observation_read_app,
+      scopes: 'user/Observation.read'
+    )
+    @user_response_token_r = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_response_read_app,
+      scopes: 'user/QuestionnaireResponse.read'
+    )
   end
 
   # Sets up applications registered for system flow
@@ -282,7 +303,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'SYSTEM FLOW: should be 415 when bad content type header via create' do
     post(
-      '/fhir/r4/Patient', 
+      '/fhir/r4/Patient',
       params: @patient_1.to_json,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
     )
@@ -603,7 +624,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'USER FLOW: analysts should not have any access to patients' do
     @user = User.find_by(email: 'analyst_all@example.com')
     @user.update!(api_enabled: true)
-    @user_patient_token_rw = Doorkeeper::AccessToken.create(resource_owner_id: @user.id, application: @user_patient_read_write_app, scopes: 'user/*.read user/*.write')
+    @user_patient_token_rw = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_patient_read_write_app,
+      scopes: 'user/Patient.*'
+    )
     get(
       '/fhir/r4/Patient/1',
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
@@ -615,7 +640,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Created patient should be okay
     @user = User.find_by(email: 'state1_enroller@example.com')
     @user.update!(api_enabled: true, jurisdiction_id: 2)
-    @user_patient_token_rw = Doorkeeper::AccessToken.create(resource_owner_id: @user.id, application: @user_patient_read_write_app, scopes: 'user/Patient.*')
+    @user_patient_token_rw = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_patient_read_write_app,
+      scopes: 'user/Patient.*'
+    )
     Patient.find_by(id: 1).update!(creator_id: @user[:id])
 
     get(
@@ -680,7 +709,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'USER FLOW: should be 403 forbidden when user does not have api access enabled' do
     @user.update!(api_enabled: false)
-    @user_patient_token_rw = Doorkeeper::AccessToken.create(resource_owner_id: @user.id, application: @user_patient_read_write_app, scopes: 'user/*.read user/*.write')
+    @user_patient_token_rw = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_patient_read_write_app,
+      scopes: 'user/*.read user/*.write'
+    )
     get(
       '/fhir/r4/Patient/1',
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
@@ -773,14 +806,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'USER FLOW: should be unauthorized via create read only' do
     post '/fhir/r4/Patient', params: @patient_1.to_json,
-    headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}" }
+                             headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}" }
     assert_response :forbidden
   end
 
   test 'USER FLOW: should create Patient via create' do
     post(
       '/fhir/r4/Patient', params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+                          headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :created
     json_response = JSON.parse(response.body)
@@ -799,7 +832,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'USER FLOW: should calculate Patient age via create' do
     post(
       '/fhir/r4/Patient', params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+                          headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :created
     json_response = JSON.parse(response.body)
@@ -809,7 +842,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'USER FLOW: should be 415 when bad content type header via create' do
     post(
-      '/fhir/r4/Patient', 
+      '/fhir/r4/Patient',
       params: @patient_1.to_json,
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
     )
@@ -826,7 +859,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'USER FLOW: should be unauthorized via update' do
-    get '/fhir/r4/Patient/1'   
+    get '/fhir/r4/Patient/1'
     assert_response :unauthorized
   end
 
@@ -1127,3 +1160,4 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
   end
 end
+# rubocop:enable Metrics/ClassLength
