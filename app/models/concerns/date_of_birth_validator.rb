@@ -14,7 +14,7 @@ class DateOfBirthValidator < ActiveModel::EachValidator
     elsif !value.acts_like?(:date)
       false
     else
-      !(value < Date.new(1900,1,1))
+      value >= Date.new(1900, 1, 1)
     end
   end
 end
