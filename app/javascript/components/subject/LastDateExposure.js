@@ -127,7 +127,7 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="radio"
                 id="apply_to_group_cm_only"
-                label="This monitoree and only household members where Continuous Exposure is toggled ON"
+                label="This monitoree and only household members that are not on the closed line list where Continuous Exposure is turned ON"
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group_cm_only === true}
               />
@@ -138,7 +138,7 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="radio"
                 id="apply_to_group"
-                label="This monitoree and all household members"
+                label="This monitoree and all household members that are not on the closed line list"
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group === true}
               />

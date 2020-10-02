@@ -368,6 +368,9 @@ class PatientsController < ApplicationController
       patient.closed_at = DateTime.now
     end
 
+    # Do not allow continuous exposure to updated for closed records
+    params_to_update.delete(:continuous_exposure) if params_to_update.include?(:continuous_exposure) && !patient.monitoring
+
     # If moving patient to exposure from isolation
     if params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]
       # NOTE: In the case where a patient is being moved back to the exposure workflow, the symptom onset should be overwritten
