@@ -153,37 +153,35 @@ class PatientsController < ApplicationController
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
     patient.submission_token = SecureRandom.hex(20) # 160 bits
+
     # Attempt to save and continue; else if failed redirect to index
-    if patient.save
+    render(json: patient.errors, status: 422) && return unless patient.save
 
-      # Send enrollment notification only to responders
-      patient.send_enrollment_notification if patient.self_reporter_or_proxy?
+    # Send enrollment notification only to responders
+    patient.send_enrollment_notification if patient.self_reporter_or_proxy?
 
-      # Create a history for the enrollment
-      History.enrollment(patient: patient, created_by: current_user.email)
+    # Create a history for the enrollment
+    History.enrollment(patient: patient, created_by: current_user.email)
 
-      if params[:cc_id].present?
-        close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc_id)[:cc_id])&.first
-        close_contact.update(enrolled_id: patient.id)
-      end
-
-      # Create laboratories for patient if included in import
-      unless params.dig(:patient, :laboratories).nil?
-        params[:patient][:laboratories].each do |lab|
-          laboratory = Laboratory.new
-          laboratory.lab_type = lab[:lab_type]
-          laboratory.specimen_collection = lab[:specimen_collection]
-          laboratory.report = lab[:report]
-          laboratory.result = lab[:result]
-          laboratory.patient = patient
-          laboratory.save
-        end
-      end
-
-      render(json: patient) && return
-    else
-      render(json: patient.errors, status: 422) && return
+    if params[:cc_id].present?
+      close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc_id)[:cc_id])&.first
+      close_contact.update(enrolled_id: patient.id)
     end
+
+    # Create laboratories for patient if included in import
+    unless params.dig(:patient, :laboratories).nil?
+      params[:patient][:laboratories].each do |lab|
+        laboratory = Laboratory.new
+        laboratory.lab_type = lab[:lab_type]
+        laboratory.specimen_collection = lab[:specimen_collection]
+        laboratory.report = lab[:report]
+        laboratory.result = lab[:result]
+        laboratory.patient = patient
+        laboratory.save
+      end
+    end
+
+    render(json: patient) && return
   end
 
   # General updates to an existing subject.
