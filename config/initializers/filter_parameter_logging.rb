@@ -46,7 +46,7 @@ Rails.application.config.filter_parameters += %i[first_name last_name primary_te
 Rails.application.config.filter_parameters += %i[bool_value float_value int_value label name notes]
 
 # Laboratory filters
-Rails.application.config.filter_parameters += %i[lab_type spcimen_collection report result]
+Rails.application.config.filter_parameters += %i[lab_type specimen_collection report result]
 
 # Assessment filters
 Rails.application.config.filter_parameters += %i[symptomatic]
