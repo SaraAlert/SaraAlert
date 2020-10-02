@@ -100,6 +100,8 @@ class Patient < ApplicationRecord
   validates_with PrimaryContactValidator, on: :api
   validates :last_date_of_exposure, last_date_of_exposure_and_symptom_onset: true
   validates :symptom_onset, last_date_of_exposure_and_symptom_onset: true
+  validates :extended_isolation, :last_date_of_exposure, :symptom_onset, at_most_thirty_days_from_now: true
+  validates :date_of_birth, date_of_birth: true
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
