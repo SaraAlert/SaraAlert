@@ -128,6 +128,9 @@ class PatientTest < ActiveSupport::TestCase
     patient = build(:patient, last_date_of_exposure: nil)
     assert patient.valid?
 
+    patient = build(:patient, last_date_of_exposure: Time.now - 1.day)
+    assert patient.valid?
+
     patient = build(:patient, last_date_of_exposure: Time.now + 30.days)
     assert patient.valid?
 
@@ -142,10 +145,41 @@ class PatientTest < ActiveSupport::TestCase
     patient = build(:patient, symptom_onset: nil)
     assert patient.valid?
 
+    patient = build(:patient, symptom_onset: Time.now - 1.day)
+    assert patient.valid?
+
     patient = build(:patient, symptom_onset: Time.now + 30.days)
     assert patient.valid?
 
     patient = build(:patient, symptom_onset: Time.now + 31.days)
+    assert_not patient.valid?
+  end
+
+  test 'validates extended isolation is not more than 30 days in the past' do
+    patient = build(:patient, extended_isolation: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: nil)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: Time.now + 1.day)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: Time.now - 30.days)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: Time.now - 31.days)
+    assert_not patient.valid?
+  end
+
+  test 'validates date of birth is not before 1/1/1900' do
+    patient = build(:patient, date_of_birth: nil)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_birth: 25.years.ago)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_birth: Date.new(1800,1,1))
     assert_not patient.valid?
   end
 
