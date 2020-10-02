@@ -182,7 +182,7 @@ class PatientsController < ApplicationController
 
       render(json: patient) && return
     else
-      render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
+      render(json: patient.errors, status: 422) && return
     end
   end
 
