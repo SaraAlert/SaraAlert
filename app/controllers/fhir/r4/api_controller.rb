@@ -3,6 +3,7 @@
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ActionController::API
   include ActionController::MimeResponds
+  before_action :cors_headers
   before_action only: %i[create update] do
     doorkeeper_authorize!(
       :'user/Patient.write',
@@ -23,7 +24,6 @@ class Fhir::R4::ApiController < ActionController::API
       :'system/QuestionnaireResponse.read'
     )
   end
-  before_action :cors_headers
 
   # Return a resource given a type and an id.
   #
@@ -36,10 +36,27 @@ class Fhir::R4::ApiController < ActionController::API
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
+      return if doorkeeper_authorize!(
+        :'user/Patient.read',
+        :'user/Patient.*',
+        :'system/Patient.read',
+        :'system/Patient.*'
+      )
+
       resource = get_patient(params.permit(:id)[:id])
     when 'observation'
+      return if doorkeeper_authorize!(
+        :'user/Observation.read',
+        :'system/Observation.read'
+      )
+
       resource = get_laboratory(params.permit(:id)[:id])
     when 'questionnaireresponse'
+      return if doorkeeper_authorize!(
+        :'user/QuestionnaireResponse.read',
+        :'system/QuestionnaireResponse.read'
+      )
+
       resource = get_assessment(params.permit(:id)[:id])
     else
       status_bad_request && return
@@ -67,6 +84,13 @@ class Fhir::R4::ApiController < ActionController::API
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
+      return if doorkeeper_authorize!(
+        :'user/Patient.write',
+        :'user/Patient.*',
+        :'system/Patient.write',
+        :'system/Patient.*'
+      )
+
       updates = Patient.from_fhir(contents).select { |_k, v| v.present? }
       resource = get_patient(params.permit(:id)[:id])
     else
@@ -103,6 +127,13 @@ class Fhir::R4::ApiController < ActionController::API
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
+      return if doorkeeper_authorize!(
+        :'user/Patient.write',
+        :'user/Patient.*',
+        :'system/Patient.write',
+        :'system/Patient.*'
+      )
+
       # Construct a Sara Alert Patient
       resource = Patient.new(Patient.from_fhir(contents))
 
@@ -160,12 +191,29 @@ class Fhir::R4::ApiController < ActionController::API
                                  '_count', '_id')
     case resource_type
     when 'patient'
+      return if doorkeeper_authorize!(
+        :'user/Patient.read',
+        :'user/Patient.*',
+        :'system/Patient.read',
+        :'system/Patient.*'
+      )
+
       resources = search_patients(search_params)
       resource_type = 'Patient'
     when 'observation'
+      return if doorkeeper_authorize!(
+        :'user/Observation.read',
+        :'system/Observation.read'
+      )
+
       resources = search_laboratories(search_params) || []
       resource_type = 'Observation'
     when 'questionnaireresponse'
+      return if doorkeeper_authorize!(
+        :'user/QuestionnaireResponse.read',
+        :'system/QuestionnaireResponse.read'
+      )
+
       resources = search_assessments(search_params) || []
       resource_type = 'QuestionnaireResponse'
     else
@@ -205,6 +253,22 @@ class Fhir::R4::ApiController < ActionController::API
   # GET /fhir/r4/Patient/[:id]/$everything
   def all
     status_not_acceptable && return unless accept_header?
+
+    # Require all scopes for all three resources
+    return if doorkeeper_authorize!(
+      :'user/Patient.read',
+      :'user/Patient.*',
+      :'system/Patient.read',
+      :'system/Patient.*'
+    )
+    return if doorkeeper_authorize!(
+      :'user/Observation.read',
+      :'system/Observation.read'
+    )
+    return if doorkeeper_authorize!(
+      :'user/QuestionnaireResponse.read',
+      :'system/QuestionnaireResponse.read'
+    )
 
     patient = get_patient(params.permit(:id)[:id])
 

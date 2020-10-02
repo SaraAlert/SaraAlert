@@ -18,94 +18,240 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Make sure API access is enabled for this user.
     @user.update!(api_enabled: true)
 
-    @user_patient_read_write_app = Doorkeeper::Application.create(name: 'user-test-rw',
-                                                                  redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                                  scopes: 'user/Patient.*')
-    @user_patient_read_app = Doorkeeper::Application.create(name: 'user-test-r',
-                                                            redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                            scopes: 'user/Patient.read')
-    @user_patient_write_app = Doorkeeper::Application.create(name: 'user-test-w',
-                                                             redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                             scopes: 'user/Patient.write')
-    @user_observation_read_app = Doorkeeper::Application.create(name: 'user-test-r',
-                                                                redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                                scopes: 'user/Observation.read')
+    # Create OAuth applications
+    @user_patient_read_write_app = Doorkeeper::Application.create(
+      name: 'user-test-patient-rw',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/Patient.*'
+    )
 
-    @user_response_read_app = Doorkeeper::Application.create(name: 'user-test-r',
-                                                             redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                             scopes: 'user/QuestionnaireResponse.read')
+    @user_patient_read_app = Doorkeeper::Application.create(
+      name: 'user-test-patient-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/Patient.read'
+    )
 
+    @user_patient_write_app = Doorkeeper::Application.create(
+      name: 'user-test-patient-w',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/Patient.write'
+    )
+
+    @user_observation_read_app = Doorkeeper::Application.create(
+      name: 'user-test-observation-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/Observation.read'
+    )
+
+    @user_response_read_app = Doorkeeper::Application.create(
+      name: 'user-test-response-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/QuestionnaireResponse.read'
+    )
+
+    @user_patient_rw_observation_r_app = Doorkeeper::Application.create(
+      name: 'user-test-patient-rw-observation-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/Patient.* user/Observation.read'
+    )
+
+    @user_patient_rw_response_r_app = Doorkeeper::Application.create(
+      name: 'user-test-patient-rw-response-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read'
+    )
+
+    @user_observation_r_response_r_app = Doorkeeper::Application.create(
+      name: 'user-test-observation-r-response-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/QuestionnaireResponse.read user/Observation.read'
+    )
+
+    @user_everything_app = Doorkeeper::Application.create(
+      name: 'user-test-everything',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read'
+    )
+
+    # Create access tokens
     @user_patient_token_rw = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
       application: @user_patient_read_write_app,
       scopes: 'user/Patient.*'
     )
+
     @user_patient_token_r = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
       application: @user_patient_read_app,
       scopes: 'user/Patient.read'
     )
+
     @user_patient_token_w = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
       application: @user_patient_write_app,
       scopes: 'user/Patient.write'
     )
+
     @user_observation_token_r = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
       application: @user_observation_read_app,
       scopes: 'user/Observation.read'
     )
+
     @user_response_token_r = Doorkeeper::AccessToken.create(
       resource_owner_id: @user.id,
       application: @user_response_read_app,
       scopes: 'user/QuestionnaireResponse.read'
     )
+
+    @user_patient_rw_observation_r_token = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_patient_rw_observation_r_app,
+      scopes: 'user/Patient.* user/Observation.read'
+    )
+
+    @user_patient_rw_response_r_token = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_patient_rw_response_r_app,
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read'
+    )
+
+    @user_observation_r_response_r_token = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_observation_r_response_r_app,
+      scopes: 'user/QuestionnaireResponse.read user/Observation.read'
+    )
+
+    @user_everything_token = Doorkeeper::AccessToken.create(
+      resource_owner_id: @user.id,
+      application: @user_everything_app,
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read'
+    )
   end
 
   # Sets up applications registered for system flow
   def setup_system_applications
-    shadow_user = User.create!(email: 'test@example.com',
-                               password: User.rand_gen,
-                               jurisdiction: Jurisdiction.find_by(id: 2),
-                               force_password_change: false,
-                               api_enabled: true)
+    # Create "shadow user" that will is associated with the M2M OAuth apps
+    shadow_user = User.create!(
+      email: 'test@example.com',
+      password: User.rand_gen,
+      jurisdiction: Jurisdiction.find_by(id: 2),
+      force_password_change: false,
+      api_enabled: true
+    )
     shadow_user.add_role 'Public Health Enroller'
     shadow_user.save!
-    @system_patient_read_write_app = Doorkeeper::Application.create(name: 'system-test-rw',
-                                                                    redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                                    scopes: 'system/Patient.*',
-                                                                    jurisdiction_id: 2,
-                                                                    user_id: shadow_user.id)
 
-    @system_patient_read_app = Doorkeeper::Application.create(name: 'system-test-r',
-                                                              redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                              scopes: 'system/Patient.read',
-                                                              jurisdiction_id: 2,
-                                                              user_id: shadow_user.id)
+    # Create OAuth applications
+    @system_patient_read_write_app = Doorkeeper::Application.create(
+      name: 'system-test-patient-rw',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Patient.*',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
 
-    @system_patient_write_app = Doorkeeper::Application.create(name: 'system-test-w',
-                                                               redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                               scopes: 'system/Patient.write',
-                                                               jurisdiction_id: 2,
-                                                               user_id: shadow_user.id)
+    @system_patient_read_app = Doorkeeper::Application.create(
+      name: 'system-test-patient-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Patient.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
 
-    @system_observation_read_app = Doorkeeper::Application.create(name: 'system-test-r',
-                                                                  redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                                  scopes: 'system/Observation.read',
-                                                                  jurisdiction_id: 2,
-                                                                  user_id: shadow_user.id)
+    @system_patient_write_app = Doorkeeper::Application.create(
+      name: 'system-test-patient-w',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Patient.write',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
 
-    @system_response_read_app = Doorkeeper::Application.create(name: 'system-test-r',
-                                                               redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-                                                               scopes: 'system/QuestionnaireResponse.read',
-                                                               jurisdiction_id: 2,
-                                                               user_id: shadow_user.id)
+    @system_observation_read_app = Doorkeeper::Application.create(
+      name: 'system-test-observation-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Observation.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
 
-    @system_patient_token_rw = Doorkeeper::AccessToken.create(application: @system_patient_read_write_app, scopes: 'system/Patient.*')
-    @system_patient_token_r = Doorkeeper::AccessToken.create(application: @system_patient_read_app, scopes: 'system/Patient.read')
-    @system_patient_token_w = Doorkeeper::AccessToken.create(application: @system_patient_write_app, scopes: 'system/Patient.write')
-    @system_observation_token_r = Doorkeeper::AccessToken.create(application: @system_patient_read_app, scopes: 'system/Observation.read')
-    @system_response_token_r = Doorkeeper::AccessToken.create(application: @system_patient_read_app, scopes: 'system/QuestionnaireResponse.read')
+    @system_response_read_app = Doorkeeper::Application.create(
+      name: 'system-test-response-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/QuestionnaireResponse.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_patient_rw_observation_r_app = Doorkeeper::Application.create(
+      name: 'system-test-patient-rw-observation-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Patient.* system/Observation.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_patient_rw_response_r_app = Doorkeeper::Application.create(
+      name: 'system-test-patient-rw-response-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Patient.* system/QuestionnaireResponse.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_observation_r_response_r_app = Doorkeeper::Application.create(
+      name: 'system-test-observation-r-response-r',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/QuestionnaireResponse.read system/Observation.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    @system_everything_app = Doorkeeper::Application.create(
+      name: 'system-test-everything',
+      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read',
+      jurisdiction_id: 2,
+      user_id: shadow_user.id
+    )
+
+    # Create access tokens
+    @system_patient_token_rw = Doorkeeper::AccessToken.create(
+      application: @system_patient_read_write_app,
+      scopes: 'system/Patient.*'
+    )
+    @system_patient_token_r = Doorkeeper::AccessToken.create(
+      application: @system_patient_read_app,
+      scopes: 'system/Patient.read'
+    )
+    @system_patient_token_w = Doorkeeper::AccessToken.create(
+      application: @system_patient_write_app,
+      scopes: 'system/Patient.write'
+    )
+    @system_observation_token_r = Doorkeeper::AccessToken.create(
+      application: @system_observation_read_app,
+      scopes: 'system/Observation.read'
+    )
+    @system_response_token_r = Doorkeeper::AccessToken.create(
+      application: @system_response_read_app,
+      scopes: 'system/QuestionnaireResponse.read'
+    )
+    @system_patient_rw_observation_r_token = Doorkeeper::AccessToken.create(
+      application: @system_patient_rw_observation_r_app,
+      scopes: 'system/Patient.* system/Observation.read'
+    )
+    @system_patient_rw_response_r_token = Doorkeeper::AccessToken.create(
+      application: @system_patient_rw_response_r_app,
+      scopes: 'system/Patient.* system/QuestionnaireResponse.read'
+    )
+    @system_observation_r_response_r_token = Doorkeeper::AccessToken.create(
+      application: @system_observation_r_response_r_app,
+      scopes: 'system/QuestionnaireResponse.read system/Observation.read'
+    )
+    @system_everything_token = Doorkeeper::AccessToken.create(
+      application: @system_everything_app,
+      scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read'
+    )
   end
 
   # Sets up FHIR patients used for testing
@@ -123,6 +269,206 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     get '/fhir/r4/Patient/1'
     assert_response :unauthorized
   end
+
+  #----- system scope tests -----
+
+  test 'SYSTEM FLOW: should not be able to create Patient resource with Patient read scope' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to create Patient resource with Observation scope' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to create Patient resource with QuestionnaireResponse scope' do
+    post(
+      '/fhir/r4/Patient',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to update Patient resource with Patient read scope' do
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to update Patient resource with Observation scope' do
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to update Patient resource with QuestionnaireResponse scope' do
+    put(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to read Patient resource with Patient write only scope' do
+    get(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to read Patient resource with Observation scope' do
+    get(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to read Patient resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to search Patient resource with Patient write only scope' do
+    get(
+      '/fhir/r4/Patient?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to search Patient resource with Observation scope' do
+    get(
+      '/fhir/r4/Patient?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to search Patient resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient?_id=1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to read Observation resource with Patient scope' do
+    get(
+      '/fhir/r4/Observation/1',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to read Observation resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Observation/1',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to read QuestionnaireResponse resource with Patient scope' do
+    get(
+      '/fhir/r4/QuestionnaireResponse/1',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to read QuestionnaireResponse resource with Observation scope' do
+    get(
+      '/fhir/r4/QuestionnaireResponse/1',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to get everything with only Patient write only scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to get everything with only Patient read only scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to get everything with only Patient read and write scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to get everything with only Observation scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to get everything with only QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@system_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to get everything with only Patient read and write scope and Observation scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@system_patient_rw_observation_r_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to get everything with only Patient read and write scope and QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@system_patient_rw_response_r_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'SYSTEM FLOW: should not be able to get everything with only Observation scope and QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@system_observation_r_response_r_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  # ----- end system scope tests -----
 
   test 'SYSTEM FLOW: patients within exact jurisdiction should be accessable' do
     # Same jurisdiction
@@ -183,14 +529,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'foo/bar' }
     )
     assert_response :not_acceptable
-  end
-
-  test 'SYSTEM FLOW: should be unauthorized via show write only' do
-    get(
-      '/fhir/r4/Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
   end
 
   test 'SYSTEM FLOW: should get patient via show' do
@@ -260,15 +598,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
-  test 'SYSTEM FLOW: should be unauthorized via create read only' do
-    post(
-      '/fhir/r4/Patient',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}" }
-    )
-    assert_response :forbidden
-  end
-
   test 'SYSTEM FLOW: should create Patient via create' do
     post(
       '/fhir/r4/Patient',
@@ -322,15 +651,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'SYSTEM FLOW: should be unauthorized via update' do
     get '/fhir/r4/Patient/1'
     assert_response :unauthorized
-  end
-
-  test 'SYSTEM FLOW: should be unauthorized via update read only' do
-    put(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
-      headers: { 'Authorization': "Bearer #{@system_patient_token_r.token}" }
-    )
-    assert_response :forbidden
   end
 
   test 'SYSTEM FLOW: should update Patient via update' do
@@ -396,7 +716,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'SYSTEM FLOW: should find Observations for a Patient via search' do
     get(
       '/fhir/r4/Observation?subject=Patient/1',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_observation_token_r.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -536,18 +856,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
-  test 'SYSTEM FLOW: should be unauthorized via all write only' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_w.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
   test 'SYSTEM FLOW: should get Bundle via all' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@system_everything_token.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -593,14 +905,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_nil json_response['link']
   end
 
-  test 'SYSTEM FLOW: should be forbidden via all' do
-    get(
-      '/fhir/r4/Patient/9/$everything',
-      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
   test 'SYSTEM FLOW: should get CapabilityStatement unauthorized via capability_statement' do
     get(
       '/fhir/r4/metadata',
@@ -620,6 +924,206 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     json_response = JSON.parse(response.body)
     assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
   end
+
+  #----- user scope tests -----
+
+  test 'USER FLOW: should not be able to create Patient resource with Patient read scope' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to create Patient resource with Observation scope' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to create Patient resource with QuestionnaireResponse scope' do
+    post(
+      '/fhir/r4/Patient',
+      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to update Patient resource with Patient read scope' do
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to update Patient resource with Observation scope' do
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to update Patient resource with QuestionnaireResponse scope' do
+    put(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to read Patient resource with Patient write only scope' do
+    get(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to read Patient resource with Observation scope' do
+    get(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to read Patient resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient/1',
+      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to search Patient resource with Patient write only scope' do
+    get(
+      '/fhir/r4/Patient?_id=1',
+      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to search Patient resource with Observation scope' do
+    get(
+      '/fhir/r4/Patient?_id=1',
+      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to search Patient resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient?_id=1',
+      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to read Observation resource with Patient scope' do
+    get(
+      '/fhir/r4/Observation/1',
+      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to read Observation resource with QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Observation/1',
+      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to read QuestionnaireResponse resource with Patient scope' do
+    get(
+      '/fhir/r4/QuestionnaireResponse/1',
+      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to read QuestionnaireResponse resource with Observation scope' do
+    get(
+      '/fhir/r4/QuestionnaireResponse/1',
+      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to get everything with only Patient write only scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to get everything with only Patient read only scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@user_patient_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to get everything with only Patient read and write scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to get everything with only Observation scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to get everything with only QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@user_response_token_r.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to get everything with only Patient read and write scope and Observation scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@user_patient_rw_observation_r_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to get everything with only Patient read and write scope and QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@user_patient_rw_response_r_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  test 'USER FLOW: should not be able to get everything with only Observation scope and QuestionnaireResponse scope' do
+    get(
+      '/fhir/r4/Patient/1/$everything',
+      headers: { 'Authorization': "Bearer #{@user_observation_r_response_r_token.token}", 'Accept': 'application/fhir+json' }
+    )
+    assert_response :forbidden
+  end
+
+  # ----- end user scope tests -----
 
   test 'USER FLOW: analysts should not have any access to patients' do
     @user = User.find_by(email: 'analyst_all@example.com')
@@ -935,7 +1439,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   test 'USER FLOW: should find Observations for a Patient via search' do
     get(
       '/fhir/r4/Observation?subject=Patient/1',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@user_observation_token_r.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -1075,18 +1579,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
-  test 'USER FLOW: should be unauthorized via all write only' do
-    get(
-      '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_w.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
-  end
-
   test 'USER FLOW: should get Bundle via all' do
     get(
       '/fhir/r4/Patient/1/$everything',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
+      headers: { 'Authorization': "Bearer #{@user_everything_token.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
@@ -1130,14 +1626,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     json_response = JSON.parse(response.body)
     assert_equal 'Bundle', json_response['resourceType']
     assert_nil json_response['link']
-  end
-
-  test 'USER FLOW: should be forbidden via all' do
-    get(
-      '/fhir/r4/Patient/9/$everything',
-      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
-    )
-    assert_response :forbidden
   end
 
   test 'USER FLOW: should get CapabilityStatement unauthorized via capability_statement' do
