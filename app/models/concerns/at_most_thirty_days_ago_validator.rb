@@ -14,7 +14,7 @@ class AtMostThirtyDaysAgoValidator < ActiveModel::EachValidator
     elsif !value.acts_like?(:date)
       false
     else
-      !(value < Date.today - 30.days)
+      value >= (Date.today - 30.days)
     end
   end
 end

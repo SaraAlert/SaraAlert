@@ -179,7 +179,7 @@ class PatientTest < ActiveSupport::TestCase
     patient = build(:patient, date_of_birth: 25.years.ago)
     assert patient.valid?
 
-    patient = build(:patient, date_of_birth: Date.new(1800,1,1))
+    patient = build(:patient, date_of_birth: Date.new(1800, 1, 1))
     assert_not patient.valid?
   end
 
