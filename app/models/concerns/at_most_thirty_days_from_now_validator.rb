@@ -3,7 +3,7 @@
 # Several Patient attributes should not be more than 30 days into the future.
 class AtMostThirtyDaysFromNowValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
-    record.errors.add(attribute, 'cannot be more than 30 days in the future') unless valid?(value)
+    record.errors.add(attribute, 'cannot be more than 30 days from now') unless valid?(value)
   end
 
   private
