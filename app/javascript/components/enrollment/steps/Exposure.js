@@ -29,7 +29,7 @@ class Exposure extends React.Component {
     this.isolationFields = this.isolationFields.bind(this);
     this.expsoureFields = this.exposureFields.bind(this);
     this.getSchema = this.getSchema.bind(this);
-    this.schema = this.getSchema(this.props.currentState.isolation);
+    this.schema = this.getSchema(this.props.currentState.patient);
   }
 
   handleChange(event) {
@@ -104,7 +104,7 @@ class Exposure extends React.Component {
 
   validate(callback) {
     let self = this;
-    this.getSchema(this.props.currentState.isolation)
+    this.getSchema(this.props.currentState.patient)
       .validate({ ...this.state.current.patient }, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
@@ -260,16 +260,19 @@ class Exposure extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group>
+          <Form.Group className="ml-1">
             <Form.Check
               size="lg"
               label="CONTINUOUS EXPOSURE"
-              type="switch"
               id="continuous_exposure"
-              className="ml-1"
+              className="ml-1 d-inline"
               checked={this.state.current.patient.continuous_exposure}
               onChange={this.handleChange}
             />
+            <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
+            <Form.Control.Feedback className="d-block" type="invalid">
+              {this.state.errors['continuous_exposure']}
+            </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
@@ -612,7 +615,7 @@ class Exposure extends React.Component {
     );
   }
 
-  getSchema(isolation) {
+  getSchema(patient) {
     let schema = {
       potential_exposure_location: yup
         .string()
@@ -669,7 +672,7 @@ class Exposure extends React.Component {
         .max(2000, 'Max length exceeded, please limit to 2000 characters.')
         .nullable(),
     };
-    if (isolation) {
+    if (patient.isolation) {
       schema['symptom_onset'] = yup
         .date('Date must correspond to the "mm/dd/yyyy" format.')
         .max(
@@ -689,8 +692,17 @@ class Exposure extends React.Component {
             .toDate(),
           'Date can not be more than 30 days in the future.'
         )
-        .required('Please enter a last date of exposure.')
         .nullable();
+      schema['continuous_exposure'] = yup.bool().nullable();
+      if (patient.last_date_of_exposure && patient.continuous_exposure) {
+        const validation_err_msg = 'Either enter a last date of exposure or turn on continuous exposure, but not both';
+        schema['last_date_of_exposure'] = schema['last_date_of_exposure'].oneOf([null, undefined], validation_err_msg);
+        schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([null, undefined, false], validation_err_msg);
+      } else if (!patient.last_date_of_exposure && !patient.continuous_exposure) {
+        const validation_err_msg = 'Please enter a last date of exposure or turn on continuous exposure';
+        schema['last_date_of_exposure'] = schema['last_date_of_exposure'].required(validation_err_msg);
+        schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([true], validation_err_msg);
+      }
     }
     return yup.object().shape(schema);
   }
