@@ -99,6 +99,7 @@ class CaseStatus extends React.Component {
     let current = this.state.showCaseStatusModal;
     this.setState({
       showCaseStatusModal: !current,
+      confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
       apply_to_group: false,
       case_status: this.props.patient.case_status || '',
       disabled: false,
