@@ -10,10 +10,8 @@ const caseStatusValues = [ '', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'N
 const monitoringOptionValues = [ '', 'End Monitoring', 'Continue Monitoring in Isolation Workflow' ];
 
 function getWrapper(patient, hasGroupMembers) {
-    return shallow(<CaseStatus patient={patient} hasGroupMembers={hasGroupMembers} authenticity_token={authyToken} />);
+    return shallow(<CaseStatus patient={patient} has_group_members={hasGroupMembers} authenticity_token={authyToken} />);
 }
-
-// console.log(wrapper.debug())
 
 describe('CaseStatus', () => {
     it('Properly renders all main components', () => {
@@ -123,18 +121,81 @@ describe('CaseStatus', () => {
         expect(wrapper.find(Button).at(1).prop('disabled')).toBeTruthy();
     });
 
-    // changing monitoring options
-    // submit disabled
-    // p text etc
+    it('Changing monitoring option updates state and disable/enables the submit button', () => {
+        const wrapper = getWrapper(mockPatient1, false);
+        wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
 
-    // test HoH radio buttons
-    // const wrapper = getWrapper(mockPatient1, true);
+        // initial modal state with monitoring option empty
+        expect(wrapper.state('monitoring_option')).toEqual('');
+        expect(wrapper.find(Button).at(1).prop('disabled')).toBeTruthy();
+
+        // change monitoring option to End Monitoring
+        wrapper.find(Modal).find(Form.Control).simulate('change', { target: { id: 'monitoring_option', value: 'End Monitoring' }, persist: jest.fn() });
+        wrapper.update();
+        expect(wrapper.state('monitoring_option')).toEqual('End Monitoring');
+        expect(wrapper.state('isolation')).toEqual(mockPatient1.isolation);
+        expect(wrapper.state('monitoring')).toBeFalsy();
+        expect(wrapper.find(Button).at(1).prop('disabled')).toBeFalsy();
+        expect(wrapper.find('p').at(1).text()).toEqual('The case status for the selected record will be updated to Confirmed and moved to the closed line list in the current workflow.');
+
+        // change monitoring option to Continue Monitoring in Isolation Workflow
+        wrapper.find(Modal).find(Form.Control).simulate('change', { target: { id: 'monitoring_option', value: 'Continue Monitoring in Isolation Workflow' }, persist: jest.fn() });
+        wrapper.update();
+        expect(wrapper.state('monitoring_option')).toEqual('Continue Monitoring in Isolation Workflow');
+        expect(wrapper.state('isolation')).toBeTruthy();
+        expect(wrapper.state('monitoring')).toBeTruthy();
+        expect(wrapper.find(Button).at(1).prop('disabled')).toBeFalsy();
+        expect(wrapper.find('p').at(1).text()).toEqual('The case status for the selected record will be updated to Confirmed and moved to the appropriate line list in the Isolation Workflow.');
+
+        // back to initial modal state with monitoring option empty
+        wrapper.find(Modal).find(Form.Control).simulate('change', { target: { id: 'monitoring_option', value: '' }, persist: jest.fn() });
+        expect(wrapper.state('monitoring_option')).toEqual('');
+        expect(wrapper.find(Button).at(1).prop('disabled')).toBeTruthy();
+    });
+
+    it('Properly renders radio buttons for HoH', () => {
+        const wrapper = getWrapper(mockPatient1, true);
+        wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
+        const modalBody = wrapper.find(Modal.Body);
+
+        expect(modalBody.find(Form.Group).exists()).toBeTruthy();
+        expect(modalBody.find(Form.Check).length).toEqual(2);
+        expect(modalBody.find(Form.Check).at(0).prop('type')).toEqual('radio');
+        expect(modalBody.find(Form.Check).at(0).prop('label')).toEqual('This monitoree only');
+        expect(modalBody.find(Form.Check).at(1).prop('type')).toEqual('radio');
+        expect(modalBody.find(Form.Check).at(1).prop('label')).toEqual('This monitoree and all household members');
+    });
+
+    it('Clicking HoH radio buttons updates this.state.apply_to_group', () => {
+        const wrapper = getWrapper(mockPatient1, true);
+        wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
+
+        // initial radio button state
+        expect(wrapper.state('apply_to_group')).toBeFalsy();
+        expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
+        expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+
+        // change to apply to all of household
+        wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' }, persist: jest.fn() });
+        wrapper.update()
+        expect(wrapper.state('apply_to_group')).toBeTruthy();
+        expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeFalsy();
+        expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeTruthy();
+
+        // change back to just this monitoree
+        wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' }, persist: jest.fn() });
+        wrapper.update()
+        expect(wrapper.state('apply_to_group')).toBeFalsy();
+        expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
+        expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+    });
 
     it('Clicking the cancel button closes modal and resets state', () => {
         const wrapper = getWrapper(mockPatient1, false);
 
         // closes modal
-        wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
+        wrapper.find(Form.Control).at(0).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
+        wrapper.find(Form.Control).at(1).simulate('change', { target: { id: 'monitoring_option', value: 'End Monitoring' }, persist: jest.fn() });
         expect(wrapper.find(Modal).exists()).toBeTruthy();
         wrapper.find(Button).at(0).simulate('click');
         expect(wrapper.find(Modal).exists()).toBeFalsy();
