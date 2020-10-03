@@ -485,12 +485,12 @@ class Fhir::R4::ApiController < ActionController::API
     end
   end
 
-    # Generic 404 not found response
-    def status_not_found
-      respond_to do |format|
-        format.any { head :not_found }
-      end
+  # Generic 404 not found response
+  def status_not_found
+    respond_to do |format|
+      format.any { head :not_found }
     end
+  end
 
   # Generic 201 created response
   def status_created(resource)
