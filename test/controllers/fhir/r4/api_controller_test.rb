@@ -577,12 +577,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not json_response['item'].find(text: 'difficulty-breathing').first['answer'].first['valueBoolean']
   end
 
-  test 'SYSTEM FLOW: should be bad request via show' do
+  test 'SYSTEM FLOW: should be 404 via show when requesting unsupported resource' do
     get(
       '/fhir/r4/FooBar/1',
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
-    assert_response :bad_request
+    assert_response :not_found
   end
 
   test 'SYSTEM FLOW: should be forbidden via show' do
@@ -682,13 +682,13 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  test 'SYSTEM FLOW: should be bad request via update due to bad resource' do
+  test 'SYSTEM FLOW: should be bad request via update due to unsupported resource' do
     put(
       '/fhir/r4/FooBar/9',
       params: @patient_2.to_json,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
-    assert_response :bad_request
+    assert_response :not_found
   end
 
   test 'SYSTEM FLOW: should be forbidden via update' do
@@ -843,12 +843,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'SYSTEM FLOW: should be bad request via search' do
+  test 'SYSTEM FLOW: should be 404 via search when requesting unsupported resource' do
     get(
       '/fhir/r4/FooBar?email=grazyna%40example.com',
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
-    assert_response :bad_request
+    assert_response :not_found
   end
 
   test 'SYSTEM FLOW: should be unauthorized via all' do
@@ -1287,12 +1287,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not json_response['item'].find(text: 'difficulty-breathing').first['answer'].first['valueBoolean']
   end
 
-  test 'USER FLOW: should be bad request via show' do
+  test 'USER FLOW: should be 404 via show when requesting unsupported resource' do
     get(
       '/fhir/r4/FooBar/1',
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
-    assert_response :bad_request
+    assert_response :not_found
   end
 
   test 'USER FLOW: should be forbidden via show' do
@@ -1405,13 +1405,13 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  test 'USER FLOW: should be bad request via update due to bad resource' do
+  test 'USER FLOW: should be 404 not found via update due to unsupported resource' do
     put(
       '/fhir/r4/FooBar/9',
       params: @patient_2.to_json,
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
-    assert_response :bad_request
+    assert_response :not_found
   end
 
   test 'USER FLOW: should be forbidden via update' do
@@ -1566,12 +1566,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'USER FLOW: should be bad request via search' do
+  test 'USER FLOW: should be 404 via search when requesting unsupported resource' do
     get(
       '/fhir/r4/FooBar?email=grazyna%40example.com',
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
-    assert_response :bad_request
+    assert_response :not_found
   end
 
   test 'USER FLOW: should be unauthorized via all' do

@@ -59,7 +59,7 @@ class Fhir::R4::ApiController < ActionController::API
 
       resource = get_assessment(params.permit(:id)[:id])
     else
-      status_bad_request && return
+      status_not_found && return
     end
 
     status_forbidden && return if resource.nil?
@@ -94,7 +94,7 @@ class Fhir::R4::ApiController < ActionController::API
       updates = Patient.from_fhir(contents).select { |_k, v| v.present? }
       resource = get_patient(params.permit(:id)[:id])
     else
-      status_bad_request && return
+      status_not_found && return
     end
 
     status_forbidden && return if resource.nil?
@@ -160,6 +160,8 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Generate a submission token for the new monitoree
       resource.submission_token = SecureRandom.hex(20) # 160 bits
+    else
+      status_not_found && return
     end
 
     status_bad_request && return if resource.nil?
@@ -217,7 +219,7 @@ class Fhir::R4::ApiController < ActionController::API
       resources = search_assessments(search_params) || []
       resource_type = 'QuestionnaireResponse'
     else
-      status_bad_request && return
+      status_not_found && return
     end
 
     page_size = params.permit(:_count)[:_count].nil? ? 10 : params.permit(:_count)[:_count].to_i
@@ -482,6 +484,13 @@ class Fhir::R4::ApiController < ActionController::API
       format.any { head :forbidden }
     end
   end
+
+    # Generic 404 not found response
+    def status_not_found
+      respond_to do |format|
+        format.any { head :not_found }
+      end
+    end
 
   # Generic 201 created response
   def status_created(resource)
