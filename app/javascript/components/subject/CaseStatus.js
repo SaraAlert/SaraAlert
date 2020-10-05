@@ -26,73 +26,98 @@ class CaseStatus extends React.Component {
     this.origState = Object.assign({}, this.state);
   }
 
-  handleChange = event => {
+  handleCaseStatusChange = event => {
+    event.persist();
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
+
+    this.setState({ [event.target.id]: value, showCaseStatusModal: true, confirmedOrProbable }, () => {
+      // changing case status of monitoree in the closed line list (either workflow)
+      if (!this.props.patient.monitoring) {
+        this.setState({
+          modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to ${value ||
+            'blank'}? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`,
+        });
+
+        // changing case status to blank from any other case status and either workflow
+      } else if (value === '') {
+        this.setState({
+          modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to blank? The monitoree will remain in the same workflow.`,
+        });
+
+        // changing case status to Unknown, Suspect or Not a Case from Confirmed or Probable in the isolation workflow
+      } else if (
+        this.state.isolation &&
+        !confirmedOrProbable &&
+        (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')
+      ) {
+        this.setState({
+          isolation: false,
+          modal_text: `This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.`,
+        });
+
+        // changing case status to Confirmed from Probable or vice versa in the isolation workflow
+      } else if (
+        confirmedOrProbable &&
+        (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable') &&
+        this.state.isolation
+      ) {
+        this.setState({
+          isolation: true,
+          modal_text: `Are you sure you want to change the case status from ${this.props.patient.case_status} to ${value}? The record will remain in the isolation workflow.`,
+        });
+
+        // changing case status to Confirmed or Probable (excluding case directly above)
+      } else if (confirmedOrProbable) {
+        this.setState({ disabled: true });
+
+        // changing case status to Unknown, Suspect or Not a Case in the isolation workflow (excluding changing from Confirmed or Probable)
+      } else if (!confirmedOrProbable && this.state.isolation) {
+        this.setState({
+          isolation: false,
+          modal_text: `The case status for the selected record will be updated to ${value} and moved to the appropriate line list in the Exposure Workflow.`,
+        });
+
+        // changing case status to Unknown, Suspect or Not a Case in the exposure workflow
+      } else if (!confirmedOrProbable && !this.state.isolation) {
+        this.setState({
+          isolation: false,
+          modal_text: `The case status for the selected record will be updated to ${value}.`,
+        });
+      }
+    });
+  };
+
+  handleMonitoringChange = event => {
     event.persist();
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
-    if (event?.target?.name && event.target.name === 'apply_to_group') {
-      let applyToGroup = event.target.id === 'apply_to_group_yes';
-      this.setState({ [event.target.name]: applyToGroup });
-    } else {
-      this.setState({ [event.target.id]: value }, () => {
-        if (event.target.id === 'case_status') {
-          const confirmedOrProbable = value === 'Confirmed' || value === 'Probable';
-          this.setState({ showCaseStatusModal: true, confirmedOrProbable }, () => {
-            if (!this.props.patient.monitoring) {
-              this.setState({
-                modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to ${value ||
-                  'blank'}? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`,
-              });
-            } else if (value === '') {
-              this.setState({
-                modal_text: `Are you sure you want to change case status from ${this.props.patient.case_status} to blank? The monitoree will remain in the same workflow.`,
-              });
-            } else if (
-              this.state.isolation &&
-              !confirmedOrProbable &&
-              (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')
-            ) {
-              this.setState({
-                modal_text: `This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.`,
-              });
-            } else if (confirmedOrProbable && (this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable')) {
-              this.setState({
-                modal_text: `Are you sure you want to change the case status from ${this.props.patient.case_status} to ${value}? The record will remain in the isolation workflow.`,
-              });
-            } else if (confirmedOrProbable) {
-              this.setState({ disabled: true });
-            } else {
-              this.setState({
-                isolation: false,
-                modal_text: `The case status for the selected record will be updated to ${value} and moved to the appropriate line list in the Exposure Workflow.`,
-              });
-            }
-          });
-        } else if (event.target.id === 'monitoring_option') {
-          if (event.target.value === 'End Monitoring') {
-            this.setState({
-              disabled: false,
-              isolation: this.props.patient.isolation,
-              monitoring: false,
-              monitoring_reason: 'Meets Case Definition',
-              modal_text: `The case status for the selected record will be updated to ${this.state.case_status} and moved to the closed line list in the current workflow.`,
-            });
-          }
-          if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
-            this.setState({
-              disabled: false,
-              isolation: true,
-              monitoring: true,
-              monitoring_reason: 'Meets Case Definition',
-              modal_text: `The case status for the selected record will be updated to ${this.state.case_status} and moved to the appropriate line list in the Isolation Workflow.`,
-            });
-          }
-          if (event.target.value === '') {
-            this.setState({ disabled: true, modal_text: '' });
-          }
-        }
+    if (value === 'End Monitoring') {
+      this.setState({
+        disabled: false,
+        isolation: this.props.patient.isolation,
+        monitoring: false,
+        monitoring_option: value,
+        monitoring_reason: 'Meets Case Definition',
+        modal_text: `The case status for the selected record will be updated to ${this.state.case_status} and moved to the closed line list in the current workflow.`,
       });
+    } else if (event.target.value === 'Continue Monitoring in Isolation Workflow') {
+      this.setState({
+        disabled: false,
+        isolation: true,
+        monitoring: true,
+        monitoring_option: value,
+        monitoring_reason: 'Meets Case Definition',
+        modal_text: `The case status for the selected record will be updated to ${this.state.case_status} and moved to the appropriate line list in the Isolation Workflow.`,
+      });
+    } else if (event.target.value === '') {
+      this.setState({ monitoring_option: value, disabled: true, modal_text: '' });
     }
+  };
+
+  handleApplyGroupChange = event => {
+    let applyToGroup = event.target.id === 'apply_to_group_yes';
+    this.setState({ apply_to_group: applyToGroup });
   };
 
   toggleCaseStatusModal = () => {
@@ -150,7 +175,7 @@ class CaseStatus extends React.Component {
                   as="select"
                   className="form-control-lg mb-3"
                   id="monitoring_option"
-                  onChange={this.handleChange}
+                  onChange={this.handleMonitoringChange}
                   value={this.state.monitoring_option}>
                   <option></option>
                   <option>End Monitoring</option>
@@ -169,7 +194,7 @@ class CaseStatus extends React.Component {
                   name="apply_to_group"
                   id="apply_to_group_no"
                   label="This monitoree only"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyGroupChange}
                   checked={!this.state.apply_to_group}
                 />
                 <Form.Check
@@ -178,7 +203,7 @@ class CaseStatus extends React.Component {
                   name="apply_to_group"
                   id="apply_to_group_yes"
                   label="This monitoree and all household members"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyGroupChange}
                   checked={this.state.apply_to_group}
                 />
               </Form.Group>
@@ -210,7 +235,7 @@ class CaseStatus extends React.Component {
             CASE STATUS
             <InfoTooltip tooltipTextKey="caseStatus" location="right"></InfoTooltip>
           </Form.Label>
-          <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleChange} value={this.state.case_status}>
+          <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleCaseStatusChange} value={this.state.case_status}>
             <option></option>
             <option>Confirmed</option>
             <option>Probable</option>

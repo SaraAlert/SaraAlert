@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Button, Modal, Form } from 'react-bootstrap';
 import CaseStatus from '../../components/subject/CaseStatus.js'
 import InfoTooltip from '../../components/util/InfoTooltip';
-import { mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../mocks/mockPatients'
+import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../mocks/mockPatients'
 
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
 const caseStatusValues = [ '', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case' ];
@@ -44,7 +44,7 @@ describe('CaseStatus', () => {
         expect(wrapper.find(Button).at(1).text()).toEqual('Submit');
     });
 
-    it('Properly renders modal body and updates state when not monitoring', () => {
+    it('Correctly renders modal body and does not change line list or workflow for closed record', () => {
         const wrapper = getWrapper(mockPatient3, false);
         wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
         const modalBody = wrapper.find(Modal.Body);
@@ -52,10 +52,12 @@ describe('CaseStatus', () => {
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
         expect(wrapper.state('case_status')).toEqual('Confirmed');
         expect(wrapper.state('confirmedOrProbable')).toBeTruthy();
+        expect(wrapper.state('isolation')).toEqual(mockPatient3.isolation);
+        expect(wrapper.state('monitoring')).toBeFalsy();
         expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change case status from ${mockPatient3.case_status} to Confirmed? Since this record is on the Closed line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record’s Monitoring Status.`);
     });
 
-    it('Properly renders modal body and updates state when changing Case Status to blank', () => {
+    it('Correctly renders modal body and and does not change line list or workflow when changing Case Status to blank', () => {
         const wrapper = getWrapper(mockPatient1, false);
         wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: '' }, persist: jest.fn() });
         const modalBody = wrapper.find(Modal.Body);
@@ -63,10 +65,12 @@ describe('CaseStatus', () => {
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
         expect(wrapper.state('case_status')).toEqual('');
         expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
+        expect(wrapper.state('isolation')).toEqual(mockPatient1.isolation);
+        expect(wrapper.state('monitoring')).toBeTruthy();
         expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change case status from ${mockPatient1.case_status} to blank? The monitoree will remain in the same workflow.`);
     });
 
-    it('Properly renders modal body and updates state when changing Case Status to Suspect, Unknown or Not a Case from Confirmed or Probable in isolation workflow', () => {
+    it('Correctly renders modal body and updates to exposure workflow when changing Case Status to Suspect, Unknown or Not a Case from Confirmed or Probable in isolation workflow', () => {
         const wrapper = getWrapper(mockPatient4, false);
         wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Unknown' }, persist: jest.fn() });
         const modalBody = wrapper.find(Modal.Body);
@@ -74,22 +78,24 @@ describe('CaseStatus', () => {
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
         expect(wrapper.state('case_status')).toEqual('Unknown');
         expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
+        expect(wrapper.state('isolation')).toBeFalsy();
         expect(modalBody.find('p').text()).toEqual('This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring.');
     });
 
-    it('Properly renders modal body and updates state when changing Case Status to Confirmed from Probable or vice versa', () => {
-        const wrapper = getWrapper(mockPatient2, false);
-        wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Probable' }, persist: jest.fn() });
+    it('Correctly renders modal body and does not change workflow or line list when updating Case Status to Confirmed from Probable or vice versa for a record in the Isolation workflow', () => {
+        const wrapper = getWrapper(mockPatient4, false);
+        wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
         const modalBody = wrapper.find(Modal.Body);
 
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
-        expect(wrapper.state('case_status')).toEqual('Probable');
+        expect(wrapper.state('case_status')).toEqual('Confirmed');
         expect(wrapper.state('confirmedOrProbable')).toBeTruthy();
-        expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change the case status from ${mockPatient2.case_status} to Probable? The record will remain in the isolation workflow.`);
+        expect(wrapper.state('isolation')).toBeTruthy();
+        expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change the case status from ${mockPatient4.case_status} to Confirmed? The record will remain in the isolation workflow.`);
     });
 
-    it('Properly renders modal body and updates state when changing Case Status to Suspect, Unknown or Not A Case (all other cases)', () => {
-        const wrapper = getWrapper(mockPatient2, false);
+    it('Correctly renders modal body and is moved to the exposure workflow when changing Case Status to Suspect, Unknown or Not A Case in the isolation workflow', () => {
+        const wrapper = getWrapper(blankMockPatient, false);
         wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Suspect' }, persist: jest.fn() });
         const modalBody = wrapper.find(Modal.Body);
 
@@ -100,7 +106,19 @@ describe('CaseStatus', () => {
         expect(modalBody.find('p').text()).toEqual('The case status for the selected record will be updated to Suspect and moved to the appropriate line list in the Exposure Workflow.');
     });
 
-    it('Properly renders modal body and updates state when changing Case Status to Confirmed or Probable (all other cases)', () => {
+    it('Correctly renders modal body and does not change workflow or line list when when changing Case Status to Suspect, Unknown or Not A Case in the exposure workflow', () => {
+        const wrapper = getWrapper(mockPatient2, false);
+        wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Suspect' }, persist: jest.fn() });
+        const modalBody = wrapper.find(Modal.Body);
+
+        expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('case_status')).toEqual('Suspect');
+        expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
+        expect(wrapper.state('isolation')).toBeFalsy();
+        expect(modalBody.find('p').text()).toEqual('The case status for the selected record will be updated to Suspect.');
+    });
+
+    it('Correctly renders modal body when changing Case Status to Confirmed or Probable (all other cases)', () => {
         const wrapper = getWrapper(mockPatient1, false);
         wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
         const modalBody = wrapper.find(Modal.Body);
@@ -108,7 +126,7 @@ describe('CaseStatus', () => {
         // updates state
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
         expect(wrapper.state('case_status')).toEqual('Confirmed');
-        expect(wrapper.state('confirmedOrProbable')).toEqual(true);
+        expect(wrapper.state('confirmedOrProbable')).toBeTruthy();
         expect(wrapper.state('disabled')).toBeTruthy();
 
         // renders modal elements
@@ -121,7 +139,7 @@ describe('CaseStatus', () => {
         expect(wrapper.find(Button).at(1).prop('disabled')).toBeTruthy();
     });
 
-    it('Changing monitoring option updates state and disable/enables the submit button', () => {
+    it('Changing monitoring option dropdown updates workflow and disable/enables the submit button', () => {
         const wrapper = getWrapper(mockPatient1, false);
         wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
 
@@ -166,7 +184,7 @@ describe('CaseStatus', () => {
         expect(modalBody.find(Form.Check).at(1).prop('label')).toEqual('This monitoree and all household members');
     });
 
-    it('Clicking HoH radio buttons updates this.state.apply_to_group', () => {
+    it('Clicking HoH radio buttons toggles this.state.apply_to_group', () => {
         const wrapper = getWrapper(mockPatient1, true);
         wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
 
