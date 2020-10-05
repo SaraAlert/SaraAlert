@@ -220,6 +220,7 @@ class Exposure extends React.Component {
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
               customClass="form-control-lg"
+              isClearable
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['last_date_of_exposure']}

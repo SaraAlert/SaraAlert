@@ -238,6 +238,7 @@ class LastDateExposure extends React.Component {
                   onChange={this.openLastDateOfExposureModal}
                   placement="top"
                   customClass="form-control-lg"
+                  isClearable
                 />
               </Col>
             </Row>
