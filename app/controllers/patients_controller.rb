@@ -47,7 +47,8 @@ class PatientsController < ApplicationController
                            primary_telephone: @close_contact.nil? ? '' : @close_contact.primary_telephone,
                            email: @close_contact.nil? ? '' : @close_contact.email,
                            contact_of_known_case: !@close_contact.nil?,
-                           contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id)
+                           contact_of_known_case_id: @close_contact.nil? ? '' : @close_contact.patient_id,
+                           exposure_notes: @close_contact.nil? ? '' : @close_contact.notes)
   end
 
   # Similar to 'new', except used for creating a new group member
@@ -127,9 +128,7 @@ class PatientsController < ApplicationController
     # Default responder to self if no responder condition met
     patient.responder = patient if patient.responder.nil?
 
-    if params.permit(:responder_id)[:responder_id]
-      patient.responder = patient.responder.responder if patient.responder.responder_id != patient.responder.id
-    end
+    patient.responder = patient.responder.responder if params.permit(:responder_id)[:responder_id] && (patient.responder.responder_id != patient.responder.id)
 
     # Set the creator as the current user
     patient.creator = current_user
@@ -388,6 +387,17 @@ class PatientsController < ApplicationController
       end
     end
 
+    # Reset public health action if case status is change to suspect, unknown, not a case
+    if params_to_update.include?(:case_status) && ['Suspect', 'Unknown', 'Not a Case'].include?(params.require(:patient).permit(:case_status)[:case_status]) &&
+       patient[:public_health_action] != 'None'
+      message = patient[:monitoring] ? "System changed Latest Public Health Action from \"#{patient[:public_health_action]}\" to \"None\" so that the monitoree
+                                        will appear on the appropriate line list in the exposure workflow to continue monitoring."
+                                     : "System changed Latest Public Health Action from \"#{patient[:public_health_action]}\" to \"None\"."
+      History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: message)
+      params_to_update << :public_health_action
+      params[:patient][:public_health_action] = 'None'
+    end
+
     # If the symptom onset was cleared by the user
     if params_to_update.include?(:symptom_onset) && params.require(:patient).permit(:symptom_onset)[:symptom_onset].nil?
       params_to_update.concat(%i[user_defined_symptom_onset symptom_onset])
@@ -460,6 +470,21 @@ class PatientsController < ApplicationController
     History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
   end
 
+  # Get all individuals whose responder_id = id, these people are "HOH eligible"
+  def self_reporting
+    redirect_to(root_url) && return unless current_user.can_edit_patient?
+
+    patients = if current_user.has_role?(:enroller)
+                 current_user.enrolled_patients.where('patients.responder_id = patients.id')
+               else
+                 current_user.viewable_patients.where('patients.responder_id = patients.id')
+               end
+    patients = patients.pluck(:id, :first_name, :last_name, :age, :user_defined_id_statelocal).map do |p|
+      { id: p[0], first_name: p[1], last_name: p[2], age: p[3], state_id: p[4] }
+    end
+    render json: { self_reporting: patients.sort_by { |p| p[:last_name] || 'ZZZ' }.to_json }
+  end
+
   # A patient is eligible to be removed from a household if their responder doesn't have the same contact
   # information of them
   def household_removeable
@@ -482,7 +507,7 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
-    patient.send_assessment(true)
+    patient.send_assessment(force: true)
 
     History.report_reminder(patient: patient, created_by: current_user)
   end

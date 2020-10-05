@@ -165,7 +165,7 @@ class History < ApplicationRecord
     }
     return if field[:old_value] == field[:new_value]
 
-    if !history[:params][:monitoring].nil? && !history[:params][:monitoring]
+    if !history[:params][:monitoring].blank? && !history[:params][:monitoring]
       history[:note] = ', and chose to "End Monitoring"'
     elsif !history[:patient][:isolation].present? && history[:params][:isolation].present?
       history[:note] = ', and chose to "Continue Monitoring in Isolation Workflow"'

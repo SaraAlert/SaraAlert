@@ -34,7 +34,7 @@ class MonitoringStatus extends React.Component {
       assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
       original_assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
       monitoring_reasons: null,
-      monitoring_reason: props.patient.monitoring_reason ? props.patient.monitoring_reason : '',
+      monitoring_reason: '',
       public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
       apply_to_group: false,
       isolation: props.patient.isolation,
@@ -105,12 +105,22 @@ class MonitoringStatus extends React.Component {
         monitoring_reasons: null,
       });
     } else if (event?.target?.id && event.target.id === 'public_health_action') {
-      if (this.state.patient.isolation) {
+      if (!this.state.patient.monitoring) {
         this.setState({
           showPublicHealthActionModal: true,
           message: `latest public health action to "${event.target.value}"`,
           message_warning:
-            'The monitoree will be moved to the "Records Requiring Review" line list if they meet a recovery definition or will remain on the "Reporting" or "Non-Reporting" line list as appropriate until a recovery definition is met.',
+            'Since this record is on the "Closed" line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record\'s Monitoring Status.',
+          public_health_action: event?.target?.value ? event.target.value : '',
+          monitoring_reasons: null,
+        });
+      } else if (this.state.patient.isolation) {
+        this.setState({
+          showPublicHealthActionModal: true,
+          message: `latest public health action to "${event.target.value}"`,
+          message_warning: 'This will not impact the line list on which this record appears.',
+          household_warning:
+            'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
           public_health_action: event?.target?.value ? event.target.value : '',
           monitoring_reasons: null,
         });
@@ -122,6 +132,9 @@ class MonitoringStatus extends React.Component {
             event.target.value === 'None'
               ? 'The monitoree will be moved back into the primary status line lists.'
               : 'The monitoree will be moved into the PUI line list.',
+          household_warning:
+            'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
+
           public_health_action: event?.target?.value ? event.target.value : '',
           monitoring_reasons: null,
         });
@@ -143,7 +156,9 @@ class MonitoringStatus extends React.Component {
         showMonitoringStatusModal: true,
         message: `monitoring status to "${event.target.value}"`,
         message_warning:
-          event.target.value === 'Not Monitoring' ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.' : '',
+          event.target.value === 'Not Monitoring'
+            ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.'
+            : 'This will move the selected record(s) from the Closed line list to the appropriate Active Monitoring line list',
         monitoring: event.target.value === 'Actively Monitoring',
         monitoring_status: event?.target?.value ? event.target.value : '',
         monitoring_reasons:
@@ -348,6 +363,9 @@ class MonitoringStatus extends React.Component {
                   checked={this.state.apply_to_group}
                 />
               </Form.Group>
+              <Form.Group>
+                {(this.state.apply_to_group || this.state.apply_to_group_cm_only) && this.state.household_warning && <i>{this.state.household_warning}</i>}
+              </Form.Group>
             </React.Fragment>
           )}
           {this.state.monitoring_reasons && (
@@ -373,7 +391,7 @@ class MonitoringStatus extends React.Component {
             <React.Fragment>
               <hr />
               <p className="mb-2">
-                Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure toggled ON and are being
+                Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure turned ON and are being
                 monitored in the Exposure Workflow?
               </p>
               <Form.Group className="px-4">
@@ -404,6 +422,10 @@ class MonitoringStatus extends React.Component {
                         <DateInput
                           id="apply_to_group_cm_only_date"
                           date={this.state.apply_to_group_cm_only_date}
+                          minDate={'2020-01-01'}
+                          maxDate={moment()
+                            .add(30, 'days')
+                            .format('YYYY-MM-DD')}
                           onChange={date => this.setState({ apply_to_group_cm_only_date: date })}
                           placement="bottom"
                         />
@@ -419,20 +441,14 @@ class MonitoringStatus extends React.Component {
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
           </Button>
-          {this.state.monitoring_reasons && !this.state.monitoring_reason ? (
-            <Button variant="primary btn-square" disabled>
-              Submit
-            </Button>
-          ) : (
-            <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
-              {this.state.loading && (
-                <React.Fragment>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-                </React.Fragment>
-              )}
-              Submit
-            </Button>
-          )}
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
+            Submit
+          </Button>
         </Modal.Footer>
       </Modal>
     );
@@ -510,7 +526,10 @@ class MonitoringStatus extends React.Component {
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <Form.Label className="nav-input-label">
                     LATEST PUBLIC HEALTH ACTION
-                    <InfoTooltip tooltipTextKey="latestPublicHealthAction" location="right"></InfoTooltip>
+                    <InfoTooltip
+                      tooltipTextKey={this.props.isolation ? 'latestPublicHealthActionInIsolation' : 'latestPublicHealthActionInExposure'}
+                      location="right"
+                    />
                   </Form.Label>
                   <Form.Control
                     as="select"

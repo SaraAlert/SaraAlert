@@ -42,7 +42,7 @@ describe('Monitoree Identification', () => {
     expect(wrapper.find('#first_name').instance().value).toEqual('')
     expect(wrapper.find('#middle_name').instance().value).toEqual('')
     expect(wrapper.find('#last_name').instance().value).toEqual('')
-    expect(wrapper.find('#age').instance().value).toEqual('')
+    expect(wrapper.find('#age').instance().value).toEqual('0')
     expect(wrapper.find('#sex').instance().value).toEqual('')
     expect(wrapper.find('#gender_identity').instance().value).toEqual('')
     expect(wrapper.find('#sexual_orientation').instance().value).toEqual('')

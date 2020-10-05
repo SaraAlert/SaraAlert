@@ -18,7 +18,6 @@ class CaseStatus extends React.Component {
       monitoring: this.props.patient.monitoring,
       monitoring_reason: this.props.patient.monitoring_reason,
       monitoring_option: '',
-      public_health_action: this.props.patient.public_health_action,
       apply_to_group: false,
       loading: false,
     };
@@ -44,7 +43,7 @@ class CaseStatus extends React.Component {
               this.submit();
             }
             if (!confirmedOrProbable && this.state.case_status !== '') {
-              this.setState({ isolation: false, public_health_action: 'None' });
+              this.setState({ isolation: false });
             }
           });
         } else if (event.target.id === 'monitoring_option') {
@@ -91,7 +90,6 @@ class CaseStatus extends React.Component {
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
           apply_to_group: this.state.apply_to_group,
-          public_health_action: this.state.public_health_action,
           diffState: diffState,
         })
         .then(() => {
@@ -168,10 +166,17 @@ class CaseStatus extends React.Component {
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-              This case will be moved to the exposure workflow and will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to
-              continue exposure monitoring.
-            </p>
+            {this.props.patient.monitoring ? (
+              <p>
+                This case will be moved to the exposure workflow and will be placed in the Symptomatic, Non-Reporting, or Asymptomatic line list as appropriate
+                to continue exposure monitoring.
+              </p>
+            ) : (
+              <p>
+                This case will be moved to the exposure workflow and will be placed in the Closed line list. If this individual should be actively monitored,
+                please update the record’s Monitoring Status.
+              </p>
+            )}
             {this.props.has_group_members && this.renderRadioButtons()}
           </Modal.Body>
           <Modal.Footer>
