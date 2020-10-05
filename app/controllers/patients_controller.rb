@@ -700,7 +700,6 @@ class PatientsController < ApplicationController
       isolation
       jurisdiction_id
       assigned_user
-      case_status
       continuous_exposure
     ]
   end
