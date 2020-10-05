@@ -119,7 +119,7 @@ en:
         daily2-s: ' Is this person '
         daily3: 'experiencing any of the following symptoms: '
         daily4: ' Please reply with "Yes" or "No"'
-        try-again: "I'm sorry, I didn’t quite get that. Please reply with \"Yes\" or \"No\""
+        try-again: "I'm sorry, I didn’t quite get that. Please reply with \"Yes\" or \"No\". Please contact your local health department if you have any questions."
         thanks: 'Thank you for completing your daily report!'
       weblink:
         intro1: 'This is the Sara Alert system please complete the report for'
