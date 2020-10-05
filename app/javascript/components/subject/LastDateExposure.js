@@ -104,6 +104,7 @@ class LastDateExposure extends React.Component {
 
   createModal(title, message, toggle, submit) {
     message += this.props.has_group_members ? '(s):' : '.';
+    const update_continuous_exposure = title === 'Continuous Exposure';
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
@@ -127,7 +128,9 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="radio"
                 id="apply_to_group_cm_only"
-                label="This monitoree and only household members where Continuous Exposure is toggled ON"
+                label={`This monitoree and only household members ${
+                  update_continuous_exposure ? 'that are not on the closed line list' : ''
+                } where Continuous Exposure is turned ON`}
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group_cm_only === true}
               />
@@ -138,7 +141,7 @@ class LastDateExposure extends React.Component {
               <Form.Check
                 type="radio"
                 id="apply_to_group"
-                label="This monitoree and all household members"
+                label={`This monitoree and all household members ${update_continuous_exposure ? 'that are not on the closed line list' : ''}`}
                 onChange={this.handleChange}
                 checked={this.state.apply_to_group === true}
               />
