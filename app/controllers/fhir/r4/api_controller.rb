@@ -12,7 +12,7 @@ class Fhir::R4::ApiController < ActionController::API
       :'system/Patient.*'
     )
   end
-  before_action only: %i[show search all] do
+  before_action only: %i[show search] do
     doorkeeper_authorize!(
       :'user/Patient.read',
       :'user/Patient.*',
@@ -254,8 +254,6 @@ class Fhir::R4::ApiController < ActionController::API
   #
   # GET /fhir/r4/Patient/[:id]/$everything
   def all
-    status_not_acceptable && return unless accept_header?
-
     # Require all scopes for all three resources
     return if doorkeeper_authorize!(
       :'user/Patient.read',
@@ -271,6 +269,8 @@ class Fhir::R4::ApiController < ActionController::API
       :'user/QuestionnaireResponse.read',
       :'system/QuestionnaireResponse.read'
     )
+
+    status_not_acceptable && return unless accept_header?
 
     patient = get_patient(params.permit(:id)[:id])
 
