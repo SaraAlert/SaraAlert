@@ -527,19 +527,9 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && (
-              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
-                Previous
-              </Button>
-            )}
             {this.props.next && (
               <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
                 Next
-              </Button>
-            )}
-            {this.props.submit && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>
-                Finish
               </Button>
             )}
           </Card.Body>
@@ -604,9 +594,7 @@ const schema = yup.object().shape({
 
 Identification.propTypes = {
   currentState: PropTypes.object,
-  previous: PropTypes.func,
   next: PropTypes.func,
-  submit: PropTypes.func,
 };
 
 export default Identification;

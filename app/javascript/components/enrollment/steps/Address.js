@@ -580,11 +580,6 @@ class Address extends React.Component {
                 Next
               </Button>
             )}
-            {this.props.submit && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>
-                Finish
-              </Button>
-            )}
           </Card.Body>
         </Card>
       </React.Fragment>
@@ -708,10 +703,9 @@ const schemaForeign = yup.object().shape({
 
 Address.propTypes = {
   currentState: PropTypes.object,
-  previous: PropTypes.func,
   setEnrollmentState: PropTypes.func,
+  previous: PropTypes.func,
   next: PropTypes.func,
-  submit: PropTypes.func,
 };
 
 export default Address;

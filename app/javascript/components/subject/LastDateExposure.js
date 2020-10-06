@@ -24,46 +24,12 @@ class LastDateExposure extends React.Component {
       showContinuousExposureModal: false,
     };
     this.origState = Object.assign({}, this.state);
-    this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.openLastDateOfExposureModal = this.openLastDateOfExposureModal.bind(this);
+    this.submit = this.submit.bind(this);
     this.openContinuousExposureModal = this.openContinuousExposureModal.bind(this);
-    this.createModal = this.createModal.bind(this);
+    this.openLastDateOfExposureModal = this.openLastDateOfExposureModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.createCEToggle = this.createCEToggle.bind(this);
-  }
-
-  openContinuousExposureModal() {
-    this.setState({
-      showContinuousExposureModal: true,
-      last_date_of_exposure: null,
-      continuous_exposure: !this.props.patient.continuous_exposure,
-      apply_to_group: false,
-      apply_to_group_cm_only: false,
-    });
-  }
-
-  openLastDateOfExposureModal(date) {
-    if (date && date !== this.props.patient.last_date_of_exposure) {
-      this.setState({
-        showLastDateOfExposureModal: true,
-        last_date_of_exposure: date,
-        continuous_exposure: false,
-        apply_to_group: false,
-        apply_to_group_cm_only: false,
-      });
-    }
-  }
-
-  closeModal() {
-    this.setState({
-      last_date_of_exposure: this.props.patient.last_date_of_exposure,
-      continuous_exposure: !!this.props.patient.continuous_exposure,
-      showLastDateOfExposureModal: false,
-      showContinuousExposureModal: false,
-      apply_to_group: false,
-      apply_to_group_cm_only: false,
-    });
+    this.createModal = this.createModal.bind(this);
   }
 
   handleChange(event) {
@@ -99,6 +65,39 @@ class LastDateExposure extends React.Component {
         .catch(error => {
           reportError(error);
         });
+    });
+  }
+
+  openContinuousExposureModal() {
+    this.setState({
+      showContinuousExposureModal: true,
+      last_date_of_exposure: null,
+      continuous_exposure: !this.props.patient.continuous_exposure,
+      apply_to_group: false,
+      apply_to_group_cm_only: false,
+    });
+  }
+
+  openLastDateOfExposureModal(date) {
+    if (date && date !== this.props.patient.last_date_of_exposure) {
+      this.setState({
+        showLastDateOfExposureModal: true,
+        last_date_of_exposure: date,
+        continuous_exposure: false,
+        apply_to_group: false,
+        apply_to_group_cm_only: false,
+      });
+    }
+  }
+
+  closeModal() {
+    this.setState({
+      last_date_of_exposure: this.props.patient.last_date_of_exposure,
+      continuous_exposure: !!this.props.patient.continuous_exposure,
+      showLastDateOfExposureModal: false,
+      showContinuousExposureModal: false,
+      apply_to_group: false,
+      apply_to_group_cm_only: false,
     });
   }
 
@@ -180,19 +179,6 @@ class LastDateExposure extends React.Component {
     );
   }
 
-  createCEToggle() {
-    return (
-      <Form.Check
-        size="lg"
-        label="CONTINUOUS EXPOSURE"
-        id="continuous_exposure"
-        disabled={!this.props.patient.monitoring}
-        checked={this.state.continuous_exposure}
-        onChange={() => this.openContinuousExposureModal()}
-      />
-    );
-  }
-
   render() {
     return (
       <React.Fragment>
@@ -208,7 +194,7 @@ class LastDateExposure extends React.Component {
           this.createModal(
             'Continuous Exposure',
             `Are you sure you want to turn ${this.state.continuous_exposure ? 'ON' : 'OFF'} Continuous Exposure? The Last Date of Exposure will ${
-              this.state.continuous_exposure ? 'be turned OFF' : 'need to be populated'
+              this.state.continuous_exposure ? 'be cleared' : 'need to be populated'
             } and Continuous Exposure will be turned ${this.state.continuous_exposure ? 'ON' : 'OFF'} for the selected record${
               this.props.has_group_members ? '(s):' : '.'
             }`,
@@ -244,20 +230,26 @@ class LastDateExposure extends React.Component {
             </Row>
             <Row className="pt-2">
               <Col>
-                {!this.props.patient.monitoring && (
-                  <OverlayTrigger
-                    key="tooltip-ot-ce"
-                    placement="left"
-                    overlay={
-                      <Tooltip id="tooltip-ce">
-                        Continuous Exposure cannot be turned on or off for records on the Closed line list. If this monitoree requires monitoring due to a
-                        Continuous Exposure, you may update this field after changing Monitoring Status to &quot;Actively Monitoring&quot;
-                      </Tooltip>
-                    }>
-                    <span className="d-inline-block">{this.createCEToggle()}</span>
-                  </OverlayTrigger>
-                )}
-                {this.props.patient.monitoring && <span className="d-inline-block">{this.createCEToggle()}</span>}
+                <OverlayTrigger
+                  key="tooltip-ot-ce"
+                  placement="left"
+                  overlay={
+                    <Tooltip id="tooltip-ce" style={this.props.patient.monitoring ? { display: 'none' } : {}}>
+                      Continuous Exposure cannot be turned on or off for records on the Closed line list. If this monitoree requires monitoring due to a
+                      Continuous Exposure, you may update this field after changing Monitoring Status to &quot;Actively Monitoring&quot;
+                    </Tooltip>
+                  }>
+                  <span className="d-inline-block">
+                    <Form.Check
+                      size="lg"
+                      label="CONTINUOUS EXPOSURE"
+                      id="continuous_exposure"
+                      disabled={!this.props.patient.monitoring}
+                      checked={this.state.continuous_exposure}
+                      onChange={() => this.openContinuousExposureModal()}
+                    />
+                  </span>
+                </OverlayTrigger>
                 <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
               </Col>
             </Row>

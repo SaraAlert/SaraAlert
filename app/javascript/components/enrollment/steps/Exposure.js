@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Button, Form, Col } from 'react-bootstrap';
+import { Button, Card, Col, Form } from 'react-bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
 import moment from 'moment';
@@ -62,6 +62,14 @@ class Exposure extends React.Component {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 9999) return;
 
       value = event.target.value === '' ? null : parseInt(event.target.value);
+    } else if (event?.target?.id && event.target.id === 'continuous_exposure') {
+      const lde = value ? null : this.props.patient.last_date_of_exposure;
+      current.patient.last_date_of_exposure = lde;
+      if (modified.patient) {
+        modified.patient.last_date_of_exposure = lde;
+      } else {
+        modified = { patient: { last_date_of_exposure: lde } };
+      }
     }
     this.setState(
       {
@@ -221,6 +229,14 @@ class Exposure extends React.Component {
               isInvalid={!!this.state.errors['last_date_of_exposure']}
               customClass="form-control-lg"
               isClearable
+              disabled={this.state.current.patient.continuous_exposure}
+              tooltipText={
+                this.state.current.patient.continuous_exposure
+                  ? 'Last Date of Exposure cannot be populated when Continuous Exposure is turned ON. Please turn OFF Continuous Exposure if the Last Date of Exposure is to be populated.'
+                  : null
+              }
+              tooltipKey="tooltip-lde"
+              tooltipPlacement="top"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['last_date_of_exposure']}
@@ -267,7 +283,7 @@ class Exposure extends React.Component {
               label="CONTINUOUS EXPOSURE"
               id="continuous_exposure"
               className="ml-1 d-inline"
-              checked={this.state.current.patient.continuous_exposure}
+              checked={this.state.current.patient.continuous_exposure || false}
               onChange={this.handleChange}
             />
             <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
@@ -605,11 +621,6 @@ class Exposure extends React.Component {
                 Next
               </Button>
             )}
-            {this.props.submit && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>
-                Finish
-              </Button>
-            )}
           </Card.Body>
         </Card>
       </React.Fragment>
@@ -696,11 +707,11 @@ class Exposure extends React.Component {
         .nullable();
       schema['continuous_exposure'] = yup.bool().nullable();
       if (patient.last_date_of_exposure && patient.continuous_exposure) {
-        const validation_err_msg = 'Either enter a last date of exposure or turn on continuous exposure, but not both';
+        const validation_err_msg = 'Please enter a last date of exposure OR turn on continuous monitoring, but not both';
         schema['last_date_of_exposure'] = schema['last_date_of_exposure'].oneOf([null, undefined], validation_err_msg);
         schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([null, undefined, false], validation_err_msg);
       } else if (!patient.last_date_of_exposure && !patient.continuous_exposure) {
-        const validation_err_msg = 'Please enter a last date of exposure or turn on continuous exposure';
+        const validation_err_msg = 'Please enter a last date of exposure OR turn on continuous exposure';
         schema['last_date_of_exposure'] = schema['last_date_of_exposure'].required(validation_err_msg);
         schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([true], validation_err_msg);
       }
@@ -711,10 +722,10 @@ class Exposure extends React.Component {
 
 Exposure.propTypes = {
   currentState: PropTypes.object,
-  previous: PropTypes.func,
   setEnrollmentState: PropTypes.func,
+  previous: PropTypes.func,
   next: PropTypes.func,
-  submit: PropTypes.func,
+  patient: PropTypes.object,
   has_group_members: PropTypes.bool,
   jurisdictionPaths: PropTypes.object,
   assignedUsers: PropTypes.array,
