@@ -182,6 +182,10 @@ namespace :demo do
       laboratory_histories = demo_populate_laboratories(today, days_ago, existing_patients)
       histories = histories.concat(laboratory_histories)
 
+      # Create close contacts
+      close_contacts_histories = demo_populate_close_contacts(today, days_ago, existing_patients)
+      histories = histories.concat(close_contacts_histories)
+
       # Create transfers
       transfer_histories = demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
       histories = histories.concat(transfer_histories)
@@ -608,6 +612,50 @@ namespace :demo do
       )
     end
     Laboratory.import! laboratories
+    printf(" done.\n")
+
+    return histories
+  end
+
+  def demo_populate_close_contacts(today, days_ago, existing_patients)
+    printf("Generating close contacts...")
+    close_contacts = []
+    histories = []
+    patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
+    enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
+    enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
+    patient_ids.each_with_index do |patient_id, index|
+      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
+      close_contact_ts = create_fake_timestamp(today, today)
+      close_contact = {
+        patient_id: patient_id,
+        created_at: close_contact_ts,
+        updated_at: close_contact_ts,
+        notes: rand < 0.7 ? Faker::Hacker.say_something_smart : nil,
+        contact_attempts: rand < 0.4 ? rand(1..5) : nil
+      }
+      if index < enrolled_close_contacts.size
+        close_contact[:enrolled_id] = enrolled_close_contacts[index][0]
+        close_contact[:first_name] = enrolled_close_contacts[index][1]
+        close_contact[:last_name] = enrolled_close_contacts[index][2]
+        close_contact[:primary_telephone] = enrolled_close_contacts[index][3]
+        close_contact[:email] = enrolled_close_contacts[index][4]
+      else
+        close_contact[:enrolled_id] = nil
+        close_contact[:first_name] = "#{rand < 0.5 ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
+        close_contact[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+        close_contact[:primary_telephone] = rand < 0.85 ? "+155555501#{rand(9)}#{rand(9)}" : nil
+        close_contact[:email] = rand < 0.75 ? "#{rand(1000000000..9999999999)}fake@example.com" : nil
+      end
+      close_contacts << close_contact
+      histories << History.new(
+        patient_id: patient_id,
+        created_by: 'Sara Alert System',
+        comment: "User created a new close contact.",
+        history_type: 'Close Contact'
+      )
+    end
+    CloseContact.import! close_contacts
     printf(" done.\n")
 
     return histories

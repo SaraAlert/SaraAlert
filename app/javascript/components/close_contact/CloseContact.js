@@ -32,6 +32,14 @@ class CloseContact extends React.Component {
       : 'enter additional information about monitoree’s potential exposure';
   }
 
+  formatPhoneNumber(phone) {
+    const match = phone
+      .replace('+1', '')
+      .replace(/\D/g, '')
+      .match(/^(\d{3})(\d{3})(\d{4})$/);
+    return match ? +match[1] + '-' + match[2] + '-' + match[3] : '';
+  }
+
   toggleModal = () => {
     let current = this.state.showModal;
     this.setState({

@@ -655,7 +655,7 @@ class Patient < ApplicationRecord
 
   # Date when patient is expected to be purged
   def expected_purge_date
-    (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822
+    (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 unless monitoring
   end
 
   # Determine if this patient's phone number has blocked communication with SaraAlert

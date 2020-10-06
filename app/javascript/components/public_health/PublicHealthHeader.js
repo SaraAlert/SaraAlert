@@ -163,7 +163,15 @@ class PublicHealthHeader extends React.Component {
               )}
             </Button>
           )}
-          {this.props.abilities.export && <Export authenticity_token={this.props.authenticity_token} workflow={this.props.workflow}></Export>}
+          {this.props.abilities.export && (
+            <Export
+              authenticity_token={this.props.authenticity_token}
+              workflow={this.props.workflow}
+              query={this.props.query}
+              allMonitoreesCount={this.state.counts.exposure + this.state.counts.isolation}
+              filteredMonitoreesCount={this.props.filteredMonitoreesCount}
+            />
+          )}
           {this.props.abilities.import && (
             <DropdownButton
               as={ButtonGroup}
@@ -209,6 +217,8 @@ PublicHealthHeader.propTypes = {
     export: PropTypes.bool,
     import: PropTypes.bool,
   }),
+  query: PropTypes.object,
+  filteredMonitoreesCount: PropTypes.number,
 };
 
 export default PublicHealthHeader;
