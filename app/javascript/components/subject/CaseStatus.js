@@ -167,8 +167,7 @@ class CaseStatus extends React.Component {
         <Modal.Body>
           {this.state.confirmedOrProbable &&
             this.props.patient.monitoring &&
-            this.props.patient.case_status !== 'Confirmed' &&
-            this.props.patient.case_status !== 'Probable' && (
+            ((this.props.patient.case_status !== 'Confirmed' && this.props.patient.case_status !== 'Probable') || !this.state.isolation) && (
               <React.Fragment>
                 <p>Please select what you would like to do:</p>
                 <Form.Control
