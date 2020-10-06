@@ -4,6 +4,7 @@ import { Button, ButtonGroup, Modal, DropdownButton, Dropdown } from 'react-boot
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 
+import CustomExport from './CutsomExport';
 import reportError from '../util/ReportError';
 
 class Export extends React.Component {
@@ -14,6 +15,7 @@ class Export extends React.Component {
       showSaraFormatModal: false,
       showAllPurgeEligibleModal: false,
       showAllModal: false,
+      showCustomFormatModal: false,
     };
     this.submit = this.submit.bind(this);
   }
@@ -95,6 +97,8 @@ class Export extends React.Component {
           <Dropdown.Item onClick={() => this.setState({ showSaraFormatModal: true })}>Sara Alert Format ({this.props.workflow})</Dropdown.Item>
           <Dropdown.Item onClick={() => this.setState({ showAllPurgeEligibleModal: true })}>Excel Export For Purge-Eligible Monitorees</Dropdown.Item>
           <Dropdown.Item onClick={() => this.setState({ showAllModal: true })}>Excel Export For All Monitorees</Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
         </DropdownButton>
         {this.state.showCSVModal &&
           this.createModal(
@@ -142,6 +146,16 @@ class Export extends React.Component {
           draggable
           pauseOnHover
         />
+        {this.state.showCustomFormatModal && (
+          <CustomExport
+            authenticity_token={this.props.authenticity_token}
+            preset={null}
+            query={this.props.query}
+            filteredMonitoreesCount={this.props.filteredMonitoreesCount}
+            allMonitoreesCount={this.props.allMonitoreesCount}
+            onClose={() => this.setState({ showCustomFormatModal: false })}
+          />
+        )}
       </React.Fragment>
     );
   }
@@ -150,6 +164,9 @@ class Export extends React.Component {
 Export.propTypes = {
   workflow: PropTypes.string,
   authenticity_token: PropTypes.string,
+  query: PropTypes.object,
+  allMonitoreesCount: PropTypes.number,
+  filteredMonitoreesCount: PropTypes.number,
 };
 
 export default Export;

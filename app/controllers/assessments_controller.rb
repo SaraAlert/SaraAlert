@@ -125,7 +125,7 @@ class AssessmentsController < ApplicationController
       @assessment_receipt.save
 
       # Create history if assessment was created by user
-      History.report_created(patient: patient, created_by: current_user.email, comment: "User created a new report. ID: #{@assessment.id}") if current_user
+      History.report_created(patient: patient, created_by: current_user.email, comment: "User created a new report (ID: #{@assessment.id}).") if current_user
 
       redirect_to(patient_assessments_url)
     end
