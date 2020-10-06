@@ -23,11 +23,11 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     @@system_test_utils.go_to_next_page
     verify_text_displayed('Please enter a First Name')
     verify_text_displayed('Please enter a Last Name')
-    verify_text_displayed('Please enter a date of birth')
+    verify_text_displayed('Please enter a Date of Birth')
     @@enrollment_form.populate_enrollment_step(:identification, identification)
     verify_text_not_displayed('Please enter a First Name')
     verify_text_not_displayed('Please enter a Last Name')
-    verify_text_not_displayed('Please enter a date of birth')
+    verify_text_not_displayed('Please enter a Date of Birth')
   end
 
   def verify_input_validation_for_address(address)
@@ -56,54 +56,51 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
   def verify_input_validation_for_contact_info(contact_info)
     select 'Telephone call', from: 'preferred_contact_method'
     click_on 'Next'
-    verify_text_not_displayed('Please provide an email or change Preferred Reporting Method')
-    verify_text_not_displayed('Please confirm email')
-    verify_text_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
+    verify_text_not_displayed('Please provide an Email or change Preferred Reporting Method')
+    verify_text_not_displayed('Please confirm Email')
+    verify_text_displayed('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
     select 'SMS Text-message', from: 'preferred_contact_method'
     click_on 'Next'
-    verify_text_not_displayed('Please provide an email or change Preferred Reporting Method')
-    verify_text_not_displayed('Please confirm email')
-    verify_text_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
+    verify_text_not_displayed('Please provide an Email or change Preferred Reporting Method')
+    verify_text_not_displayed('Please confirm Email')
+    verify_text_displayed('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
     select 'E-mailed Web Link', from: 'preferred_contact_method'
     click_on 'Next'
-    verify_text_displayed('Please provide an email or change Preferred Reporting Method')
-    verify_text_displayed('Please confirm email')
-    verify_text_not_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
+    verify_text_displayed('Please provide an Email or change Preferred Reporting Method')
+    verify_text_displayed('Please confirm Email')
+    verify_text_not_displayed('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
     fill_in 'email', with: 'email@eample.com'
     click_on 'Next'
-    verify_text_not_displayed('Please provide an email or change Preferred Reporting Method')
-    verify_text_displayed('Please confirm email')
-    verify_text_not_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
+    verify_text_not_displayed('Please provide an Email or change Preferred Reporting Method')
+    verify_text_displayed('Please confirm Email')
+    verify_text_not_displayed('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
     @@enrollment_form.populate_enrollment_step(:contact_info, contact_info)
-    verify_text_not_displayed('Please provide an email or change Preferred Reporting Method')
-    verify_text_not_displayed('Please confirm email')
-    verify_text_not_displayed('Please provide a primary telephone number, or change Preferred Reporting Method.')
+    verify_text_not_displayed('Please provide an Email or change Preferred Reporting Method')
+    verify_text_not_displayed('Please confirm Email')
+    verify_text_not_displayed('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
   end
 
   def verify_input_validation_for_arrival_info(arrival_info)
     @@enrollment_form.populate_enrollment_step(:arrival_info, arrival_info)
-    verify_text_not_displayed('Please enter a valid date of departure')
   end
 
   def verify_input_validation_for_additional_planned_travel(additional_planned_travel)
     @@enrollment_form.populate_enrollment_step(:additional_planned_travel, additional_planned_travel)
-    verify_text_not_displayed('Please enter a valid start date')
-    verify_text_not_displayed('Please enter a valid end date')
   end
 
   def verify_input_validation_for_potential_exposure_info(potential_exposure_info)
     @@system_test_utils.go_to_next_page
-    verify_text_displayed('Please enter a last date of exposure')
+    verify_text_displayed('Please enter a Last Date of Exposure')
     fill_in 'last_date_of_exposure', with: rand(30).days.ago.strftime('%m/%d/%Y')
     fill_in 'jurisdiction_id', with: ''
     click_on 'Next'
-    verify_text_displayed('Please enter a valid jurisdiction')
+    verify_text_displayed('Please enter a valid Assigned Jurisdiction')
     fill_in 'jurisdiction_id', with: 'fake jurisdiction'
     click_on 'Next'
-    verify_text_displayed('Please enter a valid jurisdiction')
+    verify_text_displayed('Please enter a valid Assigned Jurisdiction')
     fill_in 'jurisdiction_id', with: 'USA'
     click_on 'Next'
-    verify_text_displayed('Please enter a valid jurisdiction')
+    verify_text_displayed('Please enter a valid Assigned Jurisdiction')
     fill_in 'jurisdiction_id', with: 'USA, State 1, County 1'
     fill_in 'assigned_user', with: '-8.5'
     assert_not_equal('-8.5', page.find_field('assignedUser').value)
@@ -114,7 +111,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'assigned_user', with: 'W(#*&R#(W&'
     assert_not_equal('W(#*&R#(W&', page.find_field('assignedUser').value)
     @@enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
-    verify_text_not_displayed('Please enter a last date of exposure')
+    verify_text_not_displayed('Please enter a Last Date of Exposure')
   end
 
   def verify_text_displayed(text)

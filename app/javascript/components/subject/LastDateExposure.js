@@ -110,19 +110,6 @@ class LastDateExposure extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>{message}</p>
-          {!!this.props.patient.continuous_exposure && !this.state.continuous_exposure && (
-            <div className="mb-3">
-              <DateInput
-                id="last_date_of_exposure"
-                date={this.state.last_date_of_exposure}
-                maxDate={moment()
-                  .add(30, 'days')
-                  .format('YYYY-MM-DD')}
-                onChange={date => this.setState({ last_date_of_exposure: date })}
-                placement="top"
-              />
-            </div>
-          )}
           {this.props.has_group_members && (
             <Form.Group className="mb-2 px-4">
               <Form.Check
@@ -157,6 +144,20 @@ class LastDateExposure extends React.Component {
                 checked={this.state.apply_to_group === true}
               />
             </Form.Group>
+          )}
+          {!!this.props.patient.continuous_exposure && !this.state.continuous_exposure && (
+            <div className="mt-2">
+              <Form.Label className="nav-input-label">Update Last Date of Exposure to:</Form.Label>
+              <DateInput
+                id="last_date_of_exposure"
+                date={this.state.last_date_of_exposure}
+                maxDate={moment()
+                  .add(30, 'days')
+                  .format('YYYY-MM-DD')}
+                onChange={date => this.setState({ last_date_of_exposure: date })}
+                placement="top"
+              />
+            </div>
           )}
         </Modal.Body>
         <Modal.Footer>

@@ -18,6 +18,7 @@ class Exposure extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
+      isEditMode: window.location.href.includes('edit'),
       jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
@@ -28,8 +29,26 @@ class Exposure extends React.Component {
     this.validate = this.validate.bind(this);
     this.isolationFields = this.isolationFields.bind(this);
     this.expsoureFields = this.exposureFields.bind(this);
-    this.getSchema = this.getSchema.bind(this);
-    this.schema = this.getSchema(this.props.currentState.patient);
+  }
+
+  componentDidMount() {
+    if (this.state.isEditMode) {
+      // Update the Schema Validator based on workflow.
+      if (this.props.patient.isolation) {
+        schema['symptom_onset'] = yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .max(
+            moment()
+              .add(30, 'days')
+              .toDate(),
+            'Date can not be more than 30 days in the future.'
+          )
+          .required('Please enter a Symptom Onset Date.')
+          .nullable();
+      } else {
+        this.updateLDEandCEValidations(this.props.patient);
+      }
+    }
   }
 
   handleChange(event) {
@@ -70,6 +89,7 @@ class Exposure extends React.Component {
       } else {
         modified = { patient: { last_date_of_exposure: lde } };
       }
+      this.updateLDEandCEValidations({ ...current.patient, [event.target.id]: value });
     }
     this.setState(
       {
@@ -94,6 +114,9 @@ class Exposure extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
+    if (field === 'last_date_of_exposure') {
+      this.updateLDEandCEValidations({ ...current.patient, [field]: date });
+    }
   }
 
   handlePropagatedFieldChange(event) {
@@ -110,10 +133,37 @@ class Exposure extends React.Component {
     );
   }
 
+  updateLDEandCEValidations = patient => {
+    schema['last_date_of_exposure'] = yup
+      .date('Date must correspond to the "mm/dd/yyyy" format.')
+      .max(
+        moment()
+          .add(30, 'days')
+          .toDate(),
+        'Date can not be more than 30 days in the future.'
+      )
+      .nullable();
+    schema['continuous_exposure'] = yup.bool().nullable();
+    const validation_msg_required = 'Please enter a Last Date of Exposure OR turn on Continuous Monitoring, but not both';
+    const validation_msg_only_one = 'Please enter a Last Date of Exposure OR turn on Continuous Exposure';
+    if (!patient.last_date_of_exposure && !patient.continuous_exposure) {
+      schema['last_date_of_exposure'] = schema['last_date_of_exposure'].required(validation_msg_only_one);
+      schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([true], validation_msg_only_one);
+    } else if (!patient.last_date_of_exposure && patient.continuous_exposure) {
+      schema['last_date_of_exposure'] = schema['last_date_of_exposure'].oneOf([null, undefined], validation_msg_only_one);
+      schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([true], validation_msg_required);
+    } else if (patient.last_date_of_exposure && !patient.continuous_exposure) {
+      schema['last_date_of_exposure'] = schema['last_date_of_exposure'].required(validation_msg_required);
+      schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([null, undefined, false], validation_msg_only_one);
+    }
+  };
+
   validate(callback) {
     let self = this;
-    this.getSchema(this.props.currentState.patient)
-      .validate({ ...this.state.current.patient }, { abortEarly: false })
+    console.log(schema);
+    console.log(this.state.current.patient);
+    schema
+      .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, async () => {
@@ -151,7 +201,7 @@ class Exposure extends React.Component {
       <React.Fragment>
         <Form.Row>
           <Form.Group as={Col} md="7" controlId="symptom_onset">
-            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
             <DateInput
               id="symptom_onset"
               date={this.state.current.patient.symptom_onset}
@@ -169,7 +219,7 @@ class Exposure extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="8" controlId="case_status">
-            <Form.Label className="nav-input-label">CASE STATUS{this.schema?.fields?.case_status?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="nav-input-label">CASE STATUS{schema?.fields?.case_status?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['case_status']}
               as="select"
@@ -188,7 +238,7 @@ class Exposure extends React.Component {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-2">
-            <Form.Label className="nav-input-label">NOTES{this.schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="nav-input-label ml-1">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
@@ -214,7 +264,7 @@ class Exposure extends React.Component {
         <Form.Row>
           <Form.Group as={Col} md="7" controlId="last_date_of_exposure">
             <Form.Label className="nav-input-label">
-              LAST DATE OF EXPOSURE{this.schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
+              LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
             </Form.Label>
             <DateInput
@@ -239,9 +289,7 @@ class Exposure extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="10" controlId="potential_exposure_location">
-            <Form.Label className="nav-input-label">
-              EXPOSURE LOCATION{this.schema?.fields?.potential_exposure_location?._exclusive?.required && ' *'}
-            </Form.Label>
+            <Form.Label className="nav-input-label">EXPOSURE LOCATION{schema?.fields?.potential_exposure_location?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['potential_exposure_location']}
               size="lg"
@@ -254,7 +302,7 @@ class Exposure extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="7" controlId="potential_exposure_country">
-            <Form.Label className="nav-input-label">EXPOSURE COUNTRY{this.schema?.fields?.potential_exposure_country?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="nav-input-label">EXPOSURE COUNTRY{schema?.fields?.potential_exposure_country?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['potential_exposure_country']}
               as="select"
@@ -276,7 +324,7 @@ class Exposure extends React.Component {
           <Form.Group className="ml-1">
             <Form.Check
               size="lg"
-              label="CONTINUOUS EXPOSURE"
+              label={`CONTINUOUS EXPOSURE${schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}`}
               id="continuous_exposure"
               className="ml-1 d-inline"
               checked={this.state.current.patient.continuous_exposure || false}
@@ -438,7 +486,7 @@ class Exposure extends React.Component {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-4">
-            <Form.Label className="nav-input-label">NOTES{this.schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="nav-input-label">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
@@ -478,9 +526,7 @@ class Exposure extends React.Component {
                   </Form.Row>
                   <Form.Row>
                     <Form.Group as={Col} md="18" controlId="jurisdiction_id" className="pt-2">
-                      <Form.Label className="nav-input-label">
-                        ASSIGNED JURISDICTION{this.schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}
-                      </Form.Label>
+                      <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
@@ -521,7 +567,7 @@ class Exposure extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} md="6" controlId="assigned_user" className="pt-2">
                       <Form.Label className="nav-input-label">
-                        ASSIGNED USER{this.schema?.fields?.assigned_user?._exclusive?.required && ' *'}
+                        ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
                         <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
                       </Form.Label>
                       <Form.Control
@@ -565,7 +611,7 @@ class Exposure extends React.Component {
                     </Form.Group>
                     <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="pt-2">
                       <Form.Label className="nav-input-label">
-                        RISK ASSESSMENT{this.schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
+                        RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['exposure_risk_assessment']}
@@ -585,7 +631,7 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group as={Col} md="16" controlId="monitoring_plan" className="pt-2">
-                      <Form.Label className="nav-input-label">MONITORING PLAN{this.schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
+                      <Form.Label className="nav-input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitoring_plan']}
                         as="select"
@@ -622,99 +668,64 @@ class Exposure extends React.Component {
       </React.Fragment>
     );
   }
-
-  getSchema(patient) {
-    let schema = {
-      potential_exposure_location: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      potential_exposure_country: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      contact_of_known_case: yup.boolean().nullable(),
-      contact_of_known_case_id: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      healthcare_personnel_facility_name: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      laboratory_personnel_facility_name: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      was_in_health_care_facility_with_known_cases_facility_name: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      member_of_a_common_exposure_cohort_type: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      travel_to_affected_country_or_area: yup.boolean().nullable(),
-      was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
-      crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),
-      laboratory_personnel: yup.boolean().nullable(),
-      healthcare_personnel: yup.boolean().nullable(),
-      exposure_risk_assessment: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      monitoring_plan: yup
-        .string()
-        .max(200, 'Max length exceeded, please limit to 200 characters.')
-        .nullable(),
-      jurisdiction_id: yup
-        .number()
-        .positive('Please enter a valid jurisdiction.')
-        .required(),
-      assigned_user: yup
-        .number()
-        .positive('Please enter a valid assigned user')
-        .nullable(),
-      exposure_notes: yup
-        .string()
-        .max(2000, 'Max length exceeded, please limit to 2000 characters.')
-        .nullable(),
-    };
-    if (patient.isolation) {
-      schema['symptom_onset'] = yup
-        .date('Date must correspond to the "mm/dd/yyyy" format.')
-        .max(
-          moment()
-            .add(30, 'days')
-            .toDate(),
-          'Date can not be more than 30 days in the future.'
-        )
-        .required('Please enter a symptom onset date.')
-        .nullable();
-    } else {
-      schema['last_date_of_exposure'] = yup
-        .date('Date must correspond to the "mm/dd/yyyy" format.')
-        .max(
-          moment()
-            .add(30, 'days')
-            .toDate(),
-          'Date can not be more than 30 days in the future.'
-        )
-        .nullable();
-      schema['continuous_exposure'] = yup.bool().nullable();
-      if (patient.last_date_of_exposure && patient.continuous_exposure) {
-        const validation_err_msg = 'Please enter a last date of exposure OR turn on continuous monitoring, but not both';
-        schema['last_date_of_exposure'] = schema['last_date_of_exposure'].oneOf([null, undefined], validation_err_msg);
-        schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([null, undefined, false], validation_err_msg);
-      } else if (!patient.last_date_of_exposure && !patient.continuous_exposure) {
-        const validation_err_msg = 'Please enter a last date of exposure OR turn on continuous exposure';
-        schema['last_date_of_exposure'] = schema['last_date_of_exposure'].required(validation_err_msg);
-        schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([true], validation_err_msg);
-      }
-    }
-    return yup.object().shape(schema);
-  }
 }
+
+var schema = yup.object().shape({
+  potential_exposure_location: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  potential_exposure_country: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  contact_of_known_case: yup.boolean().nullable(),
+  contact_of_known_case_id: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  healthcare_personnel_facility_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  laboratory_personnel_facility_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  was_in_health_care_facility_with_known_cases_facility_name: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  member_of_a_common_exposure_cohort_type: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  travel_to_affected_country_or_area: yup.boolean().nullable(),
+  was_in_health_care_facility_with_known_cases: yup.boolean().nullable(),
+  crew_on_passenger_or_cargo_flight: yup.boolean().nullable(),
+  laboratory_personnel: yup.boolean().nullable(),
+  healthcare_personnel: yup.boolean().nullable(),
+  exposure_risk_assessment: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  monitoring_plan: yup
+    .string()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  jurisdiction_id: yup
+    .number()
+    .positive('Please enter a valid Assigned Jurisdiction.')
+    .required(),
+  assigned_user: yup
+    .number()
+    .positive('Please enter a valid Assigned User')
+    .nullable(),
+  exposure_notes: yup
+    .string()
+    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
+    .nullable(),
+});
 
 Exposure.propTypes = {
   currentState: PropTypes.object,

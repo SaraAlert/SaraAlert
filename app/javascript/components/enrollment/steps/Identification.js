@@ -556,7 +556,7 @@ const schema = yup.object().shape({
     .nullable(),
   date_of_birth: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
-    .required('Please enter a date of birth.')
+    .required('Please enter a Date of Birth.')
     .max(new Date(), 'Date can not be in the future.')
     .nullable(),
   age: yup.number().nullable(),
