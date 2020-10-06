@@ -230,11 +230,7 @@ class Exposure extends React.Component {
               customClass="form-control-lg"
               isClearable
               disabled={this.state.current.patient.continuous_exposure}
-              tooltipText={
-                this.state.current.patient.continuous_exposure
-                  ? 'Last Date of Exposure cannot be populated when Continuous Exposure is turned ON. Please turn OFF Continuous Exposure if the Last Date of Exposure is to be populated.'
-                  : null
-              }
+              tooltipText={this.state.current.patient.continuous_exposure ? 'Please turn OFF Continuous Exposure to populate the Last Date of Exposure.' : null}
               tooltipKey="tooltip-lde"
               tooltipPlacement="top"
             />
