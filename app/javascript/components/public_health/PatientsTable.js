@@ -301,10 +301,10 @@ class PatientsTable extends React.Component {
     }
     if (isHoH) {
       return (
-        <React.Fragment>
+        <div>
           <a href={`/patients/${id}`}>{name}</a>
           <i className="fa-fw fas fa-h-square pl-1"></i>
-        </React.Fragment>
+        </div>
       );
     }
     return <a href={`/patients/${id}`}>{name}</a>;
