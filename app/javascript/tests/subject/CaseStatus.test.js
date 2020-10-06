@@ -50,6 +50,7 @@ describe('CaseStatus', () => {
         const modalBody = wrapper.find(Modal.Body);
 
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
         expect(wrapper.state('case_status')).toEqual('Confirmed');
         expect(wrapper.state('confirmedOrProbable')).toBeTruthy();
         expect(wrapper.state('isolation')).toEqual(mockPatient3.isolation);
@@ -63,6 +64,7 @@ describe('CaseStatus', () => {
         const modalBody = wrapper.find(Modal.Body);
 
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
         expect(wrapper.state('case_status')).toEqual('');
         expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
         expect(wrapper.state('isolation')).toEqual(mockPatient1.isolation);
@@ -76,6 +78,7 @@ describe('CaseStatus', () => {
         const modalBody = wrapper.find(Modal.Body);
 
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
         expect(wrapper.state('case_status')).toEqual('Unknown');
         expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
         expect(wrapper.state('isolation')).toBeFalsy();
@@ -88,6 +91,7 @@ describe('CaseStatus', () => {
         const modalBody = wrapper.find(Modal.Body);
 
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
         expect(wrapper.state('case_status')).toEqual('Confirmed');
         expect(wrapper.state('confirmedOrProbable')).toBeTruthy();
         expect(wrapper.state('isolation')).toBeTruthy();
@@ -100,6 +104,7 @@ describe('CaseStatus', () => {
         const modalBody = wrapper.find(Modal.Body);
 
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
         expect(wrapper.state('case_status')).toEqual('Suspect');
         expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
         expect(wrapper.state('isolation')).toBeFalsy();
@@ -112,6 +117,7 @@ describe('CaseStatus', () => {
         const modalBody = wrapper.find(Modal.Body);
 
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
         expect(wrapper.state('case_status')).toEqual('Suspect');
         expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
         expect(wrapper.state('isolation')).toBeFalsy();
@@ -125,6 +131,7 @@ describe('CaseStatus', () => {
 
         // updates state
         expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeTruthy();
         expect(wrapper.state('case_status')).toEqual('Confirmed');
         expect(wrapper.state('confirmedOrProbable')).toBeTruthy();
         expect(wrapper.state('disabled')).toBeTruthy();
@@ -220,6 +227,7 @@ describe('CaseStatus', () => {
 
         // resets state
         expect(wrapper.state('showCaseStatusModal')).toBeFalsy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
         expect(wrapper.state('confirmedOrProbable')).toEqual(mockPatient1.case_status === 'Confirmed' || mockPatient1.case_status === 'Probable');
         expect(wrapper.state('apply_to_group')).toBeFalsy();
         expect(wrapper.state('case_status')).toEqual(mockPatient1.case_status);

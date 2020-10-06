@@ -12,6 +12,7 @@ class CaseStatus extends React.Component {
     super(props);
     this.state = {
       showCaseStatusModal: false,
+      showMonitoringDropdown: false,
       confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
       case_status: this.props.patient.case_status || '',
       disabled: false,
@@ -69,7 +70,7 @@ class CaseStatus extends React.Component {
 
         // changing case status to Confirmed or Probable (excluding case directly above)
       } else if (confirmedOrProbable) {
-        this.setState({ disabled: true });
+        this.setState({ disabled: true, showMonitoringDropdown: true });
 
         // changing case status to Unknown, Suspect or Not a Case in the isolation workflow (excluding changing from Confirmed or Probable)
       } else if (!confirmedOrProbable && this.state.isolation) {
@@ -124,6 +125,7 @@ class CaseStatus extends React.Component {
     let current = this.state.showCaseStatusModal;
     this.setState({
       showCaseStatusModal: !current,
+      showMonitoringDropdown: false,
       confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
       apply_to_group: false,
       case_status: this.props.patient.case_status || '',
@@ -165,23 +167,21 @@ class CaseStatus extends React.Component {
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {this.state.confirmedOrProbable &&
-            this.props.patient.monitoring &&
-            ((this.props.patient.case_status !== 'Confirmed' && this.props.patient.case_status !== 'Probable') || !this.state.isolation) && (
-              <React.Fragment>
-                <p>Please select what you would like to do:</p>
-                <Form.Control
-                  as="select"
-                  className="form-control-lg mb-3"
-                  id="monitoring_option"
-                  onChange={this.handleMonitoringChange}
-                  value={this.state.monitoring_option}>
-                  <option></option>
-                  <option>End Monitoring</option>
-                  <option>Continue Monitoring in Isolation Workflow</option>
-                </Form.Control>
-              </React.Fragment>
-            )}
+          {this.state.showMonitoringDropdown && (
+            <React.Fragment>
+              <p>Please select what you would like to do:</p>
+              <Form.Control
+                as="select"
+                className="form-control-lg mb-3"
+                id="monitoring_option"
+                onChange={this.handleMonitoringChange}
+                value={this.state.monitoring_option}>
+                <option></option>
+                <option>End Monitoring</option>
+                <option>Continue Monitoring in Isolation Workflow</option>
+              </Form.Control>
+            </React.Fragment>
+          )}
           {this.state.modal_text !== '' && <p>{this.state.modal_text}</p>}
           {this.props.has_group_members && (
             <React.Fragment>
