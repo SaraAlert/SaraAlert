@@ -84,7 +84,7 @@ const TOOLTIP_TEXT = {
   caseStatus: (
     <div>
       Used to move records into the appropriate workflow.
-      <ul>
+      <ul className="mb-0">
         <li>
           {' '}
           For monitorees currently in the Exposure Workflow: Selecting Confirmed or Probable will prompt the option to move the monitoree into the Isolation
