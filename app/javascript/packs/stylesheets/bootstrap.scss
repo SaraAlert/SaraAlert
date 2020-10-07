@@ -213,10 +213,17 @@ select.form-control {
 }
 
 .modal-af {
-  width: 900px !important;
-  max-width: 900px !important;
+  width: 1000px !important;
+  max-width: 1000px !important;
 }
 
-.saved-filters-select {
-  max-width: 20% !important;
+.advanced-filter-dropdown {
+  max-width: 250px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+.justify-unset {
+  justify-content: unset;
 }

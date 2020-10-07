@@ -15,6 +15,7 @@ import {
   OverlayTrigger,
   TabContent,
   Tooltip,
+  Row,
 } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -25,6 +26,7 @@ import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import InfoTooltip from '../util/InfoTooltip';
 import CustomTable from '../layout/CustomTable';
 import EligibilityTooltip from '../util/EligibilityTooltip';
+import confirmDialog from '../util/ConfirmDialog';
 
 class PatientsTable extends React.Component {
   constructor(props) {
@@ -96,6 +98,33 @@ class PatientsTable extends React.Component {
     // select tab and fetch patients
     this.handleTabSelect(tab);
 
+    // Select page if it exists in local storage
+    let page = localStorage.getItem(`${this.props.workflow}Page`);
+    if (page) {
+      this.handlePageUpdate(JSON.parse(page));
+    }
+
+    // Set entries if it exists in local storage
+    let entries = localStorage.getItem(`${this.props.workflow}Entries`);
+    if (parseInt(entries)) {
+      this.handleEntriesChange(parseInt(entries));
+    }
+
+    // Set search if it exists in local storage
+    let search = localStorage.getItem(`${this.props.workflow}Search`);
+    if (search) {
+      this.setState(
+        state => {
+          return {
+            query: { ...state.query, search: search },
+          };
+        },
+        () => {
+          this.updateTable(this.state.query);
+        }
+      );
+    }
+
     // fetch workflow and tab counts
     Object.keys(this.props.tabs).forEach(tab => {
       axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
@@ -108,6 +137,16 @@ class PatientsTable extends React.Component {
     // fetch list of jurisdiction paths
     this.updateJurisdictionPaths();
   }
+
+  resetDashboard = async () => {
+    if (await confirmDialog('Are you sure you want to reset this dashboard? All active filters and searches will be cleared.')) {
+      localStorage.removeItem(`${this.props.workflow}Filter`);
+      localStorage.removeItem(`${this.props.workflow}Page`);
+      localStorage.removeItem(`${this.props.workflow}Entries`);
+      localStorage.removeItem(`${this.props.workflow}Search`);
+      location.reload();
+    }
+  };
 
   handleTabSelect = tab => {
     this.setState(
@@ -137,6 +176,7 @@ class PatientsTable extends React.Component {
       },
       () => {
         this.updateTable(this.state.query);
+        localStorage.setItem(`${this.props.workflow}Page`, JSON.stringify(page));
       }
     );
   };
@@ -147,7 +187,7 @@ class PatientsTable extends React.Component {
    * @param {SyntheticEvent} event - Event when num entries changes
    */
   handleEntriesChange = event => {
-    const value = event.target.value;
+    const value = event?.target?.value || event;
     this.setState(
       state => {
         return {
@@ -156,6 +196,7 @@ class PatientsTable extends React.Component {
       },
       () => {
         this.updateTable(this.state.query);
+        localStorage.setItem(`${this.props.workflow}Entries`, value);
       }
     );
   };
@@ -180,6 +221,7 @@ class PatientsTable extends React.Component {
       }
     } else if (event.target.name === 'search') {
       this.updateTable({ ...query, search: event.target.value, page: 0 });
+      localStorage.setItem(`${this.props.workflow}Search`, event.target.value);
     }
   };
 
@@ -278,7 +320,7 @@ class PatientsTable extends React.Component {
   };
 
   advancedFilterUpdate(filter) {
-    this.setState({ filter: filter }, () => {
+    this.setState({ filter: filter.filter(field => field?.filterOption != null) }, () => {
       this.updateTable(this.state.query);
     });
   }
@@ -356,12 +398,24 @@ class PatientsTable extends React.Component {
         <TabContent>
           <Card>
             <Card.Body className="pl-4 pr-4">
-              <div className="lead mt-1 mb-3">
-                {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u> workflow.
-                {this.props.tabs[this.state.query.tab].tooltip && (
-                  <InfoTooltip tooltipTextKey={this.props.tabs[this.state.query.tab].tooltip} location="right"></InfoTooltip>
-                )}
-              </div>
+              <Row>
+                <Col md="18">
+                  <div className="lead mt-1 mb-3">
+                    {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u> workflow.
+                    {this.props.tabs[this.state.query.tab].tooltip && (
+                      <InfoTooltip tooltipTextKey={this.props.tabs[this.state.query.tab].tooltip} location="right"></InfoTooltip>
+                    )}
+                  </div>
+                </Col>
+                <Col>
+                  <div className="float-right">
+                    <Button size="sm" onClick={this.resetDashboard}>
+                      <i className="fas fa-eraser"></i>
+                      <span className="ml-1">Reset Dashboard</span>
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
               <Form className="my-1">
                 <Form.Row className="align-items-center">
                   {this.state.query.tab !== 'transferred_out' && (
@@ -482,7 +536,12 @@ class PatientsTable extends React.Component {
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}
                   />
-                  <AdvancedFilter advancedFilterUpdate={this.advancedFilterUpdate} authenticity_token={this.props.authenticity_token} />
+                  <AdvancedFilter
+                    advancedFilterUpdate={this.advancedFilterUpdate}
+                    authenticity_token={this.props.authenticity_token}
+                    workflow={this.props.workflow}
+                    tab={this.state.query?.tab?.replace(/_/g, ' ')}
+                  />
                   {this.state.query !== 'transferred_out' && (
                     <DropdownButton
                       as={ButtonGroup}
@@ -490,7 +549,7 @@ class PatientsTable extends React.Component {
                       variant="primary"
                       title={
                         <React.Fragment>
-                          <i className="fas fa-tools"></i> Actions{' '}
+                          <i className="fas fa-tools"></i> Bulk Actions{' '}
                         </React.Fragment>
                       }
                       className="ml-2"
@@ -523,7 +582,7 @@ class PatientsTable extends React.Component {
                 selectedRows={this.state.selectedPatients}
                 selectAll={this.state.selectAll}
                 entryOptions={this.state.entryOptions}
-                entries={this.state.query.entries}
+                entries={parseInt(this.state.query.entries)}
               />
             </Card.Body>
           </Card>

@@ -33,7 +33,14 @@ class DateInput extends React.Component {
   render() {
     return (
       <div className="date-input">
-        <i className={`fas fa-calendar ${this.props.customClass?.includes('sm') ? 'date-input__calendar_icon_sm' : 'date-input__calendar_icon_lg'}`}></i>
+        <i
+          className={`fas fa-calendar ${
+            this.props.customClass?.includes('sm')
+              ? 'date-input__calendar_icon_sm'
+              : this.props.customClass?.includes('md')
+              ? 'date-input__calendar_icon_md'
+              : 'date-input__calendar_icon_lg'
+          }`}></i>
         {this.props.isClearable && this.props.date && (
           <button className={`close ${this.props.isInvalid ? 'date-input__clear-btn-invalid' : 'date-input__clear-btn'}`} onClick={this.clearDate}>
             <i className="fas fa-times"></i>
@@ -55,7 +62,11 @@ class DateInput extends React.Component {
               mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
               keepCharPositions
               className={`${
-                this.props.customClass?.includes('sm') ? 'date-input__input_sm' : 'date-input__input_lg'
+                this.props.customClass?.includes('sm')
+                  ? 'date-input__input_sm'
+                  : this.props.customClass?.includes('md')
+                  ? 'date-input__input_md'
+                  : 'date-input__input_lg'
               } react-datepicker-ignore-onclickoutside form-control ${this.props.customClass} ${this.props.isInvalid ? ' is-invalid' : ''}`}
             />
           }

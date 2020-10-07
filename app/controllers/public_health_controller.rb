@@ -71,7 +71,7 @@ class PublicHealthController < ApplicationController
       advanced = params.require(:filter).collect do |filter|
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
-          value: filter.require(:value),
+          value: filter.permit(:value)[:value] || filter.require(:value) || nil,
           dateOption: filter.permit(:dateOption)[:dateOption]
         }
       end
@@ -139,12 +139,12 @@ class PublicHealthController < ApplicationController
   def filter(patients, search)
     return patients if search.nil? || search.blank?
 
-    patients.where('first_name like ?', "#{search}%").or(
-      patients.where('last_name like ?', "#{search}%").or(
-        patients.where('user_defined_id_statelocal like ?', "#{search}%").or(
-          patients.where('user_defined_id_cdc like ?', "#{search}%").or(
-            patients.where('user_defined_id_nndss like ?', "#{search}%").or(
-              patients.where('date_of_birth like ?', "#{search}%")
+    patients.where('lower(first_name) like ?', "#{search&.downcase}%").or(
+      patients.where('lower(last_name) like ?', "#{search&.downcase}%").or(
+        patients.where('lower(user_defined_id_statelocal) like ?', "#{search&.downcase}%").or(
+          patients.where('lower(user_defined_id_cdc) like ?', "#{search&.downcase}%").or(
+            patients.where('lower(user_defined_id_nndss) like ?', "#{search&.downcase}%").or(
+              patients.where('date_of_birth like ?', "#{search&.downcase}%")
             )
           )
         )
@@ -276,6 +276,7 @@ class PublicHealthController < ApplicationController
     %i[jurisdiction assigned_user end_of_monitoring risk_level monitoring_plan latest_report report_eligibility]
   end
 
+  # rubocop:disable Metrics/MethodLength
   def advanced_filter(patients, filters)
     filters.each do |filter|
       case filter[:filterOption]['name']
@@ -285,6 +286,8 @@ class PublicHealthController < ApplicationController
         patients = patients.where("latest_assessment_at #{filter[:value] ? '>' : '<'} ?", DateTime.now.beginning_of_day)
       when 'paused'
         patients = patients.where('pause_notifications = ?', filter[:value])
+      when 'monitoring-status'
+        patients = patients.where('monitoring = ?', filter[:value])
       when 'preferred-contact-method'
         patients = patients.where('preferred_contact_method = ?', filter[:value])
       when 'latest-report'
@@ -306,18 +309,24 @@ class PublicHealthController < ApplicationController
                    else
                      patients.where.not('patients.id = patients.responder_id')
                    end
+      when 'household-member'
+        patients = if filter[:value]
+                     patients.where.not('patients.id = patients.responder_id')
+                   else
+                     patients.where('patients.id = patients.responder_id')
+                   end
       when 'enrolled'
         case filter[:dateOption]
         when 'before'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('created_at < ?', compare_date)
+          patients = patients.where('patients.created_at < ?', compare_date)
         when 'after'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('created_at > ?', compare_date)
+          patients = patients.where('patients.created_at > ?', compare_date)
         when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('created_at > ?', compare_date_start).where('created_at < ?', compare_date_end)
+          patients = patients.where('patients.created_at > ?', compare_date_start).where('patients.created_at < ?', compare_date_end)
         end
       when 'last-date-exposure'
         case filter[:dateOption]
@@ -348,24 +357,88 @@ class PublicHealthController < ApplicationController
       when 'continous-exposure'
         patients = patients.where('continuous_exposure = ?', filter[:value])
       when 'telephone-number'
-        patients = patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
+        patients = if filter[:value].blank?
+                     patients.where(primary_telephone: nil)
+                   else
+                     patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
+                   end
+      when 'telephone-number-partial'
+        patients = if filter[:value].blank?
+                     patients.where(primary_telephone: nil)
+                   else
+                     patients.where('patients.primary_telephone like ?', "%#{filter[:value]}%")
+                   end
       when 'email'
-        patients = patients.where('patients.email like ?', filter[:value])
+        patients = if filter[:value].blank?
+                     patients.where(email: nil)
+                   else
+                     patients.where('lower(patients.email) like ?', "%#{filter[:value]&.downcase}%")
+                   end
+      when 'primary-language'
+        patients = if filter[:value].blank?
+                     patients.where(primary_language: nil)
+                   else
+                     patients.where('lower(patients.primary_language) like ?', "%#{filter[:value]&.downcase}%")
+                   end
       when 'sara-id'
         patients = patients.where(id: filter[:value])
       when 'first-name'
-        patients = patients.where('patients.first_name like ?', filter[:value])
+        patients = if filter[:value].blank?
+                     patients.where(first_name: nil)
+                   else
+                     patients.where('lower(patients.first_name) like ?', "%#{filter[:value]&.downcase}%")
+                   end
       when 'middle-name'
-        patients = patients.where('patients.middle_name like ?', filter[:value])
+        patients = if filter[:value].blank?
+                     patients.where(middle_name: nil)
+                   else
+                     patients.where('lower(patients.middle_name) like ?', "%#{filter[:value]&.downcase}%")
+                   end
       when 'last-name'
-        patients = patients.where('patients.last_name like ?', filter[:value])
+        patients = if filter[:value].blank?
+                     patients.where(last_name: nil)
+                   else
+                     patients.where('lower(patients.last_name) like ?', "%#{filter[:value]&.downcase}%")
+                   end
+      when 'cohort'
+        patients = if filter[:value].blank?
+                     patients.where(member_of_a_common_exposure_cohort_type: nil)
+                   else
+                     patients.where('lower(patients.member_of_a_common_exposure_cohort_type) like ?', "%#{filter[:value]&.downcase}%")
+                   end
+      when 'address-usa'
+        patients = patients.where('lower(patients.address_line_1) like ?', "%#{filter[:value]&.downcase}%").or(
+          patients.where('lower(patients.address_line_2) like ?', "%#{filter[:value]&.downcase}%").or(
+            patients.where('lower(patients.address_city) like ?', "%#{filter[:value]&.downcase}%").or(
+              patients.where('lower(patients.address_state) like ?', "%#{filter[:value]&.downcase}%").or(
+                patients.where('lower(patients.address_zip) like ?', "%#{filter[:value]&.downcase}%").or(
+                  patients.where('lower(patients.address_county) like ?', "%#{filter[:value]&.downcase}%")
+                )
+              )
+            )
+          )
+        )
+      when 'address-foreign'
+        patients = patients.where('lower(patients.foreign_address_line_1) like ?', "%#{filter[:value]&.downcase}%").or(
+          patients.where('lower(patients.foreign_address_line_2) like ?', "%#{filter[:value]&.downcase}%").or(
+            patients.where('lower(patients.foreign_address_line_3) like ?', "%#{filter[:value]&.downcase}%").or(
+              patients.where('lower(patients.foreign_address_city) like ?', "%#{filter[:value]&.downcase}%").or(
+                patients.where('lower(patients.foreign_address_zip) like ?', "%#{filter[:value]&.downcase}%").or(
+                  patients.where('lower(patients.foreign_address_state) like ?', "%#{filter[:value]&.downcase}%").or(
+                    patients.where('lower(patients.foreign_address_country) like ?', "%#{filter[:value]&.downcase}%")
+                  )
+                )
+              )
+            )
+          )
+        )
       when 'monitoring-plan'
         patients = patients.where('monitoring_plan = ?', filter[:value])
       when 'never-responded'
         patients = if filter[:value]
-                     patients.where('lastest_assessment_at = ?', nil)
+                     patients.where(latest_assessment_at: nil)
                    else
-                     patients.where.not('lastest_assessment_at = ?', nil)
+                     patients.where.not(latest_assessment_at: nil)
                    end
       when 'risk-exposure'
         patients = patients.where('exposure_risk_assessment = ?', filter[:value])
@@ -377,6 +450,7 @@ class PublicHealthController < ApplicationController
     end
     patients
   end
+  # rubocop:enable Metrics/MethodLength
 
   private
 

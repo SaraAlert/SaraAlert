@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, ButtonGroup, ToggleButton, Row, Col, Form, Modal, Dropdown } from 'react-bootstrap';
+import { Button, ButtonGroup, ToggleButton, Row, Col, Form, Modal, OverlayTrigger, Tooltip, Dropdown } from 'react-bootstrap';
+import Select, { components } from 'react-select';
 import { ToastContainer, toast } from 'react-toastify';
 import moment from 'moment-timezone';
 import confirmDialog from '../util/ConfirmDialog';
@@ -16,7 +17,6 @@ class AdvancedFilter extends React.Component {
       filterName: null,
       activeFilterOptions: [],
       filterOptions: [
-        { name: 'blank', title: 'Select Field...', description: '', type: 'blank' },
         { name: 'sent-today', title: 'Sent Notification Today', description: 'Monitorees who have been sent a notification so far today', type: 'boolean' },
         { name: 'responded-today', title: 'Responded Today', description: 'Monitorees who have reported today', type: 'boolean' },
         { name: 'paused', title: 'Notifications Paused', description: 'Monitorees who have paused notifications', type: 'boolean' },
@@ -29,6 +29,7 @@ class AdvancedFilter extends React.Component {
         },
         { name: 'latest-report', title: 'Latest Report', description: 'Monitorees with latest report', type: 'date' },
         { name: 'hoh', title: 'Head of Household', description: 'Monitorees that are a head of household', type: 'boolean' },
+        { name: 'household-member', title: 'Household Member', description: 'Monitorees that are in a household', type: 'boolean' },
         { name: 'enrolled', title: 'Enrolled', description: 'Monitorees enrollment', type: 'date' },
         {
           name: 'last-date-exposure',
@@ -38,12 +39,18 @@ class AdvancedFilter extends React.Component {
         },
         { name: 'symptom-onset', title: 'Symptom onset', description: 'Monitorees who have a symptom onset', type: 'date' },
         { name: 'continous-exposure', title: 'Continuous Exposure', description: 'Monitorees who have continuous exposure enabled', type: 'boolean' },
-        { name: 'telephone-number', title: 'Telephone Number', description: 'Monitoree telephone number', type: 'search' },
+        { name: 'monitoring-status', title: 'Monitoring Status', description: 'Monitorees who are currently under active monitoring', type: 'boolean' },
+        { name: 'primary-language', title: 'Primary Language', description: 'Monitoree primary language', type: 'search' },
+        { name: 'cohort', title: 'Cohort', description: 'Monitoree cohort', type: 'search' },
+        { name: 'address-usa', title: 'Address (within USA)', description: 'Address (within USA)', type: 'search' },
+        { name: 'address-foreign', title: 'Address (outside USA)', description: 'Address (outside USA)', type: 'search' },
+        { name: 'telephone-number', title: 'Telephone Number (Full)', description: 'Monitoree telephone number (Full)', type: 'search' },
+        { name: 'telephone-number-partial', title: 'Telephone Number (Partial)', description: 'Monitoree telephone number (Partial)', type: 'search' },
         { name: 'email', title: 'Email', description: 'Monitoree email address', type: 'search' },
         { name: 'sara-id', title: 'Sara Alert ID', description: 'Monitoree Sara Alert ID', type: 'search' },
-        { name: 'first-name', title: 'First Name', description: 'Monitoree first name', type: 'search' },
-        { name: 'middle-name', title: 'Middle Name', description: 'Monitoree middle name', type: 'search' },
-        { name: 'last-name', title: 'Last Name', description: 'Monitoree last name', type: 'search' },
+        { name: 'first-name', title: 'Name (First)', description: 'Monitoree first name', type: 'search' },
+        { name: 'middle-name', title: 'Name (Middle)', description: 'Monitoree middle name', type: 'search' },
+        { name: 'last-name', title: 'Name (Last)', description: 'Monitoree last name', type: 'search' },
         {
           name: 'monitoring-plan',
           title: 'Monitoring Plan',
@@ -94,6 +101,7 @@ class AdvancedFilter extends React.Component {
     this.renderOptions = this.renderOptions.bind(this);
     this.setFilter = this.setFilter.bind(this);
     this.renderFilterNameModal = this.renderFilterNameModal.bind(this);
+    this.getFormattedOptions = this.getFormattedOptions.bind(this);
   }
 
   componentDidMount() {
@@ -105,14 +113,25 @@ class AdvancedFilter extends React.Component {
     // Grab saved filters
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios.get(window.BASE_PATH + '/user_filters').then(response => {
-      this.setState({ savedFilters: response.data });
+      this.setState({ savedFilters: response.data }, () => {
+        // Apply filter if it exists in local storage
+        let sessionFilter = localStorage.getItem(`${this.props.workflow}Filter`);
+        if (parseInt(sessionFilter)) {
+          this.setFilter(
+            this.state.savedFilters.find(filter => {
+              return filter.id === parseInt(sessionFilter);
+            }),
+            true
+          );
+        }
+      });
     });
   }
 
   // Add dummy active (default to first option which is a boolean type). User can then edit as needed.
   add() {
     this.setState(state => ({
-      activeFilterOptions: [...state.activeFilterOptions, { filterOption: state.filterOptions[0], value: true }],
+      activeFilterOptions: [...state.activeFilterOptions, { filterOption: null }],
     }));
   }
 
@@ -141,6 +160,7 @@ class AdvancedFilter extends React.Component {
   clear() {
     this.setState({ activeFilter: null, applied: false }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilter);
+      localStorage.setItem(`${this.props.workflow}Filter`, null);
     });
   }
 
@@ -152,8 +172,13 @@ class AdvancedFilter extends React.Component {
   }
 
   // Set the active filter
-  setFilter(filter) {
-    this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter.contents });
+  setFilter(filter, apply = false) {
+    this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter.contents }, () => {
+      localStorage.setItem(`${this.props.workflow}Filter`, filter.id);
+      if (apply) {
+        this.apply();
+      }
+    });
   }
 
   // Change an index filter option
@@ -212,7 +237,8 @@ class AdvancedFilter extends React.Component {
       .then(response => {
         if (response?.data) {
           toast.success('Filter successfully saved.');
-          this.setState({ activeFilter: response?.data, savedFilters: [...self.state.savedFilters, response.data] });
+          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
+          this.setState({ activeFilter: data, savedFilters: [...self.state.savedFilters, data] });
         }
       });
   }
@@ -229,13 +255,14 @@ class AdvancedFilter extends React.Component {
       .then(response => {
         if (response?.data) {
           toast.success('Filter successfully updated.');
+          let data = { ...response?.data, contents: JSON.parse(response?.data?.contents) };
           this.setState({
-            activeFilter: response.data,
+            activeFilter: data,
             savedFilters: [
               ...self.state.savedFilters.filter(filter => {
-                return filter.id != response.data.id;
+                return filter.id != data.id;
               }),
-              response.data,
+              data,
             ],
           });
         }
@@ -267,27 +294,51 @@ class AdvancedFilter extends React.Component {
       });
   }
 
+  // Format options for select
+  getFormattedOptions() {
+    return this.state.filterOptions
+      .sort((a, b) => {
+        if (a.type === 'blank') return -1;
+        if (b.type === 'blank') return 1;
+        return a.title.localeCompare(b.title);
+      })
+      .map(option => {
+        return {
+          label: option.title,
+          subLabel: option.description,
+          value: option.name,
+          disabled: option.type === 'blank',
+        };
+      });
+  }
+
   // Render the options for the select that represents fields to filter on
   renderOptions(current, index) {
+    const Option = props => {
+      return (
+        <components.Option {...props}>
+          <div>{props.data.label}</div>
+          <div style={{ fontSize: 12 }}>{props.data.subLabel}</div>
+        </components.Option>
+      );
+    };
     return (
-      <Form.Group key={index + 'opkeygroup'} className="py-0 my-0">
-        <Form.Control
-          as="select"
-          value={current}
-          className="py-0 my-0"
-          size="sm"
-          onChange={event => {
-            this.changeFilterOption(index, event.target.value);
-          }}>
-          {this.state.filterOptions.map((option, op_index) => {
-            return (
-              <option key={index + 'opkeyop' + op_index} value={option.name} disabled={option.type === 'blank'}>
-                {option.title}
-              </option>
-            );
-          })}
-        </Form.Control>
-      </Form.Group>
+      <Select
+        options={this.getFormattedOptions()}
+        value={this.getFormattedOptions().find(option => {
+          return option.value === current;
+        })}
+        isOptionDisabled={option => option.disabled}
+        components={{ Option }}
+        onChange={event => {
+          this.changeFilterOption(index, event?.value);
+        }}
+        placeHolder="Select Field...."
+        theme={theme => ({
+          ...theme,
+          borderRadius: 0,
+        })}
+      />
     );
   }
 
@@ -299,7 +350,6 @@ class AdvancedFilter extends React.Component {
           as="select"
           value={current}
           className="py-0 my-0"
-          size="sm"
           onChange={event => {
             this.changeFilterDateOption(index, event.target.value);
           }}>
@@ -311,6 +361,7 @@ class AdvancedFilter extends React.Component {
     );
   }
 
+  // Modal to specify filter name
   renderFilterNameModal() {
     return (
       <Modal
@@ -367,7 +418,7 @@ class AdvancedFilter extends React.Component {
           </Row>
         )}
         <Row key={'rowkey-filter' + index} className="pb-1 pt-1">
-          <Col className="py-0" md="8">
+          <Col className="py-0" md="9">
             {this.renderOptions(filterOption?.name, index)}
           </Col>
           {filterOption?.type === 'date' && (
@@ -383,7 +434,6 @@ class AdvancedFilter extends React.Component {
                   variant="outline-primary"
                   checked={value}
                   value="1"
-                  size="sm"
                   onChange={() => {
                     this.changeValue(index, !value);
                   }}>
@@ -394,7 +444,6 @@ class AdvancedFilter extends React.Component {
                   variant="outline-primary"
                   checked={!value}
                   value="0"
-                  size="sm"
                   onChange={() => {
                     this.changeValue(index, !value);
                   }}>
@@ -408,7 +457,6 @@ class AdvancedFilter extends React.Component {
                   as="select"
                   value={value}
                   className="py-0 my-0"
-                  size="sm"
                   onChange={event => {
                     this.changeValue(index, event.target.value);
                   }}>
@@ -430,7 +478,7 @@ class AdvancedFilter extends React.Component {
                     this.changeValue(index, date);
                   }}
                   placement="bottom"
-                  customClass="form-control-sm"
+                  customClass="form-control-md"
                   minDate={'1900-01-01'}
                   maxDate={moment()
                     .add(30, 'days')
@@ -448,7 +496,7 @@ class AdvancedFilter extends React.Component {
                         this.changeValue(index, { start: date, end: value.end });
                       }}
                       placement="bottom"
-                      customClass="form-control-sm"
+                      customClass="form-control-md"
                       minDate={'1900-01-01'}
                       maxDate={moment()
                         .add(30, 'days')
@@ -465,7 +513,7 @@ class AdvancedFilter extends React.Component {
                         this.changeValue(index, { start: value.start, end: date });
                       }}
                       placement="bottom"
-                      customClass="form-control-sm"
+                      customClass="form-control-md"
                       minDate={'1900-01-01'}
                       maxDate={moment()
                         .add(30, 'days')
@@ -481,7 +529,6 @@ class AdvancedFilter extends React.Component {
                   as="input"
                   value={value}
                   className="py-0 my-0"
-                  size="sm"
                   onChange={event => {
                     this.changeValue(index, event.target.value);
                   }}
@@ -491,7 +538,7 @@ class AdvancedFilter extends React.Component {
           </Col>
           <Col className="py-0" md={2}>
             <div className="float-right">
-              <Button variant="danger" onClick={() => this.remove(index)} size="sm">
+              <Button variant="danger" onClick={() => this.remove(index)}>
                 <i className="fas fa-minus"></i>
               </Button>
             </div>
@@ -512,29 +559,34 @@ class AdvancedFilter extends React.Component {
             this.setState({ show: false });
           }}>
           <Modal.Header>
-            <Modal.Title>Advanced Filter ({this.state.activeFilter ? this.state.activeFilter.name : 'new'})</Modal.Title>
+            <Modal.Title>Advanced Filter: {this.state.activeFilter ? this.state.activeFilter.name : 'untitled'}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row className="pb-2 pt-1">
               <Col>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    this.setState({ showFilterNameModal: true, show: false });
-                  }}
-                  className="mr-1"
-                  disabled={!!this.state.activeFilter}>
-                  <i className="fas fa-save"></i>
-                  <span className="ml-1">Save</span>
-                </Button>
-                <Button variant="primary" onClick={this.update} className="mr-1" disabled={!this.state.activeFilter}>
-                  <i className="fas fa-marker"></i>
-                  <span className="ml-1">Update</span>
-                </Button>
-                <Button variant="danger" onClick={this.delete} disabled={!this.state.activeFilter}>
-                  <i className="fas fa-trash"></i>
-                  <span className="ml-1">Delete</span>
-                </Button>
+                {!this.state.activeFilter && (
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      this.setState({ showFilterNameModal: true, show: false });
+                    }}
+                    className="mr-1">
+                    <i className="fas fa-save"></i>
+                    <span className="ml-1">Save</span>
+                  </Button>
+                )}
+                {this.state.activeFilter && (
+                  <Button variant="primary" onClick={this.update} className="mr-1">
+                    <i className="fas fa-marker"></i>
+                    <span className="ml-1">Update</span>
+                  </Button>
+                )}
+                {this.state.activeFilter && (
+                  <Button variant="danger" onClick={this.delete} disabled={!this.state.activeFilter}>
+                    <i className="fas fa-trash"></i>
+                    <span className="ml-1">Delete</span>
+                  </Button>
+                )}
                 <div className="float-right">
                   <Button variant="danger" onClick={this.reset}>
                     Reset
@@ -550,18 +602,21 @@ class AdvancedFilter extends React.Component {
                 <div className="g-border-bottom-2"></div>
               </Col>
             </Row>
-            {this.state.activeFilterOptions.map((statement, index) => {
+            {this.state.activeFilterOptions?.map((statement, index) => {
               return this.renderStatement(statement.filterOption, statement.value, index, this.state.activeFilterOptions.length, statement.dateOption);
             })}
             <Row className="pt-2 pb-1">
               <Col>
-                <Button variant="primary" disabled={this.state.activeFilterOptions.length > 4} onClick={() => this.add()} size="sm">
+                <Button variant="primary" disabled={this.state.activeFilterOptions.length > 4} onClick={() => this.add()}>
                   <i className="fas fa-plus"></i>
                 </Button>
               </Col>
             </Row>
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer className="justify-unset">
+            <p className="lead mr-auto">
+              Filter will be applied to the <u>{this.props.tab}</u> line list in the <u>{this.props.workflow}</u> workflow.
+            </p>
             <Button
               variant="secondary btn-square"
               onClick={() => {
@@ -572,12 +627,22 @@ class AdvancedFilter extends React.Component {
           </Modal.Footer>
         </Modal>
         {this.renderFilterNameModal()}
-        <Dropdown>
-          <Dropdown.Toggle variant="primary" size="sm">
+        <OverlayTrigger overlay={<Tooltip>Find monitorees using specific parameters</Tooltip>}>
+          <Button
+            size="sm"
+            className="ml-2"
+            onClick={() => {
+              this.setState({ show: true });
+            }}>
             <i className="fas fa-microscope"></i>
             <span className="ml-1">Advanced Filter</span>
+          </Button>
+        </OverlayTrigger>
+        <Dropdown>
+          <Dropdown.Toggle variant="outline-secondary" size="sm" className="advanced-filter-dropdown">
+            {this.state.applied && (this.state.activeFilter?.name || 'untitled')}
           </Dropdown.Toggle>
-          <Dropdown.Menu>
+          <Dropdown.Menu alignRight>
             <Dropdown.Item href="#" onClick={this.newFilter}>
               <i className="fas fa-plus fa-fw"></i>
               <span className="ml-2">New filter</span>
@@ -589,19 +654,11 @@ class AdvancedFilter extends React.Component {
                   <i className="fas fa-times fa-fw"></i>
                   <span className="ml-2">Clear current filter</span>
                 </Dropdown.Item>
-                <Dropdown.Item
-                  href="#"
-                  onClick={() => {
-                    this.setState({ show: true });
-                  }}>
-                  <i className="fas fa-search fa-fw"></i>
-                  <span className="ml-2">View current filter</span>
-                </Dropdown.Item>
               </React.Fragment>
             )}
             <Dropdown.Divider />
             <Dropdown.Header>Saved Filters</Dropdown.Header>
-            {this.state.savedFilters.map((filter, index) => {
+            {this.state.savedFilters?.map((filter, index) => {
               return (
                 <Dropdown.Item href="#" key={`di${index}`} onClick={() => this.setFilter(filter)}>
                   {filter.name}
@@ -619,6 +676,8 @@ class AdvancedFilter extends React.Component {
 AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
+  workflow: PropTypes.string,
+  tab: PropTypes.string,
 };
 
 export default AdvancedFilter;
