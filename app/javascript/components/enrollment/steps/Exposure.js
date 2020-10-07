@@ -270,7 +270,7 @@ class Exposure extends React.Component {
             />
           </Form.Group>
         </Form.Row>
-        <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPERATE MULTIPLE SPECIFIED VALUES)</Form.Label>
+        <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
         <Form.Row>
           <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
             <Form.Check
