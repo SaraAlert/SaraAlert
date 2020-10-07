@@ -347,14 +347,6 @@ class PatientsController < ApplicationController
     end
   end
 
-  def update_lde(patient, lde_date)
-    if patient[:continuous_exposure]
-      History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System turned off Continuous Exposure because monitoree is no
-      longer being exposed to a case.')
-    end
-    patient.update(last_date_of_exposure: lde_date, continuous_exposure: false)
-  end
-
   def update_fields(patient, params, household, propagation)
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
