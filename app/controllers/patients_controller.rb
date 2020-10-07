@@ -331,7 +331,7 @@ class PatientsController < ApplicationController
     end
 
     # Update patient and all group members
-    if params.permit(:apply_to_group)[:apply_to_group] 
+    if params.permit(:apply_to_group)[:apply_to_group]
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
       end
