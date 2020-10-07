@@ -316,7 +316,7 @@ class PatientsController < ApplicationController
 
     # update LDE for patient and group members only in the exposure workflow with continuous exposure on (separate from updating monitoring status)
     if params.permit(:apply_to_group_cm_exp_only)[:apply_to_group_cm_exp_only] && params[:apply_to_group_cm_exp_only_date].present?
-      (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
+      (current_user.get_patient(patient.responder_id)&.dependents_exclude_self&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
         member.update(last_date_of_exposure: params[:apply_to_group_cm_exp_only_date], continuous_exposure: false)
 
         History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: "User updated Monitoring Status for another member in this
