@@ -347,7 +347,6 @@ class PatientsController < ApplicationController
     else # update patient
       update_fields(patient, params, :patient, :none)
     end
-
   end
 
   def update_fields(patient, params, household, propagation)
