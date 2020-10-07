@@ -314,6 +314,19 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
+    # update LDE for patient and group members only in the exposure workflow with continuous exposure on (separate from updating monitoring status)
+    if params.permit(:apply_to_group_cm_exp_only)[:apply_to_group_cm_exp_only]
+      ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true, isolation: false) || [])).uniq.each do |member|
+        # turn off continuous exposure if LDE is updated
+        lde_date = params.permit(:apply_to_group_cm_exp_only_date)[:apply_to_group_cm_exp_only_date]
+        if member[:continuous_exposure]
+          History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
+          longer being exposed to a case.')
+        end
+        member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
+      end
+    end
+
     if params.permit(:apply_to_group)[:apply_to_group] # update patient and all group members
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
@@ -333,19 +346,6 @@ class PatientsController < ApplicationController
       end
     else # update patient
       update_fields(patient, params, :patient, :none)
-    end
-
-    # update LDE for patient and group members only in the exposure workflow with continuous exposure on (separate from updating monitoring status)
-    if params.permit(:apply_to_group_cm_exp_only)[:apply_to_group_cm_exp_only]
-      ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true, isolation: false) || [])).uniq.each do |member|
-        # turn off continuous exposure if LDE is updated
-        lde_date = params.permit(:apply_to_group_cm_exp_only_date)[:apply_to_group_cm_exp_only_date]
-        if member[:continuous_exposure]
-          History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
-          longer being exposed to a case.')
-        end
-        member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
-      end
     end
 
   end
