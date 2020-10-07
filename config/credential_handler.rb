@@ -47,7 +47,7 @@ module CredentialHandler
       # Grab the JWT payload from the decode output array
       payload = decoded_assertion.length > 0 ? decoded_assertion[0] : nil
       # Both the iss and sub fields should contain the client ID.
-      client_id = payload["iss"] ? payload["iss"] : payload["sub"]
+      client_id = payload && payload["iss"] ? payload["iss"] : payload["sub"]
     end
     raise_standard_doorkeeper_error("JWT is invalid. Could not extract client ID from iss or sub fields.") unless client_id.present?
 
