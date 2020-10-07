@@ -29,7 +29,7 @@ const requiredStrings = [
   'NNDSS LOC. REC. ID/CASE ID'
 ]
 
-describe('Monitoree Identification', () => {
+describe('Identification', () => {
   it('Properly renders all main components', () => {
     const wrapper = mount(<Identification goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
     requiredStrings.forEach(requiredString => {

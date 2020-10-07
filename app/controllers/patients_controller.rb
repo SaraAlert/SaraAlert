@@ -314,24 +314,31 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
-    if params.permit(:apply_to_group)[:apply_to_group] # update patient and all group members
+    # Update LDE for patient and group members only in the exposure workflow with continuous exposure on
+    # NOTE: This is a possible option when changing monitoring status of HoH in isolation.
+    if params.permit(:apply_to_group_cm_exp_only)[:apply_to_group_cm_exp_only] && params[:apply_to_group_cm_exp_only_date].present?
+      # Only update dependents (not including the HoH) in exposure with continuoous exposure is turned on
+      (current_user.get_patient(patient.responder_id)&.dependents_exclude_self&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
+        History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: "User updated Monitoring Status for another member in this
+        monitoree's household and chose to update Last Date of Exposure for household members so System changed Last Date of Exposure from
+        #{member[:last_date_of_exposure] ? member[:last_date_of_exposure].to_date.strftime('%m/%d/%Y') : 'blank'} to
+        #{params[:apply_to_group_cm_exp_only_date].to_date.strftime('%m/%d/%Y')} and turned OFF Continuous Exposure.")
+
+        member.update(last_date_of_exposure: params[:apply_to_group_cm_exp_only_date], continuous_exposure: false)
+      end
+    end
+
+    # Update patient and all group members
+    if params.permit(:apply_to_group)[:apply_to_group]
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
       end
+      # Update patient and all group members in continuous exposure
     elsif params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only] # update patient and group members only with continuous exposure on
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group_cm)
-        next unless params[:apply_to_group_cm_only_date].present?
-
-        # turn off continuous exposure if LDE is updated
-        lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
-        if member[:continuous_exposure]
-          History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
-          longer being exposed to a case.')
-        end
-        member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
       end
-    else # update patient
+    else # Update patient
       update_fields(patient, params, :patient, :none)
     end
   end
@@ -360,12 +367,15 @@ class PatientsController < ApplicationController
     # If the monitoree record was closed, set continuous exposure to be false and set the closed at time.
     if params_to_update.include?(:monitoring) && params.require(:patient).permit(:monitoring)[:monitoring] != patient.monitoring && patient.monitoring
       if patient[:continuous_exposure]
-        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because the record was
+        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System turned off Continuous Exposure because the record was
         moved to the closed line list.')
       end
       patient.continuous_exposure = false
       patient.closed_at = DateTime.now
     end
+
+    # Do not allow continuous exposure to updated for closed records
+    params_to_update.delete(:continuous_exposure) if params_to_update.include?(:continuous_exposure) && !patient.monitoring
 
     # If moving patient to exposure from isolation
     if params_to_update.include?(:isolation) && !params.require(:patient).permit(:isolation)[:isolation]
@@ -379,7 +389,7 @@ class PatientsController < ApplicationController
       params_to_update << :extended_isolation
       params[:patient][:extended_isolation] = nil
       unless patient[:extended_isolation].nil?
-        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System cleared extended isolation date because monitoree was
+        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System cleared Extended Isolation Date because monitoree was
         moved from isolation to exposure workflow.')
       end
     end
@@ -425,17 +435,17 @@ class PatientsController < ApplicationController
     return if content[:symptom_onset] == patient[:symptom_onset] || initiator != :system
 
     comment = if !patient[:symptom_onset].nil? && !content[:symptom_onset].nil?
-                "System changed symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{content[:symptom_onset].strftime('%m/%d/%Y')}
+                "System changed Symptom Onset Date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{content[:symptom_onset].strftime('%m/%d/%Y')}
                 because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on
                 daily reports."
               elsif patient[:symptom_onset].nil? && !content[:symptom_onset].nil?
-                "System changed symptom onset date from blank to #{content[:symptom_onset].strftime('%m/%d/%Y')} because monitoree was moved from isolation to
+                "System changed Symptom Onset Date from blank to #{content[:symptom_onset].strftime('%m/%d/%Y')} because monitoree was moved from isolation to
                 exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
               elsif !patient[:symptom_onset].nil? && content[:symptom_onset].nil?
-                "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from isolation to
+                "System cleared Symptom Onset Date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from isolation to
                 exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
               else
-                'System changed symptom onset date. This allows the system to show monitoree on appropriate line list based on daily reports.'
+                'System changed Symptom Onset Date. This allows the system to show monitoree on appropriate line list based on daily reports.'
               end
     History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
   end
@@ -697,7 +707,6 @@ class PatientsController < ApplicationController
       isolation
       jurisdiction_id
       assigned_user
-      case_status
       continuous_exposure
     ]
   end

@@ -18,7 +18,7 @@ const requiredStrings = [
   'CONFIRM E-MAIL ADDRESS'
 ]
 
-describe('Monitoree Contact', () => {
+describe('Contact', () => {
   it('Properly renders all main components', () => {
     const wrapper = mount(<Contact goto={() => {}} next={() => {}} setEnrollmentState={() => {}} currentState={newEnrollmentState} />);
     requiredStrings.forEach(requiredString => {
