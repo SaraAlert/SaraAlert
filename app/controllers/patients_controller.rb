@@ -346,7 +346,7 @@ class PatientsController < ApplicationController
       History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
       longer being exposed to a case.')
     end
-   patient.update(last_date_of_exposure: lde_date, continuous_exposure: false)
+    patient.update(last_date_of_exposure: lde_date, continuous_exposure: false)
   end
 
   def update_fields(patient, params, household, propagation)
