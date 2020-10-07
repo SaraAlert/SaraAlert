@@ -90,7 +90,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
 
   def verify_input_validation_for_potential_exposure_info(potential_exposure_info)
     @@system_test_utils.go_to_next_page
-    verify_text_displayed('Please enter a Last Date of Exposure')
+    verify_text_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
     fill_in 'last_date_of_exposure', with: rand(30).days.ago.strftime('%m/%d/%Y')
     fill_in 'jurisdiction_id', with: ''
     click_on 'Next'
@@ -111,7 +111,7 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     fill_in 'assigned_user', with: 'W(#*&R#(W&'
     assert_not_equal('W(#*&R#(W&', page.find_field('assignedUser').value)
     @@enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
-    verify_text_not_displayed('Please enter a Last Date of Exposure')
+    verify_text_not_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
   end
 
   def verify_text_displayed(text)

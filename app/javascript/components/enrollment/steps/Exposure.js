@@ -18,7 +18,6 @@ class Exposure extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      isEditMode: window.location.href.includes('edit'),
       jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
@@ -32,25 +31,23 @@ class Exposure extends React.Component {
   }
 
   componentDidMount() {
-    if (this.state.isEditMode) {
-      // Update the Schema Validator based on workflow.
-      if (this.props.patient.isolation) {
-        schema = yup.object().shape({
-          ...staticValidations,
-          symptom_onset: yup
-            .date('Date must correspond to the "mm/dd/yyyy" format.')
-            .max(
-              moment()
-                .add(30, 'days')
-                .toDate(),
-              'Date can not be more than 30 days in the future.'
-            )
-            .required('Please enter a Symptom Onset Date.')
-            .nullable(),
-        });
-      } else {
-        this.updateLDEandCEValidations(this.props.patient);
-      }
+    // Update the Schema Validator based on workflow.
+    if (this.props.patient.isolation) {
+      schema = yup.object().shape({
+        ...staticValidations,
+        symptom_onset: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .max(
+            moment()
+              .add(30, 'days')
+              .toDate(),
+            'Date can not be more than 30 days in the future.'
+          )
+          .required('Please enter a Symptom Onset Date.')
+          .nullable(),
+      });
+    } else {
+      this.updateLDEandCEValidations(this.props.patient);
     }
   }
 
