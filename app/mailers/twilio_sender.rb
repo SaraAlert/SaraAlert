@@ -6,7 +6,7 @@ class TwilioSender
   def self.send_sms(patient, contents)
     from = ENV['TWILLIO_MESSAGING_SERVICE_SID'] || ENV['TWILLIO_SENDING_NUMBER']
     begin
-      @@client.messages.create(
+      @client.messages.create(
         to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
         body: contents,
         from: from
@@ -22,7 +22,7 @@ class TwilioSender
   def self.start_studio_flow(patient, params)
     from = ENV['TWILLIO_MESSAGING_SERVICE_SID'] || ENV['TWILLIO_SENDING_NUMBER']
     begin
-      @@client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
+      @client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
         to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
         parameters: params,
         from: from
@@ -37,7 +37,7 @@ class TwilioSender
 
   def self.get_responder_from_flow_execution(execution_id)
     begin
-      execution = @@client.studio.v1
+      execution = @client.studio.v1
                           .flows(ENV['TWILLIO_STUDIO_FLOW'])
                           .executions(execution_id)
                           .fetch
