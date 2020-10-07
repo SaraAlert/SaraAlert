@@ -101,7 +101,7 @@ class ConsumeAssessmentsJob < ApplicationJob
 
           queue.commit
           next
-        elsif message['response_status'] == 'opt_out'
+        when 'opt_out'
           # TODO: Fill out appropriate action for user opt out once decided
           # histories = []
           # patient.dependents.uniq.each do |pat|
@@ -182,5 +182,4 @@ class ConsumeAssessmentsJob < ApplicationJob
     end
     History.import! histories
   end
-
 end

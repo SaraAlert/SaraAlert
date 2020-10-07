@@ -223,12 +223,11 @@ class History < ApplicationRecord
   end
 
   def self.monitoree_pause_notifications(patient, paused_or_resumed)
-
-    if patient.responder_id != patient.id
-      responder_or_not = '\'s responder'
-    else
-      responder_or_not = ''
-    end
+    responder_or_not = if patient.responder_id != patient.id
+                         '\'s responder'
+                       else
+                         ''
+                       end
 
     comment = "Monitoree#{responder_or_not} #{paused_or_resumed} notifications."
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], comment)
