@@ -181,4 +181,48 @@ namespace :admin do
   task purge_job: :environment do
     PurgeJob.perform_later
   end
+
+  desc 'Add API OAuth Application for Backend Services API Workflow'
+  task create_oauth_app_for_backend_services_workflow: :environment do
+    jurisdiction = Jurisdiction.find_by(id: ENV[JURISDICTION_PATH])
+    puts "Error: JURISDICTION_PATH is invalid: #{JURISDICTION_PATH}" unless jurisdiction.present?
+
+    user_already_exists = User.find_by(email: ENV[APP_USER_EMAIL]).present?
+    puts "Error: User with email # ENV[APP_USER_EMAIL]} already exists in the system." if user_already_exists
+
+    # Replace value with public JWKS.
+    PUBLIC_KEY_SET = {"keys" =>  [ENV[PUBLIC_KEY]]}.to_json
+
+    begin
+      # Create shadow user for application
+      app_user = User.create!(
+        email: ENV[APP_USER_EMAIL],
+        password: User.rand_gen,
+        jurisdiction: jurisdiction,
+        force_password_change: false,
+        api_enabled: true
+      )
+      app_user.add_role :public_health_enroller
+      app_user.save!
+
+    rescue ActiveRecord::RecordInvalid => error
+      puts "Error creating user record for application: #{error}"
+    end
+
+    begin
+      # Create OAuth application with needed data for system workflw
+      application = Doorkeeper::Application.create!(
+        name: ENV[APP_NAME], 
+        redirect_uri: 'urn:ietf:wg:oauth:2.0:oob', 
+        scopes: ENV[SCOPES], 
+        jurisdiction_id: app_user.jurisdiction_id, 
+        user_id: app_user.id, 
+        public_key_set: PUBLIC_KEY_SET
+      )
+      puts "Client ID: #{application.uid}"
+
+    rescue ActiveRecord::RecordInvalid => error
+      puts "Error creating OAuth application: #{error}"
+    end
+  end
 end
