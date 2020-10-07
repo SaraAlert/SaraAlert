@@ -83,9 +83,19 @@ const TOOLTIP_TEXT = {
 
   caseStatus: (
     <div>
-      Used to move records into the appropriate workflow after investigating a report of symptoms. If <i>confirmed</i> or <i>probable</i> is selected, the user
-      is prompted to choose between moving the record to the isolation workflow or to end monitoring. If the user selects another case status, the record will
-      be returned to the appropriate exposure monitoring line list.
+      Used to move records into the appropriate workflow.
+      <ul className="mb-0">
+        <li>
+          {' '}
+          For monitorees currently in the Exposure Workflow: Selecting Confirmed or Probable will prompt the option to move the monitoree into the Isolation
+          Workflow or to end monitoring. Selecting Suspect, Unknown, or Not a Case will not change the monitoree&apos;s workflow.{' '}
+        </li>
+        <li>
+          {' '}
+          For monitorees currently in the Isolation Workflow: Selecting Suspect, Unknown, or Not a Case will move the monitoree to the exposure workflow.
+          Selecting Confirmed or Probable will not change the monitoree&apos;s workflow.{' '}
+        </li>
+      </ul>
     </div>
   ),
 

@@ -159,8 +159,8 @@ class CustomTable extends React.Component {
                       value = col.options[data[col.field]];
                     } else if (col.filter) {
                       // If this column has a filter, apply the filter to the value
-                      // Send along string of the ID if needed
-                      value = col.filter(data[col.field], data.id.toString());
+                      // Send along string of the ID and HoH bool if needed
+                      value = col.filter(data[col.field], data.id.toString(), data.is_hoh);
                     }
                     return <td key={index}>{value}</td>;
                   })}

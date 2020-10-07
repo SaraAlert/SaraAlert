@@ -14,7 +14,7 @@
     <b>Temporary password:</b> <%= @password %>
   </p>
   <p style="margin-bottom: none">
-    Please log in to the Sara Alert application to change your password as soon as possible.
+    This temporary password is only valid for 72 hours, so please log in to the Sara Alert application to change your password as soon as possible. If copying and pasting the temporary password results in an invalid login attempt, please manually type it instead.
   </p>
 
   <%= render partial: 'main_mailer/responsive_button', locals: { link: root_url, text: 'Sara Alert' } %>
