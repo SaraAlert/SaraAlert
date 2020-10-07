@@ -314,8 +314,10 @@ class PatientsController < ApplicationController
     patient = current_user.get_patient(params.permit(:id)[:id])
     redirect_to(root_url) && return if patient.nil?
 
-    # update LDE for patient and group members only in the exposure workflow with continuous exposure on (separate from updating monitoring status)
+    # Update LDE for patient and group members only in the exposure workflow with continuous exposure on
+    # NOTE: This is a possible option when changing monitoring status of HoH in isolation.
     if params.permit(:apply_to_group_cm_exp_only)[:apply_to_group_cm_exp_only] && params[:apply_to_group_cm_exp_only_date].present?
+      # Only update dependents (not including the HoH) in exposure with continuoous exposure is turned on
       (current_user.get_patient(patient.responder_id)&.dependents_exclude_self&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
         member.update(last_date_of_exposure: params[:apply_to_group_cm_exp_only_date], continuous_exposure: false)
 
@@ -323,26 +325,22 @@ class PatientsController < ApplicationController
         monitoree's household and chose to update Last Date of Exposure for household members so System changed Last Date of Exposure from
         #{member[:last_date_of_exposure] ? member[:last_date_of_exposure].to_date.strftime('%m/%d/%Y') : 'blank'} to
         #{params[:apply_to_group_cm_exp_only_date].to_date.strftime('%m/%d/%Y')} and turned OFF Continuous Exposure.")
+
+        member.update(last_date_of_exposure: params[:apply_to_group_cm_exp_only_date], continuous_exposure: false)
       end
     end
 
-    if params.permit(:apply_to_group)[:apply_to_group] # update patient and all group members
+    # Update patient and all group members
+    if params.permit(:apply_to_group)[:apply_to_group] 
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
       end
+      # Update patient and all group members in continuous exposure
     elsif params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only] # update patient and group members only with continuous exposure on
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group_cm)
-        next unless params[:apply_to_group_cm_only_date].present?
-
-        # turn off continuous exposure if LDE is updated
-        if member[:continuous_exposure]
-          History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off Continuous Exposure because monitoree is no
-          longer being exposed to a case.')
-        end
-        member.update(last_date_of_exposure: params[:apply_to_group_cm_only_date], continuous_exposure: false)
       end
-    else # update patient
+    else # Update patient
       update_fields(patient, params, :patient, :none)
     end
   end
