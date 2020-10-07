@@ -35,16 +35,19 @@ class Exposure extends React.Component {
     if (this.state.isEditMode) {
       // Update the Schema Validator based on workflow.
       if (this.props.patient.isolation) {
-        schema['symptom_onset'] = yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
-          .required('Please enter a Symptom Onset Date.')
-          .nullable();
+        schema = yup.object().shape({
+          ...staticValidations,
+          symptom_onset: yup
+            .date('Date must correspond to the "mm/dd/yyyy" format.')
+            .max(
+              moment()
+                .add(30, 'days')
+                .toDate(),
+              'Date can not be more than 30 days in the future.'
+            )
+            .required('Please enter a Symptom Onset Date.')
+            .nullable(),
+        });
       } else {
         this.updateLDEandCEValidations(this.props.patient);
       }
@@ -134,34 +137,68 @@ class Exposure extends React.Component {
   }
 
   updateLDEandCEValidations = patient => {
-    schema['last_date_of_exposure'] = yup
-      .date('Date must correspond to the "mm/dd/yyyy" format.')
-      .max(
-        moment()
-          .add(30, 'days')
-          .toDate(),
-        'Date can not be more than 30 days in the future.'
-      )
-      .nullable();
-    schema['continuous_exposure'] = yup.bool().nullable();
-    const validation_msg_required = 'Please enter a Last Date of Exposure OR turn on Continuous Monitoring, but not both';
-    const validation_msg_only_one = 'Please enter a Last Date of Exposure OR turn on Continuous Exposure';
     if (!patient.last_date_of_exposure && !patient.continuous_exposure) {
-      schema['last_date_of_exposure'] = schema['last_date_of_exposure'].required(validation_msg_only_one);
-      schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([true], validation_msg_only_one);
+      schema = yup.object().shape({
+        ...staticValidations,
+        last_date_of_exposure: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .max(
+            moment()
+              .add(30, 'days')
+              .toDate(),
+            'Date can not be more than 30 days in the future.'
+          )
+          .required('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
+          .nullable(),
+        continuous_exposure: yup.bool().nullable(),
+      });
     } else if (!patient.last_date_of_exposure && patient.continuous_exposure) {
-      schema['last_date_of_exposure'] = schema['last_date_of_exposure'].oneOf([null, undefined], validation_msg_only_one);
-      schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([true], validation_msg_required);
+      schema = yup.object().shape({
+        ...staticValidations,
+        last_date_of_exposure: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .max(
+            moment()
+              .add(30, 'days')
+              .toDate(),
+            'Date can not be more than 30 days in the future.'
+          )
+          .oneOf([null, undefined])
+          .nullable(),
+        continuous_exposure: yup
+          .bool()
+          .oneOf([true])
+          .nullable(),
+      });
     } else if (patient.last_date_of_exposure && !patient.continuous_exposure) {
-      schema['last_date_of_exposure'] = schema['last_date_of_exposure'].required(validation_msg_required);
-      schema['continuous_exposure'] = schema['continuous_exposure'].oneOf([null, undefined, false], validation_msg_only_one);
+      schema = yup.object().shape({
+        ...staticValidations,
+        last_date_of_exposure: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .max(
+            moment()
+              .add(30, 'days')
+              .toDate(),
+            'Date can not be more than 30 days in the future.'
+          )
+          .required()
+          .nullable(),
+        continuous_exposure: yup
+          .bool()
+          .oneOf([null, undefined, false])
+          .nullable(),
+      });
     }
+    this.setState(state => {
+      const errors = state.errors;
+      delete errors.last_date_of_exposure;
+      delete errors.continuous_exposure;
+      return { errors };
+    });
   };
 
   validate(callback) {
     let self = this;
-    console.log(schema);
-    console.log(this.state.current.patient);
     schema
       .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
@@ -670,7 +707,7 @@ class Exposure extends React.Component {
   }
 }
 
-var schema = yup.object().shape({
+const staticValidations = {
   potential_exposure_location: yup
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
@@ -725,7 +762,9 @@ var schema = yup.object().shape({
     .string()
     .max(2000, 'Max length exceeded, please limit to 2000 characters.')
     .nullable(),
-});
+};
+
+var schema = yup.object().shape(staticValidations);
 
 Exposure.propTypes = {
   currentState: PropTypes.object,
