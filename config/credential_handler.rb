@@ -74,44 +74,37 @@ module CredentialHandler
           verify_sub: true,
           aud: aud,
           verify_aud: true,
-          verify_jti: true
+          verify_jti: proc { |jti| validate_jti(jti) }
         }
       )
 
     rescue JWT::JWKError
       raise_invalid_JWK_error
     rescue JWT::ExpiredSignature
-      # Handle expired token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT signature has expired."
       )
     rescue JWT::InvalidIssuerError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT iss is invalid."
       )
     rescue JWT::InvalidSubError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT sub is invalid."
       )
     rescue JWT::InvalidAudError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT aud is invalid."
       )
     rescue JWT::ImmatureSignature
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT signature is immature."
       )
     rescue JWT::InvalidJtiError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT jti is invalid"
       )
     rescue JWT::InvalidIatError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT iat is invalid."
       )
@@ -129,6 +122,10 @@ module CredentialHandler
     # to finish out this flow. 
     client_secret = client_application[:secret]
     return client_id, client_secret
+  end
+
+  def validate_jti(jti)
+    # TODO: implement
   end
 
   # Commonly raised error for invalid JWK.
