@@ -102,13 +102,13 @@ class ConsumeAssessmentsJob < ApplicationJob
           queue.commit
           next
         elsif message['response_status'] == 'opt_out'
-          histories = []
-          patient.dependents.uniq.each do |pat|
-            pat.update(pause_notifications: true)
-            histories << History.monitoree_pause_notifications(pat,'paused')
-          end
-          History.import! histories
-
+          # TODO: Fill out appropriate action for user opt out once decided
+          # histories = []
+          # patient.dependents.uniq.each do |pat|
+          #   pat.update(pause_notifications: true)
+          #   histories << History.monitoree_pause_notifications(pat,'paused')
+          # end
+          # History.import! histories
           next
         elsif message['response_status'] == 'opt_in'
           histories = []
