@@ -317,13 +317,10 @@ class PatientsController < ApplicationController
     # update LDE for patient and group members only in the exposure workflow with continuous exposure on (separate from updating monitoring status)
     if params.permit(:apply_to_group_cm_exp_only)[:apply_to_group_cm_exp_only]
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true, isolation: false) || [])).uniq.each do |member|
+        next unless params[:apply_to_group_cm_exp_only_date].present?
+
         # turn off continuous exposure if LDE is updated
-        lde_date = params.permit(:apply_to_group_cm_exp_only_date)[:apply_to_group_cm_exp_only_date]
-        if member[:continuous_exposure]
-          History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
-          longer being exposed to a case.')
-        end
-        member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
+        update_lde(member, params[:apply_to_group_cm_exp_only_date])
       end
     end
 
@@ -337,16 +334,19 @@ class PatientsController < ApplicationController
         next unless params[:apply_to_group_cm_only_date].present?
 
         # turn off continuous exposure if LDE is updated
-        lde_date = params.permit(:apply_to_group_cm_only_date)[:apply_to_group_cm_only_date]
-        if member[:continuous_exposure]
-          History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
-          longer being exposed to a case.')
-        end
-        member.update(last_date_of_exposure: lde_date, continuous_exposure: false)
+        update_lde(member, params[:apply_to_group_cm_only_date])
       end
     else # update patient
       update_fields(patient, params, :patient, :none)
     end
+  end
+
+  def update_lde(patient, lde_date)
+    if patient[:continuous_exposure]
+      History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: 'System turned off continuous exposure because monitoree is no
+      longer being exposed to a case.')
+    end
+   patient.update(last_date_of_exposure: lde_date, continuous_exposure: false)
   end
 
   def update_fields(patient, params, household, propagation)
