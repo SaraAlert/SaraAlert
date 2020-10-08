@@ -12,6 +12,22 @@ class ClosePatientsJobTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['job_run_email'] = nil
   end
 
+  test 'handles case where last date of exposure is nil' do
+    patient = create(:patient,
+                     purged: false,
+                     isolation: false,
+                     monitoring: true,
+                     symptom_onset: nil,
+                     public_health_action: 'None',
+                     latest_assessment_at: Time.now,
+                     last_date_of_exposure: nil,
+                     created_at: 20.days.ago)
+    ClosePatientsJob.perform_now
+    # Reload attributes after job
+    patient.reload
+    assert_equal('Completed Monitoring (system)', patient.monitoring_reason)
+  end
+
   test 'updates appropriate fields on each closed record' do
     patient = create(:patient,
                      purged: false,

@@ -1,5 +1,5 @@
 <% content_for :assets do %>
-  <%= javascript_pack_tag "authy" %>
+  <%= javascript_pack_tag 'authy' %>
 <% end %>
 <div class="authy-menu col-24 d-flex flex-column justify-content-center">
   <div class="row">
@@ -9,9 +9,9 @@
       </div>
       <div class="card shadow shadow-sm card-square">
         <div class="card text-center">
-        <div class="card-header">
-          <h4 class="mb-0">Register For 2-Factor Authentication</h4>
-        </div>
+          <div class="card-header">
+            <h4 class="mb-0">Register For 2-Factor Authentication</h4>
+          </div>
           <div class="card-body">
             <%= enable_authy_form do %>
               <div class="form-row">
@@ -22,10 +22,10 @@
                   </select>
                 </div>
                 <div class="form-group col-md-10 mb-0">
-                  <%= text_field_tag :cellphone, '', autocomplete: :off, placeholder: I18n.t('devise.cellphone'), id: "authy-cellphone", class: "form-control form-control-sm mt-0" %>
+                  <%= text_field_tag :cellphone, '', autocomplete: :off, placeholder: I18n.t('devise.cellphone'), id: 'authy-cellphone', class: 'form-control form-control-sm mt-0' %>
                 </div>
                 <div class="form-group col-md-4 mb-0">
-                  <%= submit_tag I18n.t('enable_authy', {scope: 'devise'}), class: "btn btn-primary btn-sm mt-0", value: "Register" %>
+                  <%= submit_tag I18n.t('enable_authy', { scope: 'devise' }), class: 'btn btn-primary btn-sm mt-0', value: 'Register' %>
                 </div>
               </div>
             <% end %>

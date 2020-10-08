@@ -8,28 +8,25 @@ class Review extends React.Component {
   constructor(props) {
     super(props);
     this.state = { submitDisabled: false, showGroupAddNotification: false };
-    this.submit = this.submit.bind(this);
-    this.toggleGroupAddNotification = this.toggleGroupAddNotification.bind(this);
-    this.reenableSubmit = this.reenableSubmit.bind(this);
   }
 
-  submit(event, groupMember) {
+  submit = (event, groupMember) => {
     // Update state before submitting data so submit button disables when clicked to prevent multiple submissions.
     this.setState({ submitDisabled: true }, () => {
       this.props.submit(event, groupMember, this.reenableSubmit);
     });
-  }
+  };
 
-  reenableSubmit() {
+  reenableSubmit = () => {
     this.setState({ submitDisabled: false });
-  }
+  };
 
-  toggleGroupAddNotification() {
+  toggleGroupAddNotification = () => {
     let current = this.state.showGroupAddNotification;
     this.setState({
       showGroupAddNotification: !current,
     });
-  }
+  };
 
   createModal(title, toggle, submit) {
     return (

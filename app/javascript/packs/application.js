@@ -4,7 +4,7 @@ require('core-js');
 
 // Sentry
 import * as Sentry from '@sentry/browser';
-if (!!window.SENTRY_URL) {
+if (window.SENTRY_URL !== "null") {
   Sentry.init({
     dsn: window.SENTRY_URL,
     release: window.SARA_VERSION

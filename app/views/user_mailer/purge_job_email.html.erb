@@ -1,5 +1,9 @@
-<h1>Sara Alert Purge Job Results (<%= ActionMailer::Base.default_url_options[:host] %>)</h1>
-<h2><%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %></h2>
+<h1>
+  Sara Alert Purge Job Results (<%= ActionMailer::Base.default_url_options[:host] %>)
+</h1>
+<h2>
+  <%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %>
+</h2>
 <br />
 Total eligible for purge at runtime: <%= @eligible %>
 <br />
@@ -7,18 +11,24 @@ Purged during this job run: <b><%= @purged.count %></b>
 <br />
 Not purged during this job run (due to exceptions): <b><%= @not_purged.count %></b>
 <br />
-<h2>Purged</h2>
+<h2>
+  Purged
+</h2>
 <br />
 ID
 <br />
 <% @purged.each do |p| %>
-  <%= p[:id] %><br />
+  <%= p[:id] %>
+  <br />
 <% end %>
 <br />
-<h2>Not Purged</h2>
+<h2>
+  Not Purged
+</h2>
 <br />
 ID, Reason
 <br />
 <% @not_purged.each do |np| %>
-  <%= np[:id] %>, <%= np[:reason] %><br />
+  <%= np[:id] %>, <%= np[:reason] %>
+  <br />
 <% end %>
