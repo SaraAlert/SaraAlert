@@ -140,6 +140,21 @@ class Fhir::R4::ApiController < ActionController::API
       # Responder is self
       resource.responder = resource
 
+      # Storing call method call in variable for efficiency
+      patients = accessible_patients
+
+      # Set the responder for this patient, this will link patients that have duplicate primary contact info
+      if ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? resource[:preferred_contact_method]
+        if patients.responder_for_number(resource[:primary_telephone])&.exists?
+          resource.responder = patients.responder_for_number(resource[:primary_telephone]).first
+        end
+      elsif resource[:preferred_contact_method] == 'E-mailed Web Link'
+        resource.responder = patients.responder_for_email(resource[:email]).first if patients.responder_for_email(resource[:email])&.exists?
+      end
+
+      # Default responder to self if no responder condition met
+      resource.responder = resource if resource.responder.nil?
+
       # Determine resource creator
       if current_resource_owner.present?
         # Creator is authenticated user
@@ -428,9 +443,9 @@ class Fhir::R4::ApiController < ActionController::API
     Doorkeeper::Application.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
   end
 
-  # Determine the patient data that is accessable by either the current resource owner
+  # Determine the patient data that is accessible by either the current resource owner
   # (user flow) or the current client application (system flow).
-  def accessable_patients
+  def accessible_patients
     # If there is a current resource owner (end user) that has api access enabled
     if current_resource_owner.present? && current_resource_owner&.can_use_api?
       # This will access all patients that the role has access to, if any
@@ -510,12 +525,12 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Get a patient by id (if any patients, otherwise nil)
   def get_patient(id)
-    accessable_patients&.find_by(id: id)
+    accessible_patients&.find_by(id: id)
   end
 
   # Search for patients
   def search_patients(options)
-    query = accessable_patients
+    query = accessible_patients
     options.each do |option, search|
       case option
       when 'family'
@@ -523,7 +538,7 @@ class Fhir::R4::ApiController < ActionController::API
       when 'given'
         query = query.where('first_name like ?', "%#{search}%") if search.present?
       when 'telecom'
-        query = query.where('primary_telephone like ?', "%#{search}%") if search.present?
+        query = query.where('primary_telephone like ?', Phonelib.parse(search, 'US').full_e164) if search.present?
       when 'email'
         query = query.where('email like ?', "%#{search}%") if search.present?
       when '_id'
@@ -537,11 +552,11 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Search for laboratories
   def search_laboratories(options)
-    query = Laboratory.where(patient: accessable_patients)
+    query = Laboratory.where(patient: accessible_patients)
     options.each do |option, search|
       case option
       when 'subject'
-        query = accessable_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
+        query = accessible_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
       when '_id'
         query = query.where(id: search) if search.present?
       end
@@ -551,11 +566,11 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Search for assessments
   def search_assessments(options)
-    query = Assessment.where(patient: accessable_patients)
+    query = Assessment.where(patient: accessible_patients)
     options.each do |option, search|
       case option
       when 'subject'
-        query = accessable_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
+        query = accessible_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
       when '_id'
         query = query.where(id: search) if search.present?
       end
@@ -565,12 +580,12 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Get a lab result by id
   def get_laboratory(id)
-    Laboratory.where(patient_id: accessable_patients).find_by(id: id)
+    Laboratory.where(patient_id: accessible_patients).find_by(id: id)
   end
 
   # Get an assessment by id
   def get_assessment(id)
-    Assessment.where(patient_id: accessable_patients).find_by(id: id)
+    Assessment.where(patient_id: accessible_patients).find_by(id: id)
   end
 
   # Construct a full url via a request and resource

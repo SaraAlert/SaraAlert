@@ -257,12 +257,22 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   # Sets up FHIR patients used for testing
   def setup_patients
     @patient_1 = Patient.find_by(id: 1).as_fhir
-    Patient.find_by(id: 2).update(preferred_contact_method: 'SMS Texted Weblink',
-                                  preferred_contact_time: 'Afternoon',
-                                  last_date_of_exposure: 4.days.ago,
-                                  symptom_onset: 3.days.ago,
-                                  isolation: true)
+
+    # Update Patient 2 before created FHIR resource from it
+    Patient.find_by(id: 2).update!(
+      preferred_contact_method: 'SMS Texted Weblink',
+      preferred_contact_time: 'Afternoon',
+      last_date_of_exposure: 4.days.ago,
+      symptom_onset: 3.days.ago,
+      isolation: true,
+      primary_telephone: '+15555559999'
+    )
     @patient_2 = Patient.find_by(id: 2).as_fhir
+
+    # Update Patient 2 number to guarantee unique phone number
+    Patient.find_by(id: 2).update!(
+      primary_telephone: '+15555559998'
+    )
   end
 
   test 'GENERAL: should be unauthorized via show' do
@@ -270,7 +280,45 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
-  #----- system scope tests -----
+  #----- system flow tests -----
+
+  test 'SYSTEM FLOW: should group Patients in households with matching phone numbers' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
+    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
+  end
+
+  test 'SYSTEM FLOW: should group Patients in households with matching emails' do
+    Patient.find_by(id: 1).update!(preferred_contact_method: 'E-mailed Web Link')
+    @patient_1 = Patient.find_by(id: 1).as_fhir
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
+    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
+  end
+
+  test 'SYSTEM FLOW: should make Patient a self reporter if no matching number or email' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_2.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be their own reporter since they have a unique phone number and email
+    assert_equal json_response['id'], Patient.find_by(id: json_response['id']).responder_id
+  end
 
   test 'SYSTEM FLOW: should not be able to create Patient resource with Patient read scope' do
     post(
@@ -468,8 +516,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  # ----- end system scope tests -----
-
   test 'SYSTEM FLOW: patients within exact jurisdiction should be accessable' do
     # Same jurisdiction
     get(
@@ -624,6 +670,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       params: @patient_1.to_json,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
+
     assert_response :created
     json_response = JSON.parse(response.body)
     patient = Patient.find(json_response['id'])
@@ -806,14 +853,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'SYSTEM FLOW: should find Patient via search on telecom' do
     get(
-      '/fhir/r4/Patient?telecom=%28555%29%20555-0141',
+      '/fhir/r4/Patient?telecom=5555550111',
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal 'Bundle', json_response['resourceType']
     assert_equal 1, json_response['total']
-    assert_equal 2, json_response['entry'].first['resource']['id']
+    assert_equal 1, json_response['entry'].first['resource']['id']
   end
 
   test 'SYSTEM FLOW: should find Patient via search on email' do
@@ -925,7 +972,47 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
   end
 
-  #----- user scope tests -----
+  # ----- end system flow tests -----
+
+  #----- user flow tests -----
+
+  test 'USER FLOW: should group Patients in households with matching phone numbers' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
+    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
+  end
+
+  test 'USER FLOW: should group Patients in households with matching emails' do
+    Patient.find_by(id: 1).update!(preferred_contact_method: 'E-mailed Web Link')
+    @patient_1 = Patient.find_by(id: 1).as_fhir
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be a dependent in the same household as patient with ID 1, who is now the HoH
+    assert_equal 1, Patient.find_by(id: json_response['id']).responder_id
+  end
+
+  test 'USER FLOW: should make Patient a self reporter if no matching number or email' do
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_2.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :created
+    json_response = JSON.parse(response.body)
+    # Should be their own reporter since they have a unique phone number and email
+    assert_equal json_response['id'], Patient.find_by(id: json_response['id']).responder_id
+  end
 
   test 'USER FLOW: should not be able to create Patient resource with Patient read scope' do
     post(
@@ -1529,14 +1616,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'USER FLOW: should find Patient via search on telecom' do
     get(
-      '/fhir/r4/Patient?telecom=%28555%29%20555-0141',
+      '/fhir/r4/Patient?telecom=15555550111',
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
     json_response = JSON.parse(response.body)
     assert_equal 'Bundle', json_response['resourceType']
     assert_equal 1, json_response['total']
-    assert_equal 2, json_response['entry'].first['resource']['id']
+    assert_equal 1, json_response['entry'].first['resource']['id']
   end
 
   test 'USER FLOW: should find Patient via search on email' do
@@ -1647,5 +1734,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     json_response = JSON.parse(response.body)
     assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
   end
+  # ----- end user flow tests -----
 end
 # rubocop:enable Metrics/ClassLength
