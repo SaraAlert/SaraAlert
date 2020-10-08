@@ -84,7 +84,11 @@
         </thead>
         <tbody>
         <% @assessments.each do |assessment| -%>
-          <tr class="<% if assessment.symptomatic %>table-danger<% end %>">
+          <% if assessment.symptomatic %>
+            <tr class="table-danger">
+          <% else %>
+            <tr>
+          <% end %>
             <td>
               <%= assessment.id %>
             </td>
