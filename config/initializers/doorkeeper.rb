@@ -55,7 +55,7 @@ Doorkeeper.configure do
   #     destroy
   #   end
   # end
-
+  
   # Enables polymorphic Resource Owner association for Access Tokens and Access Grants.
   # By default this option is disabled.
   #

@@ -56,7 +56,7 @@ module CredentialHandler
     end
 
     # Get expected JWT aud value: the request token endpoint.
-    aud = request.original_url
+    aud = request.original_url    
 
     # Begin process of decoding and validating JWT assertion required for this flow.
     begin
@@ -74,10 +74,10 @@ module CredentialHandler
           verify_sub: true,
           aud: aud,
           verify_aud: true,
-          verify_jti: proc { |jti| validate_jti(jti) }
+          verify_jti: proc { |jti| validate_jti(jti, client_id) }
         }
       )
-
+  
     rescue JWT::JWKError
       raise_invalid_JWK_error
     rescue JWT::ExpiredSignature
@@ -116,6 +116,20 @@ module CredentialHandler
       )
     end
 
+    # Validate expiration value is no more than 5 minutes in the future
+    exp = decoded_token.exp
+    parsed_exp_date = Time.at(exp)
+    if parsed_exp_date > Time.now + 5.minutes
+      raise_standard_doorkeeper_error(
+        "JWT signature is too far in the future. Must be a maximum of 5 minutes in the future."
+      )
+    end
+
+    # ---- PASSED VALIDATION ----
+
+    # Add jti to table to keep track of previously encountered jti values to prevent replay attacks
+    save_jti(jti, client_id, decoded_token.exp)
+
     # Find the associated client secret so Doorkeeper can continue with this flow.
     # For the Sara Alert use of this particular flow, the real client secret is not required or used for validation
     # as it is kept by the client and used to sign the asserted JWT. Doorkeeper generates a secret anyway that is used
@@ -124,8 +138,24 @@ module CredentialHandler
     return client_id, client_secret
   end
 
-  def self.validate_jti(jti)
-    # TODO: implement
+  # Creates a new record in the JwtIdentifier table in the DB to track encountered jti values for a given application
+  def self.save_jti(jti, client_id, expiration_timestamp)
+    # Convert to actual date and timestamp from epoch timestamp
+    parsed_exp_date = Time.at(expiration_timestamp)
+
+    # Create record
+    JwtIdentifier.create(application_id: client_id, value: jti, expiration_date: parsed_exp_date)
+  end
+
+  # Verifies this JTI has not been encountered before
+  def self.validate_jti(jti, client_id)
+    # Get JTI values for this application - should only be at most 1
+    matching_jti_values = JwtIdentifier.where(application_id: client_id, value: jti)
+    if matching_jti_values.exists?
+      # This is an issue - should not see the same jti within a JWT lifetime. 
+      # Do not allow to prevent replay attacks. 
+      return false
+    end
     return true
   end
 
