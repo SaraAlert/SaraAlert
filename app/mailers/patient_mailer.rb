@@ -62,7 +62,10 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
-    add_success_history(patient, patient) if TwilioSender.send_sms(patient, contents)
+
+    success = TwilioSender.send_sms(patient, contents)
+    add_success_history(patient, patient) if success
+    add_fail_history_sms(patient) unless success
 
     # Always update the last contact time so the system does not try and send emails again.
     patient.update(last_assessment_reminder_sent: DateTime.now)
