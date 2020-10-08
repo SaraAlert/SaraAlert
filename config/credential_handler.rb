@@ -124,8 +124,9 @@ module CredentialHandler
     return client_id, client_secret
   end
 
-  def validate_jti(jti)
+  def self.validate_jti(jti)
     # TODO: implement
+    return true
   end
 
   # Commonly raised error for invalid JWK.

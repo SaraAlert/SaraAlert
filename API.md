@@ -34,7 +34,8 @@ This API is intended for use by public health organizations using Sara Alert, an
 	  - [PUT [base]/Patient/[:id]](#update-put-pat)
 	- [Searching](#search)
 	  - [GET [base]/Patient?parameter(s)](#search-get)
-	  - [GET [base]/Observation?subject=Patient/[:id]](#search-subj)
+    - [GET [base]/QuestionnaireResponse?subject=Patient/[:id]](#search-questionnaire-subj)
+	  - [GET [base]/Observation?subject=Patient/[:id]](#search-observation-subj)
 	  - [GET [base]/Patient?_count=2](#search-all)
 	
 <a name="get-started"/>
@@ -1761,11 +1762,191 @@ GET `[base]/Patient?given=testy&family=mctest`
 ```
 </details>
 
+#### GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
+You can use search to find Monitoree daily reports by using the `subject` parameter.
+
+<a name="search-questionnaire-sub"/>
+
+GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+
+```json
+{
+  "id": 1,
+  "meta": {
+      "lastUpdated": "2020-10-05T21:48:43+00:00"
+  },
+  "status": "completed",
+  "subject": {
+      "reference": "Patient/231"
+  },
+  "item": [
+    {
+      "linkId": "0",
+      "text": "cough",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "1",
+      "text": "difficulty-breathing",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "2",
+      "text": "new-loss-of-smell",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "3",
+      "text": "new-loss-of-taste",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "4",
+      "text": "shortness-of-breath",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "5",
+      "text": "fever",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "6",
+      "text": "used-a-fever-reducer",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "7",
+      "text": "chills",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "8",
+      "text": "repeated-shaking-with-chills",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "9",
+      "text": "muscle-pain",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "10",
+      "text": "headache",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "11",
+      "text": "sore-throat",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "12",
+      "text": "nausea-or-vomiting",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "13",
+      "text": "diarrhea",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "14",
+      "text": "fatigue",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "15",
+      "text": "congestion-or-runny-nose",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "16",
+      "text": "pulse-ox",
+      "answer": [
+        {
+          "valueDecimal": -4.0
+        }
+      ]
+    }
+  ],
+  "resourceType": "QuestionnaireResponse"
+}
+```
+</details>
+
 #### GET `[base]/Observation?subject=Patient/[:id]`
 
-You can also use search to find Monitoree daily reports and laboratory results by using the `subject` parameter.
+You can also use search to find Monitoree laboratory results by using the `subject` parameter.
 
-<a name="search-subj"/>
+<a name="search-observation-subj"/>
 
 GET `[base]/Observation?subject=Patient/[:id]`
 
