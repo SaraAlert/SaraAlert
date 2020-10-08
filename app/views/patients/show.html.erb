@@ -97,9 +97,9 @@
           <%symptom_value = assessment.get_reported_symptom_value(column)%>
           <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
             <% if symptom_value %>
-              <% symptom_value = "Yes" %>
+              <% symptom_value = 'Yes' %>
             <% else %>
-              <% symptom_value = "No" %>
+              <% symptom_value = 'No' %>
             <%end%>
             <td>
               <% if passes_threshold.nil? -%>
