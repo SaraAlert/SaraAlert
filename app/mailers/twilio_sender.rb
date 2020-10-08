@@ -38,9 +38,9 @@ class TwilioSender
   def self.get_responder_from_flow_execution(execution_id)
     begin
       execution = @client.studio.v1
-                          .flows(ENV['TWILLIO_STUDIO_FLOW'])
-                          .executions(execution_id)
-                          .fetch
+                         .flows(ENV['TWILLIO_STUDIO_FLOW'])
+                         .executions(execution_id)
+                         .fetch
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
       return
