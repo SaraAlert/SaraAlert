@@ -209,7 +209,7 @@ class History < ApplicationRecord
 
   def self.pause_notifications(history)
     field = {
-      name: 'notification status',
+      name: 'Notification Status',
       old_value: history[:patient][:pause_notifications] ? 'paused' : 'resumed',
       new_value: history[:params][:pause_notifications] ? 'paused' : 'resumed'
     }
