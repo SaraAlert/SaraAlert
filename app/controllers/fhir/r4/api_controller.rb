@@ -3,13 +3,27 @@
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ActionController::API
   include ActionController::MimeResponds
-  before_action only: %i[create update] do
-    doorkeeper_authorize! :'user/*.write', :'user/*.*', :'system/*.write', :'system/*.*'
-  end
-  before_action only: %i[show search all] do
-    doorkeeper_authorize! :'user/*.read', :'user/*.*', :'system/*.read', :'system/*.*'
-  end
   before_action :cors_headers
+  before_action only: %i[create update] do
+    doorkeeper_authorize!(
+      :'user/Patient.write',
+      :'user/Patient.*',
+      :'system/Patient.write',
+      :'system/Patient.*'
+    )
+  end
+  before_action only: %i[show search] do
+    doorkeeper_authorize!(
+      :'user/Patient.read',
+      :'user/Patient.*',
+      :'user/Observation.read',
+      :'user/QuestionnaireResponse.read',
+      :'system/Patient.read',
+      :'system/Patient.*',
+      :'system/Observation.read',
+      :'system/QuestionnaireResponse.read'
+    )
+  end
 
   # Return a resource given a type and an id.
   #
@@ -22,13 +36,30 @@ class Fhir::R4::ApiController < ActionController::API
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
+      return if doorkeeper_authorize!(
+        :'user/Patient.read',
+        :'user/Patient.*',
+        :'system/Patient.read',
+        :'system/Patient.*'
+      )
+
       resource = get_patient(params.permit(:id)[:id])
     when 'observation'
+      return if doorkeeper_authorize!(
+        :'user/Observation.read',
+        :'system/Observation.read'
+      )
+
       resource = get_laboratory(params.permit(:id)[:id])
     when 'questionnaireresponse'
+      return if doorkeeper_authorize!(
+        :'user/QuestionnaireResponse.read',
+        :'system/QuestionnaireResponse.read'
+      )
+
       resource = get_assessment(params.permit(:id)[:id])
     else
-      status_bad_request && return
+      status_not_found && return
     end
 
     status_forbidden && return if resource.nil?
@@ -53,10 +84,17 @@ class Fhir::R4::ApiController < ActionController::API
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
+      return if doorkeeper_authorize!(
+        :'user/Patient.write',
+        :'user/Patient.*',
+        :'system/Patient.write',
+        :'system/Patient.*'
+      )
+
       updates = Patient.from_fhir(contents).select { |_k, v| v.present? }
       resource = get_patient(params.permit(:id)[:id])
     else
-      status_bad_request && return
+      status_not_found && return
     end
 
     status_forbidden && return if resource.nil?
@@ -89,11 +127,33 @@ class Fhir::R4::ApiController < ActionController::API
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
+      return if doorkeeper_authorize!(
+        :'user/Patient.write',
+        :'user/Patient.*',
+        :'system/Patient.write',
+        :'system/Patient.*'
+      )
+
       # Construct a Sara Alert Patient
       resource = Patient.new(Patient.from_fhir(contents))
 
       # Responder is self
       resource.responder = resource
+
+      # Storing call method call in variable for efficiency
+      patients = accessible_patients
+
+      # Set the responder for this patient, this will link patients that have duplicate primary contact info
+      if ['SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].include? resource[:preferred_contact_method]
+        if patients.responder_for_number(resource[:primary_telephone])&.exists?
+          resource.responder = patients.responder_for_number(resource[:primary_telephone]).first
+        end
+      elsif resource[:preferred_contact_method] == 'E-mailed Web Link'
+        resource.responder = patients.responder_for_email(resource[:email]).first if patients.responder_for_email(resource[:email])&.exists?
+      end
+
+      # Default responder to self if no responder condition met
+      resource.responder = resource if resource.responder.nil?
 
       # Determine resource creator
       if current_resource_owner.present?
@@ -115,6 +175,8 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Generate a submission token for the new monitoree
       resource.submission_token = SecureRandom.hex(20) # 160 bits
+    else
+      status_not_found && return
     end
 
     status_bad_request && return if resource.nil?
@@ -146,16 +208,33 @@ class Fhir::R4::ApiController < ActionController::API
                                  '_count', '_id')
     case resource_type
     when 'patient'
+      return if doorkeeper_authorize!(
+        :'user/Patient.read',
+        :'user/Patient.*',
+        :'system/Patient.read',
+        :'system/Patient.*'
+      )
+
       resources = search_patients(search_params)
       resource_type = 'Patient'
     when 'observation'
+      return if doorkeeper_authorize!(
+        :'user/Observation.read',
+        :'system/Observation.read'
+      )
+
       resources = search_laboratories(search_params) || []
       resource_type = 'Observation'
     when 'questionnaireresponse'
+      return if doorkeeper_authorize!(
+        :'user/QuestionnaireResponse.read',
+        :'system/QuestionnaireResponse.read'
+      )
+
       resources = search_assessments(search_params) || []
       resource_type = 'QuestionnaireResponse'
     else
-      status_bad_request && return
+      status_not_found && return
     end
 
     page_size = params.permit(:_count)[:_count].nil? ? 10 : params.permit(:_count)[:_count].to_i
@@ -190,6 +269,22 @@ class Fhir::R4::ApiController < ActionController::API
   #
   # GET /fhir/r4/Patient/[:id]/$everything
   def all
+    # Require all scopes for all three resources
+    return if doorkeeper_authorize!(
+      :'user/Patient.read',
+      :'user/Patient.*',
+      :'system/Patient.read',
+      :'system/Patient.*'
+    )
+    return if doorkeeper_authorize!(
+      :'user/Observation.read',
+      :'system/Observation.read'
+    )
+    return if doorkeeper_authorize!(
+      :'user/QuestionnaireResponse.read',
+      :'system/QuestionnaireResponse.read'
+    )
+
     status_not_acceptable && return unless accept_header?
 
     patient = get_patient(params.permit(:id)[:id])
@@ -311,9 +406,22 @@ class Fhir::R4::ApiController < ActionController::API
     render json: {
       authorization_endpoint: "#{root_url}oauth/authorize",
       token_endpoint: "#{root_url}oauth/token",
+      token_endpoint_auth_methods_supported: %w[client_secret_basic private_key_jwt],
+      token_endpoint_auth_signing_alg_values_supported: ['RS384'],
       introspection_endpoint: "#{root_url}oauth/introspect",
       revocation_endpoint: "#{root_url}oauth/revoke",
-      scopes_supported: ['user/*.read', 'user/*.write', 'user/*.*'],
+      scopes_supported: [
+        'user/Patient.read',
+        'user/Patient.write',
+        'user/Patient.*',
+        'user/Observation.read',
+        'user/QuestionnaireResponse.read',
+        'system/Patient.read',
+        'system/Patient.write',
+        'system/Patient.*',
+        'system/Observation.read',
+        'system/QuestionnaireResponse.read'
+      ],
       capabilities: ['launch-standalone']
     }
   end
@@ -335,9 +443,9 @@ class Fhir::R4::ApiController < ActionController::API
     Doorkeeper::Application.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
   end
 
-  # Determine the patient data that is accessable by either the current resource owner
+  # Determine the patient data that is accessible by either the current resource owner
   # (user flow) or the current client application (system flow).
-  def accessable_patients
+  def accessible_patients
     # If there is a current resource owner (end user) that has api access enabled
     if current_resource_owner.present? && current_resource_owner&.can_use_api?
       # This will access all patients that the role has access to, if any
@@ -392,6 +500,13 @@ class Fhir::R4::ApiController < ActionController::API
     end
   end
 
+  # Generic 404 not found response
+  def status_not_found
+    respond_to do |format|
+      format.any { head :not_found }
+    end
+  end
+
   # Generic 201 created response
   def status_created(resource)
     respond_to do |format|
@@ -410,12 +525,12 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Get a patient by id (if any patients, otherwise nil)
   def get_patient(id)
-    accessable_patients&.find_by(id: id)
+    accessible_patients&.find_by(id: id)
   end
 
   # Search for patients
   def search_patients(options)
-    query = accessable_patients
+    query = accessible_patients
     options.each do |option, search|
       case option
       when 'family'
@@ -423,7 +538,7 @@ class Fhir::R4::ApiController < ActionController::API
       when 'given'
         query = query.where('first_name like ?', "%#{search}%") if search.present?
       when 'telecom'
-        query = query.where('primary_telephone like ?', "%#{search}%") if search.present?
+        query = query.where('primary_telephone like ?', Phonelib.parse(search, 'US').full_e164) if search.present?
       when 'email'
         query = query.where('email like ?', "%#{search}%") if search.present?
       when '_id'
@@ -437,11 +552,11 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Search for laboratories
   def search_laboratories(options)
-    query = Laboratory.where(patient: accessable_patients)
+    query = Laboratory.where(patient: accessible_patients)
     options.each do |option, search|
       case option
       when 'subject'
-        query = accessable_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
+        query = accessible_patients.find_by(id: search.split('/')[-1])&.laboratories if search.present?
       when '_id'
         query = query.where(id: search) if search.present?
       end
@@ -451,11 +566,11 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Search for assessments
   def search_assessments(options)
-    query = Assessment.where(patient: accessable_patients)
+    query = Assessment.where(patient: accessible_patients)
     options.each do |option, search|
       case option
       when 'subject'
-        query = accessable_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
+        query = accessible_patients.find_by(id: search.split('/')[-1])&.assessments if search.present?
       when '_id'
         query = query.where(id: search) if search.present?
       end
@@ -465,12 +580,12 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Get a lab result by id
   def get_laboratory(id)
-    Laboratory.where(patient_id: accessable_patients).find_by(id: id)
+    Laboratory.where(patient_id: accessible_patients).find_by(id: id)
   end
 
   # Get an assessment by id
   def get_assessment(id)
-    Assessment.where(patient_id: accessable_patients).find_by(id: id)
+    Assessment.where(patient_id: accessible_patients).find_by(id: id)
   end
 
   # Construct a full url via a request and resource
