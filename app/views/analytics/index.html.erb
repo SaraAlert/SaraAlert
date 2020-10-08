@@ -1,17 +1,17 @@
 <% content_for :assets do %>
-  <%= javascript_pack_tag "moment" %>
-  <%= javascript_pack_tag "closest" %>
+  <%= javascript_pack_tag 'moment' %>
+  <%= javascript_pack_tag 'closest' %>
 <% end %>
 <% if current_user.has_role? :analyst %>
-  <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Analytics", href: nil} ] } %>
+  <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Analytics', href: nil }] } %>
 <% else %>
-  <%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Return to Exposure Dashboard", href: root_url}, {value: "Analytics", href: nil} ] } %>
+  <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: root_url }, { value: 'Analytics', href: nil }] } %>
 <% end %>
 
 <% if current_user.has_role?(:enroller) %>
-  <%= react_component("analytics/EnrollerAnalytics", { current_user: current_user, stats: @stats }) %>
+  <%= react_component('analytics/EnrollerAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>
 
 <% if current_user.has_role?(:public_health) || current_user.has_role?(:public_health_enroller) || current_user.has_role?(:analyst) %>
-  <%= react_component("analytics/PublicHealthAnalytics", { current_user: current_user, stats: @stats }) %>
+  <%= react_component('analytics/PublicHealthAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>

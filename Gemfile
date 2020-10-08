@@ -92,6 +92,7 @@ gem 'fhir_models'
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'erb_lint'
   gem 'factory_bot_rails'
   gem 'gemsurance'
   gem 'rubocop'

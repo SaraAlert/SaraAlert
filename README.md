@@ -23,7 +23,7 @@ To work with the application, you will need to install some prerequisites:
 * [Ruby](https://www.ruby-lang.org/)
 * [Bundler](https://bundler.io/)
 * [MySQL](https://www.mysql.com/)
-* [Redis](https://redis.io)
+* [Redis](https://redis.io) (installation instructions [below](#redis))
 * [Yarn](https://yarnpkg.com/)
 
 ### Development Installation
@@ -41,7 +41,7 @@ Run the following commands from the project's root directory to pull in both fro
 
 #### Database
 
-Run the following commands from the root directory to initialize the database (note: make sure you have a MySQL database running):
+Run the following commands from the root directory to initialize the database (note: make sure you have a MySQL database and Redis running):
 
 * (optional for local development only, not for docker containers)
   ```

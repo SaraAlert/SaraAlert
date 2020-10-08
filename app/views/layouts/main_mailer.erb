@@ -1,6 +1,6 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
- <head>
+  <head>
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title><%= message.subject %></title>
@@ -8,9 +8,7 @@
   </head>
   <body class="">
     <span class="preheader">
-
       <%= yield :preheader %>
-      
     </span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
@@ -22,7 +20,7 @@
             <div class="header">
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
-                    <%= render partial: 'main_mailer/logo' %>
+                  <%= render partial: 'main_mailer/logo' %>
                 </tr>
               </table>
             </div>
@@ -37,9 +35,7 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td>
-
                         <%= yield :body %>
-    
                       </td>
                     </tr>
                   </table>
@@ -54,7 +50,7 @@
             <div class="footer">
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
-                    <%= yield :footer %>
+                  <%= yield :footer %>
                 </tr>
               </table>
             </div>
