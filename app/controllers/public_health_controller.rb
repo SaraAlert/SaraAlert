@@ -281,15 +281,23 @@ class PublicHealthController < ApplicationController
     filters.each do |filter|
       case filter[:filterOption]['name']
       when 'sent-today'
-        patients = patients.where("last_assessment_reminder_sent #{filter[:value] ? '>' : '<'} ?", DateTime.now.beginning_of_day)
+        patients = if filter[:value].present?
+                     patients.where('last_assessment_reminder_sent >= ?', 24.hours.ago)
+                   else
+                     patients.where('last_assessment_reminder_sent < ?', 24.hours.ago).or(patients.where(last_assessment_reminder_sent: nil))
+                   end
       when 'responded-today'
-        patients = patients.where("latest_assessment_at #{filter[:value] ? '>' : '<'} ?", DateTime.now.beginning_of_day)
+        patients = if filter[:value].present?
+                     patients.where('latest_assessment_at >= ?', 24.hours.ago)
+                   else
+                     patients.where('latest_assessment_at < ?', 24.hours.ago).or(patients.where(latest_assessment_at: nil))
+                   end
       when 'paused'
-        patients = patients.where('pause_notifications = ?', filter[:value])
+        patients = patients.where(pause_notifications: filter[:value].present? ? true : [nil, false])
       when 'monitoring-status'
-        patients = patients.where('monitoring = ?', filter[:value])
+        patients = patients.where(monitoring: filter[:value].present? ? true : [nil, false])
       when 'preferred-contact-method'
-        patients = patients.where('preferred_contact_method = ?', filter[:value])
+        patients = patients.where(preferred_contact_method: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'latest-report'
         case filter[:dateOption]
         when 'before'
@@ -355,28 +363,28 @@ class PublicHealthController < ApplicationController
           patients = patients.where('symptom_onset > ?', compare_date_start).where('symptom_onset < ?', compare_date_end)
         end
       when 'continous-exposure'
-        patients = patients.where('continuous_exposure = ?', filter[:value])
+        patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'telephone-number'
         patients = if filter[:value].blank?
-                     patients.where(primary_telephone: nil)
+                     patients.where(primary_telephone: [nil, ''])
                    else
                      patients.where('patients.primary_telephone like ?', Phonelib.parse(filter[:value], 'US').full_e164)
                    end
       when 'telephone-number-partial'
         patients = if filter[:value].blank?
-                     patients.where(primary_telephone: nil)
+                     patients.where(primary_telephone: [nil, ''])
                    else
                      patients.where('patients.primary_telephone like ?', "%#{filter[:value]}%")
                    end
       when 'email'
         patients = if filter[:value].blank?
-                     patients.where(email: nil)
+                     patients.where(email: [nil, ''])
                    else
                      patients.where('lower(patients.email) like ?', "%#{filter[:value]&.downcase}%")
                    end
       when 'primary-language'
         patients = if filter[:value].blank?
-                     patients.where(primary_language: nil)
+                     patients.where(primary_language: [nil, ''])
                    else
                      patients.where('lower(patients.primary_language) like ?', "%#{filter[:value]&.downcase}%")
                    end
@@ -384,25 +392,25 @@ class PublicHealthController < ApplicationController
         patients = patients.where(id: filter[:value])
       when 'first-name'
         patients = if filter[:value].blank?
-                     patients.where(first_name: nil)
+                     patients.where(first_name: [nil, ''])
                    else
                      patients.where('lower(patients.first_name) like ?', "%#{filter[:value]&.downcase}%")
                    end
       when 'middle-name'
         patients = if filter[:value].blank?
-                     patients.where(middle_name: nil)
+                     patients.where(middle_name: [nil, ''])
                    else
                      patients.where('lower(patients.middle_name) like ?', "%#{filter[:value]&.downcase}%")
                    end
       when 'last-name'
         patients = if filter[:value].blank?
-                     patients.where(last_name: nil)
+                     patients.where(last_name: [nil, ''])
                    else
                      patients.where('lower(patients.last_name) like ?', "%#{filter[:value]&.downcase}%")
                    end
       when 'cohort'
         patients = if filter[:value].blank?
-                     patients.where(member_of_a_common_exposure_cohort_type: nil)
+                     patients.where(member_of_a_common_exposure_cohort_type: [nil, ''])
                    else
                      patients.where('lower(patients.member_of_a_common_exposure_cohort_type) like ?', "%#{filter[:value]&.downcase}%")
                    end
@@ -433,7 +441,7 @@ class PublicHealthController < ApplicationController
           )
         )
       when 'monitoring-plan'
-        patients = patients.where('monitoring_plan = ?', filter[:value])
+        patients = patients.where(monitoring_plan: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'never-responded'
         patients = if filter[:value]
                      patients.where(latest_assessment_at: nil)
@@ -441,11 +449,11 @@ class PublicHealthController < ApplicationController
                      patients.where.not(latest_assessment_at: nil)
                    end
       when 'risk-exposure'
-        patients = patients.where('exposure_risk_assessment = ?', filter[:value])
+        patients = patients.where(exposure_risk_assessment: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'require-interpretation'
-        patients = patients.where('interpretation_required = ?', filter[:value])
+        patients = patients.where(interpretation_required: filter[:value].present? ? true : [nil, false])
       when 'preferred-contact-time'
-        patients = patients.where('preferred_contact_time = ?', filter[:value])
+        patients = patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : filter[:value])
       end
     end
     patients

@@ -7,6 +7,7 @@ import confirmDialog from '../util/ConfirmDialog';
 import axios from 'axios';
 import DateInput from '../util/DateInput';
 import { PropTypes } from 'prop-types';
+import supportedLanguages from '../../data/supportedLanguages.json';
 
 class AdvancedFilter extends React.Component {
   constructor(props) {
@@ -17,43 +18,98 @@ class AdvancedFilter extends React.Component {
       filterName: null,
       activeFilterOptions: [],
       filterOptions: [
-        { name: 'sent-today', title: 'Sent Notification Today', description: 'Monitorees who have been sent a notification so far today', type: 'boolean' },
-        { name: 'responded-today', title: 'Responded Today', description: 'Monitorees who have reported today', type: 'boolean' },
-        { name: 'paused', title: 'Notifications Paused', description: 'Monitorees who have paused notifications', type: 'boolean' },
+        {
+          name: 'sent-today',
+          title: 'Sent Notification in last 24 hours (Boolean)',
+          description: 'Monitorees who have been sent a notification in the last 24 hours',
+          type: 'boolean',
+        },
+        {
+          name: 'responded-today',
+          title: 'Reported in last 24 hours (Boolean)',
+          description: 'Monitorees who had a report created in the last 24 hours',
+          type: 'boolean',
+        },
+        { name: 'paused', title: 'Notifications Paused (Boolean)', description: 'Monitorees who have paused notifications', type: 'boolean' },
         {
           name: 'preferred-contact-method',
-          title: 'Preferred Contact Method',
+          title: 'Preferred Contact Method (Select)',
           description: 'Monitorees preferred contact method',
           type: 'option',
           options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
         },
-        { name: 'latest-report', title: 'Latest Report', description: 'Monitorees with latest report', type: 'date' },
-        { name: 'hoh', title: 'Head of Household', description: 'Monitorees that are a head of household', type: 'boolean' },
-        { name: 'household-member', title: 'Household Member', description: 'Monitorees that are in a household', type: 'boolean' },
-        { name: 'enrolled', title: 'Enrolled', description: 'Monitorees enrollment', type: 'date' },
+        { name: 'latest-report', title: 'Latest Report (Date picker)', description: 'Monitorees with latest report during specified date range', type: 'date' },
+        { name: 'hoh', title: 'Daily Reporters (Boolean)', description: 'Monitorees that are a Head of Household or self-reporter', type: 'boolean' },
+        {
+          name: 'household-member',
+          title: 'Household Member (Boolean)',
+          description: 'Monitorees that are in a household but not the Head of Household',
+          type: 'boolean',
+        },
+        { name: 'enrolled', title: 'Enrolled (Date picker)', description: 'Monitorees enrolled in system during specified date range', type: 'date' },
         {
           name: 'last-date-exposure',
-          title: 'Last date of exposure',
-          description: 'Monitorees who have a last date of exposure',
+          title: 'Last date of exposure (Date picker)',
+          description: 'Monitorees who have a last date of exposure during specified date range',
           type: 'date',
         },
-        { name: 'symptom-onset', title: 'Symptom onset', description: 'Monitorees who have a symptom onset', type: 'date' },
-        { name: 'continous-exposure', title: 'Continuous Exposure', description: 'Monitorees who have continuous exposure enabled', type: 'boolean' },
-        { name: 'monitoring-status', title: 'Monitoring Status', description: 'Monitorees who are currently under active monitoring', type: 'boolean' },
-        { name: 'primary-language', title: 'Primary Language', description: 'Monitoree primary language', type: 'search' },
-        { name: 'cohort', title: 'Cohort', description: 'Monitoree cohort', type: 'search' },
-        { name: 'address-usa', title: 'Address (within USA)', description: 'Address (within USA)', type: 'search' },
-        { name: 'address-foreign', title: 'Address (outside USA)', description: 'Address (outside USA)', type: 'search' },
-        { name: 'telephone-number', title: 'Telephone Number (Full)', description: 'Monitoree telephone number (Full)', type: 'search' },
-        { name: 'telephone-number-partial', title: 'Telephone Number (Partial)', description: 'Monitoree telephone number (Partial)', type: 'search' },
-        { name: 'email', title: 'Email', description: 'Monitoree email address', type: 'search' },
-        { name: 'sara-id', title: 'Sara Alert ID', description: 'Monitoree Sara Alert ID', type: 'search' },
-        { name: 'first-name', title: 'Name (First)', description: 'Monitoree first name', type: 'search' },
-        { name: 'middle-name', title: 'Name (Middle)', description: 'Monitoree middle name', type: 'search' },
-        { name: 'last-name', title: 'Name (Last)', description: 'Monitoree last name', type: 'search' },
+        {
+          name: 'symptom-onset',
+          title: 'Symptom onset (Date picker)',
+          description: 'Monitorees who have a symptom onset date during specified date range',
+          type: 'date',
+        },
+        { name: 'continous-exposure', title: 'Continuous Exposure (Boolean)', description: 'Monitorees who have continuous exposure enabled', type: 'boolean' },
+        {
+          name: 'monitoring-status',
+          title: 'Active Monitoring (Boolean)',
+          description: 'Monitorees who are currently under active monitoring',
+          type: 'boolean',
+        },
+        {
+          name: 'primary-language',
+          title: 'Primary Language (Select)',
+          description: 'Monitoree primary language',
+          type: 'option',
+          options: supportedLanguages.languages
+            .map(lang => {
+              return lang.name;
+            })
+            .concat(['']),
+        },
+        { name: 'cohort', title: 'Common Exposure Cohort Name (Text)', description: 'Monitoree common exposure cohort name or description', type: 'search' },
+        {
+          name: 'address-usa',
+          title: 'Address (within USA) (Text)',
+          description: 'Monitoree Address 1, Town/City, State, Address 2, Zip, or County within USA',
+          type: 'search',
+        },
+        {
+          name: 'address-foreign',
+          title: 'Address (outside USA) (Text)',
+          description: 'Monitoree Address 1, Town/City, Country, Address 2, Postal Code, Address 3 or State/Province (outside USA)',
+          type: 'search',
+        },
+        {
+          name: 'telephone-number',
+          title: 'Telephone Number (Exact Match) (Text)',
+          description: 'Monitorees with specified 10 digit telephone number',
+          type: 'search',
+        },
+        {
+          name: 'telephone-number-partial',
+          title: 'Telephone Number (Contains) (Text)',
+          description: 'Monitorees with a telephone number that contains specified digits',
+          type: 'search',
+        },
+        { name: 'email', title: 'Email (Text)', description: 'Monitoree email address', type: 'search' },
+        { name: 'sara-id', title: 'Sara Alert ID (Text)', description: 'Monitoree Sara Alert ID', type: 'search' },
+        { name: 'first-name', title: 'Name (First) (Text)', description: 'Monitoree first name', type: 'search' },
+        { name: 'middle-name', title: 'Name (Middle) (Text)', description: 'Monitoree middle name', type: 'search' },
+        { name: 'last-name', title: 'Name (Last) (Text)', description: 'Monitoree last name', type: 'search' },
         {
           name: 'monitoring-plan',
-          title: 'Monitoring Plan',
+          title: 'Monitoring Plan (Select)',
           description: 'Monitoree monitoring plan',
           type: 'option',
           options: [
@@ -65,18 +121,18 @@ class AdvancedFilter extends React.Component {
             '',
           ],
         },
-        { name: 'never-responded', title: 'Never Responded', description: 'Monitorees who have never reported', type: 'boolean' },
+        { name: 'never-responded', title: 'Never Reported (Boolean)', description: 'Monitorees who have no reports', type: 'boolean' },
         {
           name: 'risk-exposure',
-          title: 'Risk Exposure',
-          description: 'Monitoree risk exposure',
+          title: 'Exposure Risk Assessment (Select)',
+          description: 'Monitoree risk exposure risk assessment',
           type: 'option',
           options: ['High', 'Medium', 'Low', 'No Identified Risk', ''],
         },
-        { name: 'require-interpretation', title: 'Requires Interpretation', description: 'Monitorees who require interpretation', type: 'boolean' },
+        { name: 'require-interpretation', title: 'Requires Interpretation (Boolean)', description: 'Monitorees who require interpretation', type: 'boolean' },
         {
           name: 'preferred-contact-time',
-          title: 'Preferred Contact Time',
+          title: 'Preferred Contact Time (Select)',
           description: 'Monitoree preferred contact time',
           type: 'option',
           options: ['Morning', 'Afternoon', 'Evening', ''],
@@ -86,26 +142,10 @@ class AdvancedFilter extends React.Component {
       activeFilter: null,
       applied: false,
     };
-    this.add = this.add.bind(this);
-    this.remove = this.remove.bind(this);
-    this.reset = this.reset.bind(this);
-    this.apply = this.apply.bind(this);
-    this.save = this.save.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
-    this.clear = this.clear.bind(this);
-    this.newFilter = this.newFilter.bind(this);
-    this.changeFilterOption = this.changeFilterOption.bind(this);
-    this.changeValue = this.changeValue.bind(this);
-    this.renderStatement = this.renderStatement.bind(this);
-    this.renderOptions = this.renderOptions.bind(this);
-    this.setFilter = this.setFilter.bind(this);
-    this.renderFilterNameModal = this.renderFilterNameModal.bind(this);
-    this.getFormattedOptions = this.getFormattedOptions.bind(this);
   }
 
   componentDidMount() {
-    if (this.state.activeFilterOptions.length === 0) {
+    if (this.state.activeFilterOptions?.length === 0) {
       // Start with empty default
       this.add();
     }
@@ -115,7 +155,7 @@ class AdvancedFilter extends React.Component {
     axios.get(window.BASE_PATH + '/user_filters').then(response => {
       this.setState({ savedFilters: response.data }, () => {
         // Apply filter if it exists in local storage
-        let sessionFilter = localStorage.getItem(`${this.props.workflow}Filter`);
+        let sessionFilter = localStorage.getItem(`SaraFilter`);
         if (parseInt(sessionFilter)) {
           this.setFilter(
             this.state.savedFilters.find(filter => {
@@ -129,18 +169,18 @@ class AdvancedFilter extends React.Component {
   }
 
   // Add dummy active (default to first option which is a boolean type). User can then edit as needed.
-  add() {
+  add = () => {
     this.setState(state => ({
       activeFilterOptions: [...state.activeFilterOptions, { filterOption: null }],
     }));
-  }
+  };
 
   // Completely remove a statement from the active list
-  remove(index) {
+  remove = index => {
     this.setState(state => ({
-      activeFilterOptions: state.activeFilterOptions.slice(0, index).concat(state.activeFilterOptions.slice(index + 1, state.activeFilterOptions.length)),
+      activeFilterOptions: state.activeFilterOptions.slice(0, index).concat(state.activeFilterOptions.slice(index + 1, state.activeFilterOptions?.length)),
     }));
-  }
+  };
 
   // Reset state back to fresh start
   reset = async () => {
@@ -150,39 +190,39 @@ class AdvancedFilter extends React.Component {
   };
 
   // Apply the current filter
-  apply() {
+  apply = () => {
     this.setState({ show: false, applied: true }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilterOptions);
     });
-  }
+  };
 
   // Clear the current filter
-  clear() {
+  clear = () => {
     this.setState({ activeFilter: null, applied: false }, () => {
       this.props.advancedFilterUpdate(this.state.activeFilter);
-      localStorage.setItem(`${this.props.workflow}Filter`, null);
+      localStorage.setItem(`SaraFilter`, null);
     });
-  }
+  };
 
   // Start a new filter
-  newFilter() {
+  newFilter = () => {
     this.setState({ activeFilterOptions: [], show: true, activeFilter: null, applied: false }, () => {
       this.add();
     });
-  }
+  };
 
   // Set the active filter
-  setFilter(filter, apply = false) {
+  setFilter = (filter, apply = false) => {
     this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter.contents }, () => {
-      localStorage.setItem(`${this.props.workflow}Filter`, filter.id);
+      localStorage.setItem(`SaraFilter`, filter.id);
       if (apply) {
         this.apply();
       }
     });
-  }
+  };
 
   // Change an index filter option
-  changeFilterOption(index, name) {
+  changeFilterOption = (index, name) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     let filterOption = this.state.filterOptions.find(filterOption => {
       return filterOption.name === name;
@@ -203,10 +243,10 @@ class AdvancedFilter extends React.Component {
 
     activeFilterOptions[parseInt(index)] = { filterOption, value, dateOption: filterOption.type === 'date' ? 'within' : null };
     this.setState({ activeFilterOptions });
-  }
+  };
 
   // Change an index filter option for date
-  changeFilterDateOption(index, value) {
+  changeFilterDateOption = (index, value) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     let defaultValue = null;
     if (value === 'within') {
@@ -216,17 +256,17 @@ class AdvancedFilter extends React.Component {
     }
     activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
     this.setState({ activeFilterOptions });
-  }
+  };
 
   // Change an index value
-  changeValue(index, value) {
+  changeValue = (index, value) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     activeFilterOptions[parseInt(index)]['value'] = value;
     this.setState({ activeFilterOptions });
-  }
+  };
 
   // Save a new filter
-  save() {
+  save = () => {
     let self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
@@ -241,10 +281,10 @@ class AdvancedFilter extends React.Component {
           this.setState({ activeFilter: data, savedFilters: [...self.state.savedFilters, data] });
         }
       });
-  }
+  };
 
   // Update an existing filter
-  update() {
+  update = () => {
     let self = this;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
@@ -267,10 +307,10 @@ class AdvancedFilter extends React.Component {
           });
         }
       });
-  }
+  };
 
   // Delete an existing filter
-  delete() {
+  delete = () => {
     let self = this;
     const id = this.state.activeFilter.id;
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -292,10 +332,10 @@ class AdvancedFilter extends React.Component {
           ],
         });
       });
-  }
+  };
 
   // Format options for select
-  getFormattedOptions() {
+  getFormattedOptions = () => {
     return this.state.filterOptions
       .sort((a, b) => {
         if (a.type === 'blank') return -1;
@@ -310,10 +350,10 @@ class AdvancedFilter extends React.Component {
           disabled: option.type === 'blank',
         };
       });
-  }
+  };
 
   // Render the options for the select that represents fields to filter on
-  renderOptions(current, index) {
+  renderOptions = (current, index) => {
     const Option = props => {
       return (
         <components.Option {...props}>
@@ -340,10 +380,10 @@ class AdvancedFilter extends React.Component {
         })}
       />
     );
-  }
+  };
 
   // Render date specific options
-  renderDateOptions(current, index) {
+  renderDateOptions = (current, index) => {
     return (
       <Form.Group key={index + 'opkeygroup'} className="py-0 my-0">
         <Form.Control
@@ -359,10 +399,10 @@ class AdvancedFilter extends React.Component {
         </Form.Control>
       </Form.Group>
     );
-  }
+  };
 
   // Modal to specify filter name
-  renderFilterNameModal() {
+  renderFilterNameModal = () => {
     return (
       <Modal
         show={this.state.showFilterNameModal}
@@ -404,10 +444,10 @@ class AdvancedFilter extends React.Component {
         </Modal.Footer>
       </Modal>
     );
-  }
+  };
 
   // Render a single line "statement"
-  renderStatement(filterOption, value, index, total, dateOption) {
+  renderStatement = (filterOption, value, index, total, dateOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -481,7 +521,7 @@ class AdvancedFilter extends React.Component {
                   customClass="form-control-md"
                   minDate={'1900-01-01'}
                   maxDate={moment()
-                    .add(30, 'days')
+                    .add(2, 'years')
                     .format('YYYY-MM-DD')}
                 />
               </Form.Group>
@@ -499,7 +539,7 @@ class AdvancedFilter extends React.Component {
                       customClass="form-control-md"
                       minDate={'1900-01-01'}
                       maxDate={moment()
-                        .add(30, 'days')
+                        .add(2, 'years')
                         .format('YYYY-MM-DD')}
                     />
                   </Col>
@@ -516,7 +556,7 @@ class AdvancedFilter extends React.Component {
                       customClass="form-control-md"
                       minDate={'1900-01-01'}
                       maxDate={moment()
-                        .add(30, 'days')
+                        .add(2, 'years')
                         .format('YYYY-MM-DD')}
                     />
                   </Col>
@@ -546,18 +586,16 @@ class AdvancedFilter extends React.Component {
         </Row>
       </React.Fragment>
     );
-  }
+  };
+
+  onHide = () => {
+    this.setState({ show: false });
+  };
 
   render() {
     return (
       <React.Fragment>
-        <Modal
-          show={this.state.show}
-          centered
-          dialogClassName="modal-af"
-          onHide={() => {
-            this.setState({ show: false });
-          }}>
+        <Modal show={this.state.show} centered dialogClassName="modal-af" onHide={this.onHide}>
           <Modal.Header>
             <Modal.Title>Advanced Filter: {this.state.activeFilter ? this.state.activeFilter.name : 'untitled'}</Modal.Title>
           </Modal.Header>
@@ -603,11 +641,11 @@ class AdvancedFilter extends React.Component {
               </Col>
             </Row>
             {this.state.activeFilterOptions?.map((statement, index) => {
-              return this.renderStatement(statement.filterOption, statement.value, index, this.state.activeFilterOptions.length, statement.dateOption);
+              return this.renderStatement(statement.filterOption, statement.value, index, this.state.activeFilterOptions?.length, statement.dateOption);
             })}
             <Row className="pt-2 pb-1">
               <Col>
-                <Button variant="primary" disabled={this.state.activeFilterOptions.length > 4} onClick={() => this.add()}>
+                <Button variant="primary" disabled={this.state.activeFilterOptions?.length > 4} onClick={() => this.add()}>
                   <i className="fas fa-plus"></i>
                 </Button>
               </Col>
@@ -615,7 +653,7 @@ class AdvancedFilter extends React.Component {
           </Modal.Body>
           <Modal.Footer className="justify-unset">
             <p className="lead mr-auto">
-              Filter will be applied to the <u>{this.props.tab}</u> line list in the <u>{this.props.workflow}</u> workflow.
+              Filter will be applied to the line lists in the <u>{this.props.workflow}</u> workflow until reset.
             </p>
             <Button
               variant="secondary btn-square"
@@ -627,7 +665,7 @@ class AdvancedFilter extends React.Component {
           </Modal.Footer>
         </Modal>
         {this.renderFilterNameModal()}
-        <OverlayTrigger overlay={<Tooltip>Find monitorees using specific parameters</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>Find monitorees that meet specified parameters within current workflow</Tooltip>}>
           <Button
             size="sm"
             className="ml-2"
@@ -677,7 +715,6 @@ AdvancedFilter.propTypes = {
   authenticity_token: PropTypes.string,
   advancedFilterUpdate: PropTypes.func,
   workflow: PropTypes.string,
-  tab: PropTypes.string,
 };
 
 export default AdvancedFilter;

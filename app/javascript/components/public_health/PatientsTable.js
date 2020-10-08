@@ -99,19 +99,19 @@ class PatientsTable extends React.Component {
     this.handleTabSelect(tab);
 
     // Select page if it exists in local storage
-    let page = localStorage.getItem(`${this.props.workflow}Page`);
+    let page = localStorage.getItem(`SaraPage`);
     if (page) {
       this.handlePageUpdate(JSON.parse(page));
     }
 
     // Set entries if it exists in local storage
-    let entries = localStorage.getItem(`${this.props.workflow}Entries`);
+    let entries = localStorage.getItem(`SaraEntries`);
     if (parseInt(entries)) {
       this.handleEntriesChange(parseInt(entries));
     }
 
     // Set search if it exists in local storage
-    let search = localStorage.getItem(`${this.props.workflow}Search`);
+    let search = localStorage.getItem(`SaraSearch`);
     if (search) {
       this.setState(
         state => {
@@ -138,17 +138,19 @@ class PatientsTable extends React.Component {
     this.updateJurisdictionPaths();
   }
 
-  resetDashboard = async () => {
-    if (await confirmDialog('Are you sure you want to reset this dashboard? All active filters and searches will be cleared.')) {
-      localStorage.removeItem(`${this.props.workflow}Filter`);
-      localStorage.removeItem(`${this.props.workflow}Page`);
-      localStorage.removeItem(`${this.props.workflow}Entries`);
-      localStorage.removeItem(`${this.props.workflow}Search`);
+  clearAllFilters = async () => {
+    if (await confirmDialog('Are you sure you want to clear all filters? All active filters and searches will be cleared.')) {
+      localStorage.removeItem(`SaraFilter`);
+      localStorage.removeItem(`SaraPage`);
+      localStorage.removeItem(`SaraEntries`);
+      localStorage.removeItem(`SaraSearch`);
       location.reload();
+      this.setState({ filter: null });
     }
   };
 
   handleTabSelect = tab => {
+    localStorage.removeItem(`SaraPage`);
     this.setState(
       state => {
         return { query: { ...state.query, tab, page: 0 } };
@@ -176,7 +178,7 @@ class PatientsTable extends React.Component {
       },
       () => {
         this.updateTable(this.state.query);
-        localStorage.setItem(`${this.props.workflow}Page`, JSON.stringify(page));
+        localStorage.setItem(`SaraPage`, JSON.stringify(page));
       }
     );
   };
@@ -187,21 +189,23 @@ class PatientsTable extends React.Component {
    * @param {SyntheticEvent} event - Event when num entries changes
    */
   handleEntriesChange = event => {
+    localStorage.removeItem(`SaraPage`);
     const value = event?.target?.value || event;
     this.setState(
       state => {
         return {
-          query: { ...state.query, entries: value },
+          query: { ...state.query, entries: value, page: 0 },
         };
       },
       () => {
         this.updateTable(this.state.query);
-        localStorage.setItem(`${this.props.workflow}Entries`, value);
+        localStorage.setItem(`SaraEntries`, value);
       }
     );
   };
 
   handleChange = event => {
+    localStorage.removeItem(`SaraPage`);
     const form = this.state.form;
     const query = this.state.query;
     if (event.target.name === 'jurisdictionPath') {
@@ -221,7 +225,7 @@ class PatientsTable extends React.Component {
       }
     } else if (event.target.name === 'search') {
       this.updateTable({ ...query, search: event.target.value, page: 0 });
-      localStorage.setItem(`${this.props.workflow}Search`, event.target.value);
+      localStorage.setItem(`SaraSearch`, event.target.value);
     }
   };
 
@@ -320,9 +324,13 @@ class PatientsTable extends React.Component {
   };
 
   advancedFilterUpdate(filter) {
-    this.setState({ filter: filter.filter(field => field?.filterOption != null) }, () => {
-      this.updateTable(this.state.query);
-    });
+    localStorage.removeItem(`SaraPage`);
+    this.setState(
+      state => ({ filter: filter?.filter(field => field?.filterOption != null), query: { ...state.query, page: 0 } }),
+      () => {
+        this.updateTable(this.state.query);
+      }
+    );
   }
 
   updateJurisdictionPaths() {
@@ -409,9 +417,9 @@ class PatientsTable extends React.Component {
                 </Col>
                 <Col>
                   <div className="float-right">
-                    <Button size="sm" onClick={this.resetDashboard}>
+                    <Button size="sm" onClick={this.clearAllFilters}>
                       <i className="fas fa-eraser"></i>
-                      <span className="ml-1">Reset Dashboard</span>
+                      <span className="ml-1">Clear All Filters</span>
                     </Button>
                   </div>
                 </Col>
@@ -540,7 +548,6 @@ class PatientsTable extends React.Component {
                     advancedFilterUpdate={this.advancedFilterUpdate}
                     authenticity_token={this.props.authenticity_token}
                     workflow={this.props.workflow}
-                    tab={this.state.query?.tab?.replace(/_/g, ' ')}
                   />
                   {this.state.query !== 'transferred_out' && (
                     <DropdownButton
