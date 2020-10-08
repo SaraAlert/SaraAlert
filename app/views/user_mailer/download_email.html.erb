@@ -18,19 +18,22 @@
     <% end %>
     &quot; is now ready.
     <p>
-    Please note that this export is one-time use only and is only valid for 24 hours. The system will delete an export once you've downloaded a file or a 24 hour period has elapsed.
-    These downloads will be invalid if you attempt another export of this type before retrieving the file(s). Exports will not work if forwarded to another user. You must be logged into Sara Alert to access exports.
-    <br />
-    If your export exceeded <%=@batch_size%> records, you will see separate files below with each containing data for no more than <%=@batch_size%> monitorees. 
-    Each file (e.g., monitorees, assessments, etc) belonging to the same batch will have the same number at the end of the filename.
+      Please note that this export is one-time use only. The system will delete an export file once you've downloaded that file.
+      These downloads will be invalid if you attempt another export of this type before retrieving the file(s). Exports will not work if forwarded to another user. You must be logged into Sara Alert to access exports.
+      <br />
+      <br />
+      If your export exceeded <%= number_with_delimiter(@batch_size) %> records, you will see separate files below with each containing data for no more than <%= number_with_delimiter(@batch_size) %> monitorees.
+      Each file (e.g., monitorees, assessments, etc) belonging to the same batch will have the same number at the end of the filename.
     </p>
   </p>
   <% @lookups.each do |lookup| %>
-    <%= render partial: 'main_mailer/responsive_button', locals: {link: export_download_url(lookup: lookup[:lookup]) , text: "Click here to download #{lookup[:filename]}"} %>
+    <%= render partial: 'main_mailer/responsive_button', locals: { link: export_download_url(lookup: lookup[:lookup]), text: "Click here to download #{lookup[:filename]}" } %>
     <br />
   <% end %>
 <% end %>
 
 <% content_for :footer do %>
-  <p>This notification was sent by the Sara Alert system. If you wish to stop receiving these notifications or believe that it was a mistake, please contact the help desk.</p>
+  <p>
+    This notification was sent by the Sara Alert system. If you wish to stop receiving these notifications or believe that it was a mistake, please contact the help desk.
+  </p>
 <% end %>

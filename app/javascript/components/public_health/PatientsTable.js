@@ -295,9 +295,12 @@ class PatientsTable extends React.Component {
     }
   }
 
-  linkPatient = (name, id) => {
+  linkPatient = (name, id, isHoH) => {
     if (this.state.query.tab === 'transferred_out') {
       return name;
+    }
+    if (isHoH) {
+      // TODO: render HoH icon
     }
     return <a href={`/patients/${id}`}>{name}</a>;
   };

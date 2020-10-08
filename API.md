@@ -1,94 +1,333 @@
 # Sara Alert API
 
-Sara Alert provides a FHIR (see: https://www.hl7.org/fhir/overview.html) based RESTful API to interact with the system to perform various actions. Actions include reading, writing, and updating monitoree data as well as reading monitoree lab results and monitoree daily reports. The data accepted and returned by the API corresponds to FHIR version R4 (the FHIR Patient resource is used to represent monitorees, the Observation FHIR resource is used to represent monitoree lab results, and the FHIR QuestionaireResponse FHIR resource is used to represent monitoree daily reports).
+<a name="overview"/>
 
-For the purposes of this documentation, \[base\] includes `/fhir/r4`.
+## Overview
+Sara Alert strives to support interoperability standards in public health, and as a result provides a [FHIR](https://www.hl7.org/fhir/overview.html) RESTful API for reading, writing, and updating monitoree data. The data format accepted and returned by the API corresponds to [FHIR version R4](https://hl7.org/fhir/R4/).
 
-JSON is currently the only supported format. Please make use of the `application/fhir+json` mime type for the `Accept` header. The `Content-Type` header must also correspond to this mime type.
+The Sara Alert API does this by following SMART on FHIR API [standards and profiles](http://docs.smarthealthit.org/), as described [here](https://smarthealthit.org/smart-on-fhir-api/):
+> A key innovation in the SMART on FHIR platform is the use of a standards-based data layer building on the emerging FHIR API and resource definitions. SMART on FHIR, provides a health app interface based on open standards including HL7’s FHIR, OAuth2, and OpenID Connect. FHIR provides a detailed set of “core” data models, but leaves many fields optional and vocabularies under-constrained, in order to support diverse requirements across varied regions and use cases. But to enable substitutable health apps as well as third-party application services, developers need stronger contracts. To this end, SMART on FHIR applies a set of “profiles” that provide developers with expectations about the vocabularies that will be used to express medications, problems, labs, and other clinical data.
 
-This API follows the FHIR RESTful API (https://www.hl7.org/fhir/http.html) and SMART-on-FHIR SMART App Launch Framework standards (http://hl7.org/fhir/smart-app-launch/index.html), so there is nothing unique or custom about this implementation in particular. Capabilities are described by the `/metadata` endpoint. This means that developers can utilize existing open source libraries for FHIR/SMART-on-FHIR, such as:
-
-* Python SMART on FHIR client: https://github.com/smart-on-fhir/client-py
-* JavaScript SMART on FHIR client: https://github.com/smart-on-fhir/client-js
-* Official .NET FHIR API: https://github.com/FirelyTeam/fhir-net-api
-* Java HAPI FHIR API: https://hapifhir.io/
+This API is intended for use by public health organizations using Sara Alert, and thus Sara  Alert admins maintain a registered list of supported client applications. For access to a live production or demonstration environment, please contact system administrators at `sarasupport@aimsplatform.com` to discuss adding your client application to the approved list.
 
 ## Contents
+- [Overview](#overview)
+- [Get Started Using the Sara Alert API](#get-started)
+	- [Supported Workflows](#workflows)
+	- [SMART-on-FHIR App Launch Framework "Standalone Launch" Workflow](#standalone-launch)
+	- [SMART on FHIR Backend Services Workflow](#backend-services)
+- [API Specification](#api-spec)
+	- [Data Representation](#data-representation)
+	- [Supported Scopes](#supported-scopes)
+	- [CapabilityStatement and Well-Known Uniform Resource Identifiers](#cap)
+	  - [GET [base]/metadata](#cap-get)
+	  - [GET [base]/.well-known/smart-configuration](#wk-get)
+	- [Reading](#read)
+	  - [GET [base]/Patient/[:id]](#read-get-pat)
+	  - [GET [base]/Observation/[:id]](#read-get-obs)
+	  - [GET [base]/QuestionaireResponse/[:id]](#read-get-que)
+	  - [GET [base]/Patient/[:id]/$everything](#read-get-all)
+	- [Creating](#create)
+	  - [Extensions](#create-ext)
+	  - [POST [base]/Patient](#create-post-pat)
+	- [Updating](#update)
+	  - [PUT [base]/Patient/[:id]](#update-put-pat)
+	- [Searching](#search)
+	  - [GET [base]/Patient?parameter(s)](#search-get)
+	  - [GET [base]/Observation?subject=Patient/[:id]](#search-subj)
+	  - [GET [base]/Patient?\_count=2](#search-all)
 
-- [Authenticating](#auth)
-- [CapabilityStatement and Well-Known Uniform Resource Identifiers](#cap)
-  - [GET [base]/metadata](#cap-get)
-  - [GET [base]/.well-known/smart-configuration](#wk-get)
-- [Reading](#read)
-  - [GET [base]/Patient/[:id]](#read-get-pat)
-  - [GET [base]/Observation/[:id]](#read-get-obs)
-  - [GET [base]/QuestionaireResponse/[:id]](#read-get-que)
-  - [GET [base]/Patient/[:id]/$everything](#read-get-all)
-- [Creating](#create)
-  - [Extensions](#create-ext)
-  - [POST [base]/Patient](#create-post-pat)
-- [Updating](#update)
-  - [PUT [base]/Patient/[:id]](#update-put-pat)
-- [Searching](#search)
-  - [GET [base]/Patient?parameter(s)](#search-get)
-  - [GET [base]/Observation?subject=Patient/[:id]](#search-subj)
-  - [GET [base]/Patient?_count=2](#search-all)
+<a name="get-started"/>
 
-<a name="auth"/>
+## Get Started Using the Sara Alert API
+No matter the workflow, in order to use the Sara Alert API and ensure security of application data, the client must go through a three-step process before reading or writing any data.
 
-## Authenticating
+1. **Registration**: Register as a Client Application with Sara Alert (one-time step). The registration process allows Sara Alert to pre-authorize and curate the clients that will be using the Sara Alert API. Registration is a manual step, as is [traditional](https://tools.ietf.org/html/draft-ietf-oauth-dyn-reg-30).
+2. **Authorization**: Go through an authorization process to obtain access token for API requests.
+3. **Authentication**: Use obtained access token to make API requests to Sara Alert API.
 
-Sara Alert currently utilizes the SMART-on-FHIR SMART App Launch Framework "standalone launch" flow for authentication. For more details, see http://hl7.org/fhir/smart-app-launch/index.html.
+While each of these steps must be followed, they vary depending on the client workflow to support different use cases. Therefore, this documentation will describe these steps per workflow.
 
-For access to a live production or demonstration enviornment, please contact the system administrator to discuss adding your application to the approved list. Additionally, users must be granted API access via the admin panel.
+<a name="workflows"/>
 
-The supported scopes are `user/*.read` and `user/*.write` (or `user/*.*` for both read and write). Currently, this iteration of the API only supports accessing resources available to the authenticated user (hence the `user/` based scopes).
+### Supported Workflows
+Sara Alert currently supports two different workflows for API use. Both of these workflows are [SMART-on-FHIR standards](http://docs.smarthealthit.org/).
 
-The demonstration-data-generator script that comes with the Sara Alert source code on GitHub includes a read/write OAuth 2.0 application for testing. The client id is `demo-oauth-app-uid` and the client secret is `demo-oauth-app-secret`. User accounts `state1_epi@example.com` and `state1_epi_enroller@example.com` both have API access enabled.
+1. [**SMART on FHIR App Launch Framework "standalone launch"**](#standalone-launch). This expects and requires a user in the loop.
+2. [**SMART on FHIR Backend Services**](#backend-services). This is complementary to the above flow, and does not require a user in the loop.
 
-First, the user must authorize your application. Use the following URL to do so: `/oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD`. For specifics about each parameter, see http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization.
+In theory, a client application can be registered to support both workflows if it provides the needed registration information for both workflows up front. This is not an expected or understood use case, however, so please notify admins about the need for this upon registration request. In this case, the client application cannot access the API through both workflows simultaneously: i.e. if there is a logged in user who does not have API access enabled, they still cannot access the API even if the client application is registered for the system flow.
 
-For testing locally (developers), use: http://localhost:3000/oauth/authorize?client_id=demo-oauth-app-uid&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fredirect&response_type=code&scope=user%2F%2A.write+user%2F%2A.read&state=blah&aud=http%3A%2F%2Flocalhost%3A3000%2Ffhir%2Fr4
+<a name="standalone-launch"/>
 
-The authorization code returned can be used to get an access token:
+### SMART on FHIR App Launch Framework "Standalone Launch" Workflow
+This workflow supports user-facing client applications launched by a user to access the Sara Alert API and requires a Sara Alert user to give explicit permission for their registered client application to use their Sara Alert user account for authentication purposes when using the API. If you are looking for server-to-server API use, the [SMART on FHIR Backend Services Workflow](#backend-services) may better suit your needs.
 
-### POST `/oauth/token`
+The data that is accessible by this workflow is determined by the data available to the authenticated user. For example, if the authenticated user only has access to data for monitorees that they have enrolled in Sara Alert (i.e. the Enroller role), that is the level of access granted to the application. Additionally, admins have the option to toggle API access to their added user. If API access is not enabled for a user, they will see a 403 forbidden response status.
 
-#### Request Body
+Client application developers can utilize existing open source libraries for FHIR/SMART-on-FHIR to integrate with this workflow, such as:
+
+* [Python SMART on FHIR client](https://github.com/smart-on-fhir/client-py)
+* [JavaScript SMART on FHIR client](https://github.com/smart-on-fhir/client-js)
+* [Official .NET FHIR API](https://github.com/FirelyTeam/fhir-net-api)
+* [Java HAPI FHIR API](https://hapifhir.io/)
+
+Before going further, it is highly recommended to read the profile for this workflow detailed [here](http://hl7.org/fhir/smart-app-launch/index.html).
+
+
+#### Registration
+The registration process for this workflow is fairly straightforward.
+
+The client must have the following information first before taking any additional steps:
+
+* Which environment to register the client application for (demo or production)
+* What scopes the application needs access to. See list of supported scopes [here](#supported-scopes).
+* The redirect URI (used for redirecting back to the client application after authorization)
+
+Steps:
+
+1. Contact Sara Alert administrators at `sarasupport@aimsplatform.com` with a request to register a client application for API use using this workflow. At this time, the client must provide the information listed above.
+1. Once Sara Alert administrators approve the request, they will pass along an assigned client ID and client secret specific to the newly registered client application. The client should make sure to store the client secret securely.
+
+#### Authorization
+Once a client application is registered, a user must authorize the client application to use the API and obtain an authorization code. This process is also described in detail [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization).
+
+1. The registered client application must build a request for an authorization code. The request parameters are detailed in the specification for this flow [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization). This will cause the app to be redirected to the authorization endpoint and require the user to login to Sara Alert. For example, the following (once populated with the appropriate params), would navigate the client application to the Sara Alert demo server's authorization endpoint:
+
+	```
+	https://demo.saraalert.org//oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD
+	```
+2. Once the end-user has authorized the request, Sara Alert will redirect back to the application using the redirect_uri given upon registration with the authorization code provided as a parameter.
+
+3. Once the authorization code is retrieved by the client application, it can be used to get an access token. This step is  also described in detail [here](http://hl7.org/fhir/smart-app-launch/index.html#step-3-app-exchanges-authorization-code-for-access-token). Note that the authorization code does expire after 10 minutes as is necessary.
+
+	##### POST `/oauth/token`
+
+	**Request** Body
+
+	```json
+	{
+	  "client_id": "<CLIENT_ID>",
+	  "client_secret": "<CLIENT_SECRET>",
+	  "code": "<AUTHORIZATION_CODE>",
+	  "grant_type": "authorization_code",
+	  "redirect_uri": "<CLIENT_REDIRECT_URI>"
+	}
+	```
+
+	**Response**
+
+	```json
+	{
+	  "access_token": "<TOKEN>",
+	  "token_type": "Bearer",
+	  "expires_in": 7200,
+	  "scope": "<CLIENT_SCOPES>",
+	  "created_at": 1589830122
+	}
+	```
+
+#### Authentication
+The obtained token can then be used for all subsequent requests, via Authorization header, i.e. `'Authorization': "Bearer <TOKEN>"` and will be used to authenticate the user.
+
+Note that access tokens expire after two hours, and after a given access token expires the client application must go through the authorization process once more. Currently Sara Alert does not support issuing refresh tokens for this flow, but that may be supported in the future as described [here](http://hl7.org/fhir/smart-app-launch/index.html#step-5-later-app-uses-a-refresh-token-to-obtain-a-new-access-token).
+
+Example request using access token:
+
+##### GET `[base]/Patient/[:id]`
+
+**Request Headers**
 
 ```json
 {
-  "client_id": "<CLIENT_ID>",
-  "client_secret": "<CLIENT_SECRET>",
-  "code": "<AUTHORIZATION_CODE>",
-  "grant_type": "authorization_code",
-  "redirect_uri": "http://localhost:3000/redirect"
+  "Content-Type": "application/x-www-form-urlencoded",
+  "Authorization": "Bearer <ACCESS_TOKEN>"
 }
 ```
 
-#### Response
+#### Testing
+Sara Alert has a script that generates demo data for testing provided in the source code [here](https://github.com/SaraAlert/SaraAlert/blob/master/lib/tasks/demo.rake). This demo data includes a read/write OAuth 2.0 application for testing this workflow. The client id is `demo-oauth-app-uid` and the client secret is `demo-oauth-app-secret`. User accounts `state1_epi@example.com` and `state1_epi_enroller@example.com` both have API access enabled.
+
+For testing locally (developers), the following url can be used to get to the authorization endpoint and retrieve the authorization code if the Sara Alert application is running locally at `localhost:3000`:
+
+```
+http://localhost:3000/oauth/authorize?client_id=demo-oauth-app-uid&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fredirect&response_type=code&scope=user%2FPatient.%2A+user%2FObservation.read+user%2FQuestionnaireResponse.read&state=blah&aud=http%3A%2F%2Flocalhost%3A3000%2Ffhir%2Fr4
+```
+
+<a name="backend-services"/>
+
+### SMART on FHIR Backend Services Workflow
+This workflow supports backend client applications to use the Sara Alert API without an end-user in the loop. It is ideal for automated workflows that do not require a user-facing application launch.
+
+The data that is accessible by this workflow is determined by jurisdiction provided upon registration. For example, if the client application is registered with access to "USA, State 1" then it will have access to all patients in "USA, State 1" and its subjurisdictions.
+
+This workflow does not require an authenticated end user, but when creating monitoree records it is expected that there is an associated "creator" user. As a result, upon registration a user account will be created that is associated with the client application. The email associated with this user (provided upon registration) will be shown in the History if edits to the monitoree data are made via this workflow. This user account is solely for associating a user creator of the monitoree and cannot be logged into.
+
+Because of the nature of this workflow, there is a lot of flexibility when implementing the client-side of this workflow. It only really requires the following capabilities:
+- For registration: Generate and store JWKS (NOTE: generation can be done with a third-party tool if need be)
+- For authorization: Make POST authorization requests with a signed JWT and receive access token responses
+- For authentication and API interaction: Make API requests
+
+Before going further, it is highly recommended to read the profile for this workflow detailed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html). Specifically, the [worked example](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#worked-example) is particularly useful.
+
+Additionally, we have provided the following resources for this workflow:
+- Step-by-step process for using this new workflow with a local version of Sara Alert [here](https://github.com/SaraAlert/saraalert-fhir-ig/wiki/Step-by-Step-Instructions-For-Local-Testing:-SMART-on-FHIR-Backend-Services-Workflow).
+- Example Ruby client for interacting with the API via this new workflow can be found [here](https://github.com/SaraAlert/saraalert-fhir-ig/tree/master/examples/ruby).
+
+#### Registration
+The registration step of this workflow requires more information up front. It is recommended that the details of this step in the process first be read in the formal SMART on FHIR profile [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#registering-a-smart-backend-service-communicating-public-keys).
+
+The key takeaway is the following:
+> Before a SMART client can run against a FHIR server, the client SHALL generate or obtain an asymmetric key pair and SHALL register its public key set with that FHIR server’s authorization service...No matter how a client registers with a FHIR authorization service, the client SHALL register the public key the client will use to authenticate itself to the SMART FHIR authorization server. The public key SHALL be conveyed to the FHIR authorization server in a JSON Web Key (JWK) structure presented within a JWK Set, as defined in JSON Web Key Set (JWKS). The client SHALL protect the associated private key from unauthorized disclosure and corruption.
+
+*Generating JWKS*
+
+A JSON Web Key (JWK) is a JSON data structure that represents a cryptographic key or keypair. They can hold both public and private information about the key.
+
+The client must generate an assymetric public/private key pair and then provide the *public* key in the form of a JSON Web Key Set. Read more about JWK and JWKS [here](https://tools.ietf.org/html/rfc7517), and see an example of this what a JWKS with public keys looks like [here](https://hl7.org/fhir/uv/bulkdata/authorization/sample-jwks/RS384.public.json).
+
+The JSON Web Algorithm (JWA) for generating the JWKS must be RS384, as that is the only algorithm currently supported by the Sara Alert API. This may be enhanced to include ES384 in the future.
+
+JWKS can be easily generated with tools such as [this](https://mkjwk.org/), which allow you to specify an algorithm, use (signature), and more. See a Javascript example of generating a JWKS on the official SMART on FHIR GitHub [here](https://github.com/smart-on-fhir/bulk-data-server/blob/master/generator.js).
+
+The client is then entirely responsible for securely storing the private key, as it is never shared with Sara Alert. In the future, the Sara Alert API may support storing urls to public JWKS hosted by the client as discussed [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#registering-a-smart-backend-service-communicating-public-keys).
+
+
+The client must have the following information first before taking any additional steps:
+
+* Which environment to register the client application for (demo or production)
+* What scopes the application needs access to. See list of supported scopes [here](#supported-scopes).
+* The jurisdiction this client application will have access to.
+* The generated *public* key set in the form of a JSON Web Key Set (JWKS).
+* The email the client would like associated with this application for logging monitoree updates in the system
+
+Steps:
+
+1. Contact Sara Alert administrators at `sarasupport@aimsplatform.com` with a request to register a client application for API use using this workflow. At this time, the client must provide the information listed above.
+2. Once Sara Alert administrators approve the request, they will pass along a client ID specific to the newly registered client application.
+
+#### Authorization
+Once the client is securely registered, it does not require a manual authorization step. Instead, it must do the following to request an access token for the Sara Alert API.
+Details about each of these steps and the expected parameter is clearly outlined in the protocol [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#protocol-details).
+
+1. Generate an authentication JSON Web Token (JWT).
+  - First, this JWT must container the headers and body parameters shown [here](https://hl7.org/fhir/uv/bulkdata/authorization/index.html#protocol-details).
+	- A recommended Ruby library for generating JWT assertions is [ruby-jwt](https://github.com/jwt/ruby-jwt).
+	- The `client_id` referenced in the protocol documentation for both the `sub` and `iss` values should be the `client_id` issued to the client upon registration.
+	- The `aud` value that is expected in incoming JWT assertions is the Sara Alert token endpoint.
+		- Development: `http://localhost:3000/oauth/token`
+		- Demo: `https://demo.saraalert.org/oauth/token`
+		- Production: `https://sara.public.saraalert.org/oauth/token`
+2. Request a new access token via HTTP POST to the FHIR authorization server’s token endpoint URL which is again `<ENVIRONMENT_BASE_URL>/oauth/token`
+3. Once the end-user has authorized the request, Sara Alert will respond with an access token.
+
+	##### POST `/oauth/token`
+
+	**Request** Headers
+
+  ```json
+  {
+    "Content-Type": "application/x-www-form-urlencoded"
+  }
+  ```
+	**Request** Body
+
+	```json
+	{
+	  "client_assertion": "<CLIENT_SIGNED_JWT_ASSERTION>",
+	  "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+	  "grant_type": "client_credentials",
+	  "scope": "<CLIENT_SCOPES>"
+	}
+	```
+
+	**Response**
+
+	```json
+	{
+	  "access_token": "<TOKEN>",
+	  "token_type": "Bearer",
+	  "expires_in": 7200,
+	  "scope": "<CLIENT_SCOPES>",
+	  "created_at": 1589830122
+	}
+	```
+
+
+#### Authentication
+The obtained token can then be used for all subsequent requests, via Authorization header, i.e. `'Authorization': "Bearer <TOKEN>"` and will be used to authenticate the user.
+
+Note that access tokens expire after two hours, and after a given access token expires the client application must go through the authorization process once more. Because the authorization process is automated - this workflow can still be fully automated.
+
+Example request using access token:
+
+##### GET `[base]/Patient/[:id]`
+
+**Request Headers**
 
 ```json
 {
-  "access_token": "<TOKEN>",
-  "token_type": "Bearer",
-  "expires_in": 7200,
-  "scope": "user/*.write user/*.read",
-  "created_at": 1589830122
+  "Content-Type": "application/x-www-form-urlencoded",
+  "Authorization": "Bearer <ACCESS_TOKEN>"
 }
 ```
 
-Use this token for all subsequent requests, via Authorization header, i.e. `'Authorization': "Bearer <TOKEN>"`.
+#### Testing
+Sara Alert has a script that generates demo data for testing provided in the source code [here](https://github.com/SaraAlert/SaraAlert/blob/master/lib/tasks/demo.rake). This demo data includes a read/write OAuth 2.0 application for testing this workflow.
+
+Developers can use the same syntax to create a test application with a `jurisdiction_id`, a `user_id` and a `public_key_set`.
+NOTE: The public_key_set *must* be serialized into a JSON string using `to_json` before storing.
+
+Fortunately, there are many tools available and is easy to generate JWKS at https://mkjwk.org/ for the public key set, which also then be used to create a JWT at https://jwt.io.
+
+It is also recommended to use a tool such as Postman to interact with the Sara Alert API for testing this workflow.
+
+<a name="api-spec"/>
+
+## API Specification
+
+For the purposes of this documentation, when describing an API route, [base] includes `/fhir/r4`.
+JSON is currently the only supported format. Please make use of the `application/fhir+json` mime type for the Accept header. The Content-Type header must also correspond to this mime type.
+
+<a name="data-representation"/>
+
+### Data Representation
+Because the Sara Alert API follows the FHIR specification, there is a mapping between known kinds of Sara Alert data and their associated FHIR resources.
+
+| Sara Alert                | FHIR Resource |
+| :---------------          | :------------ |
+| Monitoree                 | [Patient](https://hl7.org/fhir/R4/patient.html)|
+| Monitoree Lab Result      | [Observation](https://hl7.org/fhir/R4/observation.html)|
+| Monitoree Daily Report    | [QuestionnaireResponse](https://www.hl7.org/fhir/questionnaireresponse.html)|
+
+<a name="supported-scopes"/>
+
+### Supported Scopes
+For applications following the [SMART-on-FHIR App Launch Framework "Standalone Launch" Workflow](#standalone-launch), these are the available scopes:
+
+* `user/Patient.read`,
+* `user/Patient.write`,
+* `user/Patient.*`, (for both read and write access to this resource)
+* `user/Observation.read`,
+* `user/QuestionnaireResponse.read`,
+
+For applications following the [SMART on FHIR Backend Services Workflow](#backend-services), these are the available scopes:
+
+* `system/Patient.read`,
+* `system/Patient.write`,
+* `system/Patient.*`, (for both read and write access to this resource)
+* `system/Observation.read`,
+* `system/QuestionnaireResponse.read`,
 
 <a name="cap"/>
 
-## CapabilityStatement and Well-Known Uniform Resource Identifiers
+### CapabilityStatement and Well-Known Uniform Resource Identifiers
 
 <a name="cap-get"/>
 
 A capability statement is available at `[base]/metadata`:
 
-### GET `[base]/metadata`
+#### GET `[base]/metadata`
 
 <details>
   <summary>Click to expand JSON snippet</summary>
@@ -259,7 +498,7 @@ A capability statement is available at `[base]/metadata`:
 
 A Well Known statement is also available at `/.well-known/smart-configuration` or `[base]/.well-known/smart-configuration`:
 
-### GET `[base]/.well-known/smart-configuration`
+#### GET `[base]/.well-known/smart-configuration`
 
 <details>
   <summary>Click to expand JSON snippet</summary>
@@ -284,13 +523,13 @@ A Well Known statement is also available at `/.well-known/smart-configuration` o
 
 <a name="read"/>
 
-## Reading
+### Reading
 
 The API supports reading monitorees, monitoree lab results, and monitoree daily reports.
 
 <a name="read-get-pat"/>
 
-### GET `[base]/Patient/[:id]`
+#### GET `[base]/Patient/[:id]`
 
 Get a monitoree via an id, e.g.:
 
@@ -418,7 +657,7 @@ Get a monitoree via an id, e.g.:
 
 <a name="read-get-obs"/>
 
-### GET `[base]/Observation/[:id]`
+#### GET `[base]/Observation/[:id]`
 
 Get a monitoree lab result via an id, e.g.:
 
@@ -445,7 +684,7 @@ Get a monitoree lab result via an id, e.g.:
 
 <a name="read-get-que"/>
 
-### GET `[base]/QuestionnaireResponse/[:id]`
+#### GET `[base]/QuestionnaireResponse/[:id]`
 
 Get a monitoree daily report via an id, e.g.:
 
@@ -562,7 +801,7 @@ Get a monitoree daily report via an id, e.g.:
 
 <a name="read-get-all"/>
 
-### GET `[base]/Patient/[:id]/$everything`
+#### GET `[base]/Patient/[:id]/$everything`
 
 Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab results, and all their daily reports.
 
@@ -810,11 +1049,11 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
 
 <a name="create"/>
 
-## Creating
+### Creating
 
 The API supports creating new monitorees.
 
-### Extensions
+#### Extensions
 
 <a name="create-ext"/>
 
@@ -866,13 +1105,13 @@ Use `http://saraalert.org/StructureDefinition/isolation` to specify if the monit
 }
 ```
 
-### POST `[base]/Patient`
+#### POST `[base]/Patient`
 
 <a name="create-post-pat"/>
 
 To create a new monitoree, simply POST a FHIR Patient resource.
 
-#### Request Body
+##### Request Body
 
 <details>
   <summary>Click to expand JSON snippet</summary>
@@ -1120,13 +1359,13 @@ On success, the server will return the newly created resource with an id. This i
 
 <a name="update"/>
 
-## Updating
+### Updating
 
 The API supports updating existing monitorees.
 
 <a name="update-put-pat"/>
 
-### PUT `[base]/Patient/[:id]`
+#### PUT `[base]/Patient/[:id]`
 
 #### Request Body
 
@@ -1376,13 +1615,13 @@ On success, the server will update the existing resource given the id.
 
 <a name="search"/>
 
-## Searching
+### Searching
 
 The API supports searching for monitorees.
 
 <a name="search-get"/>
 
-### GET `[base]/Patient?parameter(s)`
+#### GET `[base]/Patient?parameter(s)`
 
 The current parameters allowed are: `given`, `family`, `telecom`, `email`, `active`, `subject`, and `_id`. Search results will be paginated by default (see: https://www.hl7.org/fhir/http.html#paging), although you can request a different page size using the `_count` param (defaults to 10, but will allow up to 500). Utilize the `page` param to navigate through the results, as demonstrated in the `[base]/Patient?_count=2` example below under the `link` entry.
 
@@ -1523,7 +1762,7 @@ GET `[base]/Patient?given=testy&family=mctest`
 ```
 </details>
 
-### GET `[base]/Observation?subject=Patient/[:id]`
+#### GET `[base]/Observation?subject=Patient/[:id]`
 
 You can also use search to find Monitoree daily reports and laboratory results by using the `subject` parameter.
 
@@ -1565,7 +1804,7 @@ GET `[base]/Observation?subject=Patient/[:id]`
 ```
 </details>
 
-### GET `[base]/Patient`
+#### GET `[base]/Patient`
 
 By not specifying any search parameters, you can request all resources of the specified type.
 

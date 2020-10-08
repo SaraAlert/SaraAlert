@@ -87,7 +87,7 @@ class SymptomsAssessment extends React.Component {
         type="checkbox"
         id={`${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
         key={`key_${symp.name}${this.props.idPre ? '_idpre' + this.props.idPre : ''}`}
-        checked={symp.value === true || false}
+        checked={symp.value}
         disabled={noSymptomsChecked}
         label={
           <div>

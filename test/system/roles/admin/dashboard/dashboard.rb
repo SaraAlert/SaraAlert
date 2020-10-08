@@ -9,7 +9,7 @@ class AdminDashboard < ApplicationSystemTestCase
   @@admin_dashboard_verifier = AdminDashboardVerifier.new(nil)
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def add_user(user_data, submit = true)
+  def add_user(user_data, submit: true)
     # Remove fade animation from Bootstrap modal
     # NOTE: This can apparently affect Capybara's fill_in functionality and more
     page.execute_script("$('user-modal').css('transition','none')")

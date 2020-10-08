@@ -83,17 +83,31 @@ const TOOLTIP_TEXT = {
 
   caseStatus: (
     <div>
-      Used to move records into the appropriate workflow after investigating a report of symptoms. If <i>confirmed</i> or <i>probable</i> is selected, the user
-      is prompted to choose between moving the record to the isolation workflow or to end monitoring. If the user selects another case status, the record will
-      be returned to the appropriate exposure monitoring line list.
+      Used to move records into the appropriate workflow.
+      <ul className="mb-0">
+        <li>
+          {' '}
+          For monitorees currently in the Exposure Workflow: Selecting Confirmed or Probable will prompt the option to move the monitoree into the Isolation
+          Workflow or to end monitoring. Selecting Suspect, Unknown, or Not a Case will not change the monitoree&apos;s workflow.{' '}
+        </li>
+        <li>
+          {' '}
+          For monitorees currently in the Isolation Workflow: Selecting Suspect, Unknown, or Not a Case will move the monitoree to the exposure workflow.
+          Selecting Confirmed or Probable will not change the monitoree&apos;s workflow.{' '}
+        </li>
+      </ul>
     </div>
   ),
 
-  latestPublicHealthAction: (
+  latestPublicHealthActionInExposure: (
     <div>
       Selecting any option other than <i>none</i> moves record from the symptomatic line list to the Person Under Investigation (PUI) line list in the exposure
       workflow. To move a record off the PUI line list, update <i>Case Status</i> based on the findings of the investigation.
     </div>
+  ),
+
+  latestPublicHealthActionInIsolation: (
+    <div>Used to note the public health recommendation provided to a monitoree. This element does not impact the line list on which this record appears.</div>
   ),
 
   assignedUser: (
@@ -104,6 +118,13 @@ const TOOLTIP_TEXT = {
     <div>
       This controls which users have access to records. Users can access records associated with their assigned jurisdiction and records assigned to any
       jurisdictions below theirs in the jurisdictional hierarchy defined by each agency before onboarding.
+    </div>
+  ),
+
+  continuousExposure: (
+    <div>
+      Allows a user to indicate that a monitoree has an ongoing exposure to one or more cases. If checked, the monitoring period will be extended indefinitely
+      until unchecked or the <i>Last Date of Exposure</i> is updated.
     </div>
   ),
 

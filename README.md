@@ -3,7 +3,6 @@
 [![Actions Tests](https://github.com/SaraAlert/SaraAlert/workflows/Tests/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
 [![Actions Static Analysis](https://github.com/SaraAlert/SaraAlert/workflows/Static%20Analysis/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
 [![Actions Container Scan](https://github.com/SaraAlert/SaraAlert/workflows/Container%20Scan/badge.svg)](https://github.com/SaraAlert/SaraAlert/actions)
-[![Coverage Status](https://coveralls.io/repos/github/SaraAlert/SaraAlert/badge.svg?branch=master)](https://coveralls.io/github/SaraAlert/SaraAlert?branch=master)
 [![Release](https://img.shields.io/github/v/tag/SaraAlert/SaraAlert)](https://github.com/SaraAlert/SaraAlert/tags)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.md)
 
@@ -24,7 +23,7 @@ To work with the application, you will need to install some prerequisites:
 * [Ruby](https://www.ruby-lang.org/)
 * [Bundler](https://bundler.io/)
 * [MySQL](https://www.mysql.com/)
-* [Redis](https://redis.io)
+* [Redis](https://redis.io) (installation instructions [below](#redis))
 * [Yarn](https://yarnpkg.com/)
 
 ### Development Installation
@@ -42,7 +41,7 @@ Run the following commands from the project's root directory to pull in both fro
 
 #### Database
 
-Run the following commands from the root directory to initialize the database (note: make sure you have a MySQL database running):
+Run the following commands from the root directory to initialize the database (note: make sure you have a MySQL database and Redis running):
 
 * (optional for local development only, not for docker containers)
   ```
@@ -93,7 +92,7 @@ bundle exec whenever --update-crontab
 
 ##### Periodic Jobs
   These jobs are configured to run periodically. Their run timing parameters are specified in `config/schedule.rb`.
-  * `CloseSubjectsJob`
+  * `ClosePatientsJob`
       - Closes (stops active monitoring of) monitorees that meet duration/symptomatic conditions
   * `PurgeJob`
       - Purges eligible records

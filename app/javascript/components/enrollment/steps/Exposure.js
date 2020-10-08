@@ -147,6 +147,7 @@ class Exposure extends React.Component {
             <DateInput
               id="symptom_onset"
               date={this.state.current.patient.symptom_onset}
+              minDate={'2020-01-01'}
               maxDate={moment()
                 .add(30, 'days')
                 .format('YYYY-MM-DD')}
@@ -210,6 +211,7 @@ class Exposure extends React.Component {
             <DateInput
               id="last_date_of_exposure"
               date={this.state.current.patient.last_date_of_exposure}
+              minDate={'2020-01-01'}
               maxDate={moment()
                 .add(30, 'days')
                 .format('YYYY-MM-DD')}
@@ -263,19 +265,19 @@ class Exposure extends React.Component {
               type="switch"
               id="continuous_exposure"
               className="ml-1"
-              checked={this.state.current.patient.continuous_exposure === true || false}
+              checked={this.state.current.patient.continuous_exposure}
               onChange={this.handleChange}
             />
           </Form.Group>
         </Form.Row>
-        <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPERATE MULTIPLE SPECIFIED VALUES)</Form.Label>
+        <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
         <Form.Row>
           <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
             <Form.Check
               type="switch"
               id="contact_of_known_case"
               label="CLOSE CONTACT WITH A KNOWN CASE"
-              checked={this.state.current.patient.contact_of_known_case === true || false}
+              checked={this.state.current.patient.contact_of_known_case}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -300,7 +302,7 @@ class Exposure extends React.Component {
               type="switch"
               id="travel_to_affected_country_or_area"
               label="TRAVEL FROM AFFECTED COUNTRY OR AREA"
-              checked={this.state.current.patient.travel_to_affected_country_or_area === true || false}
+              checked={this.state.current.patient.travel_to_affected_country_or_area}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -312,7 +314,7 @@ class Exposure extends React.Component {
               type="switch"
               id="was_in_health_care_facility_with_known_cases"
               label="WAS IN HEALTH CARE FACILITY WITH KNOWN CASES"
-              checked={this.state.current.patient.was_in_health_care_facility_with_known_cases === true || false}
+              checked={this.state.current.patient.was_in_health_care_facility_with_known_cases}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -337,7 +339,7 @@ class Exposure extends React.Component {
               type="switch"
               id="laboratory_personnel"
               label="LABORATORY PERSONNEL"
-              checked={this.state.current.patient.laboratory_personnel === true || false}
+              checked={this.state.current.patient.laboratory_personnel}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -362,7 +364,7 @@ class Exposure extends React.Component {
               type="switch"
               id="healthcare_personnel"
               label="HEALTHCARE PERSONNEL"
-              checked={this.state.current.patient.healthcare_personnel === true || false}
+              checked={this.state.current.patient.healthcare_personnel}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -387,7 +389,7 @@ class Exposure extends React.Component {
               type="switch"
               id="crew_on_passenger_or_cargo_flight"
               label="CREW ON PASSENGER OR CARGO FLIGHT"
-              checked={this.state.current.patient.crew_on_passenger_or_cargo_flight === true || false}
+              checked={this.state.current.patient.crew_on_passenger_or_cargo_flight}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -398,7 +400,7 @@ class Exposure extends React.Component {
               type="switch"
               id="member_of_a_common_exposure_cohort"
               label="MEMBER OF A COMMON EXPOSURE COHORT"
-              checked={this.state.current.patient.member_of_a_common_exposure_cohort === true || false}
+              checked={this.state.current.patient.member_of_a_common_exposure_cohort}
               onChange={this.handleChange}
             />
           </Form.Group>
@@ -494,7 +496,7 @@ class Exposure extends React.Component {
                               name="jurisdiction_id"
                               label="Apply this change to the entire household that this monitoree is responsible for"
                               onChange={this.handlePropagatedFieldChange}
-                              checked={this.state.current.propagatedFields.jurisdiction_id === true || false}
+                              checked={this.state.current.propagatedFields.jurisdiction_id}
                             />
                           </Form.Group>
                         )}
@@ -538,7 +540,7 @@ class Exposure extends React.Component {
                               name="assigned_user"
                               label="Apply this change to the entire household that this monitoree is responsible for"
                               onChange={this.handlePropagatedFieldChange}
-                              checked={this.state.current.propagatedFields.assigned_user === true || false}
+                              checked={this.state.current.propagatedFields.assigned_user}
                             />
                           </Form.Group>
                         )}

@@ -19,11 +19,11 @@
               <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
                 <div class="form-group">
                   <label for="uname1">Email</label>
-                  <input type="email" autofocus="autofocus" autocomplete="email" class="form-control form-control-lg rounded-0" name="user[email]" id="user_email" required="">
+                  <input type="email" autofocus="autofocus" autocomplete="email" class="form-control form-control-lg rounded-0" name="user[email]" id="user_email" required="" />
                 </div>
                 <div class="form-group">
                   <label>Password</label>
-                  <input type="password" autocomplete="current-password" class="form-control form-control-lg rounded-0" name="user[password]" id="user_password" required="" >
+                  <input type="password" autocomplete="current-password" class="form-control form-control-lg rounded-0" name="user[password]" id="user_password" required="" />
                 </div>
                 <button type="submit" class="btn btn-outline-primary btn-lg float-right btn-square px-5" id="login">Log In</button>
               <% end %>

@@ -48,14 +48,15 @@ class Assessment < ApplicationRecord
     threshold_operator = threshold_symptom&.threshold_operator&.downcase
     threshold_operator ||= 'less than'
 
-    if reported_symptom.type == 'FloatSymptom' || reported_symptom.type == 'IntegerSymptom'
+    case reported_symptom.type
+    when 'FloatSymptom', 'IntegerSymptom'
       return true if threshold_operator == 'less than' && reported_symptom.value < threshold_symptom.value
       return true if threshold_operator == 'less than or equal' && reported_symptom.value <= threshold_symptom.value
       return true if threshold_operator == 'greater than' && reported_symptom.value > threshold_symptom.value
       return true if threshold_operator == 'greater than or equal' && reported_symptom.value >= threshold_symptom.value
       return true if threshold_operator == 'equal' && reported_symptom.value == threshold_symptom.value
       return true if threshold_operator == 'not equal' && reported_symptom.value != threshold_symptom.value
-    elsif reported_symptom.type == 'BoolSymptom'
+    when 'BoolSymptom'
       return reported_symptom.value != threshold_symptom.value if threshold_operator == 'not equal'
       # Bool symptom threshold_operator will fall back to equal
       return true if reported_symptom.value == threshold_symptom.value
@@ -104,15 +105,16 @@ class Assessment < ApplicationRecord
       subject: FHIR::Reference.new(reference: "Patient/#{patient_id}"),
       status: 'completed',
       item: reported_condition.symptoms.enum_for(:each_with_index).collect do |s, index|
-        if s.type == 'IntegerSymptom'
+        case s.type
+        when 'IntegerSymptom'
           FHIR::QuestionnaireResponse::Item.new(text: s.name,
                                                 answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueInteger: s.int_value),
                                                 linkId: index.to_s)
-        elsif s.type == 'FloatSymptom'
+        when 'FloatSymptom'
           FHIR::QuestionnaireResponse::Item.new(text: s.name,
                                                 answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueDecimal: s.float_value),
                                                 linkId: index.to_s)
-        elsif s.type == 'BoolSymptom'
+        when 'BoolSymptom'
           FHIR::QuestionnaireResponse::Item.new(text: s.name,
                                                 answer: FHIR::QuestionnaireResponse::Item::Answer.new(valueBoolean: s.bool_value),
                                                 linkId: index.to_s)
@@ -129,9 +131,23 @@ class Assessment < ApplicationRecord
         latest_assessment_at: patient.assessments.maximum(:created_at)
       )
     else
+      new_symptom_onset = patient.assessments.where(symptomatic: true).minimum(:created_at)&.to_date
+      unless new_symptom_onset == patient[:symptom_onset]
+        comment = if !patient[:symptom_onset].nil? && !new_symptom_onset.nil?
+                    "System changed symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                     because a report meeting the symptomatic logic was created or updated."
+                  elsif patient[:symptom_onset].nil? && !new_symptom_onset.nil?
+                    "System changed symptom onset date from blank to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                     because a report meeting the symptomatic logic was created or updated."
+                  elsif !patient[:symptom_onset].nil? && new_symptom_onset.nil?
+                    "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank
+                     because a report meeting the symptomatic logic was created or updated."
+                  end
+        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
+      end
       patient.update(
         latest_assessment_at: patient.assessments.maximum(:created_at),
-        symptom_onset: patient.assessments.where(symptomatic: true).minimum(:created_at)
+        symptom_onset: new_symptom_onset
       )
     end
   end
@@ -140,15 +156,20 @@ class Assessment < ApplicationRecord
     # latest fever or fever reducer at only needs to be updated upon deletion as it is updated in the symptom model upon symptom creation
     if patient.user_defined_symptom_onset.present? && !patient.symptom_onset.nil?
       patient.update(
-        latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
+        latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at)&.to_date,
         latest_fever_or_fever_reducer_at: patient.assessments
                                                  .where.not(id: id)
                                                  .where_assoc_exists(:reported_condition, &:fever_or_fever_reducer)
                                                  .maximum(:created_at)
       )
     else
+      new_symptom_onset = patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at)
+      unless new_symptom_onset == patient[:symptom_onset] || !new_symptom_onset.nil?
+        comment = "System cleared symptom onset date from #{patient[:symptom_onset].strftime('%m/%d/%Y')} to blank because a symptomatic report was removed."
+        History.monitoring_change(patient: patient, created_by: 'Sara Alert System', comment: comment)
+      end
       patient.update(
-        symptom_onset: patient.assessments.where.not(id: id).where(symptomatic: true).minimum(:created_at),
+        symptom_onset: new_symptom_onset,
         latest_assessment_at: patient.assessments.where.not(id: id).maximum(:created_at),
         latest_fever_or_fever_reducer_at: patient.assessments
                                                  .where.not(id: id)

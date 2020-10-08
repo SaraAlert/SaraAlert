@@ -19,13 +19,14 @@ class ConsumeAssessmentsJob < ApplicationJob
         next if patient.nil?
 
         # Prevent duplicate patient assessment spam
-        unless patient.latest_assessment.nil? # Only check for latest assessment if there is one
-          next if patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago
-        end
+        # Only check for latest assessment if there is one
+        next if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
 
         # Get list of dependents excluding the patient itself.
         dependents = patient.dependents_exclude_self
-        if message['response_status'] == 'no_answer_voice'
+
+        case message['response_status']
+        when 'no_answer_voice'
           # If nobody answered, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert called this monitoree's primary telephone \
@@ -36,7 +37,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           end
 
           next
-        elsif message['response_status'] == 'no_answer_sms'
+        when 'no_answer_sms'
           # No need to wipe out last_assessment_reminder_sent so that another sms will be sent because the sms studio flow is kept open for 18hrs
           History.contact_attempt(patient: patient, comment: "Sara Alert texted this monitoree's primary telephone \
                                                              number #{patient.primary_telephone} during their preferred \
@@ -47,7 +48,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           end
 
           next
-        elsif message['response_status'] == 'error_voice'
+        when 'error_voice'
           # If there was an error in completeing the call, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert was unable to complete a call to this \
@@ -58,7 +59,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           end
 
           next
-        elsif message['response_status'] == 'error_sms'
+        when 'error_sms'
           # If there was an error sending an SMS, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "Sara Alert was unable to send an SMS to this monitoree's \

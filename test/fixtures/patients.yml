@@ -25,9 +25,9 @@ patient_1:
   monitored_address_city: 'Grahamshire'
   monitored_address_state: 'California'
   monitored_address_zip: '03824'
-  primary_telephone: '(555) 555-0111'
+  primary_telephone: '+15555550111'
   primary_telephone_type: 'Smartphone'
-  secondary_telephone: '(555) 555-0112'
+  secondary_telephone: '+15555550112'
   secondary_telephone_type: 'Landline'
   email: 'jeremy@example.com'
   preferred_contact_method: 'Telephone call'
@@ -81,9 +81,9 @@ patient_2:
   monitored_address_city: 'Spinkaville'
   monitored_address_state: 'New Hampshire'
   monitored_address_zip: '19521'
-  primary_telephone: '(555) 555-0141'
+  primary_telephone: '+15555550141'
   primary_telephone_type: 'Plain Cell'
-  secondary_telephone: '(555) 555-0167'
+  secondary_telephone: '+15555550167'
   secondary_telephone_type: 'Landline'
   email: 'grazyna@example.com'
   preferred_contact_method: 'Telephone call'
@@ -117,7 +117,7 @@ patient_3:
   address_city: 'North Ranae'
   address_state: 'California'
   address_zip: '19521'
-  primary_telephone: '(555) 555-0142'
+  primary_telephone: '+15555550142'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -144,7 +144,7 @@ patient_4:
   address_city: 'Port Kaycee'
   address_state: 'New York'
   address_zip: '15212'
-  primary_telephone: '(555) 555-0146'
+  primary_telephone: '+15555550146'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -171,7 +171,7 @@ patient_5:
   address_state: 'New York'
   address_county: 'Warren'
   address_zip: '08291'
-  primary_telephone: '(555) 555-0148'
+  primary_telephone: '+15555550148'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'Self_Identified'
@@ -198,7 +198,7 @@ patient_6:
   address_state: 'California'
   address_zip: '39204'
   address_county: 'Monroe'
-  primary_telephone: '(555) 555-0152'
+  primary_telephone: '+15555550152'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -226,7 +226,7 @@ patient_7:
   address_state: 'New York'
   address_county: 'Pike'
   address_zip: '16810-0047'
-  primary_telephone: '(555) 555-0164'
+  primary_telephone: '+15555550164'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -252,7 +252,7 @@ patient_8:
   address_state: 'Delaware'
   address_zip: '62431-6865'
   address_county: 'Pike'
-  primary_telephone: '(555) 555-0169'
+  primary_telephone: '+15555550169'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -282,7 +282,7 @@ patient_9:
   address_state: 'Delaware'
   address_zip: '62431-6865'
   address_county: 'Jackson'
-  primary_telephone: '(555) 555-0189'
+  primary_telephone: '+15555550189'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -310,7 +310,7 @@ patient_10:
   address_state: 'Massachusetts'
   address_zip: '62431-6865'
   address_county: 'Jackson'
-  primary_telephone: '(555) 555-0173'
+  primary_telephone: '+15555550173'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -337,7 +337,7 @@ patient_11:
   address_state: 'Massachusetts'
   address_zip: '62431-6865'
   address_county: 'Suffolk'
-  primary_telephone: '(555) 555-0174'
+  primary_telephone: '+15555550174'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -552,6 +552,8 @@ patient_20:
   public_health_action: 'Recommended medical evaluation of symptoms'
 patient_21:
   id: 21
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'American Samoa'
@@ -559,6 +561,8 @@ patient_21:
   last_date_of_exposure: <%= 1.week.ago %>
 patient_22:
   id: 22
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'American Samoa'
@@ -566,6 +570,8 @@ patient_22:
   last_date_of_exposure: <%= 3.weeks.ago %>
 patient_23:
   id: 23
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: false
   address_state: 'American Samoa'
@@ -575,6 +581,8 @@ patient_23:
   last_date_of_exposure: <%= 3.weeks.ago %>
 patient_24:
   id: 24
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: false
   address_state: 'American Samoa'
@@ -584,6 +592,8 @@ patient_24:
   last_date_of_exposure: <%= 11.weeks.ago %>
 patient_25:
   id: 25
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Puerto Rico'
@@ -591,6 +601,8 @@ patient_25:
   last_date_of_exposure: <%= 19.weeks.ago %>
 patient_26:
   id: 26
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: false
   address_state: 'Puerto Rico'
@@ -599,6 +611,8 @@ patient_26:
   last_date_of_exposure: <%= 21.weeks.ago %>
 patient_27:
   id: 27
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Puerto Rico'
@@ -607,6 +621,8 @@ patient_27:
   last_date_of_exposure: <%= 25.weeks.ago %>
 patient_28:
   id: 28
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Puerto Rico'
@@ -615,6 +631,8 @@ patient_28:
   last_date_of_exposure: <%= 25.weeks.ago %>
 patient_29:
   id: 29
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Guam'
@@ -622,12 +640,16 @@ patient_29:
   last_date_of_exposure: <%= 52.weeks.ago %>
 patient_30:
   id: 30
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 8
   monitoring: true
   address_state: 'Guam'
   last_date_of_exposure: <%= 54.weeks.ago %>
 patient_31:
   id: 31
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Guam'
@@ -636,6 +658,8 @@ patient_31:
   last_date_of_exposure: <%= 1.month.ago %>
 patient_32:
   id: 32
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Alaska'
@@ -644,6 +668,8 @@ patient_32:
   last_date_of_exposure: <%= 1.month.ago %>
 patient_33:
   id: 33
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: false
   address_state: 'Alaska'
@@ -653,6 +679,8 @@ patient_33:
   last_date_of_exposure: <%= 2.months.ago %>
 patient_34:
   id: 34
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Alaska'
@@ -661,6 +689,8 @@ patient_34:
   last_date_of_exposure: <%= 2.months.ago %>
 patient_35:
   id: 35
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Alaska'
@@ -669,6 +699,8 @@ patient_35:
   last_date_of_exposure: <%= 5.months.ago %>
 patient_36:
   id: 36
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Indiana'
@@ -677,6 +709,8 @@ patient_36:
   last_date_of_exposure: <%= 5.months.ago %>
 patient_37:
   id: 37
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Indiana'
@@ -685,6 +719,8 @@ patient_37:
   last_date_of_exposure: <%= 11.months.ago %>
 patient_38:
   id: 38
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: false
   address_state: 'Indiana'
@@ -693,6 +729,8 @@ patient_38:
   last_date_of_exposure: <%= 11.months.ago %>
 patient_39:
   id: 39
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Indiana'
@@ -701,6 +739,8 @@ patient_39:
   last_date_of_exposure: <%= 13.months.ago %>
 patient_40:
   id: 40
+  created_at: <%= 4.hours.ago %>
+  updated_at: <%= 4.hours.ago %>
   jurisdiction_id: 9
   monitoring: true
   address_state: 'Indiana'
@@ -723,7 +763,7 @@ patient_41:
   address_city: 'Laurenceborough'
   address_state: 'New York'
   address_zip: '55335'
-  primary_telephone: '(555) 555-0175'
+  primary_telephone: '+15555550175'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -771,7 +811,7 @@ patient_43:
   address_city: 'East Dewayneberg'
   address_state: 'New York'
   address_zip: '27382'
-  primary_telephone: '(555) 555-0177'
+  primary_telephone: '+15555550177'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -796,7 +836,7 @@ patient_44:
   address_city: 'Ailenemouth'
   address_state: 'California'
   address_zip: '93872'
-  primary_telephone: '(555) 555-0177'
+  primary_telephone: '+15555550177'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -820,7 +860,7 @@ patient_45:
   address_city: 'Port Walter'
   address_state: 'California'
   address_zip: '61411-4761'
-  primary_telephone: '(555) 555-0178'
+  primary_telephone: '+15555550178'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -842,7 +882,7 @@ patient_46:
   address_city: 'Haydenburgh'
   address_state: 'California'
   address_zip: '82912-2919'
-  primary_telephone: '(555) 555-0179'
+  primary_telephone: '+15555550179'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -865,7 +905,7 @@ patient_47:
   address_city: 'Boston'
   address_state: 'Massachusetts'
   address_zip: '82912-2918'
-  primary_telephone: '(555) 555-0185'
+  primary_telephone: '+15555550185'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -887,7 +927,7 @@ patient_48:
   address_city: 'South Douglasview'
   address_state: 'California'
   address_zip: '82922-2919'
-  primary_telephone: '(555) 555-0182'
+  primary_telephone: '+15555550182'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -909,7 +949,7 @@ patient_49:
   address_city: 'Port Clementeland'
   address_state: 'California'
   address_zip: '99920'
-  primary_telephone: '(555) 555-0188'
+  primary_telephone: '+15555550188'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -933,7 +973,7 @@ patient_50:
   address_city: 'West April'
   address_state: 'California'
   address_zip: '22804'
-  primary_telephone: '(555) 555-0189'
+  primary_telephone: '+15555550189'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -960,7 +1000,7 @@ patient_51:
   address_city: 'Irmaborough'
   address_state: 'California'
   address_zip: '86846-7192'
-  primary_telephone: '(555) 555-0189'
+  primary_telephone: '+15555550189'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -984,7 +1024,7 @@ patient_52:
   address_city: 'Port Madalene'
   address_state: 'New Mexico'
   address_zip: '69857'
-  primary_telephone: '(555) 555-1234'
+  primary_telephone: '+15555551234'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -1008,7 +1048,7 @@ patient_53:
   address_city: 'Port Madalene'
   address_state: 'New Mexico'
   address_zip: '69857'
-  primary_telephone: '(555) 555-1234'
+  primary_telephone: '+15555551234'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -1032,7 +1072,7 @@ patient_54:
   address_city: 'Kemmerside'
   address_state: 'Utah'
   address_zip: '28817-1621'
-  primary_telephone: '(555) 555-1234'
+  primary_telephone: '+15555551234'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'
@@ -1056,7 +1096,7 @@ patient_55:
   address_city: 'Kemmerside'
   address_state: 'Utah'
   address_zip: '28817-1621'
-  primary_telephone: '(555) 555-1234'
+  primary_telephone: '+15555551234'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
   source_of_report: 'CDC'

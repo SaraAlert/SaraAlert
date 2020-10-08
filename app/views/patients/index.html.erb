@@ -1,21 +1,22 @@
 <% content_for :assets do %>
-  <%= javascript_pack_tag "datatables" %>
+  <%= javascript_pack_tag 'datatables' %>
 <% end %>
-<%= render partial: "layouts/breadcrumb", locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [ {value: "Dashboard", href: nil} ] } %>
+<%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Dashboard', href: nil }] } %>
 
 <div class="btn-group">
-
-  <%= link_to '<i class="fas fa-plus-square"></i> Enroll New Monitoree'.html_safe, {controller: "patients", action: "new"}, class: "btn btn-primary btn-square ml-2 mb-3" %>
-
-  <%= link_to '<i class="fas fa-chart-pie"></i> Analytics'.html_safe, {controller: :analytics, action: "index"}, class: "btn btn-primary btn-square ml-2 mb-3" %>
-
+  <%= link_to({ controller: 'patients', action: 'new' }, { class: 'btn btn-primary btn-square ml-2 mb-3' }) do %>
+    <i class="fas fa-plus-square"></i> Enroll New Monitoree
+  <% end %>
+  <%= link_to({ controller: :analytics, action: 'index' }, { class: 'btn btn-primary btn-square ml-2 mb-3' }) do %>
+    <i class="fas fa-chart-pie"></i> Analytics
+  <% end %>
 </div>
 
 <div class="mx-2 pb-4">
   <div class="card card-square">
     <h5 class="card-header">Enrolled Monitorees</h5>
     <div class="m-3">
-      <%= render partial: "patients", locals: { patients: current_user.enrolled_patients } %>
+      <%= render partial: 'patients', locals: { patients: current_user.enrolled_patients } %>
     </div>
   </div>
 </div>

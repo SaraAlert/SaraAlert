@@ -6,12 +6,9 @@ import mockAnalyticsData from '../mocks/mockAnalytics'
 
 let wrapped = shallow(<PublicHealthAnalytics current_user={mockUser1} stats={mockAnalyticsData} />);
 
-describe('PublicHealthAnalytics properly renders', () => {
-  it('section header', () => {
-      expect(wrapped.find('.display-5').text()).toEqual('Epidemiological Summary');
-  });
-
-  it('export button', () => {
+describe('PublicHealthAnalytics', () => {
+  it('Properly renders all main components', () => {
+    expect(wrapped.find('.display-5').text()).toEqual('Epidemiological Summary');
     expect(wrapped.find('.export-png').exists()).toBeTruthy();
   });
 });

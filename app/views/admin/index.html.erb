@@ -1,7 +1,6 @@
-<%= stylesheet_link_tag "AdminTable" %>
-<%= react_component("admin/AdminTable", {
-        role_types: Role.pluck(:name).uniq.reverse.map{|role| role.split('_').map(&:capitalize).join(' ')}, 
-        authenticity_token: form_authenticity_token, 
-        is_usa_admin: current_user.can_send_admin_emails? 
-    }) 
-%>
+<%= stylesheet_link_tag 'AdminTable' %>
+<%= react_component('admin/AdminTable', {
+                      role_types: Role.pluck(:name).uniq.reverse.map { |role| role.split('_').map(&:capitalize).join(' ') },
+                      authenticity_token: form_authenticity_token,
+                      is_usa_admin: current_user.can_send_admin_emails?
+                    }) %>

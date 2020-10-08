@@ -1,16 +1,17 @@
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>Sara Alert</title>
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
   <script>
-    window.BASE_PATH = "<%= ADMIN_OPTIONS['base_path'] %>";
-    window.SENTRY_URL = "<%= ADMIN_OPTIONS['sentry_url'] %>";
-    window.SARA_VERSION = "<%= ADMIN_OPTIONS['version'] %>";
-    window.USER_EMAIL = "<%= current_user&.email || 'NONE' %>";
-    window.USER_ID = "<%= current_user&.id || 'NONE' %>";
+    // Because the ERB should use to_json in all <script> tags, some values must be HTML escaped.
+    window.BASE_PATH = "<%= ADMIN_OPTIONS['base_path'].to_json %>".replace(/&quot;/g, '');
+    window.SENTRY_URL = "<%= ADMIN_OPTIONS['sentry_url'].to_json %>".replace(/&quot;/g, '');
+    window.SARA_VERSION = "<%= ADMIN_OPTIONS['version'].to_json %>".replace(/&quot;/g, '');
+    window.USER_EMAIL = "<%= (current_user&.email || 'NONE').to_json %>".replace(/&quot;/g, '');
+    window.USER_ID = "<%= (current_user&.id || 'NONE').to_json %>";
   </script>
   <%= stylesheet_pack_tag 'application', media: 'all' %>
   <%= javascript_pack_tag 'application' %>

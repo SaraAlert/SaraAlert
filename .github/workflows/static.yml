@@ -1,10 +1,6 @@
 name: Static Analysis
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push]
 
 jobs:
   test:
@@ -51,6 +47,8 @@ jobs:
         run: bundle exec brakeman -qAzw1
       - name: Run Rubocop
         run: bundle exec rubocop
+      - name: Run ERB Lint
+        run: bundle exec erblint --lint-all
       - name: Run ESLint
         run: ./node_modules/.bin/eslint app/javascript/components
 

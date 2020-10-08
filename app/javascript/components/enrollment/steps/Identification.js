@@ -24,17 +24,13 @@ class Identification extends React.Component {
       modified: {},
       languageOptions: this.getLanguageOptions(),
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleDateChange = this.handleDateChange.bind(this);
-    this.handleLanguageChange = this.handleLanguageChange.bind(this);
-    this.validate = this.validate.bind(this);
   }
 
-  handleChange(event) {
+  handleChange = event => {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    let self = this;
+    const self = this;
     event.persist();
     this.setState(
       {
@@ -45,7 +41,7 @@ class Identification extends React.Component {
         self.props.setEnrollmentState({ ...self.state.modified });
       }
     );
-  }
+  };
 
   handleWorkflowChange = event => {
     const value = event.value;
@@ -66,8 +62,8 @@ class Identification extends React.Component {
 
   getWorkflowValue = () => (this.state.current.isolation ? WORKFLOW_OPTIONS[1] : WORKFLOW_OPTIONS[0]);
 
-  handleDateChange(field, date) {
-    let self = this;
+  handleDateChange = (field, date) => {
+    const self = this;
     this.setState(
       state => {
         return {
@@ -81,8 +77,8 @@ class Identification extends React.Component {
         const dateOfBirth = self.state.current.patient.date_of_birth;
         // If date is undefined, age will stay undefined (which nulls out the age field)
         if (dateOfBirth) {
-          age = 0 - moment(dateOfBirth).diff(moment.now(), 'years');
-          age = age < 200 && age > 0 ? age : self.state.current.patient.age;
+          age = moment().diff(moment(dateOfBirth), 'years');
+          age = age >= 0 ? age : self.state.age;
         }
         self.setState(
           state => {
@@ -97,9 +93,9 @@ class Identification extends React.Component {
         );
       }
     );
-  }
+  };
 
-  handleLanguageChange(languageType, event) {
+  handleLanguageChange = (languageType, event) => {
     const value = event.value;
     const current = this.state.current;
     const modified = this.state.modified;
@@ -113,10 +109,10 @@ class Identification extends React.Component {
         self.props.setEnrollmentState({ ...self.state.modified });
       }
     );
-  }
+  };
 
-  validate(callback) {
-    let self = this;
+  validate = callback => {
+    const self = this;
     schema
       .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
@@ -135,7 +131,7 @@ class Identification extends React.Component {
           self.setState({ errors: issues });
         }
       });
-  }
+  };
 
   getLanguageOptions() {
     const langOptions = supportedLanguages.languages.map(lang => {
@@ -146,11 +142,11 @@ class Identification extends React.Component {
     return langOptions;
   }
 
-  getLanguageValue(language) {
+  getLanguageValue = language => {
     return this.state.languageOptions.find(lang => lang.value === language);
-  }
+  };
 
-  renderLanguageSupportMessage(selectedLanguage, languageType) {
+  renderPrimaryLanguageSupportMessage(selectedLanguage) {
     if (selectedLanguage) {
       const languageJson = supportedLanguages.languages.find(l => l.name === selectedLanguage);
 
@@ -163,40 +159,25 @@ class Identification extends React.Component {
         if (!fullySupported) {
           let message = languageJson.name;
           if (!sms && !email && !phone) {
-            message += ' is not currently supported by Sara Alert.';
-            if (languageType === 'primary') {
-              message += ' Any messages sent to this monitoree will be in English.';
-            }
+            message += ' is not currently supported by Sara Alert. Any messages sent to this monitoree will be in English.';
           } else if (!sms && !email && phone) {
-            message += ' is supported for the telephone call method only.';
-            if (languageType === 'primary') {
-              message += ' If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
-            }
+            message +=
+              ' is supported for the telephone call method only. If email or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
           } else if (!sms && email && !phone) {
-            message += ' is supported for the email weblink method only.';
-            if (languageType === 'primary') {
-              message += ' If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
-            }
+            message +=
+              ' is supported for the email weblink method only. If telephone call or SMS texted weblink is selected as the preferred reporting method, messages will be in English.';
           } else if (!sms && email && phone) {
-            message += ' is supported for telephone call and email reporting methods only.';
-            if (languageType === 'primary') {
-              message += ' If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
-            }
+            message +=
+              ' is supported for telephone call and email reporting methods only. If SMS texted weblink is selected as the preferred reporting method, the text will be in English.';
           } else if (sms && !email && !phone) {
-            message += ' is supported for the SMS text weblink method only.';
-            if (languageType === 'primary') {
-              message += ' If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
-            }
+            message +=
+              ' is supported for the SMS text weblink method only. If telephone call or emailed weblink is selected as the preferred reporting method, messages will be in English.';
           } else if (sms && !email && phone) {
-            message += ' is supported for telephone call and SMS text reporting methods only.';
-            if (languageType === 'primary') {
-              message += ' If email is selected as the preferred reporting method, the email will be in English.';
-            }
+            message +=
+              ' is supported for telephone call and SMS text reporting methods only. If email is selected as the preferred reporting method, the email will be in English.';
           } else if (sms && email && !phone) {
-            message += ' is supported for email and SMS text reporting methods only.';
-            if (languageType === 'primary') {
-              message += ' If telephone call is selected as the preferred reporting method, the call will be in English.';
-            }
+            message +=
+              ' is supported for email and SMS text reporting methods only. If telephone call is selected as the preferred reporting method, the call will be in English.';
           }
           return (
             <i>
@@ -285,6 +266,8 @@ class Identification extends React.Component {
                   <DateInput
                     id="date_of_birth"
                     date={this.state.current.patient.date_of_birth}
+                    minDate={'1900-01-01'}
+                    maxDate={moment().format('YYYY-MM-DD')}
                     onChange={date => this.handleDateChange('date_of_birth', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_birth']}
@@ -301,8 +284,9 @@ class Identification extends React.Component {
                     placeholder=""
                     size="lg"
                     className="form-square"
-                    value={this.state.current.patient.age || ''}
+                    value={this.state.current.patient.age === undefined ? '' : this.state.current.patient.age}
                     onChange={this.handleChange}
+                    disabled
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['age']}
@@ -379,19 +363,13 @@ class Identification extends React.Component {
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
-                  <Form.Check
-                    type="switch"
-                    id="white"
-                    label="WHITE"
-                    checked={this.state.current.patient.white === true || false}
-                    onChange={this.handleChange}
-                  />
+                  <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.patient.white} onChange={this.handleChange} />
                   <Form.Check
                     className="pt-2"
                     type="switch"
                     id="black_or_african_american"
                     label="BLACK OR AFRICAN AMERICAN"
-                    checked={this.state.current.patient.black_or_african_american === true || false}
+                    checked={this.state.current.patient.black_or_african_american}
                     onChange={this.handleChange}
                   />
                   <Form.Check
@@ -399,23 +377,16 @@ class Identification extends React.Component {
                     type="switch"
                     id="american_indian_or_alaska_native"
                     label="AMERICAN INDIAN OR ALASKA NATIVE"
-                    checked={this.state.current.patient.american_indian_or_alaska_native === true || false}
+                    checked={this.state.current.patient.american_indian_or_alaska_native}
                     onChange={this.handleChange}
                   />
-                  <Form.Check
-                    className="pt-2"
-                    type="switch"
-                    id="asian"
-                    label="ASIAN"
-                    checked={this.state.current.patient.asian === true || false}
-                    onChange={this.handleChange}
-                  />
+                  <Form.Check className="pt-2" type="switch" id="asian" label="ASIAN" checked={this.state.current.patient.asian} onChange={this.handleChange} />
                   <Form.Check
                     className="pt-2"
                     type="switch"
                     id="native_hawaiian_or_other_pacific_islander"
                     label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER"
-                    checked={this.state.current.patient.native_hawaiian_or_other_pacific_islander === true || false}
+                    checked={this.state.current.patient.native_hawaiian_or_other_pacific_islander}
                     onChange={this.handleChange}
                   />
                 </Form.Group>
@@ -473,12 +444,16 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
               <Form.Row>
-                <Form.Group as={Col} controlId="secondary_language_support_message">
-                  {this.renderLanguageSupportMessage(this.state.current.patient.primary_language, 'primary')}
+                <Form.Group as={Col} controlId="primary_language_support_message">
+                  {this.renderPrimaryLanguageSupportMessage(this.state.current.patient.primary_language)}
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
                 <Form.Group as={Col} controlId="secondary_language_support_message">
-                  {this.renderLanguageSupportMessage(this.state.current.patient.secondary_language, 'secondary')}
+                  {this.state.current.patient.secondary_language && (
+                    <i>
+                      <b>* Warning:</b> Not used to determine which language the system sends messages to the monitoree in.
+                    </i>
+                  )}
                 </Form.Group>
               </Form.Row>
               <Form.Row className="pt-1">

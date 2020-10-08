@@ -63,7 +63,7 @@ class SymptomOnset extends React.Component {
                 SYMPTOM ONSET
                 <InfoTooltip tooltipTextKey={this.props.patient.isolation ? 'isolationSymptomOnset' : 'exposureSymptomOnset'} location="right"></InfoTooltip>
                 <div style={{ display: 'inline' }}>
-                  <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-1">
+                  <span data-for="user_defined_symptom_onset_tooltip" data-tip="" className="ml-2">
                     {this.props.patient.user_defined_symptom_onset ? <i className="fas fa-user"></i> : <i className="fas fa-desktop"></i>}
                   </span>
                   <ReactTooltip id="user_defined_symptom_onset_tooltip" multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
@@ -85,6 +85,7 @@ class SymptomOnset extends React.Component {
               <DateInput
                 id="symptom_onset"
                 date={this.state.symptom_onset}
+                minDate={'2020-01-01'}
                 maxDate={moment()
                   .add(30, 'days')
                   .format('YYYY-MM-DD')}

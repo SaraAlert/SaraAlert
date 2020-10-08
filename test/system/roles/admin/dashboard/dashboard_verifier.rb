@@ -7,7 +7,7 @@ require_relative '../../../lib/system_test_utils'
 class AdminDashboardVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_user(user, should_exist = true)
+  def verify_user(user, should_exist: true)
     Capybara.using_wait_time(4) do
       if should_exist
         assert page.has_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', user.email)
@@ -20,7 +20,7 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
     end
   end
 
-  def verify_add_user(user_data, submit = true)
+  def verify_add_user(user_data, submit: true)
     if submit
       assert page.has_content?(user_data[:email]), @@system_test_utils.get_err_msg('New user info', 'email', user_data[:email])
       assert page.has_content?(user_data[:jurisdiction]), @@system_test_utils.get_err_msg('New user info', 'jurisdiction', user_data[:jurisdiction])

@@ -1,0 +1,37 @@
+---
+glob: "app/**/*.{html,text}{+*,}.erb"
+EnableDefaultLinters: true
+linters:
+  ErbSafety:
+    enabled: true
+  SpaceAroundErbTag:
+    enabled: false
+  RightTrim:
+    enabled: true
+    enforced_style: '-'
+  NoJavascriptTagHelper:
+    enabled: true
+    correction_style: 'plain'
+  SelfClosingTag:
+    enabled: true
+    enforced_style: 'always'
+
+  Rubocop:
+    enabled: true
+    rubocop_config:
+      inherit_from:
+        - .rubocop.yml
+      Layout/InitialIndentation:
+        Enabled: false
+      Layout/TrailingWhitespace:
+        Enabled: false
+      Layout/TrailingEmptyLines:
+        Enabled: false
+      Naming/FileName:
+        Enabled: false
+      Style/FrozenStringLiteralComment:
+        Enabled: false
+      Layout/LineLength:
+        Enabled: false
+      Lint/UselessAssignment:
+        Enabled: false
