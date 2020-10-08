@@ -31,9 +31,10 @@ class ThresholdConditionTest < ActiveSupport::TestCase
     symptoms = threshold_condition.clone_symptoms_negate_bool_values
 
     symptoms.each_with_index do |symptom, idx|
-      if symptom.type == 'BoolSymptom'
+      case symptom.type
+      when 'BoolSymptom'
         assert_not_equal(threshold_condition.symptoms[idx].value, symptom.value)
-      elsif symptom.type == 'IntegerSymptom'
+      when 'IntegerSymptom'
         assert_equal(100_000, symptom.value)
       else
         assert_equal(100_000.0, symptom.value)
