@@ -132,7 +132,7 @@ namespace :demo do
 
     print 'Creating demo Doorkeeper OAuth application...'
 
-    Doorkeeper::Application.create(name: 'demo', redirect_uri: 'http://localhost:3000/redirect', scopes: 'user/*.read user/*.write user/*.*', uid: 'demo-oauth-app-uid', secret: 'demo-oauth-app-secret')
+    Doorkeeper::Application.create(name: 'demo', redirect_uri: 'http://localhost:3000/redirect', scopes: 'user/Patient.* user/Observation.read user/QuestionnaireResponse.read', uid: 'demo-oauth-app-uid', secret: 'demo-oauth-app-secret')
 
     puts ' done!'
 
