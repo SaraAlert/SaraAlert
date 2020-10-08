@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Validates that a given date (attribute) does not occur after the date provided in options
 class LatestDateValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return unless options.key?(:date)
