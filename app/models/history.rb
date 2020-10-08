@@ -167,7 +167,7 @@ class History < ApplicationRecord
 
     if !history[:params][:monitoring].blank? && !history[:params][:monitoring]
       history[:note] = ', and chose to "End Monitoring"'
-    elsif !history[:patient][:isolation].present? && history[:params][:isolation].present?
+    elsif !history[:patient][:isolation].present? && history[:params][:isolation].present? && history[:household] == :patient
       history[:note] = ', and chose to "Continue Monitoring in Isolation Workflow"'
     end
 
