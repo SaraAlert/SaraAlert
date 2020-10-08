@@ -121,7 +121,7 @@ class PatientTest < ActiveSupport::TestCase
     assert_not responder.active_dependents_exclude_self.pluck(:id).include?(responder.id)
   end
 
-  test 'validates last date of exposure is not more than 30 days in the future' do
+  test 'validates last date of exposure date constraints' do
     patient = build(:patient, last_date_of_exposure: Time.now)
     assert patient.valid?
 
@@ -136,9 +136,12 @@ class PatientTest < ActiveSupport::TestCase
 
     patient = build(:patient, last_date_of_exposure: Time.now + 31.days)
     assert_not patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Date.new(1900, 1, 1))
+    assert_not patient.valid?
   end
 
-  test 'validates symptom onset is not more than 30 days in the future' do
+  test 'validates symptom onset date constraints' do
     patient = build(:patient, symptom_onset: Time.now)
     assert patient.valid?
 
@@ -152,6 +155,9 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
 
     patient = build(:patient, symptom_onset: Time.now + 31.days)
+    assert_not patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Date.new(1900, 1, 1))
     assert_not patient.valid?
   end
 
@@ -172,7 +178,7 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.valid?
   end
 
-  test 'validates date of birth is not before 1/1/1900' do
+  test 'validates date of birth date constraints' do
     patient = build(:patient, date_of_birth: nil)
     assert patient.valid?
 
@@ -181,6 +187,100 @@ class PatientTest < ActiveSupport::TestCase
 
     patient = build(:patient, date_of_birth: Date.new(1800, 1, 1))
     assert_not patient.valid?
+
+    patient = build(:patient, date_of_birth: 1.day.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates date of departure date constraints' do
+    patient = build(:patient, date_of_departure: Date.new(2020, 1, 1))
+    assert patient.valid?
+
+    patient = build(:patient, date_of_departure: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_departure: nil)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_departure: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, date_of_departure: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates date of arrival date constraints' do
+    patient = build(:patient, date_of_arrival: Date.new(2020, 1, 1))
+    assert patient.valid?
+
+    patient = build(:patient, date_of_arrival: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_arrival: nil)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_arrival: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, date_of_arrival: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates additional planned travel start date constraints' do
+    patient = build(:patient, additional_planned_travel_start_date: Date.new(2020, 1, 1))
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_start_date: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_start_date: nil)
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_start_date: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, additional_planned_travel_start_date: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates additional planned travel end date constraints' do
+    patient = build(:patient, additional_planned_travel_end_date: Date.new(2020, 1, 1))
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_end_date: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_end_date: nil)
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_end_date: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, additional_planned_travel_end_date: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates extended isolation date constraints' do
+    patient = build(:patient, extended_isolation: nil)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: 31.days.ago)
+    assert_not patient.valid?
+
+    patient = build(:patient, extended_isolation: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'can update patients with out of range dates' do
+    # Create & save a patient with an invalid date field to confirm that updating patients
+    # unrelated attributes will not cause an error
+    patient = build(:patient, date_of_birth: Date.new(1800, 1, 1))
+    patient.save(validate: false)
+
+    assert patient.update(first_name: 'test')
   end
 
   test 'close eligible does not include purged records' do
