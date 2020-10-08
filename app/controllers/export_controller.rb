@@ -7,11 +7,9 @@ class ExportController < ApplicationController
   include ImportExport
 
   before_action :authenticate_user!
+  before_action :authenticate_user_role
 
   def csv
-    # Verify permissions
-    redirect_to(root_url) && return unless current_user.can_export?
-
     # Verify params
     redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
@@ -34,9 +32,6 @@ class ExportController < ApplicationController
   end
 
   def excel_comprehensive_patients
-    # Verify permissions
-    redirect_to(root_url) && return unless current_user.can_export?
-
     # Verify params
     redirect_to(root_url) && return unless params[:workflow] == 'exposure' || params[:workflow] == 'isolation'
 
@@ -59,8 +54,6 @@ class ExportController < ApplicationController
   end
 
   def excel_full_history_patients
-    redirect_to(root_url) && return unless current_user.can_export?
-
     type = "full_history_#{params[:scope] == 'purgeable' ? 'purgeable' : 'all'}"
 
     if current_user.export_receipts.where(export_type: type).where('created_at > ?', 1.hour.ago).exists?
@@ -80,7 +73,6 @@ class ExportController < ApplicationController
   end
 
   def excel_full_history_patient
-    redirect_to(root_url) && return unless current_user.can_export?
     return unless current_user.viewable_patients.exists?(params[:patient_id])
 
     patients = current_user.viewable_patients.where(id: params[:patient_id])
@@ -88,5 +80,31 @@ class ExportController < ApplicationController
 
     History.monitoree_data_downloaded(patient: patients.first, created_by: current_user.email)
     send_data excel_export(patients)
+  end
+
+  def custom
+    permitted_params = params.permit(:file_ext, :fields, :filters)
+
+    # Validate file_type param
+    file_type = permitted_params.require(:file_ext).to_sym
+    return head :bad_request unless %i[csv xlsx]
+
+    # Validate fields param
+    fields = permitted_params.require(:fields)
+    return head :bad_request unless fields.kind_of?(Array)
+    fields.each do |field|
+      return head :bad_request unless PATIENT_FIELDS.keys.include?(field.to_sym)
+    end
+
+    # Validate filters
+    filters = permitted_params[:filters]
+
+    render json: {}
+  end
+
+  private
+
+  def authenticate_user_role
+    redirect_to(root_url) && return unless current_user.can_export?
   end
 end
