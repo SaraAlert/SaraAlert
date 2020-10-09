@@ -4,6 +4,14 @@
 class User < ApplicationRecord
   rolify
 
+  ROLES = %w[
+    admin
+    analyst
+    enroller
+    public_health
+    public_health_enroller
+  ].freeze
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable
@@ -229,5 +237,9 @@ class User < ApplicationRecord
   # Can this user send system email messages?
   def analyst?
     has_role?(:analyst)
+  end
+
+  def has_role?(role)
+    self.role == role.to_s
   end
 end

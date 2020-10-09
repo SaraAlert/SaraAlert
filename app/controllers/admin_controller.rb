@@ -115,8 +115,7 @@ class AdminController < ApplicationController
 
     # Parse back to format in records
     role = role.split(' ').map(&:downcase).join('_')
-    roles = Role.pluck(:name)
-    return head :bad_request unless roles.include?(role)
+    return head :bad_request unless User.ROLES.include?(role)
 
     jurisdiction = permitted_params[:jurisdiction]
 
@@ -137,9 +136,9 @@ class AdminController < ApplicationController
       password: password,
       jurisdiction: Jurisdiction.find_by_id(jurisdiction),
       force_password_change: true,
-      api_enabled: is_api_enabled
+      api_enabled: is_api_enabled,
+      role: role
     )
-    user.add_role role.to_sym
     user.save!
     UserMailer.welcome_email(user, password).deliver_later
   end
@@ -166,8 +165,7 @@ class AdminController < ApplicationController
 
     # Parse back to format in records
     role = role.split(' ').map(&:downcase).join('_')
-    roles = Role.pluck(:name)
-    return head :bad_request unless roles.include?(role)
+    return head :bad_request unless User.ROLES.include?(role)
 
     jurisdiction = permitted_params[:jurisdiction]
 
@@ -195,12 +193,8 @@ class AdminController < ApplicationController
     # Update jurisdiction
     user.jurisdiction = Jurisdiction.find_by_id(jurisdiction)
 
-    # Update role
-    user.roles = []
-    user.add_role role.to_sym
-
     # Update API access
-    user.update!(api_enabled: is_api_enabled)
+    user.update!(api_enabled: is_api_enabled, role: role)
 
     # Update locked status
     if user.locked_at.nil? && is_locked

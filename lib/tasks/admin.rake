@@ -113,7 +113,7 @@ namespace :admin do
     # Parse and add symptoms list to jurisdiction if included
     jur_symps = nil
     if jur_values != nil
-      jur_symps = jur_values['symptoms'] 
+      jur_symps = jur_values['symptoms']
       jurisdiction.email = jur_values['email'] || ''
       jurisdiction.phone = jur_values['phone'] || ''
       jurisdiction.webpage = jur_values['webpage'] || ''
@@ -129,7 +129,7 @@ namespace :admin do
 
     threshold_condition = ThresholdCondition.create(symptoms: threshold_condition_symptoms)
     jurisdiction.threshold_conditions.push(threshold_condition)
-  
+
     jurisdiction.save
 
 
@@ -165,16 +165,6 @@ namespace :admin do
     end
     rescue ActiveRecord::RecordInvalid
       puts "Jurisdiction transfer failed"
-  end
-
-  desc "Create User Role Types"
-  task create_roles: :environment do
-    role_names = ['admin', 'analyst', 'enroller', 'public_health', 'public_health_enroller']
-    role_names.each do |role_name|
-      if Role.where(name: role_name).count == 0
-        Role.create(name: role_name)
-      end
-    end
   end
 
   desc 'Run the purge job'

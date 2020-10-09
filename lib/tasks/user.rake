@@ -5,7 +5,7 @@ namespace :user do
   task add: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
-    roles = Role.pluck(:name)
+    roles = User.ROLES
     jurisdictions = Jurisdiction.pluck(:name)
     email = ENV['EMAIL']
     raise 'EMAIL must be provided' unless email
@@ -25,9 +25,9 @@ namespace :user do
       email: email,
       password: password,
       jurisdiction: Jurisdiction.find_by_name(jurisdiction),
-      force_password_change: true # Require user to change password on first login
+      force_password_change: true, # Require user to change password on first login
+      role: role
     )
-    user.add_role role
     UserMailer.welcome_email(user, password).deliver_later
   end
 
@@ -35,7 +35,7 @@ namespace :user do
   task update: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
-    roles = Role.pluck(:name)
+    roles = User.ROLES
     jurisdictions = Jurisdiction.pluck(:name)
     email = ENV['EMAIL']
     raise 'EMAIL must be provided' unless email
@@ -49,10 +49,7 @@ namespace :user do
     end
 
     user.update_attributes!(password: password) if password
-    if role
-      user.roles.each { |role| user.remove_role(role.name) }
-      user.add_role role
-    end
+    user.update_attributes!(role: role) if role
     user.update_attributes!(jurisdiction: Jurisdiction.find_by_name(jurisdiction)) if jurisdiction
   end
 

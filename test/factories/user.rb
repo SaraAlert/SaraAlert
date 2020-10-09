@@ -17,45 +17,45 @@ FactoryBot.define do
     # spelling.
     factory :admin_user do
       after(:create) do |user|
-        user.add_role(:admin)
+        user.update(role: 'admin')
       end
     end
 
     factory :usa_admin_user do
       jurisdiction { create(:usa_jurisdiction) }
       after(:create) do |user|
-        user.add_role(:admin)
+        user.update(role: 'admin')
       end
     end
 
     factory :non_usa_admin_user do
       jurisdiction { create(:non_usa_jurisdiction) }
       after(:create) do |user|
-        user.add_role(:admin)
+        user.update(role: 'admin')
       end
     end
 
     factory :enroller_user do
       after(:create) do |user|
-        user.add_role(:enroller)
+        user.update(role: 'enroller')
       end
     end
 
     factory :public_health_enroller_user do
       after(:create) do |user|
-        user.add_role(:public_health_enroller)
+        user.update(role: 'public_health_enroller')
       end
     end
 
     factory :public_health_user do
       after(:create) do |user|
-        user.add_role(:public_health)
+        user.update(role: 'public_health')
       end
     end
 
     factory :analyst_user do
       after(:create) do |user|
-        user.add_role(:analyst)
+        user.update(role: 'analyst')
       end
     end
 
