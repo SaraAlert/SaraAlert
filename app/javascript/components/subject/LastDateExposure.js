@@ -219,6 +219,7 @@ class LastDateExposure extends React.Component {
                     .format('YYYY-MM-DD')}
                   onChange={this.handleDateChange}
                   placement="top"
+                  customClass="form-control-lg"
                 />
               </Col>
             </Row>

@@ -154,6 +154,7 @@ class Exposure extends React.Component {
               onChange={date => this.handleDateChange('symptom_onset', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['symptom_onset']}
+              customClass="form-control-lg"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['symptom_onset']}
@@ -218,6 +219,7 @@ class Exposure extends React.Component {
               onChange={date => this.handleDateChange('last_date_of_exposure', date)}
               placement="bottom"
               isInvalid={!!this.state.errors['last_date_of_exposure']}
+              customClass="form-control-lg"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['last_date_of_exposure']}

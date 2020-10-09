@@ -106,6 +106,7 @@ class SymptomOnset extends React.Component {
                 }
                 placement="bottom"
                 isClearable={this.props.patient.user_defined_symptom_onset}
+                customClass="form-control-lg"
               />
             </Col>
           </Row>

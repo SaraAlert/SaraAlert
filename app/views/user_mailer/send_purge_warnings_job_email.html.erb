@@ -1,0 +1,34 @@
+<h1>
+  Sara Alert Send Purge Warnings Job Results  (<%= ActionMailer::Base.default_url_options[:host] %>)
+</h1>
+<h2>
+  <%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %>
+</h2>
+<br />
+Total eligible for purge warning at runtime: <%= @eligible %>
+<br />
+Send during this job run: <b><%= @sent.count %></b>
+<br />
+Not sent during this job run (due to exceptions): <b><%= @not_sent.count %></b>
+<br />
+<h2>
+  Sent
+</h2>
+<br />
+ID
+<br />
+<% @sent.each do |s| %>
+  <%= s[:id] %>
+  <br />
+<% end %>
+<br />
+<h2>
+  Not Sent
+</h2>
+<br />
+ID, Reason
+<br />
+<% @not_sent.each do |ns| %>
+  <%= ns[:id] %>, <%= ns[:reason] %>
+  <br />
+<% end %>

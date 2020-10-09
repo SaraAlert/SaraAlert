@@ -33,6 +33,12 @@ body {
   border-radius: 0 !important;
 }
 
+.popover {
+  border-radius: 0 !important;
+  width: 750px !important;
+  max-width: 750px !important;
+}
+
 .brand-primary-color {
   background-color: #226891;
   color: #fff;
@@ -200,4 +206,24 @@ select.form-control {
 
 .reports-actions-title {
   height: 30px !important;
+}
+
+.dropdown-menu {
+  border-radius: 0 !important;
+}
+
+.modal-af {
+  width: 1000px !important;
+  max-width: 1000px !important;
+}
+
+.advanced-filter-dropdown {
+  max-width: 250px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+.justify-unset {
+  justify-content: unset;
 }
