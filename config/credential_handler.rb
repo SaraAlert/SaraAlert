@@ -84,7 +84,7 @@ module CredentialHandler
           verify_sub: true,
           aud: aud,
           verify_aud: true,
-          verify_jti: proc { |jti| validate_jti(jti, client_id) }
+          verify_jti: proc { |jti| validate_jti(jti, client_application.id) }
         }
       )
   
@@ -112,7 +112,7 @@ module CredentialHandler
       )
     rescue JWT::InvalidJtiError
       raise_standard_doorkeeper_error(
-        "JWT jti is invalid"
+        "JWT jti is invalid. JWT jti value must be unique for your client application."
       )
     rescue JWT::InvalidIatError
       raise_standard_doorkeeper_error(
@@ -126,9 +126,21 @@ module CredentialHandler
       )
     end
 
-    # Validate expiration value is no more than 5 minutes in the future
-    exp = decoded_token.exp
-    parsed_exp_date = Time.at(exp)
+    # Grab the JWT payload from the decode output array
+    payload = decoded_token.length > 0 ? decoded_token[0] : nil
+
+    # If the payload is nil for some reason, throw standard error.
+    if payload.nil?
+      raise_standard_doorkeeper_error(
+        "Issue decoding JWT assertion. Please verify the correct private key is being used to sign the JWT, and
+        that the correct public key(s) are registered with the application."
+      )
+    end
+
+    # Validate expiration value is no more than 5 minutes in the future.
+    token_expiration = payload["exp"]
+    parsed_exp_date = Time.at(token_expiration)
+
     if parsed_exp_date > Time.now + 5.minutes
       raise_standard_doorkeeper_error(
         "JWT signature is too far in the future. Must be a maximum of 5 minutes in the future."
@@ -138,7 +150,7 @@ module CredentialHandler
     # ---- PASSED VALIDATION ----
 
     # Add jti to table to keep track of previously encountered jti values to prevent replay attacks
-    save_jti(jti, client_id, decoded_token.exp)
+    save_jti(payload["jti"], client_application, parsed_exp_date)
 
     # Find the associated client secret so Doorkeeper can continue with this flow.
     # For the Sara Alert use of this particular flow, the real client secret is not required or used for validation
@@ -149,18 +161,15 @@ module CredentialHandler
   end
 
   # Creates a new record in the JwtIdentifier table in the DB to track encountered jti values for a given application
-  def self.save_jti(jti, client_id, expiration_timestamp)
-    # Convert to actual date and timestamp from epoch timestamp
-    parsed_exp_date = Time.at(expiration_timestamp)
-
-    # Create record
-    JwtIdentifier.create(application_id: client_id, value: jti, expiration_date: parsed_exp_date)
+  def self.save_jti(jti, client_app, parsed_exp_date)
+    # Create new JWT Identifier for this client oauth app
+    client_app.jwt_identifiers.create!(value: jti, expiration_date: parsed_exp_date)
   end
 
   # Verifies this JTI has not been encountered before
-  def self.validate_jti(jti, client_id)
+  def self.validate_jti(jti, app_id)
     # Get JTI values for this application - should only be at most 1
-    matching_jti_values = JwtIdentifier.where(application_id: client_id, value: jti)
+    matching_jti_values = JwtIdentifier.where(application_id: app_id, value: jti)
     if matching_jti_values.exists?
       # This is an issue - should not see the same jti within a JWT lifetime. 
       # Do not allow to prevent replay attacks. 

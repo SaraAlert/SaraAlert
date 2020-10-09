@@ -12,6 +12,7 @@ class PurgeJwtIdentifiersJob < ApplicationJob
     # Purge all
     eligible.destroy_all
 
+    # Get total after
     total_after = JwtIdentifier.count
 
     # Send results

@@ -15,7 +15,7 @@ class PurgeJwtIdentifiersJobTest < ActiveSupport::TestCase
   end
 
   test 'sends an email with all purged JWT identifiers' do
-    jwt_identifier = create(:jwt_identifier, value: 'a', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
+    create(:jwt_identifier, value: 'a', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
     email = PurgeJwtIdentifiersJob.perform_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -23,9 +23,9 @@ class PurgeJwtIdentifiersJobTest < ActiveSupport::TestCase
   end
 
   test 'deletes purge eligible JWT Identifiers' do
-    jwt_identifier_1 = create(:jwt_identifier, value: 'a', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
-    jwt_identifier_2 = create(:jwt_identifier, value: 'b', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
-    jwt_identifier_3 = create(:jwt_identifier, value: 'c', expiration_date: Time.now + 5.minutes, application_id: @oauth_app.id)
+    create(:jwt_identifier, value: 'a', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
+    create(:jwt_identifier, value: 'b', expiration_date: Time.now - 1.day, application_id: @oauth_app.id)
+    create(:jwt_identifier, value: 'c', expiration_date: Time.now + 5.minutes, application_id: @oauth_app.id)
 
     PurgeJwtIdentifiersJob.perform_now
     # Should be one remaining since one out of the above was NOT purge eligible
