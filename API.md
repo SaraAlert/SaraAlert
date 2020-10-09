@@ -34,7 +34,7 @@ This API is intended for use by public health organizations using Sara Alert, an
 	  - [PUT [base]/Patient/[:id]](#update-put-pat)
 	- [Searching](#search)
 	  - [GET [base]/Patient?parameter(s)](#search-get)
-     - [GET [base]/QuestionnaireResponse?subject=Patient/[:id]](#search-questionnaire-subj)
+	  - [GET [base]/QuestionnaireResponse?subject=Patient/[:id]](#search-questionnaire-subj)
 	  - [GET [base]/Observation?subject=Patient/[:id]](#search-observation-subj)
 	  - [GET [base]/Patient?_count=2](#search-all)
 	
