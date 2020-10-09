@@ -271,12 +271,12 @@ class Exposure extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-2">
+          <Form.Group as={Col} md="24" controlId="exposure_notes" className="mb-2">
             <Form.Label className="nav-input-label ml-1">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
-              rows="5"
+              rows="4"
               size="lg"
               className="form-square"
               placeholder="enter additional information about case"
@@ -296,7 +296,7 @@ class Exposure extends React.Component {
     return (
       <React.Fragment>
         <Form.Row>
-          <Form.Group as={Col} md="7" controlId="last_date_of_exposure">
+          <Form.Group as={Col} md="7" controlId="last_date_of_exposure" className="mb-2">
             <Form.Label className="nav-input-label">
               LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
@@ -322,7 +322,7 @@ class Exposure extends React.Component {
               {this.state.errors['last_date_of_exposure']}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} md="10" controlId="potential_exposure_location">
+          <Form.Group as={Col} md="10" controlId="potential_exposure_location" className="mb-2">
             <Form.Label className="nav-input-label">EXPOSURE LOCATION{schema?.fields?.potential_exposure_location?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['potential_exposure_location']}
@@ -335,7 +335,7 @@ class Exposure extends React.Component {
               {this.state.errors['potential_exposure_location']}
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} md="7" controlId="potential_exposure_country">
+          <Form.Group as={Col} md="7" controlId="potential_exposure_country" className="mb-2">
             <Form.Label className="nav-input-label">EXPOSURE COUNTRY{schema?.fields?.potential_exposure_country?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['potential_exposure_country']}
@@ -370,7 +370,7 @@ class Exposure extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
-        <Form.Label className="nav-input-label pb-2">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
+        <Form.Label className="nav-input-label pb-1">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
         <Form.Row>
           <Form.Group as={Col} md="auto" className="mb-0 my-auto pb-2">
             <Form.Check
@@ -519,12 +519,12 @@ class Exposure extends React.Component {
           </Form.Group>
         </Form.Row>
         <Form.Row>
-          <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-4">
+          <Form.Group as={Col} md="24" controlId="exposure_notes" className="pt-3 mb-2">
             <Form.Label className="nav-input-label">NOTES{schema?.fields?.exposure_notes?._exclusive?.required && ' *'}</Form.Label>
             <Form.Control
               isInvalid={this.state.errors['exposure_notes']}
               as="textarea"
-              rows="5"
+              rows="4"
               size="lg"
               className="form-square"
               placeholder="enter additional information about monitoree’s potential exposure"
@@ -548,18 +548,18 @@ class Exposure extends React.Component {
           {this.props.currentState.isolation && <Card.Header as="h5">Monitoree Case Information</Card.Header>}
           <Card.Body>
             <Form>
-              <Form.Row className="pt-2 pb-4 h-100">
+              <Form.Row className="pb-3 h-100">
                 <Form.Group as={Col} className="my-auto">
                   {!this.props.currentState.isolation && this.exposureFields()}
                   {this.props.currentState.isolation && this.isolationFields()}
                   <Form.Row className="pt-2 g-border-bottom-2" />
                   <Form.Row className="pt-2">
-                    <Form.Group as={Col}>
+                    <Form.Group as={Col} className="mb-2">
                       <Form.Label className="nav-input-label">PUBLIC HEALTH RISK ASSESSMENT AND MANAGEMENT</Form.Label>
                     </Form.Group>
                   </Form.Row>
                   <Form.Row>
-                    <Form.Group as={Col} md="18" controlId="jurisdiction_id" className="pt-2">
+                    <Form.Group as={Col} md="18" controlId="jurisdiction_id" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
@@ -599,7 +599,7 @@ class Exposure extends React.Component {
                           </Form.Group>
                         )}
                     </Form.Group>
-                    <Form.Group as={Col} md="6" controlId="assigned_user" className="pt-2">
+                    <Form.Group as={Col} md="6" controlId="assigned_user" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">
                         ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
                         <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
@@ -643,7 +643,7 @@ class Exposure extends React.Component {
                           </Form.Group>
                         )}
                     </Form.Group>
-                    <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="pt-2">
+                    <Form.Group as={Col} md="8" controlId="exposure_risk_assessment" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">
                         RISK ASSESSMENT{schema?.fields?.exposure_risk_assessment?._exclusive?.required && ' *'}
                       </Form.Label>
@@ -664,7 +664,7 @@ class Exposure extends React.Component {
                         {this.state.errors['exposure_risk_assessment']}
                       </Form.Control.Feedback>
                     </Form.Group>
-                    <Form.Group as={Col} md="16" controlId="monitoring_plan" className="pt-2">
+                    <Form.Group as={Col} md="16" controlId="monitoring_plan" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">MONITORING PLAN{schema?.fields?.monitoring_plan?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['monitoring_plan']}

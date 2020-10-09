@@ -163,7 +163,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2">
+                  <Form.Row>
                     <Form.Group as={Col} md={8} controlId="address_line_2">
                       <Form.Label className="nav-input-label">ADDRESS 2{schemaDomestic?.fields?.address_line_2?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
@@ -191,7 +191,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2">
+                  <Form.Row>
                     <Form.Group as={Col} md={8} controlId="address_county">
                       <Form.Label className="nav-input-label">
                         COUNTY (DISTRICT) {schemaDomestic?.fields?.address_county?._exclusive?.required && ' *'}
@@ -285,7 +285,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2">
+                  <Form.Row>
                     <Form.Group as={Col} md={8} controlId="monitored_address_line_2">
                       <Form.Label className="nav-input-label">
                         ADDRESS 2{schemaDomestic?.fields?.monitored_address_line_2?._exclusive?.required && ' *'}
@@ -315,7 +315,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2 pb-3">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md={8} controlId="monitored_address_county">
                       <Form.Label className="nav-input-label">
                         COUNTY (DISTRICT) {schemaDomestic?.fields?.monitored_address_county?._exclusive?.required && ' *'}
@@ -387,7 +387,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2">
+                  <Form.Row>
                     <Form.Group as={Col} md={8} controlId="foreign_address_line_2">
                       <Form.Label className="nav-input-label">
                         ADDRESS 2{schemaForeign?.fields?.foreign_address_line_2?._exclusive?.required && ' *'}
@@ -417,7 +417,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2">
+                  <Form.Row>
                     <Form.Group as={Col} md={8} controlId="foreign_address_line_3">
                       <Form.Label className="nav-input-label">
                         ADDRESS 3{schemaForeign?.fields?.foreign_address_line_3?._exclusive?.required && ' *'}
@@ -457,7 +457,7 @@ class Address extends React.Component {
                       <h5>Address at Destination in USA Where Monitored</h5>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2 pb-2">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md={24} className="my-auto">
                       <span className="font-weight-light">
                         (If monitoree is planning on travel within the US, enter the <b>first</b> location where they may be contacted)
@@ -518,7 +518,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2">
+                  <Form.Row>
                     <Form.Group as={Col} md={8} controlId="foreign_monitored_address_line_2">
                       <Form.Label className="nav-input-label">
                         ADDRESS 2{schemaForeign?.fields?.foreign_monitored_address_line_2?._exclusive?.required && ' *'}
@@ -550,7 +550,7 @@ class Address extends React.Component {
                       </Form.Control.Feedback>
                     </Form.Group>
                   </Form.Row>
-                  <Form.Row className="pt-2 pb-3">
+                  <Form.Row className="pb-2">
                     <Form.Group as={Col} md={8} controlId="foreign_monitored_address_county">
                       <Form.Label className="nav-input-label">
                         COUNTY (DISTRICT) {schemaForeign?.fields?.foreign_monitored_address_county?._exclusive?.required && ' *'}

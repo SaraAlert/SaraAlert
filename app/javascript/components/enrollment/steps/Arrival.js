@@ -72,7 +72,7 @@ class Arrival extends React.Component {
           <Card.Header as="h5">Monitoree Arrival Information</Card.Header>
           <Card.Body>
             <Form>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="8" controlId="port_of_origin">
                   <Form.Label className="nav-input-label">PORT OF ORIGIN{schema?.fields?.port_of_origin?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -106,7 +106,7 @@ class Arrival extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="8" controlId="flight_or_vessel_number">
                   <Form.Label className="nav-input-label">
                     FLIGHT OR VESSEL NUMBER{schema?.fields?.flight_or_vessel_number?._exclusive?.required && ' *'}
@@ -136,7 +136,7 @@ class Arrival extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="8" controlId="port_of_entry_into_usa">
                   <Form.Label className="nav-input-label">
                     PORT OF ENTRY INTO USA{schema?.fields?.port_of_entry_into_usa?._exclusive?.required && ' *'}
@@ -172,7 +172,7 @@ class Arrival extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="8" controlId="source_of_report">
                   <Form.Label className="nav-input-label">SOURCE OF REPORT{schema?.fields?.source_of_report?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -212,7 +212,7 @@ class Arrival extends React.Component {
                   </Form.Group>
                 )}
               </Form.Row>
-              <Form.Row className="pt-2 pb-3">
+              <Form.Row className="pb-2">
                 <Form.Group as={Col} md="24" controlId="travel_related_notes">
                   <Form.Label className="nav-input-label">TRAVEL RELATED NOTES{schema?.fields?.travel_related_notes?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control

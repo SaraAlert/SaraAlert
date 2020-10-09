@@ -188,7 +188,7 @@ class Contact extends React.Component {
           <Card.Header as="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
             <Form>
-              <Form.Row className="pt-2 pb-3">
+              <Form.Row className="pb-3">
                 <Form.Group as={Col} md="8" controlId="preferred_contact_method">
                   <Form.Label className="nav-input-label">
                     PREFERRED REPORTING METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
@@ -231,7 +231,7 @@ class Contact extends React.Component {
                       <option>Afternoon</option>
                       <option>Evening</option>
                     </Form.Control>
-                    <Form.Row className="pt-2">
+                    <Form.Row>
                       <Form.Group as={Col} md="auto">
                         Morning:
                         <br />
@@ -253,7 +253,7 @@ class Contact extends React.Component {
                   </Form.Group>
                 )}
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="11" controlId="primary_telephone">
                   <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
                   <PhoneInput
@@ -282,7 +282,7 @@ class Contact extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="11" controlId="primary_telephone_type">
                   <Form.Label className="nav-input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -346,7 +346,7 @@ class Contact extends React.Component {
                     )}
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="auto">
                   Smartphone:
                   <br />
@@ -362,7 +362,7 @@ class Contact extends React.Component {
                   <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3 pb-3">
+              <Form.Row className="pt-3 pb-2">
                 <Form.Group as={Col} md="8" controlId="email">
                   <Form.Label className="nav-input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
