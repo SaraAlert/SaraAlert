@@ -31,9 +31,7 @@ class AdminController < ApplicationController
     return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
 
     # Get all users within the current user's jurisdiction
-    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select(
-      'users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, jurisdictions.path'
-    )
+    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, users.role, jurisdictions.path')
 
     # Filter by search text
     users = filter(users, search)
@@ -53,7 +51,7 @@ class AdminController < ApplicationController
         id: user.id,
         email: user.email,
         jurisdiction_path: user.path || '',
-        role_title: user.roles[0].name.split('_').map(&:capitalize).join(' ') || '',
+        role_title: user.role.split('_').map(&:capitalize).join(' ') || '',
         is_locked: !user.locked_at.nil? || false,
         is_api_enabled: user[:api_enabled] || false,
         is_2fa_enabled: !user.authy_id.nil? || false,
@@ -115,7 +113,7 @@ class AdminController < ApplicationController
 
     # Parse back to format in records
     role = role.split(' ').map(&:downcase).join('_')
-    return head :bad_request unless User.ROLES.include?(role)
+    return head :bad_request unless User::ROLES.include?(role)
 
     jurisdiction = permitted_params[:jurisdiction]
 
@@ -165,7 +163,7 @@ class AdminController < ApplicationController
 
     # Parse back to format in records
     role = role.split(' ').map(&:downcase).join('_')
-    return head :bad_request unless User.ROLES.include?(role)
+    return head :bad_request unless User::ROLES.include?(role)
 
     jurisdiction = permitted_params[:jurisdiction]
 

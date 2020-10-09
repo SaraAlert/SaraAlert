@@ -5,7 +5,7 @@ namespace :user do
   task add: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
-    roles = User.ROLES
+    roles = User::ROLES
     jurisdictions = Jurisdiction.pluck(:name)
     email = ENV['EMAIL']
     raise 'EMAIL must be provided' unless email
@@ -35,7 +35,7 @@ namespace :user do
   task update: :environment do
     raise 'This task is only for use in a development environment' unless Rails.env == 'development'
 
-    roles = User.ROLES
+    roles = User::ROLES
     jurisdictions = Jurisdiction.pluck(:name)
     email = ENV['EMAIL']
     raise 'EMAIL must be provided' unless email
