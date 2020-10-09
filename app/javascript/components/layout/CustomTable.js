@@ -215,6 +215,7 @@ class CustomTable extends React.Component {
               pageRangeDisplayed={4}
               marginPagesDisplayed={1}
               initialPage={this.props.page}
+              forcePage={this.props.page}
               onPageChange={this.props.handlePageUpdate}
               previousLabel="Previous"
               nextLabel="Next"

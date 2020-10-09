@@ -2,7 +2,25 @@
   position: relative;
 }
 
-.date-input__calendar_icon {
+.date-input__calendar_icon_sm {
+  z-index: 1;
+  position: absolute;
+  left: 1.00rem;
+  top: 0.40rem;
+  color: #495057;
+  font-size: 14pt;
+}
+
+.date-input__calendar_icon_md {
+  z-index: 1;
+  position: absolute;
+  left: 1.125rem;
+  top: 0.575rem;
+  color: #495057;
+  font-size: 16pt;
+}
+
+.date-input__calendar_icon_lg {
   z-index: 1;
   position: absolute;
   left: 1.25rem;
@@ -11,7 +29,15 @@
   font-size: 18pt;
 }
 
-.date-input__input {
+.date-input__input_sm {
+  padding-left: 2.375rem;
+}
+
+.date-input__input_md {
+  padding-left: 2.875rem;
+}
+
+.date-input__input_lg {
   padding-left: 3.375rem;
 }
 
