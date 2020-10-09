@@ -22,7 +22,7 @@ class SendPurgeWarningsJob < ApplicationJob
 
       # Send email to use with info
       UserMailer.purge_notification(user, num_purgeable_records).deliver_later
-      
+
       sent << { id: user.id }
     rescue StandardError => e
       not_sent << { id: user.id, reason: e.message }
