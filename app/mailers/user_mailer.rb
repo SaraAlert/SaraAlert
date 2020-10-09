@@ -20,6 +20,14 @@ class UserMailer < ApplicationMailer
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Purge Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
+  def jwt_identifier_purge_job_email(purged, not_purged, eligible)
+    @purged = purged
+    @not_purged = not_purged
+    @eligible = eligible
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert JWT Identifier Purge Job Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
+
   def close_job_email(closed, not_closed, eligible)
     @closed = closed
     @not_closed = not_closed

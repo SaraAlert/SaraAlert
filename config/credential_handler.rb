@@ -53,7 +53,7 @@ module CredentialHandler
 
     # Find the associated client application. 
     # Return if not found - Doorkeeper will automatically throw invalid_client error in this case.
-    client_application = Doorkeeper::Application.find_by(uid: client_id)
+    client_application = OauthApplication.find_by(uid: client_id)
     return unless client_application.present?
     
     # Find the registered public key set for this client application to decode the JWT assertion.
