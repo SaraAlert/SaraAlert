@@ -120,9 +120,10 @@ class CloseContact extends React.Component {
                   className="form-square"
                   value={this.state.notes || ''}
                   placeholder={this.closeContactNotePlaceholder}
-                  maxlength="2000"
+                  maxLength="2000"
                   onChange={this.handleChange}
                 />
+                <Form.Label class="close-contact-character-limit"> {2000 - this.state.notes?.length} characters remaining</Form.Label>
               </Form.Group>
             </Row>
           </Form>
