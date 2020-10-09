@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Laboratory: represents a lab result
+# JwtIdentifier: Represents a JWT Identifier (jti) from an incoming access token request JWT assertion.
 class JwtIdentifier < ApplicationRecord
   belongs_to :application, class_name: 'OauthApplication'
 

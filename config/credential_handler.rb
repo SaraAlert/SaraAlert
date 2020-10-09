@@ -45,7 +45,7 @@ module CredentialHandler
       # If not, decode the signed token first without validation to obtain the client ID.
       decoded_assertion = JWT.decode(signed_token, nil, false)
       # Grab the JWT payload from the decode output array
-      payload = decoded_assertion.length > 0 ? decoded_assertion[0] : nil
+      payload = decoded_assertion&.first
       # Both the iss and sub fields should contain the client ID.
       client_id = payload && payload["iss"] ? payload["iss"] : payload["sub"]
     end
@@ -66,7 +66,7 @@ module CredentialHandler
     end
 
     # Get expected JWT aud value: the request token endpoint.
-    aud = request.original_url    
+    aud = request.original_url
 
     # Begin process of decoding and validating JWT assertion required for this flow.
     begin
@@ -127,7 +127,7 @@ module CredentialHandler
     end
 
     # Grab the JWT payload from the decode output array
-    payload = decoded_token.length > 0 ? decoded_token[0] : nil
+    payload = decoded_token&.first
 
     # If the payload is nil for some reason, throw standard error.
     if payload.nil?
