@@ -226,6 +226,10 @@ namespace :admin do
       )
       app_user.add_role :public_health_enroller
       app_user.save!
+
+      # Lock access as no one should be logging into this user account.
+      app_user.lock_access!
+      
       puts "Successfully created user with ID #{app_user.id} and email #{app_user.email}!"
 
     rescue ActiveRecord::RecordInvalid => error
