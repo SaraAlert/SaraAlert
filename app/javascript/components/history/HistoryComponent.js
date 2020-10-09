@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import { PropTypes } from 'prop-types';
 import { Card, Row } from 'react-bootstrap';
 import Pagination from 'jw-react-pagination';
@@ -16,7 +17,9 @@ class HistoryComponent extends React.Component {
     this.state = {
       loading: false,
       comment: '',
-      selectedFilters: [],
+      filters: { typeFilters: [], creatorFilters: [] },
+      selectedTypeFilters: [],
+      selectedCreatorFilters: [],
       filteredHistories: this.props.histories,
       pageOfHistories: [],
     };
@@ -53,9 +56,14 @@ class HistoryComponent extends React.Component {
 
   filterHistories = () => {
     let filteredHistories = [...this.props.histories];
-    if (this.state.selectedFilters.length !== 0) {
+    if (this.state.filters.typeFilters.length !== 0) {
       filteredHistories = filteredHistories.filter(history => {
-        return this.state.selectedFilters.includes(history.history_type);
+        return this.state.filters.typeFilters.includes(history.history_type);
+      });
+    }
+    if (this.state.filters.creatorFilters.length !== 0) {
+      filteredHistories = filteredHistories.filter(history => {
+        return this.state.filters.creatorFilters.includes(history.created_by);
       });
     }
     this.setState({
@@ -63,10 +71,16 @@ class HistoryComponent extends React.Component {
     });
   };
 
-  handleFilterChange = inputValue => {
+  handleFilterChange = (inputValue, filterCategory) => {
+    let filters = this.state.filters;
     let selectedFilters = [];
     if (Array.isArray(inputValue) && inputValue.length) {
       selectedFilters = inputValue.map(x => x.value);
+    }
+    if (filterCategory == 'History Type') {
+      filters.typeFilters = selectedFilters;
+    } else if (filterCategory == 'History Creator') {
+      filters.creatorFilters = selectedFilters;
     }
     this.setState(
       {
@@ -77,6 +91,10 @@ class HistoryComponent extends React.Component {
       }
     );
   };
+
+  handleTypeFilterChange = inputValue => this.handleFilterChange(inputValue, 'History Type');
+
+  handleCreatorFilterChange = inputValue => this.handleFilterChange(inputValue, 'History Creator');
 
   render() {
     const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
@@ -101,6 +119,14 @@ class HistoryComponent extends React.Component {
         ],
       },
     ];
+    const historyCreators = [
+      {
+        label: 'History Creator',
+        options: _.uniq(this.props.histories.map(x => x.created_by)).map(x => {
+          return { value: x, label: x };
+        }),
+      },
+    ];
 
     return (
       <React.Fragment>
@@ -122,12 +148,26 @@ class HistoryComponent extends React.Component {
                 options={filterOptions}
                 className="basic-multi-select w-25"
                 classNamePrefix="select"
-                placeholder="Filters"
+                placeholder="Filter by Type"
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
                 })}
-                onChange={this.handleFilterChange}
+                onChange={this.handleTypeFilterChange}
+              />
+              <Select
+                closeMenuOnSelect={false}
+                isMulti
+                name="Creator Filters"
+                options={historyCreators}
+                className="basic-multi-select w-25"
+                classNamePrefix="select"
+                placeholder="Filter by Creator"
+                theme={theme => ({
+                  ...theme,
+                  borderRadius: 0,
+                })}
+                onChange={this.handleCreatorFilterChange}
               />
             </Row>
             {historiesArray}
