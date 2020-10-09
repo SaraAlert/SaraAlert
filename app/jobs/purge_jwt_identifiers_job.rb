@@ -5,13 +5,16 @@ class PurgeJwtIdentifiersJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
+    total_before = JwtIdentifier.count
     eligible = JwtIdentifier.purge_eligible
     eligible_count = eligible.count
 
     # Purge all
     eligible.destroy_all
 
+    total_after = JwtIdentifier.count
+
     # Send results
-    UserMailer.jwt_identifier_purge_job_email(eligible_count, [], eligible_count).deliver_now
+    UserMailer.jwt_identifier_purge_job_email(total_before, eligible_count, total_after).deliver_now
   end
 end

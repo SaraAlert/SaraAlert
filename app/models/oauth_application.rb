@@ -3,5 +3,5 @@
 # OauthApplication: Custom class on top of Doorkeeper Application mixin
 class OauthApplication < ApplicationRecord
   include ::Doorkeeper::Orm::ActiveRecord::Mixins::Application
-  has_many :jwt_identifiers, foreign_key: 'application_id', :dependent => :destroy
+  has_many :jwt_identifiers, foreign_key: 'application_id', dependent: :destroy
 end

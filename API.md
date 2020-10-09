@@ -187,7 +187,7 @@ A JSON Web Key (JWK) is a JSON data structure that represents a cryptographic ke
 
 The client must generate an assymetric public/private key pair and then provide the *public* key in the form of a JSON Web Key Set. Read more about JWK and JWKS [here](https://tools.ietf.org/html/rfc7517), and see an example of this what a JWKS with public keys looks like [here](https://hl7.org/fhir/uv/bulkdata/authorization/sample-jwks/RS384.public.json).
 
-The JSON Web Algorithm (JWA) for generating the JWKS must be RS384, as that is the only algorithm currently supported by the Sara Alert API. This may be enhanced to include ES384 in the future.
+**The JSON Web Algorithm (JWA) for generating the JWKS must be RS384**, as that is the only algorithm currently supported by the Sara Alert API. This may be enhanced to include ES384 in the future.
 
 JWKS can be easily generated with tools such as [this](https://mkjwk.org/), which allow you to specify an algorithm, use (signature), and more. See a Javascript example of generating a JWKS on the official SMART on FHIR GitHub [here](https://github.com/smart-on-fhir/bulk-data-server/blob/master/generator.js).
 
