@@ -239,7 +239,7 @@ namespace :admin do
     # Create OAuth application with needed data for system workflw
     begin
       # NOTE: Public key set must be converted to JSON string here.
-      application = Doorkeeper::Application.create!(
+      application = OauthApplication.create!(
         name: APP_NAME,
         redirect_uri: REDIRECT_URI,
         scopes: SCOPES,

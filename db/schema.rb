@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_23_172958) do
+ActiveRecord::Schema.define(version: 2020_10_08_155724) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -105,6 +105,15 @@ ActiveRecord::Schema.define(version: 2020_09_23_172958) do
     t.string "webpage"
     t.string "message"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
+  end
+
+  create_table "jwt_identifiers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "value"
+    t.datetime "expiration_date"
+    t.bigint "application_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["application_id"], name: "index_jwt_identifiers_on_application_id"
   end
 
   create_table "laboratories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -451,6 +460,7 @@ ActiveRecord::Schema.define(version: 2020_09_23_172958) do
     t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
+  add_foreign_key "jwt_identifiers", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
 end

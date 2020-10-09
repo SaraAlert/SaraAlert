@@ -45,7 +45,7 @@ module CredentialHandler
       # If not, decode the signed token first without validation to obtain the client ID.
       decoded_assertion = JWT.decode(signed_token, nil, false)
       # Grab the JWT payload from the decode output array
-      payload = decoded_assertion.length > 0 ? decoded_assertion[0] : nil
+      payload = decoded_assertion&.first
       # Both the iss and sub fields should contain the client ID.
       client_id = payload && payload["iss"] ? payload["iss"] : payload["sub"]
     end
@@ -53,7 +53,7 @@ module CredentialHandler
 
     # Find the associated client application. 
     # Return if not found - Doorkeeper will automatically throw invalid_client error in this case.
-    client_application = Doorkeeper::Application.find_by(uid: client_id)
+    client_application = OauthApplication.find_by(uid: client_id)
     return unless client_application.present?
     
     # Find the registered public key set for this client application to decode the JWT assertion.
@@ -84,44 +84,37 @@ module CredentialHandler
           verify_sub: true,
           aud: aud,
           verify_aud: true,
-          verify_jti: true
+          verify_jti: proc { |jti| validate_jti(jti, client_application.id) }
         }
       )
-
+  
     rescue JWT::JWKError
       raise_invalid_JWK_error
     rescue JWT::ExpiredSignature
-      # Handle expired token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT signature has expired."
       )
     rescue JWT::InvalidIssuerError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT iss is invalid."
       )
     rescue JWT::InvalidSubError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT sub is invalid."
       )
     rescue JWT::InvalidAudError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT aud is invalid."
       )
     rescue JWT::ImmatureSignature
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT signature is immature."
       )
     rescue JWT::InvalidJtiError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
-        "JWT jti is invalid"
+        "JWT jti is invalid. JWT jti value must be unique for your client application."
       )
     rescue JWT::InvalidIatError
-      # Handle invalid token, e.g. logout user or deny access
       raise_standard_doorkeeper_error(
         "JWT iat is invalid."
       )
@@ -133,12 +126,56 @@ module CredentialHandler
       )
     end
 
+    # Grab the JWT payload from the decode output array
+    payload = decoded_token&.first
+
+    # If the payload is nil for some reason, throw standard error.
+    if payload.nil?
+      raise_standard_doorkeeper_error(
+        "Issue decoding JWT assertion. Please verify the correct private key is being used to sign the JWT, and
+        that the correct public key(s) are registered with the application."
+      )
+    end
+
+    # Validate expiration value is no more than 5 minutes in the future.
+    token_expiration = payload["exp"]
+    parsed_exp_date = Time.at(token_expiration)
+
+    if parsed_exp_date > Time.now + 5.minutes
+      raise_standard_doorkeeper_error(
+        "JWT signature is too far in the future. Must be a maximum of 5 minutes in the future."
+      )
+    end
+
+    # ---- PASSED VALIDATION ----
+
+    # Add jti to table to keep track of previously encountered jti values to prevent replay attacks
+    save_jti(payload["jti"], client_application, parsed_exp_date)
+
     # Find the associated client secret so Doorkeeper can continue with this flow.
     # For the Sara Alert use of this particular flow, the real client secret is not required or used for validation
     # as it is kept by the client and used to sign the asserted JWT. Doorkeeper generates a secret anyway that is used
     # to finish out this flow. 
     client_secret = client_application[:secret]
     return client_id, client_secret
+  end
+
+  # Creates a new record in the JwtIdentifier table in the DB to track encountered jti values for a given application
+  def self.save_jti(jti, client_app, parsed_exp_date)
+    # Create new JWT Identifier for this client oauth app
+    client_app.jwt_identifiers.create!(value: jti, expiration_date: parsed_exp_date)
+  end
+
+  # Verifies this JTI has not been encountered before
+  def self.validate_jti(jti, app_id)
+    # Get JTI values for this application - should only be at most 1
+    matching_jti_values = JwtIdentifier.where(application_id: app_id, value: jti)
+    if matching_jti_values.exists?
+      # This is an issue - should not see the same jti within a JWT lifetime. 
+      # Do not allow to prevent replay attacks. 
+      return false
+    end
+    return true
   end
 
   # Commonly raised error for invalid JWK.

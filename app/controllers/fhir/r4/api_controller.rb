@@ -440,7 +440,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Client application that is currently using the API
   def current_client_application
-    Doorkeeper::Application.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
+    OauthApplication.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
   end
 
   # Determine the patient data that is accessible by either the current resource owner
