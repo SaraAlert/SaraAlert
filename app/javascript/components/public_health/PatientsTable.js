@@ -16,7 +16,6 @@ import {
   TabContent,
   Tooltip,
 } from 'react-bootstrap';
-import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import moment from 'moment-timezone';
 
@@ -301,19 +300,7 @@ class PatientsTable extends React.Component {
       return name;
     }
     if (isHoH) {
-      return (
-        <div>
-          <span data-for={`${id}-hoh`} data-tip="" className="badge-hoh ml-1">
-            <Badge variant="dark">
-              <span>HoH</span>
-            </Badge>
-          </span>
-          <ReactTooltip id={`${id}-hoh`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
-            <span>Monitoree is Head of Household that reports on behalf of household members</span>
-          </ReactTooltip>
-          <a href={`/patients/${id}`}>{name}</a>
-        </div>
-      );
+      // TODO: render HoH icon
     }
     return <a href={`/patients/${id}`}>{name}</a>;
   };

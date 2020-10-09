@@ -141,6 +141,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     shadow_user.add_role 'Public Health Enroller'
     shadow_user.save!
+    shadow_user.lock_access!
 
     # Create OAuth applications
     @system_patient_read_write_app = OauthApplication.create(
