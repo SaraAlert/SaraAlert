@@ -225,7 +225,18 @@ Doorkeeper.configure do
   # For more information go to
   # https://doorkeeper.gitbook.io/guides/ruby-on-rails/scopes
   #
-  optional_scopes 'user/*.read', 'user/*.write', 'user/*.*', 'system/*.read', 'system/*.write', 'system/*.*'
+  optional_scopes(
+    'user/Patient.read',
+    'user/Patient.write',
+    'user/Patient.*',
+    'user/Observation.read',
+    'user/QuestionnaireResponse.read',
+    'system/Patient.read',
+    'system/Patient.write',
+    'system/Patient.*',
+    'system/Observation.read',
+    'system/QuestionnaireResponse.read'
+  )
 
   # Allows to restrict only certain scopes for grant_type.
   # By default, all the scopes will be available for all the grant types.

@@ -300,12 +300,7 @@ class PatientsTable extends React.Component {
       return name;
     }
     if (isHoH) {
-      return (
-        <div>
-          <i className="fa-fw fas fa-h-square hoh-icon"></i>
-          <a href={`/patients/${id}`}>{name}</a>
-        </div>
-      );
+      // TODO: render HoH icon
     }
     return <a href={`/patients/${id}`}>{name}</a>;
   };

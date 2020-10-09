@@ -615,8 +615,9 @@ class Patient < ApplicationRecord
   end
 
   def self.calc_current_age_base(provided_date_of_birth: nil)
-    dob = provided_date_of_birth || Date.today
-    today = Date.today
+    # Make sure to calculate today using UTC for consistency
+    today = Time.now.utc.to_date
+    dob = provided_date_of_birth || today
     age = today.year - dob.year
     age -= 1 if
         (dob.month > today.month) ||
