@@ -1,6 +1,7 @@
 require 'securerandom'
 require 'io/console'
 require 'digest'
+require 'json'
 
 namespace :admin do
 
@@ -180,5 +181,77 @@ namespace :admin do
   desc 'Run the purge job'
   task purge_job: :environment do
     PurgeJob.perform_later
+  end
+
+  desc 'Add API OAuth Application for Backend Services API Workflow'
+  task create_oauth_app_for_backend_services_workflow: :environment do
+    # Read from JSON file with needed information
+    begin
+      file = File.read(ENV["API_FILE_PATH"])
+      data = JSON.parse(file)
+    rescue => error
+      next puts "Error reading from expected JSON file that contains needed data: #{error}"
+    end
+
+    # Validation of needed data
+    next puts "Error! File does not contain required 'app_name' field." if data["app_name"].nil?
+    next puts "Error! File does not contain required 'email' field." if data["email"].nil?
+    next puts "Error! File does not contain required 'jurisdiction_path' field." if data["jurisdiction_path"].nil?
+    next puts "Error! File does not contain required 'public_key_set' field." if data["public_key_set"].nil?
+    next puts "Error! File does not contain required 'scopes' field." if data["scopes"].nil?
+
+    APP_NAME = data["app_name"]
+    EMAIL = data["email"]
+    JURISDICTION_PATH = data["jurisdiction_path"]
+    PUBLIC_KEY_SET = data["public_key_set"]
+    SCOPES = data["scopes"]
+
+    # Optional value for this workflow - should only include if client wants to use user workflow as well.
+    REDIRECT_URI = data["redirect_uri"] || 'urn:ietf:wg:oauth:2.0:oob'
+
+    jurisdiction = Jurisdiction.find_by(path: JURISDICTION_PATH)
+    next puts "Error! JURISDICTION_PATH is invalid: #{JURISDICTION_PATH}" unless jurisdiction.present?
+
+    user_already_exists = User.find_by(email: EMAIL).present?
+    next puts "Error! User with email #{EMAIL} already exists in the system." if user_already_exists
+
+    # Create shadow user for application
+    begin
+      app_user = User.create!(
+        email: EMAIL,
+        password: User.rand_gen,
+        jurisdiction: jurisdiction,
+        force_password_change: false,
+        api_enabled: true
+      )
+      app_user.add_role :public_health_enroller
+      app_user.save!
+
+      # Lock access as no one should be logging into this user account.
+      app_user.lock_access!
+      
+      puts "Successfully created user with ID #{app_user.id} and email #{app_user.email}!"
+
+    rescue ActiveRecord::RecordInvalid => error
+      next puts "Error creating user record for application: #{error}"
+    end
+
+    # Create OAuth application with needed data for system workflw
+    begin
+      # NOTE: Public key set must be converted to JSON string here.
+      application = Doorkeeper::Application.create!(
+        name: APP_NAME,
+        redirect_uri: REDIRECT_URI,
+        scopes: SCOPES,
+        jurisdiction_id: app_user.jurisdiction_id,
+        user_id: app_user.id,
+        public_key_set: PUBLIC_KEY_SET.to_json
+      )
+      puts "Successfully created user with OAuth Application!"
+      puts "Client ID: #{application.uid}"
+
+    rescue ActiveRecord::RecordInvalid => error
+      next puts "Error creating OAuth application: #{error}"
+    end
   end
 end
