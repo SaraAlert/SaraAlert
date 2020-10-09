@@ -123,7 +123,7 @@ class CloseContact extends React.Component {
                   maxLength="2000"
                   onChange={this.handleChange}
                 />
-                <Form.Label class="close-contact-character-limit"> {2000 - this.state.notes?.length} characters remaining</Form.Label>
+                <Form.Label class="close-contact-character-limit"> {2000 - this.state.notes.length} characters remaining </Form.Label>
               </Form.Group>
             </Row>
           </Form>
