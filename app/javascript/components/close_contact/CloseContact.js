@@ -120,6 +120,7 @@ class CloseContact extends React.Component {
                   className="form-square"
                   value={this.state.notes || ''}
                   placeholder={this.closeContactNotePlaceholder}
+                  maxlength="2000"
                   onChange={this.handleChange}
                 />
               </Form.Group>
