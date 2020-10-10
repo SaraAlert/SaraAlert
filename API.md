@@ -316,7 +316,7 @@ For applications following the [SMART on FHIR Backend Services Workflow](#backen
 * `system/Observation.read`,
 * `system/QuestionnaireResponse.read`,
 
-Please note a given application and request for access token can have have multiple scopes, thta must be space-separated. For example:
+Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
 ```
 `user/Patient.read system/Patient.read system/Observation.read`
 ```
