@@ -302,14 +302,14 @@ class PublicHealthController < ApplicationController
         case filter[:dateOption]
         when 'before'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('latest_assessment_at < ?', compare_date)
+          patients = patients.where('Date(latest_assessment_at) < ?', compare_date)
         when 'after'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('latest_assessment_at > ?', compare_date)
+          patients = patients.where('Date(latest_assessment_at) > ?', compare_date)
         when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('latest_assessment_at > ?', compare_date_start).where('latest_assessment_at < ?', compare_date_end)
+          patients = patients.where('Date(latest_assessment_at) > ?', compare_date_start).where('Date(latest_assessment_at) < ?', compare_date_end)
         end
       when 'hoh'
         patients = if filter[:value]
@@ -327,40 +327,40 @@ class PublicHealthController < ApplicationController
         case filter[:dateOption]
         when 'before'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('patients.created_at < ?', compare_date)
+          patients = patients.where('Date(patients.created_at) < ?', compare_date)
         when 'after'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('patients.created_at > ?', compare_date)
+          patients = patients.where('Date(patients.created_at) > ?', compare_date)
         when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('patients.created_at > ?', compare_date_start).where('patients.created_at < ?', compare_date_end)
+          patients = patients.where('Date(patients.created_at) > ?', compare_date_start).where('Date(patients.created_at) < ?', compare_date_end)
         end
       when 'last-date-exposure'
         case filter[:dateOption]
         when 'before'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('last_date_of_exposure < ?', compare_date)
+          patients = patients.where('Date(last_date_of_exposure) < ?', compare_date)
         when 'after'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('last_date_of_exposure > ?', compare_date)
+          patients = patients.where('Date(last_date_of_exposure) > ?', compare_date)
         when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('last_date_of_exposure > ?', compare_date_start).where('last_date_of_exposure < ?', compare_date_end)
+          patients = patients.where('Date(last_date_of_exposure) > ?', compare_date_start).where('Date(last_date_of_exposure) < ?', compare_date_end)
         end
       when 'symptom-onset'
         case filter[:dateOption]
         when 'before'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('symptom_onset < ?', compare_date)
+          patients = patients.where('Date(symptom_onset) < ?', compare_date)
         when 'after'
           compare_date = Chronic.parse(filter[:value])
-          patients = patients.where('symptom_onset > ?', compare_date)
+          patients = patients.where('Date(symptom_onset) > ?', compare_date)
         when 'within'
           compare_date_start = Chronic.parse(filter[:value][:start])
           compare_date_end = Chronic.parse(filter[:value][:end])
-          patients = patients.where('symptom_onset > ?', compare_date_start).where('symptom_onset < ?', compare_date_end)
+          patients = patients.where('Date(symptom_onset) > ?', compare_date_start).where('Date(symptom_onset) < ?', compare_date_end)
         end
       when 'continous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
