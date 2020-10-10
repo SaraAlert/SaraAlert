@@ -96,36 +96,38 @@ Once a client application is registered, a user must authorize the client applic
 1. The registered client application must build a request for an authorization code. The request parameters are detailed in the specification for this flow [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization). This will cause the app to be redirected to the authorization endpoint and require the user to login to Sara Alert. For example, the following (once populated with the appropriate params), would navigate the client application to the Sara Alert demo server's authorization endpoint:
 
 	```
-	https://demo.saraalert.org//oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD
+	https://demo.saraalert.org/oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD
 	```
 2. Once the end-user has authorized the request, Sara Alert will redirect back to the application using the redirect_uri given upon registration with the authorization code provided as a parameter.
 
 3. Once the authorization code is retrieved by the client application, it can be used to get an access token. This step is  also described in detail [here](http://hl7.org/fhir/smart-app-launch/index.html#step-3-app-exchanges-authorization-code-for-access-token). Note that the authorization code does expire after 10 minutes as is necessary.
 
 	##### POST `/oauth/token`
+	
+  **Request** Headers
+
+  ```
+    Content-Type: application/x-www-form-urlencoded
+  ```
 
 	**Request** Body
 
-	```json
-	{
-	  "client_id": "<CLIENT_ID>",
-	  "client_secret": "<CLIENT_SECRET>",
-	  "code": "<AUTHORIZATION_CODE>",
-	  "grant_type": "authorization_code",
-	  "redirect_uri": "<CLIENT_REDIRECT_URI>"
-	}
+	```	
+	  client_id: <CLIENT_ID>,
+	  client_secret: <CLIENT_SECRET>,
+	  code: <AUTHORIZATION_CODE>,
+	  grant_type: authorization_code,
+	  redirect_uri: <CLIENT_REDIRECT_URI>
 	```
 
 	**Response**
 
-	```json
-	{
-	  "access_token": "<TOKEN>",
-	  "token_type": "Bearer",
-	  "expires_in": 7200,
-	  "scope": "<CLIENT_SCOPES>",
-	  "created_at": 1589830122
-	}
+	```
+	  access_token: "<TOKEN>,
+	  token_type: "Bearer,
+	  expires_in: 7200,
+	  scope: <CLIENT_SCOPES>,
+	  created_at: 1589830122
 	```
 
 #### Authentication
@@ -139,11 +141,10 @@ Example request using access token:
 
 **Request Headers**
 
-```json
-{
-  "Content-Type": "application/x-www-form-urlencoded",
-  "Authorization": "Bearer <ACCESS_TOKEN>"
-}
+```
+  Content-Type: application/x-www-form-urlencoded,
+  Accept: application/fhir+json,
+  Authorization": Bearer <ACCESS_TOKEN>
 ```
 
 #### Testing
@@ -228,32 +229,26 @@ Details about each of these steps and the expected parameter is clearly outlined
 
 	**Request** Headers
 
-  ```json
-  {
-    "Content-Type": "application/x-www-form-urlencoded"
-  }
+  ```
+    Content-Type: application/x-www-form-urlencoded
   ```
 	**Request** Body
 
-	```json
-	{
-	  "client_assertion": "<CLIENT_SIGNED_JWT_ASSERTION>",
-	  "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-	  "grant_type": "client_credentials",
-	  "scope": "<CLIENT_SCOPES>"
-	}
+	```
+	  client_assertion: <CLIENT_SIGNED_JWT_ASSERTION>,
+	  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer,
+	  grant_type: client_credentials,
+	  scope: <CLIENT_SCOPES (space separated)>
 	```
 
 	**Response**
 
-	```json
-	{
-	  "access_token": "<TOKEN>",
-	  "token_type": "Bearer",
-	  "expires_in": 7200,
-	  "scope": "<CLIENT_SCOPES>",
-	  "created_at": 1589830122
-	}
+	```
+	  access_token: "<TOKEN>,
+	  token_type: "Bearer,
+	  expires_in: 7200,
+	  scope: <CLIENT_SCOPES>,
+	  created_at: 1589830122
 	```
 
 
@@ -268,11 +263,10 @@ Example request using access token:
 
 **Request Headers**
 
-```json
-{
-  "Content-Type": "application/x-www-form-urlencoded",
-  "Authorization": "Bearer <ACCESS_TOKEN>"
-}
+```
+  Content-Type: application/x-www-form-urlencoded,
+  Accept: application/fhir+json,
+  Authorization": Bearer <ACCESS_TOKEN>
 ```
 
 #### Testing
@@ -321,6 +315,11 @@ For applications following the [SMART on FHIR Backend Services Workflow](#backen
 * `system/Patient.*`, (for both read and write access to this resource)
 * `system/Observation.read`,
 * `system/QuestionnaireResponse.read`,
+
+Please note a given application and request for access token can have have multiple scopes, thta must be space-separated. For example:
+```
+`user/Patient.read system/Patient.read system/Observation.read`
+```
 
 <a name="cap"/>
 
