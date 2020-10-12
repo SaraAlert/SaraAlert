@@ -220,8 +220,8 @@ Details about each of these steps and the expected parameter is clearly outlined
 		- Development: `http://localhost:3000/oauth/token`
 		- Demo: `https://demo.saraalert.org/oauth/token`
 		- Production: `https://sara.public.saraalert.org/oauth/token`
-  - The `jti` value should be a string value that uniquely identifies the JWT among requests from the client application. Therefore how it is generated is up to the client application. It's even okay to make it as simple as a counter, but the client application must ensure it will never be used twice on two different JWTs. 
-  - The `exp` value, as state with the other requirements in the protocol, should be no more than 5 minutes in the future. 
+    - The `jti` value should be a string value that uniquely identifies the JWT among requests from the client application. Therefore how it is generated is up to the client application. It's even okay to make it as simple as a counter, but the client application must ensure it will never be used twice on two different JWTs. 
+    - The `exp` value must be epoch time in *seconds* and should be no more than 5 minutes in the future. 
 2. Request a new access token via HTTP POST to the FHIR authorization server’s token endpoint URL which is again `<ENVIRONMENT_BASE_URL>/oauth/token`
 3. Once the end-user has authorized the request, Sara Alert will respond with an access token.
 
@@ -1767,7 +1767,7 @@ GET `[base]/Patient?given=testy&family=mctest`
 #### GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
 You can use search to find Monitoree daily reports by using the `subject` parameter.
 
-<a name="search-questionnaire-sub"/>
+<a name="search-questionnaire-subj"/>
 
 GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
 
