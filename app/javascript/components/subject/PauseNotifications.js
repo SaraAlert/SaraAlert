@@ -1,6 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button } from 'react-bootstrap';
+import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 
 import confirmDialog from '../util/ConfirmDialog';
@@ -9,14 +10,12 @@ import reportError from '../util/ReportError';
 class PauseNotifications extends React.Component {
   constructor(props) {
     super(props);
-    this.submit = this.submit.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
       loading: false,
     };
   }
 
-  submit() {
+  submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -32,7 +31,7 @@ class PauseNotifications extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
   handleSubmit = async confirmText => {
     if (await confirmDialog(confirmText)) {
@@ -44,22 +43,37 @@ class PauseNotifications extends React.Component {
     return (
       <React.Fragment>
         {!this.props.patient.pause_notifications && (
-          <Button
-            id="pause_notifications"
-            className="mr-2"
-            disabled={this.state.loading}
-            onClick={() =>
-              this.handleSubmit(
-                "You are about to change this monitoree's notification status to paused. This means that the system will stop sending the monitoree symptom report requests until notifications are resumed by a user."
-              )
-            }>
-            <i className="fas fa-pause"></i> Pause Notifications
-            {this.state.loading && (
-              <React.Fragment>
-                &nbsp;<span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-              </React.Fragment>
+          <React.Fragment>
+            <span data-for={`${this.props.patient.id}-pause-notifications`} data-tip="">
+              <Button
+                id="pause_notifications"
+                className="mr-2"
+                disabled={this.props.patient.id !== this.props.patient.responder_id || this.state.loading}
+                onClick={() =>
+                  this.handleSubmit(
+                    "You are about to change this monitoree's notification status to paused. This means that the system will stop sending the monitoree symptom report requests until notifications are resumed by a user."
+                  )
+                }>
+                <i className="fas fa-pause"></i> Pause Notifications
+                {this.state.loading && (
+                  <React.Fragment>
+                    &nbsp;<span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  </React.Fragment>
+                )}
+              </Button>
+            </span>
+            {this.props.patient.id !== this.props.patient.responder_id && (
+              <ReactTooltip
+                id={`${this.props.patient.id}-pause-notifications`}
+                multiline={true}
+                place="bottom"
+                type="dark"
+                effect="solid"
+                className="tooltip-container">
+                <span>INSERT TOOLTIP HERE</span>
+              </ReactTooltip>
             )}
-          </Button>
+          </React.Fragment>
         )}
         {this.props.patient.pause_notifications && (
           <Button
