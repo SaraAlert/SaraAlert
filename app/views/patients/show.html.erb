@@ -52,9 +52,7 @@
         <% unless @patient.isolation %>
         <%= react_component('subject/ClearReports', { authenticity_token: form_authenticity_token, patient: @patient }) %>
         <% end %>
-        <% if @patient.monitoring %>
         <%= react_component('subject/PauseNotifications', { authenticity_token: form_authenticity_token, patient: @patient }) %>
-        <% end %>
         <%= react_component('subject/ContactAttempt', { authenticity_token: form_authenticity_token, patient: @patient }) %>
       </div>
     </div>
