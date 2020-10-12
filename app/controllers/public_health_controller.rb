@@ -16,7 +16,7 @@ class PublicHealthController < ApplicationController
 
     # Validate filter params
     begin
-      validate_filter_params(permitted_params)
+      filters = validate_filter_params(permitted_params)
     rescue StandardError
       return head :bad_request
     end
@@ -27,7 +27,7 @@ class PublicHealthController < ApplicationController
     return head :bad_request unless entries >= 0 && page >= 0
 
     # Get filtered patients
-    patients = filtered_patients(permitted_params)
+    patients = filtered_patients(current_user, filters)
 
     # Paginate
     patients = patients.paginate(per_page: entries, page: page + 1)
@@ -59,7 +59,7 @@ class PublicHealthController < ApplicationController
     end
 
     # Get patients by workflow and tab
-    patients = patients_by_linelist(workflow, tab)
+    patients = patients_by_linelist(current_user, workflow, tab)
 
     render json: { total: patients.size }
   end

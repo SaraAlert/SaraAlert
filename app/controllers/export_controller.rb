@@ -5,6 +5,7 @@ require 'axlsx'
 # ExportController: for exporting subjects
 class ExportController < ApplicationController
   include ImportExport
+  include PatientFiltersHelper
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
@@ -85,9 +86,11 @@ class ExportController < ApplicationController
   def custom_export
     permitted_params = params.permit(:file_ext, :fields, :workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
 
-    # Validate file_type param
-    file_type = permitted_params.require(:file_ext).to_sym
-    return head :bad_request unless %i[csv xlsx].include?(file_type)
+    # Figure out how to limit exports (1 hour limit might be annoying to users for custom export)
+
+    # Validate file_ext param
+    file_ext = permitted_params.require(:file_ext)
+    return head :bad_request unless %w[csv xlsx].include?(file_ext)
 
     # Validate fields param
     fields = permitted_params.require(:fields)
@@ -99,14 +102,17 @@ class ExportController < ApplicationController
 
     # Validate filter params
     begin
-      validate_filter_params(permitted_params)
+      filters = validate_filter_params(permitted_params)
     rescue StandardError
       return head :bad_request
     end
 
     # Spawn job to handle export
+    ExportJob.perform_later(current_user.id, 'Custom', file_ext, 'Monitorees', fields, filters)
 
-    render json: {}
+    respond_to do |format|
+      format.any { head :ok }
+    end
   end
 
   private

@@ -2,13 +2,13 @@
 
 # Helper methods for filtering through patients
 module PatientFiltersHelper # rubocop:todo Metrics/ModuleLength
-  def validate_filter_params(permitted_params)
+  def validate_filter_params(params)
     # Validate workflow param
-    workflow = permitted_params[:workflow].to_sym
+    workflow = params[:workflow].to_sym
     raise InvalidFilterError.new(:workflow, workflow) unless %i[exposure isolation].include?(workflow)
 
     # Validate tab param
-    tab = permitted_params[:tab].to_sym
+    tab = params[:tab].to_sym
     if workflow == :exposure
       raise InvalidFilterError.new(:tab, tab) unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     else
@@ -16,44 +16,46 @@ module PatientFiltersHelper # rubocop:todo Metrics/ModuleLength
     end
 
     # Validate jurisdiction param
-    jurisdiction = permitted_params[:jurisdiction]
+    jurisdiction = params[:jurisdiction]
     unless jurisdiction.nil? || jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(jurisdiction.to_i)
       raise InvalidFilterError.new(:jurisdiction, jurisdiction)
     end
 
     # Validate scope param
-    scope = permitted_params[:scope]&.to_sym
+    scope = params[:scope]&.to_sym
     raise InvalidFilterError.new(:scope, scope) unless scope.nil? || %i[all exact].include?(scope)
 
     # Validate user param
-    user = permitted_params[:user]
+    user = params[:user]
     raise InvalidFilterError.new(:user, user) unless user.nil? || %w[all none].include?(user) || user.to_i.between?(1, 9999)
 
     # Validate sort params
-    order = permitted_params[:order]
+    order = params[:order]
     raise InvalidFilterError.new(:order, order) unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user
                                                                                         state_local_id dob end_of_monitoring risk_level monitoring_plan
                                                                                         public_health_action expected_purge_date reason_for_closure closed_at
                                                                                         transferred_at latest_report symptom_onset
                                                                                         extended_isolation].include?(order)
 
-    direction = permitted_params[:direction]
+    direction = params[:direction]
     raise InvalidFilterError.new(:direction, direction) unless direction.nil? || direction.blank? || %w[asc desc].include?(direction)
     raise InvalidFilterError.new(:direction, direction) unless (!order.blank? && !direction.blank?) || (order.blank? && direction.blank?)
+
+    params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
   end
 
-  def filtered_patients(permitted_params)
-    workflow = permitted_params[:workflow].to_sym
-    tab = permitted_params[:tab].to_sym
-    jurisdiction = permitted_params[:jurisdiction]
-    scope = permitted_params[:scope]&.to_sym
-    user = permitted_params[:user]
-    search = permitted_params[:search]
-    order = permitted_params[:order]
-    direction = permitted_params[:direction]
+  def filtered_patients(current_user, filters)
+    workflow = filters[:workflow].to_sym
+    tab = filters[:tab].to_sym
+    jurisdiction = filters[:jurisdiction]
+    scope = filters[:scope]&.to_sym
+    user = filters[:user]
+    search = filters[:search]
+    order = filters[:order]
+    direction = filters[:direction]
 
     # Get current user's viewable patients by linelist
-    patients = patients_by_linelist(workflow, tab)
+    patients = patients_by_linelist(current_user, workflow, tab)
 
     # Filter by assigned jurisdiction
     unless jurisdiction.nil? || jurisdiction == 'all' || tab == :transferred_out
@@ -83,7 +85,7 @@ module PatientFiltersHelper # rubocop:todo Metrics/ModuleLength
     sort(patients, order, direction)
   end
 
-  def patients_by_linelist(workflow, tab)
+  def patients_by_linelist(current_user, workflow, tab)
     return current_user.viewable_patients if workflow.nil?
     return current_user.viewable_patients.where(isolation: workflow == :isolation) if !workflow.nil? && tab.nil?
 

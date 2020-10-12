@@ -320,6 +320,36 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     value.to_s.downcase.gsub(/[ -.]/, '')
   end
 
+  def csv_export(patients, data_type, fields)
+    package = CSV.generate(headers: true) do |csv|
+      csv << fields.map { |field| PATIENT_FIELDS[field] }
+      # statuses = patient_statuses(patients)
+      patients.find_in_batches(batch_size: 500) do |patients_group|
+        # linelists = linelists_for_export(patients_group, statuses)
+        # patients_group.each do |patient|
+        #   csv << linelists[patient.id].values
+        # end
+      end
+    end
+    Base64.encode64(package)
+  end
+
+  def xlsx_export(patients, data_type, fields)
+    Axlsx::Package.new do |p|
+      p.workbook.add_worksheet(name: data_type) do |sheet|
+        sheet.add_row(fields.map { |field| PATIENT_FIELDS[field] })
+        # statuses = patient_statuses(patients)
+        patients.find_in_batches(batch_size: 500) do |patients_group|
+          # comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
+          # patients_group.each do |patient|
+          #   sheet.add_row comprehensive_details[patient.id].values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
+          # end
+        end
+      end
+      return Base64.encode64(p.to_stream.read)
+    end
+  end
+
   def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|
       csv << LINELIST_HEADERS
