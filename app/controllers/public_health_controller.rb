@@ -189,7 +189,7 @@ class PublicHealthController < ApplicationController
       patients = patients.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir)
     when 'expected_purge_date'
       patients = patients.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, updated_at ' + dir)
-        # Eligible purge date is a derivative field from `updated_at`
+      # Eligible purge date is a derivative field from `updated_at`
     when 'reason_for_closure'
       patients = patients.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + dir)
     when 'closed_at'
