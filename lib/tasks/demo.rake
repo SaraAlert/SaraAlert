@@ -376,7 +376,7 @@ namespace :demo do
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.hex(20)
-      patient[:creator_id] = User.all.select { |u| u.has_role?('enroller') }.sample[:id]
+      patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
       patient[:created_at] = Faker::Time.between_dates(from: today, to: today, period: :day)
       patient[:updated_at] = Faker::Time.between_dates(from: patient[:created_at], to: today, period: :day)
@@ -643,7 +643,7 @@ namespace :demo do
         patient_id: patient_id,
         to_jurisdiction_id: to_jurisdiction,
         from_jurisdiction_id: jur_id,
-        who_id: User.all.select { |u| u.has_role?('public_health') }.sample[:id],
+        who_id: User.all.select { |u| u.role?('public_health') }.sample[:id],
         created_at: timestamp,
         updated_at: timestamp
       )

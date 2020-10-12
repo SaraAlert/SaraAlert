@@ -9,10 +9,10 @@ class AnalyticsController < ApplicationController
     redirect_to(root_url) && return unless current_user.can_view_analytics?
 
     # Stats for enrollers
-    @stats = enroller_stats if current_user.has_role?(:enroller)
+    @stats = enroller_stats if current_user.role?(:enroller)
 
     # Stats for public health & analysts
-    @stats = epi_stats if current_user.has_role?(:public_health) || current_user.has_role?(:public_health_enroller) || current_user.has_role?(:analyst)
+    @stats = epi_stats if current_user.role?(:public_health) || current_user.role?(:public_health_enroller) || current_user.role?(:analyst)
 
     redirect_to(root_url) && return if @stats.nil?
   end

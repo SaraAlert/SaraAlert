@@ -5,12 +5,12 @@ class AdminController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    redirect_to(root_url) && return unless current_user.has_role? :admin
+    redirect_to(root_url) && return unless current_user.role? :admin
   end
 
   # Retrieve users for the admin user table.
   def users
-    redirect_to(root_url) && return unless current_user.has_role? :admin
+    redirect_to(root_url) && return unless current_user.role? :admin
 
     permitted_params = params.permit(:search, :entries, :page, :orderBy, :sortDirection)
 
@@ -31,7 +31,9 @@ class AdminController < ApplicationController
     return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
 
     # Get all users within the current user's jurisdiction
-    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids).joins(:jurisdiction).select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, users.role, jurisdictions.path')
+    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
+                .joins(:jurisdiction)
+                .select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, users.role, jurisdictions.path')
 
     # Filter by search text
     users = filter(users, search)
@@ -98,7 +100,7 @@ class AdminController < ApplicationController
 
   # Create and save a new user. Triggers welcome email to be sent.
   def create_user
-    redirect_to(root_url) && return unless current_user.has_role? :admin
+    redirect_to(root_url) && return unless current_user.role? :admin
 
     permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title, :is_api_enabled)
     email = permitted_params[:email]
@@ -143,7 +145,7 @@ class AdminController < ApplicationController
 
   # Edit existing user.
   def edit_user
-    redirect_to(root_url) && return unless current_user.has_role? :admin
+    redirect_to(root_url) && return unless current_user.role? :admin
 
     permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked)
 
@@ -206,7 +208,7 @@ class AdminController < ApplicationController
 
   # Resets 2FA for the users with ids in params.
   def reset_2fa
-    redirect_to(root_url) && return unless current_user.has_role? :admin
+    redirect_to(root_url) && return unless current_user.role? :admin
 
     permitted_params = params[:admin].permit({ ids: [] })
     ids = permitted_params[:ids]
@@ -228,7 +230,7 @@ class AdminController < ApplicationController
 
   # Resets passwords of the users with ids in params.
   def reset_password
-    redirect_to(root_url) && return unless current_user.has_role? :admin
+    redirect_to(root_url) && return unless current_user.role? :admin
 
     permitted_params = params[:admin].permit({ ids: [] })
     ids = permitted_params[:ids]
