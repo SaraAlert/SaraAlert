@@ -41,26 +41,23 @@ class PauseNotifications extends React.Component {
   };
 
   renderTooltip() {
-    // monitoree record is closed
+    const notificationStatus = this.props.patient.pause_notifications ? 'resumed' : 'paused';
+    let text = '';
     if (!this.props.patient.monitoring) {
-      // pause and resume case
-      const text = 'closed tool tip';
-      return (
-        <ReactTooltip id={`notifications-tooltip`} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container mt-3">
-          <span> {text} </span>
-        </ReactTooltip>
-      );
-
-      // monitoree is a HH dependent
+      // monitoree record is closed
+      text = `Notifications cannot be ${notificationStatus} for records on the Closed line list since this monitoree is not eligible to receive notifications. If this monitoree requires monitoring, you may update this field after changing Monitoring Status to "Actively Monitoring"`;
     } else if (this.props.patient.id !== this.props.patient.responder_id) {
-      // pause and resume case
-      const text = 'dependent tool tip';
-      return (
-        <ReactTooltip id={`notifications-tooltip`} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container mt-3">
-          <span> {text} </span>
-        </ReactTooltip>
-      );
+      // monitoree is a HH dependent
+      text = `Notifications cannot be ${notificationStatus} for household members who are not the Head of Household since this monitoree is not eligible to receive notifications. If notifications to the Head of Household should be ${notificationStatus}, you may update this field on the Head of Household record.`;
+      if (notificationStatus === 'paused') {
+        text += 'If this monitoree should no longer be monitored by the Head of Household, please update the Monitoring Status to "Not Monitoring"';
+      }
     }
+    return (
+      <ReactTooltip id={`notifications-tooltip`} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container mt-3">
+        <span> {text} </span>
+      </ReactTooltip>
+    );
   }
 
   render() {
