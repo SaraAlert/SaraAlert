@@ -193,7 +193,7 @@ state1_epi_enroller:
   authy_enabled: false
   authy_enforced: false
   api_enabled: true
-  role: 'public_health'
+  role: 'public_health_enroller'
 usa_admin:
   id: 14
   email: "usa_admin@example.com"
