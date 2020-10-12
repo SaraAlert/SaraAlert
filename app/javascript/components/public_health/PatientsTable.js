@@ -15,22 +15,26 @@ import {
   OverlayTrigger,
   TabContent,
   Tooltip,
+  Row,
 } from 'react-bootstrap';
 
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import moment from 'moment-timezone';
 
+import AdvancedFilter from './AdvancedFilter';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import InfoTooltip from '../util/InfoTooltip';
 import CustomTable from '../layout/CustomTable';
 import EligibilityTooltip from '../util/EligibilityTooltip';
+import confirmDialog from '../util/ConfirmDialog';
 
 class PatientsTable extends React.Component {
   constructor(props) {
     super(props);
     this.handleTabSelect = this.handleTabSelect.bind(this);
+    this.advancedFilterUpdate = this.advancedFilterUpdate.bind(this);
     this.state = {
       table: {
         colData: [
@@ -80,6 +84,7 @@ class PatientsTable extends React.Component {
       },
       entryOptions: [10, 15, 25, 50, 100],
       cancelToken: axios.CancelToken.source(),
+      filter: null,
     };
     this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
   }
@@ -95,6 +100,33 @@ class PatientsTable extends React.Component {
     // select tab and fetch patients
     this.handleTabSelect(tab);
 
+    // Select page if it exists in local storage
+    let page = localStorage.getItem(`SaraPage`);
+    if (page) {
+      this.handlePageUpdate(JSON.parse(page));
+    }
+
+    // Set entries if it exists in local storage
+    let entries = localStorage.getItem(`SaraEntries`);
+    if (parseInt(entries)) {
+      this.handleEntriesChange(parseInt(entries));
+    }
+
+    // Set search if it exists in local storage
+    let search = localStorage.getItem(`SaraSearch`);
+    if (search) {
+      this.setState(
+        state => {
+          return {
+            query: { ...state.query, search: search },
+          };
+        },
+        () => {
+          this.updateTable(this.state.query);
+        }
+      );
+    }
+
     // fetch workflow and tab counts
     Object.keys(this.props.tabs).forEach(tab => {
       axios.get(`/public_health/patients/counts/${this.props.workflow}/${tab}`).then(response => {
@@ -108,7 +140,19 @@ class PatientsTable extends React.Component {
     this.updateJurisdictionPaths();
   }
 
+  clearAllFilters = async () => {
+    if (await confirmDialog('Are you sure you want to clear all filters? All active filters and searches will be cleared.')) {
+      localStorage.removeItem(`SaraFilter`);
+      localStorage.removeItem(`SaraPage`);
+      localStorage.removeItem(`SaraEntries`);
+      localStorage.removeItem(`SaraSearch`);
+      location.reload();
+      this.setState({ filter: null });
+    }
+  };
+
   handleTabSelect = tab => {
+    localStorage.removeItem(`SaraPage`);
     this.setState(
       state => {
         return { query: { ...state.query, tab, page: 0 } };
@@ -136,6 +180,7 @@ class PatientsTable extends React.Component {
       },
       () => {
         this.updateTable(this.state.query);
+        localStorage.setItem(`SaraPage`, JSON.stringify(page));
       }
     );
   };
@@ -146,20 +191,23 @@ class PatientsTable extends React.Component {
    * @param {SyntheticEvent} event - Event when num entries changes
    */
   handleEntriesChange = event => {
-    const value = event.target.value;
+    localStorage.removeItem(`SaraPage`);
+    const value = event?.target?.value || event;
     this.setState(
       state => {
         return {
-          query: { ...state.query, entries: value },
+          query: { ...state.query, entries: value, page: 0 },
         };
       },
       () => {
         this.updateTable(this.state.query);
+        localStorage.setItem(`SaraEntries`, value);
       }
     );
   };
 
   handleChange = event => {
+    localStorage.removeItem(`SaraPage`);
     const form = this.state.form;
     const query = this.state.query;
     if (event.target.name === 'jurisdictionPath') {
@@ -179,6 +227,7 @@ class PatientsTable extends React.Component {
       }
     } else if (event.target.name === 'search') {
       this.updateTable({ ...query, search: event.target.value, page: 0 });
+      localStorage.setItem(`SaraSearch`, event.target.value);
     }
   };
 
@@ -235,8 +284,10 @@ class PatientsTable extends React.Component {
 
     this.setState({ query, cancelToken, loading: true }, () => {
       axios
-        .get('/public_health/patients', {
-          params: { workflow: this.props.workflow, ...query },
+        .post('/public_health/patients', {
+          workflow: this.props.workflow,
+          ...query,
+          filter: this.state.filter,
           cancelToken: this.state.cancelToken.token,
         })
 
@@ -273,6 +324,16 @@ class PatientsTable extends React.Component {
         });
     });
   };
+
+  advancedFilterUpdate(filter) {
+    localStorage.removeItem(`SaraPage`);
+    this.setState(
+      state => ({ filter: filter?.filter(field => field?.filterOption != null), query: { ...state.query, page: 0 } }),
+      () => {
+        this.updateTable(this.state.query);
+      }
+    );
+  }
 
   updateJurisdictionPaths() {
     axios.get('/jurisdictions/paths').then(response => {
@@ -359,12 +420,24 @@ class PatientsTable extends React.Component {
         <TabContent>
           <Card>
             <Card.Body className="pl-4 pr-4">
-              <div className="lead mt-1 mb-3">
-                {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u> workflow.
-                {this.props.tabs[this.state.query.tab].tooltip && (
-                  <InfoTooltip tooltipTextKey={this.props.tabs[this.state.query.tab].tooltip} location="right"></InfoTooltip>
-                )}
-              </div>
+              <Row>
+                <Col md="18">
+                  <div className="lead mt-1 mb-3">
+                    {this.props.tabs[this.state.query.tab].description} You are currently in the <u>{this.props.workflow}</u> workflow.
+                    {this.props.tabs[this.state.query.tab].tooltip && (
+                      <InfoTooltip tooltipTextKey={this.props.tabs[this.state.query.tab].tooltip} location="right"></InfoTooltip>
+                    )}
+                  </div>
+                </Col>
+                <Col>
+                  <div className="float-right">
+                    <Button size="sm" onClick={this.clearAllFilters}>
+                      <i className="fas fa-eraser"></i>
+                      <span className="ml-1">Clear All Filters</span>
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
               <Form className="my-1">
                 <Form.Row className="align-items-center">
                   {this.state.query.tab !== 'transferred_out' && (
@@ -485,6 +558,11 @@ class PatientsTable extends React.Component {
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}
                   />
+                  <AdvancedFilter
+                    advancedFilterUpdate={this.advancedFilterUpdate}
+                    authenticity_token={this.props.authenticity_token}
+                    workflow={this.props.workflow}
+                  />
                   {this.state.query !== 'transferred_out' && (
                     <DropdownButton
                       as={ButtonGroup}
@@ -492,7 +570,7 @@ class PatientsTable extends React.Component {
                       variant="primary"
                       title={
                         <React.Fragment>
-                          <i className="fas fa-tools"></i> Actions{' '}
+                          <i className="fas fa-tools"></i> Bulk Actions{' '}
                         </React.Fragment>
                       }
                       className="ml-2"
@@ -525,7 +603,7 @@ class PatientsTable extends React.Component {
                 selectedRows={this.state.selectedPatients}
                 selectAll={this.state.selectAll}
                 entryOptions={this.state.entryOptions}
-                entries={this.state.query.entries}
+                entries={parseInt(this.state.query.entries)}
               />
             </Card.Body>
           </Card>

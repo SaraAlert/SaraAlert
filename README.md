@@ -102,6 +102,8 @@ bundle exec whenever --update-crontab
       - Caches analytics information for faster retrieval
   * `SendAssessmentsJob`
       - Send assessment reminders to monitorees
+  * `PurgeJwtIdentifiersJob`
+      - Purge expired JWT Identifiers that are saved and validated when clients request access to the API.
 
 NOTE: In any production instance, these jobs should be handled outside of any of the containers (they should be scheduled and launched via crontab by the host).
 

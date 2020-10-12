@@ -19,55 +19,55 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @user.update!(api_enabled: true)
 
     # Create OAuth applications
-    @user_patient_read_write_app = Doorkeeper::Application.create(
+    @user_patient_read_write_app = OauthApplication.create(
       name: 'user-test-patient-rw',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/Patient.*'
     )
 
-    @user_patient_read_app = Doorkeeper::Application.create(
+    @user_patient_read_app = OauthApplication.create(
       name: 'user-test-patient-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/Patient.read'
     )
 
-    @user_patient_write_app = Doorkeeper::Application.create(
+    @user_patient_write_app = OauthApplication.create(
       name: 'user-test-patient-w',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/Patient.write'
     )
 
-    @user_observation_read_app = Doorkeeper::Application.create(
+    @user_observation_read_app = OauthApplication.create(
       name: 'user-test-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/Observation.read'
     )
 
-    @user_response_read_app = Doorkeeper::Application.create(
+    @user_response_read_app = OauthApplication.create(
       name: 'user-test-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/QuestionnaireResponse.read'
     )
 
-    @user_patient_rw_observation_r_app = Doorkeeper::Application.create(
+    @user_patient_rw_observation_r_app = OauthApplication.create(
       name: 'user-test-patient-rw-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/Patient.* user/Observation.read'
     )
 
-    @user_patient_rw_response_r_app = Doorkeeper::Application.create(
+    @user_patient_rw_response_r_app = OauthApplication.create(
       name: 'user-test-patient-rw-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/Patient.* user/QuestionnaireResponse.read'
     )
 
-    @user_observation_r_response_r_app = Doorkeeper::Application.create(
+    @user_observation_r_response_r_app = OauthApplication.create(
       name: 'user-test-observation-r-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/QuestionnaireResponse.read user/Observation.read'
     )
 
-    @user_everything_app = Doorkeeper::Application.create(
+    @user_everything_app = OauthApplication.create(
       name: 'user-test-everything',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read'
@@ -141,9 +141,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     shadow_user.add_role 'Public Health Enroller'
     shadow_user.save!
+    shadow_user.lock_access!
 
     # Create OAuth applications
-    @system_patient_read_write_app = Doorkeeper::Application.create(
+    @system_patient_read_write_app = OauthApplication.create(
       name: 'system-test-patient-rw',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Patient.*',
@@ -151,7 +152,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-    @system_patient_read_app = Doorkeeper::Application.create(
+    @system_patient_read_app = OauthApplication.create(
       name: 'system-test-patient-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Patient.read',
@@ -159,7 +160,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-    @system_patient_write_app = Doorkeeper::Application.create(
+    @system_patient_write_app = OauthApplication.create(
       name: 'system-test-patient-w',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Patient.write',
@@ -167,7 +168,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-    @system_observation_read_app = Doorkeeper::Application.create(
+    @system_observation_read_app = OauthApplication.create(
       name: 'system-test-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Observation.read',
@@ -175,7 +176,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-    @system_response_read_app = Doorkeeper::Application.create(
+    @system_response_read_app = OauthApplication.create(
       name: 'system-test-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/QuestionnaireResponse.read',
@@ -183,7 +184,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-    @system_patient_rw_observation_r_app = Doorkeeper::Application.create(
+    @system_patient_rw_observation_r_app = OauthApplication.create(
       name: 'system-test-patient-rw-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Patient.* system/Observation.read',
@@ -191,7 +192,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-    @system_patient_rw_response_r_app = Doorkeeper::Application.create(
+    @system_patient_rw_response_r_app = OauthApplication.create(
       name: 'system-test-patient-rw-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Patient.* system/QuestionnaireResponse.read',
@@ -199,7 +200,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-    @system_observation_r_response_r_app = Doorkeeper::Application.create(
+    @system_observation_r_response_r_app = OauthApplication.create(
       name: 'system-test-observation-r-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/QuestionnaireResponse.read system/Observation.read',
@@ -207,7 +208,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       user_id: shadow_user.id
     )
 
-    @system_everything_app = Doorkeeper::Application.create(
+    @system_everything_app = OauthApplication.create(
       name: 'system-test-everything',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
       scopes: 'system/Patient.* system/QuestionnaireResponse.read system/Observation.read',

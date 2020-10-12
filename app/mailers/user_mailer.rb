@@ -20,6 +20,20 @@ class UserMailer < ApplicationMailer
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Purge Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
+  def jwt_identifier_purge_job_email(total_before, eligible, total_after)
+    @total_before = total_before
+    @eligible = eligible
+    @total_after = total_after
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert JWT Identifier Purge Job Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
+  def send_purge_warnings_job_email(sent, not_sent, eligible)
+    @sent = sent
+    @not_sent = not_sent
+    @eligible = eligible
+    mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Send Purge Warnings Job Results (#{ActionMailer::Base.default_url_options[:host]})")
+  end
+
   def close_job_email(closed, not_closed, eligible)
     @closed = closed
     @not_closed = not_closed
@@ -59,21 +73,14 @@ class UserMailer < ApplicationMailer
     end
   end
 
-  def purge_notification
-    recipients = User.with_any_role(:admin)
+  def purge_notification(user, num_purgeable_records)
+    @user = user
+    @num_purgeable_records = num_purgeable_records
     @expiration_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_date']).strftime('%A %B %d, at %l:%M %p %Z')
+    subject = @num_purgeable_records.zero? ? 'Sara Alert Notification' : 'Sara Alert User Records Expiring Soon'
 
-    recipients.each do |user|
-      next if user.jurisdiction&.name == 'USA'
-
-      @user = user
-      @num_purgeable_records = user.viewable_patients.purge_eligible.size
-
-      subject = @num_purgeable_records.zero? ? 'Sara Alert Notification' : 'Sara Alert User Records Expiring Soon'
-
-      mail(to: user.email.strip, subject: subject) do |format|
-        format.html { render layout: 'main_mailer' }
-      end
+    mail(to: user.email.strip, subject: subject) do |format|
+      format.html { render layout: 'main_mailer' }
     end
   end
 end

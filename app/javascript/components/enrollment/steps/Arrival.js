@@ -99,6 +99,7 @@ class Arrival extends React.Component {
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_departure']}
                     isClearable
+                    customClass="form-control-lg"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_departure']}
@@ -164,6 +165,7 @@ class Arrival extends React.Component {
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_arrival']}
                     isClearable
+                    customClass="form-control-lg"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_arrival']}

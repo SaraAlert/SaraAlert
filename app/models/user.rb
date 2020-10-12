@@ -22,6 +22,7 @@ class User < ApplicationRecord
 
   has_many :downloads
   has_many :export_receipts
+  has_many :user_filters
 
   belongs_to :jurisdiction
 
@@ -113,6 +114,11 @@ class User < ApplicationRecord
 
   # Can this user import?
   def can_import?
+    has_role?(:public_health) || has_role?(:public_health_enroller)
+  end
+
+  # Can this user manage saved filters?
+  def can_manage_saved_filters?
     has_role?(:public_health) || has_role?(:public_health_enroller)
   end
 
