@@ -82,22 +82,29 @@ class ExportController < ApplicationController
     send_data excel_export(patients)
   end
 
-  def custom
-    permitted_params = params.permit(:file_ext, :fields, :filters)
+  def custom_export
+    permitted_params = params.permit(:file_ext, :fields, :workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
 
     # Validate file_type param
     file_type = permitted_params.require(:file_ext).to_sym
-    return head :bad_request unless %i[csv xlsx]
+    return head :bad_request unless %i[csv xlsx].include?(file_type)
 
     # Validate fields param
     fields = permitted_params.require(:fields)
-    return head :bad_request unless fields.kind_of?(Array)
+    return head :bad_request unless fields.is_a?(Array)
+
     fields.each do |field|
       return head :bad_request unless PATIENT_FIELDS.keys.include?(field.to_sym)
     end
 
-    # Validate filters
-    filters = permitted_params[:filters]
+    # Validate filter params
+    begin
+      validate_filter_params(permitted_params)
+    rescue StandardError
+      return head :bad_request
+    end
+
+    # Spawn job to handle export
 
     render json: {}
   end
