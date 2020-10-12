@@ -271,6 +271,7 @@ class Identification extends React.Component {
                     onChange={date => this.handleDateChange('date_of_birth', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_birth']}
+                    customClass="form-control-lg"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_birth']}

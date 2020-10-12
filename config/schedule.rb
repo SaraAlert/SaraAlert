@@ -5,8 +5,12 @@ require File.expand_path(File.dirname(__FILE__) + "/environment")
 
 set :output, "/tmp/cronlog.log"
 
-every 24.hours do
+every 1.hours do
   runner "ClosePatientsJob.perform_later"
+end
+
+every 24.hours do
+  runner "PurgeJwtIdentifiersJob.perform_later"
 end
 
 weekly_purge_date = Chronic.parse(ADMIN_OPTIONS['weekly_purge_date'])

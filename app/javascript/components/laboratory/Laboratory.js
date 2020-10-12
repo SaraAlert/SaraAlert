@@ -105,6 +105,7 @@ class Laboratory extends React.Component {
                   maxDate={moment().format('YYYY-MM-DD')}
                   onChange={date => this.handleDateChange('specimen_collection', date)}
                   placement="bottom"
+                  customClass="form-control-lg"
                 />
               </Form.Group>
             </Row>
@@ -119,6 +120,7 @@ class Laboratory extends React.Component {
                   onChange={date => this.handleDateChange('report', date)}
                   placement="bottom"
                   isInvalid={this.state.reportInvalid}
+                  customClass="form-control-lg"
                 />
                 <Form.Control.Feedback className="d-block" type="invalid">
                   {this.state.reportInvalid && <span>Report Date cannot be before Specimen Collection Date.</span>}

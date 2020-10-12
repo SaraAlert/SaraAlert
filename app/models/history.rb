@@ -113,7 +113,7 @@ class History < ApplicationRecord
     History.monitoring_status(history) if diff_state.include?(:monitoring)
     History.exposure_risk_assessment(history) if diff_state.include?(:exposure_risk_assessment)
     History.monitoring_plan(history) if diff_state.include?(:monitoring_plan)
-    History.case_status(history) if diff_state.include?(:case_status)
+    History.case_status(history, diff_state) if diff_state.include?(:case_status)
     History.public_health_action(history) if diff_state.include?(:public_health_action)
     History.jurisdiction(history) if diff_state.include?(:jurisdiction_path)
     History.assigned_user(history) if diff_state.include?(:assigned_user)
@@ -157,7 +157,7 @@ class History < ApplicationRecord
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
-  def self.case_status(history)
+  def self.case_status(history, diff_state)
     field = {
       name: 'Case Status',
       old_value: history[:patient][:case_status],
@@ -166,8 +166,10 @@ class History < ApplicationRecord
     return if field[:old_value] == field[:new_value]
 
     if !history[:params][:monitoring].blank? && !history[:params][:monitoring]
+      # monitoree went from actively monitoring to not monitoring
       history[:note] = ', and chose to "End Monitoring"'
-    elsif !history[:patient][:isolation].present? && history[:params][:isolation].present?
+      # monitoree went from exposure to isolation (only applies to when user deliberately selected to continue monitoring in isolation workflow)
+    elsif !history[:patient][:isolation].present? && history[:params][:isolation].present? && diff_state.include?(:isolation)
       history[:note] = ', and chose to "Continue Monitoring in Isolation Workflow"'
     end
 
