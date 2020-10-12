@@ -160,7 +160,7 @@ class HistoryComponent extends React.Component {
                 isMulti
                 name="Creator Filters"
                 options={historyCreators}
-                className="basic-multi-select w-25"
+                className="basic-multi-select w-25 pl-1"
                 classNamePrefix="select"
                 placeholder="Filter by Creator"
                 theme={theme => ({
