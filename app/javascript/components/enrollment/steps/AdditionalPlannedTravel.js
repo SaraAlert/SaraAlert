@@ -74,7 +74,7 @@ class AdditionalPlannedTravel extends React.Component {
           <Card.Header as="h5">Additional Planned Travel</Card.Header>
           <Card.Body>
             <Form>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="8" controlId="additional_planned_travel_type">
                   <Form.Label className="nav-input-label">TRAVEL TYPE{schema?.fields?.additional_planned_travel_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -157,7 +157,7 @@ class AdditionalPlannedTravel extends React.Component {
                   </Form.Group>
                 )}
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="8" controlId="additional_planned_travel_port_of_departure">
                   <Form.Label className="nav-input-label">
                     PORT OF DEPARTURE{schema?.fields?.additional_planned_travel_port_of_departure?._exclusive?.required && ' *'}
@@ -188,6 +188,7 @@ class AdditionalPlannedTravel extends React.Component {
                     placement="bottom"
                     isInvalid={!!this.state.errors['additional_planned_travel_start_date']}
                     isClearable
+                    customClass="form-control-lg"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_start_date']}
@@ -208,13 +209,14 @@ class AdditionalPlannedTravel extends React.Component {
                     placement="bottom"
                     isInvalid={!!this.state.errors['additional_planned_travel_end_date']}
                     isClearable
+                    customClass="form-control-lg"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['additional_planned_travel_end_date']}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2 pb-3">
+              <Form.Row className="pb-2">
                 <Form.Group as={Col} md="24" controlId="additional_planned_travel_related_notes">
                   <Form.Label className="nav-input-label">
                     ADDITIONAL PLANNED TRAVEL NOTES{schema?.fields?.additional_planned_travel_related_notes?._exclusive?.required && ' *'}
@@ -243,11 +245,6 @@ class AdditionalPlannedTravel extends React.Component {
             {this.props.next && (
               <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
                 Next
-              </Button>
-            )}
-            {this.props.submit && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>
-                Finish
               </Button>
             )}
           </Card.Body>
@@ -295,10 +292,9 @@ const schema = yup.object().shape({
 
 AdditionalPlannedTravel.propTypes = {
   currentState: PropTypes.object,
-  previous: PropTypes.func,
   setEnrollmentState: PropTypes.func,
+  previous: PropTypes.func,
   next: PropTypes.func,
-  submit: PropTypes.func,
 };
 
 export default AdditionalPlannedTravel;

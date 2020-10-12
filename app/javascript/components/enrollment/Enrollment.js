@@ -200,48 +200,29 @@ class Enrollment extends React.Component {
             <Identification goto={this.goto} next={this.next} setEnrollmentState={this.setEnrollmentState} currentState={this.state.enrollmentState} />
           </Carousel.Item>
           <Carousel.Item>
-            <Address
-              goto={this.goto}
-              next={this.next}
-              previous={this.previous}
-              setEnrollmentState={this.setEnrollmentState}
-              currentState={this.state.enrollmentState}
-            />
+            <Address currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
           </Carousel.Item>
           <Carousel.Item>
-            <Contact
-              goto={this.goto}
-              next={this.next}
-              previous={this.previous}
-              setEnrollmentState={this.setEnrollmentState}
-              currentState={this.state.enrollmentState}
-            />
+            <Contact currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
           </Carousel.Item>
           <Carousel.Item>
-            <Arrival
-              goto={this.goto}
-              next={this.next}
-              previous={this.previous}
-              setEnrollmentState={this.setEnrollmentState}
-              currentState={this.state.enrollmentState}
-            />
+            <Arrival currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
           </Carousel.Item>
           <Carousel.Item>
             <AdditionalPlannedTravel
-              goto={this.goto}
-              next={this.next}
-              previous={this.previous}
-              setEnrollmentState={this.setEnrollmentState}
               currentState={this.state.enrollmentState}
+              setEnrollmentState={this.setEnrollmentState}
+              previous={this.previous}
+              next={this.next}
             />
           </Carousel.Item>
           <Carousel.Item>
             <Exposure
-              goto={this.goto}
-              next={this.next}
-              previous={this.previous}
-              setEnrollmentState={this.setEnrollmentState}
               currentState={this.state.enrollmentState}
+              setEnrollmentState={this.setEnrollmentState}
+              previous={this.previous}
+              next={this.next}
+              patient={this.props.patient}
               has_group_members={this.props.has_group_members}
               jurisdictionPaths={this.props.jurisdictionPaths}
               assignedUsers={this.props.assignedUsers}
@@ -250,12 +231,11 @@ class Enrollment extends React.Component {
           </Carousel.Item>
           <Carousel.Item>
             <Review
+              currentState={this.state.enrollmentState}
+              previous={this.previous}
               goto={this.goto}
               submit={this.submit}
-              previous={this.previous}
-              setEnrollmentState={this.setEnrollmentState}
-              currentState={this.state.enrollmentState}
-              parentId={this.props.parent_id}
+              parent_id={this.props.parent_id}
               canAddGroup={this.props.can_add_group}
               jurisdictionPaths={this.props.jurisdictionPaths}
             />

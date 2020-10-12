@@ -184,8 +184,8 @@ class Fhir::R4::ApiController < ActionController::API
     status_bad_request && return unless resource.save
 
     if resource_type == 'patient'
-      # Send enrollment notification
-      resource.send_enrollment_notification
+      # Send enrollment notification only to responders
+      resource.send_enrollment_notification if resource.self_reporter_or_proxy?
 
       # Create a history for the enrollment
       History.enrollment(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree enrolled via API.')
@@ -336,7 +336,7 @@ class Fhir::R4::ApiController < ActionController::API
             coding: [
               FHIR::Coding.new(code: 'SMART-on-FHIR', system: 'http://hl7.org/fhir/restful-security-service')
             ],
-            text: 'OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org'
+            text: 'OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)'
           ),
           extension: [
             FHIR::Extension.new(
@@ -440,7 +440,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Client application that is currently using the API
   def current_client_application
-    Doorkeeper::Application.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
+    OauthApplication.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
   end
 
   # Determine the patient data that is accessible by either the current resource owner

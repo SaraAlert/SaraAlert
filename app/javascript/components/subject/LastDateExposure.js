@@ -20,50 +20,16 @@ class LastDateExposure extends React.Component {
       loading: false,
       apply_to_group: false, // Flag to apply a change to all members
       apply_to_group_cm_only: false, // Flag to apply a change only to group members where continuous_exposure is true
-      showExposureDateModal: false,
-      showContinuousMonitoringModal: false,
+      showLastDateOfExposureModal: false,
+      showContinuousExposureModal: false,
     };
     this.origState = Object.assign({}, this.state);
-    this.submit = this.submit.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleDateChange = this.handleDateChange.bind(this);
-    this.closeExposureDateModal = this.closeExposureDateModal.bind(this);
-    this.toggleContinuousMonitoringModal = this.toggleContinuousMonitoringModal.bind(this);
+    this.submit = this.submit.bind(this);
+    this.openContinuousExposureModal = this.openContinuousExposureModal.bind(this);
+    this.openLastDateOfExposureModal = this.openLastDateOfExposureModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
     this.createModal = this.createModal.bind(this);
-    this.createCEToggle = this.createCEToggle.bind(this);
-  }
-
-  toggleContinuousMonitoringModal() {
-    this.setState({
-      showContinuousMonitoringModal: !this.state.showContinuousMonitoringModal,
-      continuous_exposure: !this.state.continuous_exposure,
-      apply_to_group: false,
-      apply_to_group_cm_only: false,
-    });
-  }
-
-  closeExposureDateModal() {
-    this.setState({
-      last_date_of_exposure: this.props.patient.last_date_of_exposure,
-      showExposureDateModal: false,
-      apply_to_group: false,
-      apply_to_group_cm_only: false,
-    });
-  }
-
-  handleDateChange(date) {
-    if (date && date !== this.props.patient.last_date_of_exposure) {
-      this.setState({
-        last_date_of_exposure: date,
-        showExposureDateModal: true,
-        apply_to_group: false,
-        apply_to_group_cm_only: false,
-      });
-    } else {
-      this.setState({
-        last_date_of_exposure: date,
-      });
-    }
   }
 
   handleChange(event) {
@@ -80,10 +46,10 @@ class LastDateExposure extends React.Component {
     });
   }
 
-  submit(isLDE) {
+  submit() {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     diffState.push('continuous_exposure'); // Since exposure date updates change CE, always make sure this gets changed
-    this.setState({ loading: true, continuous_exposure: diffState.includes('last_date_of_exposure') || isLDE ? false : this.state.continuous_exposure }, () => {
+    this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
@@ -102,11 +68,43 @@ class LastDateExposure extends React.Component {
     });
   }
 
-  createModal(title, message, toggle, submit) {
-    message += this.props.has_group_members ? '(s):' : '.';
+  openContinuousExposureModal() {
+    this.setState({
+      showContinuousExposureModal: true,
+      last_date_of_exposure: null,
+      continuous_exposure: !this.props.patient.continuous_exposure,
+      apply_to_group: false,
+      apply_to_group_cm_only: false,
+    });
+  }
+
+  openLastDateOfExposureModal(date) {
+    if (date && date !== this.props.patient.last_date_of_exposure) {
+      this.setState({
+        showLastDateOfExposureModal: true,
+        last_date_of_exposure: date,
+        continuous_exposure: false,
+        apply_to_group: false,
+        apply_to_group_cm_only: false,
+      });
+    }
+  }
+
+  closeModal() {
+    this.setState({
+      last_date_of_exposure: this.props.patient.last_date_of_exposure,
+      continuous_exposure: !!this.props.patient.continuous_exposure,
+      showLastDateOfExposureModal: false,
+      showContinuousExposureModal: false,
+      apply_to_group: false,
+      apply_to_group_cm_only: false,
+    });
+  }
+
+  createModal(title, message, close, submit) {
     const update_continuous_exposure = title === 'Continuous Exposure';
     return (
-      <Modal size="lg" show centered onHide={toggle}>
+      <Modal size="lg" show centered onHide={close}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
@@ -123,7 +121,7 @@ class LastDateExposure extends React.Component {
               />
             </Form.Group>
           )}
-          {this.props.has_group_members && this.state.showExposureDateModal && (
+          {this.props.has_group_members && this.state.showLastDateOfExposureModal && (
             <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
@@ -132,7 +130,7 @@ class LastDateExposure extends React.Component {
                   update_continuous_exposure ? 'that are not on the closed line list' : ''
                 } where Continuous Exposure is turned ON`}
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group_cm_only === true}
+                checked={this.state.apply_to_group_cm_only}
               />
             </Form.Group>
           )}
@@ -143,16 +141,34 @@ class LastDateExposure extends React.Component {
                 id="apply_to_group"
                 label={`This monitoree and all household members ${update_continuous_exposure ? 'that are not on the closed line list' : ''}`}
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group === true}
+                checked={this.state.apply_to_group}
               />
             </Form.Group>
           )}
+          {!!this.props.patient.continuous_exposure && !this.state.continuous_exposure && (
+            <div className="mt-2">
+              <Form.Label className="nav-input-label">Update Last Date of Exposure to:</Form.Label>
+              <DateInput
+                id="last_date_of_exposure"
+                date={this.state.last_date_of_exposure}
+                maxDate={moment()
+                  .add(30, 'days')
+                  .format('YYYY-MM-DD')}
+                onChange={date => this.setState({ last_date_of_exposure: date })}
+                placement="top"
+                customClass="form-control-lg"
+              />
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary btn-square" onClick={toggle}>
+          <Button variant="secondary btn-square" onClick={close}>
             Cancel
           </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+          <Button
+            variant="primary btn-square"
+            onClick={submit}
+            disabled={this.state.loading || (!this.state.last_date_of_exposure && !this.state.continuous_exposure)}>
             {this.state.loading && (
               <React.Fragment>
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
@@ -165,37 +181,30 @@ class LastDateExposure extends React.Component {
     );
   }
 
-  createCEToggle() {
-    return (
-      <Form.Check
-        size="lg"
-        label="CONTINUOUS EXPOSURE"
-        id="continuous_exposure"
-        disabled={!this.props.patient.monitoring}
-        checked={this.state.continuous_exposure}
-        onChange={() => this.toggleContinuousMonitoringModal()}
-      />
-    );
-  }
-
   render() {
     return (
       <React.Fragment>
-        {this.state.showExposureDateModal &&
+        {this.state.showLastDateOfExposureModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the Last Date of Exposure to ${this.state.last_date_of_exposure}? The Last Date of Exposure will be updated and Continuous Exposure will be turned OFF for the selected record`,
-            this.closeExposureDateModal,
-            () => this.submit(true)
+            `Are you sure you want to modify the Last Date of Exposure to ${moment(this.state.last_date_of_exposure).format(
+              'MM/DD/YYYY'
+            )}? The Last Date of Exposure will be updated and Continuous Exposure will be turned OFF for the selected record${
+              this.props.has_group_members ? '(s):' : '.'
+            }`,
+            this.closeModal,
+            this.submit
           )}
-        {this.state.showContinuousMonitoringModal &&
+        {this.state.showContinuousExposureModal &&
           this.createModal(
             'Continuous Exposure',
-            `Are you sure you want to modify Continuous Exposure? Continuous Exposure will be turned ${
-              this.state.continuous_exposure ? 'ON' : 'OFF'
-            } for the selected record`,
-            this.toggleContinuousMonitoringModal,
-            () => this.submit(false)
+            `Are you sure you want to turn ${this.state.continuous_exposure ? 'ON' : 'OFF'} Continuous Exposure? The Last Date of Exposure will ${
+              this.state.continuous_exposure ? 'be cleared' : 'need to be populated'
+            } and Continuous Exposure will be turned ${this.state.continuous_exposure ? 'ON' : 'OFF'} for the selected record${
+              this.props.has_group_members ? '(s):' : '.'
+            }`,
+            this.closeModal,
+            this.submit
           )}
         <Row>
           <SymptomOnset authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
@@ -217,27 +226,35 @@ class LastDateExposure extends React.Component {
                   maxDate={moment()
                     .add(30, 'days')
                     .format('YYYY-MM-DD')}
-                  onChange={this.handleDateChange}
+                  onChange={this.openLastDateOfExposureModal}
                   placement="top"
+                  customClass="form-control-lg"
+                  isClearable
                 />
               </Col>
             </Row>
             <Row className="pt-2">
               <Col>
-                {!this.props.patient.monitoring && (
-                  <OverlayTrigger
-                    key="tooltip-ot-ce"
-                    placement="left"
-                    overlay={
-                      <Tooltip id="tooltip-ce">
-                        Continuous Exposure cannot be turned for records on the Closed line list. If this monitoree requires monitoring due to a Continuous
-                        Exposure, you may update this field after changing Monitoring Status to &quot;Actively Monitoring&quot;
-                      </Tooltip>
-                    }>
-                    <span className="d-inline-block">{this.createCEToggle()}</span>
-                  </OverlayTrigger>
-                )}
-                {this.props.patient.monitoring && <span className="d-inline-block">{this.createCEToggle()}</span>}
+                <OverlayTrigger
+                  key="tooltip-ot-ce"
+                  placement="left"
+                  overlay={
+                    <Tooltip id="tooltip-ce" style={this.props.patient.monitoring ? { display: 'none' } : {}}>
+                      Continuous Exposure cannot be turned on or off for records on the Closed line list. If this monitoree requires monitoring due to a
+                      Continuous Exposure, you may update this field after changing Monitoring Status to &quot;Actively Monitoring&quot;
+                    </Tooltip>
+                  }>
+                  <span className="d-inline-block">
+                    <Form.Check
+                      size="lg"
+                      label="CONTINUOUS EXPOSURE"
+                      id="continuous_exposure"
+                      disabled={!this.props.patient.monitoring}
+                      checked={this.state.continuous_exposure}
+                      onChange={() => this.openContinuousExposureModal()}
+                    />
+                  </span>
+                </OverlayTrigger>
                 <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
               </Col>
             </Row>

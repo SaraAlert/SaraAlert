@@ -9,7 +9,7 @@
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
-    "@rails/webpacker": "4.2.2",
+    "@rails/webpacker": "^5.2.0",
     "@sentry/browser": "^5.15.5",
     "authy-form-helpers": "^2.4.4",
     "axios": "^0.19.2",

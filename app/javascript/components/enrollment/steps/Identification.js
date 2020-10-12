@@ -202,7 +202,7 @@ class Identification extends React.Component {
           <Card.Header as="h5">Monitoree Identification</Card.Header>
           <Card.Body>
             <Form>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} controlId="workflow">
                   <Form.Label className="nav-input-label">WORKFLOW *</Form.Label>
                   <Select
@@ -219,7 +219,7 @@ class Identification extends React.Component {
                   />
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} controlId="first_name">
                   <Form.Label className="nav-input-label">FIRST NAME{schema?.fields?.first_name?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -260,7 +260,7 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="auto" controlId="date_of_birth">
                   <Form.Label className="nav-input-label">DATE OF BIRTH{schema?.fields?.date_of_birth?._exclusive?.required && ' *'}</Form.Label>
                   <DateInput
@@ -271,6 +271,7 @@ class Identification extends React.Component {
                     onChange={date => this.handleDateChange('date_of_birth', date)}
                     placement="bottom"
                     isInvalid={!!this.state.errors['date_of_birth']}
+                    customClass="form-control-lg"
                   />
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['date_of_birth']}
@@ -403,7 +404,7 @@ class Identification extends React.Component {
               <Form.Row className="pt-3 ml-0">
                 <div className="nav-input-label">LANGUAGE</div>
               </Form.Row>
-              <Form.Row className="pb-3 pt-1 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
+              <Form.Row className="pb-3 ml-0">Languages that are not fully supported are indicated by a (*) in the below list.</Form.Row>
               <Form.Row>
                 <Form.Group as={Col} controlId="primary_language" id="primary_language_wrapper">
                   <Form.Label className="nav-input-label">
@@ -467,7 +468,7 @@ class Identification extends React.Component {
                   />
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md={12} controlId="nationality">
                   <Form.Label className="nav-input-label">NATIONALITY{schema?.fields?.nationality?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -482,7 +483,7 @@ class Identification extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row className="pb-2">
                 <Form.Group as={Col} md={8} controlId="user_defined_id_statelocal">
                   <Form.Label className="nav-input-label">STATE/LOCAL ID{schema?.fields?.user_defined_id_statelocal?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -526,19 +527,9 @@ class Identification extends React.Component {
                 </Form.Group>
               </Form.Row>
             </Form>
-            {this.props.previous && (
-              <Button variant="outline-primary" size="lg" className="btn-square px-5" onClick={this.props.previous}>
-                Previous
-              </Button>
-            )}
             {this.props.next && (
               <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
                 Next
-              </Button>
-            )}
-            {this.props.submit && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>
-                Finish
               </Button>
             )}
           </Card.Body>
@@ -565,7 +556,7 @@ const schema = yup.object().shape({
     .nullable(),
   date_of_birth: yup
     .date('Date must correspond to the "mm/dd/yyyy" format.')
-    .required('Please enter a date of birth.')
+    .required('Please enter a Date of Birth.')
     .max(new Date(), 'Date can not be in the future.')
     .nullable(),
   age: yup.number().nullable(),
@@ -603,9 +594,7 @@ const schema = yup.object().shape({
 
 Identification.propTypes = {
   currentState: PropTypes.object,
-  previous: PropTypes.func,
   next: PropTypes.func,
-  submit: PropTypes.func,
 };
 
 export default Identification;

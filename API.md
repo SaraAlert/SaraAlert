@@ -34,9 +34,10 @@ This API is intended for use by public health organizations using Sara Alert, an
 	  - [PUT [base]/Patient/[:id]](#update-put-pat)
 	- [Searching](#search)
 	  - [GET [base]/Patient?parameter(s)](#search-get)
-	  - [GET [base]/Observation?subject=Patient/[:id]](#search-subj)
-	  - [GET [base]/Patient?\_count=2](#search-all)
-
+	  - [GET [base]/QuestionnaireResponse?subject=Patient/[:id]](#search-questionnaire-subj)
+	  - [GET [base]/Observation?subject=Patient/[:id]](#search-observation-subj)
+	  - [GET [base]/Patient?_count=2](#search-all)
+	
 <a name="get-started"/>
 
 ## Get Started Using the Sara Alert API
@@ -95,36 +96,38 @@ Once a client application is registered, a user must authorize the client applic
 1. The registered client application must build a request for an authorization code. The request parameters are detailed in the specification for this flow [here](http://hl7.org/fhir/smart-app-launch/index.html#step-1-app-asks-for-authorization). This will cause the app to be redirected to the authorization endpoint and require the user to login to Sara Alert. For example, the following (once populated with the appropriate params), would navigate the client application to the Sara Alert demo server's authorization endpoint:
 
 	```
-	https://demo.saraalert.org//oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD
+	https://demo.saraalert.org/oauth/authorize?client_id=CLIENT_ID&redirect_uri=REDIRECT&response_type=code&scope=SCOPES&state=STATE&aud=AUD
 	```
 2. Once the end-user has authorized the request, Sara Alert will redirect back to the application using the redirect_uri given upon registration with the authorization code provided as a parameter.
 
 3. Once the authorization code is retrieved by the client application, it can be used to get an access token. This step is  also described in detail [here](http://hl7.org/fhir/smart-app-launch/index.html#step-3-app-exchanges-authorization-code-for-access-token). Note that the authorization code does expire after 10 minutes as is necessary.
 
 	##### POST `/oauth/token`
+	
+  **Request** Headers
+
+  ```
+    Content-Type: application/x-www-form-urlencoded
+  ```
 
 	**Request** Body
 
-	```json
-	{
-	  "client_id": "<CLIENT_ID>",
-	  "client_secret": "<CLIENT_SECRET>",
-	  "code": "<AUTHORIZATION_CODE>",
-	  "grant_type": "authorization_code",
-	  "redirect_uri": "<CLIENT_REDIRECT_URI>"
-	}
+	```	
+	  client_id: <CLIENT_ID>,
+	  client_secret: <CLIENT_SECRET>,
+	  code: <AUTHORIZATION_CODE>,
+	  grant_type: authorization_code,
+	  redirect_uri: <CLIENT_REDIRECT_URI>
 	```
 
 	**Response**
 
-	```json
-	{
-	  "access_token": "<TOKEN>",
-	  "token_type": "Bearer",
-	  "expires_in": 7200,
-	  "scope": "<CLIENT_SCOPES>",
-	  "created_at": 1589830122
-	}
+	```
+	  access_token: "<TOKEN>,
+	  token_type: "Bearer,
+	  expires_in: 7200,
+	  scope: <CLIENT_SCOPES>,
+	  created_at: 1589830122
 	```
 
 #### Authentication
@@ -138,11 +141,10 @@ Example request using access token:
 
 **Request Headers**
 
-```json
-{
-  "Content-Type": "application/x-www-form-urlencoded",
-  "Authorization": "Bearer <ACCESS_TOKEN>"
-}
+```
+  Content-Type: application/x-www-form-urlencoded,
+  Accept: application/fhir+json,
+  Authorization": Bearer <ACCESS_TOKEN>
 ```
 
 #### Testing
@@ -186,7 +188,7 @@ A JSON Web Key (JWK) is a JSON data structure that represents a cryptographic ke
 
 The client must generate an assymetric public/private key pair and then provide the *public* key in the form of a JSON Web Key Set. Read more about JWK and JWKS [here](https://tools.ietf.org/html/rfc7517), and see an example of this what a JWKS with public keys looks like [here](https://hl7.org/fhir/uv/bulkdata/authorization/sample-jwks/RS384.public.json).
 
-The JSON Web Algorithm (JWA) for generating the JWKS must be RS384, as that is the only algorithm currently supported by the Sara Alert API. This may be enhanced to include ES384 in the future.
+**The JSON Web Algorithm (JWA) for generating the JWKS must be RS384**, as that is the only algorithm currently supported by the Sara Alert API. This may be enhanced to include ES384 in the future.
 
 JWKS can be easily generated with tools such as [this](https://mkjwk.org/), which allow you to specify an algorithm, use (signature), and more. See a Javascript example of generating a JWKS on the official SMART on FHIR GitHub [here](https://github.com/smart-on-fhir/bulk-data-server/blob/master/generator.js).
 
@@ -218,6 +220,8 @@ Details about each of these steps and the expected parameter is clearly outlined
 		- Development: `http://localhost:3000/oauth/token`
 		- Demo: `https://demo.saraalert.org/oauth/token`
 		- Production: `https://sara.public.saraalert.org/oauth/token`
+    - The `jti` value should be a string value that uniquely identifies the JWT among requests from the client application. Therefore how it is generated is up to the client application. It's even okay to make it as simple as a counter, but the client application must ensure it will never be used twice on two different JWTs. 
+    - The `exp` value must be epoch time in *seconds* and should be no more than 5 minutes in the future. 
 2. Request a new access token via HTTP POST to the FHIR authorization server’s token endpoint URL which is again `<ENVIRONMENT_BASE_URL>/oauth/token`
 3. Once the end-user has authorized the request, Sara Alert will respond with an access token.
 
@@ -225,32 +229,26 @@ Details about each of these steps and the expected parameter is clearly outlined
 
 	**Request** Headers
 
-  ```json
-  {
-    "Content-Type": "application/x-www-form-urlencoded"
-  }
+  ```
+    Content-Type: application/x-www-form-urlencoded
   ```
 	**Request** Body
 
-	```json
-	{
-	  "client_assertion": "<CLIENT_SIGNED_JWT_ASSERTION>",
-	  "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-	  "grant_type": "client_credentials",
-	  "scope": "<CLIENT_SCOPES>"
-	}
+	```
+	  client_assertion: <CLIENT_SIGNED_JWT_ASSERTION>,
+	  client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer,
+	  grant_type: client_credentials,
+	  scope: <CLIENT_SCOPES (space separated)>
 	```
 
 	**Response**
 
-	```json
-	{
-	  "access_token": "<TOKEN>",
-	  "token_type": "Bearer",
-	  "expires_in": 7200,
-	  "scope": "<CLIENT_SCOPES>",
-	  "created_at": 1589830122
-	}
+	```
+	  access_token: "<TOKEN>,
+	  token_type: "Bearer,
+	  expires_in: 7200,
+	  scope: <CLIENT_SCOPES>,
+	  created_at: 1589830122
 	```
 
 
@@ -265,11 +263,10 @@ Example request using access token:
 
 **Request Headers**
 
-```json
-{
-  "Content-Type": "application/x-www-form-urlencoded",
-  "Authorization": "Bearer <ACCESS_TOKEN>"
-}
+```
+  Content-Type: application/x-www-form-urlencoded,
+  Accept: application/fhir+json,
+  Authorization": Bearer <ACCESS_TOKEN>
 ```
 
 #### Testing
@@ -318,6 +315,11 @@ For applications following the [SMART on FHIR Backend Services Workflow](#backen
 * `system/Patient.*`, (for both read and write access to this resource)
 * `system/Observation.read`,
 * `system/QuestionnaireResponse.read`,
+
+Please note a given application and request for access token can have have multiple scopes, which must be space-separated. For example:
+```
+`user/Patient.read system/Patient.read system/Observation.read`
+```
 
 <a name="cap"/>
 
@@ -1762,11 +1764,191 @@ GET `[base]/Patient?given=testy&family=mctest`
 ```
 </details>
 
+#### GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
+You can use search to find Monitoree daily reports by using the `subject` parameter.
+
+<a name="search-questionnaire-subj"/>
+
+GET `[base]/QuestionnaireResponse?subject=Patient/[:id]`
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+
+```json
+{
+  "id": 1,
+  "meta": {
+      "lastUpdated": "2020-10-05T21:48:43+00:00"
+  },
+  "status": "completed",
+  "subject": {
+      "reference": "Patient/231"
+  },
+  "item": [
+    {
+      "linkId": "0",
+      "text": "cough",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "1",
+      "text": "difficulty-breathing",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "2",
+      "text": "new-loss-of-smell",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "3",
+      "text": "new-loss-of-taste",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "4",
+      "text": "shortness-of-breath",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "5",
+      "text": "fever",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "6",
+      "text": "used-a-fever-reducer",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "7",
+      "text": "chills",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "8",
+      "text": "repeated-shaking-with-chills",
+      "answer": [
+        {
+          "valueBoolean": false
+        }
+      ]
+    },
+    {
+      "linkId": "9",
+      "text": "muscle-pain",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "10",
+      "text": "headache",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "11",
+      "text": "sore-throat",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "12",
+      "text": "nausea-or-vomiting",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "13",
+      "text": "diarrhea",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "14",
+      "text": "fatigue",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "15",
+      "text": "congestion-or-runny-nose",
+      "answer": [
+        {
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "16",
+      "text": "pulse-ox",
+      "answer": [
+        {
+          "valueDecimal": -4.0
+        }
+      ]
+    }
+  ],
+  "resourceType": "QuestionnaireResponse"
+}
+```
+</details>
+
 #### GET `[base]/Observation?subject=Patient/[:id]`
 
-You can also use search to find Monitoree daily reports and laboratory results by using the `subject` parameter.
+You can also use search to find Monitoree laboratory results by using the `subject` parameter.
 
-<a name="search-subj"/>
+<a name="search-observation-subj"/>
 
 GET `[base]/Observation?subject=Patient/[:id]`
 

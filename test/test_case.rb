@@ -10,14 +10,6 @@ class ActiveSupport::TestCase
 
   fixtures :all
 
-  def setup
-    create(:enroller)
-    create(:public_health)
-    create(:public_health_enroller)
-    create(:admin)
-    create(:analyst)
-  end
-
   # Run tests in parallel with specified workers
   parallelize(workers: 1)
 

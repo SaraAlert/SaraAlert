@@ -1,0 +1,13 @@
+<h1>
+  Sara Alert JWT Identifier Purge Job Results (<%= ActionMailer::Base.default_url_options[:host] %>)
+</h1>
+<h2>
+  <%= DateTime.now.in_time_zone('Eastern Time (US & Canada)') %>
+</h2>
+<br />
+Total JWT Identifiers BEFORE purge: <%= @total_before %>
+<br />
+Total JWT Identifiers eligible for purge at runtime: <%= @eligible %>
+<br />
+Total JWT Identifiers AFTER purge: <%= @total_after %>
+<br />

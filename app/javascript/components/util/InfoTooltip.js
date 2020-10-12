@@ -107,7 +107,10 @@ const TOOLTIP_TEXT = {
   ),
 
   latestPublicHealthActionInIsolation: (
-    <div>Used to note the public health recommendation provided to a monitoree. This element does not impact the line list on which this record appears.</div>
+    <div>
+      Used to note the public health recommendation provided to a monitoree. In the isolation workflow, this element does not impact the line list on which this
+      record appears.
+    </div>
   ),
 
   assignedUser: (

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_05_194603) do
+ActiveRecord::Schema.define(version: 2020_10_09_142558) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -58,7 +58,9 @@ ActiveRecord::Schema.define(version: 2020_09_05_194603) do
     t.integer "assessment_id"
     t.string "threshold_condition_hash"
     t.string "type"
+    t.integer "threshold_condition_id"
     t.index ["assessment_id"], name: "index_conditions_on_assessment_id"
+    t.index ["threshold_condition_id"], name: "index_conditions_on_threshold_condition_id"
     t.index ["type", "assessment_id"], name: "conditions_index_chain_1"
     t.index ["type", "jurisdiction_id"], name: "conditions_index_chain_3"
     t.index ["type", "threshold_condition_hash", "id"], name: "conditions_index_chain_2"
@@ -105,6 +107,15 @@ ActiveRecord::Schema.define(version: 2020_09_05_194603) do
     t.string "webpage"
     t.string "message"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
+  end
+
+  create_table "jwt_identifiers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "value"
+    t.datetime "expiration_date"
+    t.bigint "application_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["application_id"], name: "index_jwt_identifiers_on_application_id"
   end
 
   create_table "laboratories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -338,6 +349,7 @@ ActiveRecord::Schema.define(version: 2020_09_05_194603) do
     t.index ["id", "monitoring", "purged", "isolation", "symptom_onset"], name: "patients_index_chain_4"
     t.index ["id"], name: "index_patients_on_id"
     t.index ["isolation", "jurisdiction_id"], name: "patients_index_chain_6"
+    t.index ["jurisdiction_id", "assigned_user"], name: "patients_index_chain_four_1"
     t.index ["jurisdiction_id", "isolation", "purged", "assigned_user"], name: "patients_index_chain_three_1"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
     t.index ["last_date_of_exposure"], name: "index_patients_on_last_date_of_exposure"
@@ -408,6 +420,15 @@ ActiveRecord::Schema.define(version: 2020_09_05_194603) do
     t.index ["who_id"], name: "index_transfers_on_who_id"
   end
 
+  create_table "user_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.json "contents", null: false
+    t.string "name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_user_filters_on_user_id"
+  end
+
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -428,6 +449,7 @@ ActiveRecord::Schema.define(version: 2020_09_05_194603) do
     t.boolean "authy_enabled", default: false
     t.boolean "authy_enforced", default: true
     t.boolean "api_enabled", default: false
+    t.string "role", default: "none", null: false
     t.index ["authy_id"], name: "index_users_on_authy_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"
@@ -442,6 +464,7 @@ ActiveRecord::Schema.define(version: 2020_09_05_194603) do
     t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
+  add_foreign_key "jwt_identifiers", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
 end

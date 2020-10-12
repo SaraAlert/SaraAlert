@@ -5,6 +5,8 @@ services:
     image: ${SARA_ALERT_IMAGE}:latest
   sara-alert-assessment:
     image: ${SARA_ALERT_IMAGE}:latest
+  sara-alert-api:
+    image: ${SARA_ALERT_IMAGE}:latest
   sidekiq-enrollment-mailer:
     image: ${SARA_ALERT_IMAGE}:latest
   sidekiq-enrollment-export:
