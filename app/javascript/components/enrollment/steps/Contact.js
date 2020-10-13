@@ -46,6 +46,14 @@ class Contact extends React.Component {
     }
     let current = this.state.current;
     let modified = this.state.modified;
+
+    const trimFields = ['email', 'confirm_email'];
+    if (event?.target?.id && trimFields.includes(event.target.id)) {
+      if (event.target.value.trim() == '') {
+        value = event.target.value.trim();
+      }
+    }
+
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
