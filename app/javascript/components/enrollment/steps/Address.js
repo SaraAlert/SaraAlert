@@ -44,10 +44,8 @@ class Address extends React.Component {
       'foreign_monitored_address_zip',
       'foreign_monitored_address_county',
     ];
-    if (event?.target?.id && trimFields.includes(event.target.id)) {
-      if (event.target.value.trim() == '') {
-        value = event.target.value.trim();
-      }
+    if (event?.target?.id && trimFields.includes(event.target.id) && event.target.value.trim() === '') {
+      value = '';
     }
 
     this.setState(

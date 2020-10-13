@@ -20,10 +20,8 @@ class Arrival extends React.Component {
     let modified = this.state.modified;
 
     const trimFields = ['port_of_origin', 'flight_or_vessel_number', 'flight_or_vessel_carrier', 'port_of_entry_into_usa'];
-    if (event?.target?.id && trimFields.includes(event.target.id)) {
-      if (event.target.value.trim() == '') {
-        value = event.target.value.trim();
-      }
+    if (event?.target?.id && trimFields.includes(event.target.id) && event.target.value.trim() === '') {
+      value = '';
     }
 
     this.setState(

@@ -22,10 +22,8 @@ class AdditionalPlannedTravel extends React.Component {
     let modified = this.state.modified;
 
     const trimFields = ['additional_planned_travel_destination', 'additional_planned_travel_port_of_departure'];
-    if (event?.target?.id && trimFields.includes(event.target.id)) {
-      if (event.target.value.trim() == '') {
-        value = event.target.value.trim();
-      }
+    if (event?.target?.id && trimFields.includes(event.target.id) && event.target.value.trim() === '') {
+      value = '';
     }
 
     this.setState(

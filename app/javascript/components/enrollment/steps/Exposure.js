@@ -78,7 +78,7 @@ class Exposure extends React.Component {
     } else if (event?.target?.name && event.target.name === 'assignedUser') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 9999) return;
 
-      value = event.target.value === '' ? null : parseInt(event.target.value);
+      value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
     } else if (event?.target?.id && event.target.id === 'continuous_exposure') {
       // clear out LDE if CE is turned on and populated it with previous LDE if CE is turned off
       const lde = value ? null : this.props.patient.last_date_of_exposure;
@@ -89,6 +89,8 @@ class Exposure extends React.Component {
         modified = { patient: { last_date_of_exposure: lde } };
       }
       this.updateLDEandCEValidations({ ...current.patient, [event.target.id]: value });
+    } else if (event?.target?.id && trimFields.includes(event.target.id) && event.target.value.trim() === '') {
+      value = '';
     }
     this.setState(
       {
