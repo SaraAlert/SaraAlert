@@ -156,6 +156,7 @@ class LastDateExposure extends React.Component {
                   .format('YYYY-MM-DD')}
                 onChange={date => this.setState({ last_date_of_exposure: date })}
                 placement="top"
+                customClass="form-control-lg"
               />
             </div>
           )}
