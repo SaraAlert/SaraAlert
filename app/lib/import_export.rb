@@ -90,7 +90,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     exposure_notes: 'Exposure Notes',
     symptom_onset: 'Symptom Onset Date',
     case_status: 'Case Status',
-    jurisdiction_path: 'Full Assigned Jurisdiction Path',
     assigned_user: 'Assigned User',
     gender_identity: 'Gender Identity',
     sexual_orientation: 'Sexual Orientation',
@@ -99,6 +98,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     public_health_action: 'Latest Public Health Action',
     extended_isolation: 'Extended Isolation',
     # computed fields
+    name: 'Name',
+    jurisdiction: 'Jurisdiction',
+    jurisdiction_path: 'Full Assigned Jurisdiction Path',
     status: 'Status',
     end_of_monitoring: 'End of Monitoring',
     latest_report: 'Latest Report',
@@ -323,12 +325,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   def csv_export(patients, data_type, fields)
     package = CSV.generate(headers: true) do |csv|
       csv << fields.map { |field| PATIENT_FIELDS[field] }
-      # statuses = patient_statuses(patients)
       patients.find_in_batches(batch_size: 500) do |patients_group|
-        # linelists = linelists_for_export(patients_group, statuses)
-        # patients_group.each do |patient|
-        #   csv << linelists[patient.id].values
-        # end
+        patients_details = extract_patient_details_in_batch(patients_group, fields)
+        patients_details.each do |patient_details|
+          csv << fields.map { |field| patient_details[field] }
+        end
       end
     end
     Base64.encode64(package)
@@ -338,24 +339,117 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: data_type) do |sheet|
         sheet.add_row(fields.map { |field| PATIENT_FIELDS[field] })
-        # statuses = patient_statuses(patients)
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          # comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
-          # patients_group.each do |patient|
-          #   sheet.add_row comprehensive_details[patient.id].values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
-          # end
+          patients_details = extract_patient_details_in_batch(patients_group, fields)
+          patients_details.each do |patient_details|
+            sheet.add_row(fields.map { |field| patient_details[field] }, { types: Array.new(fields.length, :string) })
+          end
         end
       end
       return Base64.encode64(p.to_stream.read)
     end
   end
 
+  def extract_patient_details_in_batch(patients_group, fields)
+    # perform the following queries in bulk only if requested for better performance
+    patients_statuses = statuses(patients) if fields.include?(:status)
+    patients_jurisdiction_names = jurisdiction_names(patients) if fields.include?(:jurisdiction)
+    patients_jurisdiction_paths = jurisdiction_paths(patients) if fields.include?(:jurisdiction_path)
+    patients_transfers = transfers(patients) if (fields & %i[transferred_from transferred_to]).any?
+    lab_fields = %i[lab_1_type lab_1_specimen_collection lab_1_report lab_1_result lab_2_type lab_2_specimen_collection lab_2_report lab_2_result]
+    patients_labs = laboratories(patients) if (fields & lab_fields).any?
+
+    # construct patient details
+    patients_details = []
+    patients_group.each do |patient|
+      # populate requested inherent fields
+      patient_details = extract_incomplete_patient_details(patient, fields)
+
+      # populate computed fields if requested
+      patient_details[:name] = patient.displayed_name || '' if fields.include?(:name)
+      patient_details[:jurisdiction] = patients_jurisdiction_names[patient.id] || '' if fields.include?(:jurisdiction)
+      patient_details[:jurisdiction_path] = patients_jurisdiction_paths[patient.id] || '' if fields.include?(:jurisdiction_path)
+      patient_details[:status] = patients_statuses[patient.id] || '' if fields.include?(:status)
+      patient_details[:end_of_monitoring] = patient.end_of_monitoring || '' if fields.include?(:end_of_monitoring)
+      patient_details[:expected_purge_date] = patient.expected_purge_date || '' if fields.include?(:expected_purge_date)
+      patient_details[:latest_report] = patient[:latest_assessment_at]&.strftime('%F') || '' if fields.include?(:latest_report)
+      patient_details[:transferred_at] = patient[:latest_transfer_at]&.strftime('%F') || '' if fields.include?(:transferred_at)
+
+      # populate latest transfer from and to if requested
+      if patients_transfers.key?(patient.id)
+        patient_details[:transferred_from] = patients_transfers[patient.id][:trasnferred_from] if fields.include?(:transferred_from)
+        patient_details[:transferred_to] = patients_transfer[patient.id][:transferred_to] if fields.include?(:transferred_to)
+      end
+
+      # populate labs if requested
+      if patients_labs.key?(patient.id)
+        if patients_labs[patient.id].key?(:first)
+          patient_details[:lab_1_type] = patients_labs[patient.id][:first][:lab_type] || '' if fields.include?(:lab_1_type)
+          if fields.include?(:lab_1_specimen_collection)
+            patient_details[:lab_1_specimen_collection] = patients_labs[patient.id][:first][:specimen_collection]&.strftime('%F') || ''
+          end
+          patient_details[:lab_1_report] = patients_labs[patient.id][:first][:report]&.strftime('%F') || '' if fields.include?(:lab_1_report)
+          patient_details[:lab_1_result] = patients_labs[patient.id][:first][:result] || '' if fields.include?(:lab_1_result)
+        end
+        if patients_labs[patient.id].key?(:second)
+          patient_details[:lab_2_type] = patients_labs[patient.id][:first][:lab_type] || '' if fields.include?(:lab_2_type)
+          if fields.include?(:lab_2_specimen_collection)
+            patient_details[:lab_2_specimen_collection] = patients_labs[patient.id][:first][:specimen_collection]&.strftime('%F') || ''
+          end
+          patient_details[:lab_2_report] = patients_labs[patient.id][:first][:report]&.strftime('%F') || '' if fields.include?(:lab_2_report)
+          patient_details[:lab_2_result] = patients_labs[patient.id][:first][:result] || '' if fields.include?(:lab_2_result)
+        end
+      end
+
+      patients_details << patient_details
+    end
+
+    patients_details
+  end
+
+  def extract_incomplete_patient_details(patient, fields)
+    details = {}
+    number_fields = %i[id assigned_user]
+    string_fields = %i[first_name middle_name last_name sex ethnicity primary_language secondary_language nationality user_defined_id_statelocal
+                       user_defined_id_cdc user_defined_id_nndss address_line_1 address_city address_state address_line_2 address_zip address_county
+                       foreign_address_line_1 foreign_address_city foreign_address_country foreign_address_line_2 foreign_address_zip foreign_address_line_3
+                       foreign_address_state monitored_address_line_1 monitored_address_city monitoring_address_state monitored_address_state
+                       monitored_address_line_2 monitored_address_zip monitored_address_county foreign_monitored_address_line_1 foreign_monitored_address_city
+                       foreign_monitored_address_state foreign_monitored_address_line_2 foreign_monitored_address_zip foreign_monitored_address_county
+                       preferred_contact_method primary_telephone primary_telephone_type secondary_telephone secondary_telephone_type preferred_contact_time
+                       email port_of_origin source_of_report flight_or_vessel_number flight_or_vessel_carrier port_of_entry_into_usa travel_related_notes
+                       additional_planned_travel_type additional_planned_travel_destination additional_planned_travel_destination_state
+                       additional_planned_travel_destination_country additional_planned_travel_port_of_departure additional_planned_travel_related_notes
+                       potential_exposure_country potential_exposure_country contact_of_known_case_id was_in_health_care_facility_with_known_cases_facility_name
+                       laboratory_personnel_facility_name healthcare_personnel_facility_name member_of_a_common_exposure_cohort_type exposure_risk_assessment
+                       monitoring_plan exposure_notes case_status gender_identity sexual_orientation risk_level monitoring_reason public_health_action]
+    date_fields = %i[date_of_birth date_of_departure date_of_arrival additional_planned_travel_start_date additional_planned_travel_end_date
+                     last_date_of_exposure symptom_onset extended_isolation]
+    bool_fields = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander interpretation_required
+                     contact_of_known_case travel_to_affected_country_or_area was_in_health_care_facility_with_known_cases laboratory_personnel
+                     healthcare_personnel crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort]
+
+    (number_fields + string_fields).each do |field|
+      details[field] = patient[field] || '' if fields.include?(field)
+    end
+
+    date_fields.each do |field|
+      details[field] = patient[field]&.strftime('%F') || '' if fields.include?(field)
+    end
+
+    bool_fields.each do |field|
+      details[field] = patient[field] || false if fields.include?(field)
+    end
+
+    details
+  end
+
   def csv_line_list(patients)
     package = CSV.generate(headers: true) do |csv|
       csv << LINELIST_HEADERS
-      statuses = patient_statuses(patients)
+      patient_statuses = statuses(patients)
       patients.find_in_batches(batch_size: 500) do |patients_group|
-        linelists = linelists_for_export(patients_group, statuses)
+        linelists = linelists_for_export(patients_group, patient_statuses)
         patients_group.each do |patient|
           csv << linelists[patient.id].values
         end
@@ -368,9 +462,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Monitorees') do |sheet|
         sheet.add_row COMPREHENSIVE_HEADERS
-        statuses = patient_statuses(patients)
+        patient_statuses = statuses(patients)
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
+          comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
           patients_group.each do |patient|
             sheet.add_row comprehensive_details[patient.id].values, { types: Array.new(COMPREHENSIVE_HEADERS.length, :string) }
           end
@@ -385,9 +479,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
         headers = MONITOREES_LIST_HEADERS
         sheet.add_row headers
-        statuses = patient_statuses(patients)
+        patient_statuses = statuses(patients)
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
+          comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
           patients_group.each do |patient|
             extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
             values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
@@ -451,9 +545,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       p.workbook.add_worksheet(name: 'Monitorees List') do |sheet|
         headers = MONITOREES_LIST_HEADERS
         sheet.add_row headers
-        statuses = patient_statuses(patients)
+        patient_statuses = statuses(patients)
         patients.find_in_batches(batch_size: 500) do |patients_group|
-          comprehensive_details = comprehensive_details_for_export(patients_group, statuses)
+          comprehensive_details = comprehensive_details_for_export(patients_group, patient_statuses)
           patients_group.each do |patient|
             extended_isolation = patient[:extended_isolation]&.strftime('%F') || ''
             values = [patient.id] + comprehensive_details[patient.id].values + [extended_isolation]
@@ -531,13 +625,13 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Patient fields relevant to linelist export
-  def linelists_for_export(patients, statuses)
+  def linelists_for_export(patients, patient_statuses)
     linelists = incomplete_linelists_for_export(patients)
     patients_jurisdiction_names = jurisdiction_names(patients)
-    patients_transfers = latest_transfers(patients)
+    patients_transfers = transfers(patients)
     patients.each do |patient|
       linelists[patient.id][:jurisdiction] = patients_jurisdiction_names[patient.id]
-      linelists[patient.id][:status] = statuses[patient.id]&.gsub('exposure ', '')&.gsub('isolation ', '')
+      linelists[patient.id][:status] = patient_statuses[patient.id]&.gsub('exposure ', '')&.gsub('isolation ', '')
       next unless patients_transfers[patient.id]
 
       %i[transferred_at transferred_from transferred_to].each do |transfer_field|
@@ -548,13 +642,13 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Patient fields relevant to sara alert format and excel export
-  def comprehensive_details_for_export(patients, statuses)
+  def comprehensive_details_for_export(patients, patient_statuses)
     comprehensive_details = incomplete_comprehensive_details_for_export(patients)
     patients_jurisdiction_paths = jurisdiction_paths(patients)
-    patients_labs = latest_laboratories(patients)
+    patients_labs = laboratories(patients)
     patients.each do |patient|
       comprehensive_details[patient.id][:jurisdiction_path] = patients_jurisdiction_paths[patient.id]
-      comprehensive_details[patient.id][:status] = statuses[patient.id]
+      comprehensive_details[patient.id][:status] = patient_statuses[patient.id]
       next unless patients_labs.key?(patient.id)
       next unless patients_labs[patient.id].key?(:first)
 
@@ -573,7 +667,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # Status of each patient (faster to do this in bulk than individually for exports)
-  def patient_statuses(patients)
+  def statuses(patients)
     tabs = {
       closed: patients.monitoring_closed.pluck(:id),
       purged: patients.purged.pluck(:id),
@@ -587,19 +681,19 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
       isolation_non_reporting: patients.isolation_non_reporting.pluck(:id),
       isolation_reporting: patients.isolation_reporting.pluck(:id)
     }
-    statuses = {}
+    patient_statuses = {}
     tabs.each do |tab, patient_ids|
       patient_ids.each do |patient_id|
-        statuses[patient_id] = tab&.to_s&.humanize&.downcase
+        patient_statuses[patient_id] = tab&.to_s&.humanize&.downcase
       end
     end
-    statuses
+    patient_statuses
   end
 
   # Latest transfer of each patient
-  def latest_transfers(patients)
-    latest_transfers = patients.pluck(:id, :latest_transfer_at)
-    transfers = Transfer.where(patient_id: latest_transfers.map { |lt| lt[0] }, created_at: latest_transfers.map { |lt| lt[1] })
+  def transfers(patients)
+    transfers = patients.pluck(:id, :latest_transfer_at)
+    transfers = Transfer.where(patient_id: transfers.map { |lt| lt[0] }, created_at: transfers.map { |lt| lt[1] })
     jurisdictions = Jurisdiction.find(transfers.pluck(:from_jurisdiction_id, :to_jurisdiction_id).flatten.uniq)
     jurisdiction_paths = Hash[jurisdictions.pluck(:id, :path).map { |id, path| [id, path] }]
     Hash[transfers.pluck(:patient_id, :created_at, :from_jurisdiction_id, :to_jurisdiction_id)
@@ -614,7 +708,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   # 2 Latest laboratories of each patient
-  def latest_laboratories(patients)
+  def laboratories(patients)
     latest_labs = Hash[patients.pluck(:id).map { |id| [id, {}] }]
     Laboratory.where(patient_id: patients.pluck(:id)).order(report: :desc).each do |lab|
       if !latest_labs[lab.patient_id].key?(:first)
