@@ -81,9 +81,10 @@ class MonitoringStatus extends React.Component {
         });
       }
     } else if (event?.target?.id && event.target.id === 'exposure_risk_assessment') {
+      const exposureRiskAssessmentPrompt = event.target.value ? `"${event.target.value}"` : 'blank';
       this.setState({
         showExposureRiskAssessmentModal: true,
-        message: `exposure risk assessment to "${event.target.value}"`,
+        message: `exposure risk assessment to ${exposureRiskAssessmentPrompt}`,
         message_warning: '',
         exposure_risk_assessment: event?.target?.value ? event.target.value : '',
         monitoring_reasons: null,
@@ -496,7 +497,7 @@ class MonitoringStatus extends React.Component {
                     id="exposure_risk_assessment"
                     onChange={this.handleChange}
                     value={this.state.exposure_risk_assessment}>
-                    <option disabled></option>
+                    <option></option>
                     <option>High</option>
                     <option>Medium</option>
                     <option>Low</option>
