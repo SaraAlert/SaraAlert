@@ -53,7 +53,7 @@ class AdminController < ApplicationController
         id: user.id,
         email: user.email,
         jurisdiction_path: user.path || '',
-        role_title: user.role.split('_').map(&:capitalize).join(' ') || '',
+        role_title: user.role.titleize,
         is_locked: !user.locked_at.nil? || false,
         is_api_enabled: user[:api_enabled] || false,
         is_2fa_enabled: !user.authy_id.nil? || false,
