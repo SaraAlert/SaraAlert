@@ -449,7 +449,7 @@ ActiveRecord::Schema.define(version: 2020_10_09_142558) do
     t.boolean "authy_enabled", default: false
     t.boolean "authy_enforced", default: true
     t.boolean "api_enabled", default: false
-    t.string "role", default: "", null: false
+    t.string "role", default: "none", null: false
     t.index ["authy_id"], name: "index_users_on_authy_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"

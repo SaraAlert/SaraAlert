@@ -4,19 +4,11 @@
 class User < ApplicationRecord
   rolify
 
-  ROLES = %w[
-    admin
-    analyst
-    enroller
-    public_health
-    public_health_enroller
-  ].freeze
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable
 
-  validates :role, inclusion: { in: User::ROLES }, presence: true
+  validates :role, inclusion: { in: Roles.all_role_values }
 
   # Validate password complexity
   validate :password_complexity
@@ -55,35 +47,35 @@ class User < ApplicationRecord
   end
 
   def patients
-    return viewable_patients if role?(:public_health) || role?(:public_health_enroller)
+    return viewable_patients if role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
 
-    return enrolled_patients if role?(:enroller)
+    return enrolled_patients if role?(Roles::ENROLLER)
 
     nil
   end
 
   # Get a patient (that this user is allowed to get)
   def get_patient(id)
-    if role?(:enroller)
+    if role?(Roles::ENROLLER)
       enrolled_patients.find_by_id(id)
-    elsif role?(:public_health)
+    elsif role?(Roles::PUBLIC_HEALTH)
       viewable_patients.find_by_id(id)
-    elsif role?(:public_health_enroller)
+    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER)
       viewable_patients.find_by_id(id)
-    elsif role?(:admin)
+    elsif role?(Roles::ADMIN)
       nil
     end
   end
 
   # Get multiple patients (that this user is allowed to get)
   def get_patients(ids)
-    if role?(:enroller)
+    if role?(Roles::ENROLLER)
       enrolled_patients.find(ids)
-    elsif role?(:public_health)
+    elsif role?(Roles::PUBLIC_HEALTH)
       viewable_patients.find(ids)
-    elsif role?(:public_health_enroller)
+    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER)
       viewable_patients.find(ids)
-    elsif role?(:admin)
+    elsif role?(Roles::ADMIN)
       nil
     end
   end
@@ -109,145 +101,145 @@ class User < ApplicationRecord
 
   # Can this user create a new Patient?
   def can_create_patient?
-    role?(:enroller) || role?(:public_health_enroller)
+    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user view a Patient?
   def can_view_patient?
-    role?(:enroller) || role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user export?
   def can_export?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user import?
   def can_import?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user manage saved filters?
   def can_manage_saved_filters?
-    has_role?(:public_health) || has_role?(:public_health_enroller)
+    has_role?(Roles::PUBLIC_HEALTH) || has_role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user edit a Patient?
   def can_edit_patient?
-    role?(:enroller) || role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user view Patient lab results?
   def can_view_patient_laboratories?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user edit Patient lab results?
   def can_edit_patient_laboratories?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user create Patient lab results?
   def can_create_patient_laboratories?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user view Patient close contacts?
   def can_view_patient_close_contacts?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user edit Patient close contacts?
   def can_edit_patient_close_contacts?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user create Patient close contacts?
   def can_create_patient_close_contacts?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user view Patient assessments?
   def can_view_patient_assessments?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user edit Patient assessments?
   def can_edit_patient_assessments?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user create Patient assessments?
   def can_create_patient_assessments?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user send a reminder email?
   def can_remind_patient?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user view the public health dashboard?
   def can_view_public_health_dashboard?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user view the enroller dashboard?
   def can_view_enroller_dashboard?
-    role?(:enroller)
+    role?(Roles::ENROLLER)
   end
 
   # Can view analytics
   def can_view_analytics?
-    role?(:enroller) || role?(:public_health) || role?(:public_health_enroller) || role?(:analyst)
+    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::ANALYST)
   end
 
   # Can this user modify subject status?
   def can_modify_subject_status?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user create subject history?
   def can_create_subject_history?
-    role?(:public_health) || role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user send system email messages?
   def can_send_admin_emails?
-    role?(:admin) && jurisdiction&.name == 'USA'
+    role?(Roles::ADMIN) && jurisdiction&.name == 'USA'
   end
 
   # Can this user send system email messages?
   def admin?
-    role?(:admin)
+    role?(Roles::ADMIN)
   end
 
   # Can this user send system email messages?
   def usa_admin?
-    role?(:admin) && jurisdiction&.name == 'USA'
+    role?(Roles::ADMIN) && jurisdiction&.name == 'USA'
   end
 
   # Can this user send system email messages?
   def enroller?
-    role?(:enroller)
+    role?(Roles::ENROLLER)
   end
 
   # Can this user send system email messages?
   def public_health?
-    role?(:public_health)
+    role?(Roles::PUBLIC_HEALTH)
   end
 
   # Can this user send system email messages?
   def public_health_enroller?
-    role?(:public_health_enroller)
+    role?(Roles::PUBLIC_HEALTH_ENROLLER)
   end
 
   # Can this user send system email messages?
   def analyst?
-    role?(:analyst)
+    role?(Roles::ANALYST)
   end
 
   def role?(role)
-    self.role == role.to_s
+    self.role == role
   end
 end

@@ -1,6 +1,6 @@
 <%= stylesheet_link_tag 'AdminTable' %>
 <%= react_component('admin/AdminTable', {
-                      role_types: User::ROLES.reverse.map { |role| role.split('_').map(&:capitalize).join(' ') },
+                      role_types: Roles.all_role_values.reverse.map { |role| role.split('_').map(&:capitalize).join(' ') },
                       authenticity_token: form_authenticity_token,
                       is_usa_admin: current_user.can_send_admin_emails?
                     }) %>

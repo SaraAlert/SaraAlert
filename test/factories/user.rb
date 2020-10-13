@@ -8,6 +8,7 @@ FactoryBot.define do
     jurisdiction { create(:jurisdiction) }
     authy_enabled { false }
     authy_enforced { false }
+    role { 'none' }
 
     transient do
       created_patients_count { 0 }
@@ -16,47 +17,33 @@ FactoryBot.define do
     # Add suffix _user becuase the role conflicts namespaces and the role must be exact because the code depends on that
     # spelling.
     factory :admin_user do
-      after(:create) do |user|
-        user.update(role: 'admin')
-      end
+      role { 'admin' }
     end
 
     factory :usa_admin_user do
       jurisdiction { create(:usa_jurisdiction) }
-      after(:create) do |user|
-        user.update(role: 'admin')
-      end
+      role { 'admin' }
     end
 
     factory :non_usa_admin_user do
       jurisdiction { create(:non_usa_jurisdiction) }
-      after(:create) do |user|
-        user.update(role: 'admin')
-      end
+      role { 'admin' }
     end
 
     factory :enroller_user do
-      after(:create) do |user|
-        user.update(role: 'enroller')
-      end
+      role { 'enroller' }
     end
 
     factory :public_health_enroller_user do
-      after(:create) do |user|
-        user.update(role: 'public_health_enroller')
-      end
+      role { 'public_health_enroller' }
     end
 
     factory :public_health_user do
-      after(:create) do |user|
-        user.update(role: 'public_health')
-      end
+      role { 'public_health' }
     end
 
     factory :analyst_user do
-      after(:create) do |user|
-        user.update(role: 'analyst')
-      end
+      role { 'analyst' }
     end
 
     after(:create) do |user, evaluator|
