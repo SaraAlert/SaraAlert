@@ -13,7 +13,6 @@ class TwilioSender
       )
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
-      patient.update(last_assessment_reminder_sent: DateTime.now)
       return false
     end
     true
@@ -29,7 +28,6 @@ class TwilioSender
       )
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
-      patient.update(last_assessment_reminder_sent: DateTime.now)
       return false
     end
     true
