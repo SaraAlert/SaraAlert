@@ -10,7 +10,7 @@ class ExportJob < ApplicationJob
   # Adds additional files as needed if records exceeds batch size.
   RECORD_BATCH_SIZE = 10_000
 
-  def perform(user_id, export_type, file_ext, data_type, fields, filters)
+  def perform(user_id, export_type, file_ext, fields, filters)
     current_user = User.find_by(id: user_id)
     return if current_user.nil?
 
@@ -21,16 +21,15 @@ class ExportJob < ApplicationJob
     patients = filtered_patients(current_user, filters)
 
     # Construct export
-    base_filename = "Sara-Alert-#{export_type}"
     lookups = []
     patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
       case file_ext
       when 'csv'
-        data = csv_export(group, data_type, fields)
+        data = csv_export(group, fields)
       when 'xlsx'
-        data = xlsx_export(group, data_type, fields)
+        data = xlsx_export(group, fields)
       end
-      lookups << get_file(user_id, data, build_filename(base_filename, index + 1, file_extension), export_type)
+      lookups << get_file(user_id, data, build_filename(export_type, index + 1, file_extension), export_type)
     end
 
     return if lookups.empty?

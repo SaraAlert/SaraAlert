@@ -98,7 +98,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     public_health_action: 'Latest Public Health Action',
     extended_isolation: 'Extended Isolation',
     # computed fields
-    name: 'Name',
+    name: 'Monitoree',
     jurisdiction: 'Jurisdiction',
     jurisdiction_path: 'Full Assigned Jurisdiction Path',
     status: 'Status',
@@ -156,6 +156,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                    'Disposition of Travelers Referred for CDC Assessment: Referred for Additional Medical Evaluation',
                    'Disposition of Travelers Referred for CDC Assessment: Other', 'Final Disposition of Traveler\'s Medical Evaluation (If applicable)',
                    'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
+
+  LINELIST_FIELDS = %i[id name jurisdiction assigned_user user_defined_id_statelocal sex date_of_birth end_of_monitoring risk_level monitoring_plan
+                       latest_report transferred_at monitoring_reason public_health_action status closed_at transferred_from transferred_to expected_purge_date
+                       symptom_onset extended_isolation].freeze
 
   COMPREHENSIVE_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american, :american_indian_or_alaska_native,
                           :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language, :secondary_language, :interpretation_required,
@@ -322,7 +326,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     value.to_s.downcase.gsub(/[ -.]/, '')
   end
 
-  def csv_export(patients, data_type, fields)
+  def csv_export(patients, fields)
     package = CSV.generate(headers: true) do |csv|
       csv << fields.map { |field| PATIENT_FIELDS[field] }
       patients.find_in_batches(batch_size: 500) do |patients_group|
@@ -335,7 +339,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     Base64.encode64(package)
   end
 
-  def xlsx_export(patients, data_type, fields)
+  def xlsx_export(patients, fields)
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: data_type) do |sheet|
         sheet.add_row(fields.map { |field| PATIENT_FIELDS[field] })
