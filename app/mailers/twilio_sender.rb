@@ -19,7 +19,13 @@ class TwilioSender
   end
 
   def self.start_studio_flow(patient, params)
-    from = ENV['TWILLIO_MESSAGING_SERVICE_SID'] || ENV['TWILLIO_SENDING_NUMBER']
+    # Studio API trigger does not support use of messaging service SID for calls
+    if params[:medium] == 'VOICE'
+      from = ENV['TWILLIO_SENDING_NUMBER']
+    else
+      from = ENV['TWILLIO_MESSAGING_SERVICE_SID'] || ENV['TWILLIO_SENDING_NUMBER']
+    end
+
     begin
       @client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions.create(
         to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
