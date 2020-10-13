@@ -22,7 +22,7 @@ class IntegerSymptom < Symptom
                        # to signify that the patient responded asymptomatic
                        100_000
                      else
-                       0
+                       -100_000
                      end
   end
 
