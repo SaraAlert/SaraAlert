@@ -27,28 +27,11 @@ class Exposure extends React.Component {
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
     this.validate = this.validate.bind(this);
     this.isolationFields = this.isolationFields.bind(this);
-    this.expsoureFields = this.exposureFields.bind(this);
+    this.exposureFields = this.exposureFields.bind(this);
   }
 
   componentDidMount() {
-    // Update the Schema Validator based on workflow.
-    if (this.props.patient.isolation) {
-      schema = yup.object().shape({
-        ...staticValidations,
-        symptom_onset: yup
-          .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
-          .required('Please enter a Symptom Onset Date.')
-          .nullable(),
-      });
-    } else {
-      this.updateLDEandCEValidations(this.props.patient);
-    }
+    this.updateStaticValidations(this.props.patient.isolation);
   }
 
   handleChange(event) {
@@ -82,6 +65,7 @@ class Exposure extends React.Component {
 
       value = event.target.value === '' ? null : parseInt(event.target.value);
     } else if (event?.target?.id && event.target.id === 'continuous_exposure') {
+      // clear out LDE if CE is turned on and populated it with previous LDE if CE is turned off
       const lde = value ? null : this.props.patient.last_date_of_exposure;
       current.patient.last_date_of_exposure = lde;
       if (modified.patient) {
@@ -133,6 +117,27 @@ class Exposure extends React.Component {
     );
   }
 
+  updateStaticValidations = isolation => {
+    // Update the Schema Validator based on workflow.
+    if (isolation) {
+      schema = yup.object().shape({
+        ...staticValidations,
+        symptom_onset: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .max(
+            moment()
+              .add(30, 'days')
+              .toDate(),
+            'Date can not be more than 30 days in the future.'
+          )
+          .required('Please enter a Symptom Onset Date.')
+          .nullable(),
+      });
+    } else {
+      this.updateLDEandCEValidations(this.props.patient);
+    }
+  };
+
   updateLDEandCEValidations = patient => {
     if (!patient.last_date_of_exposure && !patient.continuous_exposure) {
       schema = yup.object().shape({
@@ -154,12 +159,6 @@ class Exposure extends React.Component {
         ...staticValidations,
         last_date_of_exposure: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .max(
-            moment()
-              .add(30, 'days')
-              .toDate(),
-            'Date can not be more than 30 days in the future.'
-          )
           .oneOf([null, undefined])
           .nullable(),
         continuous_exposure: yup
@@ -183,6 +182,18 @@ class Exposure extends React.Component {
         continuous_exposure: yup
           .bool()
           .oneOf([null, undefined, false])
+          .nullable(),
+      });
+    } else {
+      schema = yup.object().shape({
+        ...staticValidations,
+        last_date_of_exposure: yup
+          .date('Date must correspond to the "mm/dd/yyyy" format.')
+          .oneOf([null, undefined], 'Please enter a Last Date of Exposure OR turn on Continuous Exposure, but not both')
+          .nullable(),
+        continuous_exposure: yup
+          .bool()
+          .oneOf([null, undefined, false], 'Please enter a Last Date of Exposure OR turn on Continuous Exposure, but not both')
           .nullable(),
       });
     }
@@ -361,7 +372,7 @@ class Exposure extends React.Component {
               label={`CONTINUOUS EXPOSURE${schema?.fields?.continuous_exposure?._whitelist?.list?.has(true) ? ' *' : ''}`}
               id="continuous_exposure"
               className="ml-1 d-inline"
-              checked={this.state.current.patient.continuous_exposure || false}
+              checked={!!this.state.current.patient.continuous_exposure}
               onChange={this.handleChange}
             />
             <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>

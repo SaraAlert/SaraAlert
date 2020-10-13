@@ -130,7 +130,7 @@ class LastDateExposure extends React.Component {
                   update_continuous_exposure ? 'that are not on the closed line list' : ''
                 } where Continuous Exposure is turned ON`}
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group_cm_only === true}
+                checked={this.state.apply_to_group_cm_only}
               />
             </Form.Group>
           )}
@@ -141,7 +141,7 @@ class LastDateExposure extends React.Component {
                 id="apply_to_group"
                 label={`This monitoree and all household members ${update_continuous_exposure ? 'that are not on the closed line list' : ''}`}
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group === true}
+                checked={this.state.apply_to_group}
               />
             </Form.Group>
           )}
