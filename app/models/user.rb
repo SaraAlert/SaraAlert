@@ -16,6 +16,8 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable
 
+  validates :role, inclusion: { in: User::ROLES }, presence: true
+
   # Validate password complexity
   validate :password_complexity
   def password_complexity
