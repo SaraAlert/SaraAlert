@@ -5,8 +5,8 @@ class PatientMailer < ApplicationMailer
   default from: 'notifications@saraalert.org'
 
   def enrollment_email(patient)
-    # Should not be sending enrollment email if no valid email or this patient is not a responder
-    return if patient&.email.blank? || patient.id != patient.responder_id
+    # Should not be sending enrollment email if no valid email
+    return if patient&.email.blank?
 
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -25,8 +25,8 @@ class PatientMailer < ApplicationMailer
   end
 
   def enrollment_sms_text_based(patient)
-    # Should not be sending enrollment sms if no valid number or this patient is not a responder
-    return if patient&.primary_telephone.blank? || patient.id != patient.responder_id
+    # Should not be sending enrollment sms if no valid number
+    return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
