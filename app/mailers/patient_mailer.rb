@@ -142,7 +142,7 @@ class PatientMailer < ApplicationMailer
     if TwilioSender.start_studio_flow(patient, params)
       add_success_history(patient, patient)
     else
-      add_fail_history_sms(patient)
+      add_fail_history_voice(patient)
     end
     # Always update the last contact time so the system does not try and send emails again.
     patient.update(last_assessment_reminder_sent: DateTime.now)
@@ -192,7 +192,8 @@ class PatientMailer < ApplicationMailer
   end
 
   def add_fail_history_voice(patient)
-    History.report_reminder(patient: patient, comment: "Sara Alert failed to call monitoree at #{patient.primary_telephone}.")
+    comment = "Sara Alert attempted to call monitoree at #{patient.primary_telephone}, but the call could not be completed."
+    History.report_reminder(patient: patient, comment: comment)
   end
 
   def add_fail_history_blank_field(patient, type)
