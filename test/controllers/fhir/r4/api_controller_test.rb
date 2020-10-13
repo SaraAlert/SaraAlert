@@ -140,7 +140,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       api_enabled: true,
       role: 'public_health_enroller'
     )
-    shadow_user.save!
     shadow_user.lock_access!
 
     # Create OAuth applications
