@@ -32,6 +32,14 @@ class Identification extends React.Component {
     let modified = this.state.modified;
     const self = this;
     event.persist();
+
+    const trimFields = ['first_name', 'middle_name', 'last_name', 'nationality', 'user_defined_id_statelocal', 'user_defined_id_cdc', 'user_defined_id_nndss'];
+    if (event?.target?.id && trimFields.includes(event.target.id)) {
+      if (event.target.value.trim() == '') {
+        value = event.target.value.trim();
+      }
+    }
+
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },

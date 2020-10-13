@@ -20,6 +20,36 @@ class Address extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
+
+    const trimFields = [
+      'address_line_1',
+      'address_city',
+      'address_line_2',
+      'address_zip',
+      'address_county',
+      'monitored_address_line_1',
+      'monitored_address_city',
+      'monitored_address_line_2',
+      'monitored_address_zip',
+      'monitored_address_county',
+      'foreign_address_line_1',
+      'foreign_address_city',
+      'foreign_address_line_2',
+      'foreign_address_zip',
+      'foreign_address_line_3',
+      'foreign_address_state',
+      'foreign_monitored_address_line_1',
+      'foreign_monitored_address_city',
+      'foreign_monitored_address_line_2',
+      'foreign_monitored_address_zip',
+      'foreign_monitored_address_county',
+    ];
+    if (event?.target?.id && trimFields.includes(event.target.id)) {
+      if (event.target.value.trim() == '') {
+        value = event.target.value.trim();
+      }
+    }
+
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
