@@ -77,7 +77,7 @@ class DateInput extends React.Component {
                       ? 'date-input__input_md'
                       : 'date-input__input_lg'
                   } react-datepicker-ignore-onclickoutside form-control ${this.props.customClass} ${this.props.isInvalid ? ' is-invalid' : ''}`}
-               />
+                />
               }
               disabled={this.props.disabled}
             />
