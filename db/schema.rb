@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2020_10_15_215616) do
+=======
+ActiveRecord::Schema.define(version: 2020_10_14_200514) do
+>>>>>>> create migration to add patient and jurisdiction identifiers
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -23,6 +27,7 @@ ActiveRecord::Schema.define(version: 2020_10_15_215616) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "submission_token"
+    t.string "patient_identifier"
     t.index ["submission_token"], name: "index_assessment_receipts_on_submission_token"
   end
 
@@ -104,6 +109,7 @@ ActiveRecord::Schema.define(version: 2020_10_15_215616) do
     t.string "email"
     t.string "webpage"
     t.string "message"
+    t.string "jurisdiction_identifier"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
@@ -339,7 +345,11 @@ ActiveRecord::Schema.define(version: 2020_10_15_215616) do
     t.string "sexual_orientation"
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
+<<<<<<< HEAD
     t.boolean "head_of_household"
+=======
+    t.string "patient_identifier"
+>>>>>>> create migration to add patient and jurisdiction identifiers
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
