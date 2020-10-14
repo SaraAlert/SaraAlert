@@ -253,7 +253,7 @@ class AdminControllerTest < ActionController::TestCase
     user = User.find_by(email: 'test@testing.com')
     assert_equal(user.jurisdiction, current_user_jur)
     assert_equal(user.api_enabled, true)
-    assert_equal(user.roles[0].name, 'public_health_enroller')
+    assert_equal(user.role, 'public_health_enroller')
     assert_equal(user.force_password_change, true)
 
     # Test welcome email is queued
@@ -327,7 +327,7 @@ class AdminControllerTest < ActionController::TestCase
     user = User.find_by(id: 20)
     assert_equal(user.jurisdiction, new_jur)
     assert_equal(user.api_enabled, false)
-    assert_equal(user.roles[0].name, 'public_health_enroller')
+    assert_equal(user.role, 'public_health_enroller')
     assert user.locked_at?
 
     sign_out user

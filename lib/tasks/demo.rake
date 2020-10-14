@@ -31,27 +31,27 @@ namespace :demo do
     print 'Creating enroller users...'
 
     enroller1 = User.new(email: 'state1_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller1.add_role :enroller
+    enroller1.role = 'enroller'
     enroller1.save
 
     enroller2 = User.new(email: 'localS1C1_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller2.add_role :enroller
+    enroller2.role =  'enroller'
     enroller2.save
 
     enroller3 = User.new(email: 'localS1C2_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county2], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller3.add_role :enroller
+    enroller3.role = 'enroller'
     enroller3.save
 
     enroller4 = User.new(email: 'state2_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state2], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller4.add_role :enroller
+    enroller4.role = 'enroller'
     enroller4.save
 
     enroller5 = User.new(email: 'localS2C3_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county3], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller5.add_role :enroller
+    enroller5.role = 'enroller'
     enroller5.save
 
     enroller6 = User.new(email: 'localS2C4_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county4], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller6.add_role :enroller
+    enroller6.role = 'enroller'
     enroller6.save
 
     puts ' done!'
@@ -61,27 +61,27 @@ namespace :demo do
     print 'Creating public health users...'
 
     ph1 = User.new(email: 'state1_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
-    ph1.add_role :public_health
+    ph1.role = 'public_health'
     ph1.save
 
     ph2 = User.new(email: 'localS1C1_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph2.add_role :public_health
+    ph2.role = 'public_health'
     ph2.save
 
     ph3 = User.new(email: 'localS1C2_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county2], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph3.add_role :public_health
+    ph3.role = 'public_health'
     ph3.save
 
     ph4 = User.new(email: 'state2_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state2], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph4.add_role :public_health
+    ph4.role = 'public_health'
     ph4.save
 
     ph5 = User.new(email: 'localS2C3_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county3], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph5.add_role :public_health
+    ph5.role = 'public_health'
     ph5.save
 
     ph6 = User.new(email: 'localS2C4_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county4], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph6.add_role :public_health
+    ph6.role = 'public_health'
     ph6.save
 
     puts ' done!'
@@ -91,11 +91,11 @@ namespace :demo do
     print 'Creating public health enroller users...'
 
     phe1 = User.new(email: 'epi_enroller_all@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
-    phe1.add_role :public_health_enroller
+    phe1.role = 'public_health_enroller'
     phe1.save
 
     phe2 = User.new(email: 'state1_epi_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
-    phe2.add_role :public_health_enroller
+    phe2.role = 'public_health_enroller'
     phe2.save
 
     puts ' done!'
@@ -105,7 +105,7 @@ namespace :demo do
     print 'Creating admin users...'
 
     admin1 = User.new(email: 'admin1@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    admin1.add_role :admin
+    admin1.role = 'admin'
     admin1.save
 
     puts ' done!'
@@ -115,15 +115,15 @@ namespace :demo do
     print 'Creating analyst users...'
 
     analyst1 = User.new(email: 'analyst_all@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    analyst1.add_role :analyst
+    analyst1.role = 'analyst'
     analyst1.save
 
     analyst2 = User.new(email: 'state1_analyst@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    analyst2.add_role :analyst
+    analyst2.role = 'analyst'
     analyst2.save
 
     analyst3 = User.new(email: 'localS1C1_analyst@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    analyst3.add_role :analyst
+    analyst3.role = 'analyst'
     analyst3.save
 
     puts ' done!'
@@ -376,7 +376,7 @@ namespace :demo do
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.hex(20)
-      patient[:creator_id] = User.all.select { |u| u.has_role?('enroller') }.sample[:id]
+      patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
       patient[:created_at] = Faker::Time.between_dates(from: today, to: today, period: :day)
       patient[:updated_at] = Faker::Time.between_dates(from: patient[:created_at], to: today, period: :day)
@@ -643,7 +643,7 @@ namespace :demo do
         patient_id: patient_id,
         to_jurisdiction_id: to_jurisdiction,
         from_jurisdiction_id: jur_id,
-        who_id: User.all.select { |u| u.has_role?('public_health') }.sample[:id],
+        who_id: User.all.select { |u| u.role?('public_health') }.sample[:id],
         created_at: timestamp,
         updated_at: timestamp
       )

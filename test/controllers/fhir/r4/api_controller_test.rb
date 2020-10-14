@@ -137,10 +137,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       password: User.rand_gen,
       jurisdiction: Jurisdiction.find_by(id: 2),
       force_password_change: false,
-      api_enabled: true
+      api_enabled: true,
+      role: 'public_health_enroller'
     )
-    shadow_user.add_role 'Public Health Enroller'
-    shadow_user.save!
     shadow_user.lock_access!
 
     # Create OAuth applications

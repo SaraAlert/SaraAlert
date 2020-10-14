@@ -263,7 +263,7 @@ class PatientsController < ApplicationController
     redirect_to(root_url) && return unless Patient.exists?(new_hoh_id.to_i)
 
     patients_to_update = household_ids + [current_patient_id]
-    current_user_patients = if current_user.has_role?(:enroller)
+    current_user_patients = if current_user.role?(Roles::ENROLLER)
                               current_user.enrolled_patients
                             else
                               current_user.viewable_patients
@@ -481,7 +481,7 @@ class PatientsController < ApplicationController
   def self_reporting
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    patients = if current_user.has_role?(:enroller)
+    patients = if current_user.role?(Roles::ENROLLER)
                  current_user.enrolled_patients.where('patients.responder_id = patients.id')
                else
                  current_user.viewable_patients.where('patients.responder_id = patients.id')
