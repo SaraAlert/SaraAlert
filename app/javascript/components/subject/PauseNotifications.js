@@ -52,7 +52,7 @@ class PauseNotifications extends React.Component {
     }
     return (
       <ReactTooltip id={`notifications-tooltip`} multiline={true} place="bottom" type="dark" effect="solid" className="tooltip-container mt-3">
-        <span> {text} </span>
+        <span>{text}</span>
       </ReactTooltip>
     );
   }
