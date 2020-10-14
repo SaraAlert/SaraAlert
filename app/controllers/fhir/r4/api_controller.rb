@@ -184,8 +184,8 @@ class Fhir::R4::ApiController < ActionController::API
     status_bad_request && return unless resource.save
 
     if resource_type == 'patient'
-      # Send enrollment notification
-      resource.send_enrollment_notification
+      # Send enrollment notification only to responders
+      resource.send_enrollment_notification if resource.self_reporter_or_proxy?
 
       # Create a history for the enrollment
       History.enrollment(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree enrolled via API.')

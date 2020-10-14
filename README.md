@@ -48,7 +48,6 @@ Run the following commands from the root directory to initialize the database (n
   ```
 * `bundle exec rake db:drop db:create db:migrate db:setup`
 * `bundle exec rake admin:import_or_update_jurisdictions`
-* `bundle exec rake admin:create_roles`
 * (optional) `bundle exec rake demo:setup demo:populate`
 #### ActiveJob + Sidkiq + Redis + Whenever
 
@@ -205,22 +204,13 @@ Load Jurisdictions:
 
 * `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake admin:import_or_update_jurisdictions`
 * `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-assessment bin/bundle exec rake admin:import_or_update_jurisdictions`
+
 Note: If you need to make live-changes to the jurisdictions loaded on they system, you'll have to update `config/sara/jurisdictions.yml` on the sara-alert-assessment and sara-alert-enrollment containers. The changes made to each of the jurisdictions.yml files **NEED TO BE IDENTICAL**
 
-Load User Roles
-* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment bin/bundle exec rake admin:create_roles`
+Setup the demonstration accounts and population if desired:
 
-Setup the demonstration accounts and population:
-
-* Launch a shell inside the sara-alert-enrollment container: `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run sara-alert-enrollment /bin/sh`
-* Remove the protections for running the demonstration setup tasks only in development mode:
-  * `vi lib/tasks/demo.rake`
-  * Delete the environment checks at the top of the `setup` and `populate` tasks
-  * Save and close the file
-* Execute the demonstration rake tasks:
-  * `bin/bundle exec rake demo:setup`
-  * `bin/bundle exec rake demo:populate`
-* Exit the container with `exit`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true run sara-alert-enrollment bin/bundle exec rake demo:setup`
+* `/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -e DISABLE_DATABASE_ENVIRONMENT_CHECK=true run sara-alert-enrollment bin/bundle exec rake demo:populate`
 
 The applications should be running on port 443 with Nginx proxying traffic between.
 

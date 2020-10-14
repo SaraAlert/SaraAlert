@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_08_155724) do
+ActiveRecord::Schema.define(version: 2020_10_09_142558) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -58,7 +58,9 @@ ActiveRecord::Schema.define(version: 2020_10_08_155724) do
     t.integer "assessment_id"
     t.string "threshold_condition_hash"
     t.string "type"
+    t.integer "threshold_condition_id"
     t.index ["assessment_id"], name: "index_conditions_on_assessment_id"
+    t.index ["threshold_condition_id"], name: "index_conditions_on_threshold_condition_id"
     t.index ["type", "assessment_id"], name: "conditions_index_chain_1"
     t.index ["type", "jurisdiction_id"], name: "conditions_index_chain_3"
     t.index ["type", "threshold_condition_hash", "id"], name: "conditions_index_chain_2"
@@ -347,6 +349,7 @@ ActiveRecord::Schema.define(version: 2020_10_08_155724) do
     t.index ["id", "monitoring", "purged", "isolation", "symptom_onset"], name: "patients_index_chain_4"
     t.index ["id"], name: "index_patients_on_id"
     t.index ["isolation", "jurisdiction_id"], name: "patients_index_chain_6"
+    t.index ["jurisdiction_id", "assigned_user"], name: "patients_index_chain_four_1"
     t.index ["jurisdiction_id", "isolation", "purged", "assigned_user"], name: "patients_index_chain_three_1"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
     t.index ["last_date_of_exposure"], name: "index_patients_on_last_date_of_exposure"
@@ -446,6 +449,7 @@ ActiveRecord::Schema.define(version: 2020_10_08_155724) do
     t.boolean "authy_enabled", default: false
     t.boolean "authy_enforced", default: true
     t.boolean "api_enabled", default: false
+    t.string "role", default: "none", null: false
     t.index ["authy_id"], name: "index_users_on_authy_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jurisdiction_id"], name: "index_users_on_jurisdiction_id"
