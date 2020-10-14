@@ -16,18 +16,12 @@ class MonitoringActions extends React.Component {
     super(props);
     this.state = {
       patient: props.patient,
-      showExposureRiskAssessmentModal: false,
-      showMonitoringPlanModal: false,
       showMonitoringStatusModal: false,
       showJurisdictionModal: false,
       showassignedUserModal: false,
-      showPublicHealthActionModal: false,
-      showIsolationModal: false,
-      showNotificationsModal: false,
       message: '',
       reasoning: '',
       monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
-      monitoring_plan: props.patient.monitoring_plan ? props.patient.monitoring_plan : '',
       jurisdiction_path: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
       original_jurisdiction_id: this.props.patient.jurisdiction_id,
       validJurisdiction: true,
@@ -35,11 +29,7 @@ class MonitoringActions extends React.Component {
       original_assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
       monitoring_reasons: null,
       monitoring_reason: '',
-      public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
       apply_to_group: false,
-      isolation: props.patient.isolation,
-      isolation_status: props.patient.isolation ? 'Isolation' : 'Exposure',
-      pause_notifications: props.patient.pause_notifications,
       loading: false,
       apply_to_group_cm_exp_only: false,
       apply_to_group_cm_exp_only_date: moment(new Date()).format('YYYY-MM-DD'),
@@ -49,13 +39,8 @@ class MonitoringActions extends React.Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.submit = this.submit.bind(this);
     this.toggleMonitoringStatusModal = this.toggleMonitoringStatusModal.bind(this);
-    this.toggleMonitoringPlanModal = this.toggleMonitoringPlanModal.bind(this);
-    this.toggleExposureRiskAssessmentModal = this.toggleExposureRiskAssessmentModal.bind(this);
     this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
     this.toggleAssignedUserModal = this.toggleAssignedUserModal.bind(this);
-    this.togglePublicHealthAction = this.togglePublicHealthAction.bind(this);
-    this.toggleIsolation = this.toggleIsolation.bind(this);
-    this.toggleNotifications = this.toggleNotifications.bind(this);
   }
 
   handleChange(event) {
@@ -80,69 +65,6 @@ class MonitoringActions extends React.Component {
           monitoring_reasons: null,
         });
       }
-    } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
-      this.setState({
-        showMonitoringPlanModal: true,
-        message: `monitoring plan to "${event.target.value}"`,
-        message_warning: '',
-        monitoring_plan: event?.target?.value ? event.target.value : '',
-        monitoring_reasons: null,
-      });
-    } else if (event?.target?.id && event.target.id === 'pause_notifications') {
-      this.setState({
-        showNotificationsModal: true,
-        message: `notification status to ${this.state.pause_notifications ? 'resumed' : 'paused'}`,
-        message_warning: '',
-        pause_notifications: !this.state.pause_notifications,
-        monitoring_reasons: null,
-      });
-    } else if (event?.target?.id && event.target.id === 'public_health_action') {
-      if (!this.state.patient.monitoring) {
-        this.setState({
-          showPublicHealthActionModal: true,
-          message: `latest public health action to "${event.target.value}"`,
-          message_warning:
-            'Since this record is on the "Closed" line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record\'s Monitoring Status.',
-          public_health_action: event?.target?.value ? event.target.value : '',
-          monitoring_reasons: null,
-        });
-      } else if (this.state.patient.isolation) {
-        this.setState({
-          showPublicHealthActionModal: true,
-          message: `latest public health action to "${event.target.value}"`,
-          message_warning: 'This will not impact the line list on which this record appears.',
-          household_warning:
-            'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
-          public_health_action: event?.target?.value ? event.target.value : '',
-          monitoring_reasons: null,
-        });
-      } else {
-        this.setState({
-          showPublicHealthActionModal: true,
-          message: `latest public health action to "${event.target.value}"`,
-          message_warning:
-            event.target.value === 'None'
-              ? 'The monitoree will be moved back into the primary status line lists.'
-              : 'The monitoree will be moved into the PUI line list.',
-          household_warning:
-            'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
-
-          public_health_action: event?.target?.value ? event.target.value : '',
-          monitoring_reasons: null,
-        });
-      }
-    } else if (event?.target?.id && event.target.id === 'isolation_status') {
-      this.setState({
-        showIsolationModal: true,
-        message: `workflow from the "${this.state.isolation_status}" workflow to the "${event.target.value}" workflow`,
-        message_warning:
-          event.target.value === 'Isolation'
-            ? 'This should only be done for cases you wish to monitor with Sara Alert to determine when they meet the recovery definition to discontinue isolation. The monitoree will be moved onto the Isolation workflow dashboard.'
-            : 'The monitoree will be moved into the Exposure workflow.',
-        isolation: event.target.value === 'Isolation',
-        isolation_status: event.target.value,
-        monitoring_reasons: null,
-      });
     } else if (event?.target?.id && event.target.id === 'monitoring_status') {
       this.setState({
         showMonitoringStatusModal: true,
@@ -204,26 +126,6 @@ class MonitoringActions extends React.Component {
     });
   }
 
-  toggleNotifications() {
-    let current = this.state.showNotificationsModal;
-    this.setState({
-      showNotificationsModal: !current,
-      pause_notifications: this.props.patient.pause_notifications,
-      apply_to_group: false,
-      reasoning: '',
-    });
-  }
-
-  toggleMonitoringPlanModal() {
-    let current = this.state.showMonitoringPlanModal;
-    this.setState({
-      showMonitoringPlanModal: !current,
-      monitoring_plan: this.props.patient.monitoring_plan ? this.props.patient.monitoring_plan : '',
-      apply_to_group: false,
-      reasoning: '',
-    });
-  }
-
   toggleJurisdictionModal() {
     let current = this.state.showJurisdictionModal;
     this.setState({
@@ -246,27 +148,6 @@ class MonitoringActions extends React.Component {
     });
   }
 
-  togglePublicHealthAction() {
-    let current = this.state.showPublicHealthActionModal;
-    this.setState({
-      showPublicHealthActionModal: !current,
-      public_health_action: this.props.patient.public_health_action ? this.props.patient.public_health_action : '',
-      apply_to_group: false,
-      reasoning: '',
-    });
-  }
-
-  toggleIsolation() {
-    let current = this.state.showIsolationModal;
-    this.setState({
-      showIsolationModal: !current,
-      isolation: this.props.patient.isolation ? this.props.patient.isolation : false,
-      isolation_status: this.props.patient.isolation ? 'Isolation' : 'Exposure',
-      apply_to_group: false,
-      reasoning: '',
-    });
-  }
-
   submit() {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
@@ -274,7 +155,6 @@ class MonitoringActions extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           monitoring: this.state.monitoring_status === 'Actively Monitoring',
-          monitoring_plan: this.state.monitoring_plan,
           public_health_action: this.state.public_health_action,
           reasoning:
             (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
@@ -464,22 +344,26 @@ class MonitoringActions extends React.Component {
                     has_group_members={this.props.has_group_members}
                     title={'EXPOSURE RISK ASSESSMENT'}
                     monitoringAction={'exposure_risk_assessment'}
-                    options={['High', 'Medium', 'Low', 'No Identified Risk']}
+                    options={['', 'High', 'Medium', 'Low', 'No Identified Risk']}
                     tooltipKey={'exposureRiskAssessment'}
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
-                  <Form.Label className="nav-input-label">
-                    MONITORING PLAN
-                    <InfoTooltip tooltipTextKey="monitoringPlan" location="right"></InfoTooltip>
-                  </Form.Label>
-                  <Form.Control as="select" className="form-control-lg" id="monitoring_plan" onChange={this.handleChange} value={this.state.monitoring_plan}>
-                    <option>None</option>
-                    <option>Daily active monitoring</option>
-                    <option>Self-monitoring with public health supervision</option>
-                    <option>Self-monitoring with delegated supervision</option>
-                    <option>Self-observation</option>
-                  </Form.Control>
+                  <GenericAction
+                    patient={this.props.patient}
+                    authenticity_token={this.props.authenticity_token}
+                    has_group_members={this.props.has_group_members}
+                    title={'MONITORING PLAN'}
+                    monitoringAction={'monitoring_plan'}
+                    options={[
+                      'None',
+                      'Daily active monitoring',
+                      'Self-monitoring with public health supervision',
+                      'Self-monitoring with delegated supervision',
+                      'Self-observation',
+                    ]}
+                    tooltipKey={'monitoringPlan'}
+                  />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <CaseStatus
@@ -489,24 +373,15 @@ class MonitoringActions extends React.Component {
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
-                  <Form.Label className="nav-input-label">
-                    LATEST PUBLIC HEALTH ACTION
-                    <InfoTooltip
-                      tooltipTextKey={this.props.isolation ? 'latestPublicHealthActionInIsolation' : 'latestPublicHealthActionInExposure'}
-                      location="right"
-                    />
-                  </Form.Label>
-                  <Form.Control
-                    as="select"
-                    className="form-control-lg"
-                    id="public_health_action"
-                    onChange={this.handleChange}
-                    value={this.state.public_health_action}>
-                    <option>None</option>
-                    <option>Recommended medical evaluation of symptoms</option>
-                    <option>Document results of medical evaluation</option>
-                    <option>Recommended laboratory testing</option>
-                  </Form.Control>
+                  <GenericAction
+                    patient={this.props.patient}
+                    authenticity_token={this.props.authenticity_token}
+                    has_group_members={this.props.has_group_members}
+                    title={'LATEST PUBLIC HEALTH ACTION'}
+                    monitoringAction={'public_health_action'}
+                    options={['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing']}
+                    tooltipKey={this.props.isolation ? 'latestPublicHealthActionInIsolation' : 'latestPublicHealthActionInExposure'}
+                  />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <Form.Label className="nav-input-label">
@@ -585,12 +460,8 @@ class MonitoringActions extends React.Component {
           </Row>
         </Form>
         {this.state.showMonitoringStatusModal && this.createModal('Monitoring Status', this.toggleMonitoringStatusModal, this.submit)}
-        {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
         {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
         {this.state.showassignedUserModal && this.createModal('Assigned User', this.toggleAssignedUserModal, this.submit)}
-        {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
-        {this.state.showIsolationModal && this.createModal('Isolation', this.toggleIsolation, this.submit)}
-        {this.state.showNotificationsModal && this.createModal('Notifications', this.toggleNotifications, this.submit)}
       </React.Fragment>
     );
   }

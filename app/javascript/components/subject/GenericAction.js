@@ -13,31 +13,18 @@ class GenericAction extends React.Component {
     this.state = {
       patient: props.patient,
       showExposureRiskAssessmentModal: false,
-      //   showMonitoringPlanModal: false,
-      //   showMonitoringStatusModal: false,
-      //   showJurisdictionModal: false,
-      //   showassignedUserModal: false,
-      //   showPublicHealthActionModal: false,
-      //   showIsolationModal: false,
-      //   showNotificationsModal: false,
+      showMonitoringPlanModal: false,
+      showPublicHealthActionModal: false,
+      showIsolationModal: false,
+      showNotificationsModal: false,
       message: '',
       reasoning: '',
-      //   monitoring_status: props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
-      //   monitoring_plan: props.patient.monitoring_plan ? props.patient.monitoring_plan : '',
+      monitoring_plan: props.patient.monitoring_plan ? props.patient.monitoring_plan : '',
       exposure_risk_assessment: props.patient.exposure_risk_assessment ? props.patient.exposure_risk_assessment : '',
-      //   jurisdiction_path: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
-      //   original_jurisdiction_id: this.props.patient.jurisdiction_id,
-      //   validJurisdiction: true,
-      //   assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
-      //   original_assigned_user: props.patient.assigned_user ? props.patient.assigned_user : '',
-      //   monitoring_reasons: null,
-      //   monitoring_reason: '',
-      //   public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
+      public_health_action: props.patient.public_health_action ? props.patient.public_health_action : '',
       apply_to_group: false,
-      //   isolation: props.patient.isolation,
-      //   isolation_status: props.patient.isolation ? 'Isolation' : 'Exposure',
-      //   pause_notifications: props.patient.pause_notifications,
       loading: false,
+      household_warning: '',
     };
     this.origState = Object.assign({}, this.state);
   }
@@ -50,106 +37,52 @@ class GenericAction extends React.Component {
         message: `exposure risk assessment to ${exposureRiskAssessmentPrompt}`,
         message_warning: '',
         exposure_risk_assessment: event?.target?.value ? event.target.value : '',
-        monitoring_reasons: null,
       });
-      // else if (event?.target?.id && event.target.id === 'monitoring_plan') {
-      //   this.setState({
-      //     showMonitoringPlanModal: true,
-      //     message: `monitoring plan to "${event.target.value}"`,
-      //     message_warning: '',
-      //     monitoring_plan: event?.target?.value ? event.target.value : '',
-      //     monitoring_reasons: null,
-      //   });
-      // } else if (event?.target?.id && event.target.id === 'pause_notifications') {
-      //   this.setState({
-      //     showNotificationsModal: true,
-      //     message: `notification status to ${this.state.pause_notifications ? 'resumed' : 'paused'}`,
-      //     message_warning: '',
-      //     pause_notifications: !this.state.pause_notifications,
-      //     monitoring_reasons: null,
-      //   });
-      // } else if (event?.target?.id && event.target.id === 'public_health_action') {
-      //   if (!this.state.patient.monitoring) {
-      //     this.setState({
-      //       showPublicHealthActionModal: true,
-      //       message: `latest public health action to "${event.target.value}"`,
-      //       message_warning:
-      //         'Since this record is on the "Closed" line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record\'s Monitoring Status.',
-      //       public_health_action: event?.target?.value ? event.target.value : '',
-      //       monitoring_reasons: null,
-      //     });
-      //   } else if (this.state.patient.isolation) {
-      //     this.setState({
-      //       showPublicHealthActionModal: true,
-      //       message: `latest public health action to "${event.target.value}"`,
-      //       message_warning: 'This will not impact the line list on which this record appears.',
-      //       household_warning:
-      //         'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
-      //       public_health_action: event?.target?.value ? event.target.value : '',
-      //       monitoring_reasons: null,
-      //     });
-      //   } else {
-      //     this.setState({
-      //       showPublicHealthActionModal: true,
-      //       message: `latest public health action to "${event.target.value}"`,
-      //       message_warning:
-      //         event.target.value === 'None'
-      //           ? 'The monitoree will be moved back into the primary status line lists.'
-      //           : 'The monitoree will be moved into the PUI line list.',
-      //       household_warning:
-      //         'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
-
-      //       public_health_action: event?.target?.value ? event.target.value : '',
-      //       monitoring_reasons: null,
-      //     });
-      //   }
-      // } else if (event?.target?.id && event.target.id === 'isolation_status') {
-      //   this.setState({
-      //     showIsolationModal: true,
-      //     message: `workflow from the "${this.state.isolation_status}" workflow to the "${event.target.value}" workflow`,
-      //     message_warning:
-      //       event.target.value === 'Isolation'
-      //         ? 'This should only be done for cases you wish to monitor with Sara Alert to determine when they meet the recovery definition to discontinue isolation. The monitoree will be moved onto the Isolation workflow dashboard.'
-      //         : 'The monitoree will be moved into the Exposure workflow.',
-      //     isolation: event.target.value === 'Isolation',
-      //     isolation_status: event.target.value,
-      //     monitoring_reasons: null,
-      //   });
-      // } else if (event?.target?.id && event.target.id === 'monitoring_status') {
-      //   this.setState({
-      //     showMonitoringStatusModal: true,
-      //     message: `monitoring status to "${event.target.value}"`,
-      //     message_warning:
-      //       event.target.value === 'Not Monitoring'
-      //         ? 'This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.'
-      //         : 'This will move the selected record(s) from the Closed line list to the appropriate Active Monitoring line list',
-      //     monitoring: event.target.value === 'Actively Monitoring',
-      //     monitoring_status: event?.target?.value ? event.target.value : '',
-      //     monitoring_reasons:
-      //       event.target.value === 'Not Monitoring'
-      //         ? [
-      //             'Completed Monitoring',
-      //             'Meets Case Definition',
-      //             'Lost to follow-up during monitoring period',
-      //             'Lost to follow-up (contact never established)',
-      //             'Transferred to another jurisdiction',
-      //             'Person Under Investigation (PUI)',
-      //             'Case confirmed',
-      //             'Meets criteria to discontinue isolation',
-      //             'Deceased',
-      //             'Duplicate',
-      //             'Other',
-      //           ]
-      //         : null,
-      //   });
+    } else if (event?.target?.id && event.target.id === 'monitoring_plan') {
+      this.setState({
+        showMonitoringPlanModal: true,
+        message: `monitoring plan to "${event.target.value}"`,
+        message_warning: '',
+        monitoring_plan: event?.target?.value ? event.target.value : '',
+      });
+    } else if (event?.target?.id && event.target.id === 'public_health_action') {
+      if (!this.state.patient.monitoring) {
+        this.setState({
+          showPublicHealthActionModal: true,
+          message: `latest public health action to "${event.target.value}"`,
+          message_warning:
+            'Since this record is on the "Closed" line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record\'s Monitoring Status.',
+          public_health_action: event?.target?.value ? event.target.value : '',
+        });
+      } else if (this.state.patient.isolation) {
+        this.setState({
+          showPublicHealthActionModal: true,
+          message: `latest public health action to "${event.target.value}"`,
+          message_warning: 'This will not impact the line list on which this record appears.',
+          household_warning:
+            'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
+          public_health_action: event?.target?.value ? event.target.value : '',
+        });
+      } else {
+        this.setState({
+          showPublicHealthActionModal: true,
+          message: `latest public health action to "${event.target.value}"`,
+          message_warning:
+            event.target.value === 'None'
+              ? 'The monitoree will be moved back into the primary status line lists.'
+              : 'The monitoree will be moved into the PUI line list.',
+          household_warning:
+            'If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.',
+          public_health_action: event?.target?.value ? event.target.value : '',
+        });
+      }
     } else if (event?.target?.name && event.target.name === 'apply_to_group') {
       let applyToGroup = event.target.id === 'apply_to_group_yes';
       this.setState({ [event.target.name]: applyToGroup });
+    } else if (event?.target?.id) {
+      let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+      this.setState({ [event.target.id]: event?.target?.value ? value : '' });
     }
-    // else if (event?.target?.id) {
-    //   let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    //   this.setState({ [event.target.id]: event?.target?.value ? value : '' });
-    // }
   };
 
   toggleExposureRiskAssessmentModal = () => {
@@ -162,27 +95,40 @@ class GenericAction extends React.Component {
     });
   };
 
+  toggleMonitoringPlanModal = () => {
+    let current = this.state.showMonitoringPlanModal;
+    this.setState({
+      showMonitoringPlanModal: !current,
+      monitoring_plan: this.props.patient.monitoring_plan ? this.props.patient.monitoring_plan : '',
+      apply_to_group: false,
+      reasoning: '',
+    });
+  };
+
+  togglePublicHealthAction = () => {
+    let current = this.state.showPublicHealthActionModal;
+    this.setState({
+      showPublicHealthActionModal: !current,
+      public_health_action: this.props.patient.public_health_action ? this.props.patient.public_health_action : '',
+      apply_to_group: false,
+      reasoning: '',
+    });
+  };
+
   submit = () => {
-    console.log('submitting');
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
-          //   monitoring: this.state.monitoring_status === 'Actively Monitoring',
           exposure_risk_assessment: this.state.exposure_risk_assessment,
-          //   monitoring_plan: this.state.monitoring_plan,
-          //   public_health_action: this.state.public_health_action,
+          monitoring_plan: this.state.monitoring_plan,
+          public_health_action: this.state.public_health_action,
           reasoning:
             (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
               ? this.state.monitoring_reason + (this.state.reasoning !== '' ? ', ' : '')
               : '') + this.state.reasoning,
-          //   monitoring_reason: this.state.monitoring_status === 'Not Monitoring' ? this.state.monitoring_reason : null,
-          //   jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdiction_path),
-          //   assigned_user: this.state.assigned_user,
           apply_to_group: this.state.apply_to_group,
-          //   isolation: this.state.isolation,
-          //   pause_notifications: this.state.pause_notifications,
           diffState: diffState,
         })
         .then(() => {
@@ -227,9 +173,7 @@ class GenericAction extends React.Component {
                   checked={this.state.apply_to_group}
                 />
               </Form.Group>
-              {/* <Form.Group>
-                {this.state.apply_to_group && this.state.household_warning && <i>{this.state.household_warning}</i>}
-              </Form.Group> */}
+              <Form.Group>{this.state.apply_to_group && this.state.household_warning && <i>{this.state.household_warning}</i>}</Form.Group>
             </React.Fragment>
           )}
           <Form.Group>
@@ -268,13 +212,14 @@ class GenericAction extends React.Component {
             id={this.props.monitoringAction}
             onChange={this.handleChange}
             value={this.state[this.props.monitoringAction]}>
-            <option></option>
             {this.props.options.map(function(option, index) {
               return <option key={index}>{option}</option>;
             })}
           </Form.Control>
         </div>
         {this.state.showExposureRiskAssessmentModal && this.createModal('Exposure Risk Assessment', this.toggleExposureRiskAssessmentModal, this.submit)}
+        {this.state.showMonitoringPlanModal && this.createModal('Monitoring Plan', this.toggleMonitoringPlanModal, this.submit)}
+        {this.state.showPublicHealthActionModal && this.createModal('Public Health Action', this.togglePublicHealthAction, this.submit)}
       </React.Fragment>
     );
   }
