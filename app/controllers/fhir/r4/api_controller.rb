@@ -79,7 +79,8 @@ class Fhir::R4::ApiController < ActionController::API
 
     # Parse in the FHIR::Patient
     contents = FHIR.from_contents(request.body.string)
-    status_bad_request && return if contents.nil? || !contents.valid?
+    errors = contents&.validate
+    status_bad_request(error_messages_from_hash(errors)) && return if contents.nil? || !errors.empty?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
@@ -131,7 +132,8 @@ class Fhir::R4::ApiController < ActionController::API
 
     # Parse in the FHIR::Patient
     contents = FHIR.from_contents(request.body.string)
-    status_bad_request && return if contents.nil? || !contents.valid?
+    errors = contents&.validate
+    status_bad_request(error_messages_from_hash(errors)) && return if contents.nil? || !errors.empty?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
@@ -496,9 +498,9 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Generic 400 bad request response
-  def status_bad_request
+  def status_bad_request(errors = {})
     respond_to do |format|
-      format.any { head :bad_request }
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :bad_request }
     end
   end
 
@@ -633,6 +635,22 @@ class Fhir::R4::ApiController < ActionController::API
   # Operation outcome response
   def operation_outcome_fatal
     FHIR::OperationOutcome.new(issue: [FHIR::OperationOutcome::Issue.new(severity: 'fatal', code: 'processing')])
+  end
+
+  # Generate an operation outcome with error information
+  def operation_outcome_with_errors(errors)
+    outcome = FHIR::OperationOutcome.new(issue: [])
+    errors.each { |error| outcome.issue << FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'processing', diagnostics: error) }
+    outcome
+  end
+
+  # Convert to array of error strings given nested hash with arrays of error strings as values
+  def error_messages_from_hash(errors)
+    errors&.values&.each_with_object([]) do |value, messages|
+      value.each do |val|
+        val.is_a?(Hash) ? messages.push(*error_messages_from_hash(val)) : messages << val
+      end
+    end
   end
 
   # Allow cross-origin requests
