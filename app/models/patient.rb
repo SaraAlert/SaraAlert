@@ -6,6 +6,7 @@ require 'chronic'
 class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
+  include ValidationHelper
 
   columns.each do |column|
     case column.type
@@ -45,6 +46,24 @@ class Patient < ApplicationRecord
                                                          'Low',
                                                          'No Identified Risk',
                                                          nil, ''] }
+
+  validates :preferred_contact_method, inclusion: { in: VALID_ENUMS[:preferred_contact_method] }, allow_blank: true
+
+  validates :preferred_contact_time, inclusion: { in: VALID_ENUMS[:preferred_contact_time] }, allow_blank: true
+
+  validates :ethnicity, inclusion: { in: VALID_ENUMS[:ethnicity] }, allow_blank: true
+
+  validates :sex, inclusion: { in: VALID_ENUMS[:sex] }, allow_blank: true
+
+  validates :address_state, inclusion: { in: VALID_ENUMS[:address_state] }, allow_blank: true
+
+  validates :monitored_address_state, inclusion: { in: VALID_ENUMS[:address_state] }, allow_blank: true
+
+  validates :primary_telephone, phone: { allow_blank: true, possible: true }
+
+  validates :secondary_telephone, phone: { allow_blank: true, possible: true }
+
+  validates :email, 'valid_email_2/email': true
 
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
 
@@ -791,8 +810,8 @@ class Patient < ApplicationRecord
       first_name: patient&.name&.first&.given&.first,
       middle_name: patient&.name&.first&.given&.second,
       last_name: patient&.name&.first&.family,
-      primary_telephone: Phonelib.parse(patient&.telecom&.select { |t| t&.system == 'phone' }&.first&.value, 'US').full_e164,
-      secondary_telephone: Phonelib.parse(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value, 'US').full_e164,
+      primary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.first&.value),
+      secondary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value),
       email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
       date_of_birth: patient&.birthDate,
       age: Patient.calc_current_age_fhir(patient&.birthDate),
