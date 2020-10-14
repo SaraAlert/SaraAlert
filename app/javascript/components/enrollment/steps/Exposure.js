@@ -31,7 +31,13 @@ class Exposure extends React.Component {
   }
 
   componentDidMount() {
-    this.updateStaticValidations(this.props.patient.isolation);
+    this.updateStaticValidations(this.props.currentState.isolation);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.currentState.isolation !== this.props.currentState.isolation) {
+      this.updateStaticValidations(this.props.currentState.isolation);
+    }
   }
 
   handleChange(event) {
@@ -89,6 +95,18 @@ class Exposure extends React.Component {
   handleDateChange(field, date) {
     let current = this.state.current;
     let modified = this.state.modified;
+    if (field === 'last_date_of_exposure') {
+      // turn off CE is LDE is populated
+      if (date) {
+        current.patient.continuous_exposure = false;
+        if (modified.patient) {
+          modified.patient.continuous_exposure = false;
+        } else {
+          modified = { patient: { continuous_exposure: false } };
+        }
+      }
+      this.updateLDEandCEValidations({ ...current.patient, [field]: date });
+    }
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [field]: date } },
@@ -98,9 +116,6 @@ class Exposure extends React.Component {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
-    if (field === 'last_date_of_exposure') {
-      this.updateLDEandCEValidations({ ...current.patient, [field]: date });
-    }
   }
 
   handlePropagatedFieldChange(event) {
@@ -189,12 +204,9 @@ class Exposure extends React.Component {
         ...staticValidations,
         last_date_of_exposure: yup
           .date('Date must correspond to the "mm/dd/yyyy" format.')
-          .oneOf([null, undefined], 'Please enter a Last Date of Exposure OR turn on Continuous Exposure, but not both')
+          .oneOf([null, undefined], 'Please enter a Last Date of Exposure OR turn on Continuous Exposure, but not both.')
           .nullable(),
-        continuous_exposure: yup
-          .bool()
-          .oneOf([null, undefined, false], 'Please enter a Last Date of Exposure OR turn on Continuous Exposure, but not both')
-          .nullable(),
+        continuous_exposure: yup.bool().nullable(),
       });
     }
     this.setState(state => {
@@ -324,10 +336,6 @@ class Exposure extends React.Component {
               isInvalid={!!this.state.errors['last_date_of_exposure']}
               customClass="form-control-lg"
               isClearable
-              disabled={this.state.current.patient.continuous_exposure}
-              tooltipText={this.state.current.patient.continuous_exposure ? 'Please turn OFF Continuous Exposure to populate the Last Date of Exposure.' : null}
-              tooltipKey="tooltip-lde"
-              tooltipPlacement="top"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['last_date_of_exposure']}
@@ -376,9 +384,6 @@ class Exposure extends React.Component {
               onChange={this.handleChange}
             />
             <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
-            <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['continuous_exposure']}
-            </Form.Control.Feedback>
           </Form.Group>
         </Form.Row>
         <Form.Label className="nav-input-label pb-1">EXPOSURE RISK FACTORS (USE COMMAS TO SEPARATE MULTIPLE SPECIFIED VALUES)</Form.Label>
