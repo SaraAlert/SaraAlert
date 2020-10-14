@@ -18,8 +18,6 @@ class HistoryComponent extends React.Component {
       loading: false,
       comment: '',
       filters: { typeFilters: [], creatorFilters: [] },
-      selectedTypeFilters: [],
-      selectedCreatorFilters: [],
       filteredHistories: this.props.histories,
       pageOfHistories: [],
     };
