@@ -686,13 +686,42 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unsupported_media_type
   end
 
-  test 'SYSTEM FLOW: should be bad request via create' do
+  test 'SYSTEM FLOW: should be bad request via create due to non-FHIR' do
     post(
       '/fhir/r4/Patient',
       params: { foo: 'bar' }.to_json,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
+  end
+
+  test 'SYSTEM FLOW: should be bad request via create with invalid FHIR' do
+    @patient_1.active = 1
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+  end
+
+  test 'SYSTEM FLOW: should be bad request via create with multiple FHIR errors' do
+    @patient_1.active = [1, 2]
+    @patient_1.telecom[0].value = [1, 2]
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 4
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
+    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
   end
 
   test 'SYSTEM FLOW: should be unauthorized via update' do
@@ -790,6 +819,35 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
+  end
+
+  test 'SYSTEM FLOW: should be bad request via update with invalid FHIR' do
+    @patient_1.active = 1
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+  end
+
+  test 'SYSTEM FLOW: should be bad request via update with multiple FHIR errors' do
+    @patient_1.active = [1, 2]
+    @patient_1.telecom[0].value = [1, 2]
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 4
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
+    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
   end
 
   test 'SYSTEM FLOW: should be bad request via update due to unsupported resource' do
@@ -1512,6 +1570,35 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test 'USER FLOW: should be bad request via create with invalid FHIR' do
+    @patient_1.active = 1
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+  end
+
+  test 'USER FLOW: should be bad request via create with multiple FHIR errors' do
+    @patient_1.active = [1, 2]
+    @patient_1.telecom[0].value = [1, 2]
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 4
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
+    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
+  end
+
   test 'USER FLOW: should be unauthorized via update' do
     get '/fhir/r4/Patient/1'
     assert_response :unauthorized
@@ -1616,6 +1703,35 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
+  end
+
+  test 'USER FLOW: should be bad request via update with invalid FHIR' do
+    @patient_1.active = 1
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+  end
+
+  test 'USER FLOW: should be bad request via update with multiple FHIR errors' do
+    @patient_1.active = [1, 2]
+    @patient_1.telecom[0].value = [1, 2]
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 4
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
+    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
   end
 
   test 'USER FLOW: should be 404 not found via update due to unsupported resource' do
