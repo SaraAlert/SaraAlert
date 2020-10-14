@@ -142,20 +142,6 @@ class HistoryComponent extends React.Component {
               <Select
                 closeMenuOnSelect={false}
                 isMulti
-                name="Filters"
-                options={filterOptions}
-                className="basic-multi-select w-25"
-                classNamePrefix="select"
-                placeholder="Filter by Type"
-                theme={theme => ({
-                  ...theme,
-                  borderRadius: 0,
-                })}
-                onChange={this.handleTypeFilterChange}
-              />
-              <Select
-                closeMenuOnSelect={false}
-                isMulti
                 name="Creator Filters"
                 options={historyCreators}
                 className="basic-multi-select w-25 pl-1"
@@ -166,6 +152,20 @@ class HistoryComponent extends React.Component {
                   borderRadius: 0,
                 })}
                 onChange={this.handleCreatorFilterChange}
+              />
+              <Select
+                closeMenuOnSelect={false}
+                isMulti
+                name="Filters"
+                options={filterOptions}
+                className="basic-multi-select w-25"
+                classNamePrefix="select"
+                placeholder="Filter by Type"
+                theme={theme => ({
+                  ...theme,
+                  borderRadius: 0,
+                })}
+                onChange={this.handleTypeFilterChange}
               />
             </Row>
             {historiesArray}
