@@ -112,9 +112,8 @@ class Review extends React.Component {
 
 Review.propTypes = {
   currentState: PropTypes.object,
-  goto: PropTypes.func,
   previous: PropTypes.func,
-  next: PropTypes.func,
+  goto: PropTypes.func,
   submit: PropTypes.func,
   parent_id: PropTypes.string,
   canAddGroup: PropTypes.bool,

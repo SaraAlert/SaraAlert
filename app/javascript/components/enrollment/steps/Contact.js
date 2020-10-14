@@ -19,9 +19,8 @@ class Contact extends React.Component {
 
   componentDidMount() {
     if (this.state.isEditMode) {
-      // Update the Schema Validator by simulating the user changing their preferred_contact_method
-      // to what their actual preferred_contact_method really is. This is to trigger schema validation when
-      // editing.
+      // Update the Schema Validator by simulating the user changing their preferred_contact_method to what their actual preferred_contact_method really is.
+      // This is to trigger schema validation when editing.
       this.updatePrimaryContactMethodValidations({
         currentTarget: {
           id: 'preferred_contact_method',
@@ -70,7 +69,7 @@ class Contact extends React.Component {
           primary_telephone: yup
             .string()
             .phone()
-            .required('Please provide a primary telephone number, or change Preferred Reporting Method.')
+            .required('Please provide a Primary Telephone Number, or change Preferred Reporting Method.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           secondary_telephone: yup
             .string()
@@ -80,9 +79,9 @@ class Contact extends React.Component {
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           email: yup
             .string()
-            .email('Please enter a valid email.')
+            .email('Please enter a valid Email.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+          confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
           preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       } else if (event?.currentTarget.value === 'E-mailed Web Link') {
@@ -99,13 +98,13 @@ class Contact extends React.Component {
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           email: yup
             .string()
-            .email('Please enter a valid email.')
-            .required('Please provide an email or change Preferred Reporting Method')
+            .email('Please enter a valid Email.')
+            .required('Please provide an Email or change Preferred Reporting Method')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           confirm_email: yup
             .string()
-            .required('Please confirm email.')
-            .oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+            .required('Please confirm Email.')
+            .oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
           preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       } else {
@@ -122,9 +121,9 @@ class Contact extends React.Component {
           secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
           email: yup
             .string()
-            .email('Please enter a valid email.')
+            .email('Please enter a valid Email.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+          confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
           preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       }
@@ -140,7 +139,7 @@ class Contact extends React.Component {
               return yup
                 .string()
                 .phone()
-                .required('Please provide a primary telephone number, or change Preferred Reporting Method.');
+                .required('Please provide a Primary Telephone Number, or change Preferred Reporting Method.');
             }
           }),
         secondary_telephone: yup
@@ -151,9 +150,9 @@ class Contact extends React.Component {
         secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         email: yup
           .string()
-          .email('Please enter a valid email.')
+          .email('Please enter a valid Email.')
           .max(200, 'Max length exceeded, please limit to 200 characters.'),
-        confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
+        confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
         preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
       });
     }
@@ -189,7 +188,7 @@ class Contact extends React.Component {
           <Card.Header as="h5">Monitoree Contact Information</Card.Header>
           <Card.Body>
             <Form>
-              <Form.Row className="pt-2 pb-3">
+              <Form.Row className="pb-3">
                 <Form.Group as={Col} md="8" controlId="preferred_contact_method">
                   <Form.Label className="nav-input-label">
                     PREFERRED REPORTING METHOD{schema?.fields?.preferred_contact_method?._exclusive?.required && ' *'}
@@ -232,7 +231,7 @@ class Contact extends React.Component {
                       <option>Afternoon</option>
                       <option>Evening</option>
                     </Form.Control>
-                    <Form.Row className="pt-2">
+                    <Form.Row>
                       <Form.Group as={Col} md="auto">
                         Morning:
                         <br />
@@ -254,7 +253,7 @@ class Contact extends React.Component {
                   </Form.Group>
                 )}
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="11" controlId="primary_telephone">
                   <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
                   <PhoneInput
@@ -283,7 +282,7 @@ class Contact extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="11" controlId="primary_telephone_type">
                   <Form.Label className="nav-input-label">PRIMARY PHONE TYPE{schema?.fields?.primary_telephone_type?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -347,7 +346,7 @@ class Contact extends React.Component {
                     )}
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-2">
+              <Form.Row>
                 <Form.Group as={Col} md="auto">
                   Smartphone:
                   <br />
@@ -363,7 +362,7 @@ class Contact extends React.Component {
                   <span className="font-weight-light">Has telephone but cannot use SMS or web-based reporting tool</span>
                 </Form.Group>
               </Form.Row>
-              <Form.Row className="pt-3 pb-3">
+              <Form.Row className="pt-3 pb-2">
                 <Form.Group as={Col} md="8" controlId="email">
                   <Form.Label className="nav-input-label">E-MAIL ADDRESS{schema?.fields?.email?._exclusive?.required && ' *'}</Form.Label>
                   <Form.Control
@@ -400,11 +399,6 @@ class Contact extends React.Component {
             {this.props.next && (
               <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={() => this.validate(this.props.next)}>
                 Next
-              </Button>
-            )}
-            {this.props.submit && (
-              <Button variant="outline-primary" size="lg" className="float-right btn-square px-5" onClick={this.props.submit}>
-                Finish
               </Button>
             )}
           </Card.Body>
@@ -454,12 +448,12 @@ var schema = yup.object().shape({
     .nullable(),
   email: yup
     .string()
-    .email('Please enter a valid email.')
+    .email('Please enter a valid Email.')
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
   confirm_email: yup
     .string()
-    .oneOf([yup.ref('email'), null], 'Confirm email must match.')
+    .oneOf([yup.ref('email'), null], 'Confirm Email must match.')
     .nullable(),
   preferred_contact_method: yup
     .string()
@@ -473,10 +467,9 @@ var schema = yup.object().shape({
 
 Contact.propTypes = {
   currentState: PropTypes.object,
-  previous: PropTypes.func,
   setEnrollmentState: PropTypes.func,
+  previous: PropTypes.func,
   next: PropTypes.func,
-  submit: PropTypes.func,
 };
 
 export default Contact;

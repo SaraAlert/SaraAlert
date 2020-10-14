@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import MaskedInput from 'react-text-mask';
 import moment from 'moment';
@@ -42,35 +43,46 @@ class DateInput extends React.Component {
               : 'date-input__calendar_icon_lg'
           }`}></i>
         {this.props.isClearable && this.props.date && (
-          <button className={`close ${this.props.isInvalid ? 'date-input__clear-btn-invalid' : 'date-input__clear-btn'}`} onClick={this.clearDate}>
+          <button
+            className={`close ${this.props.isInvalid ? 'date-input__clear-btn-invalid' : 'date-input__clear-btn'}`}
+            onClick={this.clearDate}
+            disabled={this.props.disabled}>
             <i className="fas fa-times"></i>
           </button>
         )}
-        <DatePicker
-          id={this.props.id}
-          selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
-          minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
-          maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
-          onChange={this.handleDateChange}
-          popperPlacement={this.props.placement || 'auto'}
-          placeholderText="mm/dd/yyyy"
-          ref={this.datePickerRef}
-          onChangeRaw={this.handleRawChange}
-          className={this.props.customClass}
-          customInput={
-            <MaskedInput
-              mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
-              keepCharPositions
-              className={`${
-                this.props.customClass?.includes('sm')
-                  ? 'date-input__input_sm'
-                  : this.props.customClass?.includes('md')
-                  ? 'date-input__input_md'
-                  : 'date-input__input_lg'
-              } react-datepicker-ignore-onclickoutside form-control ${this.props.customClass} ${this.props.isInvalid ? ' is-invalid' : ''}`}
+        <OverlayTrigger
+          key={this.props.tooltipKey || ''}
+          placement={this.props.tooltipPlacement || 'auto'}
+          overlay={<Tooltip style={this.props.tooltipText ? {} : { display: 'none' }}>{this.props.tooltipText}</Tooltip>}>
+          <div>
+            <DatePicker
+              id={this.props.id}
+              selected={this.props.date && moment(this.props.date, 'YYYY-MM-DD').toDate()}
+              minDate={this.props.minDate && moment(this.props.minDate, 'YYYY-MM-DD').toDate()}
+              maxDate={this.props.maxDate && moment(this.props.maxDate, 'YYYY-MM-DD').toDate()}
+              onChange={this.handleDateChange}
+              popperPlacement={this.props.placement || 'auto'}
+              placeholderText="mm/dd/yyyy"
+              ref={this.datePickerRef}
+              onChangeRaw={this.handleRawChange}
+              className={this.props.customClass}
+              customInput={
+                <MaskedInput
+                  mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
+                  keepCharPositions
+                  className={`${
+                    this.props.customClass?.includes('sm')
+                      ? 'date-input__input_sm'
+                      : this.props.customClass?.includes('md')
+                      ? 'date-input__input_md'
+                      : 'date-input__input_lg'
+                  } react-datepicker-ignore-onclickoutside form-control ${this.props.customClass} ${this.props.isInvalid ? ' is-invalid' : ''}`}
+               />
+              }
+              disabled={this.props.disabled}
             />
-          }
-        />
+          </div>
+        </OverlayTrigger>
       </div>
     );
   }
@@ -98,6 +110,10 @@ DateInput.propTypes = {
   isInvalid: PropTypes.bool,
   isClearable: PropTypes.bool,
   customClass: PropTypes.string,
+  disabled: PropTypes.bool,
+  tooltipText: PropTypes.string,
+  tooltipKey: PropTypes.string,
+  tooltipPlacement: PropTypes.oneOf(['top', 'bottom', 'left', 'right', 'auto']),
 };
 
 export default DateInput;
