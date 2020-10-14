@@ -336,7 +336,7 @@ class Fhir::R4::ApiController < ActionController::API
             coding: [
               FHIR::Coding.new(code: 'SMART-on-FHIR', system: 'http://hl7.org/fhir/restful-security-service')
             ],
-            text: 'OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org'
+            text: 'OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)'
           ),
           extension: [
             FHIR::Extension.new(
