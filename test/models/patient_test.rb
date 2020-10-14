@@ -416,7 +416,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: true,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call')
+                     preferred_contact_method: 'Telephone call')
 
     assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
 
@@ -424,7 +424,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call')
+                     preferred_contact_method: 'Telephone call')
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
   end
@@ -434,7 +434,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: true,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call')
+                     preferred_contact_method: 'Telephone call')
 
     assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
 
@@ -442,7 +442,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call')
+                     preferred_contact_method: 'Telephone call')
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
   end
@@ -484,7 +484,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call')
+                     preferred_contact_method: 'Telephone call')
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
   end
@@ -494,13 +494,13 @@ class PatientTest < ActiveSupport::TestCase
                        purged: false,
                        pause_notifications: false,
                        monitoring: true,
-                       preferred_contact_method: 'Telephone Call')
+                       preferred_contact_method: 'Telephone call')
 
     patient = create(:patient,
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call')
+                     preferred_contact_method: 'Telephone call')
 
     patient.update!(responder_id: responder.id)
     assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -509,7 +509,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call')
+                     preferred_contact_method: 'Telephone call')
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
   end
@@ -520,7 +520,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call',
+                     preferred_contact_method: 'Telephone call',
                      last_assessment_reminder_sent: 13.hours.ago)
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -530,7 +530,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call',
+                     preferred_contact_method: 'Telephone call',
                      last_assessment_reminder_sent: nil)
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -540,7 +540,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call',
+                     preferred_contact_method: 'Telephone call',
                      last_assessment_reminder_sent: 12.hours.ago)
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -550,7 +550,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call',
+                     preferred_contact_method: 'Telephone call',
                      last_assessment_reminder_sent: 10.hours.ago)
 
     assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -562,7 +562,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call',
+                     preferred_contact_method: 'Telephone call',
                      latest_assessment_at: 25.hours.ago)
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -572,7 +572,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call',
+                     preferred_contact_method: 'Telephone call',
                      latest_assessment_at: nil)
 
     assert_equal(1, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -582,7 +582,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call',
+                     preferred_contact_method: 'Telephone call',
                      latest_assessment_at: Time.now.getlocal('-04:00').beginning_of_day)
 
     assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -592,7 +592,7 @@ class PatientTest < ActiveSupport::TestCase
                      purged: false,
                      pause_notifications: false,
                      monitoring: true,
-                     preferred_contact_method: 'Telephone Call',
+                     preferred_contact_method: 'Telephone call',
                      latest_assessment_at: Time.now)
 
     assert_equal(0, Patient.optimal_reminder_eligible.where(id: patient.id).count)
@@ -1220,6 +1220,138 @@ class PatientTest < ActiveSupport::TestCase
     dependent.destroy
     assert_not patient.reload.head_of_household
     assert_not new_head.reload.head_of_household
+  end
+  
+  test 'validates preferred contact method inclusion' do
+    patient = build(:patient, preferred_contact_method: 'E-mailed Web Link')
+    assert patient.valid?
+
+    patient = build(:patient, preferred_contact_method: '')
+    assert patient.valid?
+
+    patient = build(:patient, preferred_contact_method: nil)
+    assert patient.valid?
+
+    patient = build(:patient, preferred_contact_method: 'foo')
+    assert_not patient.valid?
+  end
+
+  test 'validates preferred contact time inclusion' do
+    patient = build(:patient, preferred_contact_time: 'Morning')
+    assert patient.valid?
+
+    patient = build(:patient, preferred_contact_time: '')
+    assert patient.valid?
+
+    patient = build(:patient, preferred_contact_time: nil)
+    assert patient.valid?
+
+    patient = build(:patient, preferred_contact_time: 'foo')
+    assert_not patient.valid?
+  end
+
+  test 'validates ethnicity inclusion' do
+    patient = build(:patient, ethnicity: 'Hispanic or Latino')
+    assert patient.valid?
+
+    patient = build(:patient, ethnicity: '')
+    assert patient.valid?
+
+    patient = build(:patient, ethnicity: nil)
+    assert patient.valid?
+
+    patient = build(:patient, ethnicity: 'foo')
+    assert_not patient.valid?
+  end
+
+  test 'validates sex inclusion' do
+    patient = build(:patient, sex: 'Female')
+    assert patient.valid?
+
+    patient = build(:patient, sex: '')
+    assert patient.valid?
+
+    patient = build(:patient, sex: nil)
+    assert patient.valid?
+
+    patient = build(:patient, sex: 'foo')
+    assert_not patient.valid?
+  end
+
+  test 'validates address_state inclusion' do
+    patient = build(:patient, address_state: 'Georgia')
+    assert patient.valid?
+
+    patient = build(:patient, address_state: '')
+    assert patient.valid?
+
+    patient = build(:patient, address_state: nil)
+    assert patient.valid?
+
+    patient = build(:patient, address_state: 'foo')
+    assert_not patient.valid?
+  end
+
+  test 'validates monitored_address_state inclusion' do
+    patient = build(:patient, address_state: 'Oregon')
+    assert patient.valid?
+
+    patient = build(:patient, address_state: '')
+    assert patient.valid?
+
+    patient = build(:patient, address_state: nil)
+    assert patient.valid?
+
+    patient = build(:patient, address_state: 'foo')
+    assert_not patient.valid?
+  end
+
+  test 'validates primary phone is a possible phone number' do
+    patient = build(:patient, primary_telephone: '+11111111111')
+    assert patient.valid?
+
+    patient = build(:patient, primary_telephone: '+1 111 111 1111')
+    assert patient.valid?
+
+    patient = build(:patient, primary_telephone: '')
+    assert patient.valid?
+
+    patient = build(:patient, primary_telephone: nil)
+    assert patient.valid?
+
+    patient = build(:patient, primary_telephone: '123 456 7890')
+    assert_not patient.valid?
+  end
+
+  test 'validates secondary phone is a possible phone number' do
+    patient = build(:patient, secondary_telephone: '+11111111111')
+    assert patient.valid?
+
+    patient = build(:patient, secondary_telephone: '+1 111 111 1111')
+    assert patient.valid?
+
+    patient = build(:patient, secondary_telephone: '')
+    assert patient.valid?
+
+    patient = build(:patient, secondary_telephone: nil)
+    assert patient.valid?
+
+    patient = build(:patient, secondary_telephone: '123 456 7890')
+    assert_not patient.valid?
+  end
+
+  test 'validates email is a valid email address' do
+    patient = build(:patient, email: 'foo@bar.com')
+    assert patient.valid?
+
+    patient = build(:patient, email: '')
+    assert patient.valid?
+
+    patient = build(:patient, email: nil)
+    assert patient.valid?
+
+    patient = build(:patient, email: 'not@an@email.com')
+    assert_not patient.valid?
   end
 end
 # rubocop:enable Metrics/ClassLength

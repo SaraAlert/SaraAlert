@@ -192,6 +192,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     status_bad_request && return if resource.nil?
 
+    status_bad_request(error_messages_from_hash(resource.errors.messages)) && return unless resource.valid?
     status_bad_request && return unless resource.save
 
     if resource_type == 'patient'
