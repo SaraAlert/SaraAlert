@@ -158,7 +158,7 @@ class HistoryComponent extends React.Component {
                 isMulti
                 name="Filters"
                 options={filterOptions}
-                className="basic-multi-select w-25"
+                className="basic-multi-select w-25 pl-2"
                 classNamePrefix="select"
                 placeholder="Filter by Type"
                 theme={theme => ({
