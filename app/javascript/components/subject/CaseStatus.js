@@ -160,11 +160,11 @@ class CaseStatus extends React.Component {
     });
   };
 
-  createModal(title, toggle, submit) {
+  createModal(toggle, submit) {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Case Status</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {this.state.showMonitoringDropdown && (
@@ -243,7 +243,7 @@ class CaseStatus extends React.Component {
             <option>Not a Case</option>
           </Form.Control>
         </div>
-        {this.state.showCaseStatusModal && this.createModal('Case Status', this.toggleCaseStatusModal, this.submit)}
+        {this.state.showCaseStatusModal && this.createModal(this.toggleCaseStatusModal, this.submit)}
       </React.Fragment>
     );
   }

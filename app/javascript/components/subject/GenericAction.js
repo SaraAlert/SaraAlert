@@ -124,10 +124,7 @@ class GenericAction extends React.Component {
           exposure_risk_assessment: this.state.exposure_risk_assessment,
           monitoring_plan: this.state.monitoring_plan,
           public_health_action: this.state.public_health_action,
-          reasoning:
-            (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
-              ? this.state.monitoring_reason + (this.state.reasoning !== '' ? ', ' : '')
-              : '') + this.state.reasoning,
+          reasoning: this.state.reasoning,
           apply_to_group: this.state.apply_to_group,
           diffState: diffState,
         })
