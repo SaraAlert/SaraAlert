@@ -1,0 +1,199 @@
+import React from 'react';
+import { PropTypes } from 'prop-types';
+import { Button, Modal, Form } from 'react-bootstrap';
+import _ from 'lodash';
+import axios from 'axios';
+
+import InfoTooltip from '../util/InfoTooltip';
+import reportError from '../util/ReportError';
+
+class Jurisdiction extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      // patient: props.patient,
+      showJurisdictionModal: false,
+      jurisdiction_path: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
+      original_jurisdiction_id: this.props.patient.jurisdiction_id,
+      validJurisdiction: true,
+      apply_to_group: false,
+      loading: false,
+      reasoning: '',
+    };
+    this.origState = Object.assign({}, this.state);
+  }
+
+  handleChange = event => {
+    if (event?.target?.name && event.target.name === 'jurisdictionId') {
+      this.setState({
+        jurisdiction_path: event?.target?.value ? event.target.value : '',
+        validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
+      });
+    } else if (event?.target?.name && event.target.name === 'apply_to_group') {
+      let applyToGroup = event.target.id === 'apply_to_group_yes';
+      this.setState({ [event.target.name]: applyToGroup });
+    } else if (event?.target?.id) {
+      let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+      this.setState({ [event.target.id]: event?.target?.value ? value : '' });
+    }
+  };
+
+  handleKeyPress = () => {
+    if (event.which === 13) {
+      event.preventDefault();
+      this.toggleJurisdictionModal();
+    }
+  };
+
+  toggleJurisdictionModal = () => {
+    let current = this.state.showJurisdictionModal;
+    this.setState({
+      showJurisdictionModal: !current,
+      jurisdiction_path: current ? this.props.jurisdictionPaths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
+      apply_to_group: false,
+      reasoning: '',
+    });
+  };
+
+  // FIX ME
+  submit = () => {
+    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    this.setState({ loading: true }, () => {
+      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+      axios
+        .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
+          jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdiction_path),
+          reasoning: this.state.reasoning,
+          apply_to_group: this.state.apply_to_group,
+          diffState: diffState,
+        })
+        .then(() => {
+          const currentUserJurisdictionString = this.props.current_user.jurisdiction_path.join(', ');
+          // check if current_user has access to the changed jurisdiction
+          // if so, reload the page, if not, redirect to exposure or isolation dashboard
+          if (!this.state.jurisdiction_path.startsWith(currentUserJurisdictionString)) {
+            const pathEnd = this.state.isolation ? '/isolation' : '';
+            location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health' + pathEnd);
+          } else {
+            location.reload(true);
+          }
+        })
+        .catch(error => {
+          reportError(error);
+        });
+    });
+  };
+
+  createModal(toggle, submit) {
+    return (
+      <Modal size="lg" show centered onHide={toggle}>
+        <Modal.Header>
+          <Modal.Title>Jurisdiction</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to change jurisdiction from &quot;{this.props.jurisdictionPaths[this.state.original_jurisdiction_id]}&quot; to &quot;
+            {this.state.jurisdiction_path}&quot;?
+            {this.state.assigned_user !== '' && <b> Please also consider removing or updating the assigned user if it is no longer applicable.</b>}
+          </p>
+          {this.props.has_group_members && (
+            <React.Fragment>
+              <p className="mb-2">Please select the records that you would like to apply this change to:</p>
+              <Form.Group className="px-4">
+                <Form.Check
+                  type="radio"
+                  className="mb-1"
+                  name="apply_to_group"
+                  id="apply_to_group_no"
+                  label="This monitoree only"
+                  onChange={this.handleChange}
+                  checked={!this.state.apply_to_group}
+                />
+                <Form.Check
+                  type="radio"
+                  className="mb-3"
+                  name="apply_to_group"
+                  id="apply_to_group_yes"
+                  label="This monitoree and all household members"
+                  onChange={this.handleChange}
+                  checked={this.state.apply_to_group}
+                />
+              </Form.Group>
+            </React.Fragment>
+          )}
+          <Form.Group>
+            <Form.Label>Please include any additional details:</Form.Label>
+            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary btn-square" onClick={toggle}>
+            Cancel
+          </Button>
+          <Button variant="primary btn-square" onClick={submit} disabled={this.state.loading}>
+            {this.state.loading && (
+              <React.Fragment>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
+              </React.Fragment>
+            )}
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <div className="disabled">
+          <Form.Label className="nav-input-label">
+            ASSIGNED JURISDICTION
+            <InfoTooltip tooltipTextKey="assignedJurisdiction" location="right"></InfoTooltip>
+          </Form.Label>
+          <Form.Group className="d-flex mb-0">
+            <Form.Control
+              as="input"
+              name="jurisdictionId"
+              list="jurisdictionPaths"
+              autoComplete="off"
+              className="form-control-lg"
+              onChange={this.handleChange}
+              onKeyPress={this.handleKeyPress}
+              value={this.state.jurisdiction_path}
+            />
+            <datalist id="jurisdictionPaths">
+              {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
+                return (
+                  <option value={path} key={id}>
+                    {path}
+                  </option>
+                );
+              })}
+            </datalist>
+            {!this.state.validJurisdiction || this.state.jurisdiction_path === this.props.jurisdictionPaths[this.state.original_jurisdiction_id] ? (
+              <Button className="btn-lg btn-square text-nowrap ml-2" disabled>
+                <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
+              </Button>
+            ) : (
+              <Button className="btn-lg btn-square text-nowrap ml-2" onClick={this.toggleJurisdictionModal}>
+                <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
+              </Button>
+            )}
+          </Form.Group>
+        </div>
+        {this.state.showJurisdictionModal && this.createModal(this.toggleJurisdictionModal, this.submit)}
+      </React.Fragment>
+    );
+  }
+}
+
+Jurisdiction.propTypes = {
+  patient: PropTypes.object,
+  authenticity_token: PropTypes.string,
+  has_group_members: PropTypes.bool,
+  jurisdictionPaths: PropTypes.object,
+  current_user: PropTypes.object,
+};
+
+export default Jurisdiction;

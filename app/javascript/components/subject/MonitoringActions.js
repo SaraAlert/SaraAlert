@@ -6,6 +6,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 import CaseStatus from './CaseStatus';
+import Jurisdiction from './Jurisdiction';
 import GenericAction from './GenericAction';
 import DateInput from '../util/DateInput';
 import InfoTooltip from '../util/InfoTooltip';
@@ -39,21 +40,11 @@ class MonitoringActions extends React.Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.submit = this.submit.bind(this);
     this.toggleMonitoringStatusModal = this.toggleMonitoringStatusModal.bind(this);
-    this.toggleJurisdictionModal = this.toggleJurisdictionModal.bind(this);
     this.toggleAssignedUserModal = this.toggleAssignedUserModal.bind(this);
   }
 
   handleChange(event) {
-    if (event?.target?.name && event.target.name === 'jurisdictionId') {
-      // Jurisdiction is a weird case; the datalist and input work differently together
-      this.setState({
-        message: `jurisdiction from "${this.props.jurisdictionPaths[this.state.original_jurisdiction_id]}" to "${event.target.value}"`,
-        message_warning: this.state.assigned_user === '' ? '' : 'Please also consider removing or updating the assigned user if it is no longer applicable.',
-        jurisdiction_path: event?.target?.value ? event.target.value : '',
-        monitoring_reasons: null,
-        validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
-      });
-    } else if (event?.target?.name && event.target.name === 'assignedUser') {
+    if (event?.target?.name && event.target.name === 'assignedUser') {
       if (
         event?.target?.value === '' ||
         (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
@@ -121,17 +112,6 @@ class MonitoringActions extends React.Component {
     this.setState({
       showMonitoringStatusModal: !current,
       monitoring_status: this.props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
-      apply_to_group: false,
-      reasoning: '',
-    });
-  }
-
-  toggleJurisdictionModal() {
-    let current = this.state.showJurisdictionModal;
-    this.setState({
-      message: `jurisdiction from "${this.props.jurisdictionPaths[this.state.original_jurisdiction_id]}" to "${this.state.jurisdiction_path}"`,
-      showJurisdictionModal: !current,
-      jurisdiction_path: current ? this.props.jurisdictionPaths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
       apply_to_group: false,
       reasoning: '',
     });
@@ -420,47 +400,19 @@ class MonitoringActions extends React.Component {
                   </Form.Group>
                 </Form.Group>
                 <Form.Group as={Col} lg="24" className="pt-2">
-                  <Form.Label className="nav-input-label">
-                    ASSIGNED JURISDICTION
-                    <InfoTooltip tooltipTextKey="assignedJurisdiction" location="right"></InfoTooltip>
-                  </Form.Label>
-                  <Form.Group className="d-flex mb-0">
-                    <Form.Control
-                      as="input"
-                      name="jurisdictionId"
-                      list="jurisdictionPaths"
-                      autoComplete="off"
-                      className="form-control-lg"
-                      onChange={this.handleChange}
-                      onKeyPress={this.handleKeyPress}
-                      value={this.state.jurisdiction_path}
-                    />
-                    <datalist id="jurisdictionPaths">
-                      {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
-                        return (
-                          <option value={path} key={id}>
-                            {path}
-                          </option>
-                        );
-                      })}
-                    </datalist>
-                    {!this.state.validJurisdiction || this.state.jurisdiction_path === this.props.jurisdictionPaths[this.state.original_jurisdiction_id] ? (
-                      <Button className="btn-lg btn-square text-nowrap ml-2" disabled>
-                        <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
-                      </Button>
-                    ) : (
-                      <Button className="btn-lg btn-square text-nowrap ml-2" onClick={this.toggleJurisdictionModal}>
-                        <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
-                      </Button>
-                    )}
-                  </Form.Group>
+                  <Jurisdiction
+                    patient={this.props.patient}
+                    authenticity_token={this.props.authenticity_token}
+                    has_group_members={this.props.has_group_members}
+                    jurisdictionPaths={this.props.jurisdictionPaths}
+                    current_user={this.props.current_user}
+                  />
                 </Form.Group>
               </Form.Row>
             </Col>
           </Row>
         </Form>
         {this.state.showMonitoringStatusModal && this.createModal('Monitoring Status', this.toggleMonitoringStatusModal, this.submit)}
-        {this.state.showJurisdictionModal && this.createModal('Jurisdiction', this.toggleJurisdictionModal, this.submit)}
         {this.state.showassignedUserModal && this.createModal('Assigned User', this.toggleAssignedUserModal, this.submit)}
       </React.Fragment>
     );
