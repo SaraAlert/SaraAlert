@@ -148,11 +148,6 @@ class PublicHealthHeader extends React.Component {
     return (
       <React.Fragment>
         <ButtonGroup>
-          {this.props.abilities.analytics && (
-            <Button variant="primary" className="ml-2 mb-4" href="/analytics">
-              <i className="fas fa-chart-pie"></i> Analytics
-            </Button>
-          )}
           {this.props.abilities.enrollment && (
             <Button variant="primary" className="ml-2 mb-4" href={this.props.workflow === 'exposure' ? '/patients/new' : '/patients/new?isolation=true'}>
               {this.props.workflow === 'exposure' && (
