@@ -2,7 +2,22 @@
 <html>
   <%= render 'layouts/html_head' %>
   <body id="sara-alert-body" class="<%= ENV['SHOW_DEMO_WARNING'].present? ? 'demo-bg' : '' %>">
-    <%= render 'layouts/header' %>
+    <%= react_component(
+        'layout/Header',
+        {
+          report_mode: ADMIN_OPTIONS['report_mode'],
+          version: ADMIN_OPTIONS['version'],
+          root: root_path,
+          current_user: !current_user.nil? ? {
+            email: current_user&.email,
+            is_usa_admin: current_user&.usa_admin?,
+            can_access_dashboards: current_user&.can_view_public_health_dashboard?,
+            can_access_analytics: current_user&.can_view_analytics?,
+            can_access_admin_panel: current_user&.can_access_admin_panel?
+          } : nil,
+        }
+      )
+    %>
     <div class="container-fluid">
       <%= yield %>
     </div>
