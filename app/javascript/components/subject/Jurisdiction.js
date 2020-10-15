@@ -11,7 +11,6 @@ class Jurisdiction extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // patient: props.patient,
       showJurisdictionModal: false,
       jurisdiction_path: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
       original_jurisdiction_id: this.props.patient.jurisdiction_id,
@@ -55,7 +54,6 @@ class Jurisdiction extends React.Component {
     });
   };
 
-  // FIX ME
   submit = () => {
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
