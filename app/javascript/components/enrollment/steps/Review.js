@@ -91,7 +91,7 @@ class Review extends React.Component {
                 Finish
               </Button>
             )}
-            {this.props.submit && !this.props.parent_id && this.props.currentState.responder_id === this.props.currentState.id && this.props.canAddGroup && (
+            {this.props.submit && this.props.currentState.responder_id === this.props.currentState.id && this.props.canAddGroup && (
               <Button
                 variant="primary"
                 size="lg"

@@ -68,7 +68,8 @@ class Enrollment extends React.Component {
         .then(response => {
           toast.success(message, {
             onClose: () =>
-              (location.href = window.BASE_PATH + (groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id'])),
+              (location.href =
+                window.BASE_PATH + (groupMember ? '/patients/' + response['data']['responder_id'] + '/group' : '/patients/' + response['data']['id'])),
           });
         })
         .catch(err => {
@@ -142,7 +143,8 @@ class Enrollment extends React.Component {
           // Success, inform user and redirect to home
           toast.success(message, {
             onClose: () =>
-              (location.href = window.BASE_PATH + (groupMember ? '/patients/' + response['data']['id'] + '/group' : '/patients/' + response['data']['id'])),
+              (location.href =
+                window.BASE_PATH + (groupMember ? '/patients/' + response['data']['responder_id'] + '/group' : '/patients/' + response['data']['id'])),
           });
         }
       })
