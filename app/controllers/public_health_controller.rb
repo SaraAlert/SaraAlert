@@ -252,7 +252,7 @@ class PublicHealthController < ApplicationController
       details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
       details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
       details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
-      details[:is_hoh] = patient.dependents_exclude_self.where(purged: false).exists?
+      details[:is_hoh] = patient.head_of_household?
 
       linelist << details
     end
