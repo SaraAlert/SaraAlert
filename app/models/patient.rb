@@ -58,6 +58,9 @@ class Patient < ApplicationRecord
   has_many :laboratories
   has_many :close_contacts
 
+  around_save :inform_responder, if: :responder_id_changed?
+  around_destroy :inform_responder
+
   # Most recent assessment
   def latest_assessment
     assessments.order(created_at: :desc).first
@@ -844,5 +847,29 @@ class Patient < ApplicationRecord
       }
     end
     diffs
+  end
+
+  # Use the cached attribute if it exists, if not query with count for performance
+  # instead of loading all dependents.
+  def head_of_household?
+    return head_of_household unless head_of_household.nil?
+
+    dependents_exclude_self.size.positive?
+  end
+
+  # After remove callback passes a parameter which is the object that was just removed, we don't need it
+  # so we just throw it away
+  def inform_responder(*)
+    initial_responder = responder_id_was
+    # Yield to save
+    yield
+    Patient.find(initial_responder).refresh_head_of_household unless initial_responder.nil? || initial_responder == responder.id
+    # After save responder may have changed
+    responder.refresh_head_of_household
+  end
+
+  def refresh_head_of_household
+    hoh = dependents_exclude_self.size.positive?
+    update(head_of_household: hoh) unless head_of_household == hoh
   end
 end
