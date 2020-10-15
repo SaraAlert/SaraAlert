@@ -2,12 +2,14 @@
 
 # Contains valid Role attribute in the User model and methods to work with them
 module Roles
+  SUPER_USER = 'super_user'
   ADMIN = 'admin'
   ANALYST = 'analyst'
   ENROLLER = 'enroller'
   NONE = 'none'
   PUBLIC_HEALTH = 'public_health'
   PUBLIC_HEALTH_ENROLLER = 'public_health_enroller'
+  CONTACT_TRACER = 'contact_tracer'
 
   def self.all_role_values
     constants.map { |c| const_get(c) }
