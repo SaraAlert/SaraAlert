@@ -8,6 +8,7 @@ import axios from 'axios';
 import History from './History';
 import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
+import _ from 'lodash';
 
 class HistoryComponent extends React.Component {
   constructor(props) {
@@ -21,20 +22,30 @@ class HistoryComponent extends React.Component {
       pageOfHistories: [],
     };
 
-    this.handleTextChange = this.handleTextChange.bind(this);
-    this.onChangePage = this.onChangePage.bind(this);
-    this.submit = this.submit.bind(this);
+    this.filterOptions = [
+      {
+        label: 'History Type',
+        options: [],
+      },
+    ];
+
+    for (const historyType in this.props.history_types) {
+      this.filterOptions[0].options.push({
+        value: _.startCase(historyType), // converts `monitoree_data_downloaded` to `Monitoree Data Downloaded`
+        label: this.props.history_types[`${historyType}`],
+      });
+    }
   }
 
-  handleTextChange(event) {
+  handleTextChange = event => {
     this.setState({ comment: event.target.value });
-  }
+  };
 
-  onChangePage(pageOfHistories) {
+  onChangePage = pageOfHistories => {
     this.setState({ pageOfHistories });
-  }
+  };
 
-  submit() {
+  submit = () => {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
@@ -49,7 +60,7 @@ class HistoryComponent extends React.Component {
           reportError(error);
         });
     });
-  }
+  };
 
   filterHistories = () => {
     let filteredHistories = [...this.props.histories];
@@ -81,27 +92,6 @@ class HistoryComponent extends React.Component {
   render() {
     const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
 
-    const filterOptions = [
-      {
-        label: 'History Type',
-        options: [
-          { value: 'Comment', label: 'Comment' },
-          { value: 'Contact Attempt', label: 'Contact Attempt' },
-          { value: 'Enrollment', label: 'Enrollment' },
-          { value: 'Lab Result', label: 'Lab Result' },
-          { value: 'Lab Result Edit', label: 'Lab Result Edit' },
-          { value: 'Monitoree Data Downloaded', label: 'Monitoree Data Downloaded' },
-          { value: 'Monitoring Change', label: 'Monitoring Change' },
-          { value: 'Report Created', label: 'Report Created' },
-          { value: 'Report Note', label: 'Report Note' },
-          { value: 'Report Reminder', label: 'Report Reminder' },
-          { value: 'Report Reviewed', label: 'Report Reviewed' },
-          { value: 'Report Updated', label: 'Report Updated' },
-          { value: 'Reports Reviewed', label: 'Reports Reviewed' },
-        ],
-      },
-    ];
-
     return (
       <React.Fragment>
         <Card className="mx-2 mt-3 mb-4 card-square">
@@ -119,7 +109,7 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Filters"
-                options={filterOptions}
+                options={this.filterOptions}
                 className="basic-multi-select w-25"
                 classNamePrefix="select"
                 placeholder="Filters"
@@ -166,6 +156,7 @@ HistoryComponent.propTypes = {
   patient_id: PropTypes.number,
   histories: PropTypes.array,
   authenticity_token: PropTypes.string,
+  history_types: PropTypes.object,
 };
 
 export default HistoryComponent;
