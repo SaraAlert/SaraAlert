@@ -5,8 +5,8 @@ import { Form, Row, Col } from 'react-bootstrap';
 import AssignedUser from './AssignedUser';
 import CaseStatus from './CaseStatus';
 import Jurisdiction from './Jurisdiction';
+import MonitoringStatus from './MonitoringStatus';
 import GenericAction from './GenericAction';
-import InfoTooltip from '../util/InfoTooltip';
 
 class MonitoringActions extends React.Component {
   constructor(props) {
@@ -21,19 +21,13 @@ class MonitoringActions extends React.Component {
             <Col>
               <Form.Row className="align-items-end">
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
-                  <Form.Label className="nav-input-label">
-                    MONITORING STATUS
-                    <InfoTooltip tooltipTextKey="monitoringStatus" location="right"></InfoTooltip>
-                  </Form.Label>
-                  {/* <Form.Control
-                    as="select"
-                    className="form-control-lg"
-                    id="monitoring_status"
-                    onChange={this.handleChange}
-                    value={this.state.monitoring_status}>
-                    <option>Actively Monitoring</option>
-                    <option>Not Monitoring</option>
-                  </Form.Control> */}
+                  <MonitoringStatus
+                    patient={this.props.patient}
+                    authenticity_token={this.props.authenticity_token}
+                    has_group_members={this.props.has_group_members}
+                    in_a_group={this.props.in_a_group}
+                    isolation={this.props.isolation}
+                  />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <GenericAction
