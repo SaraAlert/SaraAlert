@@ -124,6 +124,12 @@ class ConsumeAssessmentsJob < ApplicationJob
           Rails.logger.info "ConsumeAssessmentsJob: skipping nil threshold (patient: #{patient.id}, hash: #{message['threshold_condition_hash']})..."
           queue.commit
           next
+        when 'max_retries_sms'
+          # TODO: Fill out appropriate action for user max retries once decided
+          next
+        when 'max_retries_voice'
+          # TODO: Fill out appropriate action for user max retries once decided
+          next
         end
 
         if message['reported_symptoms_array']
