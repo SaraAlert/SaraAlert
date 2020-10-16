@@ -2,6 +2,11 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
+import * as yup from 'yup';
+import libphonenumber from 'google-libphonenumber';
+
+const PNF = libphonenumber.PhoneNumberFormat;
+const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 import reportError from '../util/ReportError';
 import confirmDialog from '../util/ConfirmDialog';
@@ -12,6 +17,7 @@ class CloseContact extends React.Component {
     this.state = {
       showModal: false,
       loading: false,
+      errors: {},
       first_name: this.props.close_contact.first_name || '',
       last_name: this.props.close_contact.last_name || '',
       primary_telephone: this.props.close_contact.primary_telephone || '',
@@ -23,23 +29,18 @@ class CloseContact extends React.Component {
     this.closeContactNotePlaceholder = this.props.patient.isolation
       ? 'enter additional information about case'
       : 'enter additional information about monitoree’s potential exposure';
-    this.toggleModal = this.toggleModal.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
-    this.contactAttempt = this.contactAttempt.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
-  toggleModal() {
+  toggleModal = () => {
     let current = this.state.showModal;
     this.setState({
       showModal: !current,
     });
-  }
+  };
 
-  handleChange(event) {
+  handleChange = event => {
     this.setState({ [event.target.id]: event.target.value });
-  }
+  };
 
   contactAttempt = async () => {
     if (await confirmDialog('Are you sure you want to log an additional contact attempt?', { title: 'New Contact Attempt' })) {
@@ -49,28 +50,42 @@ class CloseContact extends React.Component {
     }
   };
 
-  submit() {
-    this.setState({ loading: true }, () => {
-      axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-      axios
-        .post(window.BASE_PATH + '/close_contacts' + (this.props.close_contact.id ? '/' + this.props.close_contact.id : ''), {
-          patient_id: this.props.patient.id,
-          first_name: this.state.first_name || '',
-          last_name: this.state.last_name || '',
-          primary_telephone: this.state.primary_telephone || '',
-          email: this.state.email || '',
-          notes: this.state.notes || '',
-          enrolled_id: this.state.enrolled_id || null,
-          contact_attempts: this.state.contact_attempts || 0,
-        })
-        .then(() => {
-          location.reload(true);
-        })
-        .catch(error => {
-          reportError(error);
+  submit = () => {
+    schema
+      .validate({ ...this.state }, { abortEarly: false })
+      .then(() => {
+        this.setState({ loading: true }, () => {
+          axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+          axios
+            .post(window.BASE_PATH + '/close_contacts' + (this.props.close_contact.id ? '/' + this.props.close_contact.id : ''), {
+              patient_id: this.props.patient.id,
+              first_name: this.state.first_name || '',
+              last_name: this.state.last_name || '',
+              primary_telephone: this.state.primary_telephone || '',
+              email: this.state.email || '',
+              notes: this.state.notes || '',
+              enrolled_id: this.state.enrolled_id || null,
+              contact_attempts: this.state.contact_attempts || 0,
+            })
+            .then(() => {
+              location.reload(true);
+            })
+            .catch(error => {
+              reportError(error);
+            });
         });
-    });
-  }
+      })
+      .catch(err => {
+        // Validation errors, update state to display to user
+        if (err && err.inner) {
+          let issues = {};
+          for (const issue of err.inner) {
+            issues[issue['path']] = issue['errors'];
+          }
+          this.setState({ errors: issues });
+        }
+      });
+  };
 
   createModal(title, toggle, submit) {
     return (
@@ -84,12 +99,18 @@ class CloseContact extends React.Component {
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">First Name</Form.Label>
                 <Form.Control size="lg" id="first_name" className="form-square" value={this.state.first_name || ''} onChange={this.handleChange} />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['first_name']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Last Name</Form.Label>
                 <Form.Control size="lg" id="last_name" className="form-square" value={this.state.last_name || ''} onChange={this.handleChange} />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['last_name']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
@@ -102,12 +123,18 @@ class CloseContact extends React.Component {
                   value={this.state.primary_telephone || ''}
                   onChange={this.handleChange}
                 />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['primary_telephone']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
               <Form.Group as={Col}>
                 <Form.Label className="nav-input-label">Email</Form.Label>
                 <Form.Control size="lg" id="email" className="form-square" value={this.state.email || ''} onChange={this.handleChange} />
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['email']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
@@ -124,6 +151,9 @@ class CloseContact extends React.Component {
                   onChange={this.handleChange}
                 />
                 <Form.Label className="notes-character-limit"> {2000 - this.state.notes.length} characters remaining </Form.Label>
+                <Form.Control.Feedback className="d-block" type="invalid">
+                  {this.state.errors['notes']}
+                </Form.Control.Feedback>
               </Form.Group>
             </Row>
           </Form>
@@ -190,6 +220,52 @@ class CloseContact extends React.Component {
     );
   }
 }
+
+yup.addMethod(yup.string, 'phone', function() {
+  return this.test({
+    name: 'phone',
+    exclusive: true,
+    message: 'Please enter a valid Phone Number',
+    test: value => {
+      try {
+        if (!value) {
+          return true; // Blank numbers are allowed
+        }
+        // Make sure we'll be able to convert to E164 format at submission time
+        return !!phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) && /\d{10}/.test(value.replace('+1', '').replace(/\D/g, ''));
+      } catch (e) {
+        return false;
+      }
+    },
+  });
+});
+
+const schema = yup.object().shape({
+  first_name: yup
+    .string()
+    .required('Please enter a First Name.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  last_name: yup
+    .string()
+    .required('Please enter a Last Name.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  primary_telephone: yup
+    .string()
+    .phone()
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  email: yup
+    .string()
+    .email('Please enter a valid email.')
+    .max(200, 'Max length exceeded, please limit to 200 characters.')
+    .nullable(),
+  notes: yup
+    .string()
+    .max(2000, 'Max length exceeded, please limit to 2000 characters.')
+    .nullable(),
+});
 
 CloseContact.propTypes = {
   close_contact: PropTypes.object,

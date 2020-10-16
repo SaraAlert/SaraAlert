@@ -303,6 +303,7 @@ class Exposure extends React.Component {
               size="lg"
               className="form-square"
               placeholder="enter additional information about case"
+              maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
               onChange={this.handleChange}
             />
@@ -545,6 +546,7 @@ class Exposure extends React.Component {
               size="lg"
               className="form-square"
               placeholder="enter additional information about monitoree’s potential exposure"
+              maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
               onChange={this.handleChange}
             />
