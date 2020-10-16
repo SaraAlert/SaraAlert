@@ -20,6 +20,13 @@ class PatientsController < ApplicationController
 
     @jurisdiction_path = @patient.jurisdiction_path
 
+    if current_user.can_transfer_patients?
+      @possible_jurisdiction_paths = Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
+    else
+      @possible_jurisdiction_paths = Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
+
+    end
+
     # Group members if this is HOH
     @group_members = @patient.dependents_exclude_self.where(purged: false)
 

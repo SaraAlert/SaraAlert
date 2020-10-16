@@ -12,7 +12,7 @@ class AnalyticsController < ApplicationController
     @stats = enroller_stats if current_user.role?(Roles::ENROLLER)
 
     # Stats for public health & analysts
-    @stats = epi_stats if current_user.role?(Roles::PUBLIC_HEALTH) || current_user.role?(Roles::PUBLIC_HEALTH_ENROLLER) || current_user.role?(Roles::ANALYST)
+    @stats = epi_stats if current_user.role?(Roles::ANALYST) || current_user.role?(Roles::PUBLIC_HEALTH) || current_user.role?(Roles::PUBLIC_HEALTH_ENROLLER) || current_user.role?(Roles::SUPER_USER)
 
     redirect_to(root_url) && return if @stats.nil?
   end
