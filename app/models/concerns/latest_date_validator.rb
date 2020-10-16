@@ -12,7 +12,7 @@ class LatestDateValidator < ActiveModel::EachValidator
 
   private
 
-  def  valid?(value, provided)
+  def valid?(value, provided)
     if value.nil?
       true
     elsif !value.acts_like?(:date)
