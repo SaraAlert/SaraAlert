@@ -103,7 +103,7 @@ class Import extends React.Component {
         patientData.validationErrors = validationErrors;
         patients[parseInt(patientIndex)] = patientData;
         this.setState({ patients: patients });
-        reportError(err);
+        reportError('Records did not pass data validation, see specific errors below.');
       });
   };
 
@@ -173,7 +173,7 @@ class Import extends React.Component {
     }
 
     return (
-      <Alert variant="danger">
+      <Alert variant="info">
         <span>{text}</span>
       </Alert>
     );
