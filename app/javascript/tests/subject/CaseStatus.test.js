@@ -5,7 +5,7 @@ import CaseStatus from '../../components/subject/CaseStatus.js'
 import InfoTooltip from '../../components/util/InfoTooltip';
 import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../mocks/mockPatients'
 
-const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
+const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const caseStatusValues = [ '', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case' ];
 const monitoringOptionValues = [ '', 'End Monitoring', 'Continue Monitoring in Isolation Workflow' ];
 
@@ -241,7 +241,7 @@ describe('CaseStatus', () => {
 
     it('Clicking the submit button calls the submit method', () => {
         const wrapper = getWrapper(mockPatient1, false);
-        const submitSpy = jest.spyOn(wrapper.instance(), "submit");
+        const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
 
         wrapper.find(Form.Control).simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
         expect(submitSpy).toHaveBeenCalledTimes(0);
