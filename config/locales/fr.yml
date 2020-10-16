@@ -122,8 +122,7 @@ fr:
         try-again: "Je suis désolé, je n'ai pas compris. Veuillez répondre par \"Oui\" ou par \"Non\""
         thanks: "Merci d'avoir rempli votre rapport quotidien!"
       weblink:
-        intro1: 'Ceci est un système d’Alerte Sara, veuillez compléter le rapport pour'
-        intro2: 'à'
+        intro: 'Veuillez remplir le rapport quotidien de Sara Alert pour'
     phone:
       intro: "Bonjour, voici Sara, l'assistante de santé publique automatisée qui demande votre rapport quotidien."
       try-again: "Je suis désolé, je n'ai pas compris. Essayons encore."

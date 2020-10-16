@@ -153,7 +153,10 @@ class PatientsController < ApplicationController
 
     # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
     # included in the URL sent to the monitoree to allow them to report without having to type in a password
-    patient.submission_token = SecureRandom.hex(20) # 160 bits
+    loop do
+      patient.submission_token = SecureRandom.urlsafe_base64[0, 10]
+      break unless Patient.where('BINARY submission_token = ?', patient.submission_token).any?
+    end
 
     # Attempt to save and continue; else if failed redirect to index
     render(json: patient.errors, status: 422) && return unless patient.save

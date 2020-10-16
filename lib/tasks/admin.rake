@@ -107,7 +107,13 @@ namespace :admin do
     # Create jurisdiction for it does not already exist
     if jurisdiction == nil
       jurisdiction = Jurisdiction.create(name: jur_name , parent: parent)
-      unique_identifier = Digest::SHA256.hexdigest(jurisdiction.jurisdiction_path_string)
+      
+      # create a 10 character, url-safe, base-64 string based on the SHA-256 hash of the jurisdiction path
+      unique_identifier = Base64::urlsafe_encode64([[Digest::SHA256.hexdigest(jurisdiction.jurisdiction_path_string)].pack('H*')].pack('m0'))[0, 10]
+      
+      # warn user if collision has occured
+      puts "JURISDICTION IDENTIFIER HASH COLLISION FOR: #{jurisdiction[:path]}" if Jurisdiction.where('BINARY unique_identifier = ?', unique_identifier).any?
+
       jurisdiction.update(unique_identifier: unique_identifier, path: jurisdiction.jurisdiction_path_string)
     end
 

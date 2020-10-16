@@ -23,11 +23,12 @@ class PatientMailer < ApplicationMailer
     return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
-    patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
-    intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
-    url_contents = new_patient_assessment_jurisdiction_report_lang_url(patient.submission_token,
-                                                                       lang&.to_s || 'en',
-                                                                       patient.jurisdiction.unique_identifier[0, 32])
+    patient_name = "#{patient&.initials}-#{patient&.calc_current_age || '0'}"
+    url = new_patient_assessment_jurisdiction_lang_initials_url(patient.submission_token,
+                                                                patient.jurisdiction.unique_identifier,
+                                                                lang&.to_s || 'en',
+                                                                patient_name.gsub('-', '').truncate(5, omission: nil))
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{patient_name}: #{url}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
@@ -35,12 +36,7 @@ class PatientMailer < ApplicationMailer
     client.messages.create(
       from: from,
       to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      body: intro_contents
-    )
-    client.messages.create(
-      from: from,
-      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      body: url_contents
+      body: contents
     )
   rescue Twilio::REST::RestError => e
     Rails.logger.warn e.error_message
@@ -52,7 +48,7 @@ class PatientMailer < ApplicationMailer
     return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
-    patient_name = "#{patient&.first_name&.first || ''}#{patient&.last_name&.first || ''}-#{patient&.calc_current_age || '0'}"
+    patient_name = "#{patient&.initials}-#{patient&.calc_current_age || '0'}"
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
@@ -77,11 +73,12 @@ class PatientMailer < ApplicationMailer
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |p|
       lang = p.select_language
-      patient_name = "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
-      intro_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.weblink.intro2', locale: lang)}"
-      url_contents = new_patient_assessment_jurisdiction_report_lang_url(p.submission_token,
-                                                                         lang&.to_s || 'en',
-                                                                         patient.jurisdiction.unique_identifier[0, 32])
+      patient_name = "#{p&.initials}-#{p&.calc_current_age || '0'}"
+      url = new_patient_assessment_jurisdiction_lang_initials_url(patient.submission_token,
+                                                                  patient.jurisdiction.unique_identifier,
+                                                                  lang&.to_s || 'en',
+                                                                  patient_name.gsub('-', '').truncate(5, omission: nil))
+      contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{patient_name}: #{url}"
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
       from = ENV['TWILLIO_SENDING_NUMBER']
@@ -89,12 +86,7 @@ class PatientMailer < ApplicationMailer
       client.messages.create(
         from: from,
         to: Phonelib.parse(num, 'US').full_e164,
-        body: intro_contents
-      )
-      client.messages.create(
-        from: from,
-        to: Phonelib.parse(num, 'US').full_e164,
-        body: url_contents
+        body: contents
       )
       add_success_history(p, patient)
     end
@@ -134,7 +126,7 @@ class PatientMailer < ApplicationMailer
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.active_dependents.uniq.collect do |p|
-      "#{p&.first_name&.first || ''}#{p&.last_name&.first || ''}-#{p&.calc_current_age || '0'}"
+      "#{p&.initials}-#{p&.calc_current_age || '0'}"
     end
     contents = I18n.t('assessments.sms.prompt.daily1', locale: lang) + patient_names.join(', ') + '.'
 
@@ -180,7 +172,7 @@ class PatientMailer < ApplicationMailer
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.active_dependents.uniq.collect do |p|
-      "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
+      "#{p&.initials}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
     end
     contents = I18n.t('assessments.phone.daily1', locale: lang) + patient_names.join(', ')
 

@@ -119,8 +119,12 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms weblink message contents' do
-    first_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.weblink.intro2', locale: 'en')}"
-    second_contents = new_patient_assessment_jurisdiction_report_lang_url(@patient.submission_token, 'en', @patient.jurisdiction.unique_identifier[0, 32])
+    patient_name = "#{@patient&.initials}#{@patient&.calc_current_age || '0'}".truncate(5, omission: nil)
+    url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                @patient.jurisdiction.unique_identifier,
+                                                                'en',
+                                                                patient_name)
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
       true
@@ -128,12 +132,7 @@ class PatientMailerTest < ActionMailer::TestCase
     expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
                                                                                          from: 'test',
                                                                                          to: '+15555550111',
-                                                                                         body: first_contents
-                                                                                       ))
-    expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
-                                                                                         from: 'test',
-                                                                                         to: '+15555550111',
-                                                                                         body: second_contents
+                                                                                         body: contents
                                                                                        ))
 
     PatientMailer.enrollment_sms_weblink(@patient).deliver_now
@@ -155,8 +154,12 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'assessment sms weblink message contents' do
-    first_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.weblink.intro2', locale: 'en')}"
-    second_contents = new_patient_assessment_jurisdiction_report_lang_url(@patient.submission_token, 'en', @patient.jurisdiction.unique_identifier[0, 32])
+    patient_name = "#{@patient&.initials}#{@patient&.calc_current_age || '0'}".truncate(5, omission: nil)
+    url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                @patient.jurisdiction.unique_identifier,
+                                                                'en',
+                                                                patient_name)
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
       true
@@ -164,12 +167,7 @@ class PatientMailerTest < ActionMailer::TestCase
     expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
                                                                                          from: 'test',
                                                                                          to: '+15555550111',
-                                                                                         body: first_contents
-                                                                                       ))
-    expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
-                                                                                         from: 'test',
-                                                                                         to: '+15555550111',
-                                                                                         body: second_contents
+                                                                                         body: contents
                                                                                        ))
 
     PatientMailer.assessment_sms_weblink(@patient).deliver_now
@@ -190,7 +188,7 @@ class PatientMailerTest < ActionMailer::TestCase
     end)
 
     PatientMailer.assessment_sms_weblink(@patient).deliver_now
-    assert_equal create_count, 4
+    assert_equal create_count, 2
   end
 
   test 'assessment sms reminder message contents' do

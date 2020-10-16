@@ -685,6 +685,11 @@ class Patient < ApplicationRecord
     end
   end
 
+  # Patient initials
+  def initials
+    "#{first_name&.first || ''}#{last_name&.first || ''}"
+  end
+
   # Return the calculated age based on the date of birth
   def calc_current_age
     Patient.calc_current_age_base(provided_date_of_birth: date_of_birth)

@@ -4,11 +4,18 @@
 
 <% content_for :body do %>
   <% @patients.each do |patient| %>
-    <p><%= t('assessments.email.reminder.dear', locale: @lang || :en) %> <%= "#{patient[:patient]&.first_name&.first || ''}#{patient[:patient]&.last_name&.first || ''}-#{patient[:patient]&.calc_current_age || '0'}" %>,</p>
+    <p><%= t('assessments.email.reminder.dear', locale: @lang || :en) %> <%= "#{patient[:patient]&.initials}-#{patient[:patient]&.calc_current_age || '0'}" %>,</p>
 
     <p><%= t('assessments.email.reminder.thank-you', locale: @lang || :en) %></p>
 
-    <%= render partial: 'main_mailer/responsive_button', locals: { patient: patient, link: new_patient_assessment_jurisdiction_report_lang_url(patient[:patient].submission_token, @lang&.to_s || 'en', patient[:jurisdiction_unique_id]), text: t('assessments.email.reminder.report', locale: @lang || :en) } %><br />
+    <%= render partial: 'main_mailer/responsive_button', locals: {
+          patient: patient,
+          link: new_patient_assessment_jurisdiction_lang_initials_url(patient[:patient].submission_token,
+                                                                      patient[:jurisdiction_unique_id],
+                                                                      @lang&.to_s || 'en',
+                                                                      "#{patient[:patient]&.initials}#{patient[:patient]&.calc_current_age || '0'}".truncate(5, omission: nil)),
+          text: t('assessments.email.reminder.report', locale: @lang || :en)
+        } %><br />
   <% end %>
 <% end %>
 

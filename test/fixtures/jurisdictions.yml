@@ -4,7 +4,7 @@ jurisdiction_1:
   updated_at: <%= 50.days.ago %>
   name: 'USA'
   path: 'USA'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_2:
   id: 2
   created_at: <%= 50.days.ago %>
@@ -12,7 +12,7 @@ jurisdiction_2:
   name: 'State 1'
   ancestry: '1'
   path: 'USA, State 1'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 1') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 1')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_3:
   id: 3
   created_at: <%= 50.days.ago %>
@@ -20,7 +20,7 @@ jurisdiction_3:
   name: 'State 2'
   ancestry: '1'
   path: 'USA, State 2'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 2') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 2')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_4:
   id: 4
   created_at: <%= 50.days.ago %>
@@ -28,7 +28,7 @@ jurisdiction_4:
   name: 'County 1'
   ancestry: '1/2'
   path: 'USA, State 1, County 1'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 1, County 1') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 1, County 1')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_5:
   id: 5
   created_at: <%= 50.days.ago %>
@@ -36,7 +36,7 @@ jurisdiction_5:
   name: 'County 2'
   ancestry: '1/2'
   path: 'USA, State 1, County 2'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 1, County 2') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 1, County 2')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_6:
   id: 6
   created_at: <%= 50.days.ago %>
@@ -44,7 +44,7 @@ jurisdiction_6:
   name: 'County 3'
   ancestry: '1/3'
   path: 'USA, State 2, County 3'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 2, County 3') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 2, County 3')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_7:
   id: 7
   created_at: <%= 50.days.ago %>
@@ -52,7 +52,7 @@ jurisdiction_7:
   name: 'County 4'
   ancestry: '1/3'
   path: 'USA, State 2, County 4'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 2, County 4') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 2, County 4')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_8:
   id: 8
   created_at: <%= 54.weeks.ago %>
@@ -60,7 +60,7 @@ jurisdiction_8:
   name: 'State 3'
   ancestry: '1'
   path: 'USA, State 3'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 3') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 3')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_9:
   id: 9
   created_at: <%= 54.weeks.ago %>
@@ -68,7 +68,7 @@ jurisdiction_9:
   name: 'State 4'
   ancestry: '1'
   path: 'USA, State 4'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 4') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 4')].pack('H*')].pack('m0'))[0, 10] %>
 jurisdiction_10:
   id: 10
   created_at: <%= 54.weeks.ago %>
@@ -76,4 +76,4 @@ jurisdiction_10:
   name: 'State 5'
   ancestry: '1'
   path: 'USA, State 5'
-  unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 5') %>
+  unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 5')].pack('H*')].pack('m0'))[0, 10] %>
