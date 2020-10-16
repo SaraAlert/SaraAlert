@@ -2,8 +2,11 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
 import axios from 'axios';
+<<<<<<< HEAD
 import moment from 'moment-timezone';
 import pluralize from 'pluralize';
+=======
+>>>>>>> cd187baa (Remove pluralize, clean up variables)
 import _ from 'lodash';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
@@ -67,12 +70,12 @@ class Import extends React.Component {
   };
 
   submit = (data, num, bypass) => {
-    const patient = { patient: { ...data } };
+    const patientData = { ...data };
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'post',
       url: window.BASE_PATH + '/patients',
-      data: { ...patient, bypass_duplicate: bypass },
+      data: { patient: { ...patientData }, bypass_duplicate: bypass },
     })
       .then(() => {
         let next = [...this.state.accepted, num];
@@ -88,17 +91,17 @@ class Import extends React.Component {
         });
       })
       .catch(err => {
-        let validation_errors = [];
+        let validationErrors = [];
         Object.keys(err.response.data).forEach(prop => {
-          validation_errors.push({
+          validationErrors.push({
             prop,
             message: err.response.data[String(prop)],
           });
         });
-        const patientIndex = this.state.patients.findIndex(statePatient => _.isEqual(statePatient, patient.patient));
+        const patientIndex = this.state.patients.findIndex(statePatient => _.isEqual(statePatient, patientData));
         let patients = this.state.patients;
-        patient.patient.validation_errors = validation_errors;
-        patients[parseInt(patientIndex)] = patient.patient;
+        patientData.validationErrors = validationErrors;
+        patients[parseInt(patientIndex)] = patientData;
         this.setState({ patients: patients });
         reportError(err);
       });
@@ -185,11 +188,13 @@ class Import extends React.Component {
     });
 
     let prevent = 'prevents';
+    let errorWord = 'error';
     if (formattedErrorMessages.length > 1) {
       prevent = 'prevent';
+      errorWord = 'errors';
     }
 
-    const heading = `The following ${pluralize('error', formattedErrorMessages.length)} ${prevent} this monitoree from being imported:`;
+    const heading = `The following ${errorWord} ${prevent} this monitoree from being imported:`;
 
     return (
       <Alert variant="danger">
@@ -265,7 +270,7 @@ class Import extends React.Component {
                   border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
                   <React.Fragment>
                     {patient.duplicate_data.is_duplicate && this.getDuplicateWarningText(patient.duplicate_data.duplicate_field_data)}
-                    {patient.validation_errors && this.getValidationErrorText(patient.validation_errors)}
+                    {patient.validationErrors && this.getValidationErrorText(patient.validationErrors)}
                     {(patient.jurisdiction_path || patient.assigned_user) && (
                       <Alert variant="info">
                         Note:
