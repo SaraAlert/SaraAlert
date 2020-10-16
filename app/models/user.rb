@@ -47,7 +47,7 @@ class User < ApplicationRecord
   end
 
   def patients
-    return viewable_patients if role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER)
+    return viewable_patients if role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER) 
 
     return enrolled_patients if role?(Roles::ENROLLER)
 
@@ -60,7 +60,7 @@ class User < ApplicationRecord
       enrolled_patients.find_by_id(id)
     elsif role?(Roles::PUBLIC_HEALTH)
       viewable_patients.find_by_id(id)
-    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER)
+    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) ||  role?(Roles::CONTACT_TRACER)
       viewable_patients.find_by_id(id)
     elsif role?(Roles::ADMIN)
       nil
@@ -73,7 +73,7 @@ class User < ApplicationRecord
       enrolled_patients.find(ids)
     elsif role?(Roles::PUBLIC_HEALTH)
       viewable_patients.find(ids)
-    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER)
+    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
       viewable_patients.find(ids)
     elsif role?(Roles::ADMIN)
       nil
@@ -101,12 +101,12 @@ class User < ApplicationRecord
 
   # Can this user create a new Patient?
   def can_create_patient?
-    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::ENROLLER) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user view a Patient?
   def can_view_patient?
-    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user export?
@@ -121,67 +121,71 @@ class User < ApplicationRecord
 
   # Can this user manage saved filters?
   def can_manage_saved_filters?
-    has_role?(Roles::PUBLIC_HEALTH) || has_role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user edit a Patient?
   def can_edit_patient?
-    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user view Patient lab results?
   def can_view_patient_laboratories?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user edit Patient lab results?
   def can_edit_patient_laboratories?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user create Patient lab results?
   def can_create_patient_laboratories?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user view Patient close contacts?
   def can_view_patient_close_contacts?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user edit Patient close contacts?
   def can_edit_patient_close_contacts?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) ||  role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user create Patient close contacts?
   def can_create_patient_close_contacts?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user view Patient assessments?
   def can_view_patient_assessments?
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  end
+
+  def can_download_monitoree_data?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user edit Patient assessments?
   def can_edit_patient_assessments?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user create Patient assessments?
   def can_create_patient_assessments?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user send a reminder email?
   def can_remind_patient?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user view the public health dashboard?
   def can_view_public_health_dashboard?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user view the enroller dashboard?
@@ -191,17 +195,40 @@ class User < ApplicationRecord
 
   # Can view analytics
   def can_view_analytics?
-    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::ANALYST)
+    role?(Roles::ANALYST) || role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user modify subject status?
   def can_modify_subject_status?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user create subject history?
   def can_create_subject_history?
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  end
+
+  def can_transfer_patients?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  end
+
+  def can_see_monitoring_dashboards_tab?
+    # NOTE: Contact Tracers don't need to see this tab because it is their only option
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  end
+
+  def can_see_enroller_dashboard_tab?
+    role?(Roles::ENROLLER)
+  end
+
+  def can_see_admin_panel_tab?
+    # NOTE: Admins don't need to see this tab because it is their only option
+    role?(Roles::SUPER_USER)
+  end
+
+  def can_see_analytics_tab?
+    # NOTE: Analysts don't need to see this tab because it is their only option
+    role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user send system email messages?
