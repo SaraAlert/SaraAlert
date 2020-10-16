@@ -93,7 +93,7 @@ namespace :demo do
     print 'Creating contract tracer users...'
 
     contact_tracer1 = User.create(email: 'usa_contact_tracer@example.com', password: '1234567ab!', role: Roles::CONTACT_TRACER, jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
-    contact_tracer2 = User.create(email: 'state1_contact_tracerr@example.com', password: '1234567ab!', role: Roles::CONTACT_TRACER, jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
+    contact_tracer2 = User.create(email: 'state1_contact_tracer@example.com', password: '1234567ab!', role: Roles::CONTACT_TRACER, jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
 
     puts ' done!'
 
