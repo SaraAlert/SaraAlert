@@ -95,6 +95,7 @@ class PatientMailer < ApplicationMailer
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
                try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
+               max_retries_message: I18n.t('assessments.sms.max-retries-message', locale: lang),
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
     if TwilioSender.start_studio_flow(patient, params)
@@ -137,6 +138,7 @@ class PatientMailer < ApplicationMailer
                threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.split('-').first.upcase,
                intro: I18n.t('assessments.phone.intro', locale: lang),
                try_again: I18n.t('assessments.phone.try-again', locale: lang),
+               max_retries_message: I18n.t('assessments.phone.max-retries-message', locale: lang),
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
 
     if TwilioSender.start_studio_flow(patient, params)

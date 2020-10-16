@@ -120,12 +120,14 @@ es-PR:
         daily3: 'sintiendo uno o más de los siguientes síntomas hoy?: '
         daily4: ' Responda con "Sí" o "No"'
         try-again: "Lo siento, no entendí. Responda con \"Sí\" o \"No\""
+        max_retries_message: "We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911."
         thanks: '¡Gracias por completar su informe diario!'
       weblink:
         intro: 'Complete el Informe diario de Sara Alert para'
     phone:
       intro: 'Hola, soy Sara, la asistente de salud pública automatizada que solicita su informe diario.'
       try-again: "Lo siento, no entendí. Intentemoslo de nuevo."
+      max_retries_message: "We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911."
       thanks: '¡Gracias por completar su informe diario! Adiós.'
       age: 'años'
       daily1: ' Este es el informe diario de Sara Alert para: '

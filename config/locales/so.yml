@@ -120,12 +120,14 @@ so:
         daily3: 'wax ka mid ah astaamaha soo socda: '
         daily4: ' Ku jawaab "Haa" ama "Maya"'
         try-again: "Waan ka xumahay, maan fahmin. Ku jawaab \"Haa\" ama \"Maya\""
+        max_retries_message: "We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911."
         thanks: 'Waad ku mahadsan tahay dhammaystirka warbixin maalmeedkaaga!'
       weblink:
         intro: 'Fadlan u buuxi Warbixinta Maalinlaha ee Sara Alert ee'
     phone:
       intro: 'Waa salaaman tahay Sara Alert oo ugu yeeraysa warbixintaada maalinlaha ah.'
       try-again: "Waan ka xumahay, maan fahmin. Aan isku dayno markale."
+      max_retries_message: "We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911."
       thanks: 'Waad ku mahadsan tahay dhammaystirka warbixin maalmeedkaaga! Nabad galyo'
       age: ''
       daily1: ' Tani waa warbixinta maalinlaha ah ee Sara Alert ee loogu talagalay: '
