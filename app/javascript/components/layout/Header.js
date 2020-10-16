@@ -17,19 +17,24 @@ class Header extends React.Component {
         {this.props.current_user && (
           <React.Fragment>
             <Nav className="pt-1 mr-auto" activeKey={window.location.pathname}>
-              {this.props.current_user.can_access_dashboards && (
-                <Nav.Link className="ml-3" href="/public_health">
+              {this.props.current_user.can_see_enroller_dashboard_tab && (
+                <Nav.Link className="ml-3" href={`${window.BASE_PATH}/patients`}>
+                  <i className="fas fa-table"></i>&nbsp;&nbsp;Enroller Dashboard
+                </Nav.Link>
+              )}
+              {this.props.current_user.can_see_monitoring_dashboards_tab && (
+                <Nav.Link className="ml-3" href={`${window.BASE_PATH}/public_health`}>
                   <i className="fas fa-table"></i>&nbsp;&nbsp;Monitoring Dashboards
                 </Nav.Link>
               )}
-              {this.props.current_user.can_access_analytics && (
-                <Nav.Link className="ml-3" href="/analytics">
-                  <i className="fas fa-chart-pie"></i>&nbsp;&nbsp;Analytics
+              {this.props.current_user.can_see_admin_panel_tab && (
+                <Nav.Link className="ml-3" href={`${window.BASE_PATH}/admin`}>
+                  <i className="fas fa-user-cog"></i>&nbsp;&nbsp;Admin Panel
                 </Nav.Link>
               )}
-              {this.props.current_user.can_access_admin_panel && (
-                <Nav.Link className="ml-3" href="/admin">
-                  <i className="fas fa-user-cog"></i>&nbsp;&nbsp;Admin Panel
+              {this.props.current_user.can_see_analytics_tab && (
+                <Nav.Link className="ml-3" href={`${window.BASE_PATH}/analytics`}>
+                  <i className="fas fa-chart-pie"></i>&nbsp;&nbsp;Analytics
                 </Nav.Link>
               )}
             </Nav>
@@ -65,7 +70,7 @@ class Header extends React.Component {
                       <a className="white-border-right"></a>
                     </React.Fragment>
                   )}
-                  <Nav.Link className="night-nav-link text-white" href="users/sign_out" data-method="DELETE">
+                  <Nav.Link className="night-nav-link text-white" href={`${window.BASE_PATH}/users/sign_out`} data-method="DELETE">
                     <i className="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout
                   </Nav.Link>
                 </React.Fragment>
