@@ -82,7 +82,6 @@ Rails.application.routes.draw do
   resources :user_filters, only: [:index, :create, :update, :destroy]
 
   post '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report
-  post '/report/:patient_identifier/:jurisdiction_identifier', to: 'assessments#create', as: :create_patient_assessment
   post '/twilio', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report_twilio
   post '/report/twilio', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report_twilio_report
 
@@ -90,9 +89,10 @@ Rails.application.routes.draw do
   get '/patients/:patient_submission_token/:lang/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_lang
   get '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_report
   get '/report/patients/:patient_submission_token/:lang/:unique_identifier', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_report_lang
-  get '/r/:patient_identifier/:jurisdiction_identifier/:lang/:initials_age', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_lang_initials
+  get '/r/:patient_submission_token/:unique_identifier/:lang/:initials_age', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_lang_initials
   get '/already_reported', to: 'assessments#already_reported', as: :already_reported
   get '/report/already_reported', to: 'assessments#already_reported', as: :already_reported_report
+  get '/report/invalid_link', to: 'assessments#invalid_link', as: :invalid_link
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 

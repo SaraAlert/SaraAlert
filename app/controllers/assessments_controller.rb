@@ -5,55 +5,51 @@ class AssessmentsController < ApplicationController
   def index; end
 
   def new
+    # Don't bother with this if the submission token isn't the correct length
+    @patient_submission_token = params[:patient_submission_token].gsub(/[^0-9a-z-_]/i, '')
+    redirect_to(invalid_link_url) && return if @patient_submission_token.length != 10 && @patient_submission_token.length != 40
+
+    # Don't bother with this if the jurisdiction unique identifier isn't at least 10 characters long
+    @unique_identifier = params[:unique_identifier]&.gsub(/[^0-9a-z-_]/i, '')
+    redirect_to(invalid_link_url) && return if @unique_identifier.present? && @unique_identifier.length < 10
+
     @assessment = Assessment.new
 
-    if params[:patient_identifier] && params[:jurisdiction_identifier]
-      @patient_identifier = params[:patient_identifier]&.gsub(/[^0-9a-zA-Z-_]/i, '')
-      @jurisdiction_identifier = params[:jurisdiction_identifier]&.gsub(/[^0-9a-zA-Z-_]/i, '')
-      @patient_initials = params[:initials_age][0, 2]
-      @patient_age = params[:initials_age][2..]&.gsub(/[^0-9]/i, '').to_i
-
-      # Don't bother with this if the patient jurisdiction identifying info isn't the correct length
-      return if @patient_identifier.length != 10 || @jurisdiction_identifier.length != 10
-
-      # If monitoree, limit number of reports per time period
-      if current_user.nil? && AssessmentReceipt.where(patient_identifier: @patient_identifier)
-                                               .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
-                                               .exists?
-
-        redirect_to(already_reported_report_url) && return if ADMIN_OPTIONS['report_mode']
-
-        redirect_to(already_reported_url) && return
-      end
-
-      # Figure out the jurisdiction to know which symptoms to render
-      jurisdiction = Jurisdiction.where(jurisdiction_identifier: @jurisdiction_identifier).first if ADMIN_OPTIONS['report_mode']
-      jurisdiction = Patient.find_by(patient_identifier: @patient_identifier).jurisdiction unless ADMIN_OPTIONS['report_mode']
-    elsif params[:patient_submission_token] && params[:unique_identifier] # continue to support old routes and identifying info
-      # Don't bother with this if the submission token isn't the correct length
-      @patient_submission_token = params[:patient_submission_token].gsub(/[^0-9a-z]/i, '')
-      return if @patient_submission_token.length != 40
-
-      # Don't bother with this if the jurisdiction unique identifier isn't at least 10 characters long
-      @unique_identifier = params[:unique_identifier]&.gsub(/[^0-9a-z]/i, '')
-      return if @unique_identifier.present? && @unique_identifier.length < 10
-
-      # If monitoree, limit number of reports per time period
+    # If monitoree, limit number of reports per time period
+    patient_lookup = PatientLookup.where(old_submission_token: @patient_submission_token).first
+    if patient_lookup.nil?
+      # only check new submission token if patient lookup doesn't exist
       if current_user.nil? && AssessmentReceipt.where(submission_token: @patient_submission_token)
                                                .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
                                                .exists?
 
-        redirect_to(already_reported_report_url) && return if ADMIN_OPTIONS['report_mode']
-
-        redirect_to(already_reported_url) && return
+        redirect_to(ADMIN_OPTIONS['report_mode'] ? already_reported_report_url : already_reported) && return
       end
+    else
+      # check both old and new submission tokens if patient lookup exists
+      if current_user.nil? && AssessmentReceipt.where(submission_token: @patient_submission_token)
+                                               .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+                                               .or(
+                                                 where(submission_token: patient_lookup[:old_submission_token])
+                                                 .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+                                               )
+                                               .exists?
 
-      # Figure out the jurisdiction to know which symptoms to render
-      jurisdiction = Jurisdiction.where('unique_identifier like ?', "#{@unique_identifier}%").first if ADMIN_OPTIONS['report_mode']
-      jurisdiction = Patient.find_by(submission_token: @patient_submission_token).jurisdiction unless ADMIN_OPTIONS['report_mode']
+        redirect_to(ADMIN_OPTIONS['report_mode'] ? already_reported_report_url : already_reported) && return
+      end
     end
 
-    return if jurisdiction.nil?
+    # Figure out the jurisdiction to know which symptoms to render
+    jurisdiction = Jurisdiction.where(unique_identifier: unique_identifier).first if ADMIN_OPTIONS['report_mode']
+    if jurisdiction.nil?
+      jurisdiction_lookup = JurisdictionLookup.where('old_unique_identifier like ?', "#{@unique_identifier}%").first
+      jurisdiction = Jurisdiction.where(unique_identifier: jurisdiction_lookup[:new_unique_identifier]).first unless jurisdiction_lookup.nil?
+    end
+    jurisdiction = Patient.find_by(submission_token: @patient_submission_token)&.jurisdiction unless ADMIN_OPTIONS['report_mode']
+    if jurisdiction.nil?
+      jurisdiction = Patient.find_by(submission_token: patient_lookup[:new_submission_token]).jurisdiction unless patient_lookup.nil?
+    end
+    redirect_to(invalid_link_url) && return if jurisdiction.nil?
 
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
     @symptoms = reporting_condition.symptoms
@@ -61,7 +57,7 @@ class AssessmentsController < ApplicationController
     @translations = @assessment.translations
     @contact_info = jurisdiction.contact_info
     @lang = params.permit(:lang)[:lang] if %w[en es es-PR so fr].include?(params[:lang])
-    @lang = 'en' if @lang.blank? # Default to english
+    @lang = 'en' if @lang.nil? # Default to english
   end
 
   def create

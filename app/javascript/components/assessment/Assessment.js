@@ -178,7 +178,6 @@ Assessment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
-  patient_identifier: PropTypes.string,
   symptoms: PropTypes.array,
   threshold_hash: PropTypes.string,
   assessment: PropTypes.object,

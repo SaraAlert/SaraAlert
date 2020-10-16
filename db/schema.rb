@@ -27,7 +27,6 @@ ActiveRecord::Schema.define(version: 2020_10_14_200514) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "submission_token"
-    t.string "patient_identifier"
     t.index ["submission_token"], name: "index_assessment_receipts_on_submission_token"
   end
 
@@ -98,6 +97,12 @@ ActiveRecord::Schema.define(version: 2020_10_14_200514) do
     t.index ["patient_id"], name: "index_histories_on_patient_id"
   end
 
+  create_table "jurisdiction_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "old_unique_identifier"
+    t.string "new_unique_identifier"
+    t.index ["old_unique_identifier"], name: "index_jurisdiction_lookups_on_old_unique_identifier"
+  end
+
   create_table "jurisdictions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -109,7 +114,6 @@ ActiveRecord::Schema.define(version: 2020_10_14_200514) do
     t.string "email"
     t.string "webpage"
     t.string "message"
-    t.string "jurisdiction_identifier"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
@@ -230,6 +234,12 @@ ActiveRecord::Schema.define(version: 2020_10_14_200514) do
     t.index ["password_archivable_type", "password_archivable_id"], name: "index_password_archivable"
   end
 
+  create_table "patient_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "old_submission_token"
+    t.string "new_submission_token"
+    t.index ["old_submission_token"], name: "index_patient_lookups_on_old_submission_token"
+  end
+
   create_table "patients", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -346,10 +356,13 @@ ActiveRecord::Schema.define(version: 2020_10_14_200514) do
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
 <<<<<<< HEAD
+<<<<<<< HEAD
     t.boolean "head_of_household"
 =======
     t.string "patient_identifier"
 >>>>>>> create migration to add patient and jurisdiction identifiers
+=======
+>>>>>>> create patient and jurisdiction lookup tables
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
