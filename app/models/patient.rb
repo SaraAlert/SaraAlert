@@ -47,23 +47,23 @@ class Patient < ApplicationRecord
                                                          'No Identified Risk',
                                                          nil, ''] }
 
-  validates :preferred_contact_method, inclusion: { in: VALID_ENUMS[:preferred_contact_method] }, allow_blank: true
+  %i[preferred_contact_method
+     preferred_contact_time
+     ethnicity
+     sex
+     address_state
+     monitored_address_state].each do |enum_field|
+    validates enum_field, inclusion: {
+      in: VALID_ENUMS[enum_field],
+      message: "%<value>s is not an acceptable value for '#{VALIDATION[enum_field][:label]}', acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
+    }, allow_blank: true
+  end
 
-  validates :preferred_contact_time, inclusion: { in: VALID_ENUMS[:preferred_contact_time] }, allow_blank: true
+  %i[primary_telephone secondary_telephone].each do |phone_field|
+    validates phone_field, phone_number: true
+  end
 
-  validates :ethnicity, inclusion: { in: VALID_ENUMS[:ethnicity] }, allow_blank: true
-
-  validates :sex, inclusion: { in: VALID_ENUMS[:sex] }, allow_blank: true
-
-  validates :address_state, inclusion: { in: VALID_ENUMS[:address_state] }, allow_blank: true
-
-  validates :monitored_address_state, inclusion: { in: VALID_ENUMS[:address_state] }, allow_blank: true
-
-  validates :primary_telephone, phone: { allow_blank: true, possible: true }
-
-  validates :secondary_telephone, phone: { allow_blank: true, possible: true }
-
-  validates :email, 'valid_email_2/email': true
+  validates :email, email: true
 
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
 
