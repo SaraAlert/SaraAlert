@@ -63,6 +63,10 @@ class Patient < ApplicationRecord
     validates phone_field, phone_number: true
   end
 
+  %i[date_of_birth symptom_onset last_date_of_exposure].each do |date_field|
+    validates date_field, date: { before_type_cast: true }
+  end
+
   validates :email, email: true
 
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }

@@ -4,7 +4,7 @@
 class PhoneNumberValidator < ActiveModel::EachValidator
   include ValidationHelper
   def validate_each(record, attribute, value)
-    return nil if value.blank?
+    return if value.blank?
 
     phone = Phonelib.parse(value, 'US')
     return unless phone.national(false).nil? || phone.national(false).length != 10
