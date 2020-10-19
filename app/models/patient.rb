@@ -487,10 +487,18 @@ class Patient < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
-  # Get all dependents (including self if id = responder_id) that are being monitored or in continuous exposure
+  # Get all dependents (including self if id = responder_id) that are being monitored
   def active_dependents
-    dependents.where('monitoring = ? OR continuous_exposure = ?', true, true)
+    monitoring_days_ago = ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day)
+    dependents.where(monitoring: true)
+      .where('last_date_of_exposure >= ? OR created_at >= ?', monitoring_days_ago, monitoring_days_ago)
   end
+
+  # Get all dependents (excluding self if id = responder_id) that are being monitored
+  def active_dependents_exclude_self
+    active_dependents.where.not(id: id)
+  end
+  
 
   # Get this patient's dependents excluding itself
   def dependents_exclude_self
@@ -549,7 +557,7 @@ class Patient < ApplicationRecord
     # Return UNLESS:
     # - in exposure: NOT closed AND within monitoring period OR
     # - in isolation: NOT closed (as patients on RRR linelist should receive notifications) OR
-    # - in continuous exposure OR
+    # - in ontinuous exposure OR
     # - is a HoH with actively monitored dependents
     # NOTE: We do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
     # so we also have to check that someone receiving messages is not past they're monitoring period unless they're  in isolation,
@@ -557,8 +565,8 @@ class Patient < ApplicationRecord
     start_of_exposure = last_date_of_exposure || created_at
     return unless (monitoring && start_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day) ||
                   (monitoring && isolation) ||
-                  continuous_exposure ||
-                  dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
+                  (monitoring && continuous_exposure) ||
+                  active_dependents_exclude_self.exists?
 
     # Determine if it is yet an appropriate time to send this person a message.
     unless send_now
@@ -685,7 +693,7 @@ class Patient < ApplicationRecord
     unless isolation
       # Monitoring period has elapsed
       start_of_exposure = last_date_of_exposure || created_at
-      no_active_dependents = !dependents_exclude_self.where(monitoring: true).exists?
+      no_active_dependents = !active_dependents_exclude_self.exists?
       if start_of_exposure < reporting_period && !continuous_exposure && no_active_dependents
         eligible = false
         messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
