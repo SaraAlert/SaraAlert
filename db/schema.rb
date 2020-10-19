@@ -237,6 +237,7 @@ ActiveRecord::Schema.define(version: 2020_10_14_200514) do
   create_table "patient_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "old_submission_token"
     t.string "new_submission_token"
+    t.index ["new_submission_token"], name: "index_patient_lookups_on_new_submission_token"
     t.index ["old_submission_token"], name: "index_patient_lookups_on_old_submission_token"
   end
 

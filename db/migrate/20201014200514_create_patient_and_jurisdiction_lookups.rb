@@ -2,7 +2,7 @@ class CreatePatientAndJurisdictionLookups < ActiveRecord::Migration[6.0]
   def up
     create_table :patient_lookups do |t|
       t.string :old_submission_token, index: true
-      t.string :new_submission_token
+      t.string :new_submission_token, index: true
     end
 
     create_table :jurisdiction_lookups do |t|

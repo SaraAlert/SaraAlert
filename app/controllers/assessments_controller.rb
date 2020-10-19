@@ -60,15 +60,7 @@ class AssessmentsController < ApplicationController
       ProduceAssessmentJob.perform_later assessment_placeholder
 
       # Clear out any old receipts
-      patient_lookup = PatientLookup.where('BINARY new_submission_token = ?', @patient_submission_token).first
-      if patient_lookup.nil?
-        AssessmentReceipt.where('BINARY submission_token = ?', @patient_submission_token).delete_all
-      else
-        AssessmentReceipt.where('BINARY submission_token = ?', @patient_submission_token)
-                         .or(
-                           AssessmentReceipt.where('BINARY submission_token = ?', patient_lookup.old_submission_token)
-                         ).delete_all
-      end
+      AssessmentReceipt.where('BINARY submission_token = ?', @patient_submission_token).delete_all
 
       # Save a new receipt
       assessment_receipt = AssessmentReceipt.new(submission_token: @patient_submission_token)
@@ -182,33 +174,17 @@ class AssessmentsController < ApplicationController
                                   .or(
                                     PatientLookup.where(new_submission_token: patient_submission_token)
                                   ).first
-
-    # Only check patient lookup table if patient was enrolled before migration
-    assessment_receipt_exists = if patient_lookup.nil?
-                                  AssessmentReceipt.where('BINARY submission_token = ?', patient_submission_token)
-                                                   .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
-                                                   .exists?
-                                else
-                                  # link and receipt submission token are same (old/new)
-                                  AssessmentReceipt.where('BINARY submission_token = ?', patient_submission_token)
-                                                   .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
-                                                   .or(
-                                                     # Submission token from link is new but submission token from assessment receipt is old
-                                                     AssessmentReceipt.where('BINARY submission_token = ?', patient_lookup[:old_submission_token])
-                                                                      .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
-                                                   )
-                                                   .or(
-                                                     # Submission token from link is old but submission token from assessment receipt is new
-                                                     AssessmentReceipt.where('BINARY submission_token = ?', patient_lookup[:new_submission_token])
-                                                                      .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
-                                                   ).exists?
-                                end
+    patient_submission_token = patient_lookup[:new_submission_token] unless patient_lookup.nil?
 
     # Redirect and return if already reported
-    return if url.nil? && check_if_already_reported && assessment_receipt_exists
-    redirect_to(url) && return if !url.nil? && check_if_already_reported && assessment_receipt_exists
+    if check_if_already_reported && AssessmentReceipt.where('BINARY submission_token = ?', patient_submission_token)
+                                                     .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+                                                     .exists?
+      return if url.nil?
+      redirect_to(url) && return if !url.nil?
+    end
 
     # Return submission token (new version)
-    patient_lookup.nil? ? patient_submission_token : patient_lookup[:new_submission_token]
+    patient_submission_token
   end
 end
