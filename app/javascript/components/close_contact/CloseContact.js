@@ -172,7 +172,7 @@ class CloseContact extends React.Component {
             <i className="fas fa-search"></i> View Record
           </Button>
         )}
-        {this.props.close_contact.id && !this.props.close_contact.enrolled_id && this.props.user_role === 'public_health_enroller' && (
+        {this.props.close_contact.id && !this.props.close_contact.enrolled_id && this.props.can_enroll_close_contacts && (
           <Button
             variant="link"
             onClick={() => {
@@ -191,7 +191,7 @@ class CloseContact extends React.Component {
 
 CloseContact.propTypes = {
   close_contact: PropTypes.object,
-  user_role: PropTypes.string,
+  can_enroll_close_contacts: PropTypes.bool,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
 };
