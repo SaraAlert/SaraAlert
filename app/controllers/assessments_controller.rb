@@ -13,17 +13,21 @@ class AssessmentsController < ApplicationController
     @unique_identifier = params.permit(:unique_identifier)[:unique_identifier]&.gsub(/[^0-9A-Za-z_-]/i, '')
     redirect_to(invalid_link_url) && return if @unique_identifier.present? && @unique_identifier.length < 10
 
-    # Figure out the jurisdiction to know which symptoms to render
-    jurisdiction = Jurisdiction.where('BINARY unique_identifier = ?', unique_identifier).first if ADMIN_OPTIONS['report_mode']
-    if jurisdiction.nil?
+    # Replace old unique identifier with new unique identifier if applicable
+    if @unique_identifier.present? && @unique_identifier.length > 10
       jurisdiction_lookup = JurisdictionLookup.where('old_unique_identifier like ?', "#{@unique_identifier}%").first
-      jurisdiction = Jurisdiction.where('BINARY unique_identifier = ?', jurisdiction_lookup[:new_unique_identifier]).first unless jurisdiction_lookup.nil?
+      redirect_to(invalid_link_url) && return if jurisdiction_lookup.nil?
+
+      @unique_identifier = jurisdiction_lookup.new_unique_identifier
     end
 
-    # Try looking up jurisdiction by patient (@patient_submission_token here should be the new version)
-    jurisdiction = Patient.where('BINARY submission_token = ?', @patient_submission_token).first&.jurisdiction unless ADMIN_OPTIONS['report_mode']
-
-    # Handle invalid links
+    # Figure out the jurisdiction to know which symptoms to render
+    jurisdiction = if ADMIN_OPTIONS['report_mode']
+                     Jurisdiction.where('BINARY unique_identifier = ?', @unique_identifier).first
+                   else
+                     # Try looking up jurisdiction by patient (@patient_submission_token here should be the new version)
+                     Patient.where('BINARY submission_token = ?', @patient_submission_token).first&.jurisdiction
+                   end
     redirect_to(invalid_link_url) && return if jurisdiction.nil?
 
     @assessment = Assessment.new
@@ -169,22 +173,25 @@ class AssessmentsController < ApplicationController
     patient_submission_token = params.permit(:patient_submission_token)[:patient_submission_token].gsub(/[^0-9A-Za-z_-]/i, '')
     redirect_to(invalid_link_url) && return if patient_submission_token.length != 10 && patient_submission_token.length != 40
 
-    # Patient lookups exist for patients enrolled before new submission token migration
-    patient_lookup = PatientLookup.where(old_submission_token: patient_submission_token)
-                                  .or(
-                                    PatientLookup.where(new_submission_token: patient_submission_token)
-                                  ).first
-    patient_submission_token = patient_lookup[:new_submission_token] unless patient_lookup.nil?
+    # Replace old submission token with new submission token if applicable
+    if patient_submission_token.length == 40
+      patient_lookup = PatientLookup.where(old_submission_token: patient_submission_token).first
+      if patient_lookup.nil?
+        return if url.nil?
+        redirect_to(url) && return unless url.nil?
+      end
+
+      patient_submission_token = patient_lookup.new_submission_token
+    end
 
     # Redirect and return if already reported
     if check_if_already_reported && AssessmentReceipt.where('BINARY submission_token = ?', patient_submission_token)
                                                      .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
                                                      .exists?
       return if url.nil?
-      redirect_to(url) && return if !url.nil?
+      redirect_to(url) && return unless url.nil?
     end
 
-    # Return submission token (new version)
     patient_submission_token
   end
 end

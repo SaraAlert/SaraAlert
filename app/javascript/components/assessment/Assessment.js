@@ -151,8 +151,8 @@ class Assessment extends React.Component {
               currentState={this.state.assessmentState}
               idPre={this.props.idPre}
               translations={this.props.translations}
-              patientInitials={this.props.patientInitials}
-              patientAge={this.props.patientAge}
+              patient_initials={this.props.patient_initials}
+              patient_age={this.props.patient_age}
               lang={this.props.lang || 'en'}
             />
           </Carousel.Item>
@@ -180,8 +180,8 @@ Assessment.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
-  patientInitials: PropTypes.string,
-  patientAge: PropTypes.number,
+  patient_initials: PropTypes.string,
+  patient_age: PropTypes.number,
   symptoms: PropTypes.array,
   threshold_hash: PropTypes.string,
   assessment: PropTypes.object,

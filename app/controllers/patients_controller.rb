@@ -151,8 +151,8 @@ class PatientsController < ApplicationController
     valid_jurisdiction = current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id) unless patient.jurisdiction_id.nil?
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
-    # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
-    # included in the URL sent to the monitoree to allow them to report without having to type in a password
+    # Create a secure random token to act as the monitoree's password when they submit assessments
+    # This gets included in the URL sent to the monitoree to allow them to report without having to type in a password
     loop do
       patient.submission_token = SecureRandom.urlsafe_base64[0, 10]
       break unless Patient.where('BINARY submission_token = ?', patient.submission_token).any?

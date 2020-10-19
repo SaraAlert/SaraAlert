@@ -189,7 +189,10 @@ class Fhir::R4::ApiController < ActionController::API
       resource.jurisdiction = resource.creator.jurisdiction
 
       # Generate a submission token for the new monitoree
-      resource.submission_token = SecureRandom.urlsafe_base64[0, 10]
+      loop do
+        resource.submission_token = SecureRandom.urlsafe_base64[0, 10]
+        break unless Patient.where('BINARY submission_token = ?', resource.submission_token).any?
+      end
     else
       status_not_found && return
     end

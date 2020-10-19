@@ -130,13 +130,13 @@ class SymptomsAssessment extends React.Component {
         <Card className="mx-0 card-square">
           <Card.Header as="h4">
             {this.props.translations[this.props.lang]['web']['title']}&nbsp;
-            {this.props.patientInitials && this.props.patientAge !== null && (
+            {this.props.patient_initials && this.props.patient_age !== null && (
               <span>
-                ({this.props.patientInitials}-{this.props.patientAge})
+                ({this.props.patient_initials}-{this.props.patient_age})
               </span>
             )}
-            {this.props.patientInitials && this.props.patientAge === null && <span>({this.props.patientInitials})</span>}
-            {!this.props.patientInitials && this.props.patientAge !== null && <span>({this.props.patientAge})</span>}
+            {this.props.patient_initials && this.props.patient_age === null && <span>({this.props.patient_initials})</span>}
+            {!this.props.patient_initials && this.props.patient_age !== null && <span>({this.props.patient_age})</span>}
           </Card.Header>
           <Card.Body>
             <Form.Row>
@@ -179,8 +179,8 @@ class SymptomsAssessment extends React.Component {
 
 SymptomsAssessment.propTypes = {
   translations: PropTypes.object,
-  patientInitials: PropTypes.string,
-  patientAge: PropTypes.number,
+  patient_initials: PropTypes.string,
+  patient_age: PropTypes.number,
   lang: PropTypes.string,
   currentState: PropTypes.object,
   setAssessmentState: PropTypes.func,
