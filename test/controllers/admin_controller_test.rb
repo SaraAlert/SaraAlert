@@ -14,8 +14,8 @@ class AdminControllerTest < ActionController::TestCase
     get :users
     assert_redirected_to(new_user_session_path)
 
-    # Only the admin role should be able to access admin page when signing in
-    %i[public_health_enroller_user analyst_user enroller_user public_health_user].each do |role|
+    # Only the admin and super user roles should be able to access admin page when signing in
+    %i[public_health_enroller_user analyst_user enroller_user public_health_user contact_tracer_user].each do |role|
       user = create(role)
       sign_in user
       get :users
