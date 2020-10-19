@@ -47,24 +47,27 @@ class Patient < ApplicationRecord
                                                          'No Identified Risk',
                                                          nil, ''] }
 
-  %i[preferred_contact_method
-     preferred_contact_time
+  %i[address_state
      ethnicity
-     sex
-     address_state
-     monitored_address_state].each do |enum_field|
+     monitored_address_state
+     preferred_contact_method
+     preferred_contact_time
+     sex].each do |enum_field|
     validates enum_field, inclusion: {
       in: VALID_ENUMS[enum_field],
       message: "%<value>s is not an acceptable value for '#{VALIDATION[enum_field][:label]}', acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
     }, allow_blank: true
   end
 
-  %i[primary_telephone secondary_telephone].each do |phone_field|
+  %i[primary_telephone
+     secondary_telephone].each do |phone_field|
     validates phone_field, phone_number: true
   end
 
-  %i[date_of_birth symptom_onset last_date_of_exposure].each do |date_field|
-    validates date_field, date: { before_type_cast: true }
+  %i[date_of_birth
+     last_date_of_exposure
+     symptom_onset].each do |date_field|
+    validates date_field, date: true
   end
 
   validates :email, email: true

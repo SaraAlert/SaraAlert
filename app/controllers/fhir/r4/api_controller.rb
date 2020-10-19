@@ -110,7 +110,7 @@ class Fhir::R4::ApiController < ActionController::API
     status_forbidden && return if resource.nil?
 
     # Try to update the resource
-    status_bad_request && return if updates.nil? || !resource.update(updates)
+    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return if updates.nil? || !resource.update(updates)
 
     if resource_type == 'patient'
       # Update patient history with detailed edit diff
@@ -147,7 +147,6 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Construct a Sara Alert Patient
       resource = Patient.new(Patient.from_fhir(contents))
-
       # Responder is self
       resource.responder = resource
 
@@ -191,9 +190,8 @@ class Fhir::R4::ApiController < ActionController::API
     end
 
     status_bad_request && return if resource.nil?
-    
-    status_bad_request(error_messages_from_hash(resource.errors)) && return unless resource.valid?
-    status_bad_request && return unless resource.save
+
+    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save
 
     if resource_type == 'patient'
       # Send enrollment notification only to responders
@@ -499,7 +497,7 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Generic 400 bad request response
-  def status_bad_request(errors = {})
+  def status_bad_request(errors = [])
     respond_to do |format|
       format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :bad_request }
     end
@@ -516,6 +514,12 @@ class Fhir::R4::ApiController < ActionController::API
   def status_not_found
     respond_to do |format|
       format.any { head :not_found }
+    end
+  end
+
+  def status_unprocessable_entity(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :unprocessable_entity }
     end
   end
 
