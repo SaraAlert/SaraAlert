@@ -12,6 +12,6 @@
   <%= react_component('analytics/EnrollerAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>
 
-<% if current_user.role?(Roles::ANALYST) || current_user.role?(Roles::PUBLIC_HEALTH) || current_user.role?(Roles::PUBLIC_HEALTH_ENROLLER) || current_user.role?(Roles::SUPER_USER) %>
+<% if current_user.can_view_epi_analytics? %>
   <%= react_component('analytics/PublicHealthAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>
