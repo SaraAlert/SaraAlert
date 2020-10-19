@@ -284,47 +284,48 @@ class AdminControllerTest < ActionController::TestCase
     assert_response :bad_request
 
     # Test email param
-    post :edit_user, params: { id: 20, email: 'bad format', jurisdiction: new_jur.id,
+    post :edit_user, params: { id: 17, email: 'bad format', jurisdiction: new_jur.id,
                                role_title: 'analyst', is_api_enabled: false, is_locked: false }, as: :json
     assert_response :bad_request
 
-    post :edit_user, params: { id: 20, jurisdiction: new_jur.id, role_title: 'analyst', is_api_enabled: false,
+    post :edit_user, params: { id: 17, jurisdiction: new_jur.id, role_title: 'analyst', is_api_enabled: false,
                                is_locked: false }, as: :json
     assert_response :bad_request
 
     # Test bad jurisdiction param
-    post :edit_user, params: { id: 20, email: 'test@testing.com', jurisdiction: '',
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: '',
                                role_title: 'analyst', is_api_enabled: false, is_locked: false }, as: :json
     assert_response :bad_request
 
     # Test invalid jurisdiction param (out of scope jurisdiction)
-    post :edit_user, params: { id: 20, email: 'test@testing.com', jurisdiction: Jurisdiction.find_by(path: 'USA, State 2').id,
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: Jurisdiction.find_by(path: 'USA, State 2').id,
                                role_title: 'analyst', is_api_enabled: false, is_locked: false }, as: :json
     assert_response :bad_request
 
     # Test role param
-    post :edit_user, params: { id: 20, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'test',
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'test',
                                is_api_enabled: false, is_locked: false }, as: :json
     assert_response :bad_request
 
     # Test is_api_enabled param
-    post :edit_user, params: { id: 20, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
                                is_api_enabled: 'test', is_locked: false }, as: :json
     assert_response :bad_request
 
     # Test is_locked param
-    post :edit_user, params: { id: 20, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
+    post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id, role_title: 'analyst',
                                is_api_enabled: false, is_locked: 'test' }, as: :json
     assert_response :bad_request
 
     # Test User is edited correctly after updating all fields
     assert_no_difference 'User.count' do
-      post :edit_user, params: { id: 20, email: 'test@testing.com', jurisdiction: new_jur.id,
+      post :edit_user, params: { id: 17, email: 'test@testing.com', jurisdiction: new_jur.id,
                                  role_title: 'public_health_enroller', is_api_enabled: false, is_locked: true }, as: :json
     end
     assert_response :success
 
-    user = User.find_by(id: 20)
+    # NOTE: Patient with ID 17 must be within USA, State 1 hierarchy for this test to pass
+    user = User.find_by(id: 17)
     assert_equal(user.jurisdiction, new_jur)
     assert_equal(user.api_enabled, false)
     assert_equal(user.role, 'public_health_enroller')
@@ -345,7 +346,7 @@ class AdminControllerTest < ActionController::TestCase
     user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA, State 1'))
     sign_in user
 
-    post :reset_2fa, params: { ids: [15, 3] }, as: :json
+    post :reset_2fa, params: { ids: [10, 3] }, as: :json
     assert_response :bad_request
 
     sign_out user
@@ -385,7 +386,7 @@ class AdminControllerTest < ActionController::TestCase
     user = create(:admin_user, jurisdiction: Jurisdiction.find_by(path: 'USA, State 1'))
     sign_in user
 
-    post :reset_password, params: { ids: [15, 3] }, as: :json
+    post :reset_password, params: { ids: [10, 3] }, as: :json
     assert_response :bad_request
 
     sign_out user
