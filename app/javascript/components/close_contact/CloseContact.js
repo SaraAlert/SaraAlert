@@ -204,7 +204,7 @@ class CloseContact extends React.Component {
             <i className="fas fa-search"></i> View Record
           </Button>
         )}
-        {this.props.close_contact.id && !this.props.close_contact.enrolled_id && this.props.can_enroll_close_contacts && (
+        {this.props.close_contact.id && !this.props.close_contact.enrolled_id && this.props.can_enroll_patient_close_contacts && (
           <Button
             variant="link"
             onClick={() => {
@@ -269,7 +269,7 @@ const schema = yup.object().shape({
 
 CloseContact.propTypes = {
   close_contact: PropTypes.object,
-  can_enroll_close_contacts: PropTypes.bool,
+  can_enroll_patient_close_contacts: PropTypes.bool,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
 };

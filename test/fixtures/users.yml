@@ -194,8 +194,73 @@ state1_epi_enroller:
   authy_enforced: false
   api_enabled: true
   role: 'public_health_enroller'
-usa_admin:
+
+usa_super_user:
   id: 14
+  email: "usa_super_user@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 12
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 2
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false
+  api_enabled: true
+  role: 'super_user'
+
+state1_super_user:
+  id: 15
+  email: "state1_super_user@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 32
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 2
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false
+  api_enabled: true
+  role: 'super_user'
+
+usa_contact_tracer:
+  id: 16
+  email: "usa_contact_tracer@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 10
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 2
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false
+  api_enabled: true
+  role: 'contact_tracer'
+
+state1_contact_tracer:
+  id: 17
+  email: "state1_contact_tracer@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 30
+  failed_attempts: 0
+  force_password_change: false
+  jurisdiction_id: 2
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false
+  api_enabled: true
+  role: 'contact_tracer'
+
+usa_admin:
+  id: 18
   email: "usa_admin@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 192
@@ -210,7 +275,7 @@ usa_admin:
   api_enabled: false
   role: 'admin'
 analyst_all:
-  id: 15
+  id: 19
   email: "analyst_all@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 52
@@ -225,7 +290,7 @@ analyst_all:
   api_enabled: false
   role: 'analyst'
 usa_epi:
-  id: 16
+  id: 20
   email: "usa_epi@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 21
@@ -240,7 +305,7 @@ usa_epi:
   api_enabled: false
   role: 'public_health'
 forced_password_change_user:
-  id: 17
+  id: 21
   email: "forced_password_change_user@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 5
@@ -255,7 +320,7 @@ forced_password_change_user:
   api_enabled: false
   role: 'public_health'
 locked_user:
-  id: 18
+  id: 22
   email: "locked_user@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 2
@@ -270,7 +335,7 @@ locked_user:
   api_enabled: false
   role: 'public_health_enroller'
 state5_epi:
-  id: 19
+  id: 23
   email: "state5_epi@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 5
@@ -284,7 +349,7 @@ state5_epi:
   api_enabled: false
   role: 'public_health'
 state1_admin:
-  id: 20
+  id: 24
   email: "state1_admin@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 29
