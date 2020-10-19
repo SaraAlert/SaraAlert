@@ -14,7 +14,7 @@ FactoryBot.define do
       created_patients_count { 0 }
     end
 
-    # Add suffix _user becuase the role conflicts namespaces and the role must be exact because the code depends on that
+    # Add suffix _user because the role conflicts namespaces and the role must be exact because the code depends on that
     # spelling.
     factory :admin_user do
       role { 'admin' }
@@ -45,6 +45,15 @@ FactoryBot.define do
     factory :analyst_user do
       role { 'analyst' }
     end
+
+    factory :super_user do
+      role { 'super_user' }
+    end
+
+    factory :contract_tracer_user do
+      role { 'contact_tracer' }
+    end
+
 
     after(:create) do |user, evaluator|
       evaluator.created_patients_count.times do
