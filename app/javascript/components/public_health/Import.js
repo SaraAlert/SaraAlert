@@ -173,12 +173,16 @@ class Import extends React.Component {
     }
 
     return (
-      <Alert variant="info">
+      <Alert variant="warning">
         <span>{text}</span>
       </Alert>
     );
   };
 
+  /**
+   * Gets rendered error text for when validation errors are present.
+   * @param {Object} listOfErrors - Array of validation error strings present on the patient.
+   */
   getValidationErrorText(listOfErrors) {
     let formattedErrorMessages = [];
     listOfErrors.forEach(error => {
@@ -269,8 +273,8 @@ class Import extends React.Component {
                   bg="light"
                   border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
                   <React.Fragment>
-                    {patient.duplicate_data.is_duplicate && this.getDuplicateWarningText(patient.duplicate_data.duplicate_field_data)}
                     {patient.validationErrors && this.getValidationErrorText(patient.validationErrors)}
+                    {patient.duplicate_data.is_duplicate && this.getDuplicateWarningText(patient.duplicate_data.duplicate_field_data)}
                     {(patient.jurisdiction_path || patient.assigned_user) && (
                       <Alert variant="info">
                         Note:
