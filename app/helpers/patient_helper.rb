@@ -135,9 +135,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for symptom onset date
   def self.from_symptom_onset_date_extension(patient)
-    Date.strptime(patient&.extension&.select { |e| e.url.include?('symptom-onset-date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
-  rescue ArgumentError
-    nil
+    patient&.extension&.select { |e| e.url.include?('symptom-onset-date') }&.first&.valueDate
   end
 
   # Helper to create an extension for last exposure date
@@ -150,9 +148,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for last exposure date
   def self.from_last_exposure_date_extension(patient)
-    Date.strptime(patient&.extension&.select { |e| e.url.include?('last-exposure-date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
-  rescue ArgumentError
-    nil
+    patient&.extension&.select { |e| e.url.include?('last-exposure-date') }&.first&.valueDate
   end
 
   # Helper to create an extension for isolation status
