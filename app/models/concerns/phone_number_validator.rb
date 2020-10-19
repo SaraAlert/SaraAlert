@@ -8,7 +8,7 @@ class PhoneNumberValidator < ActiveModel::EachValidator
 
     phone = Phonelib.parse(value, 'US')
     return unless phone.national(false).nil? || phone.national(false).length != 10
-    
+
     record.errors.add(attribute, "'#{value}' is not a valid phone number for '#{VALIDATION[attribute][:label]}'")
   end
 end

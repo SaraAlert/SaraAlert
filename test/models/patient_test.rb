@@ -1222,6 +1222,48 @@ class PatientTest < ActiveSupport::TestCase
     assert_not new_head.reload.head_of_household
   end
   
+  test 'validates address_state inclusion' do
+    patient = build(:patient, address_state: 'Georgia')
+    assert patient.valid?
+
+    patient = build(:patient, address_state: '')
+    assert patient.valid?
+
+    patient = build(:patient, address_state: nil)
+    assert patient.valid?
+
+    patient = build(:patient, address_state: 'foo')
+    assert_not patient.valid?
+  end
+
+  test 'validates ethnicity inclusion' do
+    patient = build(:patient, ethnicity: 'Hispanic or Latino')
+    assert patient.valid?
+
+    patient = build(:patient, ethnicity: '')
+    assert patient.valid?
+
+    patient = build(:patient, ethnicity: nil)
+    assert patient.valid?
+
+    patient = build(:patient, ethnicity: 'foo')
+    assert_not patient.valid?
+  end
+
+  test 'validates monitored_address_state inclusion' do
+    patient = build(:patient, monitored_address_state: 'Oregon')
+    assert patient.valid?
+
+    patient = build(:patient, monitored_address_state: '')
+    assert patient.valid?
+
+    patient = build(:patient, monitored_address_state: nil)
+    assert patient.valid?
+
+    patient = build(:patient, monitored_address_state: 'foo')
+    assert_not patient.valid?
+  end
+
   test 'validates preferred contact method inclusion' do
     patient = build(:patient, preferred_contact_method: 'E-mailed Web Link')
     assert patient.valid?
@@ -1250,20 +1292,6 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.valid?
   end
 
-  test 'validates ethnicity inclusion' do
-    patient = build(:patient, ethnicity: 'Hispanic or Latino')
-    assert patient.valid?
-
-    patient = build(:patient, ethnicity: '')
-    assert patient.valid?
-
-    patient = build(:patient, ethnicity: nil)
-    assert patient.valid?
-
-    patient = build(:patient, ethnicity: 'foo')
-    assert_not patient.valid?
-  end
-
   test 'validates sex inclusion' do
     patient = build(:patient, sex: 'Female')
     assert patient.valid?
@@ -1275,34 +1303,6 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
 
     patient = build(:patient, sex: 'foo')
-    assert_not patient.valid?
-  end
-
-  test 'validates address_state inclusion' do
-    patient = build(:patient, address_state: 'Georgia')
-    assert patient.valid?
-
-    patient = build(:patient, address_state: '')
-    assert patient.valid?
-
-    patient = build(:patient, address_state: nil)
-    assert patient.valid?
-
-    patient = build(:patient, address_state: 'foo')
-    assert_not patient.valid?
-  end
-
-  test 'validates monitored_address_state inclusion' do
-    patient = build(:patient, address_state: 'Oregon')
-    assert patient.valid?
-
-    patient = build(:patient, address_state: '')
-    assert patient.valid?
-
-    patient = build(:patient, address_state: nil)
-    assert patient.valid?
-
-    patient = build(:patient, address_state: 'foo')
     assert_not patient.valid?
   end
 
@@ -1319,7 +1319,7 @@ class PatientTest < ActiveSupport::TestCase
     patient = build(:patient, primary_telephone: nil)
     assert patient.valid?
 
-    patient = build(:patient, primary_telephone: '123 456 7890')
+    patient = build(:patient, primary_telephone: '123')
     assert_not patient.valid?
   end
 
@@ -1336,7 +1336,58 @@ class PatientTest < ActiveSupport::TestCase
     patient = build(:patient, secondary_telephone: nil)
     assert patient.valid?
 
-    patient = build(:patient, secondary_telephone: '123 456 7890')
+    patient = build(:patient, secondary_telephone: '123')
+    assert_not patient.valid?
+  end
+
+  test 'validates date_of_birth is a valid date' do
+    patient = build(:patient, date_of_birth: '2000-01-01')
+    assert patient.valid?
+
+    patient = build(:patient, date_of_birth: '')
+    assert patient.valid?
+
+    patient = build(:patient, date_of_birth: nil)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_birth: '01-15-2000')
+    assert_not patient.valid?
+
+    patient = build(:patient, date_of_birth: '2000-13-13')
+    assert_not patient.valid?
+  end
+
+  test 'validates last_date_of_exposure is a valid date' do
+    patient = build(:patient, last_date_of_exposure: '2000-01-01')
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: '')
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: nil)
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: '01-15-2000')
+    assert_not patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: '2000-13-13')
+    assert_not patient.valid?
+  end
+
+  test 'validates symptom_onset is a valid date' do
+    patient = build(:patient, symptom_onset: '2000-01-01')
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: '')
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: nil)
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: '01-15-2000')
+    assert_not patient.valid?
+
+    patient = build(:patient, symptom_onset: '2000-13-13')
     assert_not patient.valid?
   end
 
