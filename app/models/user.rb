@@ -160,18 +160,13 @@ class User < ApplicationRecord
   end
 
   # Can this user enroll Patient close contacts?
-  def can_enroll_close_contacts?
+  def can_enroll_patient_close_contacts?
     role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user view Patient assessments?
   def can_view_patient_assessments?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
-  end
-
-  # Can this user download data for an specific record on the Monitoree page?
-  def can_download_monitoree_data?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user edit Patient assessments?
@@ -184,9 +179,9 @@ class User < ApplicationRecord
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
-  # Can this user send a reminder email?
-  def can_remind_patient?
-    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  # Can this user download data for an specific record on the Monitoree page?
+  def can_download_monitoree_data?
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user view the public health dashboard?
@@ -249,7 +244,7 @@ class User < ApplicationRecord
 
   # Can this user send system email messages?
   def can_send_admin_emails?
-    role?(Roles::ADMIN) && jurisdiction&.name == 'USA'
+    (role?(Roles::ADMIN) || role?(Roles::SUPER_USER)) && jurisdiction&.name == 'USA'
   end
 
   def can_access_admin_panel?

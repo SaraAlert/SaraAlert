@@ -50,10 +50,19 @@ FactoryBot.define do
       role { 'super_user' }
     end
 
-    factory :contract_tracer_user do
-      role { 'contact_tracer' }
+    factory :usa_super_user do
+      jurisdiction { create(:usa_jurisdiction) }
+      role { 'super_user' }
     end
 
+    factory :non_usa_super_user do
+      jurisdiction { create(:non_usa_jurisdiction) }
+      role { 'super_user' }
+    end
+
+    factory :contact_tracer_user do
+      role { 'contact_tracer' }
+    end
 
     after(:create) do |user, evaluator|
       evaluator.created_patients_count.times do
