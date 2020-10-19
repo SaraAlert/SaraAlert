@@ -37,8 +37,12 @@ class Jurisdiction extends React.Component {
     }
   };
 
-  handleKeyPress = () => {
-    if (event.which === 13) {
+  handleKeyPress = event => {
+    if (
+      event.which === 13 &&
+      this.state.validJurisdiction &&
+      this.state.jurisdiction_path !== this.props.jurisdictionPaths[this.state.original_jurisdiction_id]
+    ) {
       event.preventDefault();
       this.toggleJurisdictionModal();
     }

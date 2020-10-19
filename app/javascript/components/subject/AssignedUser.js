@@ -38,15 +38,15 @@ class AssignedUser extends React.Component {
     }
   };
 
-  handleKeyPress = () => {
-    if (event.which === 13) {
+  handleKeyPress = event => {
+    if (event.which === 13 && this.state.assigned_user !== this.state.original_assigned_user) {
       event.preventDefault();
       this.toggleAssignedUserModal();
     }
   };
 
   toggleAssignedUserModal = () => {
-    let current = this.state.showassignedUserModal;
+    let current = this.state.showAssignedUserModal;
     this.setState({
       showAssignedUserModal: !current,
       assigned_user: current ? this.state.original_assigned_user : this.state.assigned_user,

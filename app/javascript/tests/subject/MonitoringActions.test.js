@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Form } from 'react-bootstrap';
 import MonitoringActions from '../../components/subject/MonitoringActions';
 import AssignedUser from '../../components/subject/AssignedUser';
-import CaseStatus from '../../components/subject/CaseStatus.js'
+import CaseStatus from '../../components/subject/CaseStatus'
 import Jurisdiction from '../../components/subject/Jurisdiction';
 import MonitoringStatus from '../../components/subject/MonitoringStatus';
 import GenericAction from '../../components/subject/GenericAction';
@@ -11,7 +11,7 @@ import { mockPatient1 } from '../mocks/mockPatients'
 import { mockUser1 } from '../mocks/mockUsers'
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const assignedUsers = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+const assignedUsers = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
 const jurisdictionPaths = {
   2: 'USA, State 1',
   3: 'USA, State 1, County 1',
@@ -19,7 +19,7 @@ const jurisdictionPaths = {
   5: 'USA, State 2',
   6: 'USA, State 2, County 3',
   7: 'USA, State 2, County 4'
-}
+};
 
 describe('MonitoringActions', () => {
   it('Properly renders all main components', () => {

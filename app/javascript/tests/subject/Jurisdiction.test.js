@@ -1,0 +1,191 @@
+import React from 'react'
+import { shallow, mount } from 'enzyme';
+import { Button, Form, Modal } from 'react-bootstrap';
+import Jurisdiction from '../../components/subject/Jurisdiction';
+import InfoTooltip from '../../components/util/InfoTooltip';
+import { mockPatient1 } from '../mocks/mockPatients'
+import { mockUser1 } from '../mocks/mockUsers'
+
+const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
+const jurisdictionPaths = {
+  2: 'USA, State 1',
+  3: 'USA, State 1, County 1',
+  4: 'USA, State 1, County 2',
+  5: 'USA, State 2',
+  6: 'USA, State 2, County 3',
+  7: 'USA, State 2, County 4'
+};
+
+function getWrapper(patient, hasGroupMembers) {
+  return shallow(<Jurisdiction patient={patient} current_user={mockUser1} has_group_members={hasGroupMembers}
+    jurisdictionPaths={jurisdictionPaths} authenticity_token={authyToken} />);
+}
+
+describe('Jurisdiction', () => {
+  it('Properly renders all main components', () => {
+    const wrapper = getWrapper(mockPatient1, false);
+    expect(wrapper.find(Form.Label).text().includes('ASSIGNED JURISDICTION')).toBeTruthy();
+    expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
+    expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedJurisdiction');
+    expect(wrapper.find(Form.Control).exists()).toBeTruthy();
+    expect(wrapper.find('option').length).toEqual(6);
+    for (var key of Object.keys(jurisdictionPaths)) {
+      expect(wrapper.find('option').at(key-2).text()).toEqual(jurisdictionPaths[key]);
+    }
+    expect(wrapper.find(Form.Control).prop('value')).toEqual(jurisdictionPaths[mockPatient1.jurisdiction_id]);
+    expect(wrapper.find(Button).exists()).toBeTruthy();
+    expect(wrapper.find(Button).text().includes('Change Jurisdiction')).toBeTruthy();
+    expect(wrapper.find('i').hasClass('fa-map-marked-alt')).toBeTruthy();
+    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
+  });
+
+  it('Changing jurisdiction enables change jurisdiction button and sets state correctly', () => {
+    const wrapper = getWrapper(mockPatient1, false);
+    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
+    expect(wrapper.state('jurisdiction_path')).toEqual(jurisdictionPaths[mockPatient1.jurisdiction_id]);
+    expect(wrapper.state('original_jurisdiction_id')).toEqual(mockPatient1.jurisdiction_id);
+
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
+    expect(wrapper.state('jurisdiction_path')).toEqual('USA, State 2, County 4');
+    expect(wrapper.state('original_jurisdiction_id')).toEqual(mockPatient1.jurisdiction_id);
+  });
+
+  it('Changing to an invalid jurisdiction disables change jurisdiction button and sets state correctly', () => {
+    const wrapper = getWrapper(mockPatient1, false);
+    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
+    expect(wrapper.state('validJurisdiction')).toEqual(true);
+
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
+    expect(wrapper.state('validJurisdiction')).toEqual(true);
+
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 3' } });
+    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
+    expect(wrapper.state('validJurisdiction')).toEqual(false);
+  });
+
+  it('Clicking change jurisdiction button opens modal', () => {
+    const wrapper = getWrapper(mockPatient1, false);
+    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    expect(wrapper.find(Modal).exists()).toBeFalsy();
+    wrapper.find(Button).simulate('click');
+    expect(wrapper.find(Modal).exists()).toBeTruthy();
+  });
+
+  it('Properly renders modal', () => {
+    const wrapper = getWrapper(mockPatient1, false);
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    wrapper.find(Button).simulate('click');
+    const modalBody = wrapper.find(Modal.Body);
+
+    expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Title).text()).toEqual('Jurisdiction');
+    expect(modalBody.exists()).toBeTruthy();
+    expect(modalBody.find('p').text().includes(`Are you sure you want to change jurisdiction from "${jurisdictionPaths[mockPatient1.jurisdiction_id]}" to "USA, State 2, County 4"?`)).toBeTruthy();
+    expect(modalBody.find('p').find('b').text()).toEqual(' Please also consider removing or updating the assigned user if it is no longer applicable.');
+    expect(modalBody.find(Form.Group).length).toEqual(1);
+    expect(modalBody.find(Form.Group).text().includes('Please include any additional details:')).toBeTruthy();
+    expect(modalBody.find(Form.Control).exists()).toBeTruthy();
+    expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
+    expect(wrapper.find(Button).at(1).text()).toEqual('Cancel');
+    expect(wrapper.find(Button).at(2).text()).toEqual('Submit');
+  });
+
+  it('Properly renders radio buttons for HoH', () => {
+    const wrapper = getWrapper(mockPatient1, true);
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    wrapper.find(Button).simulate('click');
+    const modalBody = wrapper.find(Modal.Body);
+
+    expect(modalBody.find(Form.Group).exists()).toBeTruthy();
+    expect(modalBody.find(Form.Check).length).toEqual(2);
+    expect(modalBody.find(Form.Check).at(0).prop('type')).toEqual('radio');
+    expect(modalBody.find(Form.Check).at(0).prop('label')).toEqual('This monitoree only');
+    expect(modalBody.find(Form.Check).at(1).prop('type')).toEqual('radio');
+    expect(modalBody.find(Form.Check).at(1).prop('label')).toEqual('This monitoree and all household members');
+  });
+
+  it('Clicking HoH radio buttons toggles this.state.apply_to_group', () => {
+      const wrapper = getWrapper(mockPatient1, true);
+      wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+      wrapper.find(Button).simulate('click');
+
+      // initial radio button state
+      expect(wrapper.state('apply_to_group')).toBeFalsy();
+      expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
+      expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+
+      // change to apply to all of household
+      wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' }, persist: jest.fn() });
+      wrapper.update()
+      expect(wrapper.state('apply_to_group')).toBeTruthy();
+      expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeFalsy();
+      expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeTruthy();
+
+      // change back to just this monitoree
+      wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' }, persist: jest.fn() });
+      wrapper.update()
+      expect(wrapper.state('apply_to_group')).toBeFalsy();
+      expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
+      expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+  });
+
+  it('Adding reasoning updates state', () => {
+    const wrapper = getWrapper(mockPatient1, false);
+    const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleChange');
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    wrapper.find(Button).simulate('click');
+
+    expect(wrapper.find(Modal.Body).find(Form.Control).exists()).toBeTruthy();
+    wrapper.find(Modal.Body).find(Form.Control).simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
+    expect(handleChangeSpy).toHaveBeenCalled();
+    expect(wrapper.state('reasoning')).toEqual('insert reasoning text here');
+  });
+
+  it('Clicking the cancel button closes modal and resets state', () => {
+    const wrapper = getWrapper(mockPatient1, false);
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    wrapper.find(Button).simulate('click');
+
+    // closes modal
+    expect(wrapper.find(Modal).exists()).toBeTruthy();
+    wrapper.find(Button).at(1).simulate('click');
+    expect(wrapper.find(Modal).exists()).toBeFalsy();
+
+    // resets state
+    expect(wrapper.state('showJurisdictionModal')).toBeFalsy();
+    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('jurisdiction_path')).toEqual(jurisdictionPaths[mockPatient1.jurisdiction_id]);
+    expect(wrapper.state('reasoning')).toEqual('');
+  });
+
+  it('Clicking the submit button calls the submit method', () => {
+    const wrapper = getWrapper(mockPatient1, false);
+    const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
+
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    expect(submitSpy).toHaveBeenCalledTimes(0);
+    wrapper.find(Button).simulate('click');
+    expect(submitSpy).toHaveBeenCalledTimes(0);
+    wrapper.find(Button).at(2).simulate('click');
+    expect(submitSpy).toHaveBeenCalled();
+  });
+
+  it('Pressing the enter key opens modal only when change user button is enabled', () => {
+    const wrapper = mount(<Jurisdiction patient={mockPatient1} current_user={mockUser1} has_group_members={false}
+      jurisdictionPaths={jurisdictionPaths} authenticity_token={authyToken} />);
+    expect(wrapper.find(Modal).exists()).toBeFalsy();
+
+    // no idea why you need both of these to trigger the change but you do...
+    wrapper.find('input').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
+    wrapper.find('input').simulate('keydown', { which: 13, preventDefault: jest.fn() });
+    expect(wrapper.find(Modal).exists()).toBeFalsy();
+
+    wrapper.find(Form.Control).simulate('change', { target: { name: 'jurisdictionId', value: 'USA, State 2, County 4' } });
+    wrapper.find('input').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
+    wrapper.find('input').simulate('keydown', { which: 13, preventDefault: jest.fn() });
+    expect(wrapper.find(Modal).exists()).toBeTruthy();
+  });
+});

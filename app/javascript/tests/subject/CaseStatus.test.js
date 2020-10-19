@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Button, Modal, Form } from 'react-bootstrap';
-import CaseStatus from '../../components/subject/CaseStatus.js'
+import CaseStatus from '../../components/subject/CaseStatus'
 import InfoTooltip from '../../components/util/InfoTooltip';
 import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../mocks/mockPatients'
 
@@ -24,6 +24,7 @@ describe('CaseStatus', () => {
         caseStatusValues.forEach(function(value, index) {
             expect(wrapper.find('option').at(index).text()).toEqual(value);
         });
+        expect(wrapper.find(Form.Control).prop('value')).toEqual(mockPatient1.case_status);
     });
 
     it('Changing Case Status opens modal', () => {
