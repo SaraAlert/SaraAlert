@@ -532,7 +532,7 @@ class Patient < ApplicationRecord
 
   # Send a daily assessment to this monitoree (if currently eligible). By setting send_now to true, an assessment
   # will be sent immediately without any consideration of the monitoree's preferred_contact_time.
-  def send_assessment(send_now = false)
+  def send_assessment(send_now: false)
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
 
     return if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent > 12.hours.ago
@@ -566,7 +566,7 @@ class Patient < ApplicationRecord
       morning = (8..12)
       afternoon = (12..16)
       evening = (16..19)
-      case preferred_contact_time&.downcase 
+      case preferred_contact_time&.downcase
       when 'morning'
         return unless morning.include? hour
       when 'afternoon'
