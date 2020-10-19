@@ -8,7 +8,6 @@ class Header extends React.Component {
   }
 
   render() {
-    // TODO: See if we can use react-bootstrap components for the dropdown
     return (
       <Navbar bg="primary" variant="dark" expand="lg" className="mb-3">
         <Navbar.Brand href={this.props.report_mode ? '/' : this.props.root}>
