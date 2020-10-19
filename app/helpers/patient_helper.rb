@@ -172,7 +172,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def self.from_fhir_phone_number(value)
-    Phonelib.parse(value, 'US').full_e164 || value
+    Phonelib.parse(value, 'US').full_e164.presence || value
   end
 
   def normalize_name(name)
