@@ -47,7 +47,7 @@ class User < ApplicationRecord
   end
 
   def patients
-    return viewable_patients if role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER) 
+    return viewable_patients if role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
 
     return enrolled_patients if role?(Roles::ENROLLER)
 
@@ -60,7 +60,7 @@ class User < ApplicationRecord
       enrolled_patients.find_by_id(id)
     elsif role?(Roles::PUBLIC_HEALTH)
       viewable_patients.find_by_id(id)
-    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) ||  role?(Roles::CONTACT_TRACER)
+    elsif role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER) || role?(Roles::CONTACT_TRACER)
       viewable_patients.find_by_id(id)
     elsif role?(Roles::ADMIN)
       nil
@@ -151,7 +151,7 @@ class User < ApplicationRecord
 
   # Can this user edit Patient close contacts?
   def can_edit_patient_close_contacts?
-    role?(Roles::PUBLIC_HEALTH) ||  role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
   # Can this user create Patient close contacts?
@@ -164,6 +164,7 @@ class User < ApplicationRecord
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
+  # Can this user download data for an specific record on the Monitoree page?
   def can_download_monitoree_data?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
@@ -198,6 +199,11 @@ class User < ApplicationRecord
     role?(Roles::ANALYST) || role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
+  # Can view the epi stats on the analytics page
+  def can_view_epi_analytics?
+    role?(Roles::ANALYST) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  end
+
   # Can this user modify subject status?
   def can_modify_subject_status?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
@@ -208,26 +214,31 @@ class User < ApplicationRecord
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
+  # Can this user transfer patients out of their jurisdiction hierarchy?
   def can_transfer_patients?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
+  # Does this user need to see the Monitoring Dashboards tab?
+  # NOTE: Contact Tracers don't need to see this tab because it is their only option
   def can_see_monitoring_dashboards_tab?
-    # NOTE: Contact Tracers don't need to see this tab because it is their only option
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
+  # Does this user need to see the Enroller Dashboard tab?
   def can_see_enroller_dashboard_tab?
     role?(Roles::ENROLLER)
   end
 
+  # Does this user need to see the Admin Panel tab?
+  # NOTE: Admins don't need to see this tab because it is their only option
   def can_see_admin_panel_tab?
-    # NOTE: Admins don't need to see this tab because it is their only option
     role?(Roles::SUPER_USER)
   end
 
+  # Does this user need to see the Analytics tab?
+  # NOTE: Analysts don't need to see this tab because it is their only option
   def can_see_analytics_tab?
-    # NOTE: Analysts don't need to see this tab because it is their only option
     role?(Roles::ENROLLER) || role?(Roles::PUBLIC_HEALTH) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
