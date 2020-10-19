@@ -2,15 +2,24 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
 import axios from 'axios';
-
+import moment from 'moment-timezone';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
 
 class Import extends React.Component {
   constructor(props) {
     super(props);
+    const patientsWithAge = this.props.patients.map(patient => {
+      if (patient.date_of_birth) {
+        const age = moment().diff(moment(patient.date_of_birth), 'years');
+        patient['age'] = age >= 0 ? age : undefined;
+      } else {
+        patient['age'] = undefined;
+      }
+      return patient;
+    });
     this.state = {
-      patients: props.patients,
+      patients: patientsWithAge,
       errors: props.errors,
       accepted: [],
       rejected: [],
@@ -20,15 +29,9 @@ class Import extends React.Component {
       isPaused: false,
       acceptedAllStarted: false,
     };
-    this.importAll = this.importAll.bind(this);
-    this.importSub = this.importSub.bind(this);
-    this.rejectSub = this.rejectSub.bind(this);
-    this.handleExtraOptionToggle = this.handleExtraOptionToggle.bind(this);
-    this.handleConfirm = this.handleConfirm.bind(this);
-    this.submit = this.submit.bind(this);
   }
 
-  importAll() {
+  importAll = () => {
     let willCreate = [];
     for (let i = 0; i < this.state.patients.length; i++) {
       if (!(this.state.accepted.includes(i) || this.state.rejected.includes(i))) {
@@ -46,18 +49,18 @@ class Import extends React.Component {
       // if there are no monitorees/cases to import, go back to root after pressing the import button
       location.reload();
     }
-  }
+  };
 
-  importSub(num, bypass) {
+  importSub = (num, bypass) => {
     this.submit(this.state.patients[parseInt(num)], num, bypass);
-  }
+  };
 
-  rejectSub(num) {
+  rejectSub = num => {
     let next = [...this.state.rejected, num];
     this.setState({ rejected: next });
-  }
+  };
 
-  submit(data, num, bypass) {
+  submit = (data, num, bypass) => {
     const patient = { patient: { ...data } };
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
@@ -81,11 +84,11 @@ class Import extends React.Component {
       .catch(err => {
         reportError(err);
       });
-  }
+  };
 
-  handleExtraOptionToggle(value) {
+  handleExtraOptionToggle = value => {
     this.setState({ importDuplicates: value });
-  }
+  };
 
   stopImport = async buttonText => {
     this.setState({ isPaused: true }, async () => {
@@ -131,7 +134,7 @@ class Import extends React.Component {
    * Gets rendered warning text for when duplicates are detected.
    * @param {Object} dupFieldData - Data concerning the possible duplicates types and the specific fields in them.
    */
-  getDuplicateWarningText(dupFieldData) {
+  getDuplicateWarningText = dupFieldData => {
     let text = `Warning: This ${this.props.workflow === 'exposure' ? 'monitoree' : 'case'} already appears to exist in the system! `;
 
     for (const fieldData of dupFieldData) {
@@ -153,7 +156,7 @@ class Import extends React.Component {
         <span>{text}</span>
       </Alert>
     );
-  }
+  };
 
   render() {
     if (this.state.patients.length === this.state.accepted.length + this.state.rejected.length && this.state.errors.length == 0) {
