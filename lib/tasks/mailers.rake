@@ -7,7 +7,7 @@ namespace :mailers do
     test_patient = Patient.new(creator: user)
     test_patient.responder = test_patient
     test_patient.email = '<test_email>'
-    test_patient.submission_token = SecureRandom.hex(20)
+    test_patient.submission_token = SecureRandom.urlsafe_base64[0, 10]
     test_patient.save!
     PatientMailer.assessment_email(test_patient).deliver_now
   end
@@ -18,7 +18,7 @@ namespace :mailers do
     test_patient = Patient.new(creator: user)
     test_patient.responder = test_patient
     test_patient.email = '<test_email>'
-    test_patient.submission_token = SecureRandom.hex(20)
+    test_patient.submission_token = SecureRandom.urlsafe_base64[0, 10]
     test_patient.save!
     PatientMailer.enrollment_email(test_patient).deliver_now
   end

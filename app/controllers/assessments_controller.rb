@@ -59,8 +59,18 @@ class AssessmentsController < ApplicationController
       # Send the assessment to the queue for consumption
       ProduceAssessmentJob.perform_later assessment_placeholder
 
-      # Save a new receipt and clear out any older ones
-      AssessmentReceipt.where('BINARY submission_token = ?', @patient_submission_token).delete_all
+      # Clear out any old receipts
+      patient_lookup = PatientLookup.where('BINARY new_submission_token = ?', @patient_submission_token).first
+      if patient_lookup.nil?
+        AssessmentReceipt.where('BINARY submission_token = ?', @patient_submission_token).delete_all
+      else
+        AssessmentReceipt.where('BINARY submission_token = ?', @patient_submission_token)
+                         .or(
+                           AssessmentReceipt.where('BINARY submission_token = ?', patient_lookup.old_submission_token)
+                         ).delete_all
+      end
+
+      # Save a new receipt
       assessment_receipt = AssessmentReceipt.new(submission_token: @patient_submission_token)
       assessment_receipt.save
     else
@@ -77,7 +87,6 @@ class AssessmentsController < ApplicationController
 
       threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
       threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
-
       redirect_to(root_url) && return unless threshold_condition
 
       reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']

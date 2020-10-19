@@ -8,7 +8,9 @@ class AssessmentFormVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_assessment(patient, assessment)
+    sleep(0.1) # wait for assessment to be saved
     saved_assessment = Assessment.where(patient_id: patient.id).joins(:patient).order(created_at: :desc).first
+    assert saved_assessment.created_at > 1.minutes.ago, @@system_test_utils.get_err_msg('Monitoree assessment', 'assessment', 'existent')
     saved_condition = Condition.where(assessment_id: saved_assessment['id']).first
     assessment['symptoms'].each do |symptom|
       saved_symptom = Symptom.where(condition_id: saved_condition['id'], label: symptom['label']).first

@@ -13,7 +13,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   def setup
     patient_email = Faker::Internet.email + rand(100).to_s
-    patient_submission_token = SecureRandom.hex(20)
+    patient_submission_token = SecureRandom.urlsafe_base64[0, 10]
     @patient = create(:patient)
     @patient.update(email: patient_email,
                     primary_language: 'en',
@@ -61,7 +61,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'enrollment email with dependents' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     email = PatientMailer.enrollment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -175,7 +175,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment sms weblink message contents with dependents' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
 
     # Cannot do the same expectation as previous tests because the expectation that any instance gets called with create is taken up by the first loop of
     # sending messages. So instead we count the amount of times create was called. Cannot do this with typical rspec methods because when you use
@@ -273,7 +273,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment sms message content' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
 
     params = {
       language: 'EN',
@@ -301,7 +301,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment voice message content' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     @patient.update(primary_language: 'so')
 
     params = {
@@ -345,7 +345,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment email with dependents' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     email = PatientMailer.assessment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -372,7 +372,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment email patient with dependents' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     email = PatientMailer.enrollment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?

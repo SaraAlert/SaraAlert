@@ -189,7 +189,7 @@ class Fhir::R4::ApiController < ActionController::API
       resource.jurisdiction = resource.creator.jurisdiction
 
       # Generate a submission token for the new monitoree
-      resource.submission_token = SecureRandom.hex(20) # 160 bits
+      resource.submission_token = SecureRandom.urlsafe_base64[0, 10]
     else
       status_not_found && return
     end

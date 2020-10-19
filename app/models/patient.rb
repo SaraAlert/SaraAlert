@@ -687,7 +687,7 @@ class Patient < ApplicationRecord
 
   # Patient initials
   def initials
-    "#{first_name&.first || ''}#{last_name&.first || ''}"
+    "#{first_name&.gsub(/[^A-Za-z]/i, '')&.first || ''}#{last_name&.gsub(/[^A-Za-z]/i, '')&.first || ''}"
   end
 
   # Return the calculated age based on the date of birth

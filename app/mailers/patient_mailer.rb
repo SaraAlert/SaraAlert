@@ -172,7 +172,7 @@ class PatientMailer < ApplicationMailer
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient_names = patient.active_dependents.uniq.collect do |p|
-      "#{p&.initials}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
+      "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
     end
     contents = I18n.t('assessments.phone.daily1', locale: lang) + patient_names.join(', ')
 

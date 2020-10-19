@@ -344,7 +344,7 @@ namespace :demo do
                                    'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
 
       # Other fields populated upon enrollment
-      patient[:submission_token] = SecureRandom.hex(20)
+      patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
       patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
       patient[:created_at] = Faker::Time.between_dates(from: today, to: today, period: :day)
@@ -472,9 +472,12 @@ namespace :demo do
     end
 
     Assessment.import! assessments
+<<<<<<< HEAD
 
     # Create assessment receipts and replace any existing ones
     AssessmentReceipt.where(submission_token: assessment_receipts.map{ |assessment_receipt| assessment_receipt[:submission_token] }).destroy_all
+=======
+>>>>>>> add assessment receipts to migration
     AssessmentReceipt.import! assessment_receipts
     printf(" done.\n")
 
