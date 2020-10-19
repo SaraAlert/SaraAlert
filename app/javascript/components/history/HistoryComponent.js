@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import { PropTypes } from 'prop-types';
 import { Card, Row } from 'react-bootstrap';
 import Pagination from 'jw-react-pagination';
@@ -8,7 +9,6 @@ import axios from 'axios';
 import History from './History';
 import InfoTooltip from '../util/InfoTooltip';
 import reportError from '../util/ReportError';
-import _ from 'lodash';
 
 class HistoryComponent extends React.Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class HistoryComponent extends React.Component {
     this.state = {
       loading: false,
       comment: '',
-      selectedFilters: [],
+      filters: { typeFilters: [], creatorFilters: [] },
       filteredHistories: this.props.histories,
       pageOfHistories: [],
     };
@@ -64,9 +64,14 @@ class HistoryComponent extends React.Component {
 
   filterHistories = () => {
     let filteredHistories = [...this.props.histories];
-    if (this.state.selectedFilters.length !== 0) {
+    if (this.state.filters.typeFilters.length !== 0) {
       filteredHistories = filteredHistories.filter(history => {
-        return this.state.selectedFilters.includes(history.history_type);
+        return this.state.filters.typeFilters.includes(history.history_type);
+      });
+    }
+    if (this.state.filters.creatorFilters.length !== 0) {
+      filteredHistories = filteredHistories.filter(history => {
+        return this.state.filters.creatorFilters.includes(history.created_by);
       });
     }
     this.setState({
@@ -74,10 +79,16 @@ class HistoryComponent extends React.Component {
     });
   };
 
-  handleFilterChange = inputValue => {
+  handleFilterChange = (inputValue, filterCategory) => {
+    let filters = this.state.filters;
     let selectedFilters = [];
     if (Array.isArray(inputValue) && inputValue.length) {
       selectedFilters = inputValue.map(x => x.value);
+    }
+    if (filterCategory == 'History Type') {
+      filters.typeFilters = selectedFilters;
+    } else if (filterCategory == 'History Creator') {
+      filters.creatorFilters = selectedFilters;
     }
     this.setState(
       {
@@ -89,8 +100,41 @@ class HistoryComponent extends React.Component {
     );
   };
 
+  handleTypeFilterChange = inputValue => this.handleFilterChange(inputValue, 'History Type');
+
+  handleCreatorFilterChange = inputValue => this.handleFilterChange(inputValue, 'History Creator');
+
   render() {
     const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
+
+    const filterOptions = [
+      {
+        label: 'History Type',
+        options: [
+          { value: 'Comment', label: 'Comment' },
+          { value: 'Contact Attempt', label: 'Contact Attempt' },
+          { value: 'Enrollment', label: 'Enrollment' },
+          { value: 'Lab Result', label: 'Lab Result' },
+          { value: 'Lab Result Edit', label: 'Lab Result Edit' },
+          { value: 'Monitoree Data Downloaded', label: 'Monitoree Data Downloaded' },
+          { value: 'Monitoring Change', label: 'Monitoring Change' },
+          { value: 'Report Created', label: 'Report Created' },
+          { value: 'Report Note', label: 'Report Note' },
+          { value: 'Report Reminder', label: 'Report Reminder' },
+          { value: 'Report Reviewed', label: 'Report Reviewed' },
+          { value: 'Report Updated', label: 'Report Updated' },
+          { value: 'Reports Reviewed', label: 'Reports Reviewed' },
+        ],
+      },
+    ];
+    const historyCreators = [
+      {
+        label: 'History Creator',
+        options: _.uniq(this.props.histories.map(x => x.created_by)).map(x => {
+          return { value: x, label: x };
+        }),
+      },
+    ];
 
     return (
       <React.Fragment>
@@ -108,16 +152,30 @@ class HistoryComponent extends React.Component {
               <Select
                 closeMenuOnSelect={false}
                 isMulti
-                name="Filters"
-                options={this.filterOptions}
-                className="basic-multi-select w-25"
+                name="Creator Filters"
+                options={historyCreators}
+                className="basic-multi-select w-25 pl-1"
                 classNamePrefix="select"
-                placeholder="Filters"
+                placeholder="Filter by Creator"
                 theme={theme => ({
                   ...theme,
                   borderRadius: 0,
                 })}
-                onChange={this.handleFilterChange}
+                onChange={this.handleCreatorFilterChange}
+              />
+              <Select
+                closeMenuOnSelect={false}
+                isMulti
+                name="Filters"
+                options={filterOptions}
+                className="basic-multi-select w-25 pl-2"
+                classNamePrefix="select"
+                placeholder="Filter by Type"
+                theme={theme => ({
+                  ...theme,
+                  borderRadius: 0,
+                })}
+                onChange={this.handleTypeFilterChange}
               />
             </Row>
             {historiesArray}
