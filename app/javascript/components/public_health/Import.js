@@ -10,11 +10,15 @@ class Import extends React.Component {
   constructor(props) {
     super(props);
     const patientsWithAge = this.props.patients.map(patient => {
-      if (patient.date_of_birth) {
-        const age = moment().diff(moment(patient.date_of_birth), 'years');
-        patient['age'] = age >= 0 ? age : undefined;
-      } else {
-        patient['age'] = undefined;
+      // If patient does not have `age`, we need to compute it
+      if (!Object.prototype.hasOwnProperty.call(patient, 'age')) {
+        if (patient.date_of_birth) {
+          // if the `age` field is set, use that. Else calculate it based off DoB
+          const age = patient['age'] ? patient['age'] : moment().diff(moment(patient.date_of_birth), 'years');
+          patient['age'] = age >= 0 ? age : undefined;
+        } else {
+          patient['age'] = undefined;
+        }
       }
       return patient;
     });
