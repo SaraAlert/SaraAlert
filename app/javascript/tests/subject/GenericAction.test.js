@@ -32,12 +32,14 @@ describe('GenericAction', () => {
     expect(wrapper.find(Form.Label).text().includes('EXPOSURE RISK ASSESSMENT')).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('exposureRiskAssessment');
-    expect(wrapper.find(Form.Control).exists()).toBeTruthy();
+    expect(wrapper.find('#exposure_risk_assessment').exists()).toBeTruthy();
+    expect(wrapper.find('#monitoring_plan').exists()).toBeFalsy();
+    expect(wrapper.find('#public_health_action').exists()).toBeFalsy();
     expect(wrapper.find('option').length).toEqual(5);
     exposureRiskAssessmentOptions.forEach(function(value, index) {
         expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockPatient1.exposure_risk_assessment);
+    expect(wrapper.find('#exposure_risk_assessment').prop('value')).toEqual(mockPatient1.exposure_risk_assessment);
   });
 
   it('Properly renders all main components for Monitoring Plan', () => {
@@ -45,12 +47,14 @@ describe('GenericAction', () => {
     expect(wrapper.find(Form.Label).text().includes('MONITORING PLAN')).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('monitoringPlan');
-    expect(wrapper.find(Form.Control).exists()).toBeTruthy();
+    expect(wrapper.find('#monitoring_plan').exists()).toBeTruthy();
+    expect(wrapper.find('#exposure_risk_assessment').exists()).toBeFalsy();
+    expect(wrapper.find('#public_health_action').exists()).toBeFalsy();
     expect(wrapper.find('option').length).toEqual(5);
     monitoringPlanOptions.forEach(function(value, index) {
         expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockPatient1.monitoring_plan);
+    expect(wrapper.find('#monitoring_plan').prop('value')).toEqual(mockPatient1.monitoring_plan);
   });
 
   it('Properly renders all main components for Public Health Action', () => {
@@ -58,38 +62,40 @@ describe('GenericAction', () => {
     expect(wrapper.find(Form.Label).text().includes('LATEST PUBLIC HEALTH ACTION')).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('latestPublicHealthActionInIsolation');
-    expect(wrapper.find(Form.Control).exists()).toBeTruthy();
+    expect(wrapper.find('#public_health_action').exists()).toBeTruthy();
+    expect(wrapper.find('#exposure_risk_assessment').exists()).toBeFalsy();
+    expect(wrapper.find('#monitoring_plan').exists()).toBeFalsy();
     expect(wrapper.find('option').length).toEqual(4);
     publicHealthActionOptions.forEach(function(value, index) {
         expect(wrapper.find('option').at(index).text()).toEqual(value);
     });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockPatient1.public_health_action);
+    expect(wrapper.find('#public_health_action').prop('value')).toEqual(mockPatient1.public_health_action);
   });
 
   it('Changing Exposure Risk Assessment opens modal', () => {
     const wrapper = getExposureRiskAssessmentWrapper(mockPatient1, false);
     expect(wrapper.find(Modal).exists()).toBeFalsy();
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
+    wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
     expect(wrapper.find(Modal).exists()).toBeTruthy();
   });
 
   it('Changing Monitoring Plan opens modal', () => {
     const wrapper = getMonitoringPlanWrapper(mockPatient1, false);
     expect(wrapper.find(Modal).exists()).toBeFalsy();
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
+    wrapper.find('#monitoring_plan').simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
     expect(wrapper.find(Modal).exists()).toBeTruthy();
   });
 
   it('Changing Public Health Action opens modal', () => {
     const wrapper = getPublicHealthActionWrapper(mockPatient1, false);
     expect(wrapper.find(Modal).exists()).toBeFalsy();
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
+    wrapper.find('#public_health_action').simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
     expect(wrapper.find(Modal).exists()).toBeTruthy();
   });
 
   it('Properly renders Exposure Risk Assessment modal and sets state correctly', () => {
     const wrapper = getExposureRiskAssessmentWrapper(mockPatient1, false);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
+    wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
     
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
@@ -114,7 +120,7 @@ describe('GenericAction', () => {
 
   it('Properly renders Monitoring Plan modal and sets state correctly', () => {
     const wrapper = getMonitoringPlanWrapper(mockPatient1, false);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
+    wrapper.find('#monitoring_plan').simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
     
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
@@ -139,7 +145,7 @@ describe('GenericAction', () => {
 
   it('Properly renders Public Health Action modal and sets state correctly for monitorees in the closed line list', () => {
     const wrapper = getPublicHealthActionWrapper(mockPatient3, false);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
+    wrapper.find('#public_health_action').simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
     
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
@@ -164,7 +170,7 @@ describe('GenericAction', () => {
 
   it('Properly renders Public Health Action modal and sets state correctly for monitorees in the isolation workflow', () => {
     const wrapper = getPublicHealthActionWrapper(mockPatient1, true);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
+    wrapper.find('#public_health_action').simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
     
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
@@ -194,7 +200,7 @@ describe('GenericAction', () => {
 
   it('Properly renders Public Health Action modal and sets state correctly for monitorees in the exposure workflow', () => {
     const wrapper = getPublicHealthActionWrapper(mockPatient2, true);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
+    wrapper.find('#public_health_action').simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
     
     // renders properly
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
@@ -224,20 +230,20 @@ describe('GenericAction', () => {
 
   it('Properly renders radio buttons for HoH', () => {
     const wrapper = getExposureRiskAssessmentWrapper(mockPatient1, true);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
+    wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
     const modalBody = wrapper.find(Modal.Body);
 
     expect(modalBody.find(Form.Group).exists()).toBeTruthy();
     expect(modalBody.find(Form.Check).length).toEqual(2);
-    expect(modalBody.find(Form.Check).at(0).prop('type')).toEqual('radio');
-    expect(modalBody.find(Form.Check).at(0).prop('label')).toEqual('This monitoree only');
-    expect(modalBody.find(Form.Check).at(1).prop('type')).toEqual('radio');
-    expect(modalBody.find(Form.Check).at(1).prop('label')).toEqual('This monitoree and all household members');
+    expect(modalBody.find('#apply_to_group_no').prop('type')).toEqual('radio');
+    expect(modalBody.find('#apply_to_group_no').prop('label')).toEqual('This monitoree only');
+    expect(modalBody.find('#apply_to_group_yes').prop('type')).toEqual('radio');
+    expect(modalBody.find('#apply_to_group_yes').prop('label')).toEqual('This monitoree and all household members');
   });
 
   it('Clicking HoH radio buttons toggles this.state.apply_to_group', () => {
     const wrapper = getExposureRiskAssessmentWrapper(mockPatient1, true);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
+    wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
 
     // initial radio button state
     expect(wrapper.state('apply_to_group')).toBeFalsy();
@@ -262,17 +268,17 @@ describe('GenericAction', () => {
   it('Adding reasoning updates state', () => {
     const wrapper = getExposureRiskAssessmentWrapper(mockPatient1, false);
     const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleChange');
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
+    wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
 
-    expect(wrapper.find(Modal.Body).find(Form.Control).exists()).toBeTruthy();
-    wrapper.find(Modal.Body).find(Form.Control).simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
+    expect(wrapper.find('#reasoning').exists()).toBeTruthy();
+    wrapper.find('#reasoning').simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
     expect(handleChangeSpy).toHaveBeenCalled();
     expect(wrapper.state('reasoning')).toEqual('insert reasoning text here');
   });
 
   it('Clicking the cancel button closes Exposure Risk Assessment modal and resets state', () => {
     const wrapper = getExposureRiskAssessmentWrapper(mockPatient1, false);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
+    wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
 
     // closes modal
     expect(wrapper.find(Modal).exists()).toBeTruthy();
@@ -292,7 +298,7 @@ describe('GenericAction', () => {
 
   it('Clicking the cancel button closes Monitoring Plan modal and resets state', () => {
     const wrapper = getMonitoringPlanWrapper(mockPatient1, false);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
+    wrapper.find('#monitoring_plan').simulate('change', { target: { id: 'monitoring_plan', value: 'None' } });
 
     // closes modal
     expect(wrapper.find(Modal).exists()).toBeTruthy();
@@ -312,7 +318,7 @@ describe('GenericAction', () => {
 
   it('Clicking the cancel button closes Public Health Action modal and resets state', () => {
     const wrapper = getPublicHealthActionWrapper(mockPatient1, false);
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
+    wrapper.find('#public_health_action').simulate('change', { target: { id: 'public_health_action', value: 'Recommended laboratory testing' } });
 
     // closes modal
     expect(wrapper.find(Modal).exists()).toBeTruthy();
@@ -334,7 +340,7 @@ describe('GenericAction', () => {
     const wrapper = getExposureRiskAssessmentWrapper(mockPatient1, true);
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
 
-    wrapper.find(Form.Control).simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
+    wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
     expect(submitSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).at(1).simulate('click');
     expect(submitSpy).toHaveBeenCalled();

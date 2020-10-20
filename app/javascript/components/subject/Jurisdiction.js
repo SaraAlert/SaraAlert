@@ -23,7 +23,7 @@ class Jurisdiction extends React.Component {
   }
 
   handleChange = event => {
-    if (event?.target?.name && event.target.name === 'jurisdictionId') {
+    if (event?.target?.id && event.target.id === 'jurisdiction_id') {
       this.setState({
         jurisdiction_path: event?.target?.value ? event.target.value : '',
         validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
@@ -156,7 +156,7 @@ class Jurisdiction extends React.Component {
           <Form.Group className="d-flex mb-0">
             <Form.Control
               as="input"
-              name="jurisdictionId"
+              id="jurisdiction_id"
               list="jurisdictionPaths"
               autoComplete="off"
               className="form-control-lg"

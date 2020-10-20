@@ -18,12 +18,12 @@ describe('AssignedUser', () => {
     expect(wrapper.find(Form.Label).text().includes('ASSIGNED USER')).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedUser');
-    expect(wrapper.find(Form.Control).exists()).toBeTruthy();
+    expect(wrapper.find('#assigned_user').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(11);
     assignedUsers.forEach(function(value, index) {
         expect(wrapper.find('option').at(index).text()).toEqual(String(value));
     });
-    expect(wrapper.find(Form.Control).prop('value')).toEqual(mockPatient1.assigned_user);
+    expect(wrapper.find('#assigned_user').prop('value')).toEqual(mockPatient1.assigned_user);
     expect(wrapper.find(Button).exists()).toBeTruthy();
     expect(wrapper.find(Button).text().includes('Change User')).toBeTruthy();
     expect(wrapper.find('i').hasClass('fa-users')).toBeTruthy();
@@ -36,7 +36,7 @@ describe('AssignedUser', () => {
     expect(wrapper.state('assigned_user')).toEqual(mockPatient1.assigned_user);
     expect(wrapper.state('original_assigned_user')).toEqual(mockPatient1.assigned_user);
 
-    wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
     expect(wrapper.state('assigned_user')).toEqual(1);
     expect(wrapper.state('original_assigned_user')).toEqual(mockPatient1.assigned_user);
@@ -45,7 +45,7 @@ describe('AssignedUser', () => {
   it('Clicking change user button opens modal', () => {
     const wrapper = getWrapper(mockPatient1, false);
     expect(wrapper.find(Modal).exists()).toBeFalsy();
-    wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     expect(wrapper.find(Modal).exists()).toBeFalsy();
     wrapper.find(Button).simulate('click');
     expect(wrapper.find(Modal).exists()).toBeTruthy();
@@ -53,7 +53,7 @@ describe('AssignedUser', () => {
 
   it('Properly renders modal', () => {
     const wrapper = getWrapper(mockPatient1, false);
-    wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
     const modalBody = wrapper.find(Modal.Body);
 
@@ -63,7 +63,7 @@ describe('AssignedUser', () => {
     expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change assigned user from "${mockPatient1.assigned_user}" to "1"?`);
     expect(modalBody.find(Form.Group).length).toEqual(1);
     expect(modalBody.find(Form.Group).text().includes('Please include any additional details:')).toBeTruthy();
-    expect(modalBody.find(Form.Control).exists()).toBeTruthy();
+    expect(modalBody.find('#reasoning').exists()).toBeTruthy();
     expect(wrapper.find(Modal.Footer).exists()).toBeTruthy();
     expect(wrapper.find(Button).at(1).text()).toEqual('Cancel');
     expect(wrapper.find(Button).at(2).text()).toEqual('Submit');
@@ -71,21 +71,21 @@ describe('AssignedUser', () => {
 
   it('Properly renders radio buttons for HoH', () => {
     const wrapper = getWrapper(mockPatient1, true);
-    wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
     const modalBody = wrapper.find(Modal.Body);
 
     expect(modalBody.find(Form.Group).exists()).toBeTruthy();
     expect(modalBody.find(Form.Check).length).toEqual(2);
-    expect(modalBody.find(Form.Check).at(0).prop('type')).toEqual('radio');
-    expect(modalBody.find(Form.Check).at(0).prop('label')).toEqual('This monitoree only');
-    expect(modalBody.find(Form.Check).at(1).prop('type')).toEqual('radio');
-    expect(modalBody.find(Form.Check).at(1).prop('label')).toEqual('This monitoree and all household members');
+    expect(modalBody.find('#apply_to_group_no').prop('type')).toEqual('radio');
+    expect(modalBody.find('#apply_to_group_no').prop('label')).toEqual('This monitoree only');
+    expect(modalBody.find('#apply_to_group_yes').prop('type')).toEqual('radio');
+    expect(modalBody.find('#apply_to_group_yes').prop('label')).toEqual('This monitoree and all household members');
   });
 
   it('Clicking HoH radio buttons toggles this.state.apply_to_group', () => {
       const wrapper = getWrapper(mockPatient1, true);
-      wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+      wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
       wrapper.find(Button).simulate('click');
 
       // initial radio button state
@@ -111,18 +111,18 @@ describe('AssignedUser', () => {
   it('Adding reasoning updates state', () => {
     const wrapper = getWrapper(mockPatient1, false);
     const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleChange');
-    wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
 
-    expect(wrapper.find(Modal.Body).find(Form.Control).exists()).toBeTruthy();
-    wrapper.find(Modal.Body).find(Form.Control).simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
+    expect(wrapper.find('#reasoning').exists()).toBeTruthy();
+    wrapper.find('#reasoning').simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
     expect(handleChangeSpy).toHaveBeenCalled();
     expect(wrapper.state('reasoning')).toEqual('insert reasoning text here');
   });
 
   it('Clicking the cancel button closes modal and resets state', () => {
     const wrapper = getWrapper(mockPatient1, false);
-    wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
 
     // closes modal
@@ -141,7 +141,7 @@ describe('AssignedUser', () => {
     const wrapper = getWrapper(mockPatient1, false);
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
 
-    wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     expect(submitSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).simulate('click');
     expect(submitSpy).toHaveBeenCalledTimes(0);
@@ -158,7 +158,7 @@ describe('AssignedUser', () => {
     wrapper.find('input').simulate('keydown', { which: 13, preventDefault: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBeFalsy();
 
-    wrapper.find(Form.Control).simulate('change', { target: { name: 'assignedUser', value: '1' } });
+    wrapper.find('#assigned_user').at(0).simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find('input').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
     wrapper.find('input').simulate('keydown', { which: 13, preventDefault: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBeTruthy();

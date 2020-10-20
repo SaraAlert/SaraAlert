@@ -22,7 +22,7 @@ class AssignedUser extends React.Component {
   }
 
   handleChange = event => {
-    if (event?.target?.name && event.target.name === 'assignedUser') {
+    if (event?.target?.id && event.target.id === 'assigned_user') {
       if (
         event?.target?.value === '' ||
         (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
@@ -143,7 +143,7 @@ class AssignedUser extends React.Component {
           <Form.Group className="d-flex mb-0">
             <Form.Control
               as="input"
-              name="assignedUser"
+              id="assigned_user"
               list="assignedUsers"
               autoComplete="off"
               className="form-control-lg"
