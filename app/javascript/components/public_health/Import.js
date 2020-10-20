@@ -198,7 +198,7 @@ class Import extends React.Component {
       errorWord = 'errors';
     }
 
-    const heading = `The following ${errorWord} ${prevent} this monitoree from being imported:`;
+    const heading = `${_.capitalize(errorWord)}: The following ${errorWord} ${prevent} this monitoree from being imported:`;
 
     return (
       <Alert variant="danger">
