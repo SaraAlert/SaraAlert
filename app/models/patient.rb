@@ -487,18 +487,27 @@ class Patient < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
-  # Get all dependents (including self if id = responder_id) that are being monitored
+  # Get all dependents (including self if id = responder_id) that are being actively monitored, meaning:
+  # - not purged AND not closed (monitoring = true)
+  #  AND
+  #    - in continuous exposure
+  #     OR
+  #    - in isolation
+  #     OR
+  #    - within monitoring period based on LDE
+  #     OR
+  #    - within monitoring period based on creation date if no LDE specified
   def active_dependents
-    monitoring_days_ago = ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day)
-    dependents.where(monitoring: true)
-      .where('last_date_of_exposure >= ? OR created_at >= ?', monitoring_days_ago, monitoring_days_ago)
+    monitoring_days_ago = ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
+    dependents.where(purged: false, monitoring: true)
+              .where('isolation = ? OR continuous_exposure = ? OR last_date_of_exposure >= ? OR (last_date_of_exposure IS NULL AND created_at >= ?)',
+                     true, true, monitoring_days_ago, monitoring_days_ago)
   end
 
   # Get all dependents (excluding self if id = responder_id) that are being monitored
   def active_dependents_exclude_self
     active_dependents.where.not(id: id)
   end
-  
 
   # Get this patient's dependents excluding itself
   def dependents_exclude_self
