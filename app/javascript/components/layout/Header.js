@@ -15,25 +15,25 @@ class Header extends React.Component {
         </Navbar.Brand>
         {this.props.current_user && (
           <React.Fragment>
-            <Nav className="pt-1 mr-auto" activeKey={window.location.pathname}>
+            <Nav className="mr-auto" activeKey={window.location.pathname}>
               {this.props.current_user.can_see_enroller_dashboard_tab && (
                 <Nav.Link className="ml-3" href={`${window.BASE_PATH}/patients`}>
-                  <i className="fas fa-table"></i>&nbsp;&nbsp;Enroller Dashboard
+                  <i className="fas fa-table fa-fw mr-2"></i>Enroller Dashboard
                 </Nav.Link>
               )}
               {this.props.current_user.can_see_monitoring_dashboards_tab && (
                 <Nav.Link className="ml-3" href={`${window.BASE_PATH}/public_health`}>
-                  <i className="fas fa-table"></i>&nbsp;&nbsp;Monitoring Dashboards
+                  <i className="fas fa-table fa-fw mr-2"></i>Monitoring Dashboards
                 </Nav.Link>
               )}
               {this.props.current_user.can_see_admin_panel_tab && (
                 <Nav.Link className="ml-3" href={`${window.BASE_PATH}/admin`}>
-                  <i className="fas fa-user-cog"></i>&nbsp;&nbsp;Admin Panel
+                  <i className="fas fa-user-cog fa-fw mr-2"></i>Admin Panel
                 </Nav.Link>
               )}
               {this.props.current_user.can_see_analytics_tab && (
                 <Nav.Link className="ml-3" href={`${window.BASE_PATH}/analytics`}>
-                  <i className="fas fa-chart-pie"></i>&nbsp;&nbsp;Analytics
+                  <i className="fas fa-chart-pie fa-fw mr-2"></i>Analytics
                 </Nav.Link>
               )}
             </Nav>
@@ -41,12 +41,13 @@ class Header extends React.Component {
               {!this.props.report_mode && (
                 <React.Fragment>
                   <Navbar.Text className="text-white px-3">
-                    <i className="fas fa-user"></i>&nbsp;&nbsp;{this.props.current_user.email}
+                    <i className="fas fa-user fa-fw mr-2"></i>
+                    {this.props.current_user.email}
                   </Navbar.Text>
                   <a className="white-border-right"></a>
                   <div className="dropdown">
                     <Nav.Link className="text-white" id="helpMenuButton" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i className="fas fa-question-circle"></i>
+                      <i className="fas fa-question-circle fa-fw"></i>
                     </Nav.Link>
                     <div className="dropdown-menu dropdown-menu-right" aria-labelledby="helpMenuButton">
                       <a className="dropdown-item" href="https://saraalert.org/public-health/guides/" target="_blank" rel="noreferrer">
@@ -64,13 +65,13 @@ class Header extends React.Component {
                   {this.props.current_user.is_usa_admin && (
                     <React.Fragment>
                       <Nav.Link className="night-nav-link text-white" href="/oauth/applications">
-                        <i className="fas fa-share-alt"></i>&nbsp;&nbsp;API
+                        <i className="fas fa-share-alt fa-fw mr-2"></i>API
                       </Nav.Link>
                       <a className="white-border-right"></a>
                     </React.Fragment>
                   )}
                   <Nav.Link className="night-nav-link text-white" href={`${window.BASE_PATH}/users/sign_out`} data-method="DELETE">
-                    <i className="fas fa-sign-out-alt"></i>&nbsp;&nbsp;Logout
+                    <i className="fas fa-sign-out-alt fa-fw mr-2"></i>Logout
                   </Nav.Link>
                 </React.Fragment>
               )}
