@@ -213,7 +213,8 @@ class Contact extends React.Component {
                 </Form.Group>
                 {(this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' ||
                   this.state.current.patient.preferred_contact_method === 'Telephone call' ||
-                  this.state.current.patient.preferred_contact_method === 'SMS Text-message') && (
+                  this.state.current.patient.preferred_contact_method === 'SMS Text-message' ||
+                  this.state.current.patient.preferred_contact_method === 'E-mailed Web Link') && (
                   <Form.Group as={Col} md="8" controlId="preferred_contact_time">
                     <Form.Label className="nav-input-label">
                       PREFERRED CONTACT TIME{schema?.fields?.preferred_contact_time?._exclusive?.required && ' *'}
