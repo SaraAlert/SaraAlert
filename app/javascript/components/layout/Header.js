@@ -16,22 +16,22 @@ class Header extends React.Component {
         {this.props.current_user && (
           <React.Fragment>
             <Nav className="mr-auto" activeKey={window.location.pathname}>
-              {this.props.current_user.can_see_enroller_dashboard_tab && (
+              {this.props.current_user?.can_see_enroller_dashboard_tab && (
                 <Nav.Link className="ml-3" href={`${window.BASE_PATH}/patients`}>
                   <i className="fas fa-table fa-fw mr-2"></i>Enroller Dashboard
                 </Nav.Link>
               )}
-              {this.props.current_user.can_see_monitoring_dashboards_tab && (
+              {this.props.current_user?.can_see_monitoring_dashboards_tab && (
                 <Nav.Link className="ml-3" href={`${window.BASE_PATH}/public_health`}>
                   <i className="fas fa-table fa-fw mr-2"></i>Monitoring Dashboards
                 </Nav.Link>
               )}
-              {this.props.current_user.can_see_admin_panel_tab && (
+              {this.props.current_user?.can_see_admin_panel_tab && (
                 <Nav.Link className="ml-3" href={`${window.BASE_PATH}/admin`}>
                   <i className="fas fa-user-cog fa-fw mr-2"></i>Admin Panel
                 </Nav.Link>
               )}
-              {this.props.current_user.can_see_analytics_tab && (
+              {this.props.current_user?.can_see_analytics_tab && (
                 <Nav.Link className="ml-3" href={`${window.BASE_PATH}/analytics`}>
                   <i className="fas fa-chart-pie fa-fw mr-2"></i>Analytics
                 </Nav.Link>
@@ -42,7 +42,7 @@ class Header extends React.Component {
                 <React.Fragment>
                   <Navbar.Text className="text-white px-3">
                     <i className="fas fa-user fa-fw mr-2"></i>
-                    {this.props.current_user.email}
+                    {this.props.current_user?.email}
                   </Navbar.Text>
                   <a className="white-border-right"></a>
                   <div className="dropdown">
@@ -62,7 +62,7 @@ class Header extends React.Component {
                     </div>
                   </div>
                   <a className="white-border-right"></a>
-                  {this.props.current_user.is_usa_admin && (
+                  {this.props.current_user?.is_usa_admin && (
                     <React.Fragment>
                       <Nav.Link className="night-nav-link text-white" href="/oauth/applications">
                         <i className="fas fa-share-alt fa-fw mr-2"></i>API
