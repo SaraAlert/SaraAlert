@@ -88,9 +88,16 @@ You must update your crontab for these jobs to run periodically (defined in `con
 bundle exec whenever --update-crontab
 ```
 
-##### Periodic Jobs
-  These jobs are configured to run periodically. Their run timing parameters are specified in `config/schedule.rb`.
-  * `ClosePatientsJob`
+##### Jobs
+  
+  The following jobs are configured to run continuously:
+  * `ConsumeAssessmentsJob`
+      - Should always be running in order to be ready to consume assessments at any time.
+      - Handles consuming assessments from the assessment container into the enrollment container.
+      - Subscribes to the Redis `reports` channel and consumes on every message in that channel.
+
+  The following jobs are configured to run periodically (their run timing parameters are specified in `config/schedule.rb`):
+  * `ClosePatientsJob`. 
       - Closes (stops active monitoring of) monitorees that meet duration/symptomatic conditions
   * `PurgeJob`
       - Purges eligible records
