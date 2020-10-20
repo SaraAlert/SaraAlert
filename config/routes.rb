@@ -73,7 +73,6 @@ Rails.application.routes.draw do
   post '/patients/:id/status', to: 'patients#update_status'
   post '/patients/:id/status/clear', to: 'patients#clear_assessments'
   post '/patients/:id/status/clear/:assessment_id', to: 'patients#clear_assessment'
-  post '/patients/:id/reminder', to: 'patients#send_reminder'
   post '/patients/:id/update_hoh', to: 'patients#update_hoh'
 
   resources :patients, param: :submission_token do
