@@ -64,8 +64,8 @@ class PublicHealthPatientPageReports < ApplicationSystemTestCase
   end
 
   def pause_notifications(user_label, submit: true)
-    pause_notifications = find('#pause_notifications').text == 'Resume Notifications'
-    find('#pause_notifications').click
+    pause_notifications = find('#notifications_action').text == 'Resume Notifications'
+    find('#notifications_action').click
     if submit
       click_on 'OK'
       @@public_health_patient_page_reports_verifier.verify_pause_notifications(!pause_notifications)

@@ -303,9 +303,11 @@ class Exposure extends React.Component {
               size="lg"
               className="form-square"
               placeholder="enter additional information about case"
+              maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
               onChange={this.handleChange}
             />
+            <Form.Label className="notes-character-limit"> {2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining </Form.Label>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['exposure_notes']}
             </Form.Control.Feedback>
@@ -544,9 +546,11 @@ class Exposure extends React.Component {
               size="lg"
               className="form-square"
               placeholder="enter additional information about monitoree’s potential exposure"
+              maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
               onChange={this.handleChange}
             />
+            <Form.Label className="notes-character-limit"> {2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining </Form.Label>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['exposure_notes']}
             </Form.Control.Feedback>

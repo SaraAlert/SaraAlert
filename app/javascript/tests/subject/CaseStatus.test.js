@@ -202,14 +202,14 @@ describe('CaseStatus', () => {
 
         // change to apply to all of household
         wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' }, persist: jest.fn() });
-        wrapper.update()
+        wrapper.update();
         expect(wrapper.state('apply_to_group')).toBeTruthy();
         expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeFalsy();
         expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeTruthy();
 
         // change back to just this monitoree
         wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' }, persist: jest.fn() });
-        wrapper.update()
+        wrapper.update();
         expect(wrapper.state('apply_to_group')).toBeFalsy();
         expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
         expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
