@@ -566,7 +566,7 @@ class Patient < ApplicationRecord
     # Return UNLESS:
     # - in exposure: NOT closed AND within monitoring period OR
     # - in isolation: NOT closed (as patients on RRR linelist should receive notifications) OR
-    # - in ontinuous exposure OR
+    # - in continuous exposure OR
     # - is a HoH with actively monitored dependents
     # NOTE: We do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
     # so we also have to check that someone receiving messages is not past they're monitoring period unless they're  in isolation,
