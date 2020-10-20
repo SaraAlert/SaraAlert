@@ -159,7 +159,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                       'Self-monitoring with public health supervision',
                       'Self-monitoring with delegated supervision',
                       'Self-observation'],
-    case_status: ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case']
+    case_status: ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'],
+    lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'],
+    result: %w[positive negative indeterminate other]
   }.freeze
 
   NORMALIZED_ENUMS = VALID_ENUMS.transform_values do |values|
@@ -206,8 +208,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     monitoring_plan: { label: 'Monitoring Plan', checks: [:enum] },
     symptom_onset: { label: 'Symptom Onset', checks: [:date] },
     case_status: { label: 'Case Status', checks: [:enum] },
+    lab_type: { label: 'Lab Test Type', checks: [:enum] },
     specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
-    report: { label: 'Lab Report Date', checks: [:date] }
+    report: { label: 'Lab Report Date', checks: [:date] },
+    result: { label: 'Result', check: [:enum] }
   }.freeze
 
   def unformat_enum_field(value)
