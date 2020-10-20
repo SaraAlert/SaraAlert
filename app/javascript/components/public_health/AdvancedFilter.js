@@ -213,12 +213,14 @@ class AdvancedFilter extends React.Component {
 
   // Set the active filter
   setFilter = (filter, apply = false) => {
-    this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter.contents }, () => {
-      localStorage.setItem(`SaraFilter`, filter.id);
-      if (apply) {
-        this.apply();
-      }
-    });
+    if (filter) {
+      this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter?.contents || [] }, () => {
+        localStorage.setItem(`SaraFilter`, filter.id);
+        if (apply) {
+          this.apply();
+        }
+      });
+    }
   };
 
   // Change an index filter option
