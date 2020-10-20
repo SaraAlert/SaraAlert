@@ -145,7 +145,7 @@ class GenericAction extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to change {this.state.message}? {this.state.message_warning && <b>{this.state.message_warning}</b>}
+            Are you sure you want to change {this.state.message}?{this.state.message_warning && <b> {this.state.message_warning}</b>}
           </p>
           {this.props.has_group_members && (
             <React.Fragment>

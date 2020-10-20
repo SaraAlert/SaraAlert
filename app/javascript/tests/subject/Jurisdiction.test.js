@@ -3,8 +3,8 @@ import { shallow, mount } from 'enzyme';
 import { Button, Form, Modal } from 'react-bootstrap';
 import Jurisdiction from '../../components/subject/Jurisdiction';
 import InfoTooltip from '../../components/util/InfoTooltip';
-import { mockPatient1 } from '../mocks/mockPatients'
-import { mockUser1 } from '../mocks/mockUsers'
+import { mockPatient1 } from '../mocks/mockPatients';
+import { mockUser1 } from '../mocks/mockUsers';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const jurisdictionPaths = {
@@ -118,14 +118,14 @@ describe('Jurisdiction', () => {
       expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
 
       // change to apply to all of household
-      wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' }, persist: jest.fn() });
+      wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' } });
       wrapper.update()
       expect(wrapper.state('apply_to_group')).toBeTruthy();
       expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeFalsy();
       expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeTruthy();
 
       // change back to just this monitoree
-      wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' }, persist: jest.fn() });
+      wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' } });
       wrapper.update()
       expect(wrapper.state('apply_to_group')).toBeFalsy();
       expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();

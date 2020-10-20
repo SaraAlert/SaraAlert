@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Button, Modal, Form } from 'react-bootstrap';
 import CaseStatus from '../../components/subject/CaseStatus'
 import InfoTooltip from '../../components/util/InfoTooltip';
-import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../mocks/mockPatients'
+import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../mocks/mockPatients';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const caseStatusValues = [ '', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case' ];
