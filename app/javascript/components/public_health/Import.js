@@ -2,11 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
 import axios from 'axios';
-<<<<<<< HEAD
 import moment from 'moment-timezone';
-import pluralize from 'pluralize';
-=======
->>>>>>> cd187baa (Remove pluralize, clean up variables)
 import _ from 'lodash';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
