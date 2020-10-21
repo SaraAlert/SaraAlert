@@ -111,7 +111,7 @@ describe('MonitoringStatus', () => {
     expect(modalBody.find('#apply_to_group_no').prop('type')).toEqual('radio');
     expect(modalBody.find('#apply_to_group_no').prop('label')).toEqual('This monitoree only');
     expect(modalBody.find('#apply_to_group_yes').prop('type')).toEqual('radio');
-    expect(modalBody.find('#apply_to_group_yes').prop('label')).toEqual('This monitoree and all household members (this will turn off continuous exposure for all household members)');
+    expect(modalBody.find('#apply_to_group_yes').prop('label')).toEqual('This monitoree and all household members (this will turn Continuous Exposure OFF for all household members)');
   });
 
   it('Clicking HoH radio buttons toggles this.state.apply_to_group', () => {

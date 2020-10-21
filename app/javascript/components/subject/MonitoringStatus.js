@@ -114,7 +114,7 @@ class MonitoringStatus extends React.Component {
                   className="mb-3"
                   name="apply_to_group"
                   id="apply_to_group_yes"
-                  label="This monitoree and all household members (this will turn off continuous exposure for all household members)"
+                  label="This monitoree and all household members (this will turn Continuous Exposure OFF for all household members)"
                   onChange={this.handleChange}
                   checked={this.state.apply_to_group}
                 />
