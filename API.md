@@ -1364,7 +1364,7 @@ On success, the server will return the newly created resource with an id. This i
 ### Updating
 An update request creates a new current version for an existing resource.
 
-**PLEASE NOTE:** This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with `nil` values, as is expected with `PUT` requests. The Sara Alert team is planning on supporting `PATCH` requests to support that kind of update in the future.
+**PLEASE NOTE:** This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with `nil` values, as is expected with `PUT` requests. The Sara Alert team is planning on supporting `PATCH` requests in the future to support updates where only fields that should be changed need to be included.
 
 <a name="update-put-pat"/>
 

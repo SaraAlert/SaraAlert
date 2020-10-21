@@ -252,7 +252,7 @@ class PatientsController < ApplicationController
 
     # Update patient history with detailed edit diff
     patient_before = patient.dup
-    Patient.detailed_history_edit(patient_before, patient, current_user, allowed_params) if patient.update(content)
+    Patient.detailed_history_edit(patient_before, patient, current_user.email, allowed_params) if patient.update(content)
 
     render json: patient
   end
