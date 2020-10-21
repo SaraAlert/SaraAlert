@@ -32,11 +32,6 @@ class Identification extends React.Component {
     let modified = this.state.modified;
     const self = this;
     event.persist();
-
-    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.trim() === '') {
-      value = '';
-    }
-
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },

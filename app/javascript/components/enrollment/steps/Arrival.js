@@ -18,11 +18,6 @@ class Arrival extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-
-    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.trim() === '') {
-      value = '';
-    }
-
     this.setState(
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
