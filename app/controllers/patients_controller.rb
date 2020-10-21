@@ -277,7 +277,9 @@ class PatientsController < ApplicationController
     end
 
     # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
-    current_user_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
+    current_user_patients.where(id: patients_to_update).each do |patient|
+      patient.update(responder_id: new_hoh_id)
+    end
   end
 
   def bulk_update_status
