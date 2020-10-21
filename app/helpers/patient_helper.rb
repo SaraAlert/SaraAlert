@@ -257,7 +257,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
       'alabama': { offset: -5, observes_dst: true },
       'alaska': { offset: -8, observes_dst: true },
       'americansamoa': { offset: -11, observes_dst: false },
-      'arizona': { offset: -7, observes_dst: true },
+      'arizona': { offset: -7, observes_dst: false },
       'arkansas': { offset: -5, observes_dst: true },
       'california': { offset: -7, observes_dst: true },
       'colorado': { offset: -6, observes_dst: true },
