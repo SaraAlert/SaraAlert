@@ -13,64 +13,139 @@ class CreatePatientAndJurisdictionLookups < ActiveRecord::Migration[6.0]
     # Generate new submission tokens for existing patients and populate lookup table
     puts 'Generating new patient submission tokens...'
     ActiveRecord::Base.transaction do
-      Patient.where(purged: false).find_each do |patient|
-        # Create a unique, random, 10 character, url-safe, base-64 string
-        new_submission_token = nil
-        loop do
-          new_submission_token = SecureRandom.urlsafe_base64[0, 10]
-        break unless PatientLookup.where('BINARY new_submission_token = ?', new_submission_token).any?
+      # Create patient submission tokens in bulk for performance and check for duplicates later
+      Patient.where.not(submission_token: nil).find_in_batches(batch_size: 1000).with_index do |patients_group, batch|
+        puts "  Processing batch #{batch + 1}"
+        submission_tokens = patients_group.pluck(:id, :submission_token)
+
+        # Create unique, random, 10 character, url-safe, base-64 strings
+        patient_lookups = submission_tokens.map.with_index do |(id, submission_token), index|
+          { old_submission_token: submission_token, new_submission_token: SecureRandom.urlsafe_base64[0, 10] }
         end
 
-        # Update assessment receipt with new submission token if applicable
-        assessment_receipt = AssessmentReceipt.where('BINARY submission_token = ?', patient.submission_token).first
-        assessment_receipt.update(submission_token: new_submission_token) unless assessment_receipt.nil?
-
-        # Create patient lookup
-        patient_lookup = PatientLookup.new(old_submission_token: patient.submission_token, new_submission_token: new_submission_token)
-        patient_lookup.save
-        patient.update(submission_token: new_submission_token)
+        # Populate lookup table
+        PatientLookup.import(patient_lookups)
       end
+
+      # Check for duplicates and generate new submission tokens individually if necessary
+      puts '  Checking for duplicates:'
+      duplicate_tokens = PatientLookup.select(:new_submission_token).group(:new_submission_token).having('COUNT(*) > 1').pluck(:new_submission_token)
+      if duplicate_tokens.empty?
+        puts '    NO DUPLICATES DETECTED'
+      else
+        PatientLookup.where(new_submission_token: duplicate_tokens).find_each do |patient_lookup|
+          puts "    REGENERATING SUBMISSION TOKEN FOR DUPLICATE TOKEN: #{patient_lookup[:new_submission_token]}"
+          # Create a unique, random, 10 character, url-safe, base-64 string
+          new_submission_token = nil
+          loop do
+            new_submission_token = SecureRandom.urlsafe_base64[0, 10]
+          break unless PatientLookup.where('BINARY new_submission_token = ?', new_submission_token).any?
+          end
+
+          # Update patient lookup
+          PatientLookup.where(new_submission_token: patient.submission_token).update(new_submission_token: new_submission_token)
+        end
+      end
+
+      # Update assessment receipts with new submission tokens
+      execute <<-SQL.squish
+        UPDATE assessment_receipts
+        INNER JOIN (
+          SELECT old_submission_token, new_submission_token
+          FROM patient_lookups
+        ) t ON assessment_receipts.submission_token = t.old_submission_token
+        SET assessment_receipts.submission_token = t.new_submission_token
+      SQL
+
+      # Update patients with new submission tokens
+      execute <<-SQL.squish
+        UPDATE patients
+        INNER JOIN (
+          SELECT old_submission_token, new_submission_token
+          FROM patient_lookups
+        ) t ON patients.submission_token = t.old_submission_token
+        SET patients.submission_token = t.new_submission_token
+      SQL
     end
 
     # Generate new unique identifiers for existing jurisdictions and populate lookup table
     puts 'Generating new jurisdiction unique identifiers...'
     ActiveRecord::Base.transaction do
-      Jurisdiction.find_each do |jurisdiction|
-        # Create a 10 character, url-safe, base-64 string based on the SHA-256 hash of the jurisdiction path
-        new_unique_identifier = Base64::urlsafe_encode64([[Digest::SHA256.hexdigest(jurisdiction[:path])].pack('H*')].pack('m0'))[0, 10]
+      jurisdiction_paths_and_identifiers = Jurisdiction.all.pluck(:id, :path, :unique_identifier)
 
-        # Warn user if collision has occured
-        if Jurisdiction.where('BINARY unique_identifier = ?', new_unique_identifier).where.not(id: jurisdiction.id).any?
-          puts "JURISDICTION IDENTIFIER HASH COLLISION FOR: #{jurisdiction[:path]}"
-        end
-
-        jurisdiction_lookup = JurisdictionLookup.new(old_unique_identifier: jurisdiction.unique_identifier, new_unique_identifier: new_unique_identifier)
-        jurisdiction_lookup.save
-        jurisdiction.update(unique_identifier: new_unique_identifier)
+      # Create new unique identifiers (10 character, url-safe, base-64 strings based on the SHA-256 hash of the jurisdiction paths)
+      puts '  Computing hashes...'
+      new_unique_identifiers = jurisdiction_paths_and_identifiers.collect(&:second).map do |path|
+        Base64::urlsafe_encode64([[Digest::SHA256.hexdigest(path)].pack('H*')].pack('m0'))[0, 10]
       end
+
+      # Check for collisions
+      puts '  Checking for collisions:'
+      duplicates = new_unique_identifiers.group_by{ |e| e }.select { |k, v| v.size > 1 }.map(&:first)
+      if duplicates.empty?
+        puts "    NO COLLISIONS DETECTED"
+      else
+        new_unique_identifiers.each_with_index do |new_unique_identifier, index|
+          if duplicates.include?(new_unique_identifier)
+            puts "    JURISDICTION IDENTIFIER HASH COLLISION FOR: #{jurisdiction_paths_and_identifiers[index][1]} (#{new_unique_identifier})"
+          end
+        end
+      end
+
+      # Populate lookup table
+      puts '  Populating lookup table...'
+      jurisdiction_lookups = jurisdiction_paths_and_identifiers.map.with_index do |(id, path, identifier), index|
+        { old_unique_identifier: identifier, new_unique_identifier: new_unique_identifiers[index] }
+      end
+      JurisdictionLookup.import(jurisdiction_lookups)
+
+      # Update jurisdictions with new unique identifiers
+      execute <<-SQL.squish
+        UPDATE jurisdictions
+        INNER JOIN (
+          SELECT old_unique_identifier, new_unique_identifier
+          FROM jurisdiction_lookups
+        ) t ON jurisdictions.unique_identifier = t.old_unique_identifier
+        SET jurisdictions.unique_identifier = t.new_unique_identifier
+      SQL
     end
   end
 
   def down
-    # Replace new submission tokens with old ones from lookup table
     puts 'Restoring old patient submission tokens...'
     ActiveRecord::Base.transaction do
-      PatientLookup.find_each do |patient_lookup|
-        patient = Patient.where('BINARY submission_token = ?', patient_lookup.new_submission_token).first
-        patient.update(submission_token: patient_lookup.old_submission_token)
+      # Update assessment receipts with old submission tokens
+      execute <<-SQL.squish
+        UPDATE assessment_receipts
+        INNER JOIN (
+          SELECT old_submission_token, new_submission_token
+          FROM patient_lookups
+        ) t ON assessment_receipts.submission_token = t.new_submission_token
+        SET assessment_receipts.submission_token = t.old_submission_token
+      SQL
 
-        # Update assessment receipt with old submission token if applicable
-        assessment_receipt = AssessmentReceipt.where('BINARY submission_token = ?', patient_lookup.new_submission_token).first
-        assessment_receipt.update(submission_token: patient_lookup.old_submission_token) unless assessment_receipt.nil?
-      end
+      # Update patients with old submission tokens
+      execute <<-SQL.squish
+        UPDATE patients
+        INNER JOIN (
+          SELECT old_submission_token, new_submission_token
+          FROM patient_lookups
+        ) t ON patients.submission_token = t.new_submission_token
+        SET patients.submission_token = t.old_submission_token
+      SQL
     end
 
-    # Replace new unique identifiers with old old ones from lookup table
     puts 'Restoring old jurisdiction unique identifiers...'
     ActiveRecord::Base.transaction do
-      Jurisdiction.find_each do |jurisdiction|
-        jurisdiction.update(unique_identifier: Digest::SHA256.hexdigest(jurisdiction.jurisdiction_path_string))
-      end
+      # Update jurisdictions with old unique identifiers
+      execute <<-SQL.squish
+        UPDATE jurisdictions
+        INNER JOIN (
+          SELECT old_unique_identifier, new_unique_identifier
+          FROM jurisdiction_lookups
+        ) t ON jurisdictions.unique_identifier = t.new_unique_identifier
+        SET jurisdictions.unique_identifier = t.old_unique_identifier
+      SQL
     end
 
     drop_table :patient_lookups

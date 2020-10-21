@@ -341,7 +341,7 @@ namespace :demo do
       patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.9
       patient[:exposure_risk_assessment] = ['High', 'Medium', 'Low', 'No Identified Risk', nil].sample
       patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
-                                   'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
+                                  'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
 
       # Other fields populated upon enrollment
       patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
@@ -356,12 +356,12 @@ namespace :demo do
       patient[:monitoring] = rand < 0.95
       patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
       patient[:monitoring_reason] = ['Completed Monitoring', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
-                                     'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
-                                     'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
-                                     'Meets criteria to discontinue isolation', 'Deceased', 'Duplicate', 'Other'].sample unless patient[:monitoring].nil?
+                                    'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
+                                    'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
+                                    'Meets criteria to discontinue isolation', 'Deceased', 'Duplicate', 'Other'].sample unless patient[:monitoring].nil?
       patient[:public_health_action] = patient[:isolation] || rand < 0.9 ? 'None' : ['Recommended medical evaluation of symptoms',
-                                                                                     'Document results of medical evaluation',
-                                                                                     'Recommended laboratory testing'].sample
+                                                                                    'Document results of medical evaluation',
+                                                                                    'Recommended laboratory testing'].sample
       patient[:pause_notifications] = rand < 0.1
 
       patients << patient
@@ -471,14 +471,10 @@ namespace :demo do
       )
     end
 
-    Assessment.import! assessments
-<<<<<<< HEAD
-
     # Create assessment receipts and replace any existing ones
     AssessmentReceipt.where(submission_token: assessment_receipts.map{ |assessment_receipt| assessment_receipt[:submission_token] }).destroy_all
-=======
->>>>>>> add assessment receipts to migration
     AssessmentReceipt.import! assessment_receipts
+    Assessment.import! assessments
     printf(" done.\n")
 
     # Get symptoms for each jurisdiction

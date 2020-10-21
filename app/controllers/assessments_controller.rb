@@ -6,7 +6,8 @@ class AssessmentsController < ApplicationController
 
   def new
     # Validate and get patient submission token and redirect if invalid link or already reported
-    @patient_submission_token = check_and_get_patient_submission_token(ADMIN_OPTIONS['report_mode'] ? already_reported_report_url : already_reported_url, true)
+    @patient_submission_token = check_and_get_patient_submission_token(invalid_link_url,
+                                                                       ADMIN_OPTIONS['report_mode'] ? already_reported_report_url : already_reported_url)
     return if @patient_submission_token.nil?
 
     # Don't bother with this if the jurisdiction unique identifier isn't at least 10 characters long
@@ -45,7 +46,7 @@ class AssessmentsController < ApplicationController
   def create
     if ADMIN_OPTIONS['report_mode']
       # Validate and get patient submission token and redirect if invalid link or already reported
-      @patient_submission_token = check_and_get_patient_submission_token(nil, true)
+      @patient_submission_token = check_and_get_patient_submission_token(nil, nil)
       return if @patient_submission_token.nil?
 
       assessment_placeholder = {}
@@ -74,7 +75,7 @@ class AssessmentsController < ApplicationController
       redirect_to(root_url) && return unless current_user&.can_create_patient_assessments?
 
       # Validate and get patient submission token and redirect if invalid link or already reported
-      @patient_submission_token = check_and_get_patient_submission_token(root_url, false)
+      @patient_submission_token = check_and_get_patient_submission_token(root_url, root_url)
       return if @patient_submission_token.nil?
 
       # The patient providing this assessment is identified through the submission_token
@@ -120,7 +121,7 @@ class AssessmentsController < ApplicationController
   end
 
   def update
-    @patient_submission_token = check_and_get_patient_submission_token(root_url, true)
+    @patient_submission_token = check_and_get_patient_submission_token(root_url, nil)
     return if @patient_submission_token.nil?
 
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
@@ -164,32 +165,32 @@ class AssessmentsController < ApplicationController
 
   protected
 
-  def check_and_get_patient_submission_token(url, check_if_already_reported)
+  def check_and_get_patient_submission_token(invalid_link_url, already_reported_url)
     # Params and token existence
-    return if url.nil? && (params.nil? || params.permit(:patient_submission_token)[:patient_submission_token].nil?)
-    redirect_to(url) && return if !url.nil? && (params.nil? || params.permit(:patient_submission_token)[:patient_submission_token].nil?)
+    return if invalid_link_url.nil? && (params.nil? || params[:patient_submission_token].nil?)
+    redirect_to(invalid_link_url) && return if !invalid_link_url.nil? && (params.nil? || params[:patient_submission_token].nil?)
 
     # Token validation
-    patient_submission_token = params.permit(:patient_submission_token)[:patient_submission_token].gsub(/[^0-9A-Za-z_-]/i, '')
-    redirect_to(invalid_link_url) && return if patient_submission_token.length != 10 && patient_submission_token.length != 40
+    patient_submission_token = params[:patient_submission_token].gsub(/[^0-9A-Za-z_-]/i, '')
+    return if invalid_link_url.nil? && patient_submission_token.length != 10 && patient_submission_token.length != 40
+    redirect_to(invalid_link_url) && return if !invalid_link_url.nil? && patient_submission_token.length != 10 && patient_submission_token.length != 40
 
     # Replace old submission token with new submission token if applicable
     if patient_submission_token.length == 40
       patient_lookup = PatientLookup.where(old_submission_token: patient_submission_token).first
       if patient_lookup.nil?
-        return if url.nil?
-        redirect_to(url) && return unless url.nil?
+        return if invalid_link_url.nil?
+        redirect_to(invalid_link_url) && return unless url.nil?
       end
 
       patient_submission_token = patient_lookup.new_submission_token
     end
 
     # Redirect and return if already reported
-    if check_if_already_reported && AssessmentReceipt.where('BINARY submission_token = ?', patient_submission_token)
-                                                     .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
-                                                     .exists?
-      return if url.nil?
-      redirect_to(url) && return unless url.nil?
+    if already_reported_url.present? && AssessmentReceipt.where('BINARY submission_token = ?', patient_submission_token)
+                                                         .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+                                                         .exists?
+      redirect_to(already_reported_url) && return
     end
 
     patient_submission_token
