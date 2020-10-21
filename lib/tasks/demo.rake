@@ -385,7 +385,7 @@ namespace :demo do
       patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
       patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil
       patient[:monitoring] = rand < 0.95
-      patient[:closed_at] = patient[:updated_at] unless patient[:monitoring].nil?
+      patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
       patient[:monitoring_reason] = ['Completed Monitoring', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
                                      'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
                                      'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
