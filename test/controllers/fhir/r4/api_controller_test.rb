@@ -725,7 +725,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Possible update request that omits all fields that can be updated except for the "active" field.
     patient_update = {
       'id' => @patient_2.id,
-      'identifier' => '100000',
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -754,7 +753,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Possible update request that omits many fields but sets active to false
     patient_update = {
       'id' => @patient_2.id,
-      'identifier' => '100000',
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
@@ -1556,7 +1554,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Possible update request that omits all fields that can be updated except for the "active" field.
     patient_update = {
       'id' => @patient_2.id,
-      'identifier' => '100000',
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -1585,7 +1582,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Possible update request that omits many fields but sets active to false
     patient_update = {
       'id' => @patient_2.id,
-      'identifier' => '100000',
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
