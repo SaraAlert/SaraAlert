@@ -50,6 +50,7 @@ class MonitoringStatus extends React.Component {
       showMonitoringStatusModal: !current,
       monitoring: this.props.patient.monitoring,
       monitoring_status: this.props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
+      monitoring_reason: '',
       apply_to_group: false,
       reasoning: '',
     });
@@ -91,7 +92,7 @@ class MonitoringStatus extends React.Component {
           <p>
             Are you sure you want to change monitoring status to &quot;{this.state.monitoring_status}&quot;?
             {!this.state.monitoring && <b> This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.</b>}
-            {this.state.monitoring && <b> This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.</b>}
+            {this.state.monitoring && <b> This will move the selected record(s) from the Closed line list to the appropriate Active Monitoring line list.</b>}
           </p>
           {this.props.has_group_members && (
             <React.Fragment>
