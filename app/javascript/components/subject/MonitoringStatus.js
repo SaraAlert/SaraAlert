@@ -187,6 +187,7 @@ class MonitoringStatus extends React.Component {
                             .format('YYYY-MM-DD')}
                           onChange={date => this.setState({ apply_to_group_cm_exp_only_date: date })}
                           placement="bottom"
+                          customClass="form-control-lg"
                         />
                       </React.Fragment>
                     )}
