@@ -276,8 +276,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
-
-
   test 'GENERAL: should be unauthorized via show' do
     get '/fhir/r4/Patient/1'
     assert_response :unauthorized
@@ -725,11 +723,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'SYSTEM FLOW: should update Patient via update and set omitted fields to nil ' do
     # Possible update request that omits all fields that can be updated except for the "active" field.
-    patient_update =  {
-      "id" => @patient_2.id,
-      "identifier" => "100000",
-      "active" => false,
-      "resourceType" => "Patient"
+    patient_update = {
+      'id' => @patient_2.id,
+      'identifier' => '100000',
+      'active' => false,
+      'resourceType' => 'Patient'
     }
 
     put(
@@ -745,24 +743,24 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not p.nil?
     assert_equal 'Patient', json_response['resourceType']
     assert_nil json_response['name']
-    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }
-    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }
-    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }
-    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' })
     assert_equal false, json_response['active']
   end
 
   test 'SYSTEM FLOW: should properly close Patient record via update' do
     # Possible update request that omits many fields but sets active to false
-    patient_update =  {
-      "id" => @patient_2.id,
-      "identifier" => "100000",
-      "active" => false,
-      "resourceType" => "Patient",
-      "telecom" => [
+    patient_update = {
+      'id' => @patient_2.id,
+      'identifier' => '100000',
+      'active' => false,
+      'resourceType' => 'Patient',
+      'telecom' => [
         {
-          "system": "email",
-          "value": "2966977816fake@example.com",
+          "system": 'email',
+          "value": '2966977816fake@example.com',
           "rank": 1
         }
       ]
@@ -1556,11 +1554,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   test 'USER FLOW: should update Patient via update and set omitted fields to nil' do
     # Possible update request that omits all fields that can be updated except for the "active" field.
-    patient_update =  {
-      "id" => @patient_2.id,
-      "identifier" => "100000",
-      "active" => false,
-      "resourceType" => "Patient"
+    patient_update = {
+      'id' => @patient_2.id,
+      'identifier' => '100000',
+      'active' => false,
+      'resourceType' => 'Patient'
     }
 
     put(
@@ -1576,24 +1574,24 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not p.nil?
     assert_equal 'Patient', json_response['resourceType']
     assert_nil json_response['name']
-    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }
-    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }
-    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }
-    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' })
     assert_equal false, json_response['active']
   end
 
   test 'USER FLOW: should properly close Patient record via update' do
     # Possible update request that omits many fields but sets active to false
-    patient_update =  {
-      "id" => @patient_2.id,
-      "identifier" => "100000",
-      "active" => false,
-      "resourceType" => "Patient",
-      "telecom" => [
+    patient_update = {
+      'id' => @patient_2.id,
+      'identifier' => '100000',
+      'active' => false,
+      'resourceType' => 'Patient',
+      'telecom' => [
         {
-          "system": "email",
-          "value": "2966977816fake@example.com",
+          "system": 'email',
+          "value": '2966977816fake@example.com',
           "rank": 1
         }
       ]

@@ -250,11 +250,9 @@ class PatientsController < ApplicationController
     # Reset symptom onset date if moving from isolation to exposure
     reset_symptom_onset(content, patient, :system) if !content[:isolation].nil? && !content[:isolation]
 
-    #Update patient history with detailed edit diff
+    # Update patient history with detailed edit diff
     patient_before = patient.dup
-    if patient.update(content)
-      Patient.detailed_history_edit(patient_before, patient, current_user, allowed_params)
-    end
+    Patient.detailed_history_edit(patient_before, patient, current_user, allowed_params) if patient.update(content)
 
     render json: patient
   end
