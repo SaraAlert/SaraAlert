@@ -10,6 +10,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     setup_user_applications
     setup_system_applications
     setup_patients
+    ActionMailer::Base.deliveries.clear
   end
 
   # Sets up applications registered for user flow
@@ -274,6 +275,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       primary_telephone: '+15555559998'
     )
   end
+
+
 
   test 'GENERAL: should be unauthorized via show' do
     get '/fhir/r4/Patient/1'
@@ -718,6 +721,74 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
+  end
+
+  test 'SYSTEM FLOW: should update Patient via update and set omitted fields to nil ' do
+    # Possible update request that omits all fields that can be updated except for the "active" field.
+    patient_update =  {
+      "id" => @patient_2.id,
+      "identifier" => "100000",
+      "active" => false,
+      "resourceType" => "Patient"
+    }
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: patient_update.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_nil json_response['name']
+    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }
+    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }
+    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }
+    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }
+    assert_equal false, json_response['active']
+  end
+
+  test 'SYSTEM FLOW: should properly close Patient record via update' do
+    # Possible update request that omits many fields but sets active to false
+    patient_update =  {
+      "id" => @patient_2.id,
+      "identifier" => "100000",
+      "active" => false,
+      "resourceType" => "Patient",
+      "telecom" => [
+        {
+          "system": "email",
+          "value": "2966977816fake@example.com",
+          "rank": 1
+        }
+      ]
+    }
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: patient_update.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+
+    # Record should be closed
+    assert_not json_response['active']
+    assert_not p.monitoring
+
+    # Closed at date should have been set to today
+    assert_equal DateTime.now.to_date, p.closed_at&.to_date
+
+    # Should have enqueued closed email to this patient since they are a reporter
+    assert_enqueued_email_with PatientMailer, :closed_email, args: [p]
   end
 
   test 'SYSTEM FLOW: should be bad request via update due to bad fhir' do
@@ -1481,6 +1552,74 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
+  end
+
+  test 'USER FLOW: should update Patient via update and set omitted fields to nil' do
+    # Possible update request that omits all fields that can be updated except for the "active" field.
+    patient_update =  {
+      "id" => @patient_2.id,
+      "identifier" => "100000",
+      "active" => false,
+      "resourceType" => "Patient"
+    }
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: patient_update.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_nil json_response['name']
+    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }
+    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }
+    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }
+    assert_equal [], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }
+    assert_equal false, json_response['active']
+  end
+
+  test 'USER FLOW: should properly close Patient record via update' do
+    # Possible update request that omits many fields but sets active to false
+    patient_update =  {
+      "id" => @patient_2.id,
+      "identifier" => "100000",
+      "active" => false,
+      "resourceType" => "Patient",
+      "telecom" => [
+        {
+          "system": "email",
+          "value": "2966977816fake@example.com",
+          "rank": 1
+        }
+      ]
+    }
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: patient_update.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+
+    # Record should be closed
+    assert_not json_response['active']
+    assert_not p.monitoring
+
+    # Closed at date should have been set to today
+    assert_equal DateTime.now.to_date, p.closed_at&.to_date
+
+    # Should have enqueued closed email to this patient since they are a reporter
+    assert_enqueued_email_with PatientMailer, :closed_email, args: [p]
   end
 
   test 'USER FLOW: should be bad request via update due to bad fhir' do
