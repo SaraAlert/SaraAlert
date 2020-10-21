@@ -1362,8 +1362,9 @@ On success, the server will return the newly created resource with an id. This i
 <a name="update"/>
 
 ### Updating
+An update request creates a new current version for an existing resource.
 
-The API supports updating existing monitorees.
+**PLEASE NOTE:** This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with `nil` values, as is expected with `PUT` requests. The Sara Alert team is planning on supporting `PATCH` requests to support that kind of update in the future.
 
 <a name="update-put-pat"/>
 
