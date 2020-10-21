@@ -125,7 +125,7 @@ describe('Jurisdiction', () => {
       expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeTruthy();
 
       // change back to just this monitoree
-      wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' } });
+      wrapper.find('#apply_to_group_no').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' } });
       wrapper.update()
       expect(wrapper.state('apply_to_group')).toBeFalsy();
       expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
