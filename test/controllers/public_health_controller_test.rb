@@ -19,7 +19,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       sign_out user
     end
 
-    %i[public_health_user public_health_enroller_user].each do |role|
+    %i[public_health_user public_health_enroller_user contact_tracer_user super_user].each do |role|
       Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
         user = create(role, jurisdiction: user_jur)
         sign_in user
@@ -337,7 +337,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       sign_out user
     end
 
-    %i[public_health_user public_health_enroller_user].each do |role|
+    %i[public_health_user public_health_enroller_user contact_tracer_user super_user].each do |role|
       Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
         user = create(role, jurisdiction: user_jur)
         sign_in user
@@ -365,7 +365,7 @@ class PublicHealthControllerTest < ActionController::TestCase
       sign_out user
     end
 
-    %i[public_health_user public_health_enroller_user].each do |role|
+    %i[public_health_user public_health_enroller_user contact_tracer_user super_user].each do |role|
       Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
         user = create(role, jurisdiction: user_jur)
         sign_in user

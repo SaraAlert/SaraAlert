@@ -33,8 +33,8 @@ class AdvancedFilter extends React.Component {
         { name: 'paused', title: 'Notifications Paused (Boolean)', description: 'Monitorees who have paused notifications', type: 'boolean' },
         {
           name: 'preferred-contact-method',
-          title: 'Preferred Contact Method (Select)',
-          description: 'Monitorees preferred contact method',
+          title: 'Preferred Reporting Method (Select)',
+          description: 'Monitorees preferred reporting method',
           type: 'option',
           options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
         },
@@ -213,12 +213,14 @@ class AdvancedFilter extends React.Component {
 
   // Set the active filter
   setFilter = (filter, apply = false) => {
-    this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter.contents }, () => {
-      localStorage.setItem(`SaraFilter`, filter.id);
-      if (apply) {
-        this.apply();
-      }
-    });
+    if (filter) {
+      this.setState({ activeFilter: filter, show: true, activeFilterOptions: filter?.contents || [] }, () => {
+        localStorage.setItem(`SaraFilter`, filter.id);
+        if (apply) {
+          this.apply();
+        }
+      });
+    }
   };
 
   // Change an index filter option
@@ -321,6 +323,7 @@ class AdvancedFilter extends React.Component {
       })
       .then(() => {
         toast.success('Filter successfully deleted.');
+        localStorage.removeItem(`SaraFilter`);
         this.setState({
           show: false,
           applied: false,

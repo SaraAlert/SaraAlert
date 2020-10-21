@@ -4,8 +4,9 @@ FactoryBot.define do
   factory :patient do
     creator { create(:user) }
     after(:build) do |patient|
-      patient.update(jurisdiction: patient.creator.jurisdiction)
-      patient.update(responder: patient)
+      update_hash = { jurisdiction: patient.creator.jurisdiction }
+      update_hash[:responder] = patient if patient.responder.nil?
+      patient.update(update_hash)
     end
   end
 end

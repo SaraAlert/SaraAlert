@@ -16,6 +16,111 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
   end
 
+  test 'active dependents does NOT include dependents that are purged' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: true, monitoring: false)
+    dependent.update!(responder_id: responder.id)
+
+    assert_not responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents does NOT include dependents where monitoring is false' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: false)
+    dependent.update!(responder_id: responder.id)
+
+    assert_not responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents does NOT include dependents where they are one day past their last day of monitoring based on LDE' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 15.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert_not responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents does NOT include dependents where they are one day past their last day of monitoring based on created_at' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: nil, created_at: 15.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert_not responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents defaults to using last_date_of_exposure unless it is nil' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 12.days.ago, created_at: 15.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    # Should be included because LDE is within monitoring period
+    assert responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents does NOT include dependents where they are way past their last day of monitoring' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 20.days.ago, created_at: 12.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert_not responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents DOES include dependents where they are on their last day of monitoring' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 14.days.ago, created_at: 12.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents DOES include dependents that are monitored in isolation, regardless of LDE or created_at' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: true, isolation: true, last_date_of_exposure: nil, created_at: 20.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents DOES include dependents that are monitored in continuous exposure, regardless of LDE or created_at' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: true, continuous_exposure: true, last_date_of_exposure: nil, created_at: 20.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents does NOT include dependents that are NOT monitored in isolation' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: false, isolation: true, last_date_of_exposure: nil, created_at: 20.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert_not responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active dependents does NOT include dependents that are NOT monitored in continuous exposure' do
+    responder = create(:patient, purged: false, monitoring: true)
+    dependent = create(:patient, purged: false, monitoring: false, continuous_exposure: true, last_date_of_exposure: nil, created_at: 20.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert_not responder.active_dependents.pluck(:id).include?(dependent.id)
+  end
+
+  test 'active_dependents DOES include the responder if the responder meets the criteria' do
+    responder = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 10.days.ago, created_at: 12.days.ago)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 10.days.ago, created_at: 12.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert responder.active_dependents.pluck(:id).include?(responder.id)
+  end
+
+  test 'active_dependents_exclude_self does NOT include the responder no matter what' do
+    responder = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 10.days.ago, created_at: 12.days.ago)
+    dependent = create(:patient, purged: false, monitoring: true, last_date_of_exposure: 10.days.ago, created_at: 12.days.ago)
+    dependent.update!(responder_id: responder.id)
+
+    assert_not responder.active_dependents_exclude_self.pluck(:id).include?(responder.id)
+  end
+
   test 'close eligible does not include purged records' do
     # Control test
     patient = create(:patient,
@@ -1098,6 +1203,23 @@ class PatientTest < ActiveSupport::TestCase
     assert_equal age, Patient.calc_current_age_fhir(birth_year.to_s)
 
     assert_nil Patient.calc_current_age_fhir(nil)
+  end
+
+  test 'refresh head of household' do
+    patient = create(:patient)
+    dependent = create(:patient, responder: patient)
+    assert patient.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+
+    new_head = create(:patient)
+    dependent.update(responder: new_head)
+    assert_not patient.reload.head_of_household
+    assert new_head.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+
+    dependent.destroy
+    assert_not patient.reload.head_of_household
+    assert_not new_head.reload.head_of_household
   end
 end
 # rubocop:enable Metrics/ClassLength
