@@ -1104,11 +1104,14 @@ class PatientTest < ActiveSupport::TestCase
     patient = create(:patient)
     dependent = create(:patient, responder: patient)
     assert patient.reload.head_of_household
+    assert_not dependent.reload.head_of_household
 
     new_head = create(:patient)
     dependent.update(responder: new_head)
     assert_not patient.reload.head_of_household
     assert new_head.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+
 
     dependent.destroy
     assert_not patient.reload.head_of_household
