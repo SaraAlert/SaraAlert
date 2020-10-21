@@ -33,8 +33,7 @@ class Identification extends React.Component {
     const self = this;
     event.persist();
 
-    const trimFields = ['first_name', 'middle_name', 'last_name', 'nationality', 'user_defined_id_statelocal', 'user_defined_id_cdc', 'user_defined_id_nndss'];
-    if (event?.target?.id && trimFields.includes(event.target.id) && event.target.value.trim() === '') {
+    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.trim() === '') {
       value = '';
     }
 

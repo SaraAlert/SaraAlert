@@ -21,30 +21,7 @@ class Address extends React.Component {
     let current = this.state.current;
     let modified = this.state.modified;
 
-    const trimFields = [
-      'address_line_1',
-      'address_city',
-      'address_line_2',
-      'address_zip',
-      'address_county',
-      'monitored_address_line_1',
-      'monitored_address_city',
-      'monitored_address_line_2',
-      'monitored_address_zip',
-      'monitored_address_county',
-      'foreign_address_line_1',
-      'foreign_address_city',
-      'foreign_address_line_2',
-      'foreign_address_zip',
-      'foreign_address_line_3',
-      'foreign_address_state',
-      'foreign_monitored_address_line_1',
-      'foreign_monitored_address_city',
-      'foreign_monitored_address_line_2',
-      'foreign_monitored_address_zip',
-      'foreign_monitored_address_county',
-    ];
-    if (event?.target?.id && trimFields.includes(event.target.id) && event.target.value.trim() === '') {
+    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.trim() === '') {
       value = '';
     }
 
