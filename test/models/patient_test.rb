@@ -1112,7 +1112,6 @@ class PatientTest < ActiveSupport::TestCase
     assert new_head.reload.head_of_household
     assert_not dependent.reload.head_of_household
 
-
     dependent.destroy
     assert_not patient.reload.head_of_household
     assert_not new_head.reload.head_of_household
