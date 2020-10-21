@@ -81,7 +81,7 @@ class GenericAction extends React.Component {
       this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-      this.setState({ [event.target.id]: event?.target?.value ? value : '' });
+      this.setState({ [event.target.id]: value || '' });
     }
   };
 
