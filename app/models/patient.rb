@@ -861,10 +861,14 @@ class Patient < ApplicationRecord
   # so we just throw it away
   def inform_responder(*)
     initial_responder = responder_id_was
-    # Yield to save
+    self_reporter = self_reporter_or_proxy?
+    # Yield to save or destroy, depending on which callback invokes this method
     yield
-    Patient.find(initial_responder).refresh_head_of_household unless initial_responder.nil? || initial_responder == responder.id
-    # After save responder may have changed
+
+    return if responder.nil?
+    # update the initial responder if it changed
+    Patient.find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
+    # update the current responder
     responder.refresh_head_of_household
   end
 
