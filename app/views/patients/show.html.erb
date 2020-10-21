@@ -18,7 +18,7 @@
                         user_can_transfer: current_user.can_transfer_patients?,
                         authenticity_token: form_authenticity_token,
                         has_dependents: @dependents_exclude_hoh.exists?,
-                        in_a_group: @household_members.count > 1, #CHANGE ME
+                        in_household_with_member_with_ce_in_exposure: @household_members_with_ce_in_exposure.exists?,
                         patient: @patient,
                         jurisdictionPaths: @possible_jurisdiction_paths,
                         assignedUsers: @patient.jurisdiction.assigned_users

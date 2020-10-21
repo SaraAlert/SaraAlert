@@ -34,6 +34,7 @@ class PatientsController < ApplicationController
     # All household members regardless if this is not HOH
     dependents = current_user.get_patient(@patient.responder_id)&.dependents
     @household_members = ([@patient] + (dependents.nil? ? [] : dependents)).uniq
+    @household_members_with_ce_in_exposure = dependents.nil? ? [] : dependents.where(isolation: false, continuous_exposure: true)
 
     @translations = Assessment.new.translations
 

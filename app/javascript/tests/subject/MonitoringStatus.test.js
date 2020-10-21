@@ -26,8 +26,9 @@ const monitoringReasons = [
   'Other'
 ];
 
-function getWrapper(patient, hasDependents, inAGroup) {
-  return shallow(<MonitoringStatus patient={patient} has_dependents={hasDependents} in_a_group={inAGroup} authenticity_token={authyToken} />);
+function getWrapper(patient, hasDependents, inHouseholdWithCeInExposure) {
+  return shallow(<MonitoringStatus patient={patient} has_dependents={hasDependents} authenticity_token={authyToken}
+    in_household_with_member_with_ce_in_exposure={inHouseholdWithCeInExposure} />);
 }
 
 describe('MonitoringStatus', () => {

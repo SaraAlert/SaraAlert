@@ -146,7 +146,7 @@ class MonitoringStatus extends React.Component {
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
-          {this.props.patient.isolation && !this.state.monitoring && this.props.in_a_group && !this.state.apply_to_group && (
+          {this.props.patient.isolation && !this.state.monitoring && this.props.in_household_with_member_with_ce_in_exposure && !this.state.apply_to_group && (
             <div className="update-dependent-lde">
               <hr />
               <p className="mb-2">
@@ -236,7 +236,7 @@ MonitoringStatus.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   has_dependents: PropTypes.bool,
-  in_a_group: PropTypes.bool,
+  in_household_with_member_with_ce_in_exposure: PropTypes.bool,
 };
 
 export default MonitoringStatus;
