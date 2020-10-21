@@ -323,6 +323,7 @@ class AdvancedFilter extends React.Component {
       })
       .then(() => {
         toast.success('Filter successfully deleted.');
+        localStorage.removeItem(`SaraFilter`);
         this.setState({
           show: false,
           applied: false,
