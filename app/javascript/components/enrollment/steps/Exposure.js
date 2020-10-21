@@ -45,14 +45,10 @@ class Exposure extends React.Component {
     let current = this.state.current;
     let modified = this.state.modified;
 
-    const trimFields = [
-      'potential_exposure_location',
-      'contact_of_known_case_id',
-      'was_in_health_care_facility_with_known_cases_facility_name',
-      'laboratory_personnel_facility_name',
-      'healthcare_personnel_facility_name',
-      'member_of_a_common_exposure_cohort_type',
-    ];
+    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.trim() === '') {
+      value = '';
+    }
+
     if (event?.target?.name && event.target.name === 'jurisdictionId') {
       this.setState({ jurisdictionPath: event.target.value });
       let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
@@ -78,7 +74,7 @@ class Exposure extends React.Component {
     } else if (event?.target?.name && event.target.name === 'assignedUser') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 9999) return;
 
-      value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
+      value = event.target.value === '' ? null : parseInt(event.target.value);
     } else if (event?.target?.id && event.target.id === 'continuous_exposure') {
       // clear out LDE if CE is turned on and populated it with previous LDE if CE is turned off
       const lde = value ? null : this.props.patient.last_date_of_exposure;
@@ -89,8 +85,6 @@ class Exposure extends React.Component {
         modified = { patient: { last_date_of_exposure: lde } };
       }
       this.updateLDEandCEValidations({ ...current.patient, [event.target.id]: value });
-    } else if (event?.target?.id && trimFields.includes(event.target.id) && event.target.value.trim() === '') {
-      value = '';
     }
     this.setState(
       {
@@ -639,6 +633,7 @@ class Exposure extends React.Component {
                         isInvalid={this.state.errors['assigned_user']}
                         as="input"
                         name="assignedUser"
+                        type="number"
                         list="assignedUsers"
                         autoComplete="off"
                         size="lg"

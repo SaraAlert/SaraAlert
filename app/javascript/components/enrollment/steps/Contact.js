@@ -47,8 +47,7 @@ class Contact extends React.Component {
     let current = this.state.current;
     let modified = this.state.modified;
 
-    const trimFields = ['email', 'confirm_email'];
-    if (event?.target?.id && trimFields.includes(event.target.id) && event.target.value.trim() === '') {
+    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.trim() === '') {
       value = '';
     }
 
