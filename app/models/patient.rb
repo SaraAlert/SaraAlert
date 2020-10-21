@@ -823,12 +823,12 @@ class Patient < ApplicationRecord
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
   def self.detailed_history_edit(patient_before, patient_after, user_email, allowed_fields, is_api_edit: false)
     diffs = patient_diff(patient_before, patient_after, allowed_fields)
-    unless diffs.length.zero?
-      pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
-      comment = is_api_edit ? "Monitoree record edited via API. " : "User edited a monitoree record. "
-      comment += "Changes were: #{pretty_diff.join(', ')}."
-      History.record_edit(patient: patient_after, created_by: user_email, comment: comment)
-    end
+    return if diffs.length.zero?
+
+    pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
+    comment = is_api_edit ? 'Monitoree record edited via API. ' : 'User edited a monitoree record. '
+    comment += "Changes were: #{pretty_diff.join(', ')}."
+    History.record_edit(patient: patient_after, created_by: user_email, comment: comment)
   end
 
   # Construct a diff for a patient update to keep track of changes
