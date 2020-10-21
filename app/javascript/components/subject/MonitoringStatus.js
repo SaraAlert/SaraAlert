@@ -51,8 +51,10 @@ class MonitoringStatus extends React.Component {
       monitoring: this.props.patient.monitoring,
       monitoring_status: this.props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
       monitoring_reason: '',
-      apply_to_group: false,
       reasoning: '',
+      apply_to_group: false,
+      apply_to_group_cm_exp_only: false,
+      apply_to_group_cm_exp_only_date: moment(new Date()).format('YYYY-MM-DD'),
     });
   };
 
@@ -145,7 +147,7 @@ class MonitoringStatus extends React.Component {
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
           {this.props.isolation && !this.state.monitoring && this.props.in_a_group && (
-            <React.Fragment>
+            <div className="update-dependent-lde">
               <hr />
               <p className="mb-2">
                 Would you like to update the <i>Last Date of Exposure</i> for all household members who have Continuous Exposure turned ON and are being
@@ -191,7 +193,7 @@ class MonitoringStatus extends React.Component {
                   </Form.Check.Label>
                 </Form.Check>
               </Form.Group>
-            </React.Fragment>
+            </div>
           )}
         </Modal.Body>
         <Modal.Footer>
