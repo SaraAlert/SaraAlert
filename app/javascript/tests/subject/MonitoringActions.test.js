@@ -23,7 +23,7 @@ const jurisdictionPaths = {
 
 describe('MonitoringActions', () => {
   it('Properly renders all main components', () => {
-    const wrapper = shallow(<MonitoringActions patient={mockPatient1} has_group_members={false} in_a_group={false} isolation={false} 
+    const wrapper = shallow(<MonitoringActions patient={mockPatient1} has_dependents={false} in_a_group={false} isolation={false} 
       authenticity_token={authyToken} jurisdictionPaths={jurisdictionPaths} current_user={mockUser1} assignedUsers={assignedUsers} />);
 
     expect(wrapper.find(Form).exists()).toBeTruthy();

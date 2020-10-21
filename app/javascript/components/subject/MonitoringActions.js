@@ -24,16 +24,15 @@ class MonitoringActions extends React.Component {
                   <MonitoringStatus
                     patient={this.props.patient}
                     authenticity_token={this.props.authenticity_token}
-                    has_group_members={this.props.has_group_members}
+                    has_dependents={this.props.has_dependents}
                     in_a_group={this.props.in_a_group}
-                    isolation={this.props.isolation}
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <GenericAction
                     patient={this.props.patient}
                     authenticity_token={this.props.authenticity_token}
-                    has_group_members={this.props.has_group_members}
+                    has_dependents={this.props.has_dependents}
                     title={'EXPOSURE RISK ASSESSMENT'}
                     monitoringAction={'exposure_risk_assessment'}
                     options={['', 'High', 'Medium', 'Low', 'No Identified Risk']}
@@ -44,7 +43,7 @@ class MonitoringActions extends React.Component {
                   <GenericAction
                     patient={this.props.patient}
                     authenticity_token={this.props.authenticity_token}
-                    has_group_members={this.props.has_group_members}
+                    has_dependents={this.props.has_dependents}
                     title={'MONITORING PLAN'}
                     monitoringAction={'monitoring_plan'}
                     options={[
@@ -58,28 +57,24 @@ class MonitoringActions extends React.Component {
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
-                  <CaseStatus
-                    patient={this.props.patient}
-                    authenticity_token={this.props.authenticity_token}
-                    has_group_members={this.props.has_group_members}
-                  />
+                  <CaseStatus patient={this.props.patient} authenticity_token={this.props.authenticity_token} has_dependents={this.props.has_dependents} />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <GenericAction
                     patient={this.props.patient}
                     authenticity_token={this.props.authenticity_token}
-                    has_group_members={this.props.has_group_members}
+                    has_dependents={this.props.has_dependents}
                     title={'LATEST PUBLIC HEALTH ACTION'}
                     monitoringAction={'public_health_action'}
                     options={['None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing']}
-                    tooltipKey={this.props.isolation ? 'latestPublicHealthActionInIsolation' : 'latestPublicHealthActionInExposure'}
+                    tooltipKey={this.props.patient.isolation ? 'latestPublicHealthActionInIsolation' : 'latestPublicHealthActionInExposure'}
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="12" lg="8" className="pt-2">
                   <AssignedUser
                     patient={this.props.patient}
                     authenticity_token={this.props.authenticity_token}
-                    has_group_members={this.props.has_group_members}
+                    has_dependents={this.props.has_dependents}
                     assignedUsers={this.props.assignedUsers}
                   />
                 </Form.Group>
@@ -87,7 +82,7 @@ class MonitoringActions extends React.Component {
                   <Jurisdiction
                     patient={this.props.patient}
                     authenticity_token={this.props.authenticity_token}
-                    has_group_members={this.props.has_group_members}
+                    has_dependents={this.props.has_dependents}
                     jurisdictionPaths={this.props.jurisdictionPaths}
                     current_user={this.props.current_user}
                   />
@@ -107,9 +102,8 @@ MonitoringActions.propTypes = {
   authenticity_token: PropTypes.string,
   jurisdictionPaths: PropTypes.object,
   assignedUsers: PropTypes.array,
-  has_group_members: PropTypes.bool,
+  has_dependents: PropTypes.bool,
   in_a_group: PropTypes.bool,
-  isolation: PropTypes.bool,
 };
 
 export default MonitoringActions;

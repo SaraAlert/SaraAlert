@@ -10,20 +10,20 @@ const exposureRiskAssessmentOptions = [ '', 'High', 'Medium', 'Low', 'No Identif
 const publicHealthActionOptions = [ 'None', 'Recommended medical evaluation of symptoms', 'Document results of medical evaluation', 'Recommended laboratory testing' ];
 const monitoringPlanOptions = [ 'None', 'Daily active monitoring', 'Self-monitoring with public health supervision', 'Self-monitoring with delegated supervision', 'Self-observation' ];
 
-function getExposureRiskAssessmentWrapper(patient, hasGroupMembers) {
+function getExposureRiskAssessmentWrapper(patient, hasDependents) {
   return shallow(<GenericAction patient={patient} title={'EXPOSURE RISK ASSESSMENT'} monitoringAction={'exposure_risk_assessment'}
-    options={exposureRiskAssessmentOptions} tooltipKey={'exposureRiskAssessment'} has_group_members={hasGroupMembers} authenticity_token={authyToken} />);
+    options={exposureRiskAssessmentOptions} tooltipKey={'exposureRiskAssessment'} has_dependents={hasDependents} authenticity_token={authyToken} />);
 }
 
-function getMonitoringPlanWrapper(patient, hasGroupMembers) {
+function getMonitoringPlanWrapper(patient, hasDependents) {
   return shallow(<GenericAction patient={patient} title={'MONITORING PLAN'} monitoringAction={'monitoring_plan'}
-    options={monitoringPlanOptions} tooltipKey={'monitoringPlan'} has_group_members={hasGroupMembers} authenticity_token={authyToken} />);
+    options={monitoringPlanOptions} tooltipKey={'monitoringPlan'} has_dependents={hasDependents} authenticity_token={authyToken} />);
 }
 
-function getPublicHealthActionWrapper(patient, hasGroupMembers) {
+function getPublicHealthActionWrapper(patient, hasDependents) {
   const tooltipKey = patient.isolation ? 'latestPublicHealthActionInIsolation' : 'latestPublicHealthActionInExposure';
   return shallow(<GenericAction patient={patient} title={'LATEST PUBLIC HEALTH ACTION'} monitoringAction={'public_health_action'}
-    options={publicHealthActionOptions} tooltipKey={tooltipKey} has_group_members={hasGroupMembers} authenticity_token={authyToken} />);
+    options={publicHealthActionOptions} tooltipKey={tooltipKey} has_dependents={hasDependents} authenticity_token={authyToken} />);
 }
 
 describe('GenericAction', () => {

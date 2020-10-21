@@ -605,7 +605,7 @@ class Exposure extends React.Component {
                       <Form.Control.Feedback className="d-block" type="invalid">
                         {this.state.errors['jurisdiction_id']}
                       </Form.Control.Feedback>
-                      {this.props.has_group_members &&
+                      {this.props.has_dependents &&
                         this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
                         Object.keys(this.props.jurisdictionPaths).includes(this.state.current.patient.jurisdiction_id) && (
                           <Form.Group className="mt-2">
@@ -648,7 +648,7 @@ class Exposure extends React.Component {
                       <Form.Control.Feedback className="d-block" type="invalid">
                         {this.state.errors['assigned_user']}
                       </Form.Control.Feedback>
-                      {this.props.has_group_members &&
+                      {this.props.has_dependents &&
                         this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
                         (this.state.current.patient.assigned_user === null ||
                           (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 9999)) && (
@@ -790,7 +790,7 @@ Exposure.propTypes = {
   previous: PropTypes.func,
   next: PropTypes.func,
   patient: PropTypes.object,
-  has_group_members: PropTypes.bool,
+  has_dependents: PropTypes.bool,
   jurisdictionPaths: PropTypes.object,
   assignedUsers: PropTypes.array,
   authenticity_token: PropTypes.string,

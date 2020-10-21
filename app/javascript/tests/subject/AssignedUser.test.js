@@ -8,8 +8,8 @@ import { mockPatient1 } from '../mocks/mockPatients';
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const assignedUsers = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21 ];
 
-function getWrapper(patient, hasGroupMembers) {
-  return shallow(<AssignedUser patient={patient} assignedUsers={assignedUsers} has_group_members={hasGroupMembers} authenticity_token={authyToken} />);
+function getWrapper(patient, hasDependents) {
+  return shallow(<AssignedUser patient={patient} assignedUsers={assignedUsers} has_dependents={hasDependents} authenticity_token={authyToken} />);
 }
 
 describe('AssignedUser', () => {

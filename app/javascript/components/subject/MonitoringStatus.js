@@ -96,7 +96,7 @@ class MonitoringStatus extends React.Component {
             {!this.state.monitoring && <b> This will move the selected record(s) to the Closed line list and turn Continuous Exposure OFF.</b>}
             {this.state.monitoring && <b> This will move the selected record(s) from the Closed line list to the appropriate Active Monitoring line list.</b>}
           </p>
-          {this.props.has_group_members && (
+          {this.props.has_dependents && (
             <React.Fragment>
               <p className="mb-2">Please select the records that you would like to apply this change to:</p>
               <Form.Group className="px-4">
@@ -146,7 +146,7 @@ class MonitoringStatus extends React.Component {
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
-          {this.props.isolation && !this.state.monitoring && this.props.in_a_group && !this.state.apply_to_group && (
+          {this.props.patient.isolation && !this.state.monitoring && this.props.in_a_group && !this.state.apply_to_group && (
             <div className="update-dependent-lde">
               <hr />
               <p className="mb-2">
@@ -235,9 +235,8 @@ class MonitoringStatus extends React.Component {
 MonitoringStatus.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_group_members: PropTypes.bool,
+  has_dependents: PropTypes.bool,
   in_a_group: PropTypes.bool,
-  isolation: PropTypes.bool,
 };
 
 export default MonitoringStatus;

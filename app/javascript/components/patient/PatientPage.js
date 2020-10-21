@@ -35,7 +35,7 @@ class PatientPage extends React.Component {
             <Patient
               details={{ ...this.props.patient }}
               jurisdictionPath={this.props.jurisdictionPath}
-              groupMembers={this.props.group_members || []}
+              groupMembers={this.props.dependents || []}
               hideBody={this.state.hideBody}
               authenticity_token={this.props.authenticity_token}
             />
@@ -50,7 +50,7 @@ PatientPage.propTypes = {
   patient_id: PropTypes.string,
   current_user: PropTypes.object,
   patient: PropTypes.object,
-  group_members: PropTypes.array,
+  dependents: PropTypes.array,
   dashboardUrl: PropTypes.string,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,

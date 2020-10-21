@@ -147,7 +147,7 @@ class GenericAction extends React.Component {
           <p>
             Are you sure you want to change {this.state.message}?{this.state.message_warning && <b> {this.state.message_warning}</b>}
           </p>
-          {this.props.has_group_members && (
+          {this.props.has_dependents && (
             <React.Fragment>
               <p className="mb-2">Please select the records that you would like to apply this change to:</p>
               <Form.Group className="px-4">
@@ -225,7 +225,7 @@ class GenericAction extends React.Component {
 GenericAction.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_group_members: PropTypes.bool,
+  has_dependents: PropTypes.bool,
   title: PropTypes.string,
   monitoringAction: PropTypes.string,
   tooltipKey: PropTypes.string,

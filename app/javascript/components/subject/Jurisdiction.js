@@ -98,7 +98,7 @@ class Jurisdiction extends React.Component {
             {this.state.jurisdiction_path}&quot;?
             {this.state.assigned_user !== '' && <b> Please also consider removing or updating the assigned user if it is no longer applicable.</b>}
           </p>
-          {this.props.has_group_members && (
+          {this.props.has_dependents && (
             <React.Fragment>
               <p className="mb-2">Please select the records that you would like to apply this change to:</p>
               <Form.Group className="px-4">
@@ -193,7 +193,7 @@ class Jurisdiction extends React.Component {
 Jurisdiction.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_group_members: PropTypes.bool,
+  has_dependents: PropTypes.bool,
   jurisdictionPaths: PropTypes.object,
   current_user: PropTypes.object,
 };

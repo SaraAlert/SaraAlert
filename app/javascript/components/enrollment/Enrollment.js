@@ -225,7 +225,7 @@ class Enrollment extends React.Component {
               previous={this.previous}
               next={this.next}
               patient={this.props.patient}
-              has_group_members={this.props.has_group_members}
+              has_dependents={this.props.has_dependents}
               jurisdictionPaths={this.props.jurisdictionPaths}
               assignedUsers={this.props.assignedUsers}
               authenticity_token={this.props.authenticity_token}
@@ -260,7 +260,7 @@ Enrollment.propTypes = {
   parent_id: PropTypes.number,
   cc_id: PropTypes.number,
   can_add_group: PropTypes.bool,
-  has_group_members: PropTypes.bool,
+  has_dependents: PropTypes.bool,
 };
 
 export default Enrollment;

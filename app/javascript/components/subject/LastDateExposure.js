@@ -110,7 +110,7 @@ class LastDateExposure extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>{message}</p>
-          {this.props.has_group_members && (
+          {this.props.is_household_member && (
             <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
@@ -121,7 +121,7 @@ class LastDateExposure extends React.Component {
               />
             </Form.Group>
           )}
-          {this.props.has_group_members && this.state.showLastDateOfExposureModal && this.state.last_date_of_exposure !== null && (
+          {this.props.is_household_member && this.state.showLastDateOfExposureModal && this.state.last_date_of_exposure !== null && (
             <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
@@ -134,7 +134,7 @@ class LastDateExposure extends React.Component {
               />
             </Form.Group>
           )}
-          {this.props.has_group_members && (
+          {this.props.is_household_member && (
             <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
@@ -191,7 +191,7 @@ class LastDateExposure extends React.Component {
               this.state.last_date_of_exposure ? ` to ${moment(this.state.last_date_of_exposure).format('MM/DD/YYYY')}` : ''
             }? The Last Date of Exposure will be updated ${this.state.last_date_of_exposure ? '' : 'to blank '}${
               this.props.patient.monitoring ? `and Continuous Exposure will be turned ${this.state.last_date_of_exposure ? 'OFF' : 'ON'}` : ''
-            } for the selected record${this.props.has_group_members ? '(s):' : '.'}`,
+            } for the selected record${this.props.is_household_member ? '(s):' : '.'}`,
             this.closeModal,
             this.submit
           )}
@@ -201,7 +201,7 @@ class LastDateExposure extends React.Component {
             `Are you sure you want to turn ${this.state.continuous_exposure ? 'ON' : 'OFF'} Continuous Exposure? The Last Date of Exposure will ${
               this.state.continuous_exposure ? 'be cleared' : 'need to be populated'
             } and Continuous Exposure will be turned ${this.state.continuous_exposure ? 'ON' : 'OFF'} for the selected record${
-              this.props.has_group_members ? '(s):' : '.'
+              this.props.is_household_member ? '(s):' : '.'
             }`,
             this.closeModal,
             this.submit
@@ -284,7 +284,7 @@ class LastDateExposure extends React.Component {
 }
 
 LastDateExposure.propTypes = {
-  has_group_members: PropTypes.bool,
+  is_household_member: PropTypes.bool,
   authenticity_token: PropTypes.string,
   patient: PropTypes.object,
 };

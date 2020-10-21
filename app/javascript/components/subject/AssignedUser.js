@@ -85,7 +85,7 @@ class AssignedUser extends React.Component {
           <p>
             Are you sure you want to change assigned user from &quot;{this.state.original_assigned_user}&quot; to &quot;{this.state.assigned_user}&quot;?
           </p>
-          {this.props.has_group_members && (
+          {this.props.has_dependents && (
             <React.Fragment>
               <p className="mb-2">Please select the records that you would like to apply this change to:</p>
               <Form.Group className="px-4">
@@ -180,7 +180,7 @@ class AssignedUser extends React.Component {
 AssignedUser.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_group_members: PropTypes.bool,
+  has_dependents: PropTypes.bool,
   assignedUsers: PropTypes.array,
 };
 

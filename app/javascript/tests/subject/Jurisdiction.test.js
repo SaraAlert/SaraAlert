@@ -16,8 +16,8 @@ const jurisdictionPaths = {
   7: 'USA, State 2, County 4'
 };
 
-function getWrapper(patient, hasGroupMembers) {
-  return shallow(<Jurisdiction patient={patient} current_user={mockUser1} has_group_members={hasGroupMembers}
+function getWrapper(patient, hasDependents) {
+  return shallow(<Jurisdiction patient={patient} current_user={mockUser1} has_dependents={hasDependents}
     jurisdictionPaths={jurisdictionPaths} authenticity_token={authyToken} />);
 }
 

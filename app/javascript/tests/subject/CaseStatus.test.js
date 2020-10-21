@@ -9,8 +9,8 @@ const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEU
 const caseStatusValues = [ '', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case' ];
 const monitoringOptionValues = [ '', 'End Monitoring', 'Continue Monitoring in Isolation Workflow' ];
 
-function getWrapper(patient, hasGroupMembers) {
-    return shallow(<CaseStatus patient={patient} has_group_members={hasGroupMembers} authenticity_token={authyToken} />);
+function getWrapper(patient, hasDependents) {
+    return shallow(<CaseStatus patient={patient} has_dependents={hasDependents} authenticity_token={authyToken} />);
 }
 
 describe('CaseStatus', () => {
