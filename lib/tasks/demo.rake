@@ -444,14 +444,20 @@ namespace :demo do
   def demo_populate_assessments(today, days_ago, existing_patients, jurisdictions)
     printf("Generating assessments...")
     assessments = []
+    assessment_receipts = []
     histories = []
-    patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(55..60) / 100)
-    patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
-      printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
+    patient_jur_ids_and_sub_tokens = existing_patients.pluck(:id, :jurisdiction_id, :submission_token).sample(existing_patients.count * rand(55..60) / 100)
+    patient_jur_ids_and_sub_tokens.each_with_index do |(patient_id, jur_id, sub_token), index|
+      printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...")
       timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
       assessments << Assessment.new(
         patient_id: patient_id,
         symptomatic: false,
+        created_at: timestamp,
+        updated_at: timestamp
+      )
+      assessment_receipts << AssessmentReceipt.new(
+        submission_token: sub_token,
         created_at: timestamp,
         updated_at: timestamp
       )
@@ -466,6 +472,10 @@ namespace :demo do
     end
 
     Assessment.import! assessments
+
+    # Create assessment receipts and replace any existing ones
+    AssessmentReceipt.where(submission_token: assessment_receipts.map{ |assessment_receipt| assessment_receipt[:submission_token] }).destroy_all
+    AssessmentReceipt.import! assessment_receipts
     printf(" done.\n")
 
     # Get symptoms for each jurisdiction
