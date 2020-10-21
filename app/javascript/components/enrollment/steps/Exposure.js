@@ -44,11 +44,6 @@ class Exposure extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-
-    if (event?.target?.value && typeof event.target.value === 'string' && event.target.value.trim() === '') {
-      value = '';
-    }
-
     if (event?.target?.name && event.target.name === 'jurisdictionId') {
       this.setState({ jurisdictionPath: event.target.value });
       let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
