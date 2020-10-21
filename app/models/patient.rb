@@ -819,4 +819,30 @@ class Patient < ApplicationRecord
       timezone_for_state('massachusetts')
     end
   end
+
+  # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
+  def self.detailed_history_edit(patient_before, patient_after, user_email, allowed_fields, is_api_edit: false)
+    diffs = patient_diff(patient_before, patient_after, allowed_fields)
+    unless diffs.length.zero?
+      pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
+      comment = is_api_edit ? "Monitoree record edited via API. " : "User edited a monitoree record. "
+      comment += "Changes were: #{pretty_diff.join(', ')}."
+      History.record_edit(patient: patient_after, created_by: user_email, comment: comment)
+    end
+  end
+
+  # Construct a diff for a patient update to keep track of changes
+  def self.patient_diff(patient_before, patient_after, allowed_fields)
+    diffs = []
+    allowed_fields.each do |attribute|
+      next if patient_before[attribute] == patient_after[attribute]
+
+      diffs << {
+        attribute: attribute,
+        before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
+        after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
+      }
+    end
+    diffs
+  end
 end
