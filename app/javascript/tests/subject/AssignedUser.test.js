@@ -1,5 +1,5 @@
 import React from 'react'
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { Button, Form, Modal } from 'react-bootstrap';
 import AssignedUser from '../../components/subject/AssignedUser';
 import InfoTooltip from '../../components/util/InfoTooltip';
@@ -150,17 +150,13 @@ describe('AssignedUser', () => {
   });
 
   it('Pressing the enter key opens modal only when change user button is enabled', () => {
-    const wrapper = mount(<AssignedUser patient={mockPatient1} assignedUsers={assignedUsers} has_group_members={false} authenticity_token={authyToken} />);
+    const wrapper = getWrapper(mockPatient1, false);
     expect(wrapper.find(Modal).exists()).toBeFalsy();
 
-    // no idea why you need both of these to trigger the change but you do...
-    wrapper.find('input').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
-    wrapper.find('input').simulate('keydown', { which: 13, preventDefault: jest.fn() });
+    wrapper.find('#assigned_user').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBeFalsy();
-
-    wrapper.find('#assigned_user').at(0).simulate('change', { target: { id: 'assigned_user', value: '1' } });
-    wrapper.find('input').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
-    wrapper.find('input').simulate('keydown', { which: 13, preventDefault: jest.fn() });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
+    wrapper.find('#assigned_user').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
 import React from 'react'
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import { Button, Form, Modal } from 'react-bootstrap';
 import Jurisdiction from '../../components/subject/Jurisdiction';
 import InfoTooltip from '../../components/util/InfoTooltip';
@@ -174,18 +174,13 @@ describe('Jurisdiction', () => {
   });
 
   it('Pressing the enter key opens modal only when change user button is enabled', () => {
-    const wrapper = mount(<Jurisdiction patient={mockPatient1} current_user={mockUser1} has_group_members={false}
-      jurisdictionPaths={jurisdictionPaths} authenticity_token={authyToken} />);
+    const wrapper = getWrapper(mockPatient1, false);
     expect(wrapper.find(Modal).exists()).toBeFalsy();
 
-    // no idea why you need both of these to trigger the change but you do...
-    wrapper.find('input').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
-    wrapper.find('input').simulate('keydown', { which: 13, preventDefault: jest.fn() });
+    wrapper.find('#jurisdiction_id').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBeFalsy();
-
-    wrapper.find('#jurisdiction_id').at(0).simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
-    wrapper.find('input').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
-    wrapper.find('input').simulate('keydown', { which: 13, preventDefault: jest.fn() });
+    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    wrapper.find('#jurisdiction_id').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBeTruthy();
   });
 });
