@@ -91,8 +91,17 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Patient.*'
       )
 
-      updates = Patient.from_fhir(contents).select { |_k, v| v.present? }
+      updates = Patient.from_fhir(contents)
       resource = get_patient(params.permit(:id)[:id])
+
+      # Grab patient before changes to construct diff
+      patient_before = resource.dup
+
+      # If "monitoring" was set to false for a Patient that was previously being monitored
+      if !resource.nil? && resource.monitoring && updates&.key?(:monitoring) && !updates[:monitoring]
+        # Add closed_at to updates
+        updates[:closed_at] = DateTime.now
+      end
     else
       status_not_found && return
     end
@@ -103,8 +112,11 @@ class Fhir::R4::ApiController < ActionController::API
     status_bad_request && return if updates.nil? || !resource.update(updates)
 
     if resource_type == 'patient'
-      # Create a history for the record update
-      History.record_edit(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree updated via API.')
+      # Update patient history with detailed edit diff
+      Patient.detailed_history_edit(patient_before, resource, resource.creator&.email, updates.keys, is_api_edit: true)
+
+      # Send closed email to patient if it is closed with this update, and if they are a reporter
+      PatientMailer.closed_email(resource).deliver_later if updates.key?(:closed_at) && resource.email.present? && resource.self_reporter_or_proxy?
     end
 
     status_ok(resource.as_fhir) && return
