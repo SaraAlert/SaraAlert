@@ -114,7 +114,7 @@ class MonitoringStatus extends React.Component {
                   className="mb-3"
                   name="apply_to_group"
                   id="apply_to_group_yes"
-                  label="This monitoree and all household members"
+                  label="This monitoree and all household members (this will turn off continuous exposure for all household members)"
                   onChange={this.handleChange}
                   checked={this.state.apply_to_group}
                 />
@@ -146,7 +146,7 @@ class MonitoringStatus extends React.Component {
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
-          {this.props.isolation && !this.state.monitoring && this.props.in_a_group && (
+          {this.props.isolation && !this.state.monitoring && this.props.in_a_group && !this.state.apply_to_group && (
             <div className="update-dependent-lde">
               <hr />
               <p className="mb-2">

@@ -111,7 +111,7 @@ describe('MonitoringStatus', () => {
     expect(modalBody.find('#apply_to_group_no').prop('type')).toEqual('radio');
     expect(modalBody.find('#apply_to_group_no').prop('label')).toEqual('This monitoree only');
     expect(modalBody.find('#apply_to_group_yes').prop('type')).toEqual('radio');
-    expect(modalBody.find('#apply_to_group_yes').prop('label')).toEqual('This monitoree and all household members');
+    expect(modalBody.find('#apply_to_group_yes').prop('label')).toEqual('This monitoree and all household members (this will turn off continuous exposure for all household members)');
   });
 
   it('Clicking HoH radio buttons toggles this.state.apply_to_group', () => {
@@ -131,11 +131,33 @@ describe('MonitoringStatus', () => {
     expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeTruthy();
 
     // change back to just this monitoree
-    wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' } });
+    wrapper.find('#apply_to_group_no').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' } });
     wrapper.update();
     expect(wrapper.state('apply_to_group')).toBeFalsy();
     expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
     expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+  });
+
+  it('Clicking the apply to household radio button shows/hides update LDE section', () => {
+    const wrapper = getWrapper(mockPatient1, true, true);
+    wrapper.find('#monitoring_status').simulate('change', { target: { id: 'monitoring_status', value: 'Not Monitoring' } });
+
+    // initial radio button state
+    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_group_cm_exp_only')).toBeFalsy();
+    expect(wrapper.find('.update-dependent-lde').exists()).toBeTruthy();
+
+    // change to apply to all of household
+    wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' } });
+    expect(wrapper.state('apply_to_group')).toBeTruthy();
+    expect(wrapper.state('apply_to_group_cm_exp_only')).toBeFalsy();
+    expect(wrapper.find('.update-dependent-lde').exists()).toBeFalsy();
+
+    // change back to just this monitoree
+    wrapper.find('#apply_to_group_no').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' } });
+    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_group_cm_exp_only')).toBeFalsy();
+    expect(wrapper.find('.update-dependent-lde').exists()).toBeTruthy();
   });
 
   it('Changing monitoring reason dropdown updates state', () => {
@@ -227,8 +249,6 @@ describe('MonitoringStatus', () => {
     wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' } });
     wrapper.find('#monitoring_reason').simulate('change', { target: { id: 'monitoring_reason', value: 'Other' } });
     wrapper.find('#reasoning').simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
-    wrapper.find('#apply_to_group_cm_exp_only_yes').simulate('change', { target: { name: 'apply_to_group_cm_exp_only', id: 'apply_to_group_cm_exp_only_yes' } });
-    wrapper.find('#apply_to_group_cm_exp_only_date').simulate('change', newDate);
 
     // check initial state
     expect(wrapper.state('showMonitoringStatusModal')).toBeTruthy();
@@ -237,8 +257,6 @@ describe('MonitoringStatus', () => {
     expect(wrapper.state('monitoring')).toEqual(false);
     expect(wrapper.state('monitoring_status')).toEqual('Not Monitoring');
     expect(wrapper.state('monitoring_reason')).toEqual('Other');
-    expect(wrapper.state('apply_to_group_cm_exp_only')).toBeTruthy();
-    expect(wrapper.state('apply_to_group_cm_exp_only_date')).toEqual(newDate);
 
     // closes modal
     expect(wrapper.find(Modal).exists()).toBeTruthy();
@@ -252,8 +270,6 @@ describe('MonitoringStatus', () => {
     expect(wrapper.state('monitoring')).toEqual(mockPatient1.monitoring);
     expect(wrapper.state('monitoring_status')).toEqual('Actively Monitoring');
     expect(wrapper.state('monitoring_reason')).toEqual('');
-    expect(wrapper.state('apply_to_group_cm_exp_only')).toBeFalsy();
-    expect(wrapper.state('apply_to_group_cm_exp_only_date')).toEqual(currentDate);
   });
 
   it('Clicking the submit button calls the submit method', () => {
