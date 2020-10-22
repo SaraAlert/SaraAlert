@@ -22,9 +22,9 @@ class AssessmentForm < ApplicationSystemTestCase
     @@system_test_utils.logout unless user_label.nil?
   end
 
-  def complete_assessment_new_link(user_label, patient, assessment_label)
+  def complete_assessment_new_link(user_label, patient, assessment_label, initials_age)
     @@system_test_utils.login(user_label) unless user_label.nil?
-    visit "/r/#{patient.submission_token}/#{patient.jurisdiction.unique_identifier}/en/#{patient.initials}"
+    visit "/r/#{patient.submission_token}/#{patient.jurisdiction.unique_identifier}/en/#{initials_age ? patient.initials_age : ''}"
     submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
     err_msg = @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
     assert page.has_content?('Thank You For Completing Your Self Report'), err_msg

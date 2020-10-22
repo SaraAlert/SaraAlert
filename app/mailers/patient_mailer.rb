@@ -23,12 +23,11 @@ class PatientMailer < ApplicationMailer
     return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
-    patient_name = "#{patient&.initials}-#{patient&.calc_current_age || '0'}"
     url = new_patient_assessment_jurisdiction_lang_initials_url(patient.submission_token,
                                                                 patient.jurisdiction.unique_identifier,
                                                                 lang&.to_s || 'en',
-                                                                patient_name.gsub('-', '').truncate(5, omission: nil))
-    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{patient_name}: #{url}"
+                                                                patient&.initials_age)
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{patient&.initials_age('-')}: #{url}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
@@ -48,8 +47,7 @@ class PatientMailer < ApplicationMailer
     return if patient&.primary_telephone.blank?
 
     lang = patient.select_language
-    patient_name = "#{patient&.initials}-#{patient&.calc_current_age || '0'}"
-    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient_name} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
+    contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
     account_sid = ENV['TWILLIO_API_ACCOUNT']
     auth_token = ENV['TWILLIO_API_KEY']
     from = ENV['TWILLIO_SENDING_NUMBER']
@@ -73,12 +71,11 @@ class PatientMailer < ApplicationMailer
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |p|
       lang = p.select_language
-      patient_name = "#{p&.initials}-#{p&.calc_current_age || '0'}"
       url = new_patient_assessment_jurisdiction_lang_initials_url(patient.submission_token,
                                                                   patient.jurisdiction.unique_identifier,
                                                                   lang&.to_s || 'en',
-                                                                  patient_name.gsub('-', '').truncate(5, omission: nil))
-      contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{patient_name}: #{url}"
+                                                                  patient&.initials_age)
+      contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{patient&.initials_age('-')}: #{url}"
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
       from = ENV['TWILLIO_SENDING_NUMBER']
@@ -125,9 +122,7 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient_names = patient.active_dependents.uniq.collect do |p|
-      "#{p&.initials}-#{p&.calc_current_age || '0'}"
-    end
+    patient_names = patient.active_dependents.uniq.collect { |p| p&.initials_age('-') }
     contents = I18n.t('assessments.sms.prompt.daily1', locale: lang) + patient_names.join(', ') + '.'
 
     # Prepare text asking about anyone in the group

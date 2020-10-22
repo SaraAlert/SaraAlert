@@ -19,10 +19,17 @@ class MonitoreeTest < ApplicationSystemTestCase
   end
 
   test 'complete assessments with new link' do
-    @@assessment_form.complete_assessment_new_link(nil, Patient.find(1), 'assessment_1')
-    @@assessment_form.complete_assessment_new_link(nil, Patient.find(2), 'assessment_2')
-    @@assessment_form.complete_assessment_new_link(nil, Patient.find(3), 'assessment_3')
-    @@assessment_form.complete_assessment_new_link(nil, Patient.find(4), 'assessment_4')
+    @@assessment_form.complete_assessment_new_link(nil, Patient.find(1), 'assessment_1', true)
+    @@assessment_form.complete_assessment_new_link(nil, Patient.find(2), 'assessment_2', true)
+    @@assessment_form.complete_assessment_new_link(nil, Patient.find(3), 'assessment_3', true)
+    @@assessment_form.complete_assessment_new_link(nil, Patient.find(4), 'assessment_4', true)
+  end
+
+  test 'complete assessments with new link (without initials age) ' do
+    @@assessment_form.complete_assessment_new_link(nil, Patient.find(1), 'assessment_1', false)
+    @@assessment_form.complete_assessment_new_link(nil, Patient.find(2), 'assessment_2', false)
+    @@assessment_form.complete_assessment_new_link(nil, Patient.find(3), 'assessment_3', false)
+    @@assessment_form.complete_assessment_new_link(nil, Patient.find(4), 'assessment_4', false)
   end
 
   test 'complete assessments with old link' do
@@ -40,10 +47,17 @@ class MonitoreeTest < ApplicationSystemTestCase
   end
 
   test 'complete assessments as logged in user with new link' do
-    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(1), 'assessment_1')
-    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(2), 'assessment_2')
-    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(3), 'assessment_3')
-    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(4), 'assessment_4')
+    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(1), 'assessment_1', true)
+    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(2), 'assessment_2', true)
+    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(3), 'assessment_3', true)
+    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(4), 'assessment_4', true)
+  end
+
+  test 'complete assessments as logged in user with new link (without initials age)' do
+    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(1), 'assessment_1', false)
+    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(2), 'assessment_2', false)
+    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(3), 'assessment_3', false)
+    @@assessment_form.complete_assessment_new_link('usa_epi', Patient.find(4), 'assessment_4', false)
   end
 
   test 'complete assessments as logged in user with old link' do
@@ -57,7 +71,7 @@ class MonitoreeTest < ApplicationSystemTestCase
     patient = Patient.find(9)
     @@assessment_form.complete_assessment_new_link('usa_epi', patient, 'assessment_1')
     @@system_test_utils.login('usa_epi')
-    visit "/r/#{patient.submission_token}/#{patient.jurisdiction.unique_identifier}/en/#{patient.initials}"
+    visit "/r/#{patient.submission_token}/#{patient.jurisdiction.unique_identifier}/en/#{patient.initials_age}"
     assert page.has_content?('It appears you have already submitted your report. Please wait before reporting again.')
     visit "/patients/#{patient.submission_token}/assessments/new"
     assert page.has_content?('It appears you have already submitted your report. Please wait before reporting again.')

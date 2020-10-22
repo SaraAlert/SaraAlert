@@ -685,6 +685,11 @@ class Patient < ApplicationRecord
     end
   end
 
+  # Patient initials and age
+  def initials_age(separator = '')
+    "#{initials}#{separator}#{(calc_current_age || 0).to_s.truncate(3, omission: nil)}"
+  end
+
   # Patient initials
   def initials
     "#{first_name&.gsub(/[^A-Za-z]/i, '')&.first || ''}#{last_name&.gsub(/[^A-Za-z]/i, '')&.first || ''}"
@@ -970,5 +975,14 @@ class Patient < ApplicationRecord
   def refresh_head_of_household
     hoh = dependents_exclude_self.where(purged: false).size.positive?
     update(head_of_household: hoh) unless head_of_household == hoh
+  end
+
+  # Create a secure random token to act as the monitoree's password when they submit assessments
+  # This gets included in the URL sent to the monitoree to allow them to report without having to type in a password
+  def new_submission_token
+    loop do
+      submission_token = SecureRandom.urlsafe_base64[0, 10]
+      break unless Patient.where('BINARY submission_token = ?', submission_token).any?
+    end
   end
 end

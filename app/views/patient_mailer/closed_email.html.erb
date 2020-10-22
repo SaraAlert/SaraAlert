@@ -3,7 +3,7 @@
 <% end %>
 
 <% content_for :body do %>
-  <p><%= t('assessments.email.closed.dear', locale: @lang || :en) %> <%= "#{@patient&.initials}-#{@patient&.calc_current_age || '0'}" %>,</p>
+  <p><%= t('assessments.email.closed.dear', locale: @lang || :en) %> <%= @patient&.initials_age('-') %>,</p>
 
   <p><%= t('assessments.email.closed.thank-you', locale: @lang || :en) %></p>
 <% end %>

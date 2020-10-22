@@ -11,12 +11,12 @@ class AssessmentsController < ApplicationController
     return if @patient_submission_token.nil?
 
     # Don't bother with this if the jurisdiction unique identifier isn't at least 10 characters long
-    @unique_identifier = params.permit(:unique_identifier)[:unique_identifier]&.gsub(/[^0-9A-Za-z_-]/i, '')
+    @unique_identifier = params.permit(:unique_identifier)[:unique_identifier]&.gsub(/[^0-9a-z_-]/i, '')
     redirect_to(invalid_link_url) && return if @unique_identifier.present? && @unique_identifier.length < 10
 
     # Replace old unique identifier with new unique identifier if applicable
     if @unique_identifier.present? && @unique_identifier.length > 10
-      jurisdiction_lookup = JurisdictionLookup.where('old_unique_identifier like ?', "#{@unique_identifier}%").first
+      jurisdiction_lookup = JurisdictionLookup.find_by('old_unique_identifier like ?', "#{@unique_identifier}%")
       redirect_to(invalid_link_url) && return if jurisdiction_lookup.nil?
 
       @unique_identifier = jurisdiction_lookup.new_unique_identifier
@@ -24,10 +24,10 @@ class AssessmentsController < ApplicationController
 
     # Figure out the jurisdiction to know which symptoms to render
     jurisdiction = if ADMIN_OPTIONS['report_mode']
-                     Jurisdiction.where('BINARY unique_identifier = ?', @unique_identifier).first
+                     Jurisdiction.find_by('BINARY unique_identifier = ?', @unique_identifier)
                    else
                      # Try looking up jurisdiction by patient (@patient_submission_token here should be the new version)
-                     Patient.where('BINARY submission_token = ?', @patient_submission_token).first&.jurisdiction
+                     Patient.find_by('BINARY submission_token = ?', @patient_submission_token)&.jurisdiction
                    end
     redirect_to(invalid_link_url) && return if jurisdiction.nil?
 
@@ -39,8 +39,8 @@ class AssessmentsController < ApplicationController
     @contact_info = jurisdiction.contact_info
     @lang = params.permit(:lang)[:lang] if %w[en es es-PR so fr].include?(params[:lang])
     @lang = 'en' if @lang.nil? # Default to english
-    @patient_initials = params.permit(:initials_age)[:initials_age]&.upcase&.gsub(/[^A-Z]/i, '')
-    @patient_age = params.permit(:initials_age)[:initials_age]&.gsub(/[^0-9]/i, '')
+    @patient_initials = params.permit(:initials_age)[:initials_age]&.upcase&.gsub(/[^a-z]/i, '')
+    @patient_age = params.permit(:initials_age)[:initials_age]&.gsub(/[^0-9]/, '')
   end
 
   def create
@@ -79,11 +79,11 @@ class AssessmentsController < ApplicationController
       return if @patient_submission_token.nil?
 
       # The patient providing this assessment is identified through the submission_token
-      patient = Patient.where('BINARY submission_token = ?', @patient_submission_token).first
+      patient = Patient.find_by('BINARY submission_token = ?', @patient_submission_token)
       redirect_to(root_url) && return unless patient
 
       threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
-      threshold_condition = ThresholdCondition.where(threshold_condition_hash: threshold_condition_hash).first
+      threshold_condition = ThresholdCondition.find_by(threshold_condition_hash: threshold_condition_hash)
       redirect_to(root_url) && return unless threshold_condition
 
       reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
@@ -125,7 +125,7 @@ class AssessmentsController < ApplicationController
     return if @patient_submission_token.nil?
 
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
-    patient = Patient.where('BINARY submission_token = ?', params.permit(:patient_submission_token)[:patient_submission_token]).first
+    patient = Patient.find_by('BINARY submission_token = ?', params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
 
@@ -171,13 +171,13 @@ class AssessmentsController < ApplicationController
     redirect_to(invalid_link_url) && return if !invalid_link_url.nil? && (params.nil? || params[:patient_submission_token].nil?)
 
     # Token validation
-    patient_submission_token = params[:patient_submission_token].gsub(/[^0-9A-Za-z_-]/i, '')
+    patient_submission_token = params[:patient_submission_token].gsub(/[^0-9a-z_-]/i, '')
     return if invalid_link_url.nil? && patient_submission_token.length != 10 && patient_submission_token.length != 40
     redirect_to(invalid_link_url) && return if !invalid_link_url.nil? && patient_submission_token.length != 10 && patient_submission_token.length != 40
 
     # Replace old submission token with new submission token if applicable
     if patient_submission_token.length == 40
-      patient_lookup = PatientLookup.where(old_submission_token: patient_submission_token).first
+      patient_lookup = PatientLookup.find_by(old_submission_token: patient_submission_token)
       if patient_lookup.nil?
         return if invalid_link_url.nil?
         redirect_to(invalid_link_url) && return unless url.nil?

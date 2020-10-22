@@ -119,11 +119,10 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms weblink message contents' do
-    patient_name = "#{@patient&.initials}#{@patient&.calc_current_age || '0'}".truncate(5, omission: nil)
     url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
                                                                 @patient.jurisdiction.unique_identifier,
                                                                 'en',
-                                                                patient_name)
+                                                                @patient&.initials_age)
     contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
@@ -154,11 +153,10 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'assessment sms weblink message contents' do
-    patient_name = "#{@patient&.initials}#{@patient&.calc_current_age || '0'}".truncate(5, omission: nil)
     url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
                                                                 @patient.jurisdiction.unique_identifier,
                                                                 'en',
-                                                                patient_name)
+                                                                @patient&.initials_age)
     contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do

@@ -188,11 +188,8 @@ class Fhir::R4::ApiController < ActionController::API
       # Jurisdiction is the authenticated user's jurisdiction
       resource.jurisdiction = resource.creator.jurisdiction
 
-      # Generate a submission token for the new monitoree
-      loop do
-        resource.submission_token = SecureRandom.urlsafe_base64[0, 10]
-        break unless Patient.where('BINARY submission_token = ?', resource.submission_token).any?
-      end
+      # Generate submission token for monitoree
+      resource.new_submission_token
     else
       status_not_found && return
     end

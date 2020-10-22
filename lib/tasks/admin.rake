@@ -113,7 +113,7 @@ namespace :admin do
 
       # Warn user if collision has occured
       if Jurisdiction.where('BINARY unique_identifier = ?', unique_identifier).where.not(id: jurisdiction.id).any?
-        puts "JURISDICTION IDENTIFIER HASH COLLISION FOR: #{jurisdiction[:path]}"
+        raise "JURISDICTION IDENTIFIER HASH COLLISION FOR: #{jurisdiction[:path]}"
       end
 
       jurisdiction.update(unique_identifier: unique_identifier, path: jurisdiction.jurisdiction_path_string)
