@@ -863,6 +863,7 @@ class Patient < ApplicationRecord
     yield
 
     return if responder.nil?
+
     # update the initial responder if it changed
     Patient.find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
     # update the current responder
