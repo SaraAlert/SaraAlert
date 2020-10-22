@@ -44,7 +44,7 @@ class Exposure extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    if (event?.target?.name && event.target.name === 'jurisdictionId') {
+    if (event?.target?.id && event.target.id === 'jurisdiction_id') {
       this.setState({ jurisdictionPath: event.target.value });
       let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
       if (jurisdiction_id) {
@@ -66,7 +66,7 @@ class Exposure extends React.Component {
       } else {
         value = -1;
       }
-    } else if (event?.target?.name && event.target.name === 'assignedUser') {
+    } else if (event?.target?.id && event.target.id === 'assigned_user') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 9999) return;
 
       // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
@@ -585,7 +585,7 @@ class Exposure extends React.Component {
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
-                        name="jurisdictionId"
+                        nid="jurisdiction_id"
                         list="jurisdictionPaths"
                         autoComplete="off"
                         size="lg"
@@ -628,7 +628,7 @@ class Exposure extends React.Component {
                       <Form.Control
                         isInvalid={this.state.errors['assigned_user']}
                         as="input"
-                        name="assignedUser"
+                        id="assigned_user"
                         list="assignedUsers"
                         autoComplete="off"
                         size="lg"

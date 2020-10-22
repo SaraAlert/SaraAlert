@@ -217,7 +217,7 @@ class PatientsTable extends React.Component {
         this.updateTable({ ...query, jurisdiction: jurisdictionId, page: 0 });
         this.updateAssignedUsers(jurisdictionId, this.state.query.scope, this.props.workflow, this.state.query.tab);
       }
-    } else if (event.target.name === 'assignedUser') {
+    } else if (event.target.name === 'assigned_user') {
       if (event.target.value === '') {
         this.setState({ form: { ...form, assignedUser: event.target.value } });
         this.updateTable({ ...query, user: 'all', page: 0 });
@@ -500,7 +500,7 @@ class PatientsTable extends React.Component {
                           <Form.Control
                             type="text"
                             autoComplete="off"
-                            name="assignedUser"
+                            id="assigned_user"
                             list="assignedUsers"
                             value={this.state.form.assignedUser}
                             onChange={this.handleChange}

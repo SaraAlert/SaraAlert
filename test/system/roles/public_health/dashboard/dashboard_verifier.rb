@@ -76,7 +76,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     if patient[:assigned_user].nil?
       find_by_id('noAssignedUser').click
     else
-      fill_in 'assignedUser', with: patient[:assigned_user]
+      fill_in 'assigned_user', with: patient[:assigned_user]
     end
     verify_patient_info(patient, workflow, tab)
     find_by_id('allAssignedUsers').click
@@ -140,8 +140,8 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     assert page.has_select?('monitoring_plan', selected: patient.monitoring_plan.to_s)
     assert page.has_select?('case_status', selected: patient.case_status.to_s)
     assert page.has_select?('public_health_action', selected: public_health_action)
-    assert page.has_field?('assignedUser', with: patient.assigned_user.to_s)
-    assert page.has_field?('jurisdictionId', with: patient.jurisdiction.jurisdiction_path_string)
+    assert page.has_field?('assigned_user', with: patient.assigned_user.to_s)
+    assert page.has_field?('jurisdiction_id', with: patient.jurisdiction.jurisdiction_path_string)
     @@system_test_utils.return_to_dashboard(nil)
     return unless apply_to_group
 
