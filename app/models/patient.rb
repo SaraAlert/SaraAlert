@@ -857,9 +857,7 @@ class Patient < ApplicationRecord
     dependents_exclude_self.size.positive?
   end
 
-  # After remove callback passes a parameter which is the object that was just removed, we don't need it
-  # so we just throw it away
-  def inform_responder(*)
+  def inform_responder
     initial_responder = responder_id_was
     # Yield to save or destroy, depending on which callback invokes this method
     yield
