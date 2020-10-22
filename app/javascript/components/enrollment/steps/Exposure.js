@@ -632,7 +632,7 @@ class Exposure extends React.Component {
                         list="assignedUsers"
                         autoComplete="off"
                         size="lg"
-                        className="no-spinner form-square"
+                        className="form-square"
                         onChange={this.handleChange}
                         value={this.state.current.patient.assigned_user || ''}
                       />
