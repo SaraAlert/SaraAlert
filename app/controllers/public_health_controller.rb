@@ -219,7 +219,8 @@ class PublicHealthController < ApplicationController
                                'patients.date_of_birth, patients.assigned_user, patients.exposure_risk_assessment, patients.monitoring_plan, '\
                                'patients.public_health_action, patients.monitoring_reason, patients.closed_at, patients.last_date_of_exposure, '\
                                'patients.created_at, patients.updated_at, patients.latest_assessment_at, patients.latest_transfer_at, '\
-                               'patients.continuous_exposure, patients.head_of_household, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path')
+                               'patients.continuous_exposure, patients.head_of_household, jurisdictions.name AS jurisdiction_name, '\
+                               'jurisdictions.path AS jurisdiction_path')
 
     # execute query and get total count
     total = patients.total_entries
