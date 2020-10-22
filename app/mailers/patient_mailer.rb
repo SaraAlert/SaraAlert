@@ -71,11 +71,11 @@ class PatientMailer < ApplicationMailer
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |p|
       lang = p.select_language
-      url = new_patient_assessment_jurisdiction_lang_initials_url(patient.submission_token,
-                                                                  patient.jurisdiction.unique_identifier,
+      url = new_patient_assessment_jurisdiction_lang_initials_url(p.submission_token,
+                                                                  p.jurisdiction.unique_identifier,
                                                                   lang&.to_s || 'en',
-                                                                  patient&.initials_age)
-      contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{patient&.initials_age('-')}: #{url}"
+                                                                  p&.initials_age)
+      contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{p&.initials_age('-')}: #{url}"
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
       from = ENV['TWILLIO_SENDING_NUMBER']

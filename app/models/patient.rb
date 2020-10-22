@@ -980,9 +980,11 @@ class Patient < ApplicationRecord
   # Create a secure random token to act as the monitoree's password when they submit assessments
   # This gets included in the URL sent to the monitoree to allow them to report without having to type in a password
   def new_submission_token
+    token = nil
     loop do
-      submission_token = SecureRandom.urlsafe_base64[0, 10]
-      break unless Patient.where('BINARY submission_token = ?', submission_token).any?
+      token = SecureRandom.urlsafe_base64[0, 10]
+      break unless Patient.where('BINARY submission_token = ?', token).any?
     end
+    token
   end
 end

@@ -6,18 +6,19 @@ class AssessmentsController < ApplicationController
 
   def new
     # Validate and get patient submission token and redirect if invalid link or already reported
-    @patient_submission_token = check_and_get_patient_submission_token(invalid_link_url,
-                                                                       ADMIN_OPTIONS['report_mode'] ? already_reported_report_url : already_reported_url)
+    ar_url = current_user.nil? ? (ADMIN_OPTIONS['report_mode'] ? already_reported_report_url : already_reported_url) : nil
+    ir_url = ADMIN_OPTIONS['report_mode'] ? invalid_link_report_url : invalid_link_url
+    @patient_submission_token = check_and_get_patient_submission_token(ir_url, ar_url)
     return if @patient_submission_token.nil?
 
     # Don't bother with this if the jurisdiction unique identifier isn't at least 10 characters long
     @unique_identifier = params.permit(:unique_identifier)[:unique_identifier]&.gsub(/[^0-9a-z_-]/i, '')
-    redirect_to(invalid_link_url) && return if @unique_identifier.present? && @unique_identifier.length < 10
+    redirect_to(ir_url) && return if @unique_identifier.present? && @unique_identifier.length < 10
 
     # Replace old unique identifier with new unique identifier if applicable
     if @unique_identifier.present? && @unique_identifier.length > 10
       jurisdiction_lookup = JurisdictionLookup.find_by('old_unique_identifier like ?', "#{@unique_identifier}%")
-      redirect_to(invalid_link_url) && return if jurisdiction_lookup.nil?
+      redirect_to(ir_url) && return if jurisdiction_lookup.nil?
 
       @unique_identifier = jurisdiction_lookup.new_unique_identifier
     end
@@ -29,7 +30,7 @@ class AssessmentsController < ApplicationController
                      # Try looking up jurisdiction by patient (@patient_submission_token here should be the new version)
                      Patient.find_by('BINARY submission_token = ?', @patient_submission_token)&.jurisdiction
                    end
-    redirect_to(invalid_link_url) && return if jurisdiction.nil?
+    redirect_to(ir_url) && return if jurisdiction.nil?
 
     @assessment = Assessment.new
     reporting_condition = jurisdiction.hierarchical_condition_unpopulated_symptoms
@@ -165,32 +166,32 @@ class AssessmentsController < ApplicationController
 
   protected
 
-  def check_and_get_patient_submission_token(invalid_link_url, already_reported_url)
-    # Params and token existence
-    return if invalid_link_url.nil? && (params.nil? || params[:patient_submission_token].nil?)
-    redirect_to(invalid_link_url) && return if !invalid_link_url.nil? && (params.nil? || params[:patient_submission_token].nil?)
+  def check_and_get_patient_submission_token(il_url, ar_url)
+    # Redirect (if url provided) and return if params is nil or does not contain patient submission token
+    return if il_url.nil? && (params.nil? || params[:patient_submission_token].nil?)
+    redirect_to(il_url) && return if !il_url.nil? && (params.nil? || params[:patient_submission_token].nil?)
 
-    # Token validation
+    # Redirect (if url provided) and return if patient submission token length is invalid (not 10 or 40)
     patient_submission_token = params[:patient_submission_token].gsub(/[^0-9a-z_-]/i, '')
-    return if invalid_link_url.nil? && patient_submission_token.length != 10 && patient_submission_token.length != 40
-    redirect_to(invalid_link_url) && return if !invalid_link_url.nil? && patient_submission_token.length != 10 && patient_submission_token.length != 40
+    return if il_url.nil? && patient_submission_token.length != 10 && patient_submission_token.length != 40
+    redirect_to(il_url) && return if !il_url.nil? && patient_submission_token.length != 10 && patient_submission_token.length != 40
 
     # Replace old submission token with new submission token if applicable
     if patient_submission_token.length == 40
       patient_lookup = PatientLookup.find_by(old_submission_token: patient_submission_token)
       if patient_lookup.nil?
-        return if invalid_link_url.nil?
-        redirect_to(invalid_link_url) && return unless url.nil?
+        return if il_url.nil?
+        redirect_to(il_url) && return unless url.nil?
       end
 
       patient_submission_token = patient_lookup.new_submission_token
     end
 
-    # Redirect and return if already reported
-    if already_reported_url.present? && AssessmentReceipt.where('BINARY submission_token = ?', patient_submission_token)
-                                                         .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
-                                                         .exists?
-      redirect_to(already_reported_url) && return
+    # Redirect and return if already reported and link is provided
+    if ar_url.present? && AssessmentReceipt.where('BINARY submission_token = ?', patient_submission_token)
+                                           .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+                                           .exists?
+      redirect_to(ar_url) && return
     end
 
     patient_submission_token

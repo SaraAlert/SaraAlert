@@ -152,7 +152,7 @@ class PatientsController < ApplicationController
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
     # Generate submission token for assessments
-    patient.new_submission_token
+    patient.submission_token = patient.new_submission_token
 
     # Attempt to save and continue; else if failed redirect to index
     render(json: patient.errors, status: 422) && return unless patient.save

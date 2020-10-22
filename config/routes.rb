@@ -93,7 +93,8 @@ Rails.application.routes.draw do
   get '/r/:patient_submission_token/:unique_identifier/:lang/:initials_age', to: 'assessments#new', as: :new_patient_assessment_jurisdiction_lang_initials
   get '/already_reported', to: 'assessments#already_reported', as: :already_reported
   get '/report/already_reported', to: 'assessments#already_reported', as: :already_reported_report
-  get '/report/invalid_link', to: 'assessments#invalid_link', as: :invalid_link
+  get '/invalid_link', to: 'assessments#invalid_link', as: :invalid_link
+  get '/report/invalid_link', to: 'assessments#invalid_link', as: :invalid_link_report
 
   post '/patients/:patient_submission_token/assessments/:id', to: 'assessments#update'
 
