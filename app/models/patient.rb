@@ -861,7 +861,6 @@ class Patient < ApplicationRecord
   # so we just throw it away
   def inform_responder(*)
     initial_responder = responder_id_was
-    self_reporter = self_reporter_or_proxy?
     # Yield to save or destroy, depending on which callback invokes this method
     yield
 
