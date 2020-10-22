@@ -19,7 +19,7 @@
                         has_group_members: @group_members.exists?,
                         in_a_group: @all_group_members.count > 1,
                         patient: @patient,
-                        jurisdictionPaths: Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }],
+                        jurisdictionPaths: @possible_jurisdiction_paths,
                         assignedUsers: @patient.jurisdiction.assigned_users,
                         isolation: @patient.isolation
                       }) %>
