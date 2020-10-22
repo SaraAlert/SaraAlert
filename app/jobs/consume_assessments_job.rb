@@ -103,6 +103,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         when 'opt_out'
           # TODO: Fill out appropriate action for user opt out once decided
+          BlockedNumber.create(phone_number: patient.primary_telephone)
           # histories = []
           # patient.dependents.uniq.each do |pat|
           #   histories << (choose correct history item)
@@ -125,10 +126,26 @@ class ConsumeAssessmentsJob < ApplicationJob
           queue.commit
           next
         when 'max_retries_sms'
-          # TODO: Fill out appropriate action for user max retries once decided
+          # Maximum amount of SMS response retries reached
+          # nil out the last_reminder_sent field so the system will try sending another SMS assessment
+          patient.update(last_assessment_reminder_sent: nil)
+          History.contact_attempt(patient: patient, comment: "Monitoree exceeded the maximum number of assessment SMS response retries via\
+                                                             primary telephone number #{patient.primary_telephone}.")
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment SMS response retries via\
+                                                                      primary telephone number #{patient.primary_telephone}.")
+          end
           next
         when 'max_retries_voice'
-          # TODO: Fill out appropriate action for user max retries once decided
+          # Maximum amount of voice response retries reached
+          # nil out the last_reminder_sent field so the system will try sending another voice assessment
+          patient.update(last_assessment_reminder_sent: nil)
+          History.contact_attempt(patient: patient, comment: "Monitoree exceeded the maximum number of assessment voice response retries via\
+                                                             primary telephone number #{patient.primary_telephone}.")
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment voice response retries via\
+                                                                      primary telephone number #{patient.primary_telephone}.")
+          end
           next
         end
 
