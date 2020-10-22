@@ -71,7 +71,7 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       unknown: unknown || false,
       other: other || false,
       refused_to_answer: refused_to_answer || false,
-      races: races,
+      races: races || [],
       ethnicity: ethnicity || '',
       primary_language: primary_language || '',
       secondary_language: secondary_language || '',

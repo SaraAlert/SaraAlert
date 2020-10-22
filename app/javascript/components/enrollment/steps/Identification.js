@@ -20,7 +20,15 @@ class Identification extends React.Component {
     super(props);
     this.state = {
       ...this.props,
-      current: { ...this.props.currentState },
+      current: {
+        ...this.props.currentState,
+        patient: {
+          ..._.extend(
+            this.props.currentState.patient,
+            _.reduce(this.props.currentState.patient.races, (memo, race) => _.extend(memo, { [race]: true }), {})
+          ),
+        },
+      },
       errors: {},
       modified: {},
       languageOptions: this.getLanguageOptions(),
