@@ -37,6 +37,11 @@ ActiveRecord::Schema.define(version: 2020_11_16_214553) do
     t.index ["symptomatic", "patient_id", "created_at"], name: "assessments_index_chain_2"
   end
 
+  create_table "blocked_numbers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "phone_number"
+    t.index ["phone_number"], name: "index_blocked_phone_number"
+  end
+
   create_table "close_contacts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "patient_id"
     t.string "first_name"
