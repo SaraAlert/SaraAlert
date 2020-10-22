@@ -257,7 +257,7 @@ namespace :demo do
       patient[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
       patient[:date_of_birth] = Faker::Date.birthday(min_age: 1, max_age: 85)
       patient[:age] = ((Date.today - patient[:date_of_birth]) / 365.25).round
-      patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
+      patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander unknown other refused_to_answer].sample] = true
       patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
       patient[:primary_language] = rand < 0.7 ? 'English' : Faker::Nation.language
       patient[:secondary_language] = Faker::Nation.language if rand < 0.4
