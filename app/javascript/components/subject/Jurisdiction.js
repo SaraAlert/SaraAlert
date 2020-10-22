@@ -64,6 +64,7 @@ class Jurisdiction extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
+          patient: this.props.patient,
           jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdiction_path),
           reasoning: this.state.reasoning,
           apply_to_group: this.state.apply_to_group,

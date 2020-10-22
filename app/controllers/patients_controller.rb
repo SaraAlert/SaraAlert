@@ -418,7 +418,7 @@ class PatientsController < ApplicationController
     end
 
     # Update the patient with updated values.
-    patient.update(params.permit(params_to_update))
+    patient.update(params.require(:patient).permit(params_to_update))
 
     if !params.permit(:jurisdiction)[:jurisdiction].nil? && params.permit(:jurisdiction)[:jurisdiction] != patient.jurisdiction_id
       # Jurisdiction has changed
