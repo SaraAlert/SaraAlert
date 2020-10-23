@@ -34,7 +34,7 @@ describe('PauseNotifications', () => {
         expect(wrapper.find(Button).text().includes('Pause Notifications')).toBeTruthy();
         expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
         expect(wrapper.find(ReactTooltip)).toBeTruthy();
-        expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Notifications cannot be paused for records on the Closed line list since this monitoree is not eligible to receive notifications. If this monitoree requires monitoring, you may update this field after changing Monitoring Status to "Actively Monitoring"`)
+        expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Notifications cannot be paused for records on the Closed line list. You may update this field after changing Monitoring Status to "Actively Monitoring"`)
     });
 
     it('Clicking the pause notifications button calls handle submit function', () => {
@@ -74,7 +74,7 @@ describe('PauseNotifications', () => {
         expect(wrapper.find(Button).text().includes('Resume Notifications')).toBeTruthy();
         expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
         expect(wrapper.find(ReactTooltip)).toBeTruthy();
-        expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Notifications cannot be resumed for records on the Closed line list since this monitoree is not eligible to receive notifications. If this monitoree requires monitoring, you may update this field after changing Monitoring Status to "Actively Monitoring"`)
+        expect(wrapper.find(ReactTooltip).find('span').text()).toEqual(`Notifications cannot be resumed for records on the Closed line list. You may update this field after changing Monitoring Status to "Actively Monitoring"`)
     });
 
     it('Clicking the resume notifications button calls handle submit function', () => {

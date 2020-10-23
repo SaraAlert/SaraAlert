@@ -45,7 +45,7 @@ class PauseNotifications extends React.Component {
     let text = '';
     // monitoree record is closed
     if (!this.props.patient.monitoring) {
-      text = `Notifications cannot be ${notificationsAction} for records on the Closed line list since this monitoree is not eligible to receive notifications. If this monitoree requires monitoring, you may update this field after changing Monitoring Status to "Actively Monitoring"`;
+      text = `Notifications cannot be ${notificationsAction} for records on the Closed line list. You may update this field after changing Monitoring Status to "Actively Monitoring"`;
       // monitoree is a HH dependent
     } else if (this.props.patient.id !== this.props.patient.responder_id) {
       text = `Notifications cannot be ${notificationsAction} because the monitoree is within a Household, so the Head of Household will receive notifications instead. If notifications to the Head of Household should be ${notificationsAction}, you may update this field on the Head of Household record.`;

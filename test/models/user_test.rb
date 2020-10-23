@@ -51,7 +51,7 @@ class UserTest < ActiveSupport::TestCase
     assert_nil user.get_patients(1)
 
     # User with patients but no role
-    user_with_patients = create(:user, created_patients_count: rand(100), jurisdiction: @jurisdiction)
+    user_with_patients = create(:user, created_patients_count: rand(1..100), jurisdiction: @jurisdiction)
     patient = user_with_patients.enrolled_patients.first
     assert_nil user_with_patients.get_patients(patient.id)
 

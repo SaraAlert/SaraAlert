@@ -43,7 +43,7 @@ class User < ApplicationRecord
 
   # Patients this user has enrolled
   def enrolled_patients
-    created_patients
+    created_patients.where(purged: false)
   end
 
   def patients
