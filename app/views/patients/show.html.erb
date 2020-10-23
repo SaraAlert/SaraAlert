@@ -15,6 +15,7 @@
   <h5 class="card-header">Monitoring Actions</h5>
   <%= react_component('subject/MonitoringStatus', {
                         current_user: current_user,
+                        user_can_transfer: current_user.can_transfer_patients?,
                         authenticity_token: form_authenticity_token,
                         has_group_members: @group_members.exists?,
                         in_a_group: @all_group_members.count > 1,
