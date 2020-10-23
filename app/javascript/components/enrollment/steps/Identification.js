@@ -644,14 +644,6 @@ const schema = yup.object().shape({
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')
     .nullable(),
-  white: yup.boolean().nullable(),
-  black_or_african_american: yup.boolean().nullable(),
-  american_indian_or_alaska_native: yup.boolean().nullable(),
-  asian: yup.boolean().nullable(),
-  native_hawaiian_or_other_pacific_islander: yup.boolean().nullable(),
-  unknown: yup.boolean().nullable(),
-  other: yup.boolean().nullable(),
-  refused_to_answer: yup.boolean().nullable(),
   races: yup.array(),
   ethnicity: yup
     .string()

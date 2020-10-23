@@ -127,6 +127,7 @@ class Fhir::R4::ApiController < ActionController::API
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
     when 'patient'
+      puts contents
       return if doorkeeper_authorize!(
         :'user/Patient.write',
         :'user/Patient.*',

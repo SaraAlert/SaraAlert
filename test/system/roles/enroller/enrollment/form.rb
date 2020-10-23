@@ -37,8 +37,12 @@ class EnrollmentForm < ApplicationSystemTestCase
           fill_in field[:id], with: data[field[:id]]
         elsif field[:type] == 'select'
           select data[field[:id]], from: field[:id]
-        elsif field[:type] == 'checkbox' || field[:type] == 'race' || field[:type] == 'risk_factor'
+        elsif field[:type] == 'checkbox' || field[:type] == 'risk_factor'
           page.find('label', text: field[:label]).click
+        elsif field[:type] == 'race'
+          data[field[:id]].each do |race|
+            page.find('id', text: race).click
+          end     
         elsif field[:type] == 'language'
           input_element = page.find_by_id("#{field[:id]}_wrapper").first(:xpath, './/div//div//div//div//div//input')
           input_element.set data[field[:id]]
