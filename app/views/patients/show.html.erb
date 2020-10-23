@@ -4,7 +4,7 @@
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: '/' }, { value: 'Monitoree Details', href: nil }], isolation: @patient&.isolation || false } %>
 
-<% if current_user.can_view_patient_assessments? %>
+<% if current_user.can_download_monitoree_data? %>
 <%= react_component('subject/DownloadMonitoreeExcel', { authenticity_token: form_authenticity_token, patient: @patient }) %>
 <% end %>
 
@@ -15,11 +15,12 @@
   <h5 class="card-header">Monitoring Actions</h5>
   <%= react_component('subject/MonitoringStatus', {
                         current_user: current_user,
+                        user_can_transfer: current_user.can_transfer_patients?,
                         authenticity_token: form_authenticity_token,
                         has_group_members: @group_members.exists?,
                         in_a_group: @all_group_members.count > 1,
                         patient: @patient,
-                        jurisdictionPaths: Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }],
+                        jurisdictionPaths: @possible_jurisdiction_paths,
                         assignedUsers: @patient.jurisdiction.assigned_users,
                         isolation: @patient.isolation
                       }) %>
@@ -216,7 +217,7 @@
           <td><%= cc.contact_attempts %></td>
           <td>
             <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, user_role: current_user.role }) %>
+              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>
             </div>
           </td>
         </tr>
@@ -225,7 +226,7 @@
     </table>
     <div class="pb-1">
       <div class="btn-group" role="group">
-        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, user_role: current_user.role }) %>
+        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>
       </div>
     </div>
   </div>

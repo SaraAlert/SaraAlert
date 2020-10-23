@@ -58,6 +58,9 @@ class Patient < ApplicationRecord
   has_many :laboratories
   has_many :close_contacts
 
+  around_save :inform_responder, if: :responder_id_changed?
+  around_destroy :inform_responder
+
   # Most recent assessment
   def latest_assessment
     assessments.order(created_at: :desc).first
@@ -484,9 +487,26 @@ class Patient < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
-  # Get all dependents (including self if id = responder_id) that are being monitored or in continuous exposure
+  # Get all dependents (including self if id = responder_id) that are being actively monitored, meaning:
+  # - not purged AND not closed (monitoring = true)
+  #  AND
+  #    - in continuous exposure
+  #     OR
+  #    - in isolation
+  #     OR
+  #    - within monitoring period based on LDE
+  #     OR
+  #    - within monitoring period based on creation date if no LDE specified
   def active_dependents
-    dependents.where('monitoring = ? OR continuous_exposure = ?', true, true)
+    monitoring_days_ago = ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
+    dependents.where(purged: false, monitoring: true)
+              .where('isolation = ? OR continuous_exposure = ? OR last_date_of_exposure >= ? OR (last_date_of_exposure IS NULL AND created_at >= ?)',
+                     true, true, monitoring_days_ago, monitoring_days_ago)
+  end
+
+  # Get all dependents (excluding self if id = responder_id) that are being monitored
+  def active_dependents_exclude_self
+    active_dependents.where.not(id: id)
   end
 
   # Get this patient's dependents excluding itself
@@ -554,8 +574,8 @@ class Patient < ApplicationRecord
     start_of_exposure = last_date_of_exposure || created_at
     return unless (monitoring && start_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day) ||
                   (monitoring && isolation) ||
-                  continuous_exposure ||
-                  dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
+                  (monitoring && continuous_exposure) ||
+                  active_dependents_exclude_self.exists?
 
     # Determine if it is yet an appropriate time to send this person a message.
     unless send_now
@@ -682,7 +702,7 @@ class Patient < ApplicationRecord
     unless isolation
       # Monitoring period has elapsed
       start_of_exposure = last_date_of_exposure || created_at
-      no_active_dependents = !dependents_exclude_self.where(monitoring: true).exists?
+      no_active_dependents = !active_dependents_exclude_self.exists?
       if start_of_exposure < reporting_period && !continuous_exposure && no_active_dependents
         eligible = false
         messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
@@ -818,5 +838,57 @@ class Patient < ApplicationRecord
     else
       timezone_for_state('massachusetts')
     end
+  end
+
+  # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
+  def self.detailed_history_edit(patient_before, patient_after, user_email, allowed_fields, is_api_edit: false)
+    diffs = patient_diff(patient_before, patient_after, allowed_fields)
+    return if diffs.length.zero?
+
+    pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
+    comment = is_api_edit ? 'Monitoree record edited via API. ' : 'User edited a monitoree record. '
+    comment += "Changes were: #{pretty_diff.join(', ')}."
+    History.record_edit(patient: patient_after, created_by: user_email, comment: comment)
+  end
+
+  # Construct a diff for a patient update to keep track of changes
+  def self.patient_diff(patient_before, patient_after, allowed_fields)
+    diffs = []
+    allowed_fields.each do |attribute|
+      next if patient_before[attribute] == patient_after[attribute]
+
+      diffs << {
+        attribute: attribute,
+        before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
+        after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
+      }
+    end
+    diffs
+  end
+
+  # Use the cached attribute if it exists, if not query with count for performance
+  # instead of loading all dependents.
+  def head_of_household?
+    return head_of_household unless head_of_household.nil?
+
+    dependents_exclude_self.where(purged: false).size.positive?
+  end
+
+  def inform_responder
+    initial_responder = responder_id_was
+    # Yield to save or destroy, depending on which callback invokes this method
+    yield
+
+    return if responder.nil?
+
+    # update the initial responder if it changed
+    Patient.find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
+    # update the current responder
+    responder.refresh_head_of_household
+  end
+
+  def refresh_head_of_household
+    hoh = dependents_exclude_self.where(purged: false).size.positive?
+    update(head_of_household: hoh) unless head_of_household == hoh
   end
 end

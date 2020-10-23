@@ -20,6 +20,14 @@ class PatientsController < ApplicationController
 
     @jurisdiction_path = @patient.jurisdiction_path
 
+    @possible_jurisdiction_paths = if current_user.can_transfer_patients?
+                                     # Allow all jurisdictions as valid transfer options.
+                                     Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
+                                   else
+                                     # Otherwise, only show jurisdictions within hierarchy.
+                                     Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
+                                   end
+
     # Group members if this is HOH
     @group_members = @patient.dependents_exclude_self.where(purged: false)
 
@@ -242,16 +250,9 @@ class PatientsController < ApplicationController
     # Reset symptom onset date if moving from isolation to exposure
     reset_symptom_onset(content, patient, :system) if !content[:isolation].nil? && !content[:isolation]
 
-    # Grab diff, attempt to update, else return to index if failed
+    # Update patient history with detailed edit diff
     patient_before = patient.dup
-    if patient.update(content)
-      diffs = patient_diff(patient_before, patient)
-      unless diffs.length.zero?
-        pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
-        comment = "User edited a monitoree record. Changes were: #{pretty_diff.join(', ')}."
-        history = History.record_edit(patient: patient, created_by: current_user.email, comment: comment)
-      end
-    end
+    Patient.detailed_history_edit(patient_before, patient, current_user.email, allowed_params) if patient.update(content)
 
     render json: patient
   end
@@ -276,7 +277,9 @@ class PatientsController < ApplicationController
     end
 
     # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
-    current_user_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
+    current_user_patients.where(id: patients_to_update).each do |patient|
+      patient.update(responder_id: new_hoh_id)
+    end
   end
 
   def bulk_update_status
@@ -507,21 +510,6 @@ class PatientsController < ApplicationController
     duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email].blank?
     # They are removeable from the household if their current responder does not have duplicate contact information
     render json: { removeable: !duplicate_contact }
-  end
-
-  # Construct a diff for a patient update to keep track of changes
-  def patient_diff(patient_before, patient_after)
-    diffs = []
-    allowed_params.each do |attribute|
-      next if patient_before[attribute] == patient_after[attribute]
-
-      diffs << {
-        attribute: attribute,
-        before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
-        after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
-      }
-    end
-    diffs
   end
 
   # Parameters allowed for saving to database

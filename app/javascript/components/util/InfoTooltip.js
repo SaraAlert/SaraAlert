@@ -117,10 +117,17 @@ const TOOLTIP_TEXT = {
     <div> Used to identify the user or group within a jurisdiction responsible for monitoring a monitoree (Values: 1-9999 for each jurisdiction). </div>
   ),
 
-  assignedJurisdiction: (
+  assignedJurisdictionCanTransfer: (
     <div>
-      This controls which users have access to records. Users can access records associated with their assigned jurisdiction and records assigned to any
-      jurisdictions below theirs in the jurisdictional hierarchy defined by each agency before onboarding.
+      The jurisdiction to which the monitoree is assigned. Because of the role you have been assigned, this field can be used to transfer records both within
+      and outside of your assigned jurisdiction hierarchy.
+    </div>
+  ),
+
+  assignedJurisdictionCannotTransfer: (
+    <div>
+      The jurisdiction to which the monitoree is assigned. Because of the role you have been assigned, this field can only be used to move records within your
+      assigned jurisdiction hierarchy.
     </div>
   ),
 

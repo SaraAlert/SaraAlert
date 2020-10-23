@@ -12,6 +12,102 @@ class PatientsControllerTest < ActionController::TestCase
     assert_redirected_to(new_user_session_path)
   end
 
+  test 'head of household when creating a patient no matching contact info' do
+    user = create(:public_health_enroller_user)
+    sign_in user
+
+    post :create, params: {
+      patient: {
+        first_name: 'test',
+        last_name: 'test'
+      }
+    }
+    assert_response :success
+    body = JSON.parse(response.body)
+    patient = Patient.find(body['id'])
+    assert_not patient.head_of_household
+    assert patient.responder.id == patient.id
+    assert patient.self_reporter_or_proxy?
+  end
+
+  test 'head of household when creating a patient matching contact info email' do
+    user = create(:public_health_enroller_user)
+    head_of_household = create(:patient, creator: user, email: 'test@example.com')
+    sign_in user
+
+    post :create, params: {
+      patient: {
+        first_name: 'test',
+        last_name: 'test',
+        email: 'test@example.com',
+        preferred_contact_method: 'E-mailed Web Link'
+      }
+    }
+    assert_response :success
+    body = JSON.parse(response.body)
+    patient = Patient.find(body['id'])
+    assert_not patient.head_of_household
+    assert head_of_household.reload.head_of_household
+  end
+
+  test 'head of household when creating a patient matching contact info telephone' do
+    user = create(:public_health_enroller_user)
+    head_of_household = create(:patient, creator: user, primary_telephone: '555-555-5555')
+    sign_in user
+
+    post :create, params: {
+      patient: {
+        first_name: 'test',
+        last_name: 'test',
+        primary_telephone: '555-555-5555',
+        preferred_contact_method: 'SMS Texted Weblink'
+      }
+    }
+    assert_response :success
+    body = JSON.parse(response.body)
+    patient = Patient.find(body['id'])
+    assert_not patient.head_of_household
+    assert head_of_household.reload.head_of_household
+  end
+
+  test 'head of household when creating a patient explicit responder id' do
+    user = create(:public_health_enroller_user)
+    head_of_household = create(:patient, creator: user)
+
+    sign_in user
+
+    post :create, params: {
+      patient: {
+        first_name: 'test',
+        last_name: 'test'
+      },
+      responder_id: head_of_household.id
+    }
+
+    assert_response :success
+    body = JSON.parse(response.body)
+    patient = Patient.find(body['id'])
+    assert_not patient.reload.head_of_household
+    assert head_of_household.reload.head_of_household
+  end
+
+  test 'head of household updates when head_of_household route' do
+    user = create(:public_health_enroller_user)
+    head_of_household = create(:patient, creator: user)
+    sign_in user
+
+    dependent = create(:patient, creator: user)
+
+    post :update_hoh, params: {
+      id: dependent.id,
+      new_hoh_id: head_of_household.id
+    }
+    assert_response :success
+
+    assert head_of_household.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+  end
+
   test 'bulk update status' do
     %i[admin_user analyst_user].each do |role|
       user = create(role)

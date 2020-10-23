@@ -19,7 +19,7 @@ class JurisdictionsControllerTest < ActionController::TestCase
       sign_out user
     end
 
-    %i[enroller_user public_health_user public_health_enroller_user].each do |role|
+    %i[enroller_user public_health_user public_health_enroller_user contact_tracer_user super_user].each do |role|
       user = create(role)
 
       Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
@@ -52,7 +52,7 @@ class JurisdictionsControllerTest < ActionController::TestCase
       sign_out user
     end
 
-    %i[enroller_user public_health_user public_health_enroller_user].each do |role|
+    %i[enroller_user public_health_user public_health_enroller_user contact_tracer_user super_user].each do |role|
       user = create(role)
 
       jurs = Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1'])
