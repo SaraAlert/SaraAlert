@@ -6,6 +6,7 @@
                           report_mode: ADMIN_OPTIONS['report_mode'],
                           version: ADMIN_OPTIONS['version'],
                           root: root_path,
+                          show_demo_warning: ENV['SHOW_DEMO_WARNING'].present?,
                           current_user: !current_user.nil? ? {
                             email: current_user&.email,
                             is_usa_admin: current_user&.usa_admin?,

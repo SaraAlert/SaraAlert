@@ -583,7 +583,9 @@ class MonitoringStatus extends React.Component {
                 <Form.Group as={Col} lg="24" className="pt-2">
                   <Form.Label className="nav-input-label">
                     ASSIGNED JURISDICTION
-                    <InfoTooltip tooltipTextKey="assignedJurisdiction" location="right"></InfoTooltip>
+                    <InfoTooltip
+                      tooltipTextKey={this.props.user_can_transfer ? 'assignedJurisdictionCanTransfer' : 'assignedJurisdictionCannotTransfer'}
+                      location="right"></InfoTooltip>
                   </Form.Label>
                   <Form.Group className="d-flex mb-0">
                     <Form.Control
@@ -635,6 +637,7 @@ class MonitoringStatus extends React.Component {
 
 MonitoringStatus.propTypes = {
   current_user: PropTypes.object,
+  user_can_transfer: PropTypes.bool,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   jurisdictionPaths: PropTypes.object,
