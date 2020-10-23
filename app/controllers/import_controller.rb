@@ -123,10 +123,10 @@ class ImportController < ApplicationController
 
   def lab_result(data, row_ind)
     {
-      lab_type: data[0],
+      lab_type: validate_enum_field(:lab_type, data[0], row_ind),
       specimen_collection: validate_field(:specimen_collection, data[1], row_ind),
       report: validate_field(:report, data[2], row_ind),
-      result: data[3]
+      result: validate_enum_field(:result, data[3], row_ind)
     }
   end
 
