@@ -203,8 +203,8 @@ const TOOLTIP_TEXT = {
   ),
   extendedIsolation: (
     <div>
-      Used by the system to determine eligibility to appear on the <i>Records Requiring Review</i> line list. A case cannot appear on the{' '}
-      <i>Records Requiring Review</i> line list until after the user-specified date. This field may be blank.
+      Used by the system to determine eligibility to appear on the <i>Records Requiring Review</i> line list. A case cannot appear on the{' '}
+      <i>Records Requiring Review</i> line list until after the user-specified date. This field may be blank.
     </div>
   ),
   // REQUIRES REVIEW RECOVERY LOGIC
