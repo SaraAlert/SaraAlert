@@ -58,7 +58,6 @@ class PauseNotifications extends React.Component {
   }
 
   render() {
-    const notificationsAction = this.props.patient.pause_notifications ? 'resumed' : 'paused';
     return (
       <React.Fragment>
         <span data-for="notifications-tooltip" data-tip="">
@@ -68,7 +67,9 @@ class PauseNotifications extends React.Component {
             disabled={this.state.disableAndDisplayTooltip || this.state.loading}
             onClick={() =>
               this.handleSubmit(
-                `You are about to change this monitoree's notification status to ${notificationsAction}. This means that the system will stop sending the monitoree symptom report requests until notifications are resumed by a user.`
+                this.props.patient.pause_notifications
+                  ? `You are about to change this monitoree's notification status to resumed. This means that the system will start sending the monitoree symptom report requests during their preferred reporting time until they are no longer eligible or notifications are paused by a user.`
+                  : `You are about to change this monitoree's notification status to paused. This means that the system will stop sending the monitoree symptom report requests until notifications are resumed by a user.`
               )
             }>
             {this.props.patient.pause_notifications && (
