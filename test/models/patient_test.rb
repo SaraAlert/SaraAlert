@@ -1222,187 +1222,321 @@ class PatientTest < ActiveSupport::TestCase
     assert_not new_head.reload.head_of_household
   end
   
-  test 'validates address_state inclusion' do
-    patient = build(:patient, address_state: 'Georgia')
-    assert patient.valid?
-
-    patient = build(:patient, address_state: '')
-    assert patient.valid?
-
-    patient = build(:patient, address_state: nil)
-    assert patient.valid?
-
-    patient = build(:patient, address_state: 'foo')
-    assert_not patient.valid?
+  def valid_patient
+    build(:patient,
+          address_city: 'city',
+          address_line_1: '123 Test Street',
+          address_state: 'Oregon',
+          address_zip: '11111',
+          date_of_birth: '2000-11-11',
+          first_name: 'Test',
+          last_date_of_exposure: 20.days.ago.to_date,
+          last_name: 'Tester')
   end
 
-  test 'validates ethnicity inclusion' do
-    patient = build(:patient, ethnicity: 'Hispanic or Latino')
-    assert patient.valid?
+  test 'validates address_state inclusion in api context' do
+    patient = valid_patient
 
-    patient = build(:patient, ethnicity: '')
-    assert patient.valid?
+    patient.address_state = 'Georgia'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, ethnicity: nil)
+    patient.address_state = 'foo'
+    assert_not patient.valid?(:api)
     assert patient.valid?
-
-    patient = build(:patient, ethnicity: 'foo')
-    assert_not patient.valid?
   end
 
-  test 'validates monitored_address_state inclusion' do
-    patient = build(:patient, monitored_address_state: 'Oregon')
-    assert patient.valid?
+  test 'validates ethnicity inclusion in api context' do
+    patient = valid_patient
 
-    patient = build(:patient, monitored_address_state: '')
-    assert patient.valid?
+    patient.ethnicity = 'Hispanic or Latino'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, monitored_address_state: nil)
-    assert patient.valid?
+    patient.ethnicity = ''
+    assert patient.valid?(:api)
 
-    patient = build(:patient, monitored_address_state: 'foo')
-    assert_not patient.valid?
+    patient.ethnicity = nil
+    assert patient.valid?(:api)
+
+    patient.ethnicity = 'foo'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
   end
 
-  test 'validates preferred contact method inclusion' do
-    patient = build(:patient, preferred_contact_method: 'E-mailed Web Link')
-    assert patient.valid?
+  test 'validates monitored_address_state inclusion in api context' do
+    patient = valid_patient
 
-    patient = build(:patient, preferred_contact_method: '')
-    assert patient.valid?
+    patient.monitored_address_state = 'Oregon'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, preferred_contact_method: nil)
-    assert patient.valid?
+    patient.monitored_address_state = ''
+    assert patient.valid?(:api)
 
-    patient = build(:patient, preferred_contact_method: 'foo')
-    assert_not patient.valid?
+    patient.monitored_address_state = nil
+    assert patient.valid?(:api)
+
+    patient.monitored_address_state = 'foo'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
   end
 
-  test 'validates preferred contact time inclusion' do
-    patient = build(:patient, preferred_contact_time: 'Morning')
-    assert patient.valid?
+  test 'validates preferred contact method inclusion in api context' do
+    patient = valid_patient
 
-    patient = build(:patient, preferred_contact_time: '')
-    assert patient.valid?
+    patient.preferred_contact_method = 'Unknown'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, preferred_contact_time: nil)
-    assert patient.valid?
+    patient.preferred_contact_method = ''
+    assert patient.valid?(:api)
 
-    patient = build(:patient, preferred_contact_time: 'foo')
-    assert_not patient.valid?
+    patient.preferred_contact_method = nil
+    assert patient.valid?(:api)
+
+    patient.preferred_contact_method = 'foo'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
   end
 
-  test 'validates sex inclusion' do
-    patient = build(:patient, sex: 'Female')
-    assert patient.valid?
+  test 'validates preferred contact time inclusion in api context' do
+    patient = valid_patient
 
-    patient = build(:patient, sex: '')
-    assert patient.valid?
+    patient.preferred_contact_time = 'Morning'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, sex: nil)
-    assert patient.valid?
+    patient.preferred_contact_time = ''
+    assert patient.valid?(:api)
 
-    patient = build(:patient, sex: 'foo')
-    assert_not patient.valid?
+    patient.preferred_contact_time = nil
+    assert patient.valid?(:api)
+
+    patient.preferred_contact_time = 'foo'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
   end
 
-  test 'validates primary phone is a possible phone number' do
-    patient = build(:patient, primary_telephone: '+11111111111')
-    assert patient.valid?
+  test 'validates sex inclusion in api context' do
+    patient = valid_patient
 
-    patient = build(:patient, primary_telephone: '+1 111 111 1111')
-    assert patient.valid?
+    patient.sex = 'Female'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, primary_telephone: '')
-    assert patient.valid?
+    patient.sex = ''
+    assert patient.valid?(:api)
 
-    patient = build(:patient, primary_telephone: nil)
-    assert patient.valid?
+    patient.sex = nil
+    assert patient.valid?(:api)
 
-    patient = build(:patient, primary_telephone: '123')
-    assert_not patient.valid?
+    patient.sex = 'foo'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
   end
 
-  test 'validates secondary phone is a possible phone number' do
-    patient = build(:patient, secondary_telephone: '+11111111111')
-    assert patient.valid?
+  test 'validates primary phone is a possible phone number in api context' do
+    patient = valid_patient
 
-    patient = build(:patient, secondary_telephone: '+1 111 111 1111')
-    assert patient.valid?
+    patient.primary_telephone = '+11111111111'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, secondary_telephone: '')
-    assert patient.valid?
+    patient.primary_telephone = '+1 111 111 1111'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, secondary_telephone: nil)
-    assert patient.valid?
+    patient.primary_telephone = ''
+    assert patient.valid?(:api)
 
-    patient = build(:patient, secondary_telephone: '123')
-    assert_not patient.valid?
+    patient.primary_telephone = nil
+    assert patient.valid?(:api)
+
+    patient.primary_telephone = '123'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
   end
 
-  test 'validates date_of_birth is a valid date' do
-    patient = build(:patient, date_of_birth: '2000-01-01')
+  test 'validates secondary phone is a possible phone number in api context' do
+    patient = valid_patient
+
+    patient.secondary_telephone = '+11111111111'
+    assert patient.valid?(:api)
+
+    patient.secondary_telephone = '+1 111 111 1111'
+    assert patient.valid?(:api)
+
+    patient.secondary_telephone = ''
+    assert patient.valid?(:api)
+
+    patient.secondary_telephone = nil
+    assert patient.valid?(:api)
+
+    patient.secondary_telephone = '123'
+    assert_not patient.valid?(:api)
     assert patient.valid?
-
-    patient = build(:patient, date_of_birth: '')
-    assert patient.valid?
-
-    patient = build(:patient, date_of_birth: nil)
-    assert patient.valid?
-
-    patient = build(:patient, date_of_birth: '01-15-2000')
-    assert_not patient.valid?
-
-    patient = build(:patient, date_of_birth: '2000-13-13')
-    assert_not patient.valid?
   end
 
-  test 'validates last_date_of_exposure is a valid date' do
-    patient = build(:patient, last_date_of_exposure: '2000-01-01')
+  test 'validates date_of_birth is a valid date in api context' do
+    patient = valid_patient
+
+    patient.date_of_birth = '2000-01-01'
+    assert patient.valid?(:api)
+
+    patient.date_of_birth = '01-15-2000'
+    assert_not patient.valid?(:api)
+
+    patient.date_of_birth = '2000-13-13'
+    assert_not patient.valid?(:api)
     assert patient.valid?
-
-    patient = build(:patient, last_date_of_exposure: '')
-    assert patient.valid?
-
-    patient = build(:patient, last_date_of_exposure: nil)
-    assert patient.valid?
-
-    patient = build(:patient, last_date_of_exposure: '01-15-2000')
-    assert_not patient.valid?
-
-    patient = build(:patient, last_date_of_exposure: '2000-13-13')
-    assert_not patient.valid?
   end
 
-  test 'validates symptom_onset is a valid date' do
-    patient = build(:patient, symptom_onset: '2000-01-01')
+  test 'validates last_date_of_exposure is a valid date in api context' do
+    patient = valid_patient
+
+    patient.last_date_of_exposure = '2000-01-01'
+    assert patient.valid?(:api)
+
+    patient.last_date_of_exposure = '01-15-2000'
+    assert_not patient.valid?(:api)
+
+    patient.last_date_of_exposure = '2000-13-13'
+    assert_not patient.valid?(:api)
     assert patient.valid?
-
-    patient = build(:patient, symptom_onset: '')
-    assert patient.valid?
-
-    patient = build(:patient, symptom_onset: nil)
-    assert patient.valid?
-
-    patient = build(:patient, symptom_onset: '01-15-2000')
-    assert_not patient.valid?
-
-    patient = build(:patient, symptom_onset: '2000-13-13')
-    assert_not patient.valid?
   end
 
-  test 'validates email is a valid email address' do
-    patient = build(:patient, email: 'foo@bar.com')
-    assert patient.valid?
+  test 'validates symptom_onset is a valid date in api context' do
+    patient = valid_patient
 
-    patient = build(:patient, email: '')
-    assert patient.valid?
+    patient.symptom_onset = '2000-01-01'
+    assert patient.valid?(:api)
 
-    patient = build(:patient, email: nil)
-    assert patient.valid?
+    patient.symptom_onset = ''
+    assert patient.valid?(:api)
 
-    patient = build(:patient, email: 'not@an@email.com')
-    assert_not patient.valid?
+    patient.symptom_onset = nil
+    assert patient.valid?(:api)
+
+    patient.symptom_onset = '01-15-2000'
+    assert_not patient.valid?(:api)
+
+    patient.symptom_onset = '2000-13-13'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates email is a valid email address in api context' do
+    patient = valid_patient
+
+    patient.email = 'foo@bar.com'
+    assert patient.valid?(:api)
+
+    patient.email = ''
+    assert patient.valid?(:api)
+
+    patient.email = nil
+    assert patient.valid?(:api)
+
+    patient.email = 'not@an@email.com'
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates address_city is required in api context' do
+    patient = valid_patient
+
+    assert patient.valid?(:api)
+
+    patient.address_city = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates address_line_1 is required in api context' do
+    patient = valid_patient
+
+    assert patient.valid?(:api)
+
+    patient.address_line_1 = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates address_state is required in api context' do
+    patient = valid_patient
+
+    assert patient.valid?(:api)
+
+    patient.address_state = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates address_zip is required in api context' do
+    patient = valid_patient
+
+    assert patient.valid?(:api)
+
+    patient.address_zip = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates date_of_birth is required in api context' do
+    patient = valid_patient
+
+    assert patient.valid?(:api)
+
+    patient.date_of_birth = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates first_name is required in api context' do
+    patient = valid_patient
+
+    assert patient.valid?(:api)
+
+    patient.first_name = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates last_date_of_exposure is required in api context' do
+    patient = valid_patient
+
+    assert patient.valid?(:api)
+
+    patient.last_date_of_exposure = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates last_name is required in api context' do
+    patient = valid_patient
+
+    assert patient.valid?(:api)
+
+    patient.last_name = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates email is not blank when preferred_contact_method is "E-mailed Web Link"' do
+    patient = valid_patient
+
+    patient.email = 'foo@bar.com'
+    patient.preferred_contact_method = 'E-mailed Web Link'
+    assert patient.valid?(:api)
+
+    patient.email = ''
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates primary_telephone is not blank when preferred_contact_method requires a phone' do
+    patient = valid_patient
+
+    patient.primary_telephone = '+1111111111'
+    patient.preferred_contact_method = 'SMS Text-message'
+    assert patient.valid?(:api)
+
+    patient.primary_telephone = ''
+    assert_not patient.valid?(:api)
+    assert patient.valid?
   end
 end
 # rubocop:enable Metrics/ClassLength
