@@ -114,9 +114,6 @@ class Fhir::R4::ApiController < ActionController::API
     if resource_type == 'patient'
       # Update patient history with detailed edit diff
       Patient.detailed_history_edit(patient_before, resource, resource.creator&.email, updates.keys, is_api_edit: true)
-
-      # Send closed email to patient if it is closed with this update, and if they are a reporter
-      PatientMailer.closed_email(resource).deliver_later if updates.key?(:closed_at) && resource.email.present? && resource.self_reporter_or_proxy?
     end
 
     status_ok(resource.as_fhir) && return
