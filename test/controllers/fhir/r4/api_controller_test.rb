@@ -736,9 +736,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 2
+    assert_equal json_response['issue'].length, 3
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
+    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'SYSTEM FLOW: should be unauthorized via update' do
@@ -888,9 +889,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 2
+    assert_equal json_response['issue'].length, 3
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
+    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'SYSTEM FLOW: should be forbidden via update' do
@@ -1645,9 +1647,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 2
+    assert_equal json_response['issue'].length, 3
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
+    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'USER FLOW: should be unauthorized via update' do
@@ -1806,9 +1809,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 2
+    assert_equal json_response['issue'].length, 3
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
+    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'USER FLOW: should be forbidden via update' do
