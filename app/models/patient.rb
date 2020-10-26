@@ -7,6 +7,7 @@ class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
   include ValidationHelper
+  include ActiveModel::Validations
 
   columns.each do |column|
     case column.type
@@ -53,7 +54,7 @@ class Patient < ApplicationRecord
      preferred_contact_method
      preferred_contact_time
      sex].each do |enum_field|
-    validates enum_field, inclusion: {
+    validates enum_field, on: :api, inclusion: {
       in: VALID_ENUMS[enum_field],
       message: "%<value>s is not an acceptable value for '#{VALIDATION[enum_field][:label]}', acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
     }, allow_blank: true
@@ -61,18 +62,31 @@ class Patient < ApplicationRecord
 
   %i[primary_telephone
      secondary_telephone].each do |phone_field|
-    validates phone_field, phone_number: true
+    validates phone_field, on: :api, phone_number: true
   end
 
   %i[date_of_birth
      last_date_of_exposure
      symptom_onset].each do |date_field|
-    validates date_field, date: true
+    validates date_field, on: :api, date: true
   end
 
-  validates :email, email: true
+  %i[address_city
+     address_line_1
+     address_state
+     address_zip
+     date_of_birth
+     first_name
+     last_date_of_exposure
+     last_name].each do |required_field|
+    validates required_field, on: :api, presence: { message: "Required field '#{VALIDATION[required_field][:label]}' is missing" }
+  end
+
+  validates :email, on: :api, email: true
 
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
+
+  validates_with PrimaryContactValidator, on: :api
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'

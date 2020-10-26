@@ -110,7 +110,11 @@ class Fhir::R4::ApiController < ActionController::API
     status_forbidden && return if resource.nil?
 
     # Try to update the resource
-    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return if updates.nil? || !resource.update(updates)
+    status_unprocessable_entity && return if updates.nil?
+
+    # The resource.update method does not allow a context to be passed, so first we assign the updates, then save
+    resource.assign_attributes(updates)
+    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save(context: :api)
 
     if resource_type == 'patient'
       # Update patient history with detailed edit diff
@@ -191,7 +195,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     status_bad_request && return if resource.nil?
 
-    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save
+    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save(context: :api)
 
     if resource_type == 'patient'
       # Send enrollment notification only to responders
