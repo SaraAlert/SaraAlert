@@ -21,6 +21,14 @@ class HistoryComponent extends React.Component {
       filteredHistories: this.props.histories,
       pageOfHistories: [],
     };
+    this.historyCreators = [
+      {
+        label: 'History Creator',
+        options: _.uniq(props.histories.map(x => x.created_by)).map(x => {
+          return { value: x, label: x };
+        }),
+      },
+    ];
 
     this.filterOptions = [
       {
@@ -106,15 +114,6 @@ class HistoryComponent extends React.Component {
 
   render() {
     const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
-    const historyCreators = [
-      {
-        label: 'History Creator',
-        options: _.uniq(this.props.histories.map(x => x.created_by)).map(x => {
-          return { value: x, label: x };
-        }),
-      },
-    ];
-
     return (
       <React.Fragment>
         <Card className="mx-2 mt-3 mb-4 card-square">
@@ -132,7 +131,7 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Creator Filters"
-                options={historyCreators}
+                options={this.historyCreators}
                 className="basic-multi-select w-25 pl-1"
                 classNamePrefix="select"
                 placeholder="Filter by Creator"
