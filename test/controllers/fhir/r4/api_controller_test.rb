@@ -10,7 +10,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     setup_user_applications
     setup_system_applications
     setup_patients
-    ActionMailer::Base.deliveries.clear
   end
 
   # Sets up applications registered for user flow
@@ -782,9 +781,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     # Closed at date should have been set to today
     assert_equal DateTime.now.to_date, p.closed_at&.to_date
-
-    # Should have enqueued closed email to this patient since they are a reporter
-    assert_enqueued_email_with PatientMailer, :closed_email, args: [p]
   end
 
   test 'SYSTEM FLOW: should be bad request via update due to bad fhir' do
@@ -1611,9 +1607,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     # Closed at date should have been set to today
     assert_equal DateTime.now.to_date, p.closed_at&.to_date
-
-    # Should have enqueued closed email to this patient since they are a reporter
-    assert_enqueued_email_with PatientMailer, :closed_email, args: [p]
   end
 
   test 'USER FLOW: should be bad request via update due to bad fhir' do
