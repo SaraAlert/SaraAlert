@@ -106,27 +106,6 @@ class HistoryComponent extends React.Component {
 
   render() {
     const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
-
-    const filterOptions = [
-      {
-        label: 'History Type',
-        options: [
-          { value: 'Comment', label: 'Comment' },
-          { value: 'Contact Attempt', label: 'Contact Attempt' },
-          { value: 'Enrollment', label: 'Enrollment' },
-          { value: 'Lab Result', label: 'Lab Result' },
-          { value: 'Lab Result Edit', label: 'Lab Result Edit' },
-          { value: 'Monitoree Data Downloaded', label: 'Monitoree Data Downloaded' },
-          { value: 'Monitoring Change', label: 'Monitoring Change' },
-          { value: 'Report Created', label: 'Report Created' },
-          { value: 'Report Note', label: 'Report Note' },
-          { value: 'Report Reminder', label: 'Report Reminder' },
-          { value: 'Report Reviewed', label: 'Report Reviewed' },
-          { value: 'Report Updated', label: 'Report Updated' },
-          { value: 'Reports Reviewed', label: 'Reports Reviewed' },
-        ],
-      },
-    ];
     const historyCreators = [
       {
         label: 'History Creator',
@@ -167,7 +146,7 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Filters"
-                options={filterOptions}
+                options={this.filterOptions}
                 className="basic-multi-select w-25 pl-2"
                 classNamePrefix="select"
                 placeholder="Filter by Type"
