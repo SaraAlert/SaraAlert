@@ -4,12 +4,8 @@
 module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
   def us_core_race(races)
-    # Don't return an extension if races is empty or nil
-    return nil if races.nil?
-    unless races.kind_of?(Array)
-      races = [races]
-    end
-    return nil if races.empty?
+    # Don't return an extension if all race categories are false or nil
+    return nil unless [races & accepted_races].any?
     extension = []
     valueString = []
     for race in races.uniq
@@ -74,7 +70,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   def self.races(patient)
     url = 'us-core-race'
-    patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.map { |extension| extension.valueCoding.code }
+    patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.map(&:valueCoding&.code)
   end
 
   # Return a boolean indicating if the given race code is present on the given FHIR::Patient.
@@ -102,7 +98,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
                             url: 'ombCategory',
                             valueCoding: FHIR::Coding.new(code: 'UNK', system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', display: 'Unknown')
                           ) : nil,
-                          ethnicity == 'Refused to Answer' ? FHIR::Extension.new(
+                          refused_to_answer ? FHIR::Extension.new(
                             url: 'ombCategory',
                             valueCoding: FHIR::Coding.new(code: 'ASKU', system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', display: 'Refused to Answer')
                           ): nil,

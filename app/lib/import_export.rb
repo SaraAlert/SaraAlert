@@ -6,7 +6,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',
                       'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation'].freeze
 
-  COMPREHENSIVE_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'Races', 'Ethnicity', 'Primary Language',
+  COMPREHENSIVE_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
+                           'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
                            'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',
                            'Identifier (NNDSS)', 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County',
                            'Foreign Address Line 1', 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip',
@@ -48,7 +49,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                    'Disposition of Travelers Referred for CDC Assessment: Other', 'Final Disposition of Traveler\'s Medical Evaluation (If applicable)',
                    'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
 
-  COMPREHENSIVE_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :races, :ethnicity, :primary_language, :secondary_language, :interpretation_required,
+  COMPREHENSIVE_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american, :american_indian_or_alaska_native,
+                          :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language, :secondary_language, :interpretation_required,
                           :nationality, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss, :address_line_1, :address_city,
                           :address_state, :address_line_2, :address_zip, :address_county, :foreign_address_line_1, :foreign_address_city,
                           :foreign_address_country, :foreign_address_line_2, :foreign_address_zip, :foreign_address_line_3, :foreign_address_state,
@@ -142,8 +144,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     WY: 'Wyoming'
   }.freeze
 
-  VALID_RACES = {default: ['2106-3', '2054-5', '1002-5', '2028-9', '2076-8'], exclusive: ['UNK', 'OTH', 'ASKU']}
-
   VALID_STATES = STATE_ABBREVIATIONS.values
 
   VALID_ENUMS = {
@@ -171,7 +171,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     last_name: { label: 'Last Name', checks: [:required] },
     date_of_birth: { label: 'Date of Birth', checks: %i[required date] },
     sex: { label: 'Sex', checks: [:sex] },
-    races: { label: 'Races', checks: [:race]}
+    white: { label: 'White', checks: [:bool] },
+    black_or_african_american: { label: 'Black or African American', checks: [:bool] },
+    american_indian_or_alaska_native: { label: 'American Indian or Alaska Native', checks: [:bool] },
+    asian: { label: 'Asian', checks: [:bool] },
+    native_hawaiian_or_other_pacific_islander: { label: 'Native Hawaiian or Other Pacific Islander', checks: [:bool] },
     ethnicity: { label: 'Ethnicity', checks: [:enum] },
     interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
     address_state: { label: 'State', checks: [:state] },
@@ -564,6 +568,11 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         last_name: patient[:last_name] || '',
         date_of_birth: patient[:date_of_birth]&.strftime('%F') || '',
         sex: patient[:sex] || '',
+        white: patient[:white] || false,
+        black_or_african_american: patient[:black_or_african_american] || false,
+        american_indian_or_alaska_native: patient[:american_indian_or_alaska_native] || false,
+        asian: patient[:asian] || false,
+        native_hawaiian_or_other_pacific_islander: patient[:native_hawaiian_or_other_pacific_islander] || false,
         ethnicity: patient[:ethnicity] || '',
         primary_language: patient[:primary_language] || '',
         secondary_language: patient[:secondary_language] || '',

@@ -546,6 +546,14 @@ class PatientsController < ApplicationController
       date_of_birth
       age
       sex
+      white
+      black_or_african_american
+      american_indian_or_alaska_native
+      asian
+      native_hawaiian_or_other_pacific_islander
+      unknown
+      other
+      refused_to_answer
       ethnicity
       primary_language
       secondary_language

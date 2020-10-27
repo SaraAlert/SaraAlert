@@ -116,7 +116,6 @@ const blankMockPatient = {
     primary_telephone_type: null,
     public_health_action: null,
     purged: false,
-    races: [],
     responder_id: 0,
     secondary_language: null,
     secondary_telephone: null,

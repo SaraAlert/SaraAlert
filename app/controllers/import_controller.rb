@@ -160,7 +160,6 @@ class ImportController < ApplicationController
     # value = validate_required_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:required)
     value = validate_enum_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:enum)
     value = validate_bool_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:bool)
-    value = validate_race_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:races)
     value = validate_date_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:date)
     value = validate_phone_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:phone)
     value = validate_state_field(field, value, row_ind) if VALIDATION[field][:checks].include?(:state)
@@ -191,24 +190,6 @@ class ImportController < ApplicationController
 
     err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are: 'True' and 'False'"
     raise ValidationError.new(err_msg, row_ind)
-  end
-
-  def validate_race_field(field, value, row_ind)
-    return [] if value.blank?
-    unless value.kind_of?(Array)
-      value = [value]
-    end
-    field.each do |race| 
-      unless VALID_RACES.default.include?(value) || VALID_RACES.exclusive.include?(value)
-        err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are any combination of: #{VALID_RACES.default.to_sentence}, or any one of:  #{VALID_RACES.exclusive.to_sentence}"
-        raise ValidationError.new(err_msg, row_ind)
-      end
-      if VALID_RACES.exclusive.include?(value) && field.length > 1
-        err_msg = "'#{value}' is an exclusive value and cannot be combined with other races."
-        raise ValidationError.new(err_msg, row_ind)
-      end
-    end
-    return value
   end
 
   def validate_date_field(field, value, row_ind)
