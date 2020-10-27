@@ -49,6 +49,7 @@ Before installing MySQL, if newer versions (i.e. version 8 of MySQL) have previo
 
 ```sh
 rm -rf /usr/local/var/mysql # remove the macOS mysql data directory and any existing databases
+brew uninstall mysql # remove current mysql version
 ```
 
 If SaraAlert had already been installed with a newer version of MySQL, navigate to the project directory and uninstall the `mysql2` gem. It needs to build the correct native extensions for MySQL 5.7.
@@ -64,12 +65,13 @@ Newer versions of MySQL also start with incompatible options for version 5.7, so
 Now, install `mysql@5.7` using [`homebrew`](https://brew.sh):
 
 ```sh
-`brew install mysql@5.7`
-`brew link mysql@5.7 --force`
+brew install mysql@5.7
+brew link mysql@5.7 --force
 ```
 
 ```sh
-bundle config --local build.mysql2 "--with-mysql-config=/usr/local/Cellar/mysql@5.7/5.7.<MINOR_VERSION>/bin/mysql_config --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include" # Please update this command with the appropriate <MINOR_VERSION> installed from homebrew.
+# Please update this command with the appropriate <MINOR_VERSION> installed from homebrew.
+bundle config --local build.mysql2 "--with-mysql-config=/usr/local/Cellar/mysql@5.7/5.7.<MINOR_VERSION>/bin/mysql_config --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include"
 bundle install
 ```
 
