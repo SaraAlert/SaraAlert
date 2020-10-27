@@ -21,7 +21,7 @@ class HistoryComponent extends React.Component {
       filteredHistories: this.props.histories,
       pageOfHistories: [],
     };
-    this.historyCreators = [
+    this.creatorFilterData = [
       {
         label: 'History Creator',
         options: _.uniq(props.histories.map(x => x.created_by)).map(x => {
@@ -30,7 +30,7 @@ class HistoryComponent extends React.Component {
       },
     ];
 
-    this.filterOptions = [
+    this.typeFilterData = [
       {
         label: 'History Type',
         options: [],
@@ -38,7 +38,7 @@ class HistoryComponent extends React.Component {
     ];
 
     for (const historyType in this.props.history_types) {
-      this.filterOptions[0].options.push({
+      this.typeFilterData[0].options.push({
         value: _.startCase(historyType), // converts `monitoree_data_downloaded` to `Monitoree Data Downloaded`
         label: this.props.history_types[`${historyType}`],
       });
@@ -131,7 +131,7 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Creator Filters"
-                options={this.historyCreators}
+                options={this.creatorFilterData}
                 className="basic-multi-select w-25 pl-1"
                 classNamePrefix="select"
                 placeholder="Filter by Creator"
@@ -145,7 +145,7 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Filters"
-                options={this.filterOptions}
+                options={this.typeFilterData}
                 className="basic-multi-select w-25 pl-2"
                 classNamePrefix="select"
                 placeholder="Filter by Type"
