@@ -95,7 +95,8 @@ class Patient extends React.Component {
                   this.props.details.asian ? ' Asian' : ''
                 }${this.props.details.american_indian_or_alaska_native ? ' American Indian or Alaska Native' : ''}${
                   this.props.details.native_hawaiian_or_other_pacific_islander ? ' Native Hawaiian or Other Pacific Islander' : ''
-                }`}</span>
+                }${this.props.details.race_unknown ? ' Unknown' : ''}${this.props.details.race_other ? ' Other' : ''}
+                ${this.props.details.race_refused_to_answer ? 'Refused to Answer' : ''}`}</span>
                 <br />
                 <b>Ethnicity:</b> <span>{`${this.props.details.ethnicity ? this.props.details.ethnicity : '--'}`}</span>
                 <br />

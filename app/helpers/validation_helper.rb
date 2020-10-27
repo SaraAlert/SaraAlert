@@ -73,7 +73,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
   VALID_STATES = STATE_ABBREVIATIONS.values
 
   VALID_ENUMS = {
-    ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino'],
+    ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino', 'Unknown', 'Refused to Answer'],
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
@@ -123,6 +123,9 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     american_indian_or_alaska_native: { label: 'American Indian or Alaska Native', checks: [:bool] },
     asian: { label: 'Asian', checks: [:bool] },
     native_hawaiian_or_other_pacific_islander: { label: 'Native Hawaiian or Other Pacific Islander', checks: [:bool] },
+    race_unknown: { label: 'Unknown', checks: [:bool] },
+    race_other: { label: 'Other', checks: [:bool] },
+    race_refused_to_answer: { label: 'Other', checks: [:bool] },
     ethnicity: { label: 'Ethnicity', checks: [:enum] },
     interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
     address_line_1: { label: 'Address 1', checks: [:required] },

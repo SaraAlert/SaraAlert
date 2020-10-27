@@ -3,9 +3,9 @@
 # Helper methods for the patient model
 module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
-  def us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander)
+  def us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander, race_unknown, race_other, race_refused_to_answer)
     # Don't return an extension if all race categories are false or nil
-    return nil unless [white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander].include?(true)
+    return nil unless [white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander, race_unknown, race_other, race_refused_to_answer].include?(true)
 
     # Build out extension based on what race categories are true
     FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race', extension: [
@@ -29,13 +29,28 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
         url: 'ombCategory',
         valueCoding: FHIR::Coding.new(code: '2076-8', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Native Hawaiian or Other Pacific Islander')
       ) : nil,
+      race_unknown ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: 'UNK', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Unknown')
+      ) : nil,
+      race_other ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: 'OTH', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Other')
+      ) : nil,
+      race_refused_to_answer ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: 'ASKU', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Refused to Answer')
+      ) : nil,
       FHIR::Extension.new(
         url: 'text',
         valueString: [white ? 'White' : nil,
                       black_or_african_american ? 'Black or African American' : nil,
                       american_indian_or_alaska_native ? 'American Indian or Alaska Native' : nil,
                       asian ? 'Asian' : nil,
-                      native_hawaiian_or_other_pacific_islander ? 'Native Hawaiian or Other Pacific Islander' : nil].reject(&:nil?).join(', ')
+                      native_hawaiian_or_other_pacific_islander ? 'Native Hawaiian or Other Pacific Islander' : nil,
+                      race_unknown ? 'Unknown' : nil,
+                      race_other ? 'Other' : nil,
+                      race_refused_to_answer ? 'Refused to Answer' : nil].reject(&:nil?).join(', ')
       )
     ].reject(&:nil?))
   end
@@ -61,6 +76,14 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
                             url: 'ombCategory',
                             valueCoding: FHIR::Coding.new(code: '2186-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Not Hispanic or Latino')
                           ) : nil,
+                          ethnicity == 'Unknown' ? FHIR::Extension.new(
+                            url: 'ombCategory',
+                            valueCoding: FHIR::Coding.new(code: 'UNK', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Unknown')
+                          ) : nil,
+                          ethnicity == 'Refused to Answer' ? FHIR::Extension.new(
+                            url: 'ombCategory',
+                            valueCoding: FHIR::Coding.new(code: 'ASKU', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Refused to Answer')
+                          ) : nil,
                           FHIR::Extension.new(
                             url: 'text',
                             valueString: ethnicity
@@ -74,6 +97,8 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     code = patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.first&.valueCoding&.code
     return 'Hispanic or Latino' if code == '2135-2'
     return 'Not Hispanic or Latino' if code == '2186-5'
+    return 'Unknown' if code == 'UNK'
+    return 'Refused to Answer' if code == 'ASKU'
 
     code
   end

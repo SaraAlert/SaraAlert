@@ -29,6 +29,7 @@ monitoree_2:
     american_indian_or_alaska_native: true
     asian: true
     native_hawaiian_or_other_pacific_islander: true
+    race_unknown: false
     ethnicity: 'Not Hispanic or Latino'
     primary_language: 'English'
     secondary_language: 'Spanish'

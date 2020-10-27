@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2020_10_28_194626) do
+=======
+ActiveRecord::Schema.define(version: 2020_10_27_212347) do
+>>>>>>> added underscore import
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -353,6 +357,9 @@ ActiveRecord::Schema.define(version: 2020_10_28_194626) do
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
     t.boolean "head_of_household"
+    t.boolean "race_unknown"
+    t.boolean "race_other"
+    t.boolean "race_refused_to_answer"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"

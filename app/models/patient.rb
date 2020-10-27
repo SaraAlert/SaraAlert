@@ -856,7 +856,7 @@ class Patient < ApplicationRecord
         ) : nil
       ].reject(&:nil?),
       extension: [
-        us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander),
+        us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander, race_unknown, race_other, race_refused_to_answer),
         us_core_ethnicity(ethnicity),
         us_core_birthsex(sex),
         to_preferred_contact_method_extension(preferred_contact_method),
@@ -900,6 +900,9 @@ class Patient < ApplicationRecord
       american_indian_or_alaska_native: PatientHelper.race_code?(patient, '1002-5'),
       asian: PatientHelper.race_code?(patient, '2028-9'),
       native_hawaiian_or_other_pacific_islander: PatientHelper.race_code?(patient, '2076-8'),
+      race_unknown: PatientHelper.race_code?(patient, 'UNK'),
+      race_other: PatientHelper.race_code?(patient, 'OTH'),
+      race_refused_to_answer: PatientHelper.race_code?(patient, 'ASKU'),
       ethnicity: PatientHelper.ethnicity(patient),
       sex: PatientHelper.birthsex(patient),
       preferred_contact_method: PatientHelper.from_preferred_contact_method_extension(patient),

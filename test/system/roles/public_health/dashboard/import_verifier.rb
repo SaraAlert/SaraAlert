@@ -10,9 +10,9 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   TELEPHONE_FIELDS = %i[primary_telephone secondary_telephone].freeze
-  BOOL_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander interpretation_required
-                   contact_of_known_case travel_to_affected_country_or_area was_in_health_care_facility_with_known_cases laboratory_personnel
-                   healthcare_personnel crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort].freeze
+  BOOL_FIELDS = %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander race_unknown race_other 
+                   race_refused_to_answer interpretation_required contact_of_known_case travel_to_affected_country_or_area was_in_health_care_facility_with_known_cases 
+                   laboratory_personnel healthcare_personnel crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort].freeze
   STATE_FIELDS = %i[address_state foreign_monitored_address_state additional_planned_travel_destination_state].freeze
   MONITORED_ADDRESS_FIELDS = %i[monitored_address_line_1 monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip].freeze
   ISOLATION_FIELDS = %i[symptom_onset extended_isolation].freeze
