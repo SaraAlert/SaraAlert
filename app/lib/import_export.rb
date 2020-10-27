@@ -171,7 +171,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     last_name: { label: 'Last Name', checks: [:required] },
     date_of_birth: { label: 'Date of Birth', checks: %i[required date] },
     sex: { label: 'Sex', checks: [:sex] },
-    races: { label: 'Races', checks: [:race]},
+    races: { label: 'Races', checks: [:race]}
     ethnicity: { label: 'Ethnicity', checks: [:enum] },
     interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
     address_state: { label: 'State', checks: [:state] },
