@@ -2,10 +2,10 @@ import React from 'react'
 import { shallow } from 'enzyme';
 import { Button, Modal, Form } from 'react-bootstrap';
 import moment from 'moment';
-import MonitoringStatus from '../../components/subject/MonitoringStatus'
-import InfoTooltip from '../../components/util/InfoTooltip';
-import DateInput from '../../components/util/DateInput';
-import { mockPatient1, mockPatient3 } from '../mocks/mockPatients';
+import MonitoringStatus from '../../../components/subject/monitoring_actions/MonitoringStatus'
+import InfoTooltip from '../../../components/util/InfoTooltip';
+import DateInput from '../../../components/util/DateInput';
+import { mockPatient1, mockPatient3 } from '../../mocks/mockPatients';
 
 const currentDate = moment(new Date()).format('YYYY-MM-DD');
 const newDate = moment(new Date('9-9-2020')).format('YYYY-MM-DD');

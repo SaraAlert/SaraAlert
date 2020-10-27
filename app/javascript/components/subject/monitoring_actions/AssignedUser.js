@@ -4,17 +4,16 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 
-import InfoTooltip from '../util/InfoTooltip';
-import reportError from '../util/ReportError';
+import InfoTooltip from '../../util/InfoTooltip';
+import reportError from '../../util/ReportError';
 
-class Jurisdiction extends React.Component {
+class AssignedUser extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showJurisdictionModal: false,
-      jurisdiction_path: this.props.jurisdiction_paths[this.props.patient.jurisdiction_id],
-      original_jurisdiction_id: this.props.patient.jurisdiction_id,
-      validJurisdiction: true,
+      showAssignedUserModal: false,
+      assigned_user: props.patient.assigned_user || '',
+      original_assigned_user: props.patient.assigned_user || '',
       apply_to_household: false,
       loading: false,
       reasoning: '',
@@ -22,11 +21,13 @@ class Jurisdiction extends React.Component {
     this.origState = Object.assign({}, this.state);
   }
 
-  handleJurisdictionChange = event => {
-    this.setState({
-      jurisdiction_path: event?.target?.value ? event.target.value : '',
-      validJurisdiction: Object.values(this.props.jurisdiction_paths).includes(event.target.value),
-    });
+  handleAssignedUserChange = event => {
+    if (
+      event?.target?.value === '' ||
+      (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
+    ) {
+      this.setState({ assigned_user: event?.target?.value ? parseInt(event.target.value) : '' });
+    }
   };
 
   handleApplyHouseholdChange = event => {
@@ -39,23 +40,19 @@ class Jurisdiction extends React.Component {
     this.setState({ [event.target.id]: value || '' });
   };
 
-  // if user hits the Enter key after changing the jurisdiction value, shows the modal (in leu of clicking the button)
+  // if user hits the Enter key after changing the Assigned User value, shows the modal (in leu of clicking the button)
   handleKeyPress = event => {
-    if (
-      event.which === 13 &&
-      this.state.validJurisdiction &&
-      this.state.jurisdiction_path !== this.props.jurisdiction_paths[this.state.original_jurisdiction_id]
-    ) {
+    if (event.which === 13 && this.state.assigned_user !== this.state.original_assigned_user) {
       event.preventDefault();
-      this.toggleJurisdictionModal();
+      this.toggleAssignedUserModal();
     }
   };
 
-  toggleJurisdictionModal = () => {
-    const current = this.state.showJurisdictionModal;
+  toggleAssignedUserModal = () => {
+    const current = this.state.showAssignedUserModal;
     this.setState({
-      showJurisdictionModal: !current,
-      jurisdiction_path: current ? this.props.jurisdiction_paths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
+      showAssignedUserModal: !current,
+      assigned_user: current ? this.state.original_assigned_user : this.state.assigned_user,
       apply_to_household: false,
       reasoning: '',
     });
@@ -67,22 +64,13 @@ class Jurisdiction extends React.Component {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
-          patient: this.props.patient,
-          jurisdiction: Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === this.state.jurisdiction_path),
+          assigned_user: this.state.assigned_user,
           reasoning: this.state.reasoning,
           apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
         .then(() => {
-          const currentUserJurisdictionString = this.props.current_user.jurisdiction_path.join(', ');
-          // check if current_user has access to the changed jurisdiction
-          // if so, reload the page, if not, redirect to exposure or isolation dashboard
-          if (!this.state.jurisdiction_path.startsWith(currentUserJurisdictionString)) {
-            const pathEnd = this.state.isolation ? '/isolation' : '';
-            location.assign((window.BASE_PATH ? window.BASE_PATH : '') + '/public_health' + pathEnd);
-          } else {
-            location.reload(true);
-          }
+          location.reload(true);
         })
         .catch(error => {
           reportError(error);
@@ -94,13 +82,11 @@ class Jurisdiction extends React.Component {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
-          <Modal.Title>Jurisdiction</Modal.Title>
+          <Modal.Title>Assigned User</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to change jurisdiction from &quot;{this.props.jurisdiction_paths[this.state.original_jurisdiction_id]}&quot; to &quot;
-            {this.state.jurisdiction_path}&quot;?
-            {this.state.assigned_user !== '' && <b> Please also consider removing or updating the assigned user if it is no longer applicable.</b>}
+            Are you sure you want to change assigned user from &quot;{this.state.original_assigned_user}&quot; to &quot;{this.state.assigned_user}&quot;?
           </p>
           {this.props.has_dependents && (
             <React.Fragment>
@@ -154,49 +140,48 @@ class Jurisdiction extends React.Component {
       <React.Fragment>
         <div className="disabled">
           <Form.Label className="nav-input-label">
-            ASSIGNED JURISDICTION
-            <InfoTooltip tooltipTextKey="assignedJurisdiction" location="right"></InfoTooltip>
+            ASSIGNED USER
+            <InfoTooltip tooltipTextKey="assignedUser" location="right"></InfoTooltip>
           </Form.Label>
           <Form.Group className="d-flex mb-0">
             <Form.Control
               as="input"
-              id="jurisdiction_id"
-              list="jurisdiction_paths"
+              id="assigned_user"
+              list="assigned_users"
               autoComplete="off"
               className="form-control-lg"
-              onChange={this.handleJurisdictionChange}
+              onChange={this.handleAssignedUserChange}
               onKeyPress={this.handleKeyPress}
-              value={this.state.jurisdiction_path}
+              value={this.state.assigned_user}
             />
-            <datalist id="jurisdiction_paths">
-              {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
+            <datalist id="assigned_users">
+              {this.props.assigned_users.map(num => {
                 return (
-                  <option value={path} key={id}>
-                    {path}
+                  <option value={num} key={num}>
+                    {num}
                   </option>
                 );
               })}
             </datalist>
             <Button
               className="btn-lg btn-square text-nowrap ml-2"
-              onClick={this.toggleJurisdictionModal}
-              disabled={!this.state.validJurisdiction || this.state.jurisdiction_path === this.props.jurisdiction_paths[this.state.original_jurisdiction_id]}>
-              <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
+              onClick={this.toggleAssignedUserModal}
+              disabled={this.state.assigned_user === this.state.original_assigned_user}>
+              <i className="fas fa-users"></i> Change User
             </Button>
           </Form.Group>
         </div>
-        {this.state.showJurisdictionModal && this.createModal(this.toggleJurisdictionModal, this.submit)}
+        {this.state.showAssignedUserModal && this.createModal(this.toggleAssignedUserModal, this.submit)}
       </React.Fragment>
     );
   }
 }
 
-Jurisdiction.propTypes = {
+AssignedUser.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   has_dependents: PropTypes.bool,
-  jurisdiction_paths: PropTypes.object,
-  current_user: PropTypes.object,
+  assigned_users: PropTypes.array,
 };
 
-export default Jurisdiction;
+export default AssignedUser;

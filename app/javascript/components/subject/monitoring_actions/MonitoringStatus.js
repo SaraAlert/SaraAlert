@@ -5,9 +5,9 @@ import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 
-import DateInput from '../util/DateInput';
-import InfoTooltip from '../util/InfoTooltip';
-import reportError from '../util/ReportError';
+import DateInput from '../../util/DateInput';
+import InfoTooltip from '../../util/InfoTooltip';
+import reportError from '../../util/ReportError';
 
 class MonitoringStatus extends React.Component {
   constructor(props) {

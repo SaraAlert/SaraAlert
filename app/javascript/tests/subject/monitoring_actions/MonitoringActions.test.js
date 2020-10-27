@@ -1,14 +1,16 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Form } from 'react-bootstrap';
-import MonitoringActions from '../../components/subject/MonitoringActions';
-import AssignedUser from '../../components/subject/AssignedUser';
-import CaseStatus from '../../components/subject/CaseStatus'
-import Jurisdiction from '../../components/subject/Jurisdiction';
-import MonitoringStatus from '../../components/subject/MonitoringStatus';
-import GenericAction from '../../components/subject/GenericAction';
-import { mockPatient1 } from '../mocks/mockPatients'
-import { mockUser1 } from '../mocks/mockUsers'
+import MonitoringActions from '../../../components/subject/monitoring_actions/MonitoringActions';
+import AssignedUser from '../../../components/subject/monitoring_actions/AssignedUser';
+import CaseStatus from '../../../components/subject/monitoring_actions/CaseStatus'
+import ExposureRiskAssessment from '../../../components/subject/monitoring_actions/ExposureRiskAssessment'
+import Jurisdiction from '../../../components/subject/monitoring_actions/Jurisdiction';
+import MonitoringPlan from '../../../components/subject/monitoring_actions/MonitoringPlan';
+import MonitoringStatus from '../../../components/subject/monitoring_actions/MonitoringStatus';
+import PublicHealthAction from '../../../components/subject/monitoring_actions/PublicHealthAction';
+import { mockPatient1 } from '../../mocks/mockPatients'
+import { mockUser1 } from '../../mocks/mockUsers'
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const assigned_users = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
@@ -30,8 +32,10 @@ describe('MonitoringActions', () => {
     expect(wrapper.find(Form.Group).length).toEqual(7);
     expect(wrapper.find(AssignedUser).exists()).toBeTruthy();
     expect(wrapper.find(CaseStatus).exists()).toBeTruthy();
+    expect(wrapper.find(ExposureRiskAssessment).exists()).toBeTruthy();
     expect(wrapper.find(Jurisdiction).exists()).toBeTruthy();
+    expect(wrapper.find(MonitoringPlan).exists()).toBeTruthy();
     expect(wrapper.find(MonitoringStatus).exists()).toBeTruthy();
-    expect(wrapper.find(GenericAction).length).toEqual(3);
+    expect(wrapper.find(PublicHealthAction).exists()).toBeTruthy();
   });
 });

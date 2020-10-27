@@ -4,8 +4,8 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 
-import InfoTooltip from '../util/InfoTooltip';
-import reportError from '../util/ReportError';
+import InfoTooltip from '../../util/InfoTooltip';
+import reportError from '../../util/ReportError';
 
 class CaseStatus extends React.Component {
   constructor(props) {

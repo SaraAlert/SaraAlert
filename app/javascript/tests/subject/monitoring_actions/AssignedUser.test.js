@@ -1,74 +1,51 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Button, Form, Modal } from 'react-bootstrap';
-import Jurisdiction from '../../components/subject/Jurisdiction';
-import InfoTooltip from '../../components/util/InfoTooltip';
-import { mockPatient1 } from '../mocks/mockPatients';
-import { mockUser1 } from '../mocks/mockUsers';
+import AssignedUser from '../../../components/subject/monitoring_actions/AssignedUser';
+import InfoTooltip from '../../../components/util/InfoTooltip';
+import { mockPatient1 } from '../../mocks/mockPatients';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const jurisdiction_paths = {
-  2: 'USA, State 1',
-  3: 'USA, State 1, County 1',
-  4: 'USA, State 1, County 2',
-  5: 'USA, State 2',
-  6: 'USA, State 2, County 3',
-  7: 'USA, State 2, County 4'
-};
+const assigned_users = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21 ];
 
 function getWrapper(patient, hasDependents) {
-  return shallow(<Jurisdiction patient={patient} current_user={mockUser1} has_dependents={hasDependents}
-    jurisdiction_paths={jurisdiction_paths} authenticity_token={authyToken} />);
+  return shallow(<AssignedUser patient={patient} assigned_users={assigned_users} has_dependents={hasDependents} authenticity_token={authyToken} />);
 }
 
-describe('Jurisdiction', () => {
+describe('AssignedUser', () => {
   it('Properly renders all main components', () => {
     const wrapper = getWrapper(mockPatient1, false);
-    expect(wrapper.find(Form.Label).text().includes('ASSIGNED JURISDICTION')).toBeTruthy();
+    expect(wrapper.find(Form.Label).text().includes('ASSIGNED USER')).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedJurisdiction');
-    expect(wrapper.find('#jurisdiction_id').exists()).toBeTruthy();
-    expect(wrapper.find('option').length).toEqual(6);
-    for (var key of Object.keys(jurisdiction_paths)) {
-      expect(wrapper.find('option').at(key-2).text()).toEqual(jurisdiction_paths[key]);
-    }
-    expect(wrapper.find('#jurisdiction_id').prop('value')).toEqual(jurisdiction_paths[mockPatient1.jurisdiction_id]);
+    expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedUser');
+    expect(wrapper.find('#assigned_user').exists()).toBeTruthy();
+    expect(wrapper.find('option').length).toEqual(11);
+    assigned_users.forEach(function(value, index) {
+        expect(wrapper.find('option').at(index).text()).toEqual(String(value));
+    });
+    expect(wrapper.find('#assigned_user').prop('value')).toEqual(mockPatient1.assigned_user);
     expect(wrapper.find(Button).exists()).toBeTruthy();
-    expect(wrapper.find(Button).text().includes('Change Jurisdiction')).toBeTruthy();
-    expect(wrapper.find('i').hasClass('fa-map-marked-alt')).toBeTruthy();
+    expect(wrapper.find(Button).text().includes('Change User')).toBeTruthy();
+    expect(wrapper.find('i').hasClass('fa-users')).toBeTruthy();
     expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
   });
 
-  it('Changing jurisdiction enables change jurisdiction button and sets state correctly', () => {
+  it('Changing Assigned User enables change user button and sets state correctly', () => {
     const wrapper = getWrapper(mockPatient1, false);
     expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
-    expect(wrapper.state('jurisdiction_path')).toEqual(jurisdiction_paths[mockPatient1.jurisdiction_id]);
-    expect(wrapper.state('original_jurisdiction_id')).toEqual(mockPatient1.jurisdiction_id);
+    expect(wrapper.state('assigned_user')).toEqual(mockPatient1.assigned_user);
+    expect(wrapper.state('original_assigned_user')).toEqual(mockPatient1.assigned_user);
 
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
-    expect(wrapper.state('jurisdiction_path')).toEqual('USA, State 2, County 4');
-    expect(wrapper.state('original_jurisdiction_id')).toEqual(mockPatient1.jurisdiction_id);
+    expect(wrapper.state('assigned_user')).toEqual(1);
+    expect(wrapper.state('original_assigned_user')).toEqual(mockPatient1.assigned_user);
   });
 
-  it('Changing to an invalid jurisdiction disables change jurisdiction button and sets state correctly', () => {
-    const wrapper = getWrapper(mockPatient1, false);
-    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
-    expect(wrapper.state('validJurisdiction')).toEqual(true);
-
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
-    expect(wrapper.find(Button).prop('disabled')).toBeFalsy();
-    expect(wrapper.state('validJurisdiction')).toEqual(true);
-
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 3' } });
-    expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
-    expect(wrapper.state('validJurisdiction')).toEqual(false);
-  });
-
-  it('Clicking change jurisdiction button opens modal', () => {
+  it('Clicking change user button opens modal', () => {
     const wrapper = getWrapper(mockPatient1, false);
     expect(wrapper.find(Modal).exists()).toBeFalsy();
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     expect(wrapper.find(Modal).exists()).toBeFalsy();
     wrapper.find(Button).simulate('click');
     expect(wrapper.find(Modal).exists()).toBeTruthy();
@@ -76,15 +53,14 @@ describe('Jurisdiction', () => {
 
   it('Properly renders modal', () => {
     const wrapper = getWrapper(mockPatient1, false);
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
     const modalBody = wrapper.find(Modal.Body);
 
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
-    expect(wrapper.find(Modal.Title).text()).toEqual('Jurisdiction');
+    expect(wrapper.find(Modal.Title).text()).toEqual('Assigned User');
     expect(modalBody.exists()).toBeTruthy();
-    expect(modalBody.find('p').text().includes(`Are you sure you want to change jurisdiction from "${jurisdiction_paths[mockPatient1.jurisdiction_id]}" to "USA, State 2, County 4"?`)).toBeTruthy();
-    expect(modalBody.find('p').find('b').text()).toEqual(' Please also consider removing or updating the assigned user if it is no longer applicable.');
+    expect(modalBody.find('p').text()).toEqual(`Are you sure you want to change assigned user from "${mockPatient1.assigned_user}" to "1"?`);
     expect(modalBody.find(Form.Group).length).toEqual(1);
     expect(modalBody.find(Form.Group).text().includes('Please include any additional details:')).toBeTruthy();
     expect(modalBody.find('#reasoning').exists()).toBeTruthy();
@@ -95,7 +71,7 @@ describe('Jurisdiction', () => {
 
   it('Properly renders radio buttons for HoH', () => {
     const wrapper = getWrapper(mockPatient1, true);
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
     const modalBody = wrapper.find(Modal.Body);
 
@@ -109,7 +85,7 @@ describe('Jurisdiction', () => {
 
   it('Clicking HoH radio buttons toggles this.state.apply_to_household', () => {
       const wrapper = getWrapper(mockPatient1, true);
-      wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+      wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
       wrapper.find(Button).simulate('click');
 
       // initial radio button state
@@ -135,18 +111,18 @@ describe('Jurisdiction', () => {
   it('Adding reasoning updates state', () => {
     const wrapper = getWrapper(mockPatient1, false);
     const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleReasoningChange');
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
 
-    expect(wrapper.find(Modal.Body).find('#reasoning').exists()).toBeTruthy();
-    wrapper.find(Modal.Body).find('#reasoning').simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
+    expect(wrapper.find('#reasoning').exists()).toBeTruthy();
+    wrapper.find('#reasoning').simulate('change', { target: { id: 'reasoning', value: 'insert reasoning text here' } });
     expect(handleChangeSpy).toHaveBeenCalled();
     expect(wrapper.state('reasoning')).toEqual('insert reasoning text here');
   });
 
   it('Clicking the cancel button closes modal and resets state', () => {
     const wrapper = getWrapper(mockPatient1, false);
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
 
     // closes modal
@@ -155,9 +131,9 @@ describe('Jurisdiction', () => {
     expect(wrapper.find(Modal).exists()).toBeFalsy();
 
     // resets state
-    expect(wrapper.state('showJurisdictionModal')).toBeFalsy();
+    expect(wrapper.state('showAssignedUserModal')).toBeFalsy();
     expect(wrapper.state('apply_to_household')).toBeFalsy();
-    expect(wrapper.state('jurisdiction_path')).toEqual(jurisdiction_paths[mockPatient1.jurisdiction_id]);
+    expect(wrapper.state('assigned_user')).toEqual(mockPatient1.assigned_user);
     expect(wrapper.state('reasoning')).toEqual('');
   });
 
@@ -165,7 +141,7 @@ describe('Jurisdiction', () => {
     const wrapper = getWrapper(mockPatient1, false);
     const submitSpy = jest.spyOn(wrapper.instance(), 'submit');
 
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     expect(submitSpy).toHaveBeenCalledTimes(0);
     wrapper.find(Button).simulate('click');
     expect(submitSpy).toHaveBeenCalledTimes(0);
@@ -177,10 +153,10 @@ describe('Jurisdiction', () => {
     const wrapper = getWrapper(mockPatient1, false);
     expect(wrapper.find(Modal).exists()).toBeFalsy();
 
-    wrapper.find('#jurisdiction_id').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
+    wrapper.find('#assigned_user').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBeFalsy();
-    wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
-    wrapper.find('#jurisdiction_id').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
+    wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
+    wrapper.find('#assigned_user').prop('onKeyPress')({ which: 13, preventDefault: jest.fn() });
     expect(wrapper.find(Modal).exists()).toBeTruthy();
   });
 });
