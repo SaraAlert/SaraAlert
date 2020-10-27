@@ -176,8 +176,8 @@ class PatientsController < ApplicationController
   # General updates to an existing subject.
   def update
     redirect_to(root_url) && return unless current_user.can_edit_patient?
-    puts *allowed_params
-    content = params.require(:patient).permit(:patient, :id, *allowed_params, :races => [])
+
+    content = params.require(:patient).permit(:patient, :id, *allowed_params)
     patient = current_user.get_patient(content[:id])
 
     # If we failed to find a subject given the id, redirect to index
@@ -554,6 +554,7 @@ class PatientsController < ApplicationController
       unknown
       other
       refused_to_answer
+      races
       ethnicity
       primary_language
       secondary_language
