@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_02_215339) do
+ActiveRecord::Schema.define(version: 2021_02_03_212021) do
 
   create_table "analytics", charset: "utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -397,6 +397,9 @@ ActiveRecord::Schema.define(version: 2021_02_02_215339) do
     t.date "extended_isolation"
     t.boolean "head_of_household"
     t.string "time_zone", default: "America/New_York"
+    t.boolean "race_unknown"
+    t.boolean "race_other"
+    t.boolean "race_refused_to_answer"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
