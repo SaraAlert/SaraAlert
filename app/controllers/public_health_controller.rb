@@ -177,9 +177,7 @@ class PublicHealthController < ApplicationController
       # `Continuous Exposure` values need a date associated with them so they always sort at the bottom. When sorting `desc`, using the epoch() time does the trick.
       # But for `asc`, we want to use a time that logically comes after any dates in the system.
       # System dates can be between now() and (30 days + the monitoring_period_days). The extra 1 (31 instead of 30) is to rule out any off-by-one errors.
-      patients = patients.order('CASE
-      WHEN continuous_exposure = 1 THEN ' + (dir == 'asc' ? 'DATE_ADD(NOW(), INTERVAL '+ (31 + ADMIN_OPTIONS['monitoring_period_days']).to_s + ' DAY)' : 'DATE("1970-01-01")') +
-      ' WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
+      patients = patients.order('CASE WHEN continuous_exposure = 1 THEN 1 ELSE 0 END, CASE WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
     when 'extended_isolation'
       patients = patients.order('CASE WHEN extended_isolation IS NULL THEN 1 ELSE 0 END, extended_isolation ' + dir)
     when 'symptom_onset'
