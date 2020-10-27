@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Col, Form } from 'react-bootstrap';
 import * as yup from 'yup';
@@ -24,6 +25,15 @@ class Identification extends React.Component {
       modified: {},
       languageOptions: this.getLanguageOptions(),
     };
+    this.default_races = [
+      'white',
+      'black_or_african_american',
+      'american_indian_or_alaska_native',
+      'asian',
+      'native_hawaiian_or_other_pacific_islander',
+      'race_other',
+    ];
+    this.exclusive_race_options = ['race_unknown', 'race_refused_to_answer'];
   }
 
   handleChange = event => {
@@ -36,6 +46,50 @@ class Identification extends React.Component {
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+      },
+      () => {
+        self.props.setEnrollmentState({ ...self.state.modified });
+      }
+    );
+  };
+
+  // Special function for handling race selection: If an exclusive race value (e.g. "unknown" or "refused to answer")
+  // is selected, unselects all other checkboxes, and if a standard race value (e.g. "white, black or african amrican", "other")
+  // is selected, unselects all exclusive checkboxes.
+  handleRaceChange = event => {
+    let value = event.target.checked;
+    var modified_races = {};
+    let current = this.state.current;
+    let modified = this.state.modified;
+
+    const self = this;
+    event.persist();
+    if (value) {
+      if (self.exclusive_race_options.includes(event.target.id)) {
+        modified_races = _.reduce(
+          _.union(this.exclusive_race_options, this.default_races),
+          (memo, race) => {
+            return _.extend(memo, { [race]: race == event.target.id });
+          },
+          {}
+        );
+      } else {
+        let test_memo = { [event.target.id]: true };
+        modified_races = _.reduce(
+          this.exclusive_race_options,
+          (memo, race) => {
+            return _.extend(memo, { [race]: false });
+          },
+          test_memo
+        );
+      }
+    } else {
+      modified_races = { [event.target.id]: false };
+    }
+    this.setState(
+      {
+        current: { ...current, patient: { ..._.extend(current.patient, modified_races) } },
+        modified: { ...modified, patient: { ..._.extend(current.patient, modified_races) } },
       },
       () => {
         self.props.setEnrollmentState({ ...self.state.modified });
@@ -368,31 +422,62 @@ class Identification extends React.Component {
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
-                  <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.patient.white} onChange={this.handleChange} />
+                  <Form.Check type="checkbox" id="white" label="WHITE" checked={!!this.state.current.patient.white} onChange={this.handleRaceChange} />
                   <Form.Check
                     className="pt-2"
-                    type="switch"
+                    type="checkbox"
                     id="black_or_african_american"
                     label="BLACK OR AFRICAN AMERICAN"
-                    checked={this.state.current.patient.black_or_african_american}
-                    onChange={this.handleChange}
+                    checked={!!this.state.current.patient.black_or_african_american}
+                    onChange={this.handleRaceChange}
                   />
                   <Form.Check
                     className="pt-2"
-                    type="switch"
+                    type="checkbox"
                     id="american_indian_or_alaska_native"
                     label="AMERICAN INDIAN OR ALASKA NATIVE"
-                    checked={this.state.current.patient.american_indian_or_alaska_native}
-                    onChange={this.handleChange}
+                    checked={!!this.state.current.patient.american_indian_or_alaska_native}
+                    onChange={this.handleRaceChange}
                   />
-                  <Form.Check className="pt-2" type="switch" id="asian" label="ASIAN" checked={this.state.current.patient.asian} onChange={this.handleChange} />
                   <Form.Check
                     className="pt-2"
-                    type="switch"
+                    type="checkbox"
+                    id="asian"
+                    label="ASIAN"
+                    checked={!!this.state.current.patient.asian}
+                    onChange={this.handleRaceChange}
+                  />
+                  <Form.Check
+                    className="pt-2"
+                    type="checkbox"
                     id="native_hawaiian_or_other_pacific_islander"
                     label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER"
-                    checked={this.state.current.patient.native_hawaiian_or_other_pacific_islander}
-                    onChange={this.handleChange}
+                    checked={!!this.state.current.patient.native_hawaiian_or_other_pacific_islander}
+                    onChange={this.handleRaceChange}
+                  />
+                  <Form.Check
+                    className="pt-2"
+                    type="checkbox"
+                    id="race_other"
+                    label="OTHER"
+                    checked={!!this.state.current.patient.race_other}
+                    onChange={this.handleRaceChange}
+                  />
+                  <Form.Check
+                    className="pt-2"
+                    type="checkbox"
+                    id="race_unknown"
+                    label="UNKNOWN"
+                    checked={!!this.state.current.patient.race_unknown}
+                    onChange={this.handleRaceChange}
+                  />
+                  <Form.Check
+                    className="pt-2"
+                    type="checkbox"
+                    id="race_refused_to_answer"
+                    label="REFUSED TO ANSWER"
+                    checked={!!this.state.current.patient.race_refused_to_answer}
+                    onChange={this.handleRaceChange}
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
@@ -402,6 +487,8 @@ class Identification extends React.Component {
                     <option></option>
                     <option>Not Hispanic or Latino</option>
                     <option>Hispanic or Latino</option>
+                    <option>Unknown</option>
+                    <option>Refused to Answer</option>
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
