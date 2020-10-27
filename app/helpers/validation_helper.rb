@@ -111,7 +111,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     address_line_1: { label: 'Address 1', checks: [:required] },
     address_city: { label: 'Town/City', checks: [:required] },
     address_zip: { label: 'Zip', checks: [:required] },
-    address_state: { label: 'State', checks: %i[required date] },
+    address_state: { label: 'State', checks: %i[required state] },
     monitored_address_state: { label: 'Monitored Address State', checks: [:state] },
     foreign_monitored_address_state: { label: 'Foreign Monitored Address State', checks: [:state] },
     preferred_contact_method: { label: 'Preferred Contact Method', checks: [:enum] },
