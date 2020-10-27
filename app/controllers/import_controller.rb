@@ -96,7 +96,7 @@ class ImportController < ApplicationController
             lab_results = []
             lab_results.push(lab_result(row[87..90], row_ind)) if !row[87].blank? || !row[88].blank? || !row[89].blank? || !row[90].blank?
             lab_results.push(lab_result(row[91..94], row_ind)) if !row[91].blank? || !row[92].blank? || !row[93].blank? || !row[94].blank?
-            patient[:laboratories] = lab_results unless lab_results.empty?
+            patient[:laboratories_attributes] = lab_results unless lab_results.empty?
           end
         rescue ValidationError => e
           @errors << e&.message || "Unknown error on row #{row_ind}"

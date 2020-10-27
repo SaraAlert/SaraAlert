@@ -135,6 +135,8 @@ class Patient < ApplicationRecord
 
   around_save :inform_responder, if: :responder_id_changed?
   around_destroy :inform_responder
+  
+  accepts_nested_attributes_for :laboratories
 
   # Most recent assessment
   def latest_assessment
