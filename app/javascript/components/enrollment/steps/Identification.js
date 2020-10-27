@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import { PropTypes } from 'prop-types';
 import { Card, Button, Form, Col } from 'react-bootstrap';
 import * as yup from 'yup';
@@ -25,8 +24,6 @@ class Identification extends React.Component {
       modified: {},
       languageOptions: this.getLanguageOptions(),
     };
-    this.default_races = ['2106-3', '2054-5', '1002-5', '2028-9', '2076-8'];
-    this.additional_race_options = ['UNK', 'OTH', 'ASKU'];
   }
 
   handleChange = event => {
@@ -39,42 +36,6 @@ class Identification extends React.Component {
       {
         current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
-      },
-      () => {
-        self.props.setEnrollmentState({ ...self.state.modified });
-      }
-    );
-  };
-
-  handleRaceChange = event => {
-    let value = event.target.checked;
-    var current_races = [];
-    let current = this.state.current;
-    let modified = this.state.modified;
-
-    const self = this;
-    event.persist();
-    if (value) {
-      if (self.additional_race_options.includes(event.target.id)) {
-        current_races = [event.target.id];
-      } else {
-        current_races = _.union(_.intersection(self.default_races, self.state.current.patient.races), [event.target.id]);
-      }
-    } else {
-      current_races = _.without(self.state.current.patient.races, event.target.id);
-    }
-    let all_races = _.union(self.additional_race_options, self.default_races);
-    let race_booleans = _.reduce(
-      all_races,
-      (memo, race) => {
-        return _.extend(memo, { [race]: current_races.includes(race) });
-      },
-      {}
-    );
-    this.setState(
-      {
-        current: { ...current, patient: { ..._.extend(current.patient, race_booleans), races: current_races } },
-        modified: { ...modified, patient: { ..._.extend(current.patient, race_booleans), races: current_races } },
       },
       () => {
         self.props.setEnrollmentState({ ...self.state.modified });
@@ -403,62 +364,31 @@ class Identification extends React.Component {
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
-                  <Form.Check type="checkbox" id="2106-3" label="WHITE" checked={this.state.current.patient['2106-3']} onChange={this.handleRaceChange} />
+                  <Form.Check type="switch" id="white" label="WHITE" checked={this.state.current.patient.white} onChange={this.handleChange} />
                   <Form.Check
                     className="pt-2"
-                    type="checkbox"
-                    id="2054-5"
+                    type="switch"
+                    id="black_or_african_american"
                     label="BLACK OR AFRICAN AMERICAN"
-                    checked={this.state.current.patient['2054-5']}
-                    onChange={this.handleRaceChange}
+                    checked={this.state.current.patient.black_or_african_american}
+                    onChange={this.handleChange}
                   />
                   <Form.Check
                     className="pt-2"
-                    type="checkbox"
-                    id="1002-5"
+                    type="switch"
+                    id="american_indian_or_alaska_native"
                     label="AMERICAN INDIAN OR ALASKA NATIVE"
-                    checked={this.state.current.patient['1002-5']}
-                    onChange={this.handleRaceChange}
+                    checked={this.state.current.patient.american_indian_or_alaska_native}
+                    onChange={this.handleChange}
                   />
+                  <Form.Check className="pt-2" type="switch" id="asian" label="ASIAN" checked={this.state.current.patient.asian} onChange={this.handleChange} />
                   <Form.Check
                     className="pt-2"
-                    type="checkbox"
-                    id="2028-9"
-                    label="ASIAN"
-                    checked={this.state.current.patient['2028-9']}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="2076-8"
+                    type="switch"
+                    id="native_hawaiian_or_other_pacific_islander"
                     label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER"
-                    checked={this.state.current.patient['2076-8']}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="UNK"
-                    label="UNKNOWN"
-                    checked={this.state.current.patient['UNK']}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="OTH"
-                    label="OTHER"
-                    checked={this.state.current.patient['OTH']}
-                    onChange={this.handleRaceChange}
-                  />
-                  <Form.Check
-                    className="pt-2"
-                    type="checkbox"
-                    id="ASKU"
-                    label="REFUSED TO ANSWER"
-                    checked={this.state.current.patient['ASKU']}
-                    onChange={this.handleRaceChange}
+                    checked={this.state.current.patient.native_hawaiian_or_other_pacific_islander}
+                    onChange={this.handleChange}
                   />
                 </Form.Group>
                 <Form.Group as={Col} md="1"></Form.Group>
@@ -468,8 +398,6 @@ class Identification extends React.Component {
                     <option></option>
                     <option>Not Hispanic or Latino</option>
                     <option>Hispanic or Latino</option>
-                    <option>Unknown</option>
-                    <option>Refused to Answer</option>
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
@@ -641,10 +569,6 @@ const schema = yup.object().shape({
   american_indian_or_alaska_native: yup.boolean().nullable(),
   asian: yup.boolean().nullable(),
   native_hawaiian_or_other_pacific_islander: yup.boolean().nullable(),
-  unknown: yup.boolean().nullable(),
-  other: yup.boolean().nullable(),
-  refused_to_answer: yup.boolean().nullable(),
-  races: yup.array(),
   ethnicity: yup
     .string()
     .max(200, 'Max length exceeded, please limit to 200 characters.')

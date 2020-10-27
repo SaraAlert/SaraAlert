@@ -3,74 +3,41 @@
 # Helper methods for the patient model
 module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Build a FHIR US Core Race Extension given Sara Alert race booleans.
-  def us_core_race(races)
+  def us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander)
     # Don't return an extension if all race categories are false or nil
-    return nil unless [races & accepted_races].any?
-    extension = []
-    valueString = []
-    for race in races.uniq
-      case race
-      when '2106-3'
-        extension << FHIR::Extension.new(
-          url: 'ombCategory',
-          valueCoding: FHIR::Coding.new(code: '2106-3', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'White')
-        )
-        valueString << 'White'
-      when '2054-5'
-        extension << FHIR::Extension.new(
-          url: 'ombCategory',
-          valueCoding: FHIR::Coding.new(code: '2054-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Black or African American')
-        )
-        valueString << 'Black or African American'
-      when '1002-5'
-        extension << FHIR::Extension.new(
-          url: 'ombCategory',
-          valueCoding: FHIR::Coding.new(code: '1002-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'American Indian or Alaska Native')
-        )
-        valueString << 'American Indian or Alaska Native'
-      when '2028-9'
-        extension << FHIR::Extension.new(
-          url: 'ombCategory',
-          valueCoding: FHIR::Coding.new(code: '2028-9', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Asian')
-        )
-        valueString << 'Asian'
-      when '2076-8'
-        extension << FHIR::Extension.new(
-          url: 'ombCategory',
-          valueCoding: FHIR::Coding.new(code: '2076-8', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Native Hawaiian or Other Pacific Islander')
-        )
-        valueString << 'native_hawaiian_or_other_pacific_islander'
-      when 'UNK'
-        extension << FHIR::Extension.new(
-          url: 'ombCategory',
-          valueCoding: FHIR::Coding.new(code: 'UNK', system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', display: 'Unknown')
-        )
-        valueString << 'Unknown'
-      when 'OTH'
-        extension << FHIR::Extension.new(
-          url: 'ombCategory',
-          valueCoding: FHIR::Coding.new(code: 'OTH', system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', display: 'Other')
-        )
-        valueString << 'Other'
-      when 'ASKU'
-        extension << FHIR::Extension.new(
-          url: 'ombCategory',
-          valueCoding: FHIR::Coding.new(code: 'ASKU', system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', display: 'Refused to Answer')
-        )
-        valueString << 'Refused to Answer'
-      end
-    end
-    extension << FHIR::Extension.new(
-      url: 'text',
-      valueString: valueString.join(', ')
-    )
-    # Build out extension based on what race categories are true
-    FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race', extension: extension.reject(&:nil?))
-  end
+    return nil unless [white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander].include?(true)
 
-  def self.races(patient)
-    url = 'us-core-race'
-    patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.map(&:valueCoding&.code)
+    # Build out extension based on what race categories are true
+    FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race', extension: [
+      white ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: '2106-3', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'White')
+      ) : nil,
+      black_or_african_american ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: '2054-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Black or African American')
+      ) : nil,
+      american_indian_or_alaska_native ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: '1002-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'American Indian or Alaska Native')
+      ) : nil,
+      asian ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: '2028-9', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Asian')
+      ) : nil,
+      native_hawaiian_or_other_pacific_islander ? FHIR::Extension.new(
+        url: 'ombCategory',
+        valueCoding: FHIR::Coding.new(code: '2076-8', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Native Hawaiian or Other Pacific Islander')
+      ) : nil,
+      FHIR::Extension.new(
+        url: 'text',
+        valueString: [white ? 'White' : nil,
+                      black_or_african_american ? 'Black or African American' : nil,
+                      american_indian_or_alaska_native ? 'American Indian or Alaska Native' : nil,
+                      asian ? 'Asian' : nil,
+                      native_hawaiian_or_other_pacific_islander ? 'Native Hawaiian or Other Pacific Islander' : nil].reject(&:nil?).join(', ')
+      )
+    ].reject(&:nil?))
   end
 
   # Return a boolean indicating if the given race code is present on the given FHIR::Patient.
@@ -82,7 +49,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Build a FHIR US Core Ethnicity Extension given Sara Alert ethnicity information.
   def us_core_ethnicity(ethnicity)
     # Don't return an extension if no ethnicity specified
-    return nil unless ['Hispanic or Latino', 'Not Hispanic or Latino', 'Unknown', 'Refused to Answer'].include?(ethnicity)
+    return nil unless ['Hispanic or Latino', 'Not Hispanic or Latino'].include?(ethnicity)
 
     # Build out extension based on what ethnicity was specified
     FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity', extension: [
@@ -94,14 +61,6 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
                             url: 'ombCategory',
                             valueCoding: FHIR::Coding.new(code: '2186-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Not Hispanic or Latino')
                           ) : nil,
-                          ethnicity == 'Unknown' ? FHIR::Extension.new(
-                            url: 'ombCategory',
-                            valueCoding: FHIR::Coding.new(code: 'UNK', system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', display: 'Unknown')
-                          ) : nil,
-                          refused_to_answer ? FHIR::Extension.new(
-                            url: 'ombCategory',
-                            valueCoding: FHIR::Coding.new(code: 'ASKU', system: 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor', display: 'Refused to Answer')
-                          ): nil,
                           FHIR::Extension.new(
                             url: 'text',
                             valueString: ethnicity
@@ -115,8 +74,6 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     code = patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.first&.valueCoding&.code
     return 'Hispanic or Latino' if code == '2135-2'
     return 'Not Hispanic or Latino' if code == '2186-5'
-    return 'Unknown' if code == 'UNK'
-    return 'Refused to Answer' if code == 'ASKU'
 
     nil
   end
