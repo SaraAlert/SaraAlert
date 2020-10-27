@@ -50,9 +50,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                    'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
 
   COMPREHENSIVE_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american, :american_indian_or_alaska_native,
-                          :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language, :secondary_language, :interpretation_required,
-                          :nationality, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss, :address_line_1, :address_city,
-                          :address_state, :address_line_2, :address_zip, :address_county, :foreign_address_line_1, :foreign_address_city,
+                          :asian, :native_hawaiian_or_other_pacific_islander, :race_unknown, :race_other, :race_refused_to_answer, :ethnicity, :primary_language, 
+                          :secondary_language, :interpretation_required, :nationality, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss, 
+                          :address_line_1, :address_city, :address_state, :address_line_2, :address_zip, :address_county, :foreign_address_line_1, :foreign_address_city,
                           :foreign_address_country, :foreign_address_line_2, :foreign_address_zip, :foreign_address_line_3, :foreign_address_state,
                           :monitored_address_line_1, :monitored_address_city, :monitored_address_state, :monitored_address_line_2, :monitored_address_zip,
                           :monitored_address_county, :foreign_monitored_address_line_1, :foreign_monitored_address_city, :foreign_monitored_address_state,
@@ -176,6 +176,9 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     american_indian_or_alaska_native: { label: 'American Indian or Alaska Native', checks: [:bool] },
     asian: { label: 'Asian', checks: [:bool] },
     native_hawaiian_or_other_pacific_islander: { label: 'Native Hawaiian or Other Pacific Islander', checks: [:bool] },
+    race_unknown: { label: 'Unknown', checks: [:bool] },
+    race_other: { label: 'Other', checks: [:bool] },
+    race_refused_to_answer: { label: 'Other', checks: [:bool] },
     ethnicity: { label: 'Ethnicity', checks: [:enum] },
     interpretation_required: { label: 'Interpretation Required?', checks: [:bool] },
     address_state: { label: 'State', checks: [:state] },

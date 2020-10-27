@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_09_142558) do
+ActiveRecord::Schema.define(version: 2020_10_27_212347) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -58,9 +58,7 @@ ActiveRecord::Schema.define(version: 2020_10_09_142558) do
     t.integer "assessment_id"
     t.string "threshold_condition_hash"
     t.string "type"
-    t.integer "threshold_condition_id"
     t.index ["assessment_id"], name: "index_conditions_on_assessment_id"
-    t.index ["threshold_condition_id"], name: "index_conditions_on_threshold_condition_id"
     t.index ["type", "assessment_id"], name: "conditions_index_chain_1"
     t.index ["type", "jurisdiction_id"], name: "conditions_index_chain_3"
     t.index ["type", "threshold_condition_hash", "id"], name: "conditions_index_chain_2"
@@ -341,6 +339,9 @@ ActiveRecord::Schema.define(version: 2020_10_09_142558) do
     t.string "sexual_orientation"
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
+    t.boolean "race_unknown"
+    t.boolean "race_other"
+    t.boolean "race_refused_to_answer"
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
@@ -349,7 +350,6 @@ ActiveRecord::Schema.define(version: 2020_10_09_142558) do
     t.index ["id", "monitoring", "purged", "isolation", "symptom_onset"], name: "patients_index_chain_4"
     t.index ["id"], name: "index_patients_on_id"
     t.index ["isolation", "jurisdiction_id"], name: "patients_index_chain_6"
-    t.index ["jurisdiction_id", "assigned_user"], name: "patients_index_chain_four_1"
     t.index ["jurisdiction_id", "isolation", "purged", "assigned_user"], name: "patients_index_chain_three_1"
     t.index ["jurisdiction_id"], name: "index_patients_on_jurisdiction_id"
     t.index ["last_date_of_exposure"], name: "index_patients_on_last_date_of_exposure"
