@@ -134,7 +134,7 @@ describe('Jurisdiction', () => {
 
   it('Adding reasoning updates state', () => {
     const wrapper = getWrapper(mockPatient1, false);
-    const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleChange');
+    const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleReasoningChange');
     wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
     wrapper.find(Button).simulate('click');
 

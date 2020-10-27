@@ -22,21 +22,24 @@ class Jurisdiction extends React.Component {
     this.origState = Object.assign({}, this.state);
   }
 
-  handleChange = event => {
-    if (event?.target?.id && event.target.id === 'jurisdiction_id') {
-      this.setState({
-        jurisdiction_path: event?.target?.value ? event.target.value : '',
-        validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
-      });
-    } else if (event?.target?.name && event.target.name === 'apply_to_household') {
-      let applyToGroup = event.target.id === 'apply_to_household_yes';
-      this.setState({ [event.target.name]: applyToGroup });
-    } else if (event?.target?.id) {
-      let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-      this.setState({ [event.target.id]: value || '' });
-    }
+  handleJurisdictionChange = event => {
+    this.setState({
+      jurisdiction_path: event?.target?.value ? event.target.value : '',
+      validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
+    });
   };
 
+  handleApplyHouseholdChange = event => {
+    const applyToHousehold = event.target.id === 'apply_to_household_yes';
+    this.setState({ apply_to_household: applyToHousehold });
+  };
+
+  handleReasoningChange = event => {
+    let value = event?.target?.value;
+    this.setState({ [event.target.id]: value || '' });
+  };
+
+  // if user hits the Enter key after changing the jurisdiction value, shows the modal (in leu of clicking the button)
   handleKeyPress = event => {
     if (
       event.which === 13 &&
@@ -109,7 +112,7 @@ class Jurisdiction extends React.Component {
                   name="apply_to_household"
                   id="apply_to_household_no"
                   label="This monitoree only"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyHouseholdChange}
                   checked={!this.state.apply_to_household}
                 />
                 <Form.Check
@@ -118,7 +121,7 @@ class Jurisdiction extends React.Component {
                   name="apply_to_household"
                   id="apply_to_household_yes"
                   label="This monitoree and all household members"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyHouseholdChange}
                   checked={this.state.apply_to_household}
                 />
               </Form.Group>
@@ -126,7 +129,7 @@ class Jurisdiction extends React.Component {
           )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
-            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
+            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleReasoningChange} />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
@@ -161,7 +164,7 @@ class Jurisdiction extends React.Component {
               list="jurisdictionPaths"
               autoComplete="off"
               className="form-control-lg"
-              onChange={this.handleChange}
+              onChange={this.handleJurisdictionChange}
               onKeyPress={this.handleKeyPress}
               value={this.state.jurisdiction_path}
             />
@@ -174,15 +177,12 @@ class Jurisdiction extends React.Component {
                 );
               })}
             </datalist>
-            {!this.state.validJurisdiction || this.state.jurisdiction_path === this.props.jurisdictionPaths[this.state.original_jurisdiction_id] ? (
-              <Button className="btn-lg btn-square text-nowrap ml-2" disabled>
-                <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
-              </Button>
-            ) : (
-              <Button className="btn-lg btn-square text-nowrap ml-2" onClick={this.toggleJurisdictionModal}>
-                <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
-              </Button>
-            )}
+            <Button
+              className="btn-lg btn-square text-nowrap ml-2"
+              onClick={this.toggleJurisdictionModal}
+              disabled={!this.state.validJurisdiction || this.state.jurisdiction_path === this.props.jurisdictionPaths[this.state.original_jurisdiction_id]}>
+              <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
+            </Button>
           </Form.Group>
         </div>
         {this.state.showJurisdictionModal && this.createModal(this.toggleJurisdictionModal, this.submit)}

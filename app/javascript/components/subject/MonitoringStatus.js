@@ -25,23 +25,27 @@ class MonitoringStatus extends React.Component {
     };
   }
 
-  handleChange = event => {
-    if (event?.target?.id && event.target.id === 'monitoring_status') {
-      this.setState({
-        showMonitoringStatusModal: true,
-        monitoring: event.target.value === 'Actively Monitoring',
-        monitoring_status: event?.target?.value ? event.target.value : '',
-      });
-    } else if (event?.target?.name && event.target.name === 'apply_to_household') {
-      let applyToGroup = event.target.id === 'apply_to_household_yes';
+  handleMonitoringStatusChange = event => {
+    this.setState({
+      showMonitoringStatusModal: true,
+      monitoring: event.target.value === 'Actively Monitoring',
+      monitoring_status: event?.target?.value ? event.target.value : '',
+    });
+  };
+
+  handleApplyHouseholdChange = event => {
+    if (event?.target?.name && event.target.name === 'apply_to_household') {
+      const applyToGroup = event.target.id === 'apply_to_household_yes';
       this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.name && event.target.name === 'apply_to_household_cm_exp_only') {
-      let applyToGroup = event.target.id === 'apply_to_household_cm_exp_only_yes';
+      const applyToGroup = event.target.id === 'apply_to_household_cm_exp_only_yes';
       this.setState({ [event.target.name]: applyToGroup });
-    } else if (event?.target?.id) {
-      let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-      this.setState({ [event.target.id]: value || '' });
     }
+  };
+
+  handleChange = event => {
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    this.setState({ [event.target.id]: value || '' });
   };
 
   toggleMonitoringStatusModal = () => {
@@ -106,7 +110,7 @@ class MonitoringStatus extends React.Component {
                   name="apply_to_household"
                   id="apply_to_household_no"
                   label="This monitoree only"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyHouseholdChange}
                   checked={!this.state.apply_to_household}
                 />
                 <Form.Check
@@ -115,7 +119,7 @@ class MonitoringStatus extends React.Component {
                   name="apply_to_household"
                   id="apply_to_household_yes"
                   label="This monitoree and all household members (this will turn Continuous Exposure OFF for all household members)"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyHouseholdChange}
                   checked={this.state.apply_to_household}
                 />
               </Form.Group>
@@ -160,7 +164,7 @@ class MonitoringStatus extends React.Component {
                   name="apply_to_household_cm_exp_only"
                   id="apply_to_household_cm_exp_only_no"
                   label="No, household members still have continuous exposure to another case"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyHouseholdChange}
                   checked={!this.state.apply_to_household_cm_exp_only}
                 />
                 <Form.Check>
@@ -169,7 +173,7 @@ class MonitoringStatus extends React.Component {
                       type="radio"
                       name="apply_to_household_cm_exp_only"
                       id="apply_to_household_cm_exp_only_yes"
-                      onChange={this.handleChange}
+                      onChange={this.handleApplyHouseholdChange}
                       checked={this.state.apply_to_household_cm_exp_only}
                     />
                     <p className="mb-1">Yes, household members are no longer being exposed to a case</p>
@@ -222,7 +226,12 @@ class MonitoringStatus extends React.Component {
             MONITORING STATUS
             <InfoTooltip tooltipTextKey="monitoringStatus" location="right"></InfoTooltip>
           </Form.Label>
-          <Form.Control as="select" className="form-control-lg" id="monitoring_status" onChange={this.handleChange} value={this.state.monitoring_status}>
+          <Form.Control
+            as="select"
+            className="form-control-lg"
+            id="monitoring_status"
+            onChange={this.handleMonitoringStatusChange}
+            value={this.state.monitoring_status}>
             <option>Actively Monitoring</option>
             <option>Not Monitoring</option>
           </Form.Control>

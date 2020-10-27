@@ -110,7 +110,7 @@ describe('AssignedUser', () => {
 
   it('Adding reasoning updates state', () => {
     const wrapper = getWrapper(mockPatient1, false);
-    const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleChange');
+    const handleChangeSpy = jest.spyOn(wrapper.instance(), 'handleReasoningChange');
     wrapper.find('#assigned_user').simulate('change', { target: { id: 'assigned_user', value: '1' } });
     wrapper.find(Button).simulate('click');
 

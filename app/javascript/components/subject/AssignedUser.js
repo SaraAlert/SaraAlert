@@ -21,23 +21,26 @@ class AssignedUser extends React.Component {
     this.origState = Object.assign({}, this.state);
   }
 
-  handleChange = event => {
-    if (event?.target?.id && event.target.id === 'assigned_user') {
-      if (
-        event?.target?.value === '' ||
-        (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
-      ) {
-        this.setState({ assigned_user: event?.target?.value ? parseInt(event.target.value) : '' });
-      }
-    } else if (event?.target?.name && event.target.name === 'apply_to_household') {
-      let applyToGroup = event.target.id === 'apply_to_household_yes';
-      this.setState({ [event.target.name]: applyToGroup });
-    } else if (event?.target?.id) {
-      let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-      this.setState({ [event.target.id]: value || '' });
+  handleAssignedUserChange = event => {
+    if (
+      event?.target?.value === '' ||
+      (event?.target?.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999)
+    ) {
+      this.setState({ assigned_user: event?.target?.value ? parseInt(event.target.value) : '' });
     }
   };
 
+  handleApplyHouseholdChange = event => {
+    const applyToHousehold = event.target.id === 'apply_to_household_yes';
+    this.setState({ apply_to_household: applyToHousehold });
+  };
+
+  handleReasoningChange = event => {
+    let value = event?.target?.value;
+    this.setState({ [event.target.id]: value || '' });
+  };
+
+  // if user hits the Enter key after changing the Assigned User value, shows the modal (in leu of clicking the button)
   handleKeyPress = event => {
     if (event.which === 13 && this.state.assigned_user !== this.state.original_assigned_user) {
       event.preventDefault();
@@ -95,7 +98,7 @@ class AssignedUser extends React.Component {
                   name="apply_to_household"
                   id="apply_to_household_no"
                   label="This monitoree only"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyHouseholdChange}
                   checked={!this.state.apply_to_household}
                 />
                 <Form.Check
@@ -104,7 +107,7 @@ class AssignedUser extends React.Component {
                   name="apply_to_household"
                   id="apply_to_household_yes"
                   label="This monitoree and all household members"
-                  onChange={this.handleChange}
+                  onChange={this.handleApplyHouseholdChange}
                   checked={this.state.apply_to_household}
                 />
               </Form.Group>
@@ -112,7 +115,7 @@ class AssignedUser extends React.Component {
           )}
           <Form.Group>
             <Form.Label>Please include any additional details:</Form.Label>
-            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
+            <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleReasoningChange} />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
@@ -147,7 +150,7 @@ class AssignedUser extends React.Component {
               list="assignedUsers"
               autoComplete="off"
               className="form-control-lg"
-              onChange={this.handleChange}
+              onChange={this.handleAssignedUserChange}
               onKeyPress={this.handleKeyPress}
               value={this.state.assigned_user}
             />
@@ -160,15 +163,12 @@ class AssignedUser extends React.Component {
                 );
               })}
             </datalist>
-            {this.state.assigned_user === this.state.original_assigned_user ? (
-              <Button className="btn-lg btn-square text-nowrap ml-2" disabled>
-                <i className="fas fa-users"></i> Change User
-              </Button>
-            ) : (
-              <Button className="btn-lg btn-square text-nowrap ml-2" onClick={this.toggleAssignedUserModal}>
-                <i className="fas fa-users"></i> Change User
-              </Button>
-            )}
+            <Button
+              className="btn-lg btn-square text-nowrap ml-2"
+              onClick={this.toggleAssignedUserModal}
+              disabled={this.state.assigned_user === this.state.original_assigned_user}>
+              <i className="fas fa-users"></i> Change User
+            </Button>
           </Form.Group>
         </div>
         {this.state.showAssignedUserModal && this.createModal(this.toggleAssignedUserModal, this.submit)}
