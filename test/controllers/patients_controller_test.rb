@@ -136,22 +136,22 @@ class PatientsControllerTest < ActionController::TestCase
       error = assert_raises(ActionController::ParameterMissing) do
         post :bulk_update_status, params: { ids: [1] }
       end
-      assert_includes(error.message, 'apply_to_group')
+      assert_includes(error.message, 'apply_to_household')
 
       not_found_id = Patient.last.id + 1
 
-      # If apply_to_group is true: Patient.dependent_ids_for_patients
-      post :bulk_update_status, params: { ids: [not_found_id], apply_to_group: true }
+      # If apply_to_household is true: Patient.dependent_ids_for_patients
+      post :bulk_update_status, params: { ids: [not_found_id], apply_to_household: true }
       assert_redirected_to('/errors#not_found')
 
-      # If apply_to_group is false: current_user.get_patients
-      post :bulk_update_status, params: { ids: [not_found_id], apply_to_group: false }
+      # If apply_to_household is false: current_user.get_patients
+      post :bulk_update_status, params: { ids: [not_found_id], apply_to_household: false }
       assert_redirected_to('/errors#not_found')
 
       # Normal operation
       post :bulk_update_status, params: {
         ids: [patient.id],
-        apply_to_group: false,
+        apply_to_household: false,
         patient: {
           monitoring: true,
           monitoring_reason: 'Meets Case Definition',
@@ -177,7 +177,7 @@ class PatientsControllerTest < ActionController::TestCase
       assert_no_changes('dependent.updated_at') do
         post :bulk_update_status, params: {
           ids: [patient.id],
-          apply_to_group: false,
+          apply_to_household: false,
           patient: {
             monitoring: true,
             monitoring_reason: 'Meets Case Definition',
@@ -192,7 +192,7 @@ class PatientsControllerTest < ActionController::TestCase
       # Apply to group logic
       post :bulk_update_status, params: {
         ids: [patient.id],
-        apply_to_group: true,
+        apply_to_household: true,
         patient: {
           monitoring: true,
           monitoring_reason: 'Meets Case Definition',
@@ -216,7 +216,7 @@ class PatientsControllerTest < ActionController::TestCase
 
       post :bulk_update_status, params: {
         ids: [patient.id],
-        apply_to_group: true,
+        apply_to_household: true,
         patient: {
           monitoring: true,
           monitoring_reason: 'Meets Case Definition',

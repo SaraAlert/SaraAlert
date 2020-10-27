@@ -15,7 +15,7 @@ class Jurisdiction extends React.Component {
       jurisdiction_path: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
       original_jurisdiction_id: this.props.patient.jurisdiction_id,
       validJurisdiction: true,
-      apply_to_group: false,
+      apply_to_household: false,
       loading: false,
       reasoning: '',
     };
@@ -28,8 +28,8 @@ class Jurisdiction extends React.Component {
         jurisdiction_path: event?.target?.value ? event.target.value : '',
         validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
       });
-    } else if (event?.target?.name && event.target.name === 'apply_to_group') {
-      let applyToGroup = event.target.id === 'apply_to_group_yes';
+    } else if (event?.target?.name && event.target.name === 'apply_to_household') {
+      let applyToGroup = event.target.id === 'apply_to_household_yes';
       this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -53,7 +53,7 @@ class Jurisdiction extends React.Component {
     this.setState({
       showJurisdictionModal: !current,
       jurisdiction_path: current ? this.props.jurisdictionPaths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
-      apply_to_group: false,
+      apply_to_household: false,
       reasoning: '',
     });
   };
@@ -67,7 +67,7 @@ class Jurisdiction extends React.Component {
           patient: this.props.patient,
           jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdiction_path),
           reasoning: this.state.reasoning,
-          apply_to_group: this.state.apply_to_group,
+          apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
         .then(() => {
@@ -106,20 +106,20 @@ class Jurisdiction extends React.Component {
                 <Form.Check
                   type="radio"
                   className="mb-1"
-                  name="apply_to_group"
-                  id="apply_to_group_no"
+                  name="apply_to_household"
+                  id="apply_to_household_no"
                   label="This monitoree only"
                   onChange={this.handleChange}
-                  checked={!this.state.apply_to_group}
+                  checked={!this.state.apply_to_household}
                 />
                 <Form.Check
                   type="radio"
                   className="mb-3"
-                  name="apply_to_group"
-                  id="apply_to_group_yes"
+                  name="apply_to_household"
+                  id="apply_to_household_yes"
                   label="This monitoree and all household members"
                   onChange={this.handleChange}
-                  checked={this.state.apply_to_group}
+                  checked={this.state.apply_to_household}
                 />
               </Form.Group>
             </React.Fragment>

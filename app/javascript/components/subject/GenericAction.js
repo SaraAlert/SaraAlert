@@ -22,7 +22,7 @@ class GenericAction extends React.Component {
       monitoring_plan: props.patient.monitoring_plan || '',
       exposure_risk_assessment: props.patient.exposure_risk_assessment || '',
       public_health_action: props.patient.public_health_action || '',
-      apply_to_group: false,
+      apply_to_household: false,
       loading: false,
       household_warning: '',
     };
@@ -76,8 +76,8 @@ class GenericAction extends React.Component {
           public_health_action: event?.target?.value ? event.target.value : '',
         });
       }
-    } else if (event?.target?.name && event.target.name === 'apply_to_group') {
-      let applyToGroup = event.target.id === 'apply_to_group_yes';
+    } else if (event?.target?.name && event.target.name === 'apply_to_household') {
+      let applyToGroup = event.target.id === 'apply_to_household_yes';
       this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -90,7 +90,7 @@ class GenericAction extends React.Component {
     this.setState({
       showExposureRiskAssessmentModal: !current,
       exposure_risk_assessment: this.props.patient.exposure_risk_assessment ? this.props.patient.exposure_risk_assessment : '',
-      apply_to_group: false,
+      apply_to_household: false,
       reasoning: '',
     });
   };
@@ -100,7 +100,7 @@ class GenericAction extends React.Component {
     this.setState({
       showMonitoringPlanModal: !current,
       monitoring_plan: this.props.patient.monitoring_plan ? this.props.patient.monitoring_plan : '',
-      apply_to_group: false,
+      apply_to_household: false,
       reasoning: '',
     });
   };
@@ -110,7 +110,7 @@ class GenericAction extends React.Component {
     this.setState({
       showPublicHealthActionModal: !current,
       public_health_action: this.props.patient.public_health_action ? this.props.patient.public_health_action : '',
-      apply_to_group: false,
+      apply_to_household: false,
       reasoning: '',
     });
   };
@@ -125,7 +125,7 @@ class GenericAction extends React.Component {
           monitoring_plan: this.state.monitoring_plan,
           public_health_action: this.state.public_health_action,
           reasoning: this.state.reasoning,
-          apply_to_group: this.state.apply_to_group,
+          apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
         .then(() => {
@@ -154,23 +154,23 @@ class GenericAction extends React.Component {
                 <Form.Check
                   type="radio"
                   className="mb-1"
-                  name="apply_to_group"
-                  id="apply_to_group_no"
+                  name="apply_to_household"
+                  id="apply_to_household_no"
                   label="This monitoree only"
                   onChange={this.handleChange}
-                  checked={!this.state.apply_to_group}
+                  checked={!this.state.apply_to_household}
                 />
                 <Form.Check
                   type="radio"
                   className="mb-3"
-                  name="apply_to_group"
-                  id="apply_to_group_yes"
+                  name="apply_to_household"
+                  id="apply_to_household_yes"
                   label="This monitoree and all household members"
                   onChange={this.handleChange}
-                  checked={this.state.apply_to_group}
+                  checked={this.state.apply_to_household}
                 />
               </Form.Group>
-              <Form.Group>{this.state.apply_to_group && this.state.household_warning && <i>{this.state.household_warning}</i>}</Form.Group>
+              <Form.Group>{this.state.apply_to_household && this.state.household_warning && <i>{this.state.household_warning}</i>}</Form.Group>
             </React.Fragment>
           )}
           <Form.Group>

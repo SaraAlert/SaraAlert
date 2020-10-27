@@ -186,34 +186,34 @@ describe('CaseStatus', () => {
 
         expect(modalBody.find(Form.Group).exists()).toBeTruthy();
         expect(modalBody.find(Form.Check).length).toEqual(2);
-        expect(modalBody.find('#apply_to_group_no').prop('type')).toEqual('radio');
-        expect(modalBody.find('#apply_to_group_no').prop('label')).toEqual('This monitoree only');
-        expect(modalBody.find('#apply_to_group_yes').prop('type')).toEqual('radio');
-        expect(modalBody.find('#apply_to_group_yes').prop('label')).toEqual('This monitoree and all household members');
+        expect(modalBody.find('#apply_to_household_no').prop('type')).toEqual('radio');
+        expect(modalBody.find('#apply_to_household_no').prop('label')).toEqual('This monitoree only');
+        expect(modalBody.find('#apply_to_household_yes').prop('type')).toEqual('radio');
+        expect(modalBody.find('#apply_to_household_yes').prop('label')).toEqual('This monitoree and all household members');
     });
 
-    it('Clicking HoH radio buttons toggles this.state.apply_to_group', () => {
+    it('Clicking HoH radio buttons toggles this.state.apply_to_household', () => {
         const wrapper = getWrapper(mockPatient1, true);
         wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Confirmed' }, persist: jest.fn() });
 
         // initial radio button state
-        expect(wrapper.state('apply_to_group')).toBeFalsy();
-        expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
-        expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+        expect(wrapper.state('apply_to_household')).toBeFalsy();
+        expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
+        expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
 
         // change to apply to all of household
-        wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' }, persist: jest.fn() });
+        wrapper.find('#apply_to_household_yes').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' }, persist: jest.fn() });
         wrapper.update();
-        expect(wrapper.state('apply_to_group')).toBeTruthy();
-        expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeFalsy();
-        expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeTruthy();
+        expect(wrapper.state('apply_to_household')).toBeTruthy();
+        expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeFalsy();
+        expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeTruthy();
 
         // change back to just this monitoree
-        wrapper.find('#apply_to_group_no').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' }, persist: jest.fn() });
+        wrapper.find('#apply_to_household_no').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' }, persist: jest.fn() });
         wrapper.update();
-        expect(wrapper.state('apply_to_group')).toBeFalsy();
-        expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
-        expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+        expect(wrapper.state('apply_to_household')).toBeFalsy();
+        expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
+        expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
     });
 
     it('Clicking the cancel button closes modal and resets state', () => {
@@ -230,7 +230,7 @@ describe('CaseStatus', () => {
         expect(wrapper.state('showCaseStatusModal')).toBeFalsy();
         expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
         expect(wrapper.state('confirmedOrProbable')).toEqual(mockPatient1.case_status === 'Confirmed' || mockPatient1.case_status === 'Probable');
-        expect(wrapper.state('apply_to_group')).toBeFalsy();
+        expect(wrapper.state('apply_to_household')).toBeFalsy();
         expect(wrapper.state('case_status')).toEqual(mockPatient1.case_status);
         expect(wrapper.state('disabled')).toBeFalsy();
         expect(wrapper.state('isolation')).toEqual(mockPatient1.isolation);

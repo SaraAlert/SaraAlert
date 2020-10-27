@@ -19,9 +19,9 @@ class MonitoringStatus extends React.Component {
       monitoring_reason: '',
       reasoning: '',
       loading: false,
-      apply_to_group: false,
-      apply_to_group_cm_exp_only: false,
-      apply_to_group_cm_exp_only_date: moment(new Date()).format('YYYY-MM-DD'),
+      apply_to_household: false,
+      apply_to_household_cm_exp_only: false,
+      apply_to_household_cm_exp_only_date: moment(new Date()).format('YYYY-MM-DD'),
     };
   }
 
@@ -32,11 +32,11 @@ class MonitoringStatus extends React.Component {
         monitoring: event.target.value === 'Actively Monitoring',
         monitoring_status: event?.target?.value ? event.target.value : '',
       });
-    } else if (event?.target?.name && event.target.name === 'apply_to_group') {
-      let applyToGroup = event.target.id === 'apply_to_group_yes';
+    } else if (event?.target?.name && event.target.name === 'apply_to_household') {
+      let applyToGroup = event.target.id === 'apply_to_household_yes';
       this.setState({ [event.target.name]: applyToGroup });
-    } else if (event?.target?.name && event.target.name === 'apply_to_group_cm_exp_only') {
-      let applyToGroup = event.target.id === 'apply_to_group_cm_exp_only_yes';
+    } else if (event?.target?.name && event.target.name === 'apply_to_household_cm_exp_only') {
+      let applyToGroup = event.target.id === 'apply_to_household_cm_exp_only_yes';
       this.setState({ [event.target.name]: applyToGroup });
     } else if (event?.target?.id) {
       let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
@@ -52,9 +52,9 @@ class MonitoringStatus extends React.Component {
       monitoring_status: this.props.patient.monitoring ? 'Actively Monitoring' : 'Not Monitoring',
       monitoring_reason: '',
       reasoning: '',
-      apply_to_group: false,
-      apply_to_group_cm_exp_only: false,
-      apply_to_group_cm_exp_only_date: moment(new Date()).format('YYYY-MM-DD'),
+      apply_to_household: false,
+      apply_to_household_cm_exp_only: false,
+      apply_to_household_cm_exp_only_date: moment(new Date()).format('YYYY-MM-DD'),
     });
   };
 
@@ -70,9 +70,9 @@ class MonitoringStatus extends React.Component {
             (this.state.showMonitoringStatusModal && this.state.monitoring_status === 'Not Monitoring'
               ? this.state.monitoring_reason + (this.state.reasoning !== '' ? ', ' : '')
               : '') + this.state.reasoning,
-          apply_to_group: this.state.apply_to_group,
-          apply_to_group_cm_exp_only: this.state.apply_to_group_cm_exp_only,
-          apply_to_group_cm_exp_only_date: this.state.apply_to_group_cm_exp_only_date,
+          apply_to_household: this.state.apply_to_household,
+          apply_to_household_cm_exp_only: this.state.apply_to_household_cm_exp_only,
+          apply_to_household_cm_exp_only_date: this.state.apply_to_household_cm_exp_only_date,
           diffState: diffState,
         })
         .then(() => {
@@ -103,20 +103,20 @@ class MonitoringStatus extends React.Component {
                 <Form.Check
                   type="radio"
                   className="mb-1"
-                  name="apply_to_group"
-                  id="apply_to_group_no"
+                  name="apply_to_household"
+                  id="apply_to_household_no"
                   label="This monitoree only"
                   onChange={this.handleChange}
-                  checked={!this.state.apply_to_group}
+                  checked={!this.state.apply_to_household}
                 />
                 <Form.Check
                   type="radio"
                   className="mb-3"
-                  name="apply_to_group"
-                  id="apply_to_group_yes"
+                  name="apply_to_household"
+                  id="apply_to_household_yes"
                   label="This monitoree and all household members (this will turn Continuous Exposure OFF for all household members)"
                   onChange={this.handleChange}
-                  checked={this.state.apply_to_group}
+                  checked={this.state.apply_to_household}
                 />
               </Form.Group>
             </React.Fragment>
@@ -146,7 +146,7 @@ class MonitoringStatus extends React.Component {
             <Form.Label>Please include any additional details:</Form.Label>
             <Form.Control as="textarea" rows="2" id="reasoning" onChange={this.handleChange} />
           </Form.Group>
-          {this.props.patient.isolation && !this.state.monitoring && this.props.in_household_with_member_with_ce_in_exposure && !this.state.apply_to_group && (
+          {this.props.patient.isolation && !this.state.monitoring && this.props.in_household_with_member_with_ce_in_exposure && !this.state.apply_to_household && (
             <div className="update-dependent-lde">
               <hr />
               <p className="mb-2">
@@ -157,35 +157,35 @@ class MonitoringStatus extends React.Component {
                 <Form.Check
                   type="radio"
                   className="mb-2"
-                  name="apply_to_group_cm_exp_only"
-                  id="apply_to_group_cm_exp_only_no"
+                  name="apply_to_household_cm_exp_only"
+                  id="apply_to_household_cm_exp_only_no"
                   label="No, household members still have continuous exposure to another case"
                   onChange={this.handleChange}
-                  checked={!this.state.apply_to_group_cm_exp_only}
+                  checked={!this.state.apply_to_household_cm_exp_only}
                 />
                 <Form.Check>
                   <Form.Check.Label>
                     <Form.Check.Input
                       type="radio"
-                      name="apply_to_group_cm_exp_only"
-                      id="apply_to_group_cm_exp_only_yes"
+                      name="apply_to_household_cm_exp_only"
+                      id="apply_to_household_cm_exp_only_yes"
                       onChange={this.handleChange}
-                      checked={this.state.apply_to_group_cm_exp_only}
+                      checked={this.state.apply_to_household_cm_exp_only}
                     />
                     <p className="mb-1">Yes, household members are no longer being exposed to a case</p>
-                    {this.state.apply_to_group_cm_exp_only && (
+                    {this.state.apply_to_household_cm_exp_only && (
                       <React.Fragment>
                         <p className="mb-2">
                           Update their <b>Last Date of Exposure</b> to:
                         </p>
                         <DateInput
-                          id="apply_to_group_cm_exp_only_date"
-                          date={this.state.apply_to_group_cm_exp_only_date}
+                          id="apply_to_household_cm_exp_only_date"
+                          date={this.state.apply_to_household_cm_exp_only_date}
                           minDate={'2020-01-01'}
                           maxDate={moment()
                             .add(30, 'days')
                             .format('YYYY-MM-DD')}
-                          onChange={date => this.setState({ apply_to_group_cm_exp_only_date: date })}
+                          onChange={date => this.setState({ apply_to_household_cm_exp_only_date: date })}
                           placement="bottom"
                           customClass="form-control-lg"
                         />

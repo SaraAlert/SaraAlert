@@ -10,7 +10,7 @@ class CloseRecords extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      apply_to_group: false,
+      apply_to_household: false,
       loading: false,
       monitoring: false,
       monitoring_reasons: [
@@ -38,8 +38,8 @@ class CloseRecords extends React.Component {
       this.setState({ monitoring_reason: event.target.value });
     } else if (event.target.id === 'reasoning') {
       this.setState({ reasoning: event.target.value });
-    } else if (event.target.id === 'apply_to_group') {
-      this.setState({ apply_to_group: event.target.checked });
+    } else if (event.target.id === 'apply_to_household') {
+      this.setState({ apply_to_household: event.target.checked });
     }
   }
 
@@ -55,7 +55,7 @@ class CloseRecords extends React.Component {
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
           reasoning: this.state.monitoring_reason + (this.state.monitoring_reason !== '' && this.state.reasoning !== '' ? ', ' : '') + this.state.reasoning,
-          apply_to_group: this.state.apply_to_group,
+          apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
         .then(() => {
@@ -96,9 +96,9 @@ class CloseRecords extends React.Component {
           <Form.Group className="my-2">
             <Form.Check
               type="switch"
-              id="apply_to_group"
+              id="apply_to_household"
               label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
-              checked={this.state.apply_to_group}
+              checked={this.state.apply_to_household}
               onChange={this.handleChange}
             />
           </Form.Group>

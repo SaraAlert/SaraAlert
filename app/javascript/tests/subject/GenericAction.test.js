@@ -111,7 +111,7 @@ describe('GenericAction', () => {
     expect(wrapper.state('showExposureRiskAssessmentModal')).toBeTruthy();
     expect(wrapper.state('showMonitoringPlanModal')).toBeFalsy();
     expect(wrapper.state('showPublicHealthActionModal')).toBeFalsy();
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.state('exposure_risk_assessment')).toEqual('High');
     expect(wrapper.state('monitoring_plan')).toEqual(mockPatient1.monitoring_plan);
     expect(wrapper.state('public_health_action')).toEqual(mockPatient1.public_health_action);
@@ -136,7 +136,7 @@ describe('GenericAction', () => {
     expect(wrapper.state('showExposureRiskAssessmentModal')).toBeFalsy();
     expect(wrapper.state('showMonitoringPlanModal')).toBeTruthy();
     expect(wrapper.state('showPublicHealthActionModal')).toBeFalsy();
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.state('exposure_risk_assessment')).toEqual(mockPatient1.exposure_risk_assessment);
     expect(wrapper.state('monitoring_plan')).toEqual('None');
     expect(wrapper.state('public_health_action')).toEqual(mockPatient1.public_health_action);
@@ -161,7 +161,7 @@ describe('GenericAction', () => {
     expect(wrapper.state('showExposureRiskAssessmentModal')).toBeFalsy();
     expect(wrapper.state('showMonitoringPlanModal')).toBeFalsy();
     expect(wrapper.state('showPublicHealthActionModal')).toBeTruthy();
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.state('exposure_risk_assessment')).toEqual(mockPatient3.exposure_risk_assessment);
     expect(wrapper.state('monitoring_plan')).toEqual(mockPatient3.monitoring_plan);
     expect(wrapper.state('public_health_action')).toEqual('Recommended laboratory testing');
@@ -187,14 +187,14 @@ describe('GenericAction', () => {
     expect(wrapper.state('showExposureRiskAssessmentModal')).toBeFalsy();
     expect(wrapper.state('showMonitoringPlanModal')).toBeFalsy();
     expect(wrapper.state('showPublicHealthActionModal')).toBeTruthy();
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.state('exposure_risk_assessment')).toEqual(mockPatient1.exposure_risk_assessment);
     expect(wrapper.state('monitoring_plan')).toEqual(mockPatient1.monitoring_plan);
     expect(wrapper.state('public_health_action')).toEqual('Recommended laboratory testing');
     expect(wrapper.state('reasoning')).toEqual('');
 
-    // renders household warning if apply_to_group selected
-    wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' } });
+    // renders household warning if apply_to_household selected
+    wrapper.find('#apply_to_household_yes').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(wrapper.find(Modal.Body).find('i').text()).toEqual(`If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.`);
   });
 
@@ -217,14 +217,14 @@ describe('GenericAction', () => {
     expect(wrapper.state('showExposureRiskAssessmentModal')).toBeFalsy();
     expect(wrapper.state('showMonitoringPlanModal')).toBeFalsy();
     expect(wrapper.state('showPublicHealthActionModal')).toBeTruthy();
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.state('exposure_risk_assessment')).toEqual(mockPatient2.exposure_risk_assessment);
     expect(wrapper.state('monitoring_plan')).toEqual(mockPatient2.monitoring_plan);
     expect(wrapper.state('public_health_action')).toEqual('Recommended laboratory testing');
     expect(wrapper.state('reasoning')).toEqual('');
 
-    // renders household warning if apply_to_group selected
-    wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' } });
+    // renders household warning if apply_to_household selected
+    wrapper.find('#apply_to_household_yes').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     expect(wrapper.find(Modal.Body).find('i').text()).toEqual(`If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health action other than "None" is selected above. If any household members are being monitored in the isolation workflow, this update will not impact the line list on which those records appear.`);
   });
 
@@ -235,34 +235,34 @@ describe('GenericAction', () => {
 
     expect(modalBody.find(Form.Group).exists()).toBeTruthy();
     expect(modalBody.find(Form.Check).length).toEqual(2);
-    expect(modalBody.find('#apply_to_group_no').prop('type')).toEqual('radio');
-    expect(modalBody.find('#apply_to_group_no').prop('label')).toEqual('This monitoree only');
-    expect(modalBody.find('#apply_to_group_yes').prop('type')).toEqual('radio');
-    expect(modalBody.find('#apply_to_group_yes').prop('label')).toEqual('This monitoree and all household members');
+    expect(modalBody.find('#apply_to_household_no').prop('type')).toEqual('radio');
+    expect(modalBody.find('#apply_to_household_no').prop('label')).toEqual('This monitoree only');
+    expect(modalBody.find('#apply_to_household_yes').prop('type')).toEqual('radio');
+    expect(modalBody.find('#apply_to_household_yes').prop('label')).toEqual('This monitoree and all household members');
   });
 
-  it('Clicking HoH radio buttons toggles this.state.apply_to_group', () => {
+  it('Clicking HoH radio buttons toggles this.state.apply_to_household', () => {
     const wrapper = getExposureRiskAssessmentWrapper(mockPatient1, true);
     wrapper.find('#exposure_risk_assessment').simulate('change', { target: { id: 'exposure_risk_assessment', value: 'High' } });
 
     // initial radio button state
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
-    expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
-    expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
+    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
 
     // change to apply to all of household
-    wrapper.find('#apply_to_group_yes').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_yes' } });
+    wrapper.find('#apply_to_household_yes').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_yes' } });
     wrapper.update()
-    expect(wrapper.state('apply_to_group')).toBeTruthy();
-    expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeFalsy();
-    expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeTruthy();
+    expect(wrapper.state('apply_to_household')).toBeTruthy();
+    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeFalsy();
+    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeTruthy();
 
     // change back to just this monitoree
-    wrapper.find('#apply_to_group_no').simulate('change', { target: { name: 'apply_to_group', id: 'apply_to_group_no' } });
+    wrapper.find('#apply_to_household_no').simulate('change', { target: { name: 'apply_to_household', id: 'apply_to_household_no' } });
     wrapper.update()
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
-    expect(wrapper.find('#apply_to_group_no').prop('checked')).toBeTruthy();
-    expect(wrapper.find('#apply_to_group_yes').prop('checked')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
+    expect(wrapper.find('#apply_to_household_no').prop('checked')).toBeTruthy();
+    expect(wrapper.find('#apply_to_household_yes').prop('checked')).toBeFalsy();
   });
 
   it('Adding reasoning updates state', () => {
@@ -289,7 +289,7 @@ describe('GenericAction', () => {
     expect(wrapper.state('showExposureRiskAssessmentModal')).toBeFalsy();
     expect(wrapper.state('showMonitoringPlanModal')).toBeFalsy();
     expect(wrapper.state('showPublicHealthActionModal')).toBeFalsy();
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.state('exposure_risk_assessment')).toEqual(mockPatient1.exposure_risk_assessment);
     expect(wrapper.state('monitoring_plan')).toEqual(mockPatient1.monitoring_plan);
     expect(wrapper.state('public_health_action')).toEqual(mockPatient1.public_health_action);
@@ -309,7 +309,7 @@ describe('GenericAction', () => {
     expect(wrapper.state('showExposureRiskAssessmentModal')).toBeFalsy();
     expect(wrapper.state('showMonitoringPlanModal')).toBeFalsy();
     expect(wrapper.state('showPublicHealthActionModal')).toBeFalsy();
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.state('exposure_risk_assessment')).toEqual(mockPatient1.exposure_risk_assessment);
     expect(wrapper.state('monitoring_plan')).toEqual(mockPatient1.monitoring_plan);
     expect(wrapper.state('public_health_action')).toEqual(mockPatient1.public_health_action);
@@ -329,7 +329,7 @@ describe('GenericAction', () => {
     expect(wrapper.state('showExposureRiskAssessmentModal')).toBeFalsy();
     expect(wrapper.state('showMonitoringPlanModal')).toBeFalsy();
     expect(wrapper.state('showPublicHealthActionModal')).toBeFalsy();
-    expect(wrapper.state('apply_to_group')).toBeFalsy();
+    expect(wrapper.state('apply_to_household')).toBeFalsy();
     expect(wrapper.state('exposure_risk_assessment')).toEqual(mockPatient1.exposure_risk_assessment);
     expect(wrapper.state('monitoring_plan')).toEqual(mockPatient1.monitoring_plan);
     expect(wrapper.state('public_health_action')).toEqual(mockPatient1.public_health_action);

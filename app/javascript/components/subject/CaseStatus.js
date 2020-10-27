@@ -21,7 +21,7 @@ class CaseStatus extends React.Component {
       monitoring: this.props.patient.monitoring,
       monitoring_reason: this.props.patient.monitoring_reason,
       monitoring_option: '',
-      apply_to_group: false,
+      apply_to_household: false,
       loading: false,
     };
     this.origState = Object.assign({}, this.state);
@@ -116,9 +116,9 @@ class CaseStatus extends React.Component {
     }
   };
 
-  handleApplyGroupChange = event => {
-    const applyToGroup = event.target.id === 'apply_to_group_yes';
-    this.setState({ apply_to_group: applyToGroup });
+  handleApplyHouseholdChange = event => {
+    const applyToHousehold = event.target.id === 'apply_to_household_yes';
+    this.setState({ apply_to_household: applyToHousehold });
   };
 
   toggleCaseStatusModal = () => {
@@ -127,7 +127,7 @@ class CaseStatus extends React.Component {
       showCaseStatusModal: !current,
       showMonitoringDropdown: false,
       confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
-      apply_to_group: false,
+      apply_to_household: false,
       case_status: this.props.patient.case_status || '',
       disabled: false,
       isolation: this.props.patient.isolation,
@@ -148,7 +148,7 @@ class CaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          apply_to_group: this.state.apply_to_group,
+          apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
         .then(() => {
@@ -190,20 +190,20 @@ class CaseStatus extends React.Component {
                 <Form.Check
                   type="radio"
                   className="mb-1"
-                  name="apply_to_group"
-                  id="apply_to_group_no"
+                  name="apply_to_household"
+                  id="apply_to_household_no"
                   label="This monitoree only"
-                  onChange={this.handleApplyGroupChange}
-                  checked={!this.state.apply_to_group}
+                  onChange={this.handleApplyHouseholdChange}
+                  checked={!this.state.apply_to_household}
                 />
                 <Form.Check
                   type="radio"
                   className="mb-3"
-                  name="apply_to_group"
-                  id="apply_to_group_yes"
+                  name="apply_to_household"
+                  id="apply_to_household_yes"
                   label="This monitoree and all household members"
-                  onChange={this.handleApplyGroupChange}
-                  checked={this.state.apply_to_group}
+                  onChange={this.handleApplyHouseholdChange}
+                  checked={this.state.apply_to_household}
                 />
               </Form.Group>
             </React.Fragment>

@@ -291,9 +291,9 @@ class PatientsController < ApplicationController
     non_dependent_patient_ids = patient_ids
 
     # If apply to group, find dependents ids and add to id array before user accessor for validation of access
-    if ActiveModel::Type::Boolean.new.cast(params.require(:apply_to_group))
+    if ActiveModel::Type::Boolean.new.cast(params.require(:apply_to_household))
       dependent_ids = current_user.patients.where(responder_id: patient_ids).pluck(:id)
-      # If apply_to_group was set, and there exists a patient that has dependents in a different
+      # If apply_to_household was set, and there exists a patient that has dependents in a different
       # jurisdiction - one that the user may not have access to - those patients will get filtered out.
       not_viewable = Patient.where(responder_id: patient_ids).pluck(:id) - dependent_ids
 
@@ -309,7 +309,7 @@ class PatientsController < ApplicationController
     patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
-      update_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_group] ? :group : :none)
+      update_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_household] ? :group : :none)
     end
   end
 
@@ -322,25 +322,25 @@ class PatientsController < ApplicationController
 
     # Update LDE for patient and group members only in the exposure workflow with continuous exposure on
     # NOTE: This is a possible option when changing monitoring status of HoH in isolation.
-    if params.permit(:apply_to_group_cm_exp_only)[:apply_to_group_cm_exp_only] && params[:apply_to_group_cm_exp_only_date].present?
+    if params.permit(:apply_to_household_cm_exp_only)[:apply_to_household_cm_exp_only] && params[:apply_to_household_cm_exp_only_date].present?
       # Only update dependents (not including the HoH) in exposure with continuoous exposure is turned on
       (current_user.get_patient(patient.responder_id)&.dependents_exclude_self&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
         History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: "User updated Monitoring Status for another member in this
         monitoree's household and chose to update Last Date of Exposure for household members so System changed Last Date of Exposure from
         #{member[:last_date_of_exposure] ? member[:last_date_of_exposure].to_date.strftime('%m/%d/%Y') : 'blank'} to
-        #{params[:apply_to_group_cm_exp_only_date].to_date.strftime('%m/%d/%Y')} and turned OFF Continuous Exposure.")
+        #{params[:apply_to_household_cm_exp_only_date].to_date.strftime('%m/%d/%Y')} and turned OFF Continuous Exposure.")
 
-        member.update(last_date_of_exposure: params[:apply_to_group_cm_exp_only_date], continuous_exposure: false)
+        member.update(last_date_of_exposure: params[:apply_to_household_cm_exp_only_date], continuous_exposure: false)
       end
     end
 
     # Update patient and all group members
-    if params.permit(:apply_to_group)[:apply_to_group]
+    if params.permit(:apply_to_household)[:apply_to_household]
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
       end
       # Update patient and all group members in continuous exposure
-    elsif params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only] # update patient and group members only with continuous exposure on
+    elsif params.permit(:apply_to_household_cm_only)[:apply_to_household_cm_only] # update patient and group members only with continuous exposure on
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group_cm)
       end
