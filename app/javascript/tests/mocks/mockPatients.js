@@ -14,7 +14,10 @@ const blankMockPatient = {
     address_state: null,
     address_zip: null,
     age: 0,
+    american_indian_or_alaska_native: null,
+    asian: true,
     assigned_user: 0,
+    black_or_african_american: null,
     case_status: null,
     closed_at: null,
     contact_of_known_case: false,
@@ -99,6 +102,7 @@ const blankMockPatient = {
     monitoring_plan: null,
     monitoring_reason: null,
     nationality: null,
+    native_hawaiian_or_other_pacific_islander: null,
     negative_lab_count: 0,
     pause_notifications: false,
     port_of_entry_into_usa: null,
@@ -112,7 +116,7 @@ const blankMockPatient = {
     primary_telephone_type: null,
     public_health_action: null,
     purged: false,
-    races: ['2028-9'],
+    races: [],
     responder_id: 0,
     secondary_language: null,
     secondary_telephone: null,
@@ -133,6 +137,7 @@ const blankMockPatient = {
     user_defined_symptom_onset: null,
     was_in_health_care_facility_with_known_cases: false,
     was_in_health_care_facility_with_known_cases_facility_name: null,
+    white: null
 }
 
 const mockPatient1 = {
@@ -151,7 +156,10 @@ const mockPatient1 = {
     address_state: "Connecticut",
     address_zip: "00000-0000",
     age: 76,
+    american_indian_or_alaska_native: null,
+    asian: true,
     assigned_user: 21,
+    black_or_african_american: null,
     case_status: "Suspect",
     closed_at: "2020-09-13T20:32:02.000Z",
     contact_of_known_case: false,
@@ -236,6 +244,7 @@ const mockPatient1 = {
     monitoring_plan: "None",
     monitoring_reason: "Transferred to another jurisdiction",
     nationality: "Serbs",
+    native_hawaiian_or_other_pacific_islander: null,
     negative_lab_count: 0,
     pause_notifications: false,
     port_of_entry_into_usa: 'Orlando',
@@ -249,7 +258,6 @@ const mockPatient1 = {
     primary_telephone_type: null,
     public_health_action: "None",
     purged: false,
-    races: ['2028-9'],
     responder_id: 17,
     secondary_language: null,
     secondary_telephone: null,
@@ -269,6 +277,7 @@ const mockPatient1 = {
     user_defined_symptom_onset: null,
     was_in_health_care_facility_with_known_cases: false,
     was_in_health_care_facility_with_known_cases_facility_name: null,
+    white: null
 }
 
 const mockPatient2 = {
@@ -287,7 +296,10 @@ const mockPatient2 = {
     address_state: "Connecticut",
     address_zip: "00000-0000",
     age: 79,
+    american_indian_or_alaska_native: null,
+    asian: true,
     assigned_user: 21,
+    black_or_african_american: null,
     case_status: "Confirmed",
     closed_at: "2020-09-13T20:32:02.000Z",
     contact_of_known_case: true,
@@ -372,6 +384,7 @@ const mockPatient2 = {
     monitoring_plan: "None",
     monitoring_reason: null,
     nationality: "Serbs",
+    native_hawaiian_or_other_pacific_islander: null,
     negative_lab_count: 0,
     pause_notifications: false,
     port_of_entry_into_usa: null,
@@ -385,7 +398,6 @@ const mockPatient2 = {
     primary_telephone_type: 'Smartphone',
     public_health_action: "None",
     purged: false,
-    races: ['2028-9'],
     responder_id: 17,
     secondary_language: null,
     secondary_telephone: null,
@@ -406,6 +418,7 @@ const mockPatient2 = {
     user_defined_symptom_onset: null,
     was_in_health_care_facility_with_known_cases: true,
     was_in_health_care_facility_with_known_cases_facility_name: 'ABC Care',
+    white: null
 }
 
 const mockPatient3 = {
@@ -424,7 +437,10 @@ const mockPatient3 = {
     address_state: "Connecticut",
     address_zip: "00000-0000",
     age: 56,
+    american_indian_or_alaska_native: null,
+    asian: true,
     assigned_user: 21,
+    black_or_african_american: null,
     case_status: "Unknown",
     closed_at: "2020-09-13T20:32:02.000Z",
     contact_of_known_case: true,
@@ -509,6 +525,7 @@ const mockPatient3 = {
     monitoring_plan: "None",
     monitoring_reason: null,
     nationality: "Serbs",
+    native_hawaiian_or_other_pacific_islander: null,
     negative_lab_count: 0,
     pause_notifications: false,
     port_of_entry_into_usa: null,
@@ -522,7 +539,6 @@ const mockPatient3 = {
     primary_telephone_type: 'Smartphone',
     public_health_action: "None",
     purged: false,
-    races: ['2028-9'],
     responder_id: 17,
     secondary_language: null,
     secondary_telephone: null,
@@ -543,6 +559,7 @@ const mockPatient3 = {
     user_defined_symptom_onset: null,
     was_in_health_care_facility_with_known_cases: true,
     was_in_health_care_facility_with_known_cases_facility_name: 'ABC Care',
+    white: null
 }
 
 const mockPatient4 = {
@@ -561,7 +578,10 @@ const mockPatient4 = {
     address_state: "Connecticut",
     address_zip: "00000-0000",
     age: 27,
+    american_indian_or_alaska_native: null,
+    asian: true,
     assigned_user: 21,
+    black_or_african_american: null,
     case_status: "Probable",
     closed_at: "2020-09-13T20:32:02.000Z",
     contact_of_known_case: true,
@@ -646,6 +666,7 @@ const mockPatient4 = {
     monitoring_plan: "None",
     monitoring_reason: null,
     nationality: "canine",
+    native_hawaiian_or_other_pacific_islander: null,
     negative_lab_count: 0,
     pause_notifications: false,
     port_of_entry_into_usa: null,
@@ -659,7 +680,6 @@ const mockPatient4 = {
     primary_telephone_type: 'Smartphone',
     public_health_action: "None",
     purged: false,
-    races: ['2028-9'],
     responder_id: 17,
     secondary_language: null,
     secondary_telephone: null,
@@ -680,6 +700,7 @@ const mockPatient4 = {
     user_defined_symptom_onset: null,
     was_in_health_care_facility_with_known_cases: true,
     was_in_health_care_facility_with_known_cases_facility_name: 'ABC Care',
+    white: null
 }
 
 export {
