@@ -585,7 +585,7 @@ class Exposure extends React.Component {
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
-                        nid="jurisdiction_id"
+                        id="jurisdiction_id"
                         list="jurisdictionPaths"
                         autoComplete="off"
                         size="lg"
