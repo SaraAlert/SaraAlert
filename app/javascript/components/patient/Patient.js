@@ -48,6 +48,15 @@ class Patient extends React.Component {
     if (this.props.details.native_hawaiian_or_other_pacific_islander) {
       raceArray.push('Native Hawaiian or Other Pacific Islander');
     }
+    if (this.props.details.race_other) {
+      raceArray.push('Other');
+    }
+    if (this.props.details.race_unknown) {
+      raceArray.push('Unknown')
+    }
+    if (this.props.details.race_refused_to_answer) {
+      raceArray.push('Refused to Answer')
+    }
     return <span>{raceArray.length === 0 ? '--' : raceArray.join(', ')}</span>;
   };
 

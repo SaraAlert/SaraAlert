@@ -157,7 +157,10 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       jurisdiction_path: jurisdiction[:path] || '',
       assigned_user: assigned_user || '',
       gender_identity: gender_identity || '',
-      sexual_orientation: sexual_orientation || ''
+      sexual_orientation: sexual_orientation || '',
+      race_unknown: race_unknown || false,
+      race_other: race_other || false,
+      race_refused_to_answer: race_refused_to_answer || false
     }
   end
 
