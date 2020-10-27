@@ -28,10 +28,6 @@ class Patient < ApplicationRecord
     in: VALID_PATIENT_ENUMS[:monitoring_plan],
     message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:monitoring_plan].reject(&:blank?).join("', '")}'"
   }
-  validates :exposure_risk_assessment, inclusion: {
-    in: VALID_PATIENT_ENUMS[:exposure_risk_assessment],
-    message: "is not an acceptable value, acceptable values are: '#{VALID_PATIENT_ENUMS[:exposure_risk_assessment].reject(&:blank?).join("', '")}'"
-  }
 
   %i[address_state
      monitored_address_state
@@ -101,6 +97,7 @@ class Patient < ApplicationRecord
                                             message: 'is not valid, acceptable values are numbers between 1-999999' }
 
   validates_with PrimaryContactValidator, on: %i[api import]
+  validates_with RaceValidator, on: :api
 
   # NOTE: Commented out until additional testing
   # validates_with PatientDateValidator
