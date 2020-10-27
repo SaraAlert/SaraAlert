@@ -32,9 +32,9 @@ class PatientsController < ApplicationController
     @dependents_exclude_hoh = @patient.dependents_exclude_self.where(purged: false)
 
     # All household members regardless if this is not HOH
-    dependents = current_user.get_patient(@patient.responder_id)&.dependents
-    @household_members = ([@patient] + (dependents.nil? ? [] : dependents)).uniq
-    @household_members_with_ce_in_exposure = dependents.nil? ? [] : dependents.where(isolation: false, continuous_exposure: true)
+    household = current_user.get_patient(@patient.responder_id)&.dependents
+    @household_members = ([@patient] + (dependents.nil? ? [] : household)).uniq
+    @household_members_with_ce_in_exposure = dependents.nil? ? [] : household.where(isolation: false, continuous_exposure: true)
 
     @translations = Assessment.new.translations
 
