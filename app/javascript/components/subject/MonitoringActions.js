@@ -75,7 +75,7 @@ class MonitoringActions extends React.Component {
                     patient={this.props.patient}
                     authenticity_token={this.props.authenticity_token}
                     has_dependents={this.props.has_dependents}
-                    assignedUsers={this.props.assignedUsers}
+                    assigned_users={this.props.assigned_users}
                   />
                 </Form.Group>
                 <Form.Group as={Col} lg="24" className="pt-2">
@@ -83,7 +83,7 @@ class MonitoringActions extends React.Component {
                     patient={this.props.patient}
                     authenticity_token={this.props.authenticity_token}
                     has_dependents={this.props.has_dependents}
-                    jurisdictionPaths={this.props.jurisdictionPaths}
+                    jurisdiction_paths={this.props.jurisdiction_paths}
                     current_user={this.props.current_user}
                   />
                 </Form.Group>
@@ -100,8 +100,8 @@ MonitoringActions.propTypes = {
   current_user: PropTypes.object,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  jurisdictionPaths: PropTypes.object,
-  assignedUsers: PropTypes.array,
+  jurisdiction_paths: PropTypes.object,
+  assigned_users: PropTypes.array,
   has_dependents: PropTypes.bool,
   in_household_with_member_with_ce_in_exposure: PropTypes.bool,
 };

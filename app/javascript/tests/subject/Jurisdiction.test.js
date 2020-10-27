@@ -7,7 +7,7 @@ import { mockPatient1 } from '../mocks/mockPatients';
 import { mockUser1 } from '../mocks/mockUsers';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const jurisdictionPaths = {
+const jurisdiction_paths = {
   2: 'USA, State 1',
   3: 'USA, State 1, County 1',
   4: 'USA, State 1, County 2',
@@ -18,7 +18,7 @@ const jurisdictionPaths = {
 
 function getWrapper(patient, hasDependents) {
   return shallow(<Jurisdiction patient={patient} current_user={mockUser1} has_dependents={hasDependents}
-    jurisdictionPaths={jurisdictionPaths} authenticity_token={authyToken} />);
+    jurisdiction_paths={jurisdiction_paths} authenticity_token={authyToken} />);
 }
 
 describe('Jurisdiction', () => {
@@ -29,10 +29,10 @@ describe('Jurisdiction', () => {
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedJurisdiction');
     expect(wrapper.find('#jurisdiction_id').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(6);
-    for (var key of Object.keys(jurisdictionPaths)) {
-      expect(wrapper.find('option').at(key-2).text()).toEqual(jurisdictionPaths[key]);
+    for (var key of Object.keys(jurisdiction_paths)) {
+      expect(wrapper.find('option').at(key-2).text()).toEqual(jurisdiction_paths[key]);
     }
-    expect(wrapper.find('#jurisdiction_id').prop('value')).toEqual(jurisdictionPaths[mockPatient1.jurisdiction_id]);
+    expect(wrapper.find('#jurisdiction_id').prop('value')).toEqual(jurisdiction_paths[mockPatient1.jurisdiction_id]);
     expect(wrapper.find(Button).exists()).toBeTruthy();
     expect(wrapper.find(Button).text().includes('Change Jurisdiction')).toBeTruthy();
     expect(wrapper.find('i').hasClass('fa-map-marked-alt')).toBeTruthy();
@@ -42,7 +42,7 @@ describe('Jurisdiction', () => {
   it('Changing jurisdiction enables change jurisdiction button and sets state correctly', () => {
     const wrapper = getWrapper(mockPatient1, false);
     expect(wrapper.find(Button).prop('disabled')).toBeTruthy();
-    expect(wrapper.state('jurisdiction_path')).toEqual(jurisdictionPaths[mockPatient1.jurisdiction_id]);
+    expect(wrapper.state('jurisdiction_path')).toEqual(jurisdiction_paths[mockPatient1.jurisdiction_id]);
     expect(wrapper.state('original_jurisdiction_id')).toEqual(mockPatient1.jurisdiction_id);
 
     wrapper.find('#jurisdiction_id').simulate('change', { target: { id: 'jurisdiction_id', value: 'USA, State 2, County 4' } });
@@ -83,7 +83,7 @@ describe('Jurisdiction', () => {
     expect(wrapper.find(Modal.Title).exists()).toBeTruthy();
     expect(wrapper.find(Modal.Title).text()).toEqual('Jurisdiction');
     expect(modalBody.exists()).toBeTruthy();
-    expect(modalBody.find('p').text().includes(`Are you sure you want to change jurisdiction from "${jurisdictionPaths[mockPatient1.jurisdiction_id]}" to "USA, State 2, County 4"?`)).toBeTruthy();
+    expect(modalBody.find('p').text().includes(`Are you sure you want to change jurisdiction from "${jurisdiction_paths[mockPatient1.jurisdiction_id]}" to "USA, State 2, County 4"?`)).toBeTruthy();
     expect(modalBody.find('p').find('b').text()).toEqual(' Please also consider removing or updating the assigned user if it is no longer applicable.');
     expect(modalBody.find(Form.Group).length).toEqual(1);
     expect(modalBody.find(Form.Group).text().includes('Please include any additional details:')).toBeTruthy();
@@ -157,7 +157,7 @@ describe('Jurisdiction', () => {
     // resets state
     expect(wrapper.state('showJurisdictionModal')).toBeFalsy();
     expect(wrapper.state('apply_to_household')).toBeFalsy();
-    expect(wrapper.state('jurisdiction_path')).toEqual(jurisdictionPaths[mockPatient1.jurisdiction_id]);
+    expect(wrapper.state('jurisdiction_path')).toEqual(jurisdiction_paths[mockPatient1.jurisdiction_id]);
     expect(wrapper.state('reasoning')).toEqual('');
   });
 

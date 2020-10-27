@@ -147,15 +147,15 @@ class AssignedUser extends React.Component {
             <Form.Control
               as="input"
               id="assigned_user"
-              list="assignedUsers"
+              list="assigned_users"
               autoComplete="off"
               className="form-control-lg"
               onChange={this.handleAssignedUserChange}
               onKeyPress={this.handleKeyPress}
               value={this.state.assigned_user}
             />
-            <datalist id="assignedUsers">
-              {this.props.assignedUsers.map(num => {
+            <datalist id="assigned_users">
+              {this.props.assigned_users.map(num => {
                 return (
                   <option value={num} key={num}>
                     {num}
@@ -181,7 +181,7 @@ AssignedUser.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   has_dependents: PropTypes.bool,
-  assignedUsers: PropTypes.array,
+  assigned_users: PropTypes.array,
 };
 
 export default AssignedUser;

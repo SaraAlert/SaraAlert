@@ -20,8 +20,8 @@
                         has_dependents: @dependents_exclude_hoh.exists?,
                         in_household_with_member_with_ce_in_exposure: @household_members_with_ce_in_exposure.exists?,
                         patient: @patient,
-                        jurisdictionPaths: @possible_jurisdiction_paths,
-                        assignedUsers: @patient.jurisdiction.assigned_users
+                        jurisdiction_paths: @possible_jurisdiction_paths,
+                        assigned_users: @patient.jurisdiction.assigned_users
                       }) %>
 </div>
 <% end %>

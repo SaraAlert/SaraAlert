@@ -12,7 +12,7 @@ class Jurisdiction extends React.Component {
     super(props);
     this.state = {
       showJurisdictionModal: false,
-      jurisdiction_path: this.props.jurisdictionPaths[this.props.patient.jurisdiction_id],
+      jurisdiction_path: this.props.jurisdiction_paths[this.props.patient.jurisdiction_id],
       original_jurisdiction_id: this.props.patient.jurisdiction_id,
       validJurisdiction: true,
       apply_to_household: false,
@@ -25,7 +25,7 @@ class Jurisdiction extends React.Component {
   handleJurisdictionChange = event => {
     this.setState({
       jurisdiction_path: event?.target?.value ? event.target.value : '',
-      validJurisdiction: Object.values(this.props.jurisdictionPaths).includes(event.target.value),
+      validJurisdiction: Object.values(this.props.jurisdiction_paths).includes(event.target.value),
     });
   };
 
@@ -44,7 +44,7 @@ class Jurisdiction extends React.Component {
     if (
       event.which === 13 &&
       this.state.validJurisdiction &&
-      this.state.jurisdiction_path !== this.props.jurisdictionPaths[this.state.original_jurisdiction_id]
+      this.state.jurisdiction_path !== this.props.jurisdiction_paths[this.state.original_jurisdiction_id]
     ) {
       event.preventDefault();
       this.toggleJurisdictionModal();
@@ -55,7 +55,7 @@ class Jurisdiction extends React.Component {
     const current = this.state.showJurisdictionModal;
     this.setState({
       showJurisdictionModal: !current,
-      jurisdiction_path: current ? this.props.jurisdictionPaths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
+      jurisdiction_path: current ? this.props.jurisdiction_paths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
       apply_to_household: false,
       reasoning: '',
     });
@@ -68,7 +68,7 @@ class Jurisdiction extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           patient: this.props.patient,
-          jurisdiction: Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === this.state.jurisdiction_path),
+          jurisdiction: Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === this.state.jurisdiction_path),
           reasoning: this.state.reasoning,
           apply_to_household: this.state.apply_to_household,
           diffState: diffState,
@@ -98,7 +98,7 @@ class Jurisdiction extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Are you sure you want to change jurisdiction from &quot;{this.props.jurisdictionPaths[this.state.original_jurisdiction_id]}&quot; to &quot;
+            Are you sure you want to change jurisdiction from &quot;{this.props.jurisdiction_paths[this.state.original_jurisdiction_id]}&quot; to &quot;
             {this.state.jurisdiction_path}&quot;?
             {this.state.assigned_user !== '' && <b> Please also consider removing or updating the assigned user if it is no longer applicable.</b>}
           </p>
@@ -161,15 +161,15 @@ class Jurisdiction extends React.Component {
             <Form.Control
               as="input"
               id="jurisdiction_id"
-              list="jurisdictionPaths"
+              list="jurisdiction_paths"
               autoComplete="off"
               className="form-control-lg"
               onChange={this.handleJurisdictionChange}
               onKeyPress={this.handleKeyPress}
               value={this.state.jurisdiction_path}
             />
-            <datalist id="jurisdictionPaths">
-              {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
+            <datalist id="jurisdiction_paths">
+              {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
                 return (
                   <option value={path} key={id}>
                     {path}
@@ -180,7 +180,7 @@ class Jurisdiction extends React.Component {
             <Button
               className="btn-lg btn-square text-nowrap ml-2"
               onClick={this.toggleJurisdictionModal}
-              disabled={!this.state.validJurisdiction || this.state.jurisdiction_path === this.props.jurisdictionPaths[this.state.original_jurisdiction_id]}>
+              disabled={!this.state.validJurisdiction || this.state.jurisdiction_path === this.props.jurisdiction_paths[this.state.original_jurisdiction_id]}>
               <i className="fas fa-map-marked-alt"></i> Change Jurisdiction
             </Button>
           </Form.Group>
@@ -195,7 +195,7 @@ Jurisdiction.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   has_dependents: PropTypes.bool,
-  jurisdictionPaths: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
   current_user: PropTypes.object,
 };
 

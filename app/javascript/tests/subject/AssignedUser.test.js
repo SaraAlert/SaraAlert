@@ -6,10 +6,10 @@ import InfoTooltip from '../../components/util/InfoTooltip';
 import { mockPatient1 } from '../mocks/mockPatients';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const assignedUsers = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21 ];
+const assigned_users = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21 ];
 
 function getWrapper(patient, hasDependents) {
-  return shallow(<AssignedUser patient={patient} assignedUsers={assignedUsers} has_dependents={hasDependents} authenticity_token={authyToken} />);
+  return shallow(<AssignedUser patient={patient} assigned_users={assigned_users} has_dependents={hasDependents} authenticity_token={authyToken} />);
 }
 
 describe('AssignedUser', () => {
@@ -20,7 +20,7 @@ describe('AssignedUser', () => {
     expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedUser');
     expect(wrapper.find('#assigned_user').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(11);
-    assignedUsers.forEach(function(value, index) {
+    assigned_users.forEach(function(value, index) {
         expect(wrapper.find('option').at(index).text()).toEqual(String(value));
     });
     expect(wrapper.find('#assigned_user').prop('value')).toEqual(mockPatient1.assigned_user);

@@ -11,8 +11,8 @@ import { mockPatient1 } from '../mocks/mockPatients'
 import { mockUser1 } from '../mocks/mockUsers'
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
-const assignedUsers = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
-const jurisdictionPaths = {
+const assigned_users = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+const jurisdiction_paths = {
   2: 'USA, State 1',
   3: 'USA, State 1, County 1',
   4: 'USA, State 1, County 2',
@@ -24,7 +24,7 @@ const jurisdictionPaths = {
 describe('MonitoringActions', () => {
   it('Properly renders all main components', () => {
     const wrapper = shallow(<MonitoringActions patient={mockPatient1} has_dependents={false} in_household_with_member_with_ce_in_exposure={false} isolation={false} 
-      authenticity_token={authyToken} jurisdictionPaths={jurisdictionPaths} current_user={mockUser1} assignedUsers={assignedUsers} />);
+      authenticity_token={authyToken} jurisdiction_paths={jurisdiction_paths} current_user={mockUser1} assigned_users={assigned_users} />);
 
     expect(wrapper.find(Form).exists()).toBeTruthy();
     expect(wrapper.find(Form.Group).length).toEqual(7);
