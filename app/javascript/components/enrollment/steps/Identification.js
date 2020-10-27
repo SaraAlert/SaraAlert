@@ -33,8 +33,8 @@ class Identification extends React.Component {
       modified: {},
       languageOptions: this.getLanguageOptions(),
     };
-    this.default_races = ['2106-3', '2054-5', '1002-5', '2028-9', '2076-8'];
-    this.additional_race_options = ['UNK', 'OTH', 'ASKU'];
+    this.default_races = ['white', 'black_or_african_american', 'american_indian_or_alaska_native', 'asian', 'native_hawaiian_or_other_pacific_islander'];
+    this.additional_race_options = ['unknown', 'other', 'refused_to_answer'];
   }
 
   handleChange = event => {
@@ -411,61 +411,61 @@ class Identification extends React.Component {
               <Form.Row className="pt-1">
                 <Form.Group as={Col} md="auto">
                   <Form.Label className="nav-input-label">RACE (SELECT ALL THAT APPLY)</Form.Label>
-                  <Form.Check type="checkbox" id="2106-3" label="WHITE" checked={this.state.current.patient['2106-3']} onChange={this.handleRaceChange} />
+                  <Form.Check type="checkbox" id="white" label="WHITE" checked={this.state.current.patient['white']} onChange={this.handleRaceChange} />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="2054-5"
+                    id="black_or_african_american"
                     label="BLACK OR AFRICAN AMERICAN"
-                    checked={this.state.current.patient['2054-5']}
+                    checked={this.state.current.patient['black_or_african_american']}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="1002-5"
+                    id="american_indian_or_alaska_native"
                     label="AMERICAN INDIAN OR ALASKA NATIVE"
-                    checked={this.state.current.patient['1002-5']}
+                    checked={this.state.current.patient['american_indian_or_alaska_native']}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="2028-9"
+                    id="asian"
                     label="ASIAN"
-                    checked={this.state.current.patient['2028-9']}
+                    checked={this.state.current.patient['asian']}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="2076-8"
+                    id="native_hawaiian_or_other_pacific_islander"
                     label="NATIVE HAWAIIAN OR OTHER PACIFIC ISLANDER"
-                    checked={this.state.current.patient['2076-8']}
+                    checked={this.state.current.patient['native_hawaiian_or_other_pacific_islander']}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="UNK"
+                    id="unknown"
                     label="UNKNOWN"
-                    checked={this.state.current.patient['UNK']}
+                    checked={this.state.current.patient['unknown']}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="OTH"
+                    id="other"
                     label="OTHER"
-                    checked={this.state.current.patient['OTH']}
+                    checked={this.state.current.patient['other']}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="ASKU"
+                    id="refused_to_answer"
                     label="REFUSED TO ANSWER"
-                    checked={this.state.current.patient['ASKU']}
+                    checked={this.state.current.patient['refused_to_answer']}
                     onChange={this.handleRaceChange}
                   />
                 </Form.Group>
