@@ -49,7 +49,7 @@ class Jurisdiction extends React.Component {
   };
 
   toggleJurisdictionModal = () => {
-    let current = this.state.showJurisdictionModal;
+    const current = this.state.showJurisdictionModal;
     this.setState({
       showJurisdictionModal: !current,
       jurisdiction_path: current ? this.props.jurisdictionPaths[this.state.original_jurisdiction_id] : this.state.jurisdiction_path,
@@ -59,7 +59,7 @@ class Jurisdiction extends React.Component {
   };
 
   submit = () => {
-    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    const diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios

@@ -117,12 +117,12 @@ class CaseStatus extends React.Component {
   };
 
   handleApplyGroupChange = event => {
-    let applyToGroup = event.target.id === 'apply_to_group_yes';
+    const applyToGroup = event.target.id === 'apply_to_group_yes';
     this.setState({ apply_to_group: applyToGroup });
   };
 
   toggleCaseStatusModal = () => {
-    let current = this.state.showCaseStatusModal;
+    const current = this.state.showCaseStatusModal;
     this.setState({
       showCaseStatusModal: !current,
       showMonitoringDropdown: false,

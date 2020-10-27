@@ -45,7 +45,7 @@ class MonitoringStatus extends React.Component {
   };
 
   toggleMonitoringStatusModal = () => {
-    let current = this.state.showMonitoringStatusModal;
+    const current = this.state.showMonitoringStatusModal;
     this.setState({
       showMonitoringStatusModal: !current,
       monitoring: this.props.patient.monitoring,
@@ -59,7 +59,7 @@ class MonitoringStatus extends React.Component {
   };
 
   submit = () => {
-    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    const diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios

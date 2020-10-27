@@ -86,7 +86,7 @@ class GenericAction extends React.Component {
   };
 
   toggleExposureRiskAssessmentModal = () => {
-    let current = this.state.showExposureRiskAssessmentModal;
+    const current = this.state.showExposureRiskAssessmentModal;
     this.setState({
       showExposureRiskAssessmentModal: !current,
       exposure_risk_assessment: this.props.patient.exposure_risk_assessment ? this.props.patient.exposure_risk_assessment : '',
@@ -96,7 +96,7 @@ class GenericAction extends React.Component {
   };
 
   toggleMonitoringPlanModal = () => {
-    let current = this.state.showMonitoringPlanModal;
+    const current = this.state.showMonitoringPlanModal;
     this.setState({
       showMonitoringPlanModal: !current,
       monitoring_plan: this.props.patient.monitoring_plan ? this.props.patient.monitoring_plan : '',
@@ -106,7 +106,7 @@ class GenericAction extends React.Component {
   };
 
   togglePublicHealthAction = () => {
-    let current = this.state.showPublicHealthActionModal;
+    const current = this.state.showPublicHealthActionModal;
     this.setState({
       showPublicHealthActionModal: !current,
       public_health_action: this.props.patient.public_health_action ? this.props.patient.public_health_action : '',
@@ -116,7 +116,7 @@ class GenericAction extends React.Component {
   };
 
   submit = () => {
-    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    const diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios

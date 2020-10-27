@@ -46,7 +46,7 @@ class AssignedUser extends React.Component {
   };
 
   toggleAssignedUserModal = () => {
-    let current = this.state.showAssignedUserModal;
+    const current = this.state.showAssignedUserModal;
     this.setState({
       showAssignedUserModal: !current,
       assigned_user: current ? this.state.original_assigned_user : this.state.assigned_user,
@@ -56,7 +56,7 @@ class AssignedUser extends React.Component {
   };
 
   submit = () => {
-    let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
+    const diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
