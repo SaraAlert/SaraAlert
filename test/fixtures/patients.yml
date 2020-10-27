@@ -13,7 +13,7 @@ patient_1:
   last_name: 'Boehm62'
   date_of_birth: <%= 25.years.ago %>
   sex: 'Male'
-  races: ['american_indian_or_alaska_native']
+  races: ['1002-5']
   ethnicity: 'Not Hispanic or Latino'
   primary_language: 'English'
   address_line_1: '76640 Barney Street'
@@ -69,7 +69,7 @@ patient_2:
   last_name: 'Kirlin44'
   date_of_birth: <%= 29.years.ago %>
   sex: 'Male'
-  races: ['native_hawaiian_or_other_pacific_islander']
+  races: ['2076-8']
   ethnicity: 'Hispanic or Latino'
   primary_language: 'English'
   address_line_1: '358 Stefany Village'

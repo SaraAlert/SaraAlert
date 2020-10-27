@@ -176,6 +176,7 @@ class PatientsController < ApplicationController
   # General updates to an existing subject.
   def update
     redirect_to(root_url) && return unless current_user.can_edit_patient?
+    puts *allowed_params
     content = params.require(:patient).permit(:patient, :id, *allowed_params, :races => [])
     patient = current_user.get_patient(content[:id])
 

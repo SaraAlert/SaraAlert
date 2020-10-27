@@ -24,7 +24,7 @@ monitoree_2:
     last_name: 'Quitzon99'
     date_of_birth: '03/09/1984'
     sex: 'Male'
-    races: ['white', 'black_or_african_american', 'american_indian_or_alaska_native', 'asian', 'native_hawaiian_or_other_pacific_islander']
+    races: ['2106-3', '2054-5', '1002-5', '2028-9', '2076-8']
     ethnicity: 'Not Hispanic or Latino'
     primary_language: 'English'
     secondary_language: 'Spanish'
@@ -148,7 +148,7 @@ monitoree_5:
     last_name: 'Effertz'
     date_of_birth: '01/02/1940'
     sex: 'Female'
-    races: ['white', 'black_or_african_american', 'american_indian_or_alaska_native', 'asian', 'native_hawaiian_or_other_pacific_islander']
+    races: ['2106-3', '2054-5', '1002-5', '2028-9', '2076-8']
     ethnicity: 'Hispanic or Latino'
   address:
     address_line_1: '107 Chia Pike'
@@ -172,7 +172,7 @@ monitoree_6:
     last_name: 'Connelly49'
     date_of_birth: '10/01/1983'
     sex: 'Unknown'
-    races: ['asian']
+    races: ['2028-9']
     ethnicity: 'Not Hispanic or Latino'
     primary_language: 'English'
     secondary_language: 'Korean'
@@ -293,7 +293,7 @@ monitoree_12:
     last_name: 'Brady'
     date_of_birth: '08/03/1977'
     sex: 'Male'
-    races: ['white', 'black_or_african_american', 'american_indian_or_alaska_native', 'asian', 'native_hawaiian_or_other_pacific_islander']
+    races: ['2106-3', '2054-5', '1002-5', '2028-9', '2076-8']
     ethnicity: 'Hispanic or Latino'
     primary_language: 'English'
     secondary_language: 'Spanish'

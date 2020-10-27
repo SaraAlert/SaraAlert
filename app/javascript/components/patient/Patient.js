@@ -168,14 +168,14 @@ class Patient extends React.Component {
                 <span className="font-weight-light">{`${this.props.details.sexual_orientation ? this.props.details.sexual_orientation : ''}`}</span>
                 <br />
                 <span className="font-weight-normal">Race:</span>{' '}
-                <span className="font-weight-light">{`${this.props.details.races.includes('white') ? 'White' : ''}${
-                  this.props.details.races.includes('black_or_african_american') ? ' Black or African American' : ''
-                }${this.props.details.races.includes('asian') ? ' Asian' : ''}${
-                  this.props.details.races.includes('american_indian_or_alaska_native') ? ' American Indian or Alaska Native' : ''
-                }${this.props.details.races.includes('native_hawaiian_or_other_pacific_islander') ? ' Native Hawaiian or Other Pacific Islander' : ''}${
-                  this.props.details.races.includes('unknown') ? ' Unknown' : ''
-                }${this.props.details.races.includes('other') ? ' Other' : ''}
-                ${this.props.details.races.includes('refused_to_answer') ? ' Refused to Answer' : ''}`}</span>
+                <span className="font-weight-light">{`${this.props.details.races.includes('2106-3') ? 'White' : ''}${
+                  this.props.details.races.includes('2054-5') ? ' Black or African American' : ''
+                }${this.props.details.races.includes('2028-9') ? ' Asian' : ''}${
+                  this.props.details.races.includes('1002-5') ? ' American Indian or Alaska Native' : ''
+                }${this.props.details.races.includes('2076-8') ? ' Native Hawaiian or Other Pacific Islander' : ''}${
+                  this.props.details.races.includes('UNK') ? ' Unknown' : ''
+                }${this.props.details.races.includes('OTH') ? ' Other' : ''}
+                ${this.props.details.races.includes('ASKU') ? ' Refused to Answer' : ''}`}</span>
                 <br />
                 <span className="font-weight-normal">Ethnicity:</span>{' '}
                 <span className="font-weight-light">{`${this.props.details.ethnicity ? this.props.details.ethnicity : ''}`}</span>

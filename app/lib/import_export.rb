@@ -142,8 +142,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     WY: 'Wyoming'
   }.freeze
 
-  VALID_RACES = {default: ['white', 'black_or_african_american', 'american_indian_or_alaska_native', 'asian', 'native_hawaiian_or_other_pacific_islander'], 
-    exclusive: ['unknown', 'other', 'refused_to_answer']}
+  VALID_RACES = {default: ['2106-3', '2054-5', '1002-5', '2028-9', '2076-8'], exclusive: ['UNK', 'OTH', 'ASKU']}
 
   VALID_STATES = STATE_ABBREVIATIONS.values
 
