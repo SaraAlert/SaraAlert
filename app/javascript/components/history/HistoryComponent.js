@@ -21,8 +21,16 @@ class HistoryComponent extends React.Component {
       filteredHistories: this.props.histories,
       pageOfHistories: [],
     };
+    this.creatorFilterData = [
+      {
+        label: 'History Creator',
+        options: _.uniq(props.histories.map(x => x.created_by)).map(x => {
+          return { value: x, label: x };
+        }),
+      },
+    ];
 
-    this.filterOptions = [
+    this.typeFilterData = [
       {
         label: 'History Type',
         options: [],
@@ -30,7 +38,7 @@ class HistoryComponent extends React.Component {
     ];
 
     for (const historyType in this.props.history_types) {
-      this.filterOptions[0].options.push({
+      this.typeFilterData[0].options.push({
         value: _.startCase(historyType), // converts `monitoree_data_downloaded` to `Monitoree Data Downloaded`
         label: this.props.history_types[`${historyType}`],
       });
@@ -106,36 +114,6 @@ class HistoryComponent extends React.Component {
 
   render() {
     const historiesArray = this.state.pageOfHistories.map(history => <History key={history.id} history={history} />);
-
-    const filterOptions = [
-      {
-        label: 'History Type',
-        options: [
-          { value: 'Comment', label: 'Comment' },
-          { value: 'Contact Attempt', label: 'Contact Attempt' },
-          { value: 'Enrollment', label: 'Enrollment' },
-          { value: 'Lab Result', label: 'Lab Result' },
-          { value: 'Lab Result Edit', label: 'Lab Result Edit' },
-          { value: 'Monitoree Data Downloaded', label: 'Monitoree Data Downloaded' },
-          { value: 'Monitoring Change', label: 'Monitoring Change' },
-          { value: 'Report Created', label: 'Report Created' },
-          { value: 'Report Note', label: 'Report Note' },
-          { value: 'Report Reminder', label: 'Report Reminder' },
-          { value: 'Report Reviewed', label: 'Report Reviewed' },
-          { value: 'Report Updated', label: 'Report Updated' },
-          { value: 'Reports Reviewed', label: 'Reports Reviewed' },
-        ],
-      },
-    ];
-    const historyCreators = [
-      {
-        label: 'History Creator',
-        options: _.uniq(this.props.histories.map(x => x.created_by)).map(x => {
-          return { value: x, label: x };
-        }),
-      },
-    ];
-
     return (
       <React.Fragment>
         <Card className="mx-2 mt-3 mb-4 card-square">
@@ -153,7 +131,7 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Creator Filters"
-                options={historyCreators}
+                options={this.creatorFilterData}
                 className="basic-multi-select w-25 pl-1"
                 classNamePrefix="select"
                 placeholder="Filter by Creator"
@@ -167,7 +145,7 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Filters"
-                options={filterOptions}
+                options={this.typeFilterData}
                 className="basic-multi-select w-25 pl-2"
                 classNamePrefix="select"
                 placeholder="Filter by Type"
