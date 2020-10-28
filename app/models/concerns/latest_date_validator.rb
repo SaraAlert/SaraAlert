@@ -7,7 +7,7 @@ class LatestDateValidator < ActiveModel::EachValidator
 
     raise TypeError, "#{options[:date]} does not implement required comparison methods" unless options[:date].acts_like?(:date)
 
-    record.errors.add(attribute, "cannot occur before #{options[:date]}") unless valid?(value, options[:date])
+    record.errors.add(attribute, "cannot occur after #{options[:date]}") unless valid?(value, options[:date])
   end
 
   private
