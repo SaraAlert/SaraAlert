@@ -221,7 +221,8 @@ namespace :admin do
         jurisdiction: jurisdiction,
         force_password_change: false,
         api_enabled: true,
-        role: 'public_health_enroller'
+        role: 'public_health_enroller',
+        is_api_proxy: true
       )
 
       # Lock access as no one should be logging into this user account.
