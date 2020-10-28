@@ -31,7 +31,8 @@ class AdminController < ApplicationController
     return head :bad_request unless (!order_by.blank? && !sort_direction.blank?) || (order_by.blank? && sort_direction.blank?)
 
     # Get all users within the current user's jurisdiction
-    users = User.where(jurisdiction_id: current_user.jurisdiction.subtree_ids)
+    # NOTE: Does not include API proxy users as those are not managed by anyone other than USA admins and cannot be accessed by real users
+    users = User.where(is_api_proxy: false, jurisdiction_id: current_user.jurisdiction.subtree_ids)
                 .joins(:jurisdiction)
                 .select('users.id, users.email, users.api_enabled, users.locked_at, users.authy_id, users.failed_attempts, users.role, jurisdictions.path')
 
