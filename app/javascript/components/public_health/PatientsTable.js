@@ -210,14 +210,14 @@ class PatientsTable extends React.Component {
     localStorage.removeItem(`SaraPage`);
     const form = this.state.form;
     const query = this.state.query;
-    if (event.target.name === 'jurisdictionPath') {
+    if (event.target.id === 'jurisdiction_path') {
       this.setState({ form: { ...form, jurisdictionPath: event.target.value } });
       const jurisdictionId = Object.keys(this.state.jurisdictionPaths).find(id => this.state.jurisdictionPaths[parseInt(id)] === event.target.value);
       if (jurisdictionId) {
         this.updateTable({ ...query, jurisdiction: jurisdictionId, page: 0 });
         this.updateAssignedUsers(jurisdictionId, this.state.query.scope, this.props.workflow, this.state.query.tab);
       }
-    } else if (event.target.name === 'assigned_user') {
+    } else if (event.target.id === 'assigned_user') {
       if (event.target.value === '') {
         this.setState({ form: { ...form, assignedUser: event.target.value } });
         this.updateTable({ ...query, user: 'all', page: 0 });
@@ -225,7 +225,7 @@ class PatientsTable extends React.Component {
         this.setState({ form: { ...form, assignedUser: event.target.value } });
         this.updateTable({ ...query, user: event.target.value, page: 0 });
       }
-    } else if (event.target.name === 'search') {
+    } else if (event.target.id === 'search') {
       this.updateTable({ ...query, search: event.target.value, page: 0 });
       localStorage.setItem(`SaraSearch`, event.target.value);
     }
@@ -453,7 +453,7 @@ class PatientsTable extends React.Component {
                           <Form.Control
                             type="text"
                             autoComplete="off"
-                            name="jurisdictionPath"
+                            id="jurisdiction_path"
                             list="jurisdictionPaths"
                             value={this.state.form.jurisdictionPath}
                             onChange={this.handleChange}
@@ -553,7 +553,7 @@ class PatientsTable extends React.Component {
                   <Form.Control
                     autoComplete="off"
                     size="sm"
-                    name="search"
+                    id="search"
                     value={this.state.query.search}
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}
