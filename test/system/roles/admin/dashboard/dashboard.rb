@@ -30,5 +30,6 @@ class AdminDashboard < ApplicationSystemTestCase
 
   def search_for_user(query)
     fill_in 'search', with: query
+    find(:id, 'search-input').send_keys(:return)
   end
 end

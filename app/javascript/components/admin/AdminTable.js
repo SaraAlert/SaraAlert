@@ -48,6 +48,7 @@ class AdminTable extends React.Component {
     };
     // Ref for the CSVLink component used to click it when async data fetch has completed
     this.csvLink = React.createRef();
+    this.searchInput = React.createRef();
   }
 
   componentDidMount() {
@@ -435,16 +436,10 @@ class AdminTable extends React.Component {
    * Handles change of input in the search bar. Updates table based on input.
    * @param {SyntheticEvent} event - Event when the search input changes
    */
-  handleSearchChange = event => {
-    const value = event.target.value;
-    this.setState(
-      state => {
-        return { query: { ...state.query, search: value } };
-      },
-      () => {
-        this.getTableData(this.state.query);
-      }
-    );
+  handleSubmit = event => {
+    const value = this.searchInput.current.value;
+    event.preventDefault();
+    this.getTableData({ search: value });
   };
 
   /**
@@ -591,7 +586,9 @@ class AdminTable extends React.Component {
                   </InputGroup.Text>
                 </OverlayTrigger>
               </InputGroup.Prepend>
-              <Form.Control id="search-input" autoComplete="off" size="md" name="search" value={this.state.query.search} onChange={this.handleSearchChange} />
+              <form onSubmit={this.handleSubmit}>
+                <Form.Control id="search-input" ref={this.searchInput} autoComplete="off" size="md" name="search" type="text" />
+              </form>
               <DropdownButton
                 size="md"
                 variant="primary"
