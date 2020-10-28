@@ -99,7 +99,7 @@ class JurisdictionsControllerTest < ActionController::TestCase
           assert_response :bad_request && next unless user_jur.subtree.include?(jur)
 
           patients = scope == 'all' ? jur.all_patients.where.not(assigned_user: nil) : jur.immediate_patients.where.not(assigned_user: nil)
-          assert_equal patients.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_user']
+          assert_equal patients.distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           get :assigned_users_for_viewable_patients, params: { jurisdiction_id: jur[:id], scope: scope, workflow: 'exposure', tab: 'all' }
           assert_equal patients.where(isolation: false, purged: false).distinct.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
