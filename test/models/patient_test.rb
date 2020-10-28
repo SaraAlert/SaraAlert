@@ -1204,5 +1204,22 @@ class PatientTest < ActiveSupport::TestCase
 
     assert_nil Patient.calc_current_age_fhir(nil)
   end
+
+  test 'refresh head of household' do
+    patient = create(:patient)
+    dependent = create(:patient, responder: patient)
+    assert patient.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+
+    new_head = create(:patient)
+    dependent.update(responder: new_head)
+    assert_not patient.reload.head_of_household
+    assert new_head.reload.head_of_household
+    assert_not dependent.reload.head_of_household
+
+    dependent.destroy
+    assert_not patient.reload.head_of_household
+    assert_not new_head.reload.head_of_household
+  end
 end
 # rubocop:enable Metrics/ClassLength
