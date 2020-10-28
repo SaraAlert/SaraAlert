@@ -226,8 +226,8 @@ class Enrollment extends React.Component {
               next={this.next}
               patient={this.props.patient}
               has_dependents={this.props.has_dependents}
-              jurisdictionPaths={this.props.jurisdictionPaths}
-              assignedUsers={this.props.assignedUsers}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              assigned_users={this.props.assigned_users}
               authenticity_token={this.props.authenticity_token}
             />
           </Carousel.Item>
@@ -239,7 +239,7 @@ class Enrollment extends React.Component {
               submit={this.submit}
               parent_id={this.props.parent_id}
               canAddGroup={this.props.can_add_group}
-              jurisdictionPaths={this.props.jurisdictionPaths}
+              jurisdiction_paths={this.props.jurisdiction_paths}
             />
           </Carousel.Item>
         </Carousel>
@@ -254,8 +254,8 @@ Enrollment.propTypes = {
   patient: PropTypes.object,
   propagated_fields: PropTypes.object,
   authenticity_token: PropTypes.string,
-  jurisdictionPaths: PropTypes.object,
-  assignedUsers: PropTypes.array,
+  jurisdiction_paths: PropTypes.object,
+  assigned_users: PropTypes.array,
   editMode: PropTypes.bool,
   parent_id: PropTypes.number,
   cc_id: PropTypes.number,

@@ -56,7 +56,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
 
     # view patient with assigned jurisdiction filter
     Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
-      fill_in 'jurisdictionPath', with: jur[:path]
+      fill_in 'jurisdiction_path', with: jur[:path]
       verify_patient_info(patient, workflow, tab) if patient.jurisdiction[:path].include?(jur[:name])
 
       find_by_id('exactJurisdiction').click
@@ -70,7 +70,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
       verify_patient_info(patient, workflow, tab) if patient.jurisdiction[:path] == jur[:path]
       find_by_id('allJurisdictions').click
     end
-    fill_in 'jurisdictionPath', with: jurisdiction[:path]
+    fill_in 'jurisdiction_path', with: jurisdiction[:path]
 
     # view patient with assigned user filter
     if patient[:assigned_user].nil?

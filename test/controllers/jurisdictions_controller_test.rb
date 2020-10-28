@@ -29,10 +29,10 @@ class JurisdictionsControllerTest < ActionController::TestCase
         get :jurisdiction_paths
         json_response = JSON.parse(response.body)
 
-        assert_equal user_jur.subtree.size, json_response['jurisdictionPaths'].size
+        assert_equal user_jur.subtree.size, json_response['jurisdiction_paths'].size
         user_jur.subtree.each do |sub_jur|
-          assert json_response['jurisdictionPaths'].key?(sub_jur[:id].to_s)
-          assert_equal sub_jur[:path], json_response['jurisdictionPaths'][sub_jur[:id].to_s]
+          assert json_response['jurisdiction_paths'].key?(sub_jur[:id].to_s)
+          assert_equal sub_jur[:path], json_response['jurisdiction_paths'][sub_jur[:id].to_s]
         end
 
         sign_out user

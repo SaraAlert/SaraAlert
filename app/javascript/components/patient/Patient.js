@@ -97,10 +97,10 @@ class Patient extends React.Component {
               </Col>
             </Row>
           )}
-        {this.props.jurisdictionPath && (
+        {this.props.jurisdiction_path && (
           <Row id="jurisdiction-path" className="mx-1">
             <Col className="text-truncate">
-              <span className="font-weight-normal">Assigned Jurisdiction:</span> <span className="font-weight-light">{this.props.jurisdictionPath}</span>
+              <span className="font-weight-normal">Assigned Jurisdiction:</span> <span className="font-weight-light">{this.props.jurisdiction_path}</span>
             </Col>
           </Row>
         )}
@@ -477,7 +477,7 @@ class Patient extends React.Component {
 Patient.propTypes = {
   groupMembers: PropTypes.array,
   details: PropTypes.object,
-  jurisdictionPath: PropTypes.string,
+  jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
   hideBody: PropTypes.bool,
   authenticity_token: PropTypes.string,

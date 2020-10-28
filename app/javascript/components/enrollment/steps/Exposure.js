@@ -18,10 +18,10 @@ class Exposure extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
+      jurisdiction_path: this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
-      assignedUsers: this.props.assignedUsers,
+      assigned_users: this.props.assigned_users,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
@@ -45,8 +45,8 @@ class Exposure extends React.Component {
     let current = this.state.current;
     let modified = this.state.modified;
     if (event?.target?.id && event.target.id === 'jurisdiction_id') {
-      this.setState({ jurisdictionPath: event.target.value });
-      let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
+      this.setState({ jurisdiction_path: event.target.value });
+      let jurisdiction_id = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === event.target.value);
       if (jurisdiction_id) {
         value = jurisdiction_id;
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -59,8 +59,8 @@ class Exposure extends React.Component {
           })
           .catch(() => {})
           .then(response => {
-            if (response?.data?.assignedUsers) {
-              this.setState({ assignedUsers: response.data.assignedUsers });
+            if (response?.data?.assigned_users) {
+              this.setState({ assigned_users: response.data.assigned_users });
             }
           });
       } else {
@@ -226,8 +226,8 @@ class Exposure extends React.Component {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, async () => {
           if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
-            const originalJurisdictionPath = self.props.jurisdictionPaths[self.state.originalJurisdictionId];
-            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdictionPath}. Are you sure you want to do this?`;
+            const originalJurisdictionPath = self.props.jurisdiction_paths[self.state.originalJurisdictionId];
+            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Are you sure you want to do this?`;
             const options = { title: 'Confirm Jurisdiction Change' };
 
             if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
@@ -586,15 +586,15 @@ class Exposure extends React.Component {
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
                         id="jurisdiction_id"
-                        list="jurisdictionPaths"
+                        list="jurisdiction_paths"
                         autoComplete="off"
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
-                        value={this.state.jurisdictionPath}
+                        value={this.state.jurisdiction_path}
                       />
-                      <datalist id="jurisdictionPaths">
-                        {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
+                      <datalist id="jurisdiction_paths">
+                        {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
                           return (
                             <option value={path} key={id}>
                               {path}
@@ -607,7 +607,7 @@ class Exposure extends React.Component {
                       </Form.Control.Feedback>
                       {this.props.has_dependents &&
                         this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
-                        Object.keys(this.props.jurisdictionPaths).includes(this.state.current.patient.jurisdiction_id) && (
+                        Object.keys(this.props.jurisdiction_paths).includes(this.state.current.patient.jurisdiction_id) && (
                           <Form.Group className="mt-2">
                             <Form.Check
                               type="switch"
@@ -623,21 +623,21 @@ class Exposure extends React.Component {
                     <Form.Group as={Col} md="6" controlId="assigned_user" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">
                         ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
-                        <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
+                        <InfoTooltip tooltipTextKey="assigned_user" location="top"></InfoTooltip>
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['assigned_user']}
                         as="input"
                         id="assigned_user"
-                        list="assignedUsers"
+                        list="assigned_users"
                         autoComplete="off"
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
                         value={this.state.current.patient.assigned_user || ''}
                       />
-                      <datalist id="assignedUsers">
-                        {this.state.assignedUsers?.map(num => {
+                      <datalist id="assigned_users">
+                        {this.state.assigned_users?.map(num => {
                           return (
                             <option value={num} key={num}>
                               {num}
@@ -791,8 +791,8 @@ Exposure.propTypes = {
   next: PropTypes.func,
   patient: PropTypes.object,
   has_dependents: PropTypes.bool,
-  jurisdictionPaths: PropTypes.object,
-  assignedUsers: PropTypes.array,
+  jurisdiction_paths: PropTypes.object,
+  assigned_users: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 

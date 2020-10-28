@@ -128,7 +128,7 @@
 
     function updateAssignedUserOptions() {
       // get a sorted, unique list of assigned users based on the scope
-      const assignedUsers = table.data()
+      const assigned_users = table.data()
                                  .filter(function (row) {
                                    if (assigned_jurisdiction == 'all') {
                                      return true;
@@ -140,7 +140,7 @@
                                  })
                                  .map(function (row) { return parseInt(row[2]) })
                                  .unique()
-                                 .filter(function (assignedUser) { return !isNaN(assignedUser) })
+                                 .filter(function (assigned_user) { return !isNaN(assigned_user) })
                                  .sort(function (a, b) { return a - b });
 
       // reset and update assigned user options
@@ -148,12 +148,12 @@
       options.empty();
       options.append($('<option></option>').attr('value', 'all').text('All'));
       options.append($('<option></option>').attr('value', 'none').text('None'));
-      $.each(assignedUsers, function (_, assignedUser) {
-        options.append($('<option></option>').attr('value', assignedUser).text(assignedUser));
+      $.each(assigned_users, function (_, assigned_user) {
+        options.append($('<option></option>').attr('value', assigned_user).text(assigned_user));
       });
 
       // reset assigned user search value to 'all' if the new list of options does not include the current assigned user search value
-      if (assigned_user === 'all' || assigned_user === 'none' || Array.from(assignedUsers).includes(parseInt(assigned_user))) {
+      if (assigned_user === 'all' || assigned_user === 'none' || Array.from(assigned_users).includes(parseInt(assigned_user))) {
         $('#assigned_user').val(assigned_user);
       } else {
         assigned_user = 'all';
