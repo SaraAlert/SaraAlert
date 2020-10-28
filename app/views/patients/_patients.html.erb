@@ -129,19 +129,19 @@
     function updateAssignedUserOptions() {
       // get a sorted, unique list of assigned users based on the scope
       const assigned_users = table.data()
-                                 .filter(function (row) {
-                                   if (assigned_jurisdiction == 'all') {
-                                     return true;
-                                   } else if (scope === 'all') {
-                                     return row[7].includes(assigned_jurisdiction);
-                                   } else {
-                                     return row[7] === assigned_jurisdiction;
-                                   }
-                                 })
-                                 .map(function (row) { return parseInt(row[2]) })
-                                 .unique()
-                                 .filter(function (assigned_user) { return !isNaN(assigned_user) })
-                                 .sort(function (a, b) { return a - b });
+                                  .filter(function (row) {
+                                    if (assigned_jurisdiction == 'all') {
+                                      return true;
+                                    } else if (scope === 'all') {
+                                      return row[7].includes(assigned_jurisdiction);
+                                    } else {
+                                      return row[7] === assigned_jurisdiction;
+                                    }
+                                  })
+                                  .map(function (row) { return parseInt(row[2]) })
+                                  .unique()
+                                  .filter(function (assigned_user) { return !isNaN(assigned_user) })
+                                  .sort(function (a, b) { return a - b });
 
       // reset and update assigned user options
       const options = $('#assigned_user');
