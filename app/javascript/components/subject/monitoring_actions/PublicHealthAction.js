@@ -21,31 +21,11 @@ class PublicHealthAction extends React.Component {
     this.origState = Object.assign({}, this.state);
   }
 
-  // refactor message warning
   handlePublicHealthActionChange = event => {
-    if (!this.state.patient.monitoring) {
-      this.setState({
-        showPublicHealthActionModal: true,
-        message_warning:
-          'Since this record is on the "Closed" line list, updating this value will not move this record to another line list. If this individual should be actively monitored, please update the record\'s Monitoring Status.',
-        public_health_action: event.target.value || '',
-      });
-    } else if (this.state.patient.isolation) {
-      this.setState({
-        showPublicHealthActionModal: true,
-        message_warning: 'This will not impact the line list on which this record appears.',
-        public_health_action: event?.target?.value ? event.target.value : '',
-      });
-    } else {
-      this.setState({
-        showPublicHealthActionModal: true,
-        message_warning:
-          event.target.value === 'None'
-            ? 'The monitoree will be moved back into the primary status line lists.'
-            : 'The monitoree will be moved into the PUI line list.',
-        public_health_action: event?.target?.value ? event.target.value : '',
-      });
-    }
+    this.setState({
+      showPublicHealthActionModal: true,
+      public_health_action: event.target.value || '',
+    });
   };
 
   handleApplyHouseholdChange = event => {
@@ -97,7 +77,18 @@ class PublicHealthAction extends React.Component {
         <Modal.Body>
           <p>
             Are you sure you want to change latest public health action to &quot;{this.state.public_health_action}&quot;?
-            {this.state.message_warning && <b> {this.state.message_warning}</b>}
+            {!this.props.patient.monitoring && (
+              <b>
+                {' '}
+                Since this record is on the &quot;Closed&quot; line list, updating this value will not move this record to another line list. If this individual
+                should be actively monitored, please update the record&apos;s Monitoring Status.
+              </b>
+            )}
+            {this.props.patient.isolation && <b> This will not impact the line list on which this record appears.</b>}
+            {!this.props.patient.isolation && this.state.public_health_action === 'None' && (
+              <b> The monitoree will be moved back into the primary status line lists.</b>
+            )}
+            {!this.props.patient.isolation && this.state.public_health_action !== 'None' && <b> The monitoree will be moved into the PUI line list.</b>}
           </p>
           {this.props.has_dependents && (
             <React.Fragment>
@@ -123,7 +114,7 @@ class PublicHealthAction extends React.Component {
                 />
               </Form.Group>
               <Form.Group>
-                {this.state.apply_to_household && this.state.patient.monitoring && (
+                {this.state.apply_to_household && this.props.patient.monitoring && (
                   <i>
                     If any household members are being monitored in the exposure workflow, those records will appear on the PUI line list if any public health
                     action other than &quot;None&quot; is selected above. If any household members are being monitored in the isolation workflow, this update

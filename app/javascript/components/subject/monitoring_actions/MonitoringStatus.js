@@ -36,10 +36,13 @@ class MonitoringStatus extends React.Component {
   handleApplyHouseholdChange = event => {
     if (event?.target?.name && event.target.name === 'apply_to_household') {
       const applyToGroup = event.target.id === 'apply_to_household_yes';
-      this.setState({ [event.target.name]: applyToGroup });
+      this.setState({
+        apply_to_household: applyToGroup,
+        apply_to_household_cm_exp_only: false,
+      });
     } else if (event?.target?.name && event.target.name === 'apply_to_household_cm_exp_only') {
       const applyToGroup = event.target.id === 'apply_to_household_cm_exp_only_yes';
-      this.setState({ [event.target.name]: applyToGroup });
+      this.setState({ apply_to_household_cm_exp_only: applyToGroup });
     }
   };
 
