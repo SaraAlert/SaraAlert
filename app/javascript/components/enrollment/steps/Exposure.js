@@ -580,7 +580,7 @@ class Exposure extends React.Component {
                     </Form.Group>
                   </Form.Row>
                   <Form.Row>
-                    <Form.Group as={Col} md="18" controlId="jurisdiction_id" className="mb-2 pt-2">
+                    <Form.Group as={Col} md="18" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
@@ -620,7 +620,7 @@ class Exposure extends React.Component {
                           </Form.Group>
                         )}
                     </Form.Group>
-                    <Form.Group as={Col} md="6" controlId="assigned_user" className="mb-2 pt-2">
+                    <Form.Group as={Col} md="6" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">
                         ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
                         <InfoTooltip tooltipTextKey="assigned_user" location="top"></InfoTooltip>
