@@ -174,9 +174,7 @@ class PublicHealthController < ApplicationController
     when 'dob'
       patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir)
     when 'end_of_monitoring'
-      patients = patients.order('CASE
-      WHEN continuous_exposure = 1 THEN ' + (dir == 'asc' ? 'now()' : 'DATE("1970-01-01")') +
-      ' WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
+      patients = patients.order('CASE WHEN continuous_exposure = 1 THEN 1 ELSE 0 END, CASE WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
     when 'extended_isolation'
       patients = patients.order('CASE WHEN extended_isolation IS NULL THEN 1 ELSE 0 END, extended_isolation ' + dir)
     when 'symptom_onset'
