@@ -9,6 +9,7 @@ import RiskStratificationTable from './widgets/RiskStratificationTable';
 import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
 import RiskFactors from './widgets/RiskFactors';
+import PreferredReportingMethod from './widgets/PreferredReportingMethod';
 import reportError from '../util/ReportError';
 import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
 import GeographicSummary from './widgets/GeographicSummary';
@@ -84,10 +85,10 @@ class PublicHealthAnalytics extends React.Component {
             </Col>
           </Row>
           <Row className="mb-4 mx-2 px-0">
-            <Col md="14" className="ml-0 pl-0">
-              <RiskStratificationTable stats={this.props.stats} />
+            <Col xl="14" lg="24" sm="24" className="mx-0 pr-xl-3">
+              <PreferredReportingMethod stats={this.props.stats} />
             </Col>
-            <Col md="10" className="mr-0 pr-0">
+            <Col xl="10" lg="24" sm="24" className="mx-0 pl-xl-3">
               <MonitoreeFlow stats={this.props.stats} />
             </Col>
           </Row>
