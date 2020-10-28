@@ -404,6 +404,20 @@ class Patient < ApplicationRecord
       non_reporting
     when 'Asymptomatic'
       asymptomatic
+    when 'Exposure Symptomatic'
+      exposure_symptomatic
+    when 'Exposure Non-Reporting'
+      exposure_non_reporting
+    when 'Exposure Asymptomatic'
+      exposure_asymptomatic
+    when 'Exposure PUI' # ASK KELLY ABOUT THIS. TODO. DO NOT COMMIT ME
+      exposure_under_investigation
+    when 'Isolation Requiring Review'
+      isolation_requiring_review
+    when 'Isolation Non-Reporting'
+      isolation_non_reporting
+    when 'Isolation Reporting'
+      isolation_reporting
     end
   }
 
