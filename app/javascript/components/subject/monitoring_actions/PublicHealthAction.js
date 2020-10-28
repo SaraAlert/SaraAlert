@@ -84,11 +84,13 @@ class PublicHealthAction extends React.Component {
                 should be actively monitored, please update the record&apos;s Monitoring Status.
               </b>
             )}
-            {this.props.patient.isolation && <b> This will not impact the line list on which this record appears.</b>}
-            {!this.props.patient.isolation && this.state.public_health_action === 'None' && (
+            {this.props.patient.isolation && this.props.patient.monitoring && <b> This will not impact the line list on which this record appears.</b>}
+            {!this.props.patient.isolation && this.props.patient.monitoring && this.state.public_health_action === 'None' && (
               <b> The monitoree will be moved back into the primary status line lists.</b>
             )}
-            {!this.props.patient.isolation && this.state.public_health_action !== 'None' && <b> The monitoree will be moved into the PUI line list.</b>}
+            {!this.props.patient.isolation && this.props.patient.monitoring && this.state.public_health_action !== 'None' && (
+              <b> The monitoree will be moved into the PUI line list.</b>
+            )}
           </p>
           {this.props.has_dependents && (
             <React.Fragment>
