@@ -117,7 +117,8 @@ class JurisdictionsControllerTest < ActionController::TestCase
           assert_equal patients.exposure_under_investigation.pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
 
           get :assigned_users_for_viewable_patients, params: { jurisdiction_id: jur[:id], scope: scope, workflow: 'exposure', tab: 'closed' }
-          assert_equal patients.where(isolation: false, monitoring: false, purged: false).pluck(:assigned_user).sort, JSON.parse(response.body)['assigned_users']
+          assigned_users = patients.where(isolation: false, monitoring: false, purged: false).pluck(:assigned_user).sort
+          assert_equal assigned_users, JSON.parse(response.body)['assigned_users']
 
           get :assigned_users_for_viewable_patients, params: { jurisdiction_id: jur[:id], scope: scope, workflow: 'exposure', tab: 'transferred_in' }
           assigned_users = if scope == 'all'
