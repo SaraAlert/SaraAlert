@@ -363,3 +363,19 @@ state1_admin:
   authy_enforced: false
   api_enabled: false
   role: 'admin'
+state1_api_proxy:
+  id: 21
+  email: "state1_api_proxy@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
+  sign_in_count: 0
+  failed_attempts: 3
+  force_password_change: false
+  jurisdiction_id: 2
+  password_changed_at: "<%= 50.days.ago %>"
+  created_at: "<%= 50.days.ago %>"
+  updated_at: "<%= 50.days.ago %>"
+  authy_enabled: false
+  authy_enforced: false
+  api_enabled: true
+  role: 'public_health_enroller'
+  is_api_proxy: true
