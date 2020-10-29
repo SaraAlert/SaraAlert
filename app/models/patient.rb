@@ -588,6 +588,11 @@ class Patient < ApplicationRecord
     (updated_at + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822
   end
 
+  # Determine if this patient's phone number has blocked communication with SaraAlert
+  def has_blocked_sms
+    BlockedNumber.exists?(phone_number: primary_telephone)
+  end
+
   # Send initial enrollment notification via patient's preferred contact method
   def send_enrollment_notification
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
