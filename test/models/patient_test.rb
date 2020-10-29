@@ -1383,7 +1383,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-    test 'validates last_date_of_exposure is a valid date in api context' do
+  test 'validates last_date_of_exposure is a valid date in api context' do
     patient = valid_patient
 
     patient.last_date_of_exposure = '2000-01-01'
@@ -1494,7 +1494,6 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-
   test 'validates last_name is required in api context' do
     patient = valid_patient
 
@@ -1525,6 +1524,23 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:api)
 
     patient.primary_telephone = ''
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates symptom_onset is present when isolation is true' do
+    patient = valid_patient
+
+    patient.isolation = false
+    patient.symptom_onset = nil
+    assert patient.valid?(:api)
+
+    patient.isolation = true
+    patient.symptom_onset = '2000-01-01'
+    assert patient.valid?(:api)
+
+    patient.isolation = true
+    patient.symptom_onset = nil
     assert_not patient.valid?(:api)
     assert patient.valid?
   end
