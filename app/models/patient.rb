@@ -83,8 +83,15 @@ class Patient < ApplicationRecord
 
   validates :symptom_onset,
             on: :api,
-            presence: { message: "Required field 'Symptom Onset' is missing. 'Symptom Onset' is required when 'Isolation' is 'true'" },
+            presence: { message: "Required field '#{VALIDATION[:symptom_onset][:label]}' is missing."\
+                                 " '#{VALIDATION[:symptom_onset][:label]}' is required when 'Isolation' is 'true'" },
             if: -> { isolation }
+
+  validates :last_date_of_exposure,
+            on: :api,
+            presence: { message: "Required field '#{VALIDATION[:last_date_of_exposure][:label]}' is missing."\
+                                 " '#{VALIDATION[:last_date_of_exposure][:label]}' is required when 'Isolation' is 'false'" },
+            if: -> { !isolation }
 
   validates :email, on: :api, email: true
 
