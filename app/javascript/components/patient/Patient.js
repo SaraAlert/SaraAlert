@@ -126,6 +126,7 @@ class Patient extends React.Component {
             <Row>
               <Col className="text-truncate">
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
+                <span className="text-danger">{this.props.details.blocked_sms && ' This Phone Number Has Blocked SMS Communication With Sara Alert'}</span>
                 <br />
                 <b>Preferred Contact Time:</b> <span>{this.props.details.preferred_contact_time ? `${this.props.details.preferred_contact_time}` : '--'}</span>
                 <br />
