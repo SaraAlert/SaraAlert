@@ -364,7 +364,7 @@ state1_admin:
   api_enabled: false
   role: 'admin'
 state1_api_proxy:
-  id: 21
+  id: 25
   email: "state1_api_proxy@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, '1234567ab!') %>
   sign_in_count: 0
