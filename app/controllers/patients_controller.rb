@@ -175,7 +175,7 @@ class PatientsController < ApplicationController
   def update
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    content = params.require(:patient).permit(:patient, :id, *allowed_params)
+    content = params.require(:patient).permit(:id).merge!(allowed_params)
     patient = current_user.get_patient(content[:id])
 
     # If we failed to find a subject given the id, redirect to index
@@ -498,6 +498,21 @@ class PatientsController < ApplicationController
     duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email].blank?
     # They are removeable from the household if their current responder does not have duplicate contact information
     render json: { removeable: !duplicate_contact }
+  end
+
+  # Construct a diff for a patient update to keep track of changes
+  def patient_diff(patient_before, patient_after)
+    diffs = []
+    allowed_params.keys.each do |attribute|
+      next if patient_before[attribute] == patient_after[attribute]
+
+      diffs << {
+        attribute: attribute,
+        before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
+        after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
+      }
+    end
+    diffs
   end
 
   # Parameters allowed for saving to database
