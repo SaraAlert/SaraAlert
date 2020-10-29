@@ -102,27 +102,23 @@ class ConsumeAssessmentsJob < ApplicationJob
           queue.commit
           next
         when 'opt_out'
-          # TODO: Fill out appropriate action for user opt out once decided
           BlockedNumber.create(phone_number: patient.primary_telephone)
-          # histories = []
-          # patient.dependents.uniq.each do |pat|
-          #   histories << (choose correct history item)
-          # end
-          # History.import! histories
-          next
-        elsif message['response_status'] == 'opt_in'
-          histories = []
-          patient.dependents.uniq.each do |pat|
-            pat.update(pause_notifications: false)
-            histories << History.monitoree_pause_notifications(pat,'resumed')
+          History.contact_attempt(patient: patient, comment: "Monitoree blocked communications with Sara Alert by sending a\
+                                                             STOP keyword via primary telephone number #{patient.primary_telephone}.")
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household blocked communications with Sara Alert by sending a\
+                                                                      STOP keyword via primary telephone number #{patient.primary_telephone}.")
           end
-          History.import! histories
-
-        threshold_condition = ThresholdCondition.where(type: 'ThresholdCondition').find_by(threshold_condition_hash: message['threshold_condition_hash'])
-
-        # Invalid threshold condition hash
-        if threshold_condition.nil?
-          Rails.logger.info "ConsumeAssessmentsJob: skipping nil threshold (patient: #{patient.id}, hash: #{message['threshold_condition_hash']})..."
+          queue.commit
+          next
+        when 'opt_in'
+          BlockedNumber.where(phone_number: patient.primary_telephone).destroy_all
+          History.contact_attempt(patient: patient, comment: "Monitoree re-enabled communications with Sara Alert by sending a\
+                                                             START keyword via primary telephone number #{patient.primary_telephone}.")
+          unless dependents.blank?
+            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household re-enabled communications with Sara Alert by sending a\
+                                                                      START keyword via primary telephone number #{patient.primary_telephone}.")
+          end
           queue.commit
           next
         when 'max_retries_sms'
@@ -132,9 +128,10 @@ class ConsumeAssessmentsJob < ApplicationJob
           History.contact_attempt(patient: patient, comment: "Monitoree exceeded the maximum number of assessment SMS response retries via\
                                                              primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
-            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment SMS response retries via\
-                                                                      primary telephone number #{patient.primary_telephone}.")
+            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment SMS response\
+                                                                      rertries via primary telephone number #{patient.primary_telephone}.")
           end
+          queue.commit
           next
         when 'max_retries_voice'
           # Maximum amount of voice response retries reached
@@ -143,9 +140,10 @@ class ConsumeAssessmentsJob < ApplicationJob
           History.contact_attempt(patient: patient, comment: "Monitoree exceeded the maximum number of assessment voice response retries via\
                                                              primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
-            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment voice response retries via\
-                                                                      primary telephone number #{patient.primary_telephone}.")
+            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment voice response\
+                                                                      retries via primary telephone number #{patient.primary_telephone}.")
           end
+          queue.commit
           next
         end
 
