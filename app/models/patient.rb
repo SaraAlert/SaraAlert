@@ -77,7 +77,6 @@ class Patient < ApplicationRecord
      address_zip
      date_of_birth
      first_name
-     last_date_of_exposure
      last_name].each do |required_field|
     validates required_field, on: :api, presence: { message: "Required field '#{VALIDATION[required_field][:label]}' is missing" }
   end
