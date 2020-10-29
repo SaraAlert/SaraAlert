@@ -81,6 +81,11 @@ class Patient < ApplicationRecord
     validates required_field, on: :api, presence: { message: "Required field '#{VALIDATION[required_field][:label]}' is missing" }
   end
 
+  validates :symptom_onset,
+            on: :api,
+            presence: { message: "Required field 'Symptom Onset' is missing. 'Symptom Onset' is required when 'Isolation' is 'true'" },
+            if: -> { isolation }
+
   validates :email, on: :api, email: true
 
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
