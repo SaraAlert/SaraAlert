@@ -30,6 +30,7 @@ class Enrollment extends React.Component {
         patient: pickBy(this.props.patient, identity),
         propagatedFields: {},
         isolation: !!this.props.patient.isolation,
+        blocked_sms: this.props.blocked_sms,
       },
     };
     this.setEnrollmentState = debounce(this.setEnrollmentState.bind(this), 1000);
@@ -53,6 +54,7 @@ class Enrollment extends React.Component {
         patient: { ...currentEnrollmentState.patient, ...enrollmentState.patient },
         propagatedFields: { ...currentEnrollmentState.propagatedFields, ...enrollmentState.propagatedFields },
         isolation: Object.prototype.hasOwnProperty.call(enrollmentState, 'isolation') ? !!enrollmentState.isolation : currentEnrollmentState.isolation,
+        blocked_sms: enrollmentState.blocked_sms,
       },
     });
   }
@@ -205,7 +207,7 @@ class Enrollment extends React.Component {
             <Address currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
           </Carousel.Item>
           <Carousel.Item>
-            <Contact currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
+            <Contact currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} blocked_sms={this.props.blocked_sms} />
           </Carousel.Item>
           <Carousel.Item>
             <Arrival currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
@@ -261,6 +263,7 @@ Enrollment.propTypes = {
   cc_id: PropTypes.number,
   can_add_group: PropTypes.bool,
   has_dependents: PropTypes.bool,
+  blocked_sms: PropTypes.bool,
 };
 
 export default Enrollment;

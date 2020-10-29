@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   end
   get '/.well-known/smart-configuration', to: 'fhir/r4/api#well_known'
   get '/redirect', to: redirect { |params, request| "/oauth/authorize/native?#{request.params.to_query}" }
+  get '/patients/sms_eligibility_check', to: 'patients#sms_eligibility_check'
 
   resources :patients, only: [:index, :new, :create, :show, :edit, :update]
 

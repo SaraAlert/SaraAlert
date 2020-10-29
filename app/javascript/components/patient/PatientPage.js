@@ -35,9 +35,9 @@ class PatientPage extends React.Component {
           </Card.Header>
           <Card.Body>
             <Patient
-              details={{ ...this.props.patient }}
               jurisdiction_path={this.props.jurisdiction_path}
               dependents={this.props.dependents || []}
+              details={{ ...this.props.patient, blocked_sms: this.props.blocked_sms }}
               hideBody={this.state.hideBody}
               authenticity_token={this.props.authenticity_token}
             />
@@ -59,6 +59,7 @@ PatientPage.propTypes = {
   canAddAssessments: PropTypes.bool,
   hideBody: PropTypes.bool,
   jurisdiction_path: PropTypes.string,
+  blocked_sms: PropTypes.bool,
 };
 
 export default PatientPage;
