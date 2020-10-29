@@ -207,7 +207,13 @@ class Enrollment extends React.Component {
             <Address currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
           </Carousel.Item>
           <Carousel.Item>
-            <Contact currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} blocked_sms={this.props.blocked_sms} />
+            <Contact
+              currentState={this.state.enrollmentState}
+              setEnrollmentState={this.setEnrollmentState}
+              previous={this.previous}
+              next={this.next}
+              blocked_sms={this.props.blocked_sms}
+            />
           </Carousel.Item>
           <Carousel.Item>
             <Arrival currentState={this.state.enrollmentState} setEnrollmentState={this.setEnrollmentState} previous={this.previous} next={this.next} />
