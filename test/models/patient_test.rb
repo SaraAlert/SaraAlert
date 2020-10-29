@@ -1230,7 +1230,9 @@ class PatientTest < ActiveSupport::TestCase
           address_zip: '11111',
           date_of_birth: '2000-11-11',
           first_name: 'Test',
-          last_name: 'Tester')
+          last_name: 'Tester',
+          last_date_of_exposure: 4.days.ago.to_date,
+          symptom_onset: 4.days.ago.to_date)
   end
 
   test 'validates address_state inclusion in api context' do
@@ -1541,6 +1543,23 @@ class PatientTest < ActiveSupport::TestCase
 
     patient.isolation = true
     patient.symptom_onset = nil
+    assert_not patient.valid?(:api)
+    assert patient.valid?
+  end
+
+  test 'validates last_date_of_exposure is present when isolation is false' do
+    patient = valid_patient
+
+    patient.isolation = true
+    patient.last_date_of_exposure = nil
+    assert patient.valid?(:api)
+
+    patient.isolation = false
+    patient.last_date_of_exposure = '2000-01-01'
+    assert patient.valid?(:api)
+
+    patient.isolation = false
+    patient.last_date_of_exposure = nil
     assert_not patient.valid?(:api)
     assert patient.valid?
   end

@@ -774,6 +774,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -792,7 +793,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Patient', json_response['resourceType']
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
-    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' })
     assert_equal false, json_response['active']
   end
@@ -804,6 +804,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
@@ -1699,6 +1700,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -1717,7 +1719,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Patient', json_response['resourceType']
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
-    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' })
     assert_equal false, json_response['active']
   end
@@ -1729,6 +1730,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
