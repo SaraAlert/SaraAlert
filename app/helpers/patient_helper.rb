@@ -48,9 +48,9 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
                       american_indian_or_alaska_native ? 'American Indian or Alaska Native' : nil,
                       asian ? 'Asian' : nil,
                       native_hawaiian_or_other_pacific_islander ? 'Native Hawaiian or Other Pacific Islander' : nil,
-                      unknown ? 'Unknown' : nil,
-                      other ? 'Other' : nil,
-                      refused_to_answer ? 'Refused to Answer' : nil].reject(&:nil?).join(', ')
+                      race_unknown ? 'Unknown' : nil,
+                      race_other ? 'Other' : nil,
+                      race_refused_to_answer ? 'Refused to Answer' : nil].reject(&:nil?).join(', ')
       )
     ].reject(&:nil?))
   end
