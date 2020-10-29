@@ -771,6 +771,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Possible update request that omits all fields that can be updated except for the "active" field.
     patient_update = {
       'id' => @patient_2.id,
+      'birthDate' => @patient_2.birthDate,
+      'name' => @patient_2.name,
+      'address' => @patient_2.address,
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -787,7 +790,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     assert_not p.nil?
     assert_equal 'Patient', json_response['resourceType']
-    assert_nil json_response['name']
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' })
@@ -799,6 +801,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Possible update request that omits many fields but sets active to false
     patient_update = {
       'id' => @patient_2.id,
+      'birthDate' => @patient_2.birthDate,
+      'name' => @patient_2.name,
+      'address' => @patient_2.address,
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
@@ -1691,6 +1696,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Possible update request that omits all fields that can be updated except for the "active" field.
     patient_update = {
       'id' => @patient_2.id,
+      'birthDate' => @patient_2.birthDate,
+      'name' => @patient_2.name,
+      'address' => @patient_2.address,
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -1707,7 +1715,6 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     assert_not p.nil?
     assert_equal 'Patient', json_response['resourceType']
-    assert_nil json_response['name']
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
     assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' })
@@ -1719,6 +1726,9 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     # Possible update request that omits many fields but sets active to false
     patient_update = {
       'id' => @patient_2.id,
+      'birthDate' => @patient_2.birthDate,
+      'name' => @patient_2.name,
+      'address' => @patient_2.address,
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
