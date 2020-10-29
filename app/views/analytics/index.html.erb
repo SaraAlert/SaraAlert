@@ -2,12 +2,7 @@
   <%= javascript_pack_tag 'moment' %>
   <%= javascript_pack_tag 'closest' %>
 <% end %>
-<% if current_user.role? Roles::ANALYST %>
-  <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Analytics', href: nil }] } %>
-<% else %>
-  <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: root_url }, { value: 'Analytics', href: nil }] } %>
-<% end %>
-
+<%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Analytics', href: nil }] } %>
 <% if current_user.role?(Roles::ENROLLER) %>
   <%= react_component('analytics/EnrollerAnalytics', { current_user: current_user, stats: @stats }) %>
 <% end %>
