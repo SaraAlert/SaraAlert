@@ -26,7 +26,7 @@ const jurisdiction_paths = {
 describe('MonitoringActions', () => {
   it('Properly renders all main components', () => {
     const wrapper = shallow(<MonitoringActions patient={mockPatient1} has_dependents={false} in_household_with_member_with_ce_in_exposure={false} isolation={false} 
-      authenticity_token={authyToken} jurisdiction_paths={jurisdiction_paths} current_user={mockUser1} assigned_users={assigned_users} />);
+      authenticity_token={authyToken} jurisdiction_paths={jurisdiction_paths} current_user={mockUser1} assigned_users={assigned_users} user_can_transfer={false} />);
 
     expect(wrapper.find(Form).exists()).toBeTruthy();
     expect(wrapper.find(Form.Group).length).toEqual(7);

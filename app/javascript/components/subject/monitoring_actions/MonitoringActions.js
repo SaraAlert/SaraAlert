@@ -70,6 +70,7 @@ class MonitoringActions extends React.Component {
 
 MonitoringActions.propTypes = {
   current_user: PropTypes.object,
+  user_can_transfer: PropTypes.bool,
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
   jurisdiction_paths: PropTypes.object,

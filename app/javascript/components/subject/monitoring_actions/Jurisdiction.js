@@ -155,7 +155,9 @@ class Jurisdiction extends React.Component {
         <div className="disabled">
           <Form.Label className="nav-input-label">
             ASSIGNED JURISDICTION
-            <InfoTooltip tooltipTextKey="assignedJurisdiction" location="right"></InfoTooltip>
+            <InfoTooltip
+              tooltipTextKey={this.props.user_can_transfer ? 'assignedJurisdictionCanTransfer' : 'assignedJurisdictionCannotTransfer'}
+              location="right"></InfoTooltip>
           </Form.Label>
           <Form.Group className="d-flex mb-0">
             <Form.Control
@@ -197,6 +199,7 @@ Jurisdiction.propTypes = {
   has_dependents: PropTypes.bool,
   jurisdiction_paths: PropTypes.object,
   current_user: PropTypes.object,
+  user_can_transfer: PropTypes.bool,
 };
 
 export default Jurisdiction;

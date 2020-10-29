@@ -18,7 +18,7 @@ const jurisdiction_paths = {
 
 function getWrapper(patient, hasDependents) {
   return shallow(<Jurisdiction patient={patient} current_user={mockUser1} has_dependents={hasDependents}
-    jurisdiction_paths={jurisdiction_paths} authenticity_token={authyToken} />);
+    jurisdiction_paths={jurisdiction_paths} authenticity_token={authyToken} user_can_transfer={true} />);
 }
 
 describe('Jurisdiction', () => {
@@ -26,7 +26,7 @@ describe('Jurisdiction', () => {
     const wrapper = getWrapper(mockPatient1, false);
     expect(wrapper.find(Form.Label).text().includes('ASSIGNED JURISDICTION')).toBeTruthy();
     expect(wrapper.find(InfoTooltip).exists()).toBeTruthy();
-    expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedJurisdiction');
+    expect(wrapper.find(InfoTooltip).prop('tooltipTextKey')).toEqual('assignedJurisdictionCanTransfer');
     expect(wrapper.find('#jurisdiction_id').exists()).toBeTruthy();
     expect(wrapper.find('option').length).toEqual(6);
     for (var key of Object.keys(jurisdiction_paths)) {
