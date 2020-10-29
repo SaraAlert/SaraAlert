@@ -562,7 +562,7 @@ class AdminTable extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="mx-2">
         <div className="d-flex justify-content-between mb-2">
           <div className="mb-1">
             <Button className="mr-1" size="md" onClick={this.handleAddUserClick}>
