@@ -76,6 +76,14 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
                             url: 'ombCategory',
                             valueCoding: FHIR::Coding.new(code: '2186-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Not Hispanic or Latino')
                           ) : nil,
+                          ethnicity == 'Unknown' ? FHIR::Extension.new(
+                            url: 'ombCategory',
+                            valueCoding: FHIR::Coding.new(code: 'UNK', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Unknown')
+                          ) : nil,
+                          ethnicity == 'Refused to Answer' ? FHIR::Extension.new(
+                            url: 'ombCategory',
+                            valueCoding: FHIR::Coding.new(code: 'ASKU', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Refused to Answer')
+                          ) : nil,
                           FHIR::Extension.new(
                             url: 'text',
                             valueString: ethnicity
@@ -89,6 +97,8 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     code = patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.first&.valueCoding&.code
     return 'Hispanic or Latino' if code == '2135-2'
     return 'Not Hispanic or Latino' if code == '2186-5'
+    return 'Unknown' if code == 'UNK'
+    return 'Refused to Answer' if code == 'ASKU'
 
     nil
   end

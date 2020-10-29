@@ -147,7 +147,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   VALID_STATES = STATE_ABBREVIATIONS.values
 
   VALID_ENUMS = {
-    ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino'],
+    ethnicity: ['Not Hispanic or Latino', 'Hispanic or Latino', 'Unknown', 'Refused to Answer'],
     preferred_contact_method: ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'],
     primary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],
     secondary_telephone_type: ['Smartphone', 'Plain Cell', 'Landline'],

@@ -473,6 +473,8 @@ class Identification extends React.Component {
                     <option></option>
                     <option>Not Hispanic or Latino</option>
                     <option>Hispanic or Latino</option>
+                    <option>Unknown</option>
+                    <option>Refused to Answer</option>
                   </Form.Control>
                 </Form.Group>
               </Form.Row>
