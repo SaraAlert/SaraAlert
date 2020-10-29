@@ -1221,7 +1221,7 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.reload.head_of_household
     assert_not new_head.reload.head_of_household
   end
-  
+
   def valid_patient
     build(:patient,
           address_city: 'city',
@@ -1230,7 +1230,6 @@ class PatientTest < ActiveSupport::TestCase
           address_zip: '11111',
           date_of_birth: '2000-11-11',
           first_name: 'Test',
-          last_date_of_exposure: 20.days.ago.to_date,
           last_name: 'Tester')
   end
 
@@ -1384,7 +1383,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates last_date_of_exposure is a valid date in api context' do
+    test 'validates last_date_of_exposure is a valid date in api context' do
     patient = valid_patient
 
     patient.last_date_of_exposure = '2000-01-01'
@@ -1495,15 +1494,6 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates last_date_of_exposure is required in api context' do
-    patient = valid_patient
-
-    assert patient.valid?(:api)
-
-    patient.last_date_of_exposure = nil
-    assert_not patient.valid?(:api)
-    assert patient.valid?
-  end
 
   test 'validates last_name is required in api context' do
     patient = valid_patient
