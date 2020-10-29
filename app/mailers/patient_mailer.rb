@@ -27,6 +27,7 @@ class PatientMailer < ApplicationMailer
   def enrollment_sms_text_based(patient)
     # Should not be sending enrollment sms if no valid number
     return if patient&.primary_telephone.blank?
+    add_fail_history_sms_blocked(patient) && return unless patient.has_blocked_sms
 
     lang = patient.select_language
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
@@ -36,6 +37,7 @@ class PatientMailer < ApplicationMailer
   # Right now the wording of this message is the same as for enrollment
   def assessment_sms_weblink(patient)
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    add_fail_history_sms_blocked(patient) && return unless patient.has_blocked_sms
 
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
@@ -59,6 +61,7 @@ class PatientMailer < ApplicationMailer
 
   def assessment_sms_reminder(patient)
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    add_fail_history_sms_blocked(patient) && return unless patient.has_blocked_sms
 
     lang = patient.select_language
     contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
@@ -73,6 +76,7 @@ class PatientMailer < ApplicationMailer
 
   def assessment_sms(patient)
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
+    add_fail_history_sms_blocked(patient) && return unless patient.has_blocked_sms
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
@@ -202,5 +206,27 @@ class PatientMailer < ApplicationMailer
     History.report_reminder(patient: patient,
                             comment: "Sara Alert could not send a report reminder to this monitoree via \
                                      #{patient.preferred_contact_method}, because the monitoree #{type} was blank.")
+  end
+
+  def add_fail_history_sms_blocked(patient)
+    comment = "Sara Alert attempted to send an SMS to #{patient.primary_telephone}, but the message could not be sent because monitoree blocked Sara Alert."
+    History.contact_attempt(patient: patient, comment: comment)
+    unless patient.dependents.blank?
+      create_contact_attempt_history_for_dependents(dependents, "Sara Alert attempted to send an SMS to #{patient.primary_telephone}, but the message could not\
+                                                                 be sent because monitoree's head of household blocked Sara Alert.")
+    end
+  end
+
+  # Use the import method here to generate less SQL statements for a bulk insert of
+  # dependent histories instead of 1 statement per dependent.
+  def create_contact_attempt_history_for_dependents(dependents, comment)
+    histories = []
+    dependents.each do |dependent|
+      histories << History.new(patient: dependent,
+                               created_by: 'Sara Alert System',
+                               comment: comment,
+                               history_type: 'Contact Attempt')
+    end
+    History.import! histories
   end
 end
