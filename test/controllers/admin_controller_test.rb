@@ -172,12 +172,14 @@ class AdminControllerTest < ActionController::TestCase
 
     sort_direction = 'asc'
     get :users, params: { orderBy: order_by, sortDirection: sort_direction }
-    ordered_logins = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).order(failed_attempts: sort_direction).pluck(:failed_attempts)
+    ordered_logins = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids)
+                         .order(failed_attempts: sort_direction).pluck(:failed_attempts)
     assert_equal(ordered_logins, (JSON.parse(response.body)['user_rows'].map { |u| u['num_failed_logins'] }))
 
     sort_direction = 'desc'
     get :users, params: { orderBy: order_by, sortDirection: sort_direction }
-    ordered_logins = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids).order(failed_attempts: sort_direction).pluck(:failed_attempts)
+    ordered_logins = User.where(is_api_proxy: false, jurisdiction_id: user.jurisdiction.subtree_ids)
+                         .order(failed_attempts: sort_direction).pluck(:failed_attempts)
     assert_equal(ordered_logins, (JSON.parse(response.body)['user_rows'].map { |u| u['num_failed_logins'] }))
 
     sign_out user
