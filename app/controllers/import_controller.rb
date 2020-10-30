@@ -60,8 +60,14 @@ class ImportController < ApplicationController
               elsif col_num == 85 && workflow == :isolation
                 patient[:user_defined_symptom_onset] = row[85].present?
                 patient[field] = validate_field(field, row[col_num], row_ind)
+              elsif col_num == 86
+                patient[field] = if workflow == :exposure
+                                   validate_case_status(:case_status_exposure, row[col_num], row_ind)
+                                 else
+                                   validate_case_status(:case_status_isolation, row[col_num], row_ind)
+                                 end
               else
-                patient[field] = validate_field(field, row[col_num], row_ind) unless [85, 86].include?(col_num) && workflow != :isolation
+                patient[field] = validate_field(field, row[col_num], row_ind) unless col_num == 85 && workflow != :isolation
               end
             end
 
@@ -272,6 +278,20 @@ class ImportController < ApplicationController
     return value.to_i if value.to_i.between?(1, 9999)
 
     raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999", row_ind)
+  end
+
+  def validate_case_status(field, value, row_ind)
+    return nil if value.blank?
+
+    normalized_value = unformat_enum_field(value)
+    return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
+
+    if field == :case_status_exposure
+      err_msg = "'#{value}' is not an acceptable value for Case Status for monitorees imported into the Exposure workflow, acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+    else
+      err_msg = "'#{value}' is not an acceptable value for Case Status for cases imported into the Isolation workflow, acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+    end
+    raise ValidationError.new(err_msg, row_ind)
   end
 
   def validate_required_primary_contact(patient, row_ind)
