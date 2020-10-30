@@ -10,7 +10,7 @@ class Confirmation extends React.Component {
   }
 
   handleChange(event) {
-    if (event.target.name === 'extraOption') {
+    if (event.target.id === 'extra_option') {
       this.props.extraOptionChange(event.target.checked);
     }
   }
@@ -42,7 +42,7 @@ class Confirmation extends React.Component {
         <Modal.Body>
           <p className="mb-0">{confirmation}</p>
           {additionalNote && <p className="mb-0 mt-4">{additionalNote}</p>}
-          {extraOption && <Form.Check type="checkbox" name="extraOption" label={extraOption} className="mt-4" onChange={this.handleChange} />}
+          {extraOption && <Form.Check type="checkbox" id="extra_option" label={extraOption} className="mt-4" onChange={this.handleChange} />}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => proceed(false)}>

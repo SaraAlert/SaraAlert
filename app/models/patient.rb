@@ -6,6 +6,8 @@ require 'chronic'
 class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
+  include ValidationHelper
+  include ActiveModel::Validations
 
   columns.each do |column|
     case column.type
@@ -46,7 +48,56 @@ class Patient < ApplicationRecord
                                                          'No Identified Risk',
                                                          nil, ''] }
 
+  %i[address_state
+     ethnicity
+     monitored_address_state
+     preferred_contact_method
+     preferred_contact_time
+     sex].each do |enum_field|
+    validates enum_field, on: :api, inclusion: {
+      in: VALID_ENUMS[enum_field],
+      message: "%<value>s is not an acceptable value for '#{VALIDATION[enum_field][:label]}', acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
+    }, allow_blank: true
+  end
+
+  %i[primary_telephone
+     secondary_telephone].each do |phone_field|
+    validates phone_field, on: :api, phone_number: true
+  end
+
+  %i[date_of_birth
+     last_date_of_exposure
+     symptom_onset].each do |date_field|
+    validates date_field, on: :api, date: true
+  end
+
+  %i[address_city
+     address_line_1
+     address_state
+     address_zip
+     date_of_birth
+     first_name
+     last_name].each do |required_field|
+    validates required_field, on: :api, presence: { message: "Required field '#{VALIDATION[required_field][:label]}' is missing" }
+  end
+
+  validates :symptom_onset,
+            on: :api,
+            presence: { message: "Required field '#{VALIDATION[:symptom_onset][:label]}' is missing."\
+                                 " '#{VALIDATION[:symptom_onset][:label]}' is required when 'Isolation' is 'true'" },
+            if: -> { isolation }
+
+  validates :last_date_of_exposure,
+            on: :api,
+            presence: { message: "Required field '#{VALIDATION[:last_date_of_exposure][:label]}' is missing."\
+                                 " '#{VALIDATION[:last_date_of_exposure][:label]}' is required when 'Isolation' is 'false'" },
+            if: -> { !isolation }
+
+  validates :email, on: :api, email: true
+
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
+
+  validates_with PrimaryContactValidator, on: :api
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
@@ -57,6 +108,9 @@ class Patient < ApplicationRecord
   has_many :transfers
   has_many :laboratories
   has_many :close_contacts
+
+  around_save :inform_responder, if: :responder_id_changed?
+  around_destroy :inform_responder
 
   # Most recent assessment
   def latest_assessment
@@ -73,7 +127,7 @@ class Patient < ApplicationRecord
     where(purged: false)
       .where(pause_notifications: false)
       .where('patients.id = patients.responder_id')
-      .where.not('latest_assessment_at >= ?', Time.now.getlocal('-04:00').beginning_of_day)
+      .where.not('latest_assessment_at >= ?', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
       .or(
         where(purged: false)
           .where(pause_notifications: false)
@@ -484,9 +538,26 @@ class Patient < ApplicationRecord
     jurisdiction&.path&.map(&:name)
   end
 
-  # Get all dependents (including self if id = responder_id) that are being monitored or in continuous exposure
+  # Get all dependents (including self if id = responder_id) that are being actively monitored, meaning:
+  # - not purged AND not closed (monitoring = true)
+  #  AND
+  #    - in continuous exposure
+  #     OR
+  #    - in isolation
+  #     OR
+  #    - within monitoring period based on LDE
+  #     OR
+  #    - within monitoring period based on creation date if no LDE specified
   def active_dependents
-    dependents.where('monitoring = ? OR continuous_exposure = ?', true, true)
+    monitoring_days_ago = ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
+    dependents.where(purged: false, monitoring: true)
+              .where('isolation = ? OR continuous_exposure = ? OR last_date_of_exposure >= ? OR (last_date_of_exposure IS NULL AND created_at >= ?)',
+                     true, true, monitoring_days_ago, monitoring_days_ago)
+  end
+
+  # Get all dependents (excluding self if id = responder_id) that are being monitored
+  def active_dependents_exclude_self
+    active_dependents.where.not(id: id)
   end
 
   # Get this patient's dependents excluding itself
@@ -530,14 +601,18 @@ class Patient < ApplicationRecord
     end
   end
 
-  # Send a daily assessment to this monitoree
-  def send_assessment(force: false)
+  # Send a daily assessment to this monitoree (if currently eligible). By setting send_now to true, an assessment
+  # will be sent immediately without any consideration of the monitoree's preferred_contact_time.
+  def send_assessment(send_now: false)
     return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
 
     return if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent > 12.hours.ago
 
     # Do not allow messages to go to household members
     return unless responder_id == id
+
+    # Stop execution if in CI
+    return if Rails.env.test?
 
     # Return UNLESS:
     # - in exposure: NOT closed AND within monitoring period OR
@@ -550,46 +625,39 @@ class Patient < ApplicationRecord
     start_of_exposure = last_date_of_exposure || created_at
     return unless (monitoring && start_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day) ||
                   (monitoring && isolation) ||
-                  continuous_exposure ||
-                  dependents_exclude_self.where('monitoring = ? OR continuous_exposure = ?', true, true).exists?
+                  (monitoring && continuous_exposure) ||
+                  active_dependents_exclude_self.exists?
 
-    # If force is set, the preferred contact time will be ignored
-    unless force
+    # Determine if it is yet an appropriate time to send this person a message.
+    unless send_now
+      # Local "hour" (defaults to eastern if timezone cannot be determined)
       hour = Time.now.getlocal(address_timezone_offset).hour
+
       # These are the hours that we consider to be morning, afternoon and evening
       morning = (8..12)
       afternoon = (12..16)
       evening = (16..19)
-      case preferred_contact_time
-      when 'Morning'
+      case preferred_contact_time&.downcase
+      when 'morning'
         return unless morning.include? hour
-      when 'Afternoon'
+      when 'afternoon'
         return unless afternoon.include? hour
-      when 'Evening'
+      when 'evening'
         return unless evening.include? hour
-      end
-    end
-
-    # Default calling to afternoon if not specified
-    if (preferred_contact_method&.downcase == 'telephone call' ||
-        preferred_contact_method&.downcase == 'sms texted weblink' ||
-        preferred_contact_method&.downcase == 'sms text-message') && responder.id == id && preferred_contact_time.blank?
-      hour = Time.now.getlocal(address_timezone_offset).hour
-      return unless (11..17).include? hour
-    end
-
-    if preferred_contact_method&.downcase == 'sms text-message' && responder.id == id && ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-      if !force
-        PatientMailer.assessment_sms(self).deliver_later
       else
-        PatientMailer.assessment_sms_reminder(self).deliver_later
+        # Default to roughly afternoon if preferred contact time is not specified
+        return unless (11..17).include? hour
       end
-    elsif preferred_contact_method&.downcase == 'sms texted weblink' && responder.id == id
-      PatientMailer.assessment_sms_weblink(self).deliver_later if ADMIN_OPTIONS['enable_sms'] && !Rails.env.test?
-    elsif preferred_contact_method&.downcase == 'telephone call' && responder.id == id
-      PatientMailer.assessment_voice(self).deliver_later if ADMIN_OPTIONS['enable_voice'] && !Rails.env.test?
-    elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email'] && responder.id == id && email.present?
-      PatientMailer.assessment_email(self).deliver_later
+    end
+
+    if preferred_contact_method&.downcase == 'sms text-message' && ADMIN_OPTIONS['enable_sms']
+      PatientMailer.assessment_sms(self).deliver_later
+    elsif preferred_contact_method&.downcase == 'sms texted weblink' && ADMIN_OPTIONS['enable_sms']
+      PatientMailer.assessment_sms_weblink(self).deliver_later
+    elsif preferred_contact_method&.downcase == 'telephone call' && ADMIN_OPTIONS['enable_voice']
+      PatientMailer.assessment_voice(self).deliver_later
+    elsif preferred_contact_method&.downcase == 'e-mailed web link' && ADMIN_OPTIONS['enable_email']
+      PatientMailer.assessment_email(self).deliver_later if email.present?
     end
   end
 
@@ -685,7 +753,7 @@ class Patient < ApplicationRecord
     unless isolation
       # Monitoring period has elapsed
       start_of_exposure = last_date_of_exposure || created_at
-      no_active_dependents = !dependents_exclude_self.where(monitoring: true).exists?
+      no_active_dependents = !active_dependents_exclude_self.exists?
       if start_of_exposure < reporting_period && !continuous_exposure && no_active_dependents
         eligible = false
         messages << { message: "Monitoree\'s monitoring period has elapsed and continuous exposure is not enabled", datetime: nil }
@@ -774,8 +842,8 @@ class Patient < ApplicationRecord
       first_name: patient&.name&.first&.given&.first,
       middle_name: patient&.name&.first&.given&.second,
       last_name: patient&.name&.first&.family,
-      primary_telephone: Phonelib.parse(patient&.telecom&.select { |t| t&.system == 'phone' }&.first&.value, 'US').full_e164,
-      secondary_telephone: Phonelib.parse(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value, 'US').full_e164,
+      primary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.first&.value),
+      secondary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value),
       email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
       date_of_birth: patient&.birthDate,
       age: Patient.calc_current_age_fhir(patient&.birthDate),
@@ -824,5 +892,57 @@ class Patient < ApplicationRecord
     else
       timezone_for_state('massachusetts')
     end
+  end
+
+  # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
+  def self.detailed_history_edit(patient_before, patient_after, user_email, allowed_fields, is_api_edit: false)
+    diffs = patient_diff(patient_before, patient_after, allowed_fields)
+    return if diffs.length.zero?
+
+    pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
+    comment = is_api_edit ? 'Monitoree record edited via API. ' : 'User edited a monitoree record. '
+    comment += "Changes were: #{pretty_diff.join(', ')}."
+    History.record_edit(patient: patient_after, created_by: user_email, comment: comment)
+  end
+
+  # Construct a diff for a patient update to keep track of changes
+  def self.patient_diff(patient_before, patient_after, allowed_fields)
+    diffs = []
+    allowed_fields.each do |attribute|
+      next if patient_before[attribute] == patient_after[attribute]
+
+      diffs << {
+        attribute: attribute,
+        before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
+        after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
+      }
+    end
+    diffs
+  end
+
+  # Use the cached attribute if it exists, if not query with count for performance
+  # instead of loading all dependents.
+  def head_of_household?
+    return head_of_household unless head_of_household.nil?
+
+    dependents_exclude_self.where(purged: false).size.positive?
+  end
+
+  def inform_responder
+    initial_responder = responder_id_was
+    # Yield to save or destroy, depending on which callback invokes this method
+    yield
+
+    return if responder.nil?
+
+    # update the initial responder if it changed
+    Patient.find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
+    # update the current responder
+    responder.refresh_head_of_household
+  end
+
+  def refresh_head_of_household
+    hoh = dependents_exclude_self.where(purged: false).size.positive?
+    update(head_of_household: hoh) unless head_of_household == hoh
   end
 end

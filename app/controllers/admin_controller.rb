@@ -5,12 +5,12 @@ class AdminController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    redirect_to(root_url) && return unless current_user.role? Roles::ADMIN
+    redirect_to(root_url) && return unless current_user.can_access_admin_panel?
   end
 
   # Retrieve users for the admin user table.
   def users
-    redirect_to(root_url) && return unless current_user.role? Roles::ADMIN
+    redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
     permitted_params = params.permit(:search, :entries, :page, :orderBy, :sortDirection)
 
@@ -100,7 +100,7 @@ class AdminController < ApplicationController
 
   # Create and save a new user. Triggers welcome email to be sent.
   def create_user
-    redirect_to(root_url) && return unless current_user.role? Roles::ADMIN
+    redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
     permitted_params = params[:admin].permit(:email, :jurisdiction, :role_title, :is_api_enabled)
     email = permitted_params[:email]
@@ -145,7 +145,7 @@ class AdminController < ApplicationController
 
   # Edit existing user.
   def edit_user
-    redirect_to(root_url) && return unless current_user.role? Roles::ADMIN
+    redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
     permitted_params = params[:admin].permit(:id, :email, :jurisdiction, :role_title, :is_api_enabled, :is_locked)
 
@@ -208,7 +208,7 @@ class AdminController < ApplicationController
 
   # Resets 2FA for the users with ids in params.
   def reset_2fa
-    redirect_to(root_url) && return unless current_user.role? Roles::ADMIN
+    redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
     permitted_params = params[:admin].permit({ ids: [] })
     ids = permitted_params[:ids]
@@ -230,7 +230,7 @@ class AdminController < ApplicationController
 
   # Resets passwords of the users with ids in params.
   def reset_password
-    redirect_to(root_url) && return unless current_user.role? Roles::ADMIN
+    redirect_to(root_url) && return unless current_user.can_access_admin_panel?
 
     permitted_params = params[:admin].permit({ ids: [] })
     ids = permitted_params[:ids]

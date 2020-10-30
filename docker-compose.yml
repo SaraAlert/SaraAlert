@@ -48,7 +48,7 @@ services:
     volumes:
       - '~/tls:/app/disease-trakker/tls:ro'
   mysql-enrollment:
-    image: 'mariadb:latest'
+    image: 'mariadb:10.5'
     volumes:
       - 'mysql-enrollment:/var/lib/mysql'
     env_file:
@@ -58,7 +58,7 @@ services:
     networks:
       - dt-net-enrollment
   mysql-assessment:
-    image: 'mariadb:latest'
+    image: 'mariadb:10.5'
     volumes:
       - 'mysql-assessment:/var/lib/mysql'
     env_file:

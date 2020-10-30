@@ -85,7 +85,7 @@ class PurgeJobTest < ActiveSupport::TestCase
     patient = create(:patient, monitoring: false, purged: false, continuous_exposure: false, submission_token: 'a',
                                monitoring_reason: 'Other', exposure_risk_assessment: 'Low', monitoring_plan: 'None', public_health_action: 'None',
                                last_assessment_reminder_sent: 1.month.ago, user_defined_id_statelocal: '1', user_defined_id_cdc: '1',
-                               user_defined_id_nndss: '1', first_name: 'a', last_name: 'a', date_of_birth: 1.year.ago, age: 1, sex: 'a',
+                               user_defined_id_nndss: '1', first_name: 'a', last_name: 'a', date_of_birth: 1.year.ago, age: 1, sex: 'Unknown',
                                white: false, black_or_african_american: false, american_indian_or_alaska_native: false, asian: false,
                                native_hawaiian_or_other_pacific_islander: false, race_unknown: false, race_other: false, 
                                race_refused_to_answer: false, ethnicity: 'a', primary_language: 'a', secondary_language: 'a', 

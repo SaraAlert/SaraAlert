@@ -686,13 +686,60 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unsupported_media_type
   end
 
-  test 'SYSTEM FLOW: should be bad request via create' do
+  test 'SYSTEM FLOW: should be bad request via create due to non-FHIR' do
     post(
       '/fhir/r4/Patient',
       params: { foo: 'bar' }.to_json,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
+  end
+
+  test 'SYSTEM FLOW: should be bad request via create with invalid FHIR' do
+    @patient_1.active = 1
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+  end
+
+  test 'SYSTEM FLOW: should be bad request via create with multiple FHIR errors' do
+    @patient_1.active = [1, 2]
+    @patient_1.telecom[0].value = [1, 2]
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 4
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
+    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via create with validation errors' do
+    bad_phone = '123'
+    bad_birth_date = '2000'
+    @patient_1.telecom[0].value = bad_phone
+    @patient_1.birthDate = bad_birth_date
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 3
+    assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
+    assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
+    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'SYSTEM FLOW: should be unauthorized via update' do
@@ -720,6 +767,75 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
   end
 
+  test 'SYSTEM FLOW: should update Patient via update and set omitted fields to nil ' do
+    # Possible update request that omits all fields that can be updated except for the "active" field.
+    patient_update = {
+      'id' => @patient_2.id,
+      'birthDate' => @patient_2.birthDate,
+      'name' => @patient_2.name,
+      'address' => @patient_2.address,
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
+      'active' => false,
+      'resourceType' => 'Patient'
+    }
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: patient_update.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' })
+    assert_equal false, json_response['active']
+  end
+
+  test 'SYSTEM FLOW: should properly close Patient record via update' do
+    # Possible update request that omits many fields but sets active to false
+    patient_update = {
+      'id' => @patient_2.id,
+      'birthDate' => @patient_2.birthDate,
+      'name' => @patient_2.name,
+      'address' => @patient_2.address,
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
+      'active' => false,
+      'resourceType' => 'Patient',
+      'telecom' => [
+        {
+          "system": 'email',
+          "value": '2966977816fake@example.com',
+          "rank": 1
+        }
+      ]
+    }
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: patient_update.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+
+    # Record should be closed
+    assert_not json_response['active']
+    assert_not p.monitoring
+
+    # Closed at date should have been set to today
+    assert_equal DateTime.now.to_date, p.closed_at&.to_date
+  end
+
   test 'SYSTEM FLOW: should be bad request via update due to bad fhir' do
     put(
       '/fhir/r4/Patient/1',
@@ -729,6 +845,35 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test 'SYSTEM FLOW: should be bad request via update with invalid FHIR' do
+    @patient_1.active = 1
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+  end
+
+  test 'SYSTEM FLOW: should be bad request via update with multiple FHIR errors' do
+    @patient_1.active = [1, 2]
+    @patient_1.telecom[0].value = [1, 2]
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 4
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
+    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
+  end
+
   test 'SYSTEM FLOW: should be bad request via update due to unsupported resource' do
     put(
       '/fhir/r4/FooBar/9',
@@ -736,6 +881,24 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :not_found
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via update with validation errors' do
+    bad_phone = '123'
+    bad_birth_date = '2000'
+    @patient_1.telecom[0].value = bad_phone
+    @patient_1.birthDate = bad_birth_date
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 3
+    assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
+    assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
+    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'SYSTEM FLOW: should be forbidden via update' do
@@ -1440,13 +1603,60 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unsupported_media_type
   end
 
-  test 'USER FLOW: should be bad request via create' do
+  test 'USER FLOW: should be bad request via create due to non-FHIR' do
     post(
       '/fhir/r4/Patient',
       params: { foo: 'bar' }.to_json,
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :bad_request
+  end
+
+  test 'USER FLOW: should be bad request via create with invalid FHIR' do
+    @patient_1.active = 1
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+  end
+
+  test 'USER FLOW: should be bad request via create with multiple FHIR errors' do
+    @patient_1.active = [1, 2]
+    @patient_1.telecom[0].value = [1, 2]
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 4
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
+    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
+  end
+
+  test 'USER FLOW: should be unprocessable entity via create with validation errors' do
+    bad_phone = '123'
+    bad_birth_date = '2000'
+    @patient_1.telecom[0].value = bad_phone
+    @patient_1.birthDate = bad_birth_date
+    post(
+      '/fhir/r4/Patient',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 3
+    assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
+    assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
+    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'USER FLOW: should be unauthorized via update' do
@@ -1483,6 +1693,75 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
   end
 
+  test 'USER FLOW: should update Patient via update and set omitted fields to nil' do
+    # Possible update request that omits all fields that can be updated except for the "active" field.
+    patient_update = {
+      'id' => @patient_2.id,
+      'birthDate' => @patient_2.birthDate,
+      'name' => @patient_2.name,
+      'address' => @patient_2.address,
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
+      'active' => false,
+      'resourceType' => 'Patient'
+    }
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: patient_update.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+    assert_equal 'Patient', json_response['resourceType']
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' })
+    assert_equal([], json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' })
+    assert_equal false, json_response['active']
+  end
+
+  test 'USER FLOW: should properly close Patient record via update' do
+    # Possible update request that omits many fields but sets active to false
+    patient_update = {
+      'id' => @patient_2.id,
+      'birthDate' => @patient_2.birthDate,
+      'name' => @patient_2.name,
+      'address' => @patient_2.address,
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
+      'active' => false,
+      'resourceType' => 'Patient',
+      'telecom' => [
+        {
+          "system": 'email',
+          "value": '2966977816fake@example.com',
+          "rank": 1
+        }
+      ]
+    }
+
+    put(
+      '/fhir/r4/Patient/1',
+      params: patient_update.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    p = Patient.find_by(id: 1)
+
+    assert_not p.nil?
+
+    # Record should be closed
+    assert_not json_response['active']
+    assert_not p.monitoring
+
+    # Closed at date should have been set to today
+    assert_equal DateTime.now.to_date, p.closed_at&.to_date
+  end
+
   test 'USER FLOW: should be bad request via update due to bad fhir' do
     put(
       '/fhir/r4/Patient/1',
@@ -1492,6 +1771,35 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test 'USER FLOW: should be bad request via update with invalid FHIR' do
+    @patient_1.active = 1
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+  end
+
+  test 'USER FLOW: should be bad request via update with multiple FHIR errors' do
+    @patient_1.active = [1, 2]
+    @patient_1.telecom[0].value = [1, 2]
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 4
+    assert_match(/Patient.active/, json_response['issue'][0]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][1]['diagnostics'])
+    assert_match(/Patient.active/, json_response['issue'][2]['diagnostics'])
+    assert_match(/ContactPoint.value/, json_response['issue'][3]['diagnostics'])
+  end
+
   test 'USER FLOW: should be 404 not found via update due to unsupported resource' do
     put(
       '/fhir/r4/FooBar/9',
@@ -1499,6 +1807,24 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :not_found
+  end
+
+  test 'USER FLOW: should be unprocessable entity via update with validation errors' do
+    bad_phone = '123'
+    bad_birth_date = '2000'
+    @patient_1.telecom[0].value = bad_phone
+    @patient_1.birthDate = bad_birth_date
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal json_response['issue'].length, 3
+    assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
+    assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
+    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'USER FLOW: should be forbidden via update' do
