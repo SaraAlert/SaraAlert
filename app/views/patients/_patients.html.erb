@@ -36,6 +36,7 @@
     </tr>
   </thead>
   <tbody class="table-striped">
+
     <% patients.each do |patient| -%>
       <tr>
         <td><%= link_to "#{patient.last_name}, #{patient.first_name}", patient, class: '' %></td>
