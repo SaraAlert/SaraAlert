@@ -47,6 +47,25 @@ class Contact extends React.Component {
     }
     this.updatePrimaryContactMethodValidations(event);
 
+    if (event.target.id === 'primary_telephone' && event.target.value.replace('_', '').length === 12) {
+      axios({
+        method: 'get',
+        url: '/patients/sms_eligibility_check',
+        params: { phone_number: phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) },
+      })
+        .then(response => {
+          let sms_eligible = true;
+          if (response?.data?.sms_eligible != null) {
+            sms_eligible = response.data.sms_eligible;
+          }
+          this.setState({ current: { ...this.state.current, blocked_sms: !sms_eligible } });
+          this.props.setEnrollmentState({ ...this.state.current, blocked_sms: !sms_eligible });
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+
     let current = this.state.current;
     let modified = this.state.modified;
     this.setState(
@@ -55,14 +74,18 @@ class Contact extends React.Component {
         modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
       },
       () => {
-        this.props.setEnrollmentState({ ...this.state.modified, blocked_sms: this.state.blocked_sms });
+        this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
   };
 
   updatePrimaryContactMethodValidations = event => {
     if (event?.currentTarget.id == 'preferred_contact_method') {
-      if (event?.currentTarget.value === 'Telephone call') {
+      if (
+        event?.currentTarget.value === 'Telephone call' ||
+        event?.currentTarget.value === 'SMS Text-message' ||
+        event?.currentTarget.value === 'SMS Texted Weblink'
+      ) {
         schema = yup.object().shape({
           primary_telephone: yup
             .string()
@@ -80,27 +103,6 @@ class Contact extends React.Component {
             .email('Please enter a valid Email.')
             .max(200, 'Max length exceeded, please limit to 200 characters.'),
           confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm Email must match.'),
-          preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-        });
-      } else if (event?.currentTarget.value === 'SMS Text-message' || event?.currentTarget.value === 'SMS Texted Weblink') {
-        schema = yup.object().shape({
-          primary_telephone: yup
-            .string()
-            .phone()
-            .sms_eligible()
-            .required('Please provide a primary telephone number, or change Preferred Reporting Method.')
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone: yup
-            .string()
-            .phone()
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          primary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          secondary_telephone_type: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
-          email: yup
-            .string()
-            .email('Please enter a valid email.')
-            .max(200, 'Max length exceeded, please limit to 200 characters.'),
-          confirm_email: yup.string().oneOf([yup.ref('email'), null], 'Confirm email must match.'),
           preferred_contact_method: yup.string().max(200, 'Max length exceeded, please limit to 200 characters.'),
         });
       } else if (event?.currentTarget.value === 'E-mailed Web Link') {
@@ -158,13 +160,7 @@ class Contact extends React.Component {
               return yup
                 .string()
                 .phone()
-                .sms_eligible()
-                .required('Please provide a primary telephone number, or change Preferred Reporting Method.');
-            } else if (pcm && ['Telephone call'].includes(pcm)) {
-              return yup
-                .string()
-                .phone()
-                .required('Please provide a primary telephone number, or change Preferred Reporting Method.');
+                .required('Please provide a Primary Telephone Number, or change Preferred Reporting Method.');
             }
           }),
         secondary_telephone: yup
@@ -190,7 +186,7 @@ class Contact extends React.Component {
       .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
-        self.state.setEnrollmentState({ ...self.state.current, blocked_sms: false });
+        self.state.setEnrollmentState({ ...self.state.current });
         self.setState({ errors: {} }, () => {
           callback();
         });
@@ -199,15 +195,11 @@ class Contact extends React.Component {
         // Validation errors, update state to display to user
         if (err && err.inner) {
           let issues = {};
-          let blocked_sms = false;
           for (var issue of err.inner) {
             issues[issue['path']] = issue['errors'];
-            if (issue['type'] == 'sms_eligible') {
-              blocked_sms = true;
-            }
           }
-          self.state.setEnrollmentState({ ...self.state.current, blocked_sms: blocked_sms });
-          self.setState({ errors: issues, blocked_sms: blocked_sms });
+          self.state.setEnrollmentState({ ...self.state.current });
+          self.setState({ errors: issues });
         }
       });
   }
@@ -355,27 +347,38 @@ class Contact extends React.Component {
                   </Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group as={Col} controlId="primary_phone_type_warning_message">
-                  {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
-                    this.state.current.patient.primary_telephone_type == 'Plain Cell' && (
-                      <i>
-                        <b>* Warning:</b> Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this
-                        type of message.
-                      </i>
-                    )}
-                  {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
-                    this.state.current.patient.primary_telephone_type == 'Landline' && (
-                      <i>
-                        <b>* Warning:</b> Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this type
-                        of message.
-                      </i>
-                    )}
-                  {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
-                    this.state.current.patient.primary_telephone_type === 'Landline' && (
-                      <i>
-                        <b>* Warning:</b> Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this
-                        type of message.
-                      </i>
-                    )}
+                  <Form.Row>
+                    {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
+                      this.state.current.patient.primary_telephone_type == 'Plain Cell' && (
+                        <i>
+                          <b>* Warning:</b> Plain cell phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this
+                          type of message.
+                        </i>
+                      )}
+                    {this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink' &&
+                      this.state.current.patient.primary_telephone_type == 'Landline' && (
+                        <i>
+                          <b>* Warning:</b> Landline phones cannot receive web-links. Please make sure the monitoree has a compatible device to receive this
+                          type of message.
+                        </i>
+                      )}
+                    {this.state.current.patient.preferred_contact_method === 'SMS Text-message' &&
+                      this.state.current.patient.primary_telephone_type === 'Landline' && (
+                        <i>
+                          <b>* Warning:</b> Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this
+                          type of message.
+                        </i>
+                      )}
+                  </Form.Row>
+                  <Form.Row>
+                    {(this.state.current.patient.preferred_contact_method === 'SMS Text-message' ||
+                      this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink') &&
+                      this.state.current.blocked_sms === true && (
+                        <i>
+                          <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with SaraAlert.
+                        </i>
+                      )}
+                  </Form.Row>
                 </Form.Group>
               </Form.Row>
               <Form.Row>
