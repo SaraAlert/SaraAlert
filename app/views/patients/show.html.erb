@@ -1,6 +1,6 @@
 <% content_for :assets do %>
-<%= javascript_pack_tag 'datatables' %>
-<%= javascript_pack_tag 'moment' %>
+<%= javascript_packs_with_chunks_tag 'datatables' %>
+<%= javascript_packs_with_chunks_tag 'moment' %>
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Return to Exposure Dashboard', href: '/' }, { value: 'Monitoree Details', href: nil }], isolation: @patient&.isolation || false } %>
 
