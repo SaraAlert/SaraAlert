@@ -8,21 +8,29 @@
 <%= react_component('subject/DownloadMonitoreeExcel', { authenticity_token: form_authenticity_token, patient: @patient }) %>
 <% end %>
 
-<%= react_component('patient/PatientPage', { current_user: current_user, patient: @patient, group_members: @group_members, patient_id: @patient.user_defined_id_statelocal || '', dashboardUrl: '/public_health', authenticity_token: form_authenticity_token, hideBody: current_user.can_modify_subject_status?, jurisdictionPath: @patient.jurisdiction[:path] }) %>
+<%= react_component('patient/PatientPage', {
+                      current_user: current_user,
+                      patient: @patient,
+                      dependents: @dependents_exclude_hoh,
+                      patient_id: @patient.user_defined_id_statelocal || '',
+                      dashboardUrl: '/public_health',
+                      authenticity_token: form_authenticity_token,
+                      hideBody: current_user.can_modify_subject_status?,
+                      jurisdiction_path: @patient.jurisdiction[:path]
+                    }) %>
 
 <% if current_user.can_modify_subject_status? %>
 <div class="card mx-2 mt-4 mb-4 card-square">
   <h5 class="card-header">Monitoring Actions</h5>
-  <%= react_component('subject/MonitoringStatus', {
+  <%= react_component('subject/monitoring_actions/MonitoringActions', {
                         current_user: current_user,
                         user_can_transfer: current_user.can_transfer_patients?,
                         authenticity_token: form_authenticity_token,
-                        has_group_members: @group_members.exists?,
-                        in_a_group: @all_group_members.count > 1,
+                        has_dependents: @dependents_exclude_hoh.exists?,
+                        in_household_with_member_with_ce_in_exposure: @household_members_with_ce_in_exposure_excludes_patient.count > 1,
                         patient: @patient,
-                        jurisdictionPaths: @possible_jurisdiction_paths,
-                        assignedUsers: @patient.jurisdiction.assigned_users,
-                        isolation: @patient.isolation
+                        jurisdiction_paths: @possible_jurisdiction_paths,
+                        assigned_users: @patient.jurisdiction.assigned_users
                       }) %>
 </div>
 <% end %>
@@ -124,7 +132,7 @@
         <% end -%>
       </tbody>
     </table>
-    <%= react_component('subject/LastDateExposure', { authenticity_token: form_authenticity_token, patient: @patient, has_group_members: @all_group_members.count > 1 }) %>
+    <%= react_component('subject/LastDateExposure', { authenticity_token: form_authenticity_token, patient: @patient, is_household_member: @household_members.count > 1 }) %>
   </div>
 </div>
 <% @patient.assessments.order('created_at').each do |assessment| -%>

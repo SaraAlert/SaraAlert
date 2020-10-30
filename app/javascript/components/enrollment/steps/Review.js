@@ -66,7 +66,7 @@ class Review extends React.Component {
             <Patient
               goto={this.props.goto}
               details={{ ...this.props.currentState.patient } || {}}
-              jurisdictionPath={this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id]}
+              jurisdiction_path={this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id]}
             />
             <div className="pb-4"></div>
             {this.props.previous && (
@@ -117,7 +117,7 @@ Review.propTypes = {
   submit: PropTypes.func,
   parent_id: PropTypes.string,
   canAddGroup: PropTypes.bool,
-  jurisdictionPaths: PropTypes.object,
+  jurisdiction_paths: PropTypes.object,
 };
 
 export default Review;

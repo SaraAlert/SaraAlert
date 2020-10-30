@@ -7,7 +7,7 @@ class JurisdictionsController < ApplicationController
 
   # Get jurisdiction ids and paths of viewable jurisdictions
   def jurisdiction_paths
-    render json: { jurisdictionPaths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }] }
+    render json: { jurisdiction_paths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }] }
   end
 
   # Get list of assigned users unique to jurisdiction
@@ -60,7 +60,7 @@ class JurisdictionsController < ApplicationController
       patients = patients.where(jurisdiction_id: jurisdiction_id) if scope == :exact
     end
 
-    render json: { assignedUsers: patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort }
+    render json: { assigned_users: patients.where.not(assigned_user: nil).distinct.pluck(:assigned_user).sort }
   end
 
   private
