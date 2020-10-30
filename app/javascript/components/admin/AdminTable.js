@@ -44,7 +44,7 @@ class AdminTable extends React.Component {
       isLoading: false,
       editRow: null,
       csvData: [],
-      jurisdictionPaths: {},
+      jurisdiction_paths: {},
     };
     // Ref for the CSVLink component used to click it when async data fetch has completed
     this.csvLink = React.createRef();
@@ -121,12 +121,12 @@ class AdminTable extends React.Component {
    */
   getJurisdictionPaths() {
     axios.get('/jurisdictions/paths').then(response => {
-      const responseData = response.data.jurisdictionPaths;
+      const responseData = response.data.jurisdiction_paths;
 
       // Swap keys and values for ease of use
-      let jurisdictionPaths = Object.assign({}, ...Object.entries(responseData).map(([id, path]) => ({ [path]: parseInt(id) })));
+      let jurisdiction_paths = Object.assign({}, ...Object.entries(responseData).map(([id, path]) => ({ [path]: parseInt(id) })));
 
-      this.setState({ jurisdictionPaths });
+      this.setState({ jurisdiction_paths });
     });
   }
 
@@ -231,7 +231,7 @@ class AdminTable extends React.Component {
 
     const dataToSend = {
       email: data.email,
-      jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
+      jurisdiction: this.state.jurisdiction_paths[data.jurisdiction_path],
       role_title: data.roleTitle,
       is_api_enabled: data.isAPIEnabled,
     };
@@ -265,7 +265,7 @@ class AdminTable extends React.Component {
     const dataToSend = {
       id: this.state.table.rowData[parseInt(row)].id,
       email: data.email,
-      jurisdiction: this.state.jurisdictionPaths[data.jurisdictionPath],
+      jurisdiction: this.state.jurisdiction_paths[data.jurisdiction_path],
       role_title: data.roleTitle,
       is_api_enabled: data.isAPIEnabled,
       is_locked: data.isLocked,
@@ -633,14 +633,14 @@ class AdminTable extends React.Component {
           entryOptions={this.state.entryOptions}
           entries={this.state.query.entries}
         />
-        {Object.keys(this.state.jurisdictionPaths).length && (this.state.showEditUserModal || this.state.showAddUserModal) && (
+        {Object.keys(this.state.jurisdiction_paths).length && (this.state.showEditUserModal || this.state.showAddUserModal) && (
           <UserModal
             show={this.state.showEditUserModal || this.state.showAddUserModal}
             onSave={formData => this.handleUserModalSave(this.state.showAddUserModal, formData)}
             onClose={this.handleUserModalClose}
             title={this.state.showEditUserModal ? 'Edit User' : 'Add User'}
             type={this.state.showEditUserModal ? 'edit' : 'add'}
-            jurisdictionPaths={Object.keys(this.state.jurisdictionPaths)}
+            jurisdiction_paths={Object.keys(this.state.jurisdiction_paths)}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
           />

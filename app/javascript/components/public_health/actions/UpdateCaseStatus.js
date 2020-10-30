@@ -16,7 +16,7 @@ class UpdateCaseStatus extends React.Component {
       initialCaseStatus: undefined,
       initialIsolation: undefined,
       initialMonitoring: undefined,
-      apply_to_group: false,
+      apply_to_household: false,
       monitoring: false,
       monitoring_reason: '',
       loading: false,
@@ -95,7 +95,7 @@ class UpdateCaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          apply_to_group: this.state.apply_to_group,
+          apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
         .then(() => {
@@ -162,9 +162,9 @@ class UpdateCaseStatus extends React.Component {
               <Form.Group className="my-2">
                 <Form.Check
                   type="switch"
-                  id="apply_to_group"
+                  id="apply_to_household"
                   label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
-                  checked={this.state.apply_to_group}
+                  checked={this.state.apply_to_household}
                   onChange={this.handleChange}
                 />
               </Form.Group>

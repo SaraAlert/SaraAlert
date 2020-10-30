@@ -7,9 +7,9 @@
                       editMode: false,
                       authenticity_token: form_authenticity_token,
                       can_add_group: current_user.can_create_patient?,
-                      has_group_members: false,
-                      jurisdictionPaths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }],
-                      assignedUsers: @patient.jurisdiction.assigned_users,
+                      has_dependents: false,
+                      jurisdiction_paths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }],
+                      assigned_users: @patient.jurisdiction.assigned_users,
                       cc_id: @close_contact&.id
                     }) %>
 

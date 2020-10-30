@@ -119,7 +119,7 @@ class RemoveFromHousehold extends React.Component {
 
 RemoveFromHousehold.propTypes = {
   patient: PropTypes.object,
-  groupMembers: PropTypes.array,
+  dependents: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 

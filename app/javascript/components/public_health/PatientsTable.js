@@ -67,11 +67,11 @@ class PatientsTable extends React.Component {
       actionsEnabled: false,
       selectedPatients: [],
       selectAll: false,
-      jurisdictionPaths: {},
-      assignedUsers: [],
+      jurisdiction_paths: {},
+      assigned_users: [],
       form: {
-        jurisdictionPath: props.jurisdiction.path,
-        assignedUser: '',
+        jurisdiction_path: props.jurisdiction.path,
+        assigned_user: '',
       },
       query: {
         tab: Object.keys(props.tabs)[0],
@@ -86,7 +86,7 @@ class PatientsTable extends React.Component {
       cancelToken: axios.CancelToken.source(),
       filter: null,
     };
-    this.state.jurisdictionPaths[props.jurisdiction.id] = props.jurisdiction.path;
+    this.state.jurisdiction_paths[props.jurisdiction.id] = props.jurisdiction.path;
   }
 
   componentDidMount() {
@@ -210,22 +210,22 @@ class PatientsTable extends React.Component {
     localStorage.removeItem(`SaraPage`);
     const form = this.state.form;
     const query = this.state.query;
-    if (event.target.name === 'jurisdictionPath') {
-      this.setState({ form: { ...form, jurisdictionPath: event.target.value } });
-      const jurisdictionId = Object.keys(this.state.jurisdictionPaths).find(id => this.state.jurisdictionPaths[parseInt(id)] === event.target.value);
+    if (event.target.id === 'jurisdiction_path') {
+      this.setState({ form: { ...form, jurisdiction_path: event.target.value } });
+      const jurisdictionId = Object.keys(this.state.jurisdiction_paths).find(id => this.state.jurisdiction_paths[parseInt(id)] === event.target.value);
       if (jurisdictionId) {
         this.updateTable({ ...query, jurisdiction: jurisdictionId, page: 0 });
         this.updateAssignedUsers(jurisdictionId, this.state.query.scope, this.props.workflow, this.state.query.tab);
       }
-    } else if (event.target.name === 'assignedUser') {
+    } else if (event.target.id === 'assigned_user') {
       if (event.target.value === '') {
-        this.setState({ form: { ...form, assignedUser: event.target.value } });
+        this.setState({ form: { ...form, assigned_user: event.target.value } });
         this.updateTable({ ...query, user: 'all', page: 0 });
       } else if (!isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999) {
-        this.setState({ form: { ...form, assignedUser: event.target.value } });
+        this.setState({ form: { ...form, assigned_user: event.target.value } });
         this.updateTable({ ...query, user: event.target.value, page: 0 });
       }
-    } else if (event.target.name === 'search') {
+    } else if (event.target.id === 'search') {
       this.updateTable({ ...query, search: event.target.value, page: 0 });
       localStorage.setItem(`SaraSearch`, event.target.value);
     }
@@ -243,7 +243,7 @@ class PatientsTable extends React.Component {
     if (user !== this.state.query.user) {
       const form = this.state.form;
       const query = this.state.query;
-      this.setState({ form: { ...form, assignedUser: '' } });
+      this.setState({ form: { ...form, assigned_user: '' } });
       this.updateTable({ ...query, user, page: 0 });
     }
   }
@@ -337,7 +337,7 @@ class PatientsTable extends React.Component {
 
   updateJurisdictionPaths() {
     axios.get('/jurisdictions/paths').then(response => {
-      this.setState({ jurisdictionPaths: response.data.jurisdictionPaths });
+      this.setState({ jurisdiction_paths: response.data.jurisdiction_paths });
     });
   }
 
@@ -353,7 +353,7 @@ class PatientsTable extends React.Component {
           },
         })
         .then(response => {
-          this.setState({ assignedUsers: response.data.assignedUsers });
+          this.setState({ assigned_users: response.data.assigned_users });
         });
     }
   }
@@ -453,13 +453,13 @@ class PatientsTable extends React.Component {
                           <Form.Control
                             type="text"
                             autoComplete="off"
-                            name="jurisdictionPath"
-                            list="jurisdictionPaths"
-                            value={this.state.form.jurisdictionPath}
+                            id="jurisdiction_path"
+                            list="jurisdiction_paths"
+                            value={this.state.form.jurisdiction_path}
                             onChange={this.handleChange}
                           />
-                          <datalist id="jurisdictionPaths">
-                            {Object.entries(this.state.jurisdictionPaths).map(([id, path]) => {
+                          <datalist id="jurisdiction_paths">
+                            {Object.entries(this.state.jurisdiction_paths).map(([id, path]) => {
                               return (
                                 <option value={path} key={id}>
                                   {path}
@@ -500,13 +500,13 @@ class PatientsTable extends React.Component {
                           <Form.Control
                             type="text"
                             autoComplete="off"
-                            name="assignedUser"
-                            list="assignedUsers"
-                            value={this.state.form.assignedUser}
+                            id="assigned_user"
+                            list="assigned_users"
+                            value={this.state.form.assigned_user}
                             onChange={this.handleChange}
                           />
-                          <datalist id="assignedUsers">
-                            {this.state.assignedUsers?.map(num => {
+                          <datalist id="assigned_users">
+                            {this.state.assigned_users?.map(num => {
                               return (
                                 <option value={num} key={num}>
                                   {num}
@@ -553,7 +553,7 @@ class PatientsTable extends React.Component {
                   <Form.Control
                     autoComplete="off"
                     size="sm"
-                    name="search"
+                    id="search"
                     value={this.state.query.search}
                     onChange={this.handleChange}
                     onKeyPress={this.handleKeyPress}

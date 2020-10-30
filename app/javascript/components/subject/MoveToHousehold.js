@@ -12,7 +12,7 @@ class MoveToHousehold extends React.Component {
       updateDisabled: true,
       showModal: false,
       loading: false,
-      groupMembers: [],
+      dependents: [],
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -50,7 +50,7 @@ class MoveToHousehold extends React.Component {
       .then(response => {
         this.setState({
           loading: false,
-          groupMembers: JSON.parse(response['data']['self_reporting']),
+          dependents: JSON.parse(response['data']['self_reporting']),
         });
       })
       .catch(err => {
@@ -93,7 +93,7 @@ class MoveToHousehold extends React.Component {
                   <option value={-1} disabled>
                     --
                   </option>
-                  {this.state?.groupMembers?.map((member, index) => {
+                  {this.state?.dependents?.map((member, index) => {
                     return (
                       <option key={`option-${index}`} value={member.id}>
                         {member.last_name}, {member.first_name} Age: {member.age}, State ID: {member.state_id}

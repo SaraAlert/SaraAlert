@@ -33,11 +33,11 @@ class Patient extends React.Component {
               <a href={'/patients/' + this.props.details.responder_id}>Click here to view that monitoree</a>.
             </Row>
             <Row className="pb-2 mx-3">
-              <RemoveFromHousehold patient={this.props?.details} groupMembers={this.props?.groupMembers} authenticity_token={this.props.authenticity_token} />
+              <RemoveFromHousehold patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
             </Row>
           </div>
         )}
-        {this.props?.groupMembers && this.props?.groupMembers?.length > 0 && (
+        {this.props?.dependents && this.props?.dependents?.length > 0 && (
           <Row id="head-of-household" className="pb-3 mx-3">
             <Col>
               <Row className="pb-2">This monitoree is responsible for handling the reporting of the following other monitorees:</Row>
@@ -52,7 +52,7 @@ class Patient extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {this.props?.groupMembers?.map((member, index) => {
+                    {this.props?.dependents?.map((member, index) => {
                       return (
                         <tr key={`dl-${index}`}>
                           <td>
@@ -70,19 +70,19 @@ class Patient extends React.Component {
                 </Table>
               </Row>
               <Row>
-                <ChangeHOH patient={this.props?.details} groupMembers={this.props?.groupMembers} authenticity_token={this.props.authenticity_token} />
+                <ChangeHOH patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
               </Row>
             </Col>
           </Row>
         )}
-        {this.props?.groupMembers &&
-          this.props?.groupMembers?.length == 0 &&
+        {this.props?.dependents &&
+          this.props?.dependents?.length == 0 &&
           this.props?.details?.responder_id &&
           this.props.details.responder_id == this.props.details.id && (
             <Row id="no-household" className="pb-3 mx-3">
               <Col>
                 <Row>This monitoree is not a member of a household:</Row>
-                {this.props?.groupMembers?.map((member, index) => {
+                {this.props?.dependents?.map((member, index) => {
                   return (
                     <Row key={'gm' + index}>
                       <a href={'/patients/' + member.id}>
@@ -92,15 +92,15 @@ class Patient extends React.Component {
                   );
                 })}
                 <Row>
-                  <MoveToHousehold patient={this.props?.details} groupMembers={this.props?.groupMembers} authenticity_token={this.props.authenticity_token} />
+                  <MoveToHousehold patient={this.props?.details} dependents={this.props?.dependents} authenticity_token={this.props.authenticity_token} />
                 </Row>
               </Col>
             </Row>
           )}
-        {this.props.jurisdictionPath && (
+        {this.props.jurisdiction_path && (
           <Row id="jurisdiction-path" className="mx-1">
             <Col className="text-truncate">
-              <span className="font-weight-normal">Assigned Jurisdiction:</span> <span className="font-weight-light">{this.props.jurisdictionPath}</span>
+              <span className="font-weight-normal">Assigned Jurisdiction:</span> <span className="font-weight-light">{this.props.jurisdiction_path}</span>
             </Col>
           </Row>
         )}
@@ -475,9 +475,9 @@ class Patient extends React.Component {
 }
 
 Patient.propTypes = {
-  groupMembers: PropTypes.array,
+  dependents: PropTypes.array,
   details: PropTypes.object,
-  jurisdictionPath: PropTypes.string,
+  jurisdiction_path: PropTypes.string,
   goto: PropTypes.func,
   hideBody: PropTypes.bool,
   authenticity_token: PropTypes.string,
