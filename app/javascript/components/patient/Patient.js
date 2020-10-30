@@ -28,7 +28,7 @@ class Patient extends React.Component {
     return (
       <React.Fragment>
         <Row id="monitoree-details-header">
-          <Col md="auto" className="mt-1">
+          <Col className="mt-1">
             <h4>
               {this.props?.dependents && this.props?.dependents?.length > 0 && (
                 <React.Fragment>
@@ -47,15 +47,13 @@ class Patient extends React.Component {
               }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
             </h4>
           </Col>
-          <Col>
-            <span className="float-right">
-              <span id="jurisdiction-path" className="mx-1">
-                <b>Assigned Jurisdiction:</b> <span>{this.props.jurisdiction_path ? this.props.jurisdiction_path : '--'}</span>
-              </span>
-              <br />
-              <span id="assigned-user" className="mx-1">
-                <b>Assigned User:</b> <span>{this.props.details.assigned_user ? this.props.details.assigned_user : '--'}</span>
-              </span>
+          <Col md="auto" className="jursdiction-user-box mr-3">
+            <span id="jurisdiction-path">
+              <b>Assigned Jurisdiction:</b> {this.props.jurisdiction_path ? this.props.jurisdiction_path : '--'}
+            </span>
+            <br />
+            <span id="assigned-user">
+              <b>Assigned User:</b> {this.props.details.assigned_user ? this.props.details.assigned_user : '--'}
             </span>
           </Col>
         </Row>
