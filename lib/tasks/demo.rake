@@ -30,29 +30,12 @@ namespace :demo do
 
     print 'Creating enroller users...'
 
-    enroller1 = User.new(email: 'state1_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller1.role = 'enroller'
-    enroller1.save
-
-    enroller2 = User.new(email: 'localS1C1_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller2.role =  'enroller'
-    enroller2.save
-
-    enroller3 = User.new(email: 'localS1C2_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county2], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller3.role = 'enroller'
-    enroller3.save
-
-    enroller4 = User.new(email: 'state2_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state2], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller4.role = 'enroller'
-    enroller4.save
-
-    enroller5 = User.new(email: 'localS2C3_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county3], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller5.role = 'enroller'
-    enroller5.save
-
-    enroller6 = User.new(email: 'localS2C4_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county4], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    enroller6.role = 'enroller'
-    enroller6.save
+    enroller1 = User.create(email: 'state1_enroller@example.com', password: '1234567ab!', role: Roles::ENROLLER, jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller2 = User.create(email: 'localS1C1_enroller@example.com', password: '1234567ab!', role: Roles::ENROLLER, jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller3 = User.create(email: 'localS1C2_enroller@example.com', password: '1234567ab!', role: Roles::ENROLLER, jurisdiction: jurisdictions[:county2], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller4 = User.create(email: 'state2_enroller@example.com', password: '1234567ab!', role: Roles::ENROLLER, jurisdiction: jurisdictions[:state2], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller5 = User.create(email: 'localS2C3_enroller@example.com', password: '1234567ab!', role: Roles::ENROLLER, jurisdiction: jurisdictions[:county3], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    enroller6 = User.create(email: 'localS2C4_enroller@example.com', password: '1234567ab!', role: Roles::ENROLLER, jurisdiction: jurisdictions[:county4], force_password_change: false, authy_enabled: false, authy_enforced: false)
 
     puts ' done!'
 
@@ -60,29 +43,12 @@ namespace :demo do
 
     print 'Creating public health users...'
 
-    ph1 = User.new(email: 'state1_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
-    ph1.role = 'public_health'
-    ph1.save
-
-    ph2 = User.new(email: 'localS1C1_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph2.role = 'public_health'
-    ph2.save
-
-    ph3 = User.new(email: 'localS1C2_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county2], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph3.role = 'public_health'
-    ph3.save
-
-    ph4 = User.new(email: 'state2_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state2], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph4.role = 'public_health'
-    ph4.save
-
-    ph5 = User.new(email: 'localS2C3_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county3], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph5.role = 'public_health'
-    ph5.save
-
-    ph6 = User.new(email: 'localS2C4_epi@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county4], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    ph6.role = 'public_health'
-    ph6.save
+    ph1 = User.create(email: 'state1_epi@example.com', password: '1234567ab!', role: Roles::PUBLIC_HEALTH, jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
+    ph2 = User.create(email: 'localS1C1_epi@example.com', password: '1234567ab!', role: Roles::PUBLIC_HEALTH, jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph3 = User.create(email: 'localS1C2_epi@example.com', password: '1234567ab!', role: Roles::PUBLIC_HEALTH, jurisdiction: jurisdictions[:county2], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph4 = User.create(email: 'state2_epi@example.com', password: '1234567ab!', role: Roles::PUBLIC_HEALTH, jurisdiction: jurisdictions[:state2], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph5 = User.create(email: 'localS2C3_epi@example.com', password: '1234567ab!', role: Roles::PUBLIC_HEALTH, jurisdiction: jurisdictions[:county3], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    ph6 = User.create(email: 'localS2C4_epi@example.com', password: '1234567ab!', role: Roles::PUBLIC_HEALTH, jurisdiction: jurisdictions[:county4], force_password_change: false, authy_enabled: false, authy_enforced: false)
 
     puts ' done!'
 
@@ -90,13 +56,8 @@ namespace :demo do
 
     print 'Creating public health enroller users...'
 
-    phe1 = User.new(email: 'epi_enroller_all@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
-    phe1.role = 'public_health_enroller'
-    phe1.save
-
-    phe2 = User.new(email: 'state1_epi_enroller@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
-    phe2.role = 'public_health_enroller'
-    phe2.save
+    phe1 = User.create(email: 'epi_enroller_all@example.com', password: '1234567ab!', role: Roles::PUBLIC_HEALTH_ENROLLER, jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
+    phe2 = User.create(email: 'state1_epi_enroller@example.com', password: '1234567ab!', role: Roles::PUBLIC_HEALTH_ENROLLER, jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
 
     puts ' done!'
 
@@ -104,9 +65,7 @@ namespace :demo do
 
     print 'Creating admin users...'
 
-    admin1 = User.new(email: 'admin1@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    admin1.role = 'admin'
-    admin1.save
+    admin1 = User.create(email: 'admin1@example.com', password: '1234567ab!', role: Roles::ADMIN, jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
 
     puts ' done!'
 
@@ -114,17 +73,27 @@ namespace :demo do
 
     print 'Creating analyst users...'
 
-    analyst1 = User.new(email: 'analyst_all@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    analyst1.role = 'analyst'
-    analyst1.save
+    analyst1 = User.create(email: 'analyst_all@example.com', password: '1234567ab!', role: Roles::ANALYST, jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    analyst2 = User.create(email: 'state1_analyst@example.com', password: '1234567ab!', role: Roles::ANALYST, jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
+    analyst3 = User.create(email: 'localS1C1_analyst@example.com', password: '1234567ab!', role: Roles::ANALYST, jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
 
-    analyst2 = User.new(email: 'state1_analyst@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    analyst2.role = 'analyst'
-    analyst2.save
+    puts ' done!'
 
-    analyst3 = User.new(email: 'localS1C1_analyst@example.com', password: '1234567ab!', jurisdiction: jurisdictions[:county1], force_password_change: false, authy_enabled: false, authy_enforced: false)
-    analyst3.role = 'analyst'
-    analyst3.save
+    #####################################
+
+    print 'Creating super users...'
+
+    super_user1 = User.create(email: 'usa_super_user@example.com', password: '1234567ab!', role: Roles::SUPER_USER, jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
+    super_user2 = User.create(email: 'state1_super_user@example.com', password: '1234567ab!', role: Roles::SUPER_USER, jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
+
+    puts ' done!'
+
+    #####################################
+
+    print 'Creating contract tracer users...'
+
+    contact_tracer1 = User.create(email: 'usa_contact_tracer@example.com', password: '1234567ab!', role: Roles::CONTACT_TRACER, jurisdiction: jurisdictions[:usa], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
+    contact_tracer2 = User.create(email: 'state1_contact_tracer@example.com', password: '1234567ab!', role: Roles::CONTACT_TRACER, jurisdiction: jurisdictions[:state1], force_password_change: false, authy_enabled: false, authy_enforced: false, api_enabled: true)
 
     puts ' done!'
 
@@ -385,7 +354,7 @@ namespace :demo do
       patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
       patient[:case_status] = patient[:isolation] ? ['Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case'].sample : nil
       patient[:monitoring] = rand < 0.95
-      patient[:closed_at] = patient[:updated_at] unless patient[:monitoring].nil?
+      patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
       patient[:monitoring_reason] = ['Completed Monitoring', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
                                      'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
                                      'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',

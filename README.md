@@ -40,15 +40,50 @@ Run the following commands from the project's root directory to pull in both fro
 
 #### Database
 
-Run the following commands from the root directory to initialize the database (note: make sure you have a MySQL database and Redis running):
+Sara Alert targets compatibility with MySQL 5.7.
 
-* (optional for local development only, not for docker containers)
-  ```
-  mysql -u root -e "CREATE USER 'disease_trakker'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'disease_trakker'@'localhost'; create database disease_trakker_test; create database disease_trakker_development;"
-  ```
-* `bundle exec rake db:drop db:create db:migrate db:setup`
+**macOS Installation Instructions:**
+
+**Migrating from a newer verison down to MySQL 5.7:**
+Before installing MySQL, if newer versions (i.e. version 8 of MySQL) have previoulsy been installed and database have been created in the newer format, these new-format databses will be incompatible with the older 5.7 version. A simple way to install 5.7 after newer versions is to delete the MySQL data directory and let the 5.7 version recreate it in the correct format. Take care to **back up** existing databases before executing the following command, as it will delete them:
+
+```sh
+rm -rf /usr/local/var/mysql # remove the macOS mysql data directory and any existing databases
+brew uninstall mysql # remove current mysql version
+```
+
+If SaraAlert had already been installed with a newer version of MySQL, navigate to the project directory and uninstall the `mysql2` gem. It needs to build the correct native extensions for MySQL 5.7.
+
+```sh
+gem uninstall mysql2 # uninstall mysql2
+```
+
+Newer versions of MySQL also start with incompatible options for version 5.7, so if you had a newer version installed edit `/usr/local/etc/my.cnf` to remove the line `'mysqlx-bind-address=127.0.0.1'`.
+
+**Installation:**
+
+Now, install `mysql@5.7` using [`homebrew`](https://brew.sh):
+
+```sh
+brew install mysql@5.7
+brew link mysql@5.7 --force
+```
+
+```sh
+# Please update this command with the appropriate <MINOR_VERSION> installed from homebrew.
+bundle config --local build.mysql2 "--with-mysql-config=/usr/local/Cellar/mysql@5.7/5.7.<MINOR_VERSION>/bin/mysql_config --with-ldflags=-L/usr/local/opt/openssl/lib --with-cppflags=-I/usr/local/opt/openssl/include"
+bundle install
+```
+
+**Database Initialization:**
+
+Run the following commands from the root of the project directory to initialize the database (note: make sure you have a MySQL database and Redis running):
+
+* `mysql -u root -e "CREATE USER 'disease_trakker'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'disease_trakker'@'localhost';"` optional for local development only, not for docker containers
+* `rails db:create`
+* `rails db:schema:load`
 * `bundle exec rake admin:import_or_update_jurisdictions`
-* (optional) `bundle exec rake demo:setup demo:populate`
+* `bundle exec rake demo:setup demo:populate` optional
 #### ActiveJob + Sidkiq + Redis + Whenever
 
 ActiveJob will work with Sidekiq, Redis, and Whenever to manage the queueing and running of jobs (used to send emails, SMS, and other methods of notification).
@@ -88,9 +123,16 @@ You must update your crontab for these jobs to run periodically (defined in `con
 bundle exec whenever --update-crontab
 ```
 
-##### Periodic Jobs
-  These jobs are configured to run periodically. Their run timing parameters are specified in `config/schedule.rb`.
-  * `ClosePatientsJob`
+##### Jobs
+
+  The following jobs are configured to run continuously:
+  * `ConsumeAssessmentsJob`
+      - Should always be running in order to be ready to consume assessments at any time.
+      - Handles consuming assessments from the assessment container into the enrollment container.
+      - Subscribes to the Redis `reports` channel and consumes on every message in that channel.
+
+  The following jobs are configured to run periodically (their run timing parameters are specified in `config/schedule.rb`):
+  * `ClosePatientsJob`.
       - Closes (stops active monitoring of) monitorees that meet duration/symptomatic conditions
   * `PurgeJob`
       - Purges eligible records

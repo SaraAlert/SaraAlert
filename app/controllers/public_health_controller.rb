@@ -174,7 +174,8 @@ class PublicHealthController < ApplicationController
     when 'dob'
       patients = patients.order('CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END, date_of_birth ' + dir)
     when 'end_of_monitoring'
-      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
+      patients = patients.order('CASE WHEN continuous_exposure = 1 THEN 1 ELSE 0 END,
+                                 CASE WHEN last_date_of_exposure IS NULL THEN patients.created_at ELSE last_date_of_exposure END ' + dir)
     when 'extended_isolation'
       patients = patients.order('CASE WHEN extended_isolation IS NULL THEN 1 ELSE 0 END, extended_isolation ' + dir)
     when 'symptom_onset'
@@ -186,7 +187,8 @@ class PublicHealthController < ApplicationController
     when 'public_health_action'
       patients = patients.order('CASE WHEN public_health_action IS NULL THEN 1 ELSE 0 END, public_health_action ' + dir)
     when 'expected_purge_date'
-      patients = patients.order('CASE WHEN last_date_of_exposure IS NULL THEN 1 ELSE 0 END, last_date_of_exposure ' + dir)
+      patients = patients.order('CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END, updated_at ' + dir)
+      # Eligible purge date is a derivative field from `updated_at`
     when 'reason_for_closure'
       patients = patients.order('CASE WHEN monitoring_reason IS NULL THEN 1 ELSE 0 END, monitoring_reason ' + dir)
     when 'closed_at'
@@ -216,7 +218,8 @@ class PublicHealthController < ApplicationController
                                'patients.date_of_birth, patients.assigned_user, patients.exposure_risk_assessment, patients.monitoring_plan, '\
                                'patients.public_health_action, patients.monitoring_reason, patients.closed_at, patients.last_date_of_exposure, '\
                                'patients.created_at, patients.updated_at, patients.latest_assessment_at, patients.latest_transfer_at, '\
-                               'patients.continuous_exposure, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path')
+                               'patients.continuous_exposure, patients.head_of_household, jurisdictions.name AS jurisdiction_name, '\
+                               'jurisdictions.path AS jurisdiction_path')
 
     # execute query and get total count
     total = patients.total_entries
@@ -249,7 +252,7 @@ class PublicHealthController < ApplicationController
       details[:latest_report] = patient[:latest_assessment_at]&.rfc2822 || '' if fields.include?(:latest_report)
       details[:status] = patient.status.to_s.gsub('_', ' ').gsub('exposure ', '')&.gsub('isolation ', '') if fields.include?(:status)
       details[:report_eligibility] = patient.report_eligibility if fields.include?(:report_eligibility)
-      details[:is_hoh] = patient.dependents_exclude_self.exists?
+      details[:is_hoh] = patient.head_of_household?
 
       linelist << details
     end

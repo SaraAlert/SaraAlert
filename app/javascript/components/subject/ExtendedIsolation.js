@@ -63,6 +63,7 @@ class ExtendedIsolation extends React.Component {
                   .format('YYYY-MM-DD')}
                 onChange={date => this.setState({ extended_isolation: date, showExtendIsolationModal: true, reasoning: '' })}
                 placement="bottom"
+                customClass="form-control-lg"
                 isClearable
               />
             </Col>

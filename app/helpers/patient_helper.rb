@@ -100,7 +100,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     return 'Unknown' if code == 'UNK'
     return 'Refused to Answer' if code == 'ASKU'
 
-    nil
+    code
   end
 
   # Build a FHIR US Core BirthSex Extension given Sara Alert sex information.
@@ -121,7 +121,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     return 'Female' if code == 'F'
     return 'Unknown' if code == 'UNK'
 
-    nil
+    code
   end
 
   # Helper to create an extension for preferred contact method
@@ -134,9 +134,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for preferred contact method
   def self.from_preferred_contact_method_extension(patient)
-    pcm = patient&.extension&.select { |e| e.url.include?('preferred-contact-method') }&.first&.valueString
-    pcm = nil unless ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'].include?(pcm)
-    pcm
+    patient&.extension&.select { |e| e.url.include?('preferred-contact-method') }&.first&.valueString
   end
 
   # Helper to create an extension for preferred contact time
@@ -149,9 +147,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for preferred contact time
   def self.from_preferred_contact_time_extension(patient)
-    pct = patient&.extension&.select { |e| e.url.include?('preferred-contact-time') }&.first&.valueString
-    pct = nil unless %w[Morning Afternoon Evening].include?(pct)
-    pct
+    patient&.extension&.select { |e| e.url.include?('preferred-contact-time') }&.first&.valueString
   end
 
   # Helper to create an extension for symptom onset date
@@ -164,9 +160,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for symptom onset date
   def self.from_symptom_onset_date_extension(patient)
-    Date.strptime(patient&.extension&.select { |e| e.url.include?('symptom-onset-date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
-  rescue ArgumentError
-    nil
+    patient&.extension&.select { |e| e.url.include?('symptom-onset-date') }&.first&.valueDate
   end
 
   # Helper to create an extension for last exposure date
@@ -179,9 +173,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for last exposure date
   def self.from_last_exposure_date_extension(patient)
-    Date.strptime(patient&.extension&.select { |e| e.url.include?('last-exposure-date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
-  rescue ArgumentError
-    nil
+    patient&.extension&.select { |e| e.url.include?('last-exposure-date') }&.first&.valueDate
   end
 
   # Helper to create an extension for isolation status
@@ -202,6 +194,10 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     pat.address_state = normalize_and_get_state_name(pat.address_state) || pat.address_state
     adpt = pat.additional_planned_travel_destination_state
     pat.additional_planned_travel_destination_state = normalize_and_get_state_name(adpt) || adpt
+  end
+
+  def self.from_fhir_phone_number(value)
+    Phonelib.parse(value, 'US').full_e164.presence || value
   end
 
   def normalize_name(name)
@@ -277,70 +273,81 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def timezone_for_state(name)
+    # Offsets are DST
     timezones = {
-      'alabama' => '-05:00',
-      'alaska' => '-08:00',
-      'americansamoa' => '-11:00',
-      'arizona' => '-07:00',
-      'arkansas' => '-05:00',
-      'california' => '-07:00',
-      'colorado' => '-06:00',
-      'connecticut' => '-04:00',
-      'delaware' => '-04:00',
-      'districtofcolumbia' => '-04:00',
-      'federatedstatesofmicronesia' => '+11:00',
-      'florida' => '-04:00',
-      'georgia' => '-04:00',
-      'guam' => '+10:00',
-      'hawaii' => '-10:00',
-      'idaho' => '-06:00',
-      'illinois' => '-05:00',
-      'indiana' => '-04:00',
-      'iowa' => '-05:00',
-      'kansas' => '-05:00',
-      'kentucky' => '-04:00',
-      'louisiana' => '-05:00',
-      'maine' => '-04:00',
-      'marshallislands' => '+12:00',
-      'maryland' => '-04:00',
-      'massachusetts' => '-04:00',
-      'michigan' => '-04:00',
-      'minnesota' => '-05:00',
-      'mississippi' => '-05:00',
-      'missouri' => '-05:00',
-      'montana' => '-06:00',
-      'nebraska' => '-05:00',
-      'nevada' => '-07:00',
-      'newhampshire' => '-04:00',
-      'newjersey' => '-04:00',
-      'newmexico' => '-06:00',
-      'newyork' => '-04:00',
-      'northcarolina' => '-04:00',
-      'northdakota' => '-05:00',
-      'northernmarianaislands' => '+10:00',
-      'ohio' => '-04:00',
-      'oklahoma' => '-05:00',
-      'oregon' => '-07:00',
-      'palau' => '+09:00',
-      'pennsylvania' => '-04:00',
-      'puertorico' => '-04:00',
-      'rhodeisland' => '-04:00',
-      'southcarolina' => '-04:00',
-      'southdakota' => '-05:00',
-      'tennessee' => '-05:00',
-      'texas' => '-05:00',
-      'utah' => '-06:00',
-      'vermont' => '-04:00',
-      'virginislands' => '-04:00',
-      'virginia' => '-04:00',
-      'washington' => '-07:00',
-      'westvirginia' => '-04:00',
-      'wisconsin' => '-05:00',
-      'wyoming' => '-06:00',
-      nil => '-04:00',
-      '' => '-04:00'
+      'alabama' => { offset: -5, observes_dst: true },
+      'alaska' => { offset: -8, observes_dst: true },
+      'americansamoa' => { offset: -11, observes_dst: false },
+      'arizona' => { offset: -7, observes_dst: false },
+      'arkansas' => { offset: -5, observes_dst: true },
+      'california' => { offset: -7, observes_dst: true },
+      'colorado' => { offset: -6, observes_dst: true },
+      'connecticut' => { offset: -4, observes_dst: true },
+      'delaware' => { offset: -4, observes_dst: true },
+      'districtofcolumbia' => { offset: -4, observes_dst: true },
+      'federatedstatesofmicronesia' => { offset: 11, observes_dst: false },
+      'florida' => { offset: -4, observes_dst: true },
+      'georgia' => { offset: -4, observes_dst: true },
+      'guam' => { offset: 10, observes_dst: false },
+      'hawaii' => { offset: -10, observes_dst: false },
+      'idaho' => { offset: -6, observes_dst: true },
+      'illinois' => { offset: -5, observes_dst: true },
+      'indiana' => { offset: -4, observes_dst: true },
+      'iowa' => { offset: -5, observes_dst: true },
+      'kansas' => { offset: -5, observes_dst: true },
+      'kentucky' => { offset: -4, observes_dst: true },
+      'louisiana' => { offset: -5, observes_dst: true },
+      'maine' => { offset: -4, observes_dst: true },
+      'marshallislands' => { offset: 12, observes_dst: false },
+      'maryland' => { offset: -4, observes_dst: true },
+      'massachusetts' => { offset: -4, observes_dst: true },
+      'michigan' => { offset: -4, observes_dst: true },
+      'minnesota' => { offset: -5, observes_dst: true },
+      'mississippi' => { offset: -5, observes_dst: true },
+      'missouri' => { offset: -5, observes_dst: true },
+      'montana' => { offset: -6, observes_dst: true },
+      'nebraska' => { offset: -5, observes_dst: true },
+      'nevada' => { offset: -7, observes_dst: true },
+      'newhampshire' => { offset: -4, observes_dst: true },
+      'newjersey' => { offset: -4, observes_dst: true },
+      'newmexico' => { offset: -6, observes_dst: true },
+      'newyork' => { offset: -4, observes_dst: true },
+      'northcarolina' => { offset: -4, observes_dst: true },
+      'northdakota' => { offset: -5, observes_dst: true },
+      'northernmarianaislands' => { offset: 10, observes_dst: false },
+      'ohio' => { offset: -4, observes_dst: true },
+      'oklahoma' => { offset: -5, observes_dst: true },
+      'oregon' => { offset: -7, observes_dst: true },
+      'palau' => { offset: 9, observes_dst: false },
+      'pennsylvania' => { offset: -4, observes_dst: true },
+      'puertorico' => { offset: -4, observes_dst: false },
+      'rhodeisland' => { offset: -4, observes_dst: true },
+      'southcarolina' => { offset: -4, observes_dst: true },
+      'southdakota' => { offset: -5, observes_dst: true },
+      'tennessee' => { offset: -5, dobserves_dstst: true },
+      'texas' => { offset: -5, observes_dst: true },
+      'utah' => { offset: -6, observes_dst: true },
+      'vermont' => { offset: -4, observes_dst: true },
+      'virginislands' => { offset: -4, observes_dst: false },
+      'virginia' => { offset: -4, observes_dst: true },
+      'washington' => { offset: -7, observes_dst: true },
+      'westvirginia' => { offset: -4, observes_dst: true },
+      'wisconsin' => { offset: -5, observes_dst: true },
+      'wyoming' => { offset: -6, observes_dst: true },
+      nil => { offset: -4, observes_dst: true },
+      '' => { offset: -4, observes_dst: true }
     }
-    timezones[normalize_name(name)] || '-04:00'
+    # Grab timezone using lookup
+    timezone = timezones[normalize_name(name)]
+
+    # Grab offset
+    offset = timezone.nil? ? -4 : timezone[:offset]
+
+    # Adjust for DST (if observed)
+    offset -= 1 if timezone && timezone[:observes_dst] && !Time.now.in_time_zone('Eastern Time (US & Canada)').dst?
+
+    # Format and return
+    (offset.negative? ? '' : '+') + format('%<offset>.2d', offset: offset) + ':00'
   end
 
   # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.

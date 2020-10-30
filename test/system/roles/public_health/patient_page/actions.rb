@@ -60,7 +60,7 @@ class PublicHealthPatientPageActions < ApplicationSystemTestCase
 
   def update_assigned_jurisdiction(user_label, patient_label, jurisdiction, reasoning, valid_jurisdiction: true, under_hierarchy: true)
     assert page.has_button?('Change Jurisdiction', disabled: true)
-    fill_in 'jurisdictionId', with: jurisdiction
+    fill_in 'jurisdiction_id', with: jurisdiction
     if valid_jurisdiction
       assert page.has_button?('Change Jurisdiction', disabled: false)
       click_on 'Change Jurisdiction'
@@ -79,7 +79,7 @@ class PublicHealthPatientPageActions < ApplicationSystemTestCase
 
   def update_assigned_user(user_label, patient_label, assigned_user, reasoning, valid_assigned_user: true, changed: true)
     assert page.has_button?('Change User', disabled: true)
-    fill_in 'assignedUser', with: assigned_user
+    fill_in 'assigned_user', with: assigned_user
     if valid_assigned_user && changed
       assert page.has_button?('Change User', disabled: false)
       click_on 'Change User'
@@ -92,7 +92,7 @@ class PublicHealthPatientPageActions < ApplicationSystemTestCase
     elsif valid_assigned_user && !changed
       assert page.has_button?('Change User', disabled: true)
     elsif !valid_assigned_user && changed
-      assert_not_equal(assigned_user, page.find_field('assignedUser').value)
+      assert_not_equal(assigned_user, page.find_field('assigned_user').value)
     end
   end
   # rubocop:enable Metrics/ParameterLists

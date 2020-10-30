@@ -32,10 +32,10 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
-  def bulk_edit_update_case_status(user_label, patient_labels, workflow, tab, case_status, next_step, apply_to_group: false)
+  def bulk_edit_update_case_status(user_label, patient_labels, workflow, tab, case_status, next_step, apply_to_household: false)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
-    @@public_health_dashboard.bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_group: apply_to_group)
+    @@public_health_dashboard.bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_household: apply_to_household)
     assertions = {
       case_status: case_status,
       isolation: %w[Confirmed Probable].include?(case_status) && next_step == 'Continue Monitoring in Isolation Workflow',
@@ -43,19 +43,19 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     }
     patient_labels.each do |label|
       @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions,
-                                                                                          apply_to_group: apply_to_group)
+                                                                                          apply_to_household: apply_to_household)
     end
     @@system_test_utils.logout
   end
 
-  def bulk_edit_close_records(user_label, patient_labels, workflow, tab, monitoring_reason, reasoning, apply_to_group: false)
+  def bulk_edit_close_records(user_label, patient_labels, workflow, tab, monitoring_reason, reasoning, apply_to_household: false)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
-    @@public_health_dashboard.bulk_edit_close_records(monitoring_reason, reasoning, apply_to_group: apply_to_group)
+    @@public_health_dashboard.bulk_edit_close_records(monitoring_reason, reasoning, apply_to_household: apply_to_household)
     assertions = { monitoring: false, monitoring_reason: monitoring_reason }
     patient_labels.each do |label|
       @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions,
-                                                                                          apply_to_group: apply_to_group)
+                                                                                          apply_to_household: apply_to_household)
     end
     @@system_test_utils.logout
   end

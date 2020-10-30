@@ -18,10 +18,10 @@ class Exposure extends React.Component {
       current: { ...this.props.currentState },
       errors: {},
       modified: {},
-      jurisdictionPath: this.props.jurisdictionPaths[this.props.currentState.patient.jurisdiction_id],
+      jurisdiction_path: this.props.jurisdiction_paths[this.props.currentState.patient.jurisdiction_id],
       originalJurisdictionId: this.props.currentState.patient.jurisdiction_id,
       originalAssignedUser: this.props.currentState.patient.assigned_user,
-      assignedUsers: this.props.assignedUsers,
+      assigned_users: this.props.assigned_users,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handlePropagatedFieldChange = this.handlePropagatedFieldChange.bind(this);
@@ -44,9 +44,9 @@ class Exposure extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     let current = this.state.current;
     let modified = this.state.modified;
-    if (event?.target?.name && event.target.name === 'jurisdictionId') {
-      this.setState({ jurisdictionPath: event.target.value });
-      let jurisdiction_id = Object.keys(this.props.jurisdictionPaths).find(id => this.props.jurisdictionPaths[parseInt(id)] === event.target.value);
+    if (event?.target?.id && event.target.id === 'jurisdiction_id') {
+      this.setState({ jurisdiction_path: event.target.value });
+      let jurisdiction_id = Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === event.target.value);
       if (jurisdiction_id) {
         value = jurisdiction_id;
         axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
@@ -59,17 +59,18 @@ class Exposure extends React.Component {
           })
           .catch(() => {})
           .then(response => {
-            if (response?.data?.assignedUsers) {
-              this.setState({ assignedUsers: response.data.assignedUsers });
+            if (response?.data?.assigned_users) {
+              this.setState({ assigned_users: response.data.assigned_users });
             }
           });
       } else {
         value = -1;
       }
-    } else if (event?.target?.name && event.target.name === 'assignedUser') {
+    } else if (event?.target?.id && event.target.id === 'assigned_user') {
       if (isNaN(event.target.value) || parseInt(event.target.value) > 9999) return;
 
-      value = event.target.value === '' ? null : parseInt(event.target.value);
+      // trim() call included since there is a bug with yup validation for numbers that allows whitespace entry
+      value = event.target.value.trim() === '' ? null : parseInt(event.target.value);
     } else if (event?.target?.id && event.target.id === 'continuous_exposure') {
       // clear out LDE if CE is turned on and populated it with previous LDE if CE is turned off
       const lde = value ? null : this.props.patient.last_date_of_exposure;
@@ -225,8 +226,8 @@ class Exposure extends React.Component {
         // No validation issues? Invoke callback (move to next step)
         self.setState({ errors: {} }, async () => {
           if (self.state.current.patient.jurisdiction_id !== self.state.originalJurisdictionId) {
-            const originalJurisdictionPath = self.props.jurisdictionPaths[self.state.originalJurisdictionId];
-            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdictionPath}. Are you sure you want to do this?`;
+            const originalJurisdictionPath = self.props.jurisdiction_paths[self.state.originalJurisdictionId];
+            const message = `You are about to change the assigned jurisdiction from ${originalJurisdictionPath} to ${self.state.jurisdiction_path}. Are you sure you want to do this?`;
             const options = { title: 'Confirm Jurisdiction Change' };
 
             if (self.state.current.patient.assigned_user && self.state.current.patient.assigned_user === self.state.originalAssignedUser) {
@@ -303,9 +304,11 @@ class Exposure extends React.Component {
               size="lg"
               className="form-square"
               placeholder="enter additional information about case"
+              maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
               onChange={this.handleChange}
             />
+            <Form.Label className="notes-character-limit"> {2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining </Form.Label>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['exposure_notes']}
             </Form.Control.Feedback>
@@ -544,9 +547,11 @@ class Exposure extends React.Component {
               size="lg"
               className="form-square"
               placeholder="enter additional information about monitoree’s potential exposure"
+              maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
               onChange={this.handleChange}
             />
+            <Form.Label className="notes-character-limit"> {2000 - (this.state.current.patient.exposure_notes || '').length} characters remaining </Form.Label>
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['exposure_notes']}
             </Form.Control.Feedback>
@@ -575,21 +580,21 @@ class Exposure extends React.Component {
                     </Form.Group>
                   </Form.Row>
                   <Form.Row>
-                    <Form.Group as={Col} md="18" controlId="jurisdiction_id" className="mb-2 pt-2">
+                    <Form.Group as={Col} md="18" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">ASSIGNED JURISDICTION{schema?.fields?.jurisdiction_id?._exclusive?.required && ' *'}</Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['jurisdiction_id']}
                         as="input"
-                        name="jurisdictionId"
-                        list="jurisdictionPaths"
+                        id="jurisdiction_id"
+                        list="jurisdiction_paths"
                         autoComplete="off"
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
-                        value={this.state.jurisdictionPath}
+                        value={this.state.jurisdiction_path}
                       />
-                      <datalist id="jurisdictionPaths">
-                        {Object.entries(this.props.jurisdictionPaths).map(([id, path]) => {
+                      <datalist id="jurisdiction_paths">
+                        {Object.entries(this.props.jurisdiction_paths).map(([id, path]) => {
                           return (
                             <option value={path} key={id}>
                               {path}
@@ -600,9 +605,9 @@ class Exposure extends React.Component {
                       <Form.Control.Feedback className="d-block" type="invalid">
                         {this.state.errors['jurisdiction_id']}
                       </Form.Control.Feedback>
-                      {this.props.has_group_members &&
+                      {this.props.has_dependents &&
                         this.state.current.patient.jurisdiction_id !== this.state.originalJurisdictionId &&
-                        Object.keys(this.props.jurisdictionPaths).includes(this.state.current.patient.jurisdiction_id) && (
+                        Object.keys(this.props.jurisdiction_paths).includes(this.state.current.patient.jurisdiction_id) && (
                           <Form.Group className="mt-2">
                             <Form.Check
                               type="switch"
@@ -615,24 +620,24 @@ class Exposure extends React.Component {
                           </Form.Group>
                         )}
                     </Form.Group>
-                    <Form.Group as={Col} md="6" controlId="assigned_user" className="mb-2 pt-2">
+                    <Form.Group as={Col} md="6" className="mb-2 pt-2">
                       <Form.Label className="nav-input-label">
                         ASSIGNED USER{schema?.fields?.assigned_user?._exclusive?.required && ' *'}
-                        <InfoTooltip tooltipTextKey="assignedUser" location="top"></InfoTooltip>
+                        <InfoTooltip tooltipTextKey="assigned_user" location="top"></InfoTooltip>
                       </Form.Label>
                       <Form.Control
                         isInvalid={this.state.errors['assigned_user']}
                         as="input"
-                        name="assignedUser"
-                        list="assignedUsers"
+                        id="assigned_user"
+                        list="assigned_users"
                         autoComplete="off"
                         size="lg"
                         className="form-square"
                         onChange={this.handleChange}
                         value={this.state.current.patient.assigned_user || ''}
                       />
-                      <datalist id="assignedUsers">
-                        {this.state.assignedUsers?.map(num => {
+                      <datalist id="assigned_users">
+                        {this.state.assigned_users?.map(num => {
                           return (
                             <option value={num} key={num}>
                               {num}
@@ -643,7 +648,7 @@ class Exposure extends React.Component {
                       <Form.Control.Feedback className="d-block" type="invalid">
                         {this.state.errors['assigned_user']}
                       </Form.Control.Feedback>
-                      {this.props.has_group_members &&
+                      {this.props.has_dependents &&
                         this.state.current.patient.assigned_user !== this.state.originalAssignedUser &&
                         (this.state.current.patient.assigned_user === null ||
                           (this.state.current.patient.assigned_user > 0 && this.state.current.patient.assigned_user <= 9999)) && (
@@ -785,9 +790,9 @@ Exposure.propTypes = {
   previous: PropTypes.func,
   next: PropTypes.func,
   patient: PropTypes.object,
-  has_group_members: PropTypes.bool,
-  jurisdictionPaths: PropTypes.object,
-  assignedUsers: PropTypes.array,
+  has_dependents: PropTypes.bool,
+  jurisdiction_paths: PropTypes.object,
+  assigned_users: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 

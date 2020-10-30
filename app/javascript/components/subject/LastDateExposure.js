@@ -18,8 +18,8 @@ class LastDateExposure extends React.Component {
       last_date_of_exposure: this.props.patient.last_date_of_exposure,
       continuous_exposure: !!this.props.patient.continuous_exposure,
       loading: false,
-      apply_to_group: false, // Flag to apply a change to all members
-      apply_to_group_cm_only: false, // Flag to apply a change only to group members where continuous_exposure is true
+      apply_to_household: false, // Flag to apply a change to all members
+      apply_to_household_cm_only: false, // Flag to apply a change only to group members where continuous_exposure is true
       showLastDateOfExposureModal: false,
       showContinuousExposureModal: false,
     };
@@ -37,11 +37,11 @@ class LastDateExposure extends React.Component {
     let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     this.setState({ [event.target.id]: value }, () => {
       if (event.target.id === 'apply_to_monitoree_only') {
-        this.setState({ apply_to_group_cm_only: false, apply_to_group: false });
-      } else if (event.target.id === 'apply_to_group') {
-        this.setState({ apply_to_group_cm_only: false, apply_to_group: true });
-      } else if (event.target.id === 'apply_to_group_cm_only') {
-        this.setState({ apply_to_group_cm_only: true, apply_to_group: false });
+        this.setState({ apply_to_household_cm_only: false, apply_to_household: false });
+      } else if (event.target.id === 'apply_to_household') {
+        this.setState({ apply_to_household_cm_only: false, apply_to_household: true });
+      } else if (event.target.id === 'apply_to_household_cm_only') {
+        this.setState({ apply_to_household_cm_only: true, apply_to_household: false });
       }
     });
   }
@@ -55,8 +55,8 @@ class LastDateExposure extends React.Component {
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           last_date_of_exposure: this.state.last_date_of_exposure,
           continuous_exposure: this.state.continuous_exposure,
-          apply_to_group: this.state.apply_to_group,
-          apply_to_group_cm_only: this.state.apply_to_group_cm_only,
+          apply_to_household: this.state.apply_to_household,
+          apply_to_household_cm_only: this.state.apply_to_household_cm_only,
           diffState: diffState,
         })
         .then(() => {
@@ -73,19 +73,19 @@ class LastDateExposure extends React.Component {
       showContinuousExposureModal: true,
       last_date_of_exposure: null,
       continuous_exposure: !this.props.patient.continuous_exposure,
-      apply_to_group: false,
-      apply_to_group_cm_only: false,
+      apply_to_household: false,
+      apply_to_household_cm_only: false,
     });
   }
 
   openLastDateOfExposureModal(date) {
-    if (date && date !== this.props.patient.last_date_of_exposure) {
+    if (date !== this.props.patient.last_date_of_exposure) {
       this.setState({
         showLastDateOfExposureModal: true,
         last_date_of_exposure: date,
-        continuous_exposure: false,
-        apply_to_group: false,
-        apply_to_group_cm_only: false,
+        continuous_exposure: date === null,
+        apply_to_household: false,
+        apply_to_household_cm_only: false,
       });
     }
   }
@@ -96,8 +96,8 @@ class LastDateExposure extends React.Component {
       continuous_exposure: !!this.props.patient.continuous_exposure,
       showLastDateOfExposureModal: false,
       showContinuousExposureModal: false,
-      apply_to_group: false,
-      apply_to_group_cm_only: false,
+      apply_to_household: false,
+      apply_to_household_cm_only: false,
     });
   }
 
@@ -110,38 +110,38 @@ class LastDateExposure extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>{message}</p>
-          {this.props.has_group_members && (
+          {this.props.is_household_member && (
             <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
                 id="apply_to_monitoree_only"
                 label="This monitoree only"
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group === false && this.state.apply_to_group_cm_only === false}
+                checked={this.state.apply_to_household === false && this.state.apply_to_household_cm_only === false}
               />
             </Form.Group>
           )}
-          {this.props.has_group_members && this.state.showLastDateOfExposureModal && (
+          {this.props.is_household_member && this.state.showLastDateOfExposureModal && this.state.last_date_of_exposure !== null && (
             <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
-                id="apply_to_group_cm_only"
+                id="apply_to_household_cm_only"
                 label={`This monitoree and only household members ${
                   update_continuous_exposure ? 'that are not on the closed line list' : ''
                 } where Continuous Exposure is turned ON`}
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group_cm_only}
+                checked={this.state.apply_to_household_cm_only}
               />
             </Form.Group>
           )}
-          {this.props.has_group_members && (
+          {this.props.is_household_member && (
             <Form.Group className="mb-2 px-4">
               <Form.Check
                 type="radio"
-                id="apply_to_group"
+                id="apply_to_household"
                 label={`This monitoree and all household members ${update_continuous_exposure ? 'that are not on the closed line list' : ''}`}
                 onChange={this.handleChange}
-                checked={this.state.apply_to_group}
+                checked={this.state.apply_to_household}
               />
             </Form.Group>
           )}
@@ -187,11 +187,11 @@ class LastDateExposure extends React.Component {
         {this.state.showLastDateOfExposureModal &&
           this.createModal(
             'Last Date of Exposure',
-            `Are you sure you want to modify the Last Date of Exposure to ${moment(this.state.last_date_of_exposure).format(
-              'MM/DD/YYYY'
-            )}? The Last Date of Exposure will be updated and Continuous Exposure will be turned OFF for the selected record${
-              this.props.has_group_members ? '(s):' : '.'
-            }`,
+            `Are you sure you want to ${this.state.last_date_of_exposure ? 'modify' : 'clear'} the Last Date of Exposure${
+              this.state.last_date_of_exposure ? ` to ${moment(this.state.last_date_of_exposure).format('MM/DD/YYYY')}` : ''
+            }? The Last Date of Exposure will be updated ${this.state.last_date_of_exposure ? '' : 'to blank '}${
+              this.props.patient.monitoring ? `and Continuous Exposure will be turned ${this.state.last_date_of_exposure ? 'OFF' : 'ON'}` : ''
+            } for the selected record${this.props.is_household_member ? '(s):' : '.'}`,
             this.closeModal,
             this.submit
           )}
@@ -201,7 +201,7 @@ class LastDateExposure extends React.Component {
             `Are you sure you want to turn ${this.state.continuous_exposure ? 'ON' : 'OFF'} Continuous Exposure? The Last Date of Exposure will ${
               this.state.continuous_exposure ? 'be cleared' : 'need to be populated'
             } and Continuous Exposure will be turned ${this.state.continuous_exposure ? 'ON' : 'OFF'} for the selected record${
-              this.props.has_group_members ? '(s):' : '.'
+              this.props.is_household_member ? '(s):' : '.'
             }`,
             this.closeModal,
             this.submit
@@ -284,7 +284,7 @@ class LastDateExposure extends React.Component {
 }
 
 LastDateExposure.propTypes = {
-  has_group_members: PropTypes.bool,
+  is_household_member: PropTypes.bool,
   authenticity_token: PropTypes.string,
   patient: PropTypes.object,
 };

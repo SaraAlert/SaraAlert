@@ -20,14 +20,27 @@ class PatientsController < ApplicationController
 
     @jurisdiction_path = @patient.jurisdiction_path
 
-    # Group members if this is HOH
-    @group_members = @patient.dependents_exclude_self.where(purged: false)
+    @possible_jurisdiction_paths = if current_user.can_transfer_patients?
+                                     # Allow all jurisdictions as valid transfer options.
+                                     Hash[Jurisdiction.all.where.not(name: 'USA').pluck(:id, :path).map { |id, path| [id, path] }]
+                                   else
+                                     # Otherwise, only show jurisdictions within hierarchy.
+                                     Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }]
+                                   end
 
-    # All group members regardless if this is not HOH
-    dependents = current_user.get_patient(@patient.responder_id)&.dependents
-    @all_group_members = ([@patient] + (dependents.nil? ? [] : dependents)).uniq
+    # Household members (dependents) for the HOH excluding HOH
+    @dependents_exclude_hoh = @patient.dependents_exclude_self.where(purged: false)
+
+    # All household members regardless if current patient is HOH
+    household = current_user.get_patient(@patient.responder_id)&.dependents
+    @household_members = ([@patient] + (household.nil? ? [] : household)).uniq
+
+    # All household members that are in the exposure workflow with continuous exposure excluding the current patient
+    @household_members_with_ce_in_exposure_excludes_patient = household.nil? ? [] : household.where(isolation: false, continuous_exposure: true)
 
     @translations = Assessment.new.translations
+
+    @history_types = History::HISTORY_TYPES
 
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
@@ -78,7 +91,7 @@ class PatientsController < ApplicationController
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
-    @group_members = @patient.dependents_exclude_self
+    @dependents_exclude_hoh = @patient.dependents_exclude_self
     @propagated_fields = Hash[group_member_subset.collect { |field| [field, false] }]
   end
 
@@ -200,9 +213,9 @@ class PatientsController < ApplicationController
         comment = "User changed Jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
         history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
         if propagated_fields.include?('jurisdiction_id')
-          group_members = patient.dependents_exclude_self
-          group_members.update(jurisdiction_id: content[:jurisdiction_id])
-          group_members.each do |group_member|
+          dependents_exclude_hoh = patient.dependents_exclude_self
+          dependents_exclude_hoh.update(jurisdiction_id: content[:jurisdiction_id])
+          dependents_exclude_hoh.each do |group_member|
             propagated_history = history.dup
             propagated_history.patient = group_member
             propagated_history.comment = "System changed Jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\" because User updated Jurisdiction
@@ -225,9 +238,9 @@ class PatientsController < ApplicationController
       comment = "User changed Assigned User from \"#{old_assigned_user}\" to \"#{new_assigned_user}\"."
       history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
       if propagated_fields.include?('assigned_user')
-        group_members = patient.dependents_exclude_self
-        group_members.update(assigned_user: content[:assigned_user])
-        group_members.each do |group_member|
+        dependents_exclude_hoh = patient.dependents_exclude_self
+        dependents_exclude_hoh.update(assigned_user: content[:assigned_user])
+        dependents_exclude_hoh.each do |group_member|
           propagated_history = history.dup
           propagated_history.patient = group_member
           propagated_history.comment = "System changed Assigned User from \"#{old_assigned_user}\" to \"#{new_assigned_user}\" because User updated Assigned
@@ -240,16 +253,9 @@ class PatientsController < ApplicationController
     # Reset symptom onset date if moving from isolation to exposure
     reset_symptom_onset(content, patient, :system) if !content[:isolation].nil? && !content[:isolation]
 
-    # Grab diff, attempt to update, else return to index if failed
+    # Update patient history with detailed edit diff
     patient_before = patient.dup
-    if patient.update(content)
-      diffs = patient_diff(patient_before, patient)
-      unless diffs.length.zero?
-        pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
-        comment = "User edited a monitoree record. Changes were: #{pretty_diff.join(', ')}."
-        history = History.record_edit(patient: patient, created_by: current_user.email, comment: comment)
-      end
-    end
+    Patient.detailed_history_edit(patient_before, patient, current_user.email, allowed_params) if patient.update(content)
 
     render json: patient
   end
@@ -274,7 +280,9 @@ class PatientsController < ApplicationController
     end
 
     # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
-    current_user_patients.where(id: patients_to_update).update_all(responder_id: new_hoh_id)
+    current_user_patients.where(id: patients_to_update).each do |patient|
+      patient.update(responder_id: new_hoh_id)
+    end
   end
 
   def bulk_update_status
@@ -285,9 +293,9 @@ class PatientsController < ApplicationController
     non_dependent_patient_ids = patient_ids
 
     # If apply to group, find dependents ids and add to id array before user accessor for validation of access
-    if ActiveModel::Type::Boolean.new.cast(params.require(:apply_to_group))
+    if ActiveModel::Type::Boolean.new.cast(params.require(:apply_to_household))
       dependent_ids = current_user.patients.where(responder_id: patient_ids).pluck(:id)
-      # If apply_to_group was set, and there exists a patient that has dependents in a different
+      # If apply_to_household was set, and there exists a patient that has dependents in a different
       # jurisdiction - one that the user may not have access to - those patients will get filtered out.
       not_viewable = Patient.where(responder_id: patient_ids).pluck(:id) - dependent_ids
 
@@ -303,7 +311,7 @@ class PatientsController < ApplicationController
     patients = current_user.get_patients(patient_ids)
 
     patients.each do |patient|
-      update_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_group] ? :group : :none)
+      update_fields(patient, params, non_dependent_patient_ids.include?(patient[:id]) ? :patient : :dependent, params[:apply_to_household] ? :group : :none)
     end
   end
 
@@ -316,25 +324,25 @@ class PatientsController < ApplicationController
 
     # Update LDE for patient and group members only in the exposure workflow with continuous exposure on
     # NOTE: This is a possible option when changing monitoring status of HoH in isolation.
-    if params.permit(:apply_to_group_cm_exp_only)[:apply_to_group_cm_exp_only] && params[:apply_to_group_cm_exp_only_date].present?
+    if params.permit(:apply_to_household_cm_exp_only)[:apply_to_household_cm_exp_only] && params[:apply_to_household_cm_exp_only_date].present?
       # Only update dependents (not including the HoH) in exposure with continuoous exposure is turned on
       (current_user.get_patient(patient.responder_id)&.dependents_exclude_self&.where(continuous_exposure: true, isolation: false) || []).uniq.each do |member|
         History.monitoring_change(patient: member, created_by: 'Sara Alert System', comment: "User updated Monitoring Status for another member in this
         monitoree's household and chose to update Last Date of Exposure for household members so System changed Last Date of Exposure from
         #{member[:last_date_of_exposure] ? member[:last_date_of_exposure].to_date.strftime('%m/%d/%Y') : 'blank'} to
-        #{params[:apply_to_group_cm_exp_only_date].to_date.strftime('%m/%d/%Y')} and turned OFF Continuous Exposure.")
+        #{params[:apply_to_household_cm_exp_only_date].to_date.strftime('%m/%d/%Y')} and turned OFF Continuous Exposure.")
 
-        member.update(last_date_of_exposure: params[:apply_to_group_cm_exp_only_date], continuous_exposure: false)
+        member.update(last_date_of_exposure: params[:apply_to_household_cm_exp_only_date], continuous_exposure: false)
       end
     end
 
     # Update patient and all group members
-    if params.permit(:apply_to_group)[:apply_to_group]
+    if params.permit(:apply_to_household)[:apply_to_household]
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group)
       end
       # Update patient and all group members in continuous exposure
-    elsif params.permit(:apply_to_group_cm_only)[:apply_to_group_cm_only] # update patient and group members only with continuous exposure on
+    elsif params.permit(:apply_to_household_cm_only)[:apply_to_household_cm_only] # update patient and group members only with continuous exposure on
       ([patient] + (current_user.get_patient(patient.responder_id)&.dependents&.where(continuous_exposure: true) || [])).uniq.each do |member|
         update_fields(member, params, patient[:id] == member[:id] ? :patient : :dependent, :group_cm)
       end
@@ -505,33 +513,6 @@ class PatientsController < ApplicationController
     duplicate_contact ||= (patient[:email] == patient.responder[:email]) unless patient[:email].blank?
     # They are removeable from the household if their current responder does not have duplicate contact information
     render json: { removeable: !duplicate_contact }
-  end
-
-  def send_reminder
-    # Send a new report reminder to the monitoree
-    redirect_to(root_url) && return unless current_user.can_remind_patient?
-
-    patient = current_user.get_patient(params.permit(:id)[:id])
-    redirect_to(root_url) && return if patient.nil?
-
-    patient.send_assessment(force: true)
-
-    History.report_reminder(patient: patient, created_by: current_user)
-  end
-
-  # Construct a diff for a patient update to keep track of changes
-  def patient_diff(patient_before, patient_after)
-    diffs = []
-    allowed_params.each do |attribute|
-      next if patient_before[attribute] == patient_after[attribute]
-
-      diffs << {
-        attribute: attribute,
-        before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
-        after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
-      }
-    end
-    diffs
   end
 
   # Parameters allowed for saving to database

@@ -56,7 +56,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
 
     # view patient with assigned jurisdiction filter
     Jurisdiction.find(jurisdiction.subtree_ids).each do |jur|
-      fill_in 'jurisdictionPath', with: jur[:path]
+      fill_in 'jurisdiction_path', with: jur[:path]
       verify_patient_info(patient, workflow, tab) if patient.jurisdiction[:path].include?(jur[:name])
 
       find_by_id('exactJurisdiction').click
@@ -70,13 +70,13 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
       verify_patient_info(patient, workflow, tab) if patient.jurisdiction[:path] == jur[:path]
       find_by_id('allJurisdictions').click
     end
-    fill_in 'jurisdictionPath', with: jurisdiction[:path]
+    fill_in 'jurisdiction_path', with: jurisdiction[:path]
 
     # view patient with assigned user filter
     if patient[:assigned_user].nil?
       find_by_id('noAssignedUser').click
     else
-      fill_in 'assignedUser', with: patient[:assigned_user]
+      fill_in 'assigned_user', with: patient[:assigned_user]
     end
     verify_patient_info(patient, workflow, tab)
     find_by_id('allAssignedUsers').click
@@ -125,7 +125,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     end
   end
 
-  def search_for_and_verify_patient_monitoring_actions(patient_label, assertions, apply_to_group)
+  def search_for_and_verify_patient_monitoring_actions(patient_label, assertions, apply_to_household)
     return if patient_label.nil?
 
     @@public_health_dashboard.search_for_and_view_patient('all', patient_label)
@@ -140,10 +140,10 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
     assert page.has_select?('monitoring_plan', selected: patient.monitoring_plan.to_s)
     assert page.has_select?('case_status', selected: patient.case_status.to_s)
     assert page.has_select?('public_health_action', selected: public_health_action)
-    assert page.has_field?('assignedUser', with: patient.assigned_user.to_s)
-    assert page.has_field?('jurisdictionId', with: patient.jurisdiction.jurisdiction_path_string)
+    assert page.has_field?('assigned_user', with: patient.assigned_user.to_s)
+    assert page.has_field?('jurisdiction_id', with: patient.jurisdiction.jurisdiction_path_string)
     @@system_test_utils.return_to_dashboard(nil)
-    return unless apply_to_group
+    return unless apply_to_household
 
     patient.dependents.each do |dependent|
       label = "patient_#{dependent.id}"
