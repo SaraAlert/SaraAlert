@@ -7,9 +7,9 @@ import { mockPatient1, mockPatient2 } from '../mocks/mockPatients'
 
 function getWrapper(mockPatient) {
     const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
-    const groupMembers = [ mockPatient2 ]
-    const wrapper = shallow(<PatientPage patient_id="EX-771721" patient={mockPatient} current_user={mockUser1} group_members={groupMembers} hideBody={true}
-        jurisdictionPath="USA, State 1, County 2" dashboardUrl="/public_health" authenticity_token={authyToken} />);
+    const dependents = [ mockPatient2 ]
+    const wrapper = shallow(<PatientPage patient_id="EX-771721" patient={mockPatient} current_user={mockUser1} dependents={dependents} hideBody={true}
+        jurisdiction_path="USA, State 1, County 2" dashboardUrl="/public_health" authenticity_token={authyToken} />);
     return wrapper;
 }
 

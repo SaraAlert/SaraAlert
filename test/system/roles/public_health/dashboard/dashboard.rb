@@ -200,22 +200,22 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     find_by_id(PATIENTS[patient_label]['id'].to_s).find('input').click
   end
 
-  def bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_group)
+  def bulk_edit_update_case_status(workflow, case_status, next_step, apply_to_household)
     click_on 'Actions'
     click_on 'Update Case Status'
     select(case_status, from: 'case_status')
     select(next_step, from: 'follow_up') if workflow != :isolation && %w[Confirmed Probable].include?(case_status)
-    find_by_id('apply_to_group', { visible: :all }).check({ allow_label_click: true }) if apply_to_group
+    find_by_id('apply_to_household', { visible: :all }).check({ allow_label_click: true }) if apply_to_household
     click_on 'Submit'
     go_to_other_workflow(workflow) if next_step != 'End Monitoring'
   end
 
-  def bulk_edit_close_records(monitoring_reason, reasoning, apply_to_group)
+  def bulk_edit_close_records(monitoring_reason, reasoning, apply_to_household)
     click_on 'Actions'
     click_on 'Close Records'
     select(monitoring_reason, from: 'monitoring_reason') unless monitoring_reason.blank?
     fill_in 'reasoning', with: reasoning
-    find_by_id('apply_to_group', { visible: :all }).check({ allow_label_click: true }) if apply_to_group
+    find_by_id('apply_to_household', { visible: :all }).check({ allow_label_click: true }) if apply_to_household
     click_on 'Submit'
   end
 
