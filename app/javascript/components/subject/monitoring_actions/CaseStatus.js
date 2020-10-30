@@ -4,8 +4,8 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import _ from 'lodash';
 import axios from 'axios';
 
-import InfoTooltip from '../util/InfoTooltip';
-import reportError from '../util/ReportError';
+import InfoTooltip from '../../util/InfoTooltip';
+import reportError from '../../util/ReportError';
 
 class CaseStatus extends React.Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class CaseStatus extends React.Component {
       monitoring: this.props.patient.monitoring,
       monitoring_reason: this.props.patient.monitoring_reason,
       monitoring_option: '',
-      apply_to_group: false,
+      apply_to_household: false,
       loading: false,
     };
     this.origState = Object.assign({}, this.state);
@@ -116,18 +116,18 @@ class CaseStatus extends React.Component {
     }
   };
 
-  handleApplyGroupChange = event => {
-    let applyToGroup = event.target.id === 'apply_to_group_yes';
-    this.setState({ apply_to_group: applyToGroup });
+  handleApplyHouseholdChange = event => {
+    const applyToHousehold = event.target.id === 'apply_to_household_yes';
+    this.setState({ apply_to_household: applyToHousehold });
   };
 
   toggleCaseStatusModal = () => {
-    let current = this.state.showCaseStatusModal;
+    const current = this.state.showCaseStatusModal;
     this.setState({
       showCaseStatusModal: !current,
       showMonitoringDropdown: false,
       confirmedOrProbable: this.props.patient.case_status === 'Confirmed' || this.props.patient.case_status === 'Probable',
-      apply_to_group: false,
+      apply_to_household: false,
       case_status: this.props.patient.case_status || '',
       disabled: false,
       isolation: this.props.patient.isolation,
@@ -148,7 +148,7 @@ class CaseStatus extends React.Component {
           isolation: this.state.isolation,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,
-          apply_to_group: this.state.apply_to_group,
+          apply_to_household: this.state.apply_to_household,
           diffState: diffState,
         })
         .then(() => {
@@ -160,11 +160,11 @@ class CaseStatus extends React.Component {
     });
   };
 
-  createModal(title, toggle, submit) {
+  createModal(toggle, submit) {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
-          <Modal.Title>{title}</Modal.Title>
+          <Modal.Title>Case Status</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {this.state.showMonitoringDropdown && (
@@ -183,27 +183,27 @@ class CaseStatus extends React.Component {
             </React.Fragment>
           )}
           {this.state.modal_text !== '' && <p>{this.state.modal_text}</p>}
-          {this.props.has_group_members && (
+          {this.props.has_dependents && (
             <React.Fragment>
               <p className="mb-2">Please select the records that you would like to apply this change to:</p>
               <Form.Group className="px-4">
                 <Form.Check
                   type="radio"
                   className="mb-1"
-                  name="apply_to_group"
-                  id="apply_to_group_no"
+                  name="apply_to_household"
+                  id="apply_to_household_no"
                   label="This monitoree only"
-                  onChange={this.handleApplyGroupChange}
-                  checked={!this.state.apply_to_group}
+                  onChange={this.handleApplyHouseholdChange}
+                  checked={!this.state.apply_to_household}
                 />
                 <Form.Check
                   type="radio"
                   className="mb-3"
-                  name="apply_to_group"
-                  id="apply_to_group_yes"
+                  name="apply_to_household"
+                  id="apply_to_household_yes"
                   label="This monitoree and all household members"
-                  onChange={this.handleApplyGroupChange}
-                  checked={this.state.apply_to_group}
+                  onChange={this.handleApplyHouseholdChange}
+                  checked={this.state.apply_to_household}
                 />
               </Form.Group>
             </React.Fragment>
@@ -243,7 +243,7 @@ class CaseStatus extends React.Component {
             <option>Not a Case</option>
           </Form.Control>
         </div>
-        {this.state.showCaseStatusModal && this.createModal('Case Status', this.toggleCaseStatusModal, this.submit)}
+        {this.state.showCaseStatusModal && this.createModal(this.toggleCaseStatusModal, this.submit)}
       </React.Fragment>
     );
   }
@@ -252,7 +252,7 @@ class CaseStatus extends React.Component {
 CaseStatus.propTypes = {
   patient: PropTypes.object,
   authenticity_token: PropTypes.string,
-  has_group_members: PropTypes.bool,
+  has_dependents: PropTypes.bool,
 };
 
 export default CaseStatus;

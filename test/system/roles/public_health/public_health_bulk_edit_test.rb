@@ -26,11 +26,11 @@ class PublicHealthTest < ApplicationSystemTestCase
 
   test 'bulk edit case status from exposure to isolation with household' do
     @@public_health_test_helper.bulk_edit_update_case_status('state1_epi', %w[patient_52], :exposure, 'all', 'Confirmed',
-                                                             'Continue Monitoring in Isolation Workflow', apply_to_group: true)
+                                                             'Continue Monitoring in Isolation Workflow', apply_to_household: true)
   end
 
   test 'bulk edit case status from isolation to exposure with household' do
-    @@public_health_test_helper.bulk_edit_update_case_status('state1_epi', %w[patient_54], :isolation, 'all', 'Unknown', nil, apply_to_group: true)
+    @@public_health_test_helper.bulk_edit_update_case_status('state1_epi', %w[patient_54], :isolation, 'all', 'Unknown', nil, apply_to_household: true)
   end
 
   test 'bulk edit close records from exposure workflow' do
@@ -42,10 +42,10 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'bulk edit close records from exposure workflow with household' do
-    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_52], :exposure, 'all', 'Duplicate', '', apply_to_group: true)
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_52], :exposure, 'all', 'Duplicate', '', apply_to_household: true)
   end
 
   test 'bulk edit close records from isolation workflow with household' do
-    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_54], :isolation, 'all', '', 'details', apply_to_group: true)
+    @@public_health_test_helper.bulk_edit_close_records('state1_epi', %w[patient_54], :isolation, 'all', '', 'details', apply_to_household: true)
   end
 end

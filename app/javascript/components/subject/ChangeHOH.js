@@ -34,7 +34,7 @@ class ChangeHOH extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
           new_hoh_id: this.state.hoh_selection,
-          household_ids: this.props?.groupMembers?.map(member => {
+          household_ids: this.props?.dependents?.map(member => {
             return member.id;
           }),
         })
@@ -66,7 +66,7 @@ class ChangeHOH extends React.Component {
                   <option value={-1} disabled>
                     --
                   </option>
-                  {this.props?.groupMembers?.map((member, index) => {
+                  {this.props?.dependents?.map((member, index) => {
                     return (
                       <option key={`option-${index}`} value={member.id}>
                         {member.last_name}, {member.first_name} {member.middle_name || ''}
@@ -109,7 +109,7 @@ class ChangeHOH extends React.Component {
 
 ChangeHOH.propTypes = {
   patient: PropTypes.object,
-  groupMembers: PropTypes.array,
+  dependents: PropTypes.array,
   authenticity_token: PropTypes.string,
 };
 
