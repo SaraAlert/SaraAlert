@@ -61,11 +61,7 @@ class ImportController < ApplicationController
                 patient[:user_defined_symptom_onset] = row[85].present?
                 patient[field] = validate_field(field, row[col_num], row_ind)
               elsif col_num == 86
-                patient[field] = if workflow == :exposure
-                                   validate_case_status(:case_status_exposure, row[col_num], row_ind)
-                                 else
-                                   validate_case_status(:case_status_isolation, row[col_num], row_ind)
-                                 end
+                patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
               else
                 patient[field] = validate_field(field, row[col_num], row_ind) unless col_num == 85 && workflow != :isolation
               end
@@ -305,16 +301,18 @@ class ImportController < ApplicationController
     raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999", row_ind)
   end
 
-  def validate_case_status(field, value, row_ind)
+  def validate_workflow_specific_enums(workflow, field, value, row_ind)
     return nil if value.blank?
 
     normalized_value = unformat_enum_field(value)
-    return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
+    if workflow == :exposure
+      return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(normalized_value)
 
-    if field == :case_status_exposure
-      err_msg = "'#{value}' is not an acceptable value for 'Case Status' for monitorees imported into the Exposure workflow, acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+      err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for monitorees imported into the Exposure workflow, acceptable values are: #{VALID_EXPOSURE_ENUMS[field].to_sentence}"
     else
-      err_msg = "'#{value}' is not an acceptable value for 'Case Status' for cases imported into the Isolation workflow, acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+      return NORMALIZED_ISOLATION_ENUMS[field][normalized_value] if NORMALIZED_ISOLATION_ENUMS[field].keys.include?(normalized_value)
+
+      err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for cases imported into the Isolation workflow, acceptable values are: #{VALID_ISOLATION_ENUMS[field].to_sentence}"
     end
     raise ValidationError.new(err_msg, row_ind)
   end

@@ -93,7 +93,23 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     monitored_address_state: VALID_STATES
   }.freeze
 
+  VALID_EXPOSURE_ENUMS = {
+    case_status: ['Suspect', 'Unknown', 'Not a Case']
+  }.freeze
+
+  VALID_ISOLATION_ENUMS = {
+    case_status: %w[Confirmed Probable]
+  }.freeze
+
   NORMALIZED_ENUMS = VALID_ENUMS.transform_values do |values|
+    Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
+  end
+
+  NORMALIZED_EXPOSURE_ENUMS = VALID_EXPOSURE_ENUMS.transform_values do |values|
+    Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
+  end
+
+  NORMALIZED_ISOLATION_ENUMS = VALID_ISOLATION_ENUMS.transform_values do |values|
     Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
   end
 
