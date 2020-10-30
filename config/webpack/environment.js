@@ -19,4 +19,6 @@ if (!Array.isArray(nodeModulesLoader.exclude)) {
 
 nodeModulesLoader.exclude.push(/react-table/);
 
+environment.splitChunks()
+
 module.exports = environment
