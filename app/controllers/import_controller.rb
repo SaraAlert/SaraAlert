@@ -312,9 +312,9 @@ class ImportController < ApplicationController
     return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
 
     if field == :case_status_exposure
-      err_msg = "'#{value}' is not an acceptable value for Case Status for monitorees imported into the Exposure workflow, acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+      err_msg = "'#{value}' is not an acceptable value for 'Case Status' for monitorees imported into the Exposure workflow, acceptable values are: #{VALID_ENUMS[field].to_sentence}"
     else
-      err_msg = "'#{value}' is not an acceptable value for Case Status for cases imported into the Isolation workflow, acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+      err_msg = "'#{value}' is not an acceptable value for 'Case Status' for cases imported into the Isolation workflow, acceptable values are: #{VALID_ENUMS[field].to_sentence}"
     end
     raise ValidationError.new(err_msg, row_ind)
   end
