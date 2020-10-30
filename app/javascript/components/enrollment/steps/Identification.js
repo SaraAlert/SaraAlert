@@ -25,8 +25,15 @@ class Identification extends React.Component {
       modified: {},
       languageOptions: this.getLanguageOptions(),
     };
-    this.default_races = ['white', 'black_or_african_american', 'american_indian_or_alaska_native', 'asian', 'native_hawaiian_or_other_pacific_islander'];
-    this.additional_race_options = ['race_unknown', 'race_other', 'race_refused_to_answer'];
+    this.default_races = [
+      'white',
+      'black_or_african_american',
+      'american_indian_or_alaska_native',
+      'asian',
+      'native_hawaiian_or_other_pacific_islander',
+      'race_other',
+    ];
+    this.additional_race_options = ['race_unknown', 'race_refused_to_answer'];
   }
 
   handleChange = event => {
@@ -444,17 +451,17 @@ class Identification extends React.Component {
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="race_unknown"
-                    label="UNKNOWN"
-                    checked={this.state.current.patient.race_unknown}
+                    id="race_other"
+                    label="OTHER"
+                    checked={this.state.current.patient.race_other}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
                     className="pt-2"
                     type="checkbox"
-                    id="race_other"
-                    label="OTHER"
-                    checked={this.state.current.patient.race_other}
+                    id="race_unknown"
+                    label="UNKNOWN"
+                    checked={this.state.current.patient.race_unknown}
                     onChange={this.handleRaceChange}
                   />
                   <Form.Check
