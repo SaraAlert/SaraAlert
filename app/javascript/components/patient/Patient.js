@@ -222,18 +222,16 @@ class Patient extends React.Component {
                   <Col className="text-truncate">
                     <b>ARRIVAL</b>
                     <br />
-                    <span className="font-weight-light">{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
+                    <span>{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
                     <br />
-                    <span className="font-weight-light">{`${
-                      this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
-                    }`}</span>
+                    <span>{`${this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''}`}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col className="text-truncate pt-1">
-                    <span className="font-weight-light">{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
+                    <span>{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
                     <br />
-                    <span className="font-weight-light">{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
+                    <span>{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
                   </Col>
                 </Row>
               </Col>
@@ -321,73 +319,85 @@ class Patient extends React.Component {
                     <Col className="text-truncate">
                       <b>LAST EXPOSURE</b>
                       <br />
-                      <span>
-                        {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
-                        {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
-                      </span>
-                      <br />
-                      <span>{`${
-                        this.props.details.last_date_of_exposure ? moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
-                      }`}</span>
-                      <br />
-                      <span className="text-danger">
-                        {this.props.details.contact_of_known_case
-                          ? 'CLOSE CONTACT WITH A KNOWN CASE: ' +
-                            (this.props.details.contact_of_known_case_id ? this.props.details.contact_of_known_case_id : '')
-                          : ''}
-                        {this.props.details.contact_of_known_case ? <br /> : ''}
-                      </span>
-                      <span className="text-danger">
-                        {this.props.details.member_of_a_common_exposure_cohort
-                          ? 'MEMBER OF A COMMON EXPOSURE COHORT: ' +
-                            (this.props.details.member_of_a_common_exposure_cohort_type ? this.props.details.member_of_a_common_exposure_cohort_type : '')
-                          : ''}
-                        {this.props.details.member_of_a_common_exposure_cohort ? <br /> : ''}
-                      </span>
-                      <span className="text-danger">
-                        {this.props.details.travel_to_affected_country_or_area ? 'TRAVEL FROM AFFECTED COUNTRY OR AREA' : ''}
-                        {this.props.details.travel_to_affected_country_or_area ? <br /> : ''}
-                      </span>
-                      <span className="text-danger">
-                        {this.props.details.was_in_health_care_facility_with_known_cases
-                          ? 'WAS IN HEALTH CARE FACILITY WITH KNOWN CASES: ' +
-                            (this.props.details.was_in_health_care_facility_with_known_cases_facility_name
-                              ? this.props.details.was_in_health_care_facility_with_known_cases_facility_name
-                              : '')
-                          : ''}
-                        {this.props.details.was_in_health_care_facility_with_known_cases ? <br /> : ''}
-                      </span>
-                      <span className="text-danger">
-                        {this.props.details.laboratory_personnel
-                          ? 'LABORATORY PERSONNEL: ' +
-                            (this.props.details.laboratory_personnel_facility_name ? this.props.details.laboratory_personnel_facility_name : '')
-                          : ''}
-                        {this.props.details.laboratory_personnel ? <br /> : ''}
-                      </span>
-                      <span className="text-danger">
-                        {this.props.details.healthcare_personnel
-                          ? 'HEALTHCARE PERSONNEL: ' +
-                            (this.props.details.healthcare_personnel_facility_name ? this.props.details.healthcare_personnel_facility_name : '')
-                          : ''}
-                        {this.props.details.healthcare_personnel ? <br /> : ''}
-                      </span>
-                      <span className="text-danger">
-                        {this.props.details.crew_on_passenger_or_cargo_flight ? 'CREW ON PASSENGER OR CARGO FLIGHT' : ''}
-                        {this.props.details.crew_on_passenger_or_cargo_flight ? <br /> : ''}
-                      </span>
+                      {(this.props.details.potential_exposure_location || this.props.details.potential_exposure_country) && (
+                        <React.Fragment>
+                          <span>
+                            {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
+                            {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
+                          </span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.last_date_of_exposure && (
+                        <React.Fragment>
+                          <span>{moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.contact_of_known_case && (
+                        <React.Fragment>
+                          <span className="text-danger">CLOSE CONTACT WITH A KNOWN CASE: {this.props.details.contact_of_known_case_id}</span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.member_of_a_common_exposure_cohort && (
+                        <React.Fragment>
+                          <span className="text-danger">MEMBER OF A COMMON EXPOSURE COHORT: {this.props.details.member_of_a_common_exposure_cohort_type}</span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.travel_to_affected_country_or_area && (
+                        <React.Fragment>
+                          <span className="text-danger">TRAVEL FROM AFFECTED COUNTRY OR AREA</span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.was_in_health_care_facility_with_known_cases && (
+                        <React.Fragment>
+                          <span className="text-danger">
+                            WAS IN HEALTH CARE FACILITY WITH KNOWN CASES: {this.props.details.was_in_health_care_facility_with_known_cases_facility_name || ''}
+                          </span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.laboratory_personnel && (
+                        <React.Fragment>
+                          <span className="text-danger">LABORATORY PERSONNEL: {this.props.details.laboratory_personnel_facility_name || ''}</span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.healthcare_personnel && (
+                        <React.Fragment>
+                          <span className="text-danger">HEALTHCARE PERSONNEL: {this.props.details.healthcare_personnel_facility_name || ''}</span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.crew_on_passenger_or_cargo_flight && (
+                        <React.Fragment>
+                          <span className="text-danger">CREW ON PASSENGER OR CARGO FLIGHT</span>
+                          <br />
+                        </React.Fragment>
+                      )}
                     </Col>
                   )}
                   {this.props.details.isolation && (
                     <Col className="text-truncate">
-                      <span className="font-weight-light">
-                        {`${
-                          this.props.details.symptom_onset
-                            ? `Symptom Onset: ${moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}`
-                            : ''
-                        }`}
-                      </span>
-                      <br />
-                      <span className="font-weight-light">{`${this.props.details.case_status ? `Case Status: ${this.props.details.case_status}` : ''}`}</span>
+                      {this.props.details.symptom_onset && (
+                        <React.Fragment>
+                          <span>
+                            <b>Symptom Onset:</b> ${moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}
+                          </span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.case_status && (
+                        <React.Fragment>
+                          <span>
+                            <b>Case Status:</b> {this.props.details.case_status}
+                          </span>
+                          <br />
+                        </React.Fragment>
+                      )}
                     </Col>
                   )}
                 </Row>
