@@ -47,13 +47,15 @@ class Patient extends React.Component {
               }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
             </h4>
           </Col>
-          <Col md="auto" className="jursdiction-user-box mr-3">
-            <span id="jurisdiction-path">
-              <b>Assigned Jurisdiction:</b> {this.props.jurisdiction_path ? this.props.jurisdiction_path : '--'}
-            </span>
-            <br />
-            <span id="assigned-user">
-              <b>Assigned User:</b> {this.props.details.assigned_user ? this.props.details.assigned_user : '--'}
+          <Col md="auto">
+            <span className="jursdiction-user-box">
+              <span id="jurisdiction-path">
+                <b>Assigned Jurisdiction:</b> {this.props.jurisdiction_path ? this.props.jurisdiction_path : '--'}
+              </span>
+              <br />
+              <span id="assigned-user">
+                <b>Assigned User:</b> {this.props.details.assigned_user ? this.props.details.assigned_user : '--'}
+              </span>
             </span>
           </Col>
         </Row>
