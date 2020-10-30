@@ -10,6 +10,14 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     setup_user_applications
     setup_system_applications
     setup_patients
+    # Suppress logging calls originating from:
+    # https://github.com/fhir-crucible/fhir_models/blob/v4.1.0/lib/fhir_models/bootstrap/json.rb
+    logger_mock = mock()
+    logger_mock.expects(:debug).at_least(0)
+    logger_mock.expects(:info).at_least(0)
+    logger_mock.expects(:warning).at_least(0)
+    logger_mock.expects(:error).at_least(0)
+    FHIR.logger = logger_mock
   end
 
   # Sets up applications registered for user flow
