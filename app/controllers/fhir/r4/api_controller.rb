@@ -79,7 +79,8 @@ class Fhir::R4::ApiController < ActionController::API
 
     # Parse in the FHIR::Patient
     contents = FHIR.from_contents(request.body.string)
-    status_bad_request && return if contents.nil? || !contents.valid?
+    errors = contents&.validate
+    status_bad_request(error_messages_from_hash(errors)) && return if contents.nil? || !errors.empty?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
@@ -91,8 +92,17 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Patient.*'
       )
 
-      updates = Patient.from_fhir(contents).select { |_k, v| v.present? }
+      updates = Patient.from_fhir(contents)
       resource = get_patient(params.permit(:id)[:id])
+
+      # Grab patient before changes to construct diff
+      patient_before = resource.dup
+
+      # If "monitoring" was set to false for a Patient that was previously being monitored
+      if !resource.nil? && resource.monitoring && updates&.key?(:monitoring) && !updates[:monitoring]
+        # Add closed_at to updates
+        updates[:closed_at] = DateTime.now
+      end
     else
       status_not_found && return
     end
@@ -100,11 +110,15 @@ class Fhir::R4::ApiController < ActionController::API
     status_forbidden && return if resource.nil?
 
     # Try to update the resource
-    status_bad_request && return if updates.nil? || !resource.update(updates)
+    status_unprocessable_entity && return if updates.nil?
+
+    # The resource.update method does not allow a context to be passed, so first we assign the updates, then save
+    resource.assign_attributes(updates)
+    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save(context: :api)
 
     if resource_type == 'patient'
-      # Create a history for the record update
-      History.record_edit(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree updated via API.')
+      # Update patient history with detailed edit diff
+      Patient.detailed_history_edit(patient_before, resource, resource.creator&.email, updates.keys, is_api_edit: true)
     end
 
     status_ok(resource.as_fhir) && return
@@ -122,7 +136,8 @@ class Fhir::R4::ApiController < ActionController::API
 
     # Parse in the FHIR::Patient
     contents = FHIR.from_contents(request.body.string)
-    status_bad_request && return if contents.nil? || !contents.valid?
+    errors = contents&.validate
+    status_bad_request(error_messages_from_hash(errors)) && return if contents.nil? || !errors.empty?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
@@ -136,7 +151,6 @@ class Fhir::R4::ApiController < ActionController::API
 
       # Construct a Sara Alert Patient
       resource = Patient.new(Patient.from_fhir(contents))
-
       # Responder is self
       resource.responder = resource
 
@@ -181,7 +195,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     status_bad_request && return if resource.nil?
 
-    status_bad_request && return unless resource.save
+    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save(context: :api)
 
     if resource_type == 'patient'
       # Send enrollment notification only to responders
@@ -487,9 +501,9 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Generic 400 bad request response
-  def status_bad_request
+  def status_bad_request(errors = [])
     respond_to do |format|
-      format.any { head :bad_request }
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :bad_request }
     end
   end
 
@@ -504,6 +518,12 @@ class Fhir::R4::ApiController < ActionController::API
   def status_not_found
     respond_to do |format|
       format.any { head :not_found }
+    end
+  end
+
+  def status_unprocessable_entity(errors = [])
+    respond_to do |format|
+      format.any { render json: errors.blank? ? operation_outcome_fatal.to_json : operation_outcome_with_errors(errors).to_json, status: :unprocessable_entity }
     end
   end
 
@@ -624,6 +644,22 @@ class Fhir::R4::ApiController < ActionController::API
   # Operation outcome response
   def operation_outcome_fatal
     FHIR::OperationOutcome.new(issue: [FHIR::OperationOutcome::Issue.new(severity: 'fatal', code: 'processing')])
+  end
+
+  # Generate an operation outcome with error information
+  def operation_outcome_with_errors(errors)
+    outcome = FHIR::OperationOutcome.new(issue: [])
+    errors.each { |error| outcome.issue << FHIR::OperationOutcome::Issue.new(severity: 'error', code: 'processing', diagnostics: error) }
+    outcome
+  end
+
+  # Convert to array of error strings given nested hash with arrays of error strings as values
+  def error_messages_from_hash(errors)
+    errors&.values&.each_with_object([]) do |value, messages|
+      value.each do |val|
+        val.is_a?(Hash) ? messages.push(*error_messages_from_hash(val)) : messages << val
+      end
+    end
   end
 
   # Allow cross-origin requests

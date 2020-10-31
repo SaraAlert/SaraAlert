@@ -34,8 +34,8 @@ class PatientPage extends React.Component {
           <Card.Body>
             <Patient
               details={{ ...this.props.patient }}
-              jurisdictionPath={this.props.jurisdictionPath}
-              groupMembers={this.props.group_members || []}
+              jurisdiction_path={this.props.jurisdiction_path}
+              dependents={this.props.dependents || []}
               hideBody={this.state.hideBody}
               authenticity_token={this.props.authenticity_token}
             />
@@ -50,13 +50,13 @@ PatientPage.propTypes = {
   patient_id: PropTypes.string,
   current_user: PropTypes.object,
   patient: PropTypes.object,
-  group_members: PropTypes.array,
+  dependents: PropTypes.array,
   dashboardUrl: PropTypes.string,
   authenticity_token: PropTypes.string,
   patient_submission_token: PropTypes.string,
   canAddAssessments: PropTypes.bool,
   hideBody: PropTypes.bool,
-  jurisdictionPath: PropTypes.string,
+  jurisdiction_path: PropTypes.string,
 };
 
 export default PatientPage;

@@ -26,8 +26,8 @@ const potentialExposureFields = [
 
 describe('Patient', () => {
     it('Properly renders all main components', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ mockPatient2 ]} goto={goToMock} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} goto={goToMock} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
         expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient1.assigned_user);
         expect(wrapper.find('#identification').exists()).toBeTruthy();
@@ -39,8 +39,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders identification section', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#identification');
         expect(section.find(Row).first().text()).toEqual('Identification: ' + nameFormatter(mockPatient1));
         expect(section.find(Button).length).toEqual(0);
@@ -50,8 +50,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders contact information section', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#contact-information');
         expect(section.find(Row).first().text()).toEqual('Contact Information');
         expect(section.find(Button).length).toEqual(0);
@@ -61,8 +61,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders address section', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#address');
         expect(section.find(Row).first().text()).toEqual('Address');
         expect(section.find(Button).length).toEqual(0);
@@ -71,8 +71,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders arrival information section', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#arrival-information');
         expect(section.find(Row).first().text()).toEqual('Arrival Information');
         expect(section.find(Button).length).toEqual(0);
@@ -87,8 +87,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders additional planned travel section', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#additional-planned-travel');
         expect(section.find(Row).first().text()).toEqual('Additional Planned Travel');
         expect(section.find(Button).length).toEqual(0);
@@ -98,8 +98,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders case information section (isolation workflow only)', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#exposure-case-information');
         expect(section.find(Row).first().text()).toEqual('Case Information');
         expect(section.find(Button).length).toEqual(0);
@@ -109,8 +109,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders potential exposure information section (exposure workflow only)', () => {
-        const wrapper = shallow(<Patient details={mockPatient2} groupMembers={[ ]} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient2} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         const section = wrapper.find('#exposure-case-information');
         expect(section.find(Row).first().text()).toEqual('Potential Exposure Information');
         expect(section.find(Button).length).toEqual(0);
@@ -123,8 +123,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders HoH section', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ mockPatient2, blankMockPatient ]} goto={goToMock} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2, blankMockPatient ]} goto={goToMock} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         expect(wrapper.find('#head-of-household').exists()).toBeTruthy();
         expect(wrapper.find('#head-of-household').find(Row).at(1).text())
             .toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
@@ -138,8 +138,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders household member section', () => {
-        const wrapper = shallow(<Patient details={mockPatient2} groupMembers={[ ]} goto={goToMock} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient2} dependents={[ ]} goto={goToMock} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         expect(wrapper.find('#household-member-not-hoh').exists()).toBeTruthy();
         expect(wrapper.find('#household-member-not-hoh').find(Row).first().text())
             .toEqual('The reporting responsibility for this monitoree is handled by another monitoree. Click here to view that monitoree.');
@@ -150,8 +150,8 @@ describe('Patient', () => {
     });
 
     it('Properly renders single member (not in household) section', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ ]} goto={goToMock} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} goto={goToMock} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         expect(wrapper.find('#no-household').exists()).toBeTruthy();
         expect(wrapper.find('#no-household').find(Row).at(1).text()).toEqual('This monitoree is not a member of a household:');
         expect(wrapper.containsMatchingElement(<MoveToHousehold />)).toBeTruthy();
@@ -165,18 +165,18 @@ describe('Patient', () => {
     });
 
     it('Expands/collapses details with this.props.hideBody', () => {
-        const collapsedWrapper = shallow(<Patient details={mockPatient1} groupMembers={[ mockPatient2 ]} goto={goToMock} hideBody={true}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const collapsedWrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} goto={goToMock} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         expect(collapsedWrapper.find(Collapse).prop('in')).toBeFalsy();
 
-        const expandedWrapper = shallow(<Patient details={mockPatient1} groupMembers={[ mockPatient2 ]} goto={goToMock} hideBody={false}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const expandedWrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} goto={goToMock} hideBody={false}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         expect(expandedWrapper.find(Collapse).prop('in')).toBeTruthy();
     });
 
     it('Calls props goto method when the edit buttons are clicked', () => {
-        const wrapper = shallow(<Patient details={mockPatient1} groupMembers={[ mockPatient2 ]} goto={goToMock} hideBody={false}
-            jurisdictionPath="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} goto={goToMock} hideBody={false}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         expect(wrapper.find(Button).length).toEqual(6);
         expect(goToMock).toHaveBeenCalledTimes(0);
         wrapper.find(Button).forEach(function(btn, index) {

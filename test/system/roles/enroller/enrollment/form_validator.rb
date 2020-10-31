@@ -103,13 +103,13 @@ class EnrollmentFormValidator < ApplicationSystemTestCase
     verify_text_displayed('Please enter a valid Assigned Jurisdiction')
     fill_in 'jurisdiction_id', with: 'USA, State 1, County 1'
     fill_in 'assigned_user', with: '-8.5'
-    assert_not_equal('-8.5', page.find_field('assignedUser').value)
+    assert_not_equal('-8.5', page.find_field('assigned_user').value)
     fill_in 'assigned_user', with: '10000'
-    assert_not_equal('10000', page.find_field('assignedUser').value)
+    assert_not_equal('10000', page.find_field('assigned_user').value)
     fill_in 'assigned_user', with: 'asdf'
-    assert_not_equal('asdf', page.find_field('assignedUser').value)
+    assert_not_equal('asdf', page.find_field('assigned_user').value)
     fill_in 'assigned_user', with: 'W(#*&R#(W&'
-    assert_not_equal('W(#*&R#(W&', page.find_field('assignedUser').value)
+    assert_not_equal('W(#*&R#(W&', page.find_field('assigned_user').value)
     @@enrollment_form.populate_enrollment_step(:potential_exposure_info, potential_exposure_info)
     verify_text_not_displayed('Please enter a Last Date of Exposure OR turn on Continuous Exposure')
   end

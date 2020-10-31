@@ -240,7 +240,7 @@ const mockPatient1 = {
     monitored_address_state: "Massachusetts",
     monitored_address_zip: "98145-4774",
     monitoring: true,
-    monitoring_plan: "None",
+    monitoring_plan: "Daily active monitoring",
     monitoring_reason: "Transferred to another jurisdiction",
     nationality: "Serbs",
     native_hawaiian_or_other_pacific_islander: null,
