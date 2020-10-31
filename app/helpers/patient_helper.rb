@@ -75,7 +75,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     return 'Hispanic or Latino' if code == '2135-2'
     return 'Not Hispanic or Latino' if code == '2186-5'
 
-    nil
+    code
   end
 
   # Build a FHIR US Core BirthSex Extension given Sara Alert sex information.
@@ -96,7 +96,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     return 'Female' if code == 'F'
     return 'Unknown' if code == 'UNK'
 
-    nil
+    code
   end
 
   # Helper to create an extension for preferred contact method
@@ -109,9 +109,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for preferred contact method
   def self.from_preferred_contact_method_extension(patient)
-    pcm = patient&.extension&.select { |e| e.url.include?('preferred-contact-method') }&.first&.valueString
-    pcm = nil unless ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', 'Unknown'].include?(pcm)
-    pcm
+    patient&.extension&.select { |e| e.url.include?('preferred-contact-method') }&.first&.valueString
   end
 
   # Helper to create an extension for preferred contact time
@@ -124,9 +122,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for preferred contact time
   def self.from_preferred_contact_time_extension(patient)
-    pct = patient&.extension&.select { |e| e.url.include?('preferred-contact-time') }&.first&.valueString
-    pct = nil unless %w[Morning Afternoon Evening].include?(pct)
-    pct
+    patient&.extension&.select { |e| e.url.include?('preferred-contact-time') }&.first&.valueString
   end
 
   # Helper to create an extension for symptom onset date
@@ -139,9 +135,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for symptom onset date
   def self.from_symptom_onset_date_extension(patient)
-    Date.strptime(patient&.extension&.select { |e| e.url.include?('symptom-onset-date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
-  rescue ArgumentError
-    nil
+    patient&.extension&.select { |e| e.url.include?('symptom-onset-date') }&.first&.valueDate
   end
 
   # Helper to create an extension for last exposure date
@@ -154,9 +148,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Helper to understand an extension for last exposure date
   def self.from_last_exposure_date_extension(patient)
-    Date.strptime(patient&.extension&.select { |e| e.url.include?('last-exposure-date') }&.first&.valueDate&.to_s || '', '%Y-%m-%d')
-  rescue ArgumentError
-    nil
+    patient&.extension&.select { |e| e.url.include?('last-exposure-date') }&.first&.valueDate
   end
 
   # Helper to create an extension for isolation status
@@ -177,6 +169,10 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     pat.address_state = normalize_and_get_state_name(pat.address_state) || pat.address_state
     adpt = pat.additional_planned_travel_destination_state
     pat.additional_planned_travel_destination_state = normalize_and_get_state_name(adpt) || adpt
+  end
+
+  def self.from_fhir_phone_number(value)
+    Phonelib.parse(value, 'US').full_e164.presence || value
   end
 
   def normalize_name(name)

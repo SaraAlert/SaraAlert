@@ -18,8 +18,8 @@ class PatientMailerTest < ActionMailer::TestCase
     @patient.update(email: patient_email,
                     primary_language: 'en',
                     submission_token: patient_submission_token,
-                    primary_telephone: '(555) 555-0111',
-                    preferred_contact_method: 'Phone')
+                    primary_telephone: '+15555550111',
+                    preferred_contact_method: 'Telephone call')
     ENV['TWILLIO_SENDING_NUMBER'] = 'test'
     ENV['TWILLIO_API_ACCOUNT'] = 'test'
     ENV['TWILLIO_API_KEY'] = 'test'

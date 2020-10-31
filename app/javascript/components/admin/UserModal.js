@@ -8,7 +8,7 @@ class UserModal extends React.Component {
     super(props);
     this.state = {
       email: this.props.initialUserData.email ? this.props.initialUserData.email : '',
-      jurisdictionPath: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdictionPaths[0],
+      jurisdiction_path: this.props.initialUserData.jurisdiction_path ? this.props.initialUserData.jurisdiction_path : this.props.jurisdiction_paths[0],
       roleTitle: this.props.initialUserData.role_title ? this.props.initialUserData.role_title : this.props.roles[0],
       isAPIEnabled: this.props.initialUserData.is_api_enabled ? this.props.initialUserData.is_api_enabled : false,
       isLocked: this.props.initialUserData.is_locked ? this.props.initialUserData.is_locked : false,
@@ -21,7 +21,7 @@ class UserModal extends React.Component {
   };
 
   handleJurisdictionChange = data => {
-    this.setState({ jurisdictionPath: data.value });
+    this.setState({ jurisdiction_path: data.value });
   };
 
   handleRoleChange = data => {
@@ -73,9 +73,9 @@ class UserModal extends React.Component {
                 defaultValue={
                   this.props.initialUserData.jurisdiction_path
                     ? { label: this.props.initialUserData.jurisdiction_path, value: this.props.initialUserData.jurisdiction_path }
-                    : { label: this.props.jurisdictionPaths[0], value: this.props.jurisdictionPaths[0] }
+                    : { label: this.props.jurisdiction_paths[0], value: this.props.jurisdiction_paths[0] }
                 }
-                options={this.props.jurisdictionPaths.map(path => {
+                options={this.props.jurisdiction_paths.map(path => {
                   return { label: path, value: path };
                 })}
                 onChange={this.handleJurisdictionChange}
@@ -153,7 +153,7 @@ UserModal.propTypes = {
   initialUserData: PropTypes.object,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
-  jurisdictionPaths: PropTypes.array,
+  jurisdiction_paths: PropTypes.array,
   roles: PropTypes.array,
 };
 
