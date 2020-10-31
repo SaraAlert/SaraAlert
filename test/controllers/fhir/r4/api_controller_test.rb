@@ -13,7 +13,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     setup_patients
     # Suppress logging calls originating from:
     # https://github.com/fhir-crucible/fhir_models/blob/v4.1.0/lib/fhir_models/bootstrap/json.rb
-    logger_double = double("logger_double", :debug => nil, :info => nil, :warning => nil, :error => nil)
+    logger_double = double('logger_double', debug: nil, info: nil, warning: nil, error: nil)
     FHIR.logger = logger_double
   end
 
