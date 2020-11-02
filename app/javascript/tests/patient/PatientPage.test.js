@@ -1,5 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PatientPage from '../../components/patient/PatientPage.js'
 import Patient from '../../components/patient/Patient.js'
 import { mockUser1 } from '../mocks/mockUsers'
@@ -19,18 +20,24 @@ describe('PatientPage', () => {
 
     it('Properly renders all main components', () => {
         expect(wrapper.find('#patient-info-header').exists()).toBeTruthy();
-        expect(wrapper.find('#patient-info-header').text()).toEqual('Monitoree Details  (edit details)');
+        expect(wrapper.find('#patient-info-header').text().includes('Monitoree Details  (edit details)')).toBeTruthy();
         expect(wrapper.find('#patient-info-header a').prop('href')).toEqual('undefined/patients/17/edit');
-        expect(wrapper.find('.collapse-hover .fa-bars').exists()).toBeTruthy();
-        expect(wrapper.containsMatchingElement(<Patient />)).toBeTruthy();
-        expect(wrapper2.find('#patient-info-header').text()).toEqual('Monitoree Details (ID: 00000-1) (edit details)');
+        expect(wrapper.find(FontAwesomeIcon).exists()).toBeTruthy();
+        expect(wrapper.find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-down');
+        expect(wrapper.containsMatchingElement(Patient)).toBeTruthy();
+        expect(wrapper2.find('#patient-info-header').text().includes('Monitoree Details (ID: 00000-1) (edit details)')).toBeTruthy();
     });
 
-    it('Updates this.state.hideBody by clicking card header', () => {
+    it('Toggles chrevron icon and updates hideBody when clicking card header', () => {
+        expect(wrapper.find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-down');
+        expect(wrapper.state('hideBody')).toBeTruthy();
+
         wrapper.find('#patient-info-header').simulate('click');
+        expect(wrapper.find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-up');
         expect(wrapper.state('hideBody')).toBeFalsy();
 
         wrapper.find('#patient-info-header').simulate('click');
+        expect(wrapper.find(FontAwesomeIcon).prop('icon').iconName).toEqual('chevron-down');
         expect(wrapper.state('hideBody')).toBeTruthy();
     });
 });
