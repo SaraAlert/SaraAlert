@@ -93,7 +93,8 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Patient.*'
       )
 
-      updates = Patient.from_fhir(contents)
+      updates = Patient.from_fhir(contents, default_patient_jurisdiction)
+
       resource = get_patient(params.permit(:id)[:id])
 
       # Grab patient before changes to construct diff
@@ -115,7 +116,9 @@ class Fhir::R4::ApiController < ActionController::API
 
     # The resource.update method does not allow a context to be passed, so first we assign the updates, then save
     resource.assign_attributes(updates)
-    status_unprocessable_entity(format_model_validation_errors(resource)) && return unless resource.save(context: :api)
+    unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
+      status_unprocessable_entity(format_model_validation_errors(resource)) && return
+    end
 
     if resource_type == 'patient'
       # Update patient history with detailed edit diff
@@ -151,7 +154,7 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       # Construct a Sara Alert Patient
-      resource = Patient.new(Patient.from_fhir(contents))
+      resource = Patient.new(Patient.from_fhir(contents, default_patient_jurisdiction))
       # Responder is self
       resource.responder = resource
 
@@ -185,9 +188,6 @@ class Fhir::R4::ApiController < ActionController::API
         resource.creator = shadow_user
       end
 
-      # Jurisdiction is the authenticated user's jurisdiction
-      resource.jurisdiction = resource.creator.jurisdiction
-
       # Generate submission token for monitoree
       resource.submission_token = resource.new_submission_token
     else
@@ -196,7 +196,9 @@ class Fhir::R4::ApiController < ActionController::API
 
     status_bad_request && return if resource.nil?
 
-    status_unprocessable_entity(format_model_validation_errors(resource)) && return unless resource.save(context: :api)
+    unless jurisdiction_valid_for_client?(resource) && resource.save(context: :api)
+      status_unprocessable_entity(format_model_validation_errors(resource)) && return
+    end
 
     if resource_type == 'patient'
       # Send enrollment notification only to responders
@@ -456,6 +458,27 @@ class Fhir::R4::ApiController < ActionController::API
   # Client application that is currently using the API
   def current_client_application
     OauthApplication.find_by(id: doorkeeper_token.application_id) if doorkeeper_token.application_id.present?
+  end
+
+  # Determine if the patient's jurisdiction is valid for the requesting application
+  def jurisdiction_valid_for_client?(patient)
+    allowed_jurisdiction_ids = current_client_application.jurisdiction&.subtree&.pluck(:id) ||
+                               current_client_application.user&.jurisdiction&.subtree&.pluck(:id)
+
+    if allowed_jurisdiction_ids.nil?
+      patient.errors.add(:jurisdiction, 'Client application does not have a jurisdiction')
+      false
+    elsif !patient.jurisdiction.nil? && allowed_jurisdiction_ids.include?(patient.jurisdiction[:id])
+      true
+    else
+      patient.errors.add(:jurisdiction, "Jurisdiction must be within the client application's jursdiction")
+      false
+    end
+  end
+
+  # If no jurisdiction specified for a patient, default to the client's jurisdiction
+  def default_patient_jurisdiction
+    current_client_application.jurisdiction || current_client_application.user&.jurisdiction
   end
 
   # Determine the patient data that is accessible by either the current resource owner

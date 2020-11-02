@@ -27,55 +27,64 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @user_patient_read_write_app = OauthApplication.create(
       name: 'user-test-patient-rw',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.*'
+      scopes: 'user/Patient.*',
+      user_id: @user.id
     )
 
     @user_patient_read_app = OauthApplication.create(
       name: 'user-test-patient-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.read'
+      scopes: 'user/Patient.read',
+      user_id: @user.id
     )
 
     @user_patient_write_app = OauthApplication.create(
       name: 'user-test-patient-w',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.write'
+      scopes: 'user/Patient.write',
+      user_id: @user.id
     )
 
     @user_observation_read_app = OauthApplication.create(
       name: 'user-test-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Observation.read'
+      scopes: 'user/Observation.read',
+      user_id: @user.id
     )
 
     @user_response_read_app = OauthApplication.create(
       name: 'user-test-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/QuestionnaireResponse.read'
+      scopes: 'user/QuestionnaireResponse.read',
+      user_id: @user.id
     )
 
     @user_patient_rw_observation_r_app = OauthApplication.create(
       name: 'user-test-patient-rw-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/Observation.read'
+      scopes: 'user/Patient.* user/Observation.read',
+      user_id: @user.id
     )
 
     @user_patient_rw_response_r_app = OauthApplication.create(
       name: 'user-test-patient-rw-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read'
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read',
+      user_id: @user.id
     )
 
     @user_observation_r_response_r_app = OauthApplication.create(
       name: 'user-test-observation-r-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/QuestionnaireResponse.read user/Observation.read'
+      scopes: 'user/QuestionnaireResponse.read user/Observation.read',
+      user_id: @user.id
     )
 
     @user_everything_app = OauthApplication.create(
       name: 'user-test-everything',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read'
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read',
+      user_id: @user.id
     )
 
     # Create access tokens
@@ -270,7 +279,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       last_date_of_exposure: 4.days.ago,
       symptom_onset: 3.days.ago,
       isolation: true,
-      primary_telephone: '+15555559999'
+      primary_telephone: '+15555559999',
+      jurisdiction_id: 4
     )
     @patient_2 = Patient.find_by(id: 2).as_fhir
 
@@ -770,6 +780,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
+    assert_equal 'USA, State 1, County 1',
+                 json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
   end
 
   test 'SYSTEM FLOW: should update Patient via update and set omitted fields to nil ' do
@@ -904,6 +916,19 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
     assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
+  end
+
+  test 'SYSTEM FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['issue'].length
+    assert(json_response['issue'][0]['diagnostics'].starts_with?('Jurisdiction must be within'))
   end
 
   test 'SYSTEM FLOW: should be forbidden via update' do
@@ -1696,6 +1721,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
+    assert_equal 'USA, State 1, County 1',
+                 json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
   end
 
   test 'USER FLOW: should update Patient via update and set omitted fields to nil' do
@@ -1830,6 +1857,19 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
     assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
+  end
+
+  test 'USER FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
+    @patient_1.extension.find { |e| e.url == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }.valueString = 'USA, State 2'
+    put(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['issue'].length
+    assert(json_response['issue'][0]['diagnostics'].starts_with?('Jurisdiction must be within'))
   end
 
   test 'USER FLOW: should be forbidden via update' do
