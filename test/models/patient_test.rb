@@ -16,6 +16,11 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
   end
 
+  def formatted_tz_offset(offset)
+    # Same formatting as PatientHelper
+    (offset.negative? ? '' : '+') + format('%<offset>.2d', offset: offset) + ':00'
+  end
+
   test 'active dependents does NOT include dependents that are purged' do
     responder = create(:patient, purged: false, monitoring: true)
     dependent = create(:patient, purged: true, monitoring: false)
@@ -920,7 +925,12 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute)).minutes.ago)
-    assert Patient.purge_eligible.count == 1
+    # If the patient was modified right before the warning, but that was on a DST boundary, the comparison to minutes before will be off by 1 hour.
+    if (Time.now + 1.minute - 2.5.days).in_time_zone('Eastern Time (US & Canada)').dst?
+      assert_equal Patient.purge_eligible.count, 0
+    else
+      assert_equal Patient.purge_eligible.count, 1
+    end
     # Anything less than the 2.5 days ago means the patient was modified between the warning and the purging and should not be purged
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
@@ -1248,13 +1258,11 @@ class PatientTest < ActiveSupport::TestCase
     )
     Patient.destroy_all
     patient = Patient.new(creator: user, jurisdiction: jur)
-    patient.responder = patient
-    patient.save
-    assert patient.address_timezone_offset == '-04:00'
+    assert patient.address_timezone_offset == formatted_tz_offset(Time.now.in_time_zone('US/Eastern').utc_offset / 60 / 60)
     patient.update(address_state: 'California')
-    assert patient.address_timezone_offset == '-07:00'
+    assert patient.address_timezone_offset == formatted_tz_offset(Time.now.in_time_zone('US/Pacific').utc_offset / 60 / 60)
     patient.update(monitored_address_state: 'Northern Mariana Islands')
-    assert patient.address_timezone_offset == '+10:00'
+    assert patient.address_timezone_offset == formatted_tz_offset(Time.now.in_time_zone('Guam').utc_offset / 60 / 60)
   end
 
   test 'duplicate_data finds duplicate that matches all criteria' do
