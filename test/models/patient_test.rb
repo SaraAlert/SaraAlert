@@ -1398,7 +1398,7 @@ class PatientTest < ActiveSupport::TestCase
           address_line_1: '123 Test Street',
           address_state: 'Oregon',
           address_zip: '11111',
-          date_of_birth: '2000-11-11',
+          date_of_birth: 25.years.ago,
           first_name: 'Test',
           last_name: 'Tester',
           last_date_of_exposure: 4.days.ago.to_date,
@@ -1544,7 +1544,7 @@ class PatientTest < ActiveSupport::TestCase
   test 'validates date_of_birth is a valid date in api context' do
     patient = valid_patient
 
-    patient.date_of_birth = '2000-01-01'
+    patient.date_of_birth = 25.years.ago
     assert patient.valid?(:api)
 
     patient.date_of_birth = '01-15-2000'
@@ -1558,7 +1558,7 @@ class PatientTest < ActiveSupport::TestCase
   test 'validates last_date_of_exposure is a valid date in api context' do
     patient = valid_patient
 
-    patient.last_date_of_exposure = '2000-01-01'
+    patient.last_date_of_exposure = Time.now - 1.day
     assert patient.valid?(:api)
 
     patient.last_date_of_exposure = '01-15-2000'
@@ -1572,7 +1572,7 @@ class PatientTest < ActiveSupport::TestCase
   test 'validates symptom_onset is a valid date in api context' do
     patient = valid_patient
 
-    patient.symptom_onset = '2000-01-01'
+    patient.symptom_onset = Time.now - 1.day
     assert patient.valid?(:api)
 
     patient.symptom_onset = ''
@@ -1708,7 +1708,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:api)
 
     patient.isolation = true
-    patient.symptom_onset = '2000-01-01'
+    patient.symptom_onset = Time.now - 1.day
     assert patient.valid?(:api)
 
     patient.isolation = true
@@ -1725,7 +1725,7 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?(:api)
 
     patient.isolation = false
-    patient.last_date_of_exposure = '2000-01-01'
+    patient.last_date_of_exposure = Time.now - 1.day
     assert patient.valid?(:api)
 
     patient.isolation = false
