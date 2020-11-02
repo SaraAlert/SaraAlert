@@ -110,8 +110,17 @@ select.form-control {
   vertical-align: top;
 }
 
+.badge-muted {
+  background-color: #6c757d !important;
+  color: #fff;
+}
+
 .table .concern {
   color: red;
+}
+
+.b-border-right-3 {
+  border-right: 3px solid black !important;
 }
 
 .g-border-bottom {
