@@ -15,12 +15,7 @@ class IntegerSymptom < Symptom
   end
 
   def negate
-    self.int_value = if threshold_operator&.downcase&.include?('less')
-                       # Max Integer for database column - ActiveRecord errors on 648.
-                       2_147_483_647
-                     else
-                       0
-                     end
+    self.int_value = 0
   end
 
   def as_json(options = {})
