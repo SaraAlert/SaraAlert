@@ -15,11 +15,7 @@ class FloatSymptom < Symptom
   end
 
   def negate
-    self.float_value = if threshold_operator&.downcase&.include?('less')
-                         3.402823466e38
-                       else
-                         0.0
-                       end
+    self.float_value = 0.0
   end
 
   def as_json(options = {})
