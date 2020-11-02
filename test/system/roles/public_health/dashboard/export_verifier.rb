@@ -68,6 +68,7 @@ class PublicHealthMonitoringExportVerifier < ApplicationSystemTestCase
     patients.each_with_index do |patient, row|
       assert_equal(patient[:id].to_s, csv[row][0], 'For field: id')
       details = patient.linelist
+      puts details
       details.keys.each_with_index do |field, col|
         if [true, false].include?(details[field])
           assert_equal(details[field] ? 'true' : 'false', csv[row][col], "For field: #{field}")
