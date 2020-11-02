@@ -56,7 +56,7 @@ class Patient < ApplicationRecord
      sex].each do |enum_field|
     validates enum_field, on: :api, inclusion: {
       in: VALID_ENUMS[enum_field],
-      message: "%<value>s is not an acceptable value for '#{VALIDATION[enum_field][:label]}', acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
+      message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
     }, allow_blank: true
   end
 
@@ -78,19 +78,17 @@ class Patient < ApplicationRecord
      date_of_birth
      first_name
      last_name].each do |required_field|
-    validates required_field, on: :api, presence: { message: "Required field '#{VALIDATION[required_field][:label]}' is missing" }
+    validates required_field, on: :api, presence: { message: 'is required' }
   end
 
   validates :symptom_onset,
             on: :api,
-            presence: { message: "Required field '#{VALIDATION[:symptom_onset][:label]}' is missing."\
-                                 " '#{VALIDATION[:symptom_onset][:label]}' is required when 'Isolation' is 'true'" },
+            presence: { message: "is required when 'Isolation' is 'true'" },
             if: -> { isolation }
 
   validates :last_date_of_exposure,
             on: :api,
-            presence: { message: "Required field '#{VALIDATION[:last_date_of_exposure][:label]}' is missing."\
-                                 " '#{VALIDATION[:last_date_of_exposure][:label]}' is required when 'Isolation' is 'false'" },
+            presence: { message: "is required when 'Isolation' is 'false'" },
             if: -> { !isolation }
 
   validates :email, on: :api, email: true
