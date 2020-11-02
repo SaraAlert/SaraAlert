@@ -164,6 +164,24 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     patient&.extension&.select { |e| e.url.include?('isolation') }&.first&.valueBoolean == true
   end
 
+  def to_string_extension(value, extension_id)
+    value.nil? ? nil : FHIR::Extension.new(
+      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      valueString: value
+    )
+  end
+
+  def self.from_string_extension(patient, extension_id)
+    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueString
+  end
+
+  # Convert from FHIR extension for Full Assigned Jurisdiction Path.
+  # Use the default if there is no path specified.
+  def self.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction)
+    jurisdiction_path = from_string_extension(patient, 'full-assigned-jurisdiction-path')
+    jurisdiction_path ? Jurisdiction.where(path: jurisdiction_path).first : default_jurisdiction
+  end
+
   def normalize_state_names(pat)
     pat.monitored_address_state = normalize_and_get_state_name(pat.monitored_address_state) || pat.monitored_address_state
     pat.address_state = normalize_and_get_state_name(pat.address_state) || pat.address_state

@@ -860,14 +860,15 @@ class Patient < ApplicationRecord
         to_preferred_contact_time_extension(preferred_contact_time),
         to_symptom_onset_date_extension(symptom_onset),
         to_last_exposure_date_extension(last_date_of_exposure),
-        to_isolation_extension(isolation)
+        to_isolation_extension(isolation),
+        to_string_extension(jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path')
       ].reject(&:nil?)
     )
   end
 
   # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
   # create new ones, or update existing ones), using the given FHIR::Patient.
-  def self.from_fhir(patient)
+  def self.from_fhir(patient, default_jurisdiction)
     {
       monitoring: patient&.active.nil? ? false : patient.active,
       first_name: patient&.name&.first&.given&.first,
@@ -903,7 +904,8 @@ class Patient < ApplicationRecord
       preferred_contact_time: PatientHelper.from_preferred_contact_time_extension(patient),
       symptom_onset: PatientHelper.from_symptom_onset_date_extension(patient),
       last_date_of_exposure: PatientHelper.from_last_exposure_date_extension(patient),
-      isolation: PatientHelper.from_isolation_extension(patient)
+      isolation: PatientHelper.from_isolation_extension(patient),
+      jurisdiction: PatientHelper.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction)
     }
   end
 
