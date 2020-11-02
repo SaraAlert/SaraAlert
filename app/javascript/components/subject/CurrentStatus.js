@@ -11,42 +11,73 @@ class CurrentStatus extends React.Component {
 
   generateStatus(status) {
     if (status === 'exposure_symptomatic') {
-      return <Badge variant="danger">symptomatic</Badge>;
+      return (
+        <Badge variant="danger" className="badge-larger-font">
+          symptomatic
+        </Badge>
+      );
     } else if (status === 'exposure_asymptomatic') {
-      return <Badge variant="success">asymptomatic</Badge>;
+      return (
+        <Badge variant="success" className="badge-larger-font">
+          asymptomatic
+        </Badge>
+      );
     } else if (status === 'exposure_non_reporting') {
-      return <Badge variant="warning">non-reporting</Badge>;
+      return (
+        <Badge variant="warning" className="badge-larger-font">
+          non-reporting
+        </Badge>
+      );
     } else if (status === 'exposure_under_investigation') {
-      return <Badge variant="dark">PUI</Badge>;
+      return (
+        <Badge variant="dark" className="badge-larger-font">
+          PUI
+        </Badge>
+      );
     } else if (status === 'purged') {
-      // FIX ME
-      return <Badge variant="muted">purged</Badge>;
+      return <Badge className="badge-muted badge-larger-font">purged</Badge>;
     } else if (status === 'closed') {
-      return <Badge variant="secondary">not currently being monitored</Badge>;
+      return (
+        <Badge variant="secondary" className="badge-larger-font">
+          not currently being monitored
+        </Badge>
+      );
     } else if (status === 'isolation_requiring_review') {
-      return <Badge variant="danger">requires review</Badge>;
+      return (
+        <Badge variant="danger" className="badge-larger-font">
+          requires review
+        </Badge>
+      );
     } else if (status === 'isolation_symp_non_test_based') {
       return (
-        <Badge variant="danger" data-for={`symptomatic-non-test-based`} data-tip="">
+        <Badge variant="danger" className="badge-larger-font" data-for={`symptomatic-non-test-based`} data-tip="">
           requires review (symptomatic non test based)
         </Badge>
       );
     } else if (status === 'isolation_asymp_non_test_based') {
       return (
-        <Badge variant="danger" data-for={`aymptomatic-non-test-based`} data-tip="">
+        <Badge variant="danger" className="badge-larger-font" data-for={`aymptomatic-non-test-based`} data-tip="">
           requires review (asymptomatic non test based)
         </Badge>
       );
     } else if (status === 'isolation_test_based') {
       return (
-        <Badge variant="danger" data-for={`test-based`} data-tip="">
+        <Badge variant="danger" className="badge-larger-font" data-for={`test-based`} data-tip="">
           requires review (test based)
         </Badge>
       );
     } else if (status === 'isolation_non_reporting') {
-      return <Badge variant="warning">non-reporting</Badge>;
+      return (
+        <Badge variant="warning" className="badge-larger-font">
+          non-reporting
+        </Badge>
+      );
     } else if (status === 'isolation_reporting') {
-      return <Badge variant="success">reporting</Badge>;
+      return (
+        <Badge variant="success" className="badge-larger-font">
+          reporting
+        </Badge>
+      );
     } else {
       return <span>unknown</span>;
     }
@@ -93,8 +124,11 @@ class CurrentStatus extends React.Component {
         <h4 className="pb-3">
           <b>
             {this.props.isolation ? 'Isolation' : 'Exposure'} Workflow: {this.generateStatus(this.props.status)}
-            {this.generateStatusTooltip(this.props.status)}
-            {'  |  '}Notification status is <EligibilityTooltip report_eligibility={this.props.report_eligibility} id={`eltt`} inline={true} />
+          </b>
+          {this.generateStatusTooltip(this.props.status)}
+          <span className="b-border-right-3 pl-3"></span>
+          <b className="pl-3">
+            Notification status is <EligibilityTooltip report_eligibility={this.props.report_eligibility} id={`eltt`} inline={true} />
           </b>
         </h4>
       </React.Fragment>
