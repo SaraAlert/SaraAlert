@@ -503,7 +503,7 @@ class PatientsController < ApplicationController
   # Construct a diff for a patient update to keep track of changes
   def patient_diff(patient_before, patient_after)
     diffs = []
-    allowed_params.keys.each do |attribute|
+    allowed_params.each_key do |attribute|
       next if patient_before[attribute] == patient_after[attribute]
 
       diffs << {
@@ -614,11 +614,11 @@ class PatientsController < ApplicationController
       :gender_identity,
       :sexual_orientation,
       :user_defined_symptom_onset,
-      laboratories_attributes: [
-        :lab_type,
-        :specimen_collection,
-        :report,
-        :result
+      laboratories_attributes: %i[
+        lab_type
+        specimen_collection
+        report
+        result
       ]
     )
   end
