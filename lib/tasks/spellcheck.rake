@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+# Hunspell GitHub: https://github.com/hunspell/hunspell
+# ffi-hunspell Ruby Gem GitHub: https://github.com/postmodern/ffi-hunspell
+# ffi-hunspell Ruby Gem Docs: https://rubydoc.info/gems/ffi-hunspell/frames
+# Hunspell Dictionary Source: https://cgit.freedesktop.org/libreoffice/dictionaries/tree/
+
+
 if Rails.env.test?
   require 'yaml'
   require 'ffi/hunspell' # inject Hunspell class to Ruby namespace
