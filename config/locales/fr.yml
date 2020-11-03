@@ -50,7 +50,7 @@ fr:
         name: 'Nez qui coule'
         notes: ''
       temperature:
-        name: 'Temperature'
+        name: 'Température'
         notes: 'Veuillez entrer votre température actuelle en degrés Fahrenheit'
       other:
         name: 'Other'
