@@ -6,10 +6,9 @@
 # Hunspell Dictionary Source: https://cgit.freedesktop.org/libreoffice/dictionaries/tree/
 
 
-if Rails.env.test?
+if Rails.env.test? || Rails.env.development?
   require 'yaml'
   require 'ffi/hunspell' # inject Hunspell class to Ruby namespace
-
 
   # Flatten the map while preserviing the paths to the the leaf values for
   # ease of locating errors to be fixed
