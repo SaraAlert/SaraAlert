@@ -102,39 +102,43 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'import sara alert format to exposure and accept all' do
-    @@public_health_test_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, nil)
+    @@public_health_test_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :valid, nil)
   end
 
   test 'import sara alert format to isolation and accept all' do
-    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format.xlsx', :valid, nil)
+    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :valid, nil)
   end
 
   test 'import sara alert format to exposure and accept all individually' do
-    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :exposure, 'Sara-Alert-Format.xlsx', :valid, [])
+    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :valid, [])
   end
 
   test 'import sara alert format to isolation and accept some' do
-    @@public_health_test_helper.import_sara_alert_format('state2_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, [1, 4, 5, 9])
+    @@public_health_test_helper.import_sara_alert_format('state2_epi', :isolation, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :valid, [1, 4, 5, 9])
   end
 
   test 'import sara alert format to exposure and reject all' do
-    @@public_health_test_helper.import_sara_alert_format('locals2c3_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, (0..10).to_a)
+    @@public_health_test_helper.import_sara_alert_format('locals2c3_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :valid, (0..10).to_a)
   end
 
   test 'import sara alert format to isolation with duplicate patient and accept duplicates' do
-    @@public_health_test_helper.import_sara_alert_format('state5_epi', :isolation, 'Sara-Alert-Format.xlsx', :valid, nil, accept_duplicates: true)
+    # rubocop:disable Layout/LineLength
+    @@public_health_test_helper.import_sara_alert_format('state5_epi', :isolation, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :valid, nil, accept_duplicates: true)
+    # rubocop:enable Layout/LineLength
   end
 
   test 'import sara alert format to exposure with duplicate patient and reject duplicates' do
-    @@public_health_test_helper.import_sara_alert_format('state5_epi', :exposure, 'Sara-Alert-Format.xlsx', :valid, nil, accept_duplicates: false)
+    # rubocop:disable Layout/LineLength
+    @@public_health_test_helper.import_sara_alert_format('state5_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :valid, nil, accept_duplicates: false)
+    # rubocop:enable Layout/LineLength
   end
 
   test 'import sara alert format to exposure with custom jurisdictions' do
-    @@public_health_test_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :valid, nil)
+    @@public_health_test_helper.import_sara_alert_format('state1_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions-EW.xlsx', :valid, nil)
   end
 
   test 'import sara alert format to isolation with custom jurisdictions' do
-    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :valid, nil)
+    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format-With-Jurisdictions-IW.xlsx', :valid, nil)
   end
 
   test 'import sara alert format to exposure and validate file type' do
@@ -163,11 +167,19 @@ class PublicHealthTest < ApplicationSystemTestCase
   end
 
   test 'import sara alert format to exposure and validate jurisdiction path' do
-    @@public_health_test_helper.import_sara_alert_format('locals2c4_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions.xlsx', :invalid_fields, [])
+    @@public_health_test_helper.import_sara_alert_format('locals2c4_epi', :exposure, 'Sara-Alert-Format-With-Jurisdictions-EW.xlsx', :invalid_fields, [])
   end
 
   test 'import sara alert format and cancel' do
-    @@public_health_test_helper.import_and_cancel('locals2c4_epi', :exposure, 'Sara-Alert-Format.xlsx', 'Sara Alert Format')
+    @@public_health_test_helper.import_and_cancel('locals2c4_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', 'Sara Alert Format')
+  end
+
+  test 'import sara alert format to exposure and validate workflow specific fields' do
+    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :exposure, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :invalid_fields, [])
+  end
+
+  test 'import sara alert format to isolation and validate workflow specific fields' do
+    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :invalid_fields, [])
   end
 
   # TODO: Re-enable when migrating away from GitHub LFS
