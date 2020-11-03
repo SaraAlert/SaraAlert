@@ -158,6 +158,8 @@ GEM
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.13.1)
+    ffi-hunspell (0.5.0)
+      ffi (~> 1.0)
     fhir_models (4.1.0)
       bcp47 (>= 0.3)
       date_time_precision (>= 0.8)
@@ -408,6 +410,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   fakeredis
+  ffi-hunspell
   fhir_models
   gemsurance
   jbuilder (~> 2.7)
