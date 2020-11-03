@@ -283,11 +283,15 @@ class ImportController < ApplicationController
     if workflow == :exposure
       return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(normalized_value)
 
+      # rubocop:disable Layout/LineLength
       err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for monitorees imported into the Exposure workflow, acceptable values are: #{VALID_EXPOSURE_ENUMS[field].to_sentence}"
+      # rubocop:enable Layout/LineLength
     else
       return NORMALIZED_ISOLATION_ENUMS[field][normalized_value] if NORMALIZED_ISOLATION_ENUMS[field].keys.include?(normalized_value)
 
+      # rubocop:disable Layout/LineLength
       err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for cases imported into the Isolation workflow, acceptable values are: #{VALID_ISOLATION_ENUMS[field].to_sentence}"
+      # rubocop:enable Layout/LineLength
     end
     raise ValidationError.new(err_msg, row_ind)
   end
