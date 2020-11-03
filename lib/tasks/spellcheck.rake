@@ -82,6 +82,11 @@ if Rails.env.test? || Rails.env.development?
   def customize_es_pr_dictionary(dict)
     dict.add('Sara')
     dict.add('Alert')
+    dict.add('Fahrenheit')
+    dict.add('infórmeles')
+    dict.add('intentemoslo')
+    dict.add('oxímetro')
+    dict.add('recordándole')
   end
 
 
@@ -89,6 +94,7 @@ if Rails.env.test? || Rails.env.development?
   def customize_fr_dictionary(dict)
     dict.add('Sara')
     dict.add('Alert')
+    dict.add('Other')
   end
 
 
