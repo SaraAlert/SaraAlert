@@ -16,6 +16,11 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
   end
 
+  def formatted_tz_offset(offset)
+    # Same formatting as PatientHelper
+    (offset.negative? ? '' : '+') + format('%<offset>.2d', offset: offset) + ':00'
+  end
+
   test 'active dependents does NOT include dependents that are purged' do
     responder = create(:patient, purged: false, monitoring: true)
     dependent = create(:patient, purged: true, monitoring: false)
@@ -119,6 +124,168 @@ class PatientTest < ActiveSupport::TestCase
     dependent.update!(responder_id: responder.id)
 
     assert_not responder.active_dependents_exclude_self.pluck(:id).include?(responder.id)
+  end
+
+  test 'validates last date of exposure date constraints' do
+    patient = build(:patient, last_date_of_exposure: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: nil)
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Time.now - 1.day)
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Time.now + 30.days)
+    assert patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Time.now + 31.days)
+    assert_not patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+  end
+
+  test 'validates symptom onset date constraints' do
+    patient = build(:patient, symptom_onset: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: nil)
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: Time.now - 1.day)
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: Time.now + 30.days)
+    assert patient.valid?
+
+    patient = build(:patient, symptom_onset: Time.now + 31.days)
+    assert_not patient.valid?
+
+    patient = build(:patient, last_date_of_exposure: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+  end
+
+  test 'validates extended isolation is not more than 30 days in the past' do
+    patient = build(:patient, extended_isolation: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: nil)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: Time.now + 1.day)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: Time.now - 30.days)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: Time.now - 31.days)
+    assert_not patient.valid?
+  end
+
+  test 'validates date of birth date constraints' do
+    patient = build(:patient, date_of_birth: nil)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_birth: 25.years.ago)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_birth: Date.new(1800, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, date_of_birth: 1.day.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates date of departure date constraints' do
+    patient = build(:patient, date_of_departure: Date.new(2020, 1, 1))
+    assert patient.valid?
+
+    patient = build(:patient, date_of_departure: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_departure: nil)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_departure: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, date_of_departure: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates date of arrival date constraints' do
+    patient = build(:patient, date_of_arrival: Date.new(2020, 1, 1))
+    assert patient.valid?
+
+    patient = build(:patient, date_of_arrival: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_arrival: nil)
+    assert patient.valid?
+
+    patient = build(:patient, date_of_arrival: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, date_of_arrival: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates additional planned travel start date constraints' do
+    patient = build(:patient, additional_planned_travel_start_date: Date.new(2020, 1, 1))
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_start_date: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_start_date: nil)
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_start_date: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, additional_planned_travel_start_date: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates additional planned travel end date constraints' do
+    patient = build(:patient, additional_planned_travel_end_date: Date.new(2020, 1, 1))
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_end_date: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_end_date: nil)
+    assert patient.valid?
+
+    patient = build(:patient, additional_planned_travel_end_date: Date.new(1900, 1, 1))
+    assert_not patient.valid?
+
+    patient = build(:patient, additional_planned_travel_end_date: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'validates extended isolation date constraints' do
+    patient = build(:patient, extended_isolation: nil)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: Time.now)
+    assert patient.valid?
+
+    patient = build(:patient, extended_isolation: 31.days.ago)
+    assert_not patient.valid?
+
+    patient = build(:patient, extended_isolation: 31.days.from_now)
+    assert_not patient.valid?
+  end
+
+  test 'can update patients with out of range dates' do
+    # Create & save a patient with an invalid date field to confirm that updating patients
+    # unrelated attributes will not cause an error
+    patient = build(:patient, date_of_birth: Date.new(1800, 1, 1))
+    patient.save(validate: false)
+
+    assert patient.update(first_name: 'test')
   end
 
   test 'close eligible does not include purged records' do
@@ -758,7 +925,12 @@ class PatientTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
     patient.update!(updated_at: (ADMIN_OPTIONS['purgeable_after'] + (2.5.days / 1.minute)).minutes.ago)
-    assert Patient.purge_eligible.count == 1
+    # If the patient was modified right before the warning, but that was on a DST boundary, the comparison to minutes before will be off by 1 hour.
+    if (Time.now + 1.minute - 2.5.days).in_time_zone('Eastern Time (US & Canada)').dst?
+      assert_equal Patient.purge_eligible.count, 0
+    else
+      assert_equal Patient.purge_eligible.count, 1
+    end
     # Anything less than the 2.5 days ago means the patient was modified between the warning and the purging and should not be purged
     ADMIN_OPTIONS['weekly_purge_date'] = (Time.now + 1.minute).strftime('%A %l:%M%p')
     ADMIN_OPTIONS['weekly_purge_warning_date'] = (Time.now + 1.minute - 2.5.days).strftime('%A %l:%M%p')
@@ -1086,13 +1258,11 @@ class PatientTest < ActiveSupport::TestCase
     )
     Patient.destroy_all
     patient = Patient.new(creator: user, jurisdiction: jur)
-    patient.responder = patient
-    patient.save
-    assert patient.address_timezone_offset == '-04:00'
+    assert patient.address_timezone_offset == formatted_tz_offset(Time.now.in_time_zone('US/Eastern').utc_offset / 60 / 60)
     patient.update(address_state: 'California')
-    assert patient.address_timezone_offset == '-07:00'
+    assert patient.address_timezone_offset == formatted_tz_offset(Time.now.in_time_zone('US/Pacific').utc_offset / 60 / 60)
     patient.update(monitored_address_state: 'Northern Mariana Islands')
-    assert patient.address_timezone_offset == '+10:00'
+    assert patient.address_timezone_offset == formatted_tz_offset(Time.now.in_time_zone('Guam').utc_offset / 60 / 60)
   end
 
   test 'duplicate_data finds duplicate that matches all criteria' do

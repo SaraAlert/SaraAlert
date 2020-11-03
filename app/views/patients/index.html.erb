@@ -1,5 +1,5 @@
 <% content_for :assets do %>
-  <%= javascript_pack_tag 'datatables' %>
+  <%= javascript_packs_with_chunks_tag 'datatables' %>
 <% end %>
 <%= render partial: 'layouts/breadcrumb', locals: { jurisdiction_path: current_user.jurisdiction_path, crumbs: [{ value: 'Dashboard', href: nil }] } %>
 

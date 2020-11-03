@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'rspec/mocks/minitest_integration'
 
 # rubocop:disable Metrics/ClassLength
 class ApiControllerTest < ActionDispatch::IntegrationTest
@@ -10,6 +11,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     setup_user_applications
     setup_system_applications
     setup_patients
+    # Suppress logging calls originating from:
+    # https://github.com/fhir-crucible/fhir_models/blob/v4.1.0/lib/fhir_models/bootstrap/json.rb
+    logger_double = double('logger_double', debug: nil, info: nil, warning: nil, error: nil)
+    FHIR.logger = logger_double
   end
 
   # Sets up applications registered for user flow

@@ -10,6 +10,10 @@ class ActiveSupport::TestCase
 
   fixtures :all
 
+  def setup
+    Sidekiq::Worker.clear_all
+  end
+
   # Run tests in parallel with specified workers
   parallelize(workers: 1)
 

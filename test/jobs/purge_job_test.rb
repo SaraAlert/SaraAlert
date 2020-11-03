@@ -73,12 +73,12 @@ class PurgeJobTest < ActiveSupport::TestCase
     assessment = create(:assessment, patient: patient)
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id)
-
     patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
     PurgeJob.perform_now
     assert(Assessment.count.zero?)
     assert(ReportedCondition.count.zero?)
-    assert(Symptom.count.zero?)
+    assert_equal(Symptom.count, 1)
+    assert_equal(Symptom.first, patient.jurisdiction.threshold_conditions.first.symptoms.first)
   end
 
   test 'nils out everything but kept attributes' do
@@ -102,8 +102,8 @@ class PurgeJobTest < ActiveSupport::TestCase
                                travel_related_notes: 'a', additional_planned_travel_type: 'a', additional_planned_travel_destination: 'a',
                                additional_planned_travel_destination_state: 'a', additional_planned_travel_destination_country: 'a',
                                additional_planned_travel_port_of_departure: 'a', date_of_departure: 1.month.ago,
-                               date_of_arrival: 1.month.ago, additional_planned_travel_start_date: 1.month.from_now,
-                               additional_planned_travel_end_date: 2.months.from_now, additional_planned_travel_related_notes: 'a',
+                               date_of_arrival: 1.month.ago, additional_planned_travel_start_date: 30.days.from_now,
+                               additional_planned_travel_end_date: 30.days.from_now, additional_planned_travel_related_notes: 'a',
                                last_date_of_exposure: 1.month.ago, potential_exposure_location: 'a', potential_exposure_country: 'a',
                                contact_of_known_case: false, contact_of_known_case_id: '1', member_of_a_common_exposure_cohort: false,
                                member_of_a_common_exposure_cohort_type: 'a', travel_to_affected_country_or_area: false,

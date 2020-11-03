@@ -5,7 +5,12 @@ class Laboratory < ApplicationRecord
   belongs_to :patient
 
   validates :result, inclusion: { in: ['positive', 'negative', 'indeterminate', 'other', nil, ''] }
-
+  validates :report, earliest_date: { date: Date.new(2020, 1, 1) },
+                     latest_date: { date: Time.now.to_date },
+                     if: -> { report_changed? }
+  validates :specimen_collection, earliest_date: { date: Date.new(2020, 1, 1) },
+                                  latest_date: { date: Time.now.to_date },
+                                  if: -> { specimen_collection_changed? }
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
 
