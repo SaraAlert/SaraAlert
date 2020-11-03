@@ -124,6 +124,7 @@ if Rails.env.test? || Rails.env.development?
   # Exits with code 0 if no spelling errors are found.
   # Exits with code 1 if one or more spelling errors are found.
   def main
+    puts FFI::Hunspell.directories
     num_errors = 0
     locale_globs = {
       'en_US': [
