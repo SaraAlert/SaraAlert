@@ -15,10 +15,11 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
                    healthcare_personnel crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort].freeze
   STATE_FIELDS = %i[address_state foreign_monitored_address_state additional_planned_travel_destination_state].freeze
   MONITORED_ADDRESS_FIELDS = %i[monitored_address_line_1 monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip].freeze
-  ISOLATION_FIELDS = %i[symptom_onset extended_isolation case_status].freeze
+  ISOLATION_FIELDS = %i[symptom_onset extended_isolation].freeze
   ENUM_FIELDS = %i[ethnicity preferred_contact_method primary_telephone_type secondary_telephone_type preferred_contact_time additional_planned_travel_type
                    exposure_risk_assessment monitoring_plan case_status].freeze
   RISK_FACTOR_FIELDS = %i[contact_of_known_case was_in_health_care_facility_with_known_cases].freeze
+  WORKFLOW_SPECIFIC_FIELDS = %i[case_status].freeze
 
   def verify_epi_x_field_validation(jurisdiction_id, workflow, file_name)
     sheet = get_xslx(file_name).sheet(0)
@@ -170,9 +171,13 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index - 13].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :symptom_onset # isolation workflow specific field
             assert_equal(workflow == :isolation ? row[index].to_s : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
-          elsif field == :case_status # isolation workflow specific enum field
-            normalized_cell_value = NORMALIZED_ENUMS[field][unformat_enum_field(row[index])].to_s
-            assert_equal(workflow == :isolation ? normalized_cell_value : '', patient[field].to_s, "#{field} mismatch in row #{row_num}")
+          elsif field == :case_status
+            normalized_cell_value = if workflow == :isolation
+                                      NORMALIZED_ISOLATION_ENUMS[field][unformat_enum_field(row[index])].to_s
+                                    else
+                                      NORMALIZED_EXPOSURE_ENUMS[field][unformat_enum_field(row[index])].to_s
+                                    end
+            assert_equal(normalized_cell_value, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           elsif field == :jurisdiction_path
             assert_equal(row[index] ? row[index].to_s : user_jurisdiction[:path].to_s, patient.jurisdiction[:path].to_s, "#{field} mismatch in row #{row_num}")
           elsif ENUM_FIELDS.include?(field)
@@ -198,6 +203,13 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
       # end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:enum) && !NORMALIZED_ENUMS[field].keys.include?(unformat_enum_field(value))
         assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
+      end
+      if value && !value.blank? && WORKFLOW_SPECIFIC_FIELDS.include?(field)
+        if workflow == :exposure && !NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(unformat_enum_field(value))
+          assert page.has_content?('for monitorees imported into the Exposure workflow'), "Error message for #{field} incorrect"
+        elsif workflow == :isolation && !NORMALIZED_ISOLATION_ENUMS[field].keys.include?(unformat_enum_field(value))
+          assert page.has_content?('for cases imported into the Isolation workflow'), "Error message for #{field} incorrect"
+        end
       end
       if value && !value.blank? && VALIDATION[field][:checks].include?(:bool) && !%w[true false].include?(value.to_s.downcase)
         assert page.has_content?("'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}'"), "Error message for #{field} missing"
