@@ -35,18 +35,20 @@ if Rails.env.test? || Rails.env.development?
   # for the hunspell checker (using the en_US dictionary).
   #
   # returns a boolean indicating if any words were found to be mispelled
-  def check_locale(filepath)
+  def check_locale(dict_name, filepath)
     num_errors = 0
     locale_hash = recursive_parsing(YAML.load_file(filepath))
 
-    FFI::Hunspell.dict('en_US') do |dict|
-      customize_en_us_dictionary(dict)
+    FFI::Hunspell.dict(dict_name) do |dict|
+      customize_dictionary(dict_name, dict)
       locale_hash.each do |key, sentence|
-        # Ignore any variables for spell checking
+        # Ignore any variables for spell checking.
         sentence.gsub!(/%{\w+}/, '')
+        # Ignore the expected temperature guidance.
+        sentence.gsub!('100.4°F/38°C', '')
         # Track if we already printed the YAML path and the sentence.
         already_put_context = false
-        words = sentence.scan(/[\w'-]+/)
+        words = sentence.scan(/[[:alpha:]\w'-]+/)
         words.each do |word|
           # Safety check if word is not actually a String.
           next if !word.is_a? String
@@ -68,10 +70,29 @@ if Rails.env.test? || Rails.env.development?
     num_errors
   end
 
-
   # Add in custom words that do not already exist in the Hunspell dictionary
-  # right now this is just for the en_US dictionary, but in the future may
-  # spellcheck other languages as well.
+  def customize_dictionary(dict_name, dict)
+    customize_en_us_dictionary(dict) if dict_name == :en_US
+    customize_es_pr_dictionary(dict) if dict_name == :es_PR
+    customize_fr_dictionary(dict) if dict_name == :fr
+  end
+
+
+  # Customize the es_PR dictionary
+  def customize_es_pr_dictionary(dict)
+    dict.add('Sara')
+    dict.add('Alert')
+  end
+
+
+  # Customize the fr dictionary
+  def customize_fr_dictionary(dict)
+    dict.add('Sara')
+    dict.add('Alert')
+  end
+
+
+  # Customize the en_US dictionary
   def customize_en_us_dictionary(dict)
     dict.add('admin')
     dict.add('admin_authenticator')
@@ -104,14 +125,23 @@ if Rails.env.test? || Rails.env.development?
   # Exits with code 1 if one or more spelling errors are found.
   def main
     num_errors = 0
-    locale_globs = [
-      'config/locales/*.en.yml',
-      'config/locales/en.yml'
-    ]
-    locale_globs.each do |glob|
+    locale_globs = {
+      'en_US': [
+        'config/locales/*.en.yml',
+        'config/locales/en.yml'
+      ],
+      'es_PR': [
+        'config/locales/es-PR.yml',
+        'config/locales/es.yml'
+      ],
+      'fr': [
+        'config/locales/fr.yml'
+      ]
+    }
+    locale_globs.each do |dict_name, glob|
       Dir.glob(glob).each do|filepath|
-        puts "CHECKING LOCALE: #{filepath}"
-        num_errors += check_locale(filepath)
+        puts "CHECKING LOCALE: #{filepath} with dictionary #{dict_name}"
+        num_errors += check_locale(dict_name, filepath)
         puts "\n\n"
       end
     end
