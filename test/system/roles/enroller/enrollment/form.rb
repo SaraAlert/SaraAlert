@@ -20,7 +20,7 @@ class EnrollmentForm < ApplicationSystemTestCase
     @@enrollment_form_steps.steps.each_key do |step|
       next unless monitoree[step.to_s]
 
-      find('h5', text: step.to_s.split('_').map(&:capitalize).join(' ')).first(:xpath, './/..//..').click_on('Edit')
+      find('b', text: step.to_s.split('_').map(&:upcase).join(' ')).first(:xpath, './/..//..//..').click_on('Edit')
       populate_enrollment_step(step, monitoree[step.to_s])
       @@system_test_utils.wait_for_enrollment_page_transition
     end
