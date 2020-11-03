@@ -94,6 +94,7 @@ group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'erb_lint'
   gem 'factory_bot_rails'
+  gem 'ffi-hunspell'
   gem 'gemsurance'
   gem 'rubocop'
 end
@@ -110,7 +111,6 @@ end
 group :test do
   gem 'capybara', '>= 2.15'
   gem 'fakeredis'
-  gem 'ffi-hunspell'
   gem 'minitest-retry'
   gem 'mocha'
   gem 'rack-test'
