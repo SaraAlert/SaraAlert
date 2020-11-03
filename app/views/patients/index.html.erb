@@ -13,7 +13,7 @@
   <div class="card card-square">
     <h5 class="card-header">Enrolled Monitorees</h5>
     <div class="m-3">
-      <%= render partial: 'patients', locals: { patients: current_user.enrolled_patients.eager_load(:jurisdiction) } %>
+      <%= render partial: 'patients', locals: { patients: @enrolled_patients } %>
     </div>
   </div>
 </div>
