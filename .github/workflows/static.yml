@@ -37,6 +37,9 @@ jobs:
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gems-
+      - name: Install hunspell library
+        run: |
+          sudo apt install hunspell
       - name: Run Bundle Install
         run: |
           bundle config path vendor/bundle
@@ -53,4 +56,6 @@ jobs:
         run: bundle exec erblint --lint-all
       - name: Run ESLint
         run: ./node_modules/.bin/eslint app/javascript/components
+      - name: Run Spellcheck
+        run: bundle exec rails spellcheck
 
