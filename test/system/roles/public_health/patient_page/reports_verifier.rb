@@ -44,7 +44,7 @@ class PublicHealthPatientPageReportsVerifier < ApplicationSystemTestCase
   end
 
   def verify_workflow(workflow)
-    assert page.has_content?(workflow), @@system_test_utils.get_err_msg('Reports', 'workflow', workflow)
+    assert page.has_content?(workflow.capitalize), @@system_test_utils.get_err_msg('Reports', 'workflow', workflow.capitalize)
   end
 
   def verify_current_status(current_status)
