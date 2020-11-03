@@ -125,6 +125,7 @@ if Rails.env.test? || Rails.env.development?
   # Exits with code 1 if one or more spelling errors are found.
   def main
     num_errors = 0
+    # { <dictionary filename>: [<glob>, ..., <glob>], ... }
     locale_globs = {
       'en_US': [
         'config/locales/*.en.yml',

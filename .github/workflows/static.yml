@@ -40,10 +40,10 @@ jobs:
       - name: Install hunspell library
         run: |
           sudo apt install hunspell
-          wget -o /usr/share/hunspell/es_PR.aff https://cgit.freedesktop.org/libreoffice/dictionaries/plain/es/es_PR.aff
-          wget -o /usr/share/hunspell/es_PR.dic https://cgit.freedesktop.org/libreoffice/dictionaries/plain/es/es_PR.dic
-          wget -o /usr/share/hunspell/fr.aff https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.aff
-          wget -o /usr/share/hunspell/fr.dic https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic
+          sudo wget -o /usr/share/hunspell/es_PR.aff https://cgit.freedesktop.org/libreoffice/dictionaries/plain/es/es_PR.aff
+          sudo wget -o /usr/share/hunspell/es_PR.dic https://cgit.freedesktop.org/libreoffice/dictionaries/plain/es/es_PR.dic
+          sudo wget -o /usr/share/hunspell/fr.aff https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.aff
+          sudo wget -o /usr/share/hunspell/fr.dic https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic
       - name: Run Bundle Install
         run: |
           bundle config path vendor/bundle
