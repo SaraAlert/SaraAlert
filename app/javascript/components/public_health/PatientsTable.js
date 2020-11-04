@@ -18,12 +18,12 @@ import {
   Row,
 } from 'react-bootstrap';
 
-import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import AdvancedFilter from './AdvancedFilter';
+import BadgeHOH from '../util/BadgeHOH';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
 import InfoTooltip from '../util/InfoTooltip';
@@ -369,14 +369,7 @@ class PatientsTable extends React.Component {
     if (isHoH) {
       return (
         <div>
-          <span data-for={`${id}-hoh`} data-tip="" className="badge-hoh ml-1">
-            <Badge variant="dark">
-              <span>HoH</span>
-            </Badge>
-          </span>
-          <ReactTooltip id={`${id}-hoh`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
-            <span>Monitoree is Head of Household that reports on behalf of household members</span>
-          </ReactTooltip>
+          <BadgeHOH patientId={id} customClass={'badge-hoh ml-1'} location={'right'} />
           <a href={`/patients/${id}`}>{name}</a>
         </div>
       );
