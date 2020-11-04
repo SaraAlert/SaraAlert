@@ -137,6 +137,12 @@ class AdvancedFilter extends React.Component {
           type: 'option',
           options: ['Morning', 'Afternoon', 'Evening', ''],
         },
+        {
+          name: 'manual-contact-attempts',
+          title: 'Manual Contact Attempts (Number)',
+          description: 'All records with certain number of manual contact attempts',
+          type: 'number',
+        },
       ],
       savedFilters: [],
       activeFilter: null,
@@ -236,6 +242,8 @@ class AdvancedFilter extends React.Component {
       value = true;
     } else if (filterOption.type === 'option') {
       value = filterOption.options[0];
+    } else if (filterOption.type === 'number') {
+      value = 0;
     } else if (filterOption.type === 'date') {
       // Default to "within" type
       value = { start: moment().add(-72, 'hours'), end: moment() };
@@ -511,6 +519,17 @@ class AdvancedFilter extends React.Component {
                     );
                   })}
                 </Form.Control>
+              </Form.Group>
+            )}
+            {filterOption?.type === 'number' && (
+              <Form.Group className="py-0 my-0">
+                <Form.Control
+                  className="form-control-number"
+                  value={value}
+                  type="number"
+                  min="0"
+                  onChange={event => this.changeValue(index, event.target.value)}
+                />
               </Form.Group>
             )}
             {filterOption?.type === 'date' && dateOption != 'within' && (
