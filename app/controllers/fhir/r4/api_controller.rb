@@ -463,7 +463,7 @@ class Fhir::R4::ApiController < ActionController::API
   # Determine if the patient's jurisdiction is valid for the requesting application
   def jurisdiction_valid_for_client?(patient)
     allowed_jurisdiction_ids = current_client_application.jurisdiction&.subtree&.pluck(:id) ||
-                               current_client_application.user&.jurisdiction&.subtree&.pluck(:id)
+                               current_resource_owner&.jurisdiction&.subtree&.pluck(:id)
 
     if allowed_jurisdiction_ids.nil?
       patient.errors.add(:jurisdiction, 'Client application does not have a jurisdiction')
@@ -478,7 +478,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # If no jurisdiction specified for a patient, default to the client's jurisdiction
   def default_patient_jurisdiction
-    current_client_application.jurisdiction || current_client_application.user&.jurisdiction
+    current_client_application.jurisdiction || current_resource_owner&.jurisdiction
   end
 
   # Determine the patient data that is accessible by either the current resource owner
