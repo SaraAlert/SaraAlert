@@ -181,8 +181,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
         end
-        verify_laboratory(patient, row[87..90])
-        verify_laboratory(patient, row[91..94])
+        verify_laboratory(patient, row[90..93])
+        verify_laboratory(patient, row[94..97])
         assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
       end
     end
