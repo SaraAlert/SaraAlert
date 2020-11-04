@@ -457,6 +457,8 @@ class PublicHealthController < ApplicationController
         patients = patients.where(interpretation_required: filter[:value].present? ? true : [nil, false])
       when 'preferred-contact-time'
         patients = patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : filter[:value])
+      when 'manual-contact-attempts'
+        patients = patients.where('contact_attempts = ?', filter[:value])
       end
     end
     patients
