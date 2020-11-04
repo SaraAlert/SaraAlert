@@ -187,7 +187,7 @@ namespace :demo do
       histories = histories.concat(transfer_histories)
 
       # Create histories
-      demo_populate_histories(histories)
+      demo_populate_histories(today, histories)
     end
 
     # Needs to be in a separate transaction
@@ -642,7 +642,21 @@ namespace :demo do
     return histories
   end
 
-  def demo_populate_histories(histories)
+  def demo_populate_histories(today, histories)
+    # add manual contact attempts
+    Patient.monitoring_open.pluck(:id).sample(Patient.monitoring_open.size * 0.2).each do |patient_id|
+      timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+      histories << History.new(
+        patient_id: patient_id,
+        created_by: 'Sara Alert System',
+        comment: "#{rand < 0.5 ? 'Successful' : 'Unsuccessful'} contact attempt.#{rand < 0.65 ? " #{Faker::Marketing.buzzwords}" : ''}",
+        history_type: 'Contact Attempt',
+        created_at: timestamp,
+        updated_at: timestamp,
+      ) if rand < 0.2
+    end
+
+    # write histories
     printf("Writing histories...")
     History.import! histories
     printf(" done.\n")
