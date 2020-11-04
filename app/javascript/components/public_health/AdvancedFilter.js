@@ -255,7 +255,7 @@ class AdvancedFilter extends React.Component {
       filterOption,
       value,
       dateOption: filterOption.type === 'date' ? 'within' : null,
-      numberOption: filterOption.type === 'number' ? 'less_than' : null,
+      numberOption: filterOption.type === 'number' ? 'equal' : null,
     };
     this.setState({ activeFilterOptions });
   };
