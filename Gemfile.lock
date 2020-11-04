@@ -71,6 +71,8 @@ GEM
     ancestry (3.2.1)
       activerecord (>= 4.2.0)
     ast (2.4.1)
+    audited (4.9.0)
+      activerecord (>= 4.2, < 6.1)
     authy (2.7.5)
       httpclient (>= 2.5.3.3)
     babel-source (5.8.35)
@@ -398,6 +400,7 @@ DEPENDENCIES
   activerecord-session_store
   activerecord_where_assoc
   ancestry
+  audited
   bootsnap (>= 1.4.2)
   brakeman
   bullet

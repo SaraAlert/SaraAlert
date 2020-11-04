@@ -93,6 +93,8 @@ gem 'redis-queue'
 
 # JSON Patch and JSON Pointer implementation (using our fork of the gem)
 gem 'hana', '~> 1.3.7'
+# Auditing model changes
+gem 'audited'
 
 group :development, :test do
   gem 'brakeman'

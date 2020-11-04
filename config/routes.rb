@@ -41,6 +41,8 @@ Rails.application.routes.draw do
   resources :admin, only: [:index]
   get 'admin/users', to: 'admin#users'
 
+  get 'users/audits/:id', to: 'users#audits'
+
   post 'admin/create_user', to: 'admin#create_user'
   post 'admin/edit_user', to: 'admin#edit_user'
   post 'admin/reset_password', to: 'admin#reset_password'
