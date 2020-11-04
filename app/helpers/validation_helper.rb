@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Helper dictionaries for data validation
 module ValidationHelper # rubocop:todo Metrics/ModuleLength
   SEX_ABBREVIATIONS = {
     M: 'Male',
