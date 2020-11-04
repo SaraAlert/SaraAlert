@@ -458,7 +458,18 @@ class PublicHealthController < ApplicationController
       when 'preferred-contact-time'
         patients = patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'manual-contact-attempts'
-        patients = patients.where('contact_attempts = ?', filter[:value])
+        case filter[:numberOption]
+        when 'less-than'
+          patients = patients.where('contact_attempts < ?', filter[:value])
+        when 'less-than-equal'
+          patients = patients.where('contact_attempts <= ?', filter[:value])
+        when 'equal'
+          patients = patients.where('contact_attempts = ?', filter[:value])
+        when 'greater-than-equal'
+          patients = patients.where('contact_attempts >= ?', filter[:value])
+        when 'greater-than'
+          patients = patients.where('contact_attempts > ?', filter[:value])
+        end
       end
     end
     patients
