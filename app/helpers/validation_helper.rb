@@ -100,17 +100,17 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     case_status: %w[Confirmed Probable]
   }.freeze
 
-  NORMALIZED_ENUMS = VALID_ENUMS.transform_values do |values|
-    Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
+  def self.normalize_enums(enums_dict)
+    enums_dict.transform_values do |values|
+      Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
+    end
   end
 
-  NORMALIZED_EXPOSURE_ENUMS = VALID_EXPOSURE_ENUMS.transform_values do |values|
-    Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
-  end
+  NORMALIZED_ENUMS = normalize_enums(VALID_ENUMS)
 
-  NORMALIZED_ISOLATION_ENUMS = VALID_ISOLATION_ENUMS.transform_values do |values|
-    Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
-  end
+  NORMALIZED_EXPOSURE_ENUMS = normalize_enums(VALID_EXPOSURE_ENUMS)
+
+  NORMALIZED_ISOLATION_ENUMS = normalize_enums(VALID_ISOLATION_ENUMS)
 
   VALIDATION = {
     first_name: { label: 'First Name', checks: [:required] },
