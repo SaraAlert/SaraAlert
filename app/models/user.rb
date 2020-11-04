@@ -2,6 +2,10 @@
 
 # User: user model
 class User < ApplicationRecord
+  rolify
+  audited only: %i[locked_at jurisdiction_id created_at api_enabled role email authy_enabled
+                   force_password_change last_sign_in_with_authy], max_audits: 1000
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :authy_authenticatable, :database_authenticatable, :registerable, :validatable, :lockable, :password_expirable, :password_archivable
@@ -92,6 +96,11 @@ class User < ApplicationRecord
   #############################################################################
   # Access Restrictions for users
   #############################################################################
+
+  # Can this user view User audits?
+  def can_view_user_audits?
+    role?(Roles::ADMIN) || role?(Roles::SUPER_USER)
+  end
 
   # Can this user use the API?
   def can_use_api?

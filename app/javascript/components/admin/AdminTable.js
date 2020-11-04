@@ -4,6 +4,7 @@ import { Button, DropdownButton, Dropdown, InputGroup, Form, OverlayTrigger, Too
 import 'react-toastify/dist/ReactToastify.css';
 import UserModal from './UserModal';
 import EmailModal from './EmailModal';
+import AuditModal from './AuditModal';
 import confirmDialog from '../util/ConfirmDialog';
 import axios from 'axios';
 import { CSVLink } from 'react-csv';
@@ -37,6 +38,7 @@ class AdminTable extends React.Component {
       },
       entryOptions: [10, 15, 25, 50, 100],
       showEditUserModal: false,
+      showAuditModal: false,
       showAddUserModal: false,
       showEmailAllModal: false,
       actionsEnabled: false,
@@ -203,6 +205,27 @@ class AdminTable extends React.Component {
     this.setState({
       showEditUserModal: false,
       showAddUserModal: false,
+      editRow: null,
+    });
+  };
+
+  /**
+   * Called when the audit button is clicked on a given row.
+   * Updates the state to show the appropriate modal for auditing a user and the the current row being audited.
+   */
+  handleAuditClick = row => {
+    this.setState({
+      showAuditModal: true,
+      editRow: row,
+    });
+  };
+
+  /**
+   * Closes the user audit modal by updating state.
+   */
+  handleAuditModalClose = () => {
+    this.setState({
+      showAuditModal: false,
       editRow: null,
     });
   };
@@ -625,6 +648,8 @@ class AdminTable extends React.Component {
           handleEdit={this.handleEditClick}
           handleEntriesChange={this.handleEntriesChange}
           isEditable={true}
+          isAuditable={true}
+          handleAudit={this.handleAuditClick}
           isLoading={this.state.isLoading}
           page={this.state.query.page}
           handlePageUpdate={this.handlePageUpdate}
@@ -643,6 +668,14 @@ class AdminTable extends React.Component {
             jurisdiction_paths={Object.keys(this.state.jurisdiction_paths)}
             roles={this.props.role_types}
             initialUserData={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
+          />
+        )}
+        {this.state.showAuditModal && (
+          <AuditModal
+            show={this.state.showAuditModal}
+            onClose={this.handleAuditModalClose}
+            user={this.state.editRow === null ? {} : this.state.table.rowData[this.state.editRow]}
+            jurisdiction_paths={this.state.jurisdiction_paths}
           />
         )}
         {this.state.showEmailAllModal && (
