@@ -251,7 +251,12 @@ class AdvancedFilter extends React.Component {
       value = '';
     }
 
-    activeFilterOptions[parseInt(index)] = { filterOption, value, dateOption: filterOption.type === 'date' ? 'within' : null };
+    activeFilterOptions[parseInt(index)] = {
+      filterOption,
+      value,
+      dateOption: filterOption.type === 'date' ? 'within' : null,
+      numberOption: filterOption.type === 'number' ? 'less_than' : null,
+    };
     this.setState({ activeFilterOptions });
   };
 
@@ -265,6 +270,13 @@ class AdvancedFilter extends React.Component {
       defaultValue = moment();
     }
     activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
+    this.setState({ activeFilterOptions });
+  };
+
+  // Change an index filter option for number
+  changeFilterNumberOption = (index, value, numberOption) => {
+    let activeFilterOptions = [...this.state.activeFilterOptions];
+    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, numberOption: numberOption };
     this.setState({ activeFilterOptions });
   };
 
@@ -412,6 +424,25 @@ class AdvancedFilter extends React.Component {
     );
   };
 
+  // Render number specific options
+  renderNumberOptions = (current, index, value) => {
+    return (
+      <Form.Control
+        as="select"
+        value={current}
+        className="form-control-number"
+        onChange={event => {
+          this.changeFilterNumberOption(index, value, event.target.value);
+        }}>
+        <option value="less-than">{'<'}</option>
+        <option value="less-than-equal">{'≤'}</option>
+        <option value="equal">{'='}</option>
+        <option value="greater-than-equal">{'≥'}</option>
+        <option value="greater-than">{'>'}</option>
+      </Form.Control>
+    );
+  };
+
   // Modal to specify filter name
   renderFilterNameModal = () => {
     return (
@@ -458,7 +489,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render a single line "statement"
-  renderStatement = (filterOption, value, index, total, dateOption) => {
+  renderStatement = (filterOption, value, index, total, dateOption, numberOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -523,13 +554,18 @@ class AdvancedFilter extends React.Component {
             )}
             {filterOption?.type === 'number' && (
               <Form.Group className="py-0 my-0">
-                <Form.Control
-                  className="form-control-number"
-                  value={value}
-                  type="number"
-                  min="0"
-                  onChange={event => this.changeValue(index, event.target.value)}
-                />
+                <Row>
+                  <Col md="auto">{this.renderNumberOptions(numberOption, index, value)}</Col>
+                  <Col>
+                    <Form.Control
+                      className="form-control-number"
+                      value={value}
+                      type="number"
+                      min="0"
+                      onChange={event => this.changeValue(index, event.target.value)}
+                    />
+                  </Col>
+                </Row>
               </Form.Group>
             )}
             {filterOption?.type === 'date' && dateOption != 'within' && (
@@ -663,7 +699,14 @@ class AdvancedFilter extends React.Component {
               </Col>
             </Row>
             {this.state.activeFilterOptions?.map((statement, index) => {
-              return this.renderStatement(statement.filterOption, statement.value, index, this.state.activeFilterOptions?.length, statement.dateOption);
+              return this.renderStatement(
+                statement.filterOption,
+                statement.value,
+                index,
+                this.state.activeFilterOptions?.length,
+                statement.dateOption,
+                statement.numberOption
+              );
             })}
             <Row className="pt-2 pb-1">
               <Col>
