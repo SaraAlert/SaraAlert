@@ -466,12 +466,12 @@ class Fhir::R4::ApiController < ActionController::API
                                current_resource_owner&.jurisdiction&.subtree&.pluck(:id)
 
     if allowed_jurisdiction_ids.nil?
-      patient.errors.add(:jurisdiction, 'Client application does not have a jurisdiction')
+      patient.errors.add(:jurisdiction_id, 'Client application does not have a jurisdiction')
       false
     elsif !patient.jurisdiction.nil? && allowed_jurisdiction_ids.include?(patient.jurisdiction[:id])
       true
     else
-      patient.errors.add(:jurisdiction, "Jurisdiction must be within the client application's jursdiction")
+      patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the client application's jurisdiction")
       false
     end
   end
