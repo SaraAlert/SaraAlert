@@ -1,8 +1,8 @@
 import React from 'react'
 import { shallow } from 'enzyme';
 import { Badge, Button, Col, Collapse, Row } from 'react-bootstrap';
-import ReactTooltip from 'react-tooltip';
 import Patient from '../../components/patient/Patient.js'
+import BadgeHOH from '../../components/util/BadgeHOH';
 import ChangeHOH from '../../components/subject/ChangeHOH';
 import MoveToHousehold from '../../components/subject/MoveToHousehold';
 import RemoveFromHousehold from '../../components/subject/RemoveFromHousehold';
@@ -32,10 +32,7 @@ describe('Patient', () => {
 
         expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
         expect(wrapper.find('#monitoree-details-header').find('h4').text().includes(nameFormatter(mockPatient1))).toBeTruthy();
-        expect(wrapper.find('#monitoree-details-header').find(Badge).exists()).toBeTruthy();
-        expect(wrapper.find('#monitoree-details-header').find(Badge).text()).toEqual('HoH');
-        expect(wrapper.find('#monitoree-details-header').find(ReactTooltip).exists()).toBeTruthy();
-        expect(wrapper.find('#monitoree-details-header').find(ReactTooltip).find('span').text()).toEqual('Monitoree is Head of Household that reports on behalf of household members');
+        expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
         expect(wrapper.find('.jursdiction-user-box').exists()).toBeTruthy();
         expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
         expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient1.assigned_user);
@@ -137,7 +134,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2, blankMockPatient ]} goto={goToMock} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
         
-        expect(wrapper.find('#monitoree-details-header').find(Badge).exists()).toBeTruthy();
+        expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
         expect(wrapper.find('#head-of-household').exists()).toBeTruthy();
         expect(wrapper.find('#head-of-household').find(Row).at(1).text())
             .toEqual('This monitoree is responsible for handling the reporting of the following other monitorees:');
@@ -154,7 +151,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient2} dependents={[ ]} goto={goToMock} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
 
-        expect(wrapper.find('#monitoree-details-header').find(Badge).exists()).toBeFalsy();
+            expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeFalsy();
         expect(wrapper.find('#household-member-not-hoh').exists()).toBeTruthy();
         expect(wrapper.find('#household-member-not-hoh').find(Row).first().text())
             .toEqual('The reporting responsibility for this monitoree is handled by another monitoree. Click here to view that monitoree.');
@@ -168,7 +165,7 @@ describe('Patient', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} goto={goToMock} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
 
-        expect(wrapper.find('#monitoree-details-header').find(Badge).exists()).toBeFalsy();
+            expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeFalsy();
         expect(wrapper.find('#no-household').exists()).toBeTruthy();
         expect(wrapper.find('#no-household').find(Row).at(1).text()).toEqual('This monitoree is not a member of a household:');
         expect(wrapper.containsMatchingElement(<MoveToHousehold />)).toBeTruthy();
