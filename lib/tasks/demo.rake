@@ -644,7 +644,9 @@ namespace :demo do
 
   def demo_populate_histories(today, histories)
     # add manual contact attempts
-    Patient.monitoring_open.pluck(:id).sample(Patient.monitoring_open.size * 0.2).each do |patient_id|
+    patient_ids_and_contact_attempts = Patient.monitoring_open.pluck(:id, :contact_attempts).sample(Patient.monitoring_open.size * 0.2)
+    patient_ids = patient_ids_and_contact_attempts.collect(&:first)
+    patient_ids.each do |patient_id|
       timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
       histories << History.new(
         patient_id: patient_id,
@@ -653,8 +655,11 @@ namespace :demo do
         history_type: 'Contact Attempt',
         created_at: timestamp,
         updated_at: timestamp,
-      ) if rand < 0.2
+      )
     end
+
+    # update patient contact atttempts
+    Patient.update(patient_ids, patient_ids_and_contact_attempts.collect(&:second).map { |contact_attempts| { contact_attempts: contact_attempts + 1 } })
 
     # write histories
     printf("Writing histories...")
