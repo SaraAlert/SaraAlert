@@ -1,9 +1,9 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Badge, Button, Card, Col, Collapse, Row, Table } from 'react-bootstrap';
-import ReactTooltip from 'react-tooltip';
+import { Button, Card, Col, Collapse, Row, Table } from 'react-bootstrap';
 import moment from 'moment';
 
+import BadgeHOH from '../util/BadgeHOH';
 import ChangeHOH from '../subject/ChangeHOH';
 import MoveToHousehold from '../subject/MoveToHousehold';
 import RemoveFromHousehold from '../subject/RemoveFromHousehold';
@@ -30,21 +30,12 @@ class Patient extends React.Component {
         <Row id="monitoree-details-header">
           <Col className="mt-1">
             <h4>
-              {`${this.props.details.first_name ? this.props.details.first_name : ''}${
-                this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
-              }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
-              {this.props?.dependents && this.props?.dependents?.length > 0 && (
-                <React.Fragment>
-                  <span data-for={`hoh-icon`} data-tip="" className="pl-2">
-                    <Badge variant="dark">
-                      <span>HoH</span>
-                    </Badge>{' '}
-                  </span>
-                  <ReactTooltip id={`hoh-icon`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
-                    <span>Monitoree is Head of Household that reports on behalf of household members</span>
-                  </ReactTooltip>
-                </React.Fragment>
-              )}
+              <span className="pr-2">
+                {`${this.props.details.first_name ? this.props.details.first_name : ''}${
+                  this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
+                }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
+              </span>
+              {this.props?.dependents && this.props?.dependents?.length > 0 && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
             </h4>
           </Col>
           <Col md="auto">
