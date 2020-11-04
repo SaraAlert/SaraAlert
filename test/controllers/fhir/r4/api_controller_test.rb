@@ -27,64 +27,55 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     @user_patient_read_write_app = OauthApplication.create(
       name: 'user-test-patient-rw',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.*',
-      user_id: @user.id
+      scopes: 'user/Patient.*'
     )
 
     @user_patient_read_app = OauthApplication.create(
       name: 'user-test-patient-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.read',
-      user_id: @user.id
+      scopes: 'user/Patient.read'
     )
 
     @user_patient_write_app = OauthApplication.create(
       name: 'user-test-patient-w',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.write',
-      user_id: @user.id
+      scopes: 'user/Patient.write'
     )
 
     @user_observation_read_app = OauthApplication.create(
       name: 'user-test-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Observation.read',
-      user_id: @user.id
+      scopes: 'user/Observation.read'
     )
 
     @user_response_read_app = OauthApplication.create(
       name: 'user-test-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/QuestionnaireResponse.read',
-      user_id: @user.id
+      scopes: 'user/QuestionnaireResponse.read'
     )
 
     @user_patient_rw_observation_r_app = OauthApplication.create(
       name: 'user-test-patient-rw-observation-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/Observation.read',
-      user_id: @user.id
+      scopes: 'user/Patient.* user/Observation.read'
     )
 
     @user_patient_rw_response_r_app = OauthApplication.create(
       name: 'user-test-patient-rw-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read',
-      user_id: @user.id
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read'
     )
 
     @user_observation_r_response_r_app = OauthApplication.create(
       name: 'user-test-observation-r-response-r',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/QuestionnaireResponse.read user/Observation.read',
-      user_id: @user.id
+      scopes: 'user/QuestionnaireResponse.read user/Observation.read'
     )
 
     @user_everything_app = OauthApplication.create(
       name: 'user-test-everything',
       redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read',
-      user_id: @user.id
+      scopes: 'user/Patient.* user/QuestionnaireResponse.read user/Observation.read'
     )
 
     # Create access tokens
