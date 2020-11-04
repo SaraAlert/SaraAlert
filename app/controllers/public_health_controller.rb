@@ -461,15 +461,15 @@ class PublicHealthController < ApplicationController
       when 'manual-contact-attempts'
         case filter[:numberOption]
         when 'less-than'
-          patients = patients.joins(:histories).where('histories.history_type = ?', 'Contact Attempt').group('patients.id').having('COUNT(*) < ?', filter[:value])
+          patients = patients.where('contact_attempts < ?', filter[:value])
         when 'less-than-equal'
-          patients = patients.joins(:histories).where('histories.history_type = ?', 'Contact Attempt').group('patients.id').having('COUNT(*) <= ?', filter[:value])
+          patients = patients.where('contact_attempts <= ?', filter[:value])
         when 'equal'
-          patients = patients.joins(:histories).where('histories.history_type = ?', 'Contact Attempt').group('patients.id').having('COUNT(*) = ?', filter[:value])
+          patients = patients.where('contact_attempts = ?', filter[:value])
         when 'greater-than-equal'
-          patients = patients.joins(:histories).where('histories.history_type = ?', 'Contact Attempt').group('patients.id').having('COUNT(*) >= ?', filter[:value])
+          patients = patients.where('contact_attempts >= ?', filter[:value])
         when 'greater-than'
-          patients = patients.joins(:histories).where('histories.history_type = ?', 'Contact Attempt').group('patients.id').having('COUNT(*) > ?', filter[:value])
+          patients = patients.where('contact_attempts > ?', filter[:value])
         end
       end
     end
