@@ -53,15 +53,15 @@ class ImportController < ApplicationController
 
           begin
             if format == :comprehensive_monitorees
-              if col_num == 95
-                patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
-              elsif col_num == 96
-                patient[:assigned_user] = validate_assigned_user(row[96], row_ind)
-              elsif col_num == 85 && workflow == :isolation
-                patient[:user_defined_symptom_onset] = row[85].present?
+              if col_num == 98
+                patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[98], row_ind, valid_jurisdiction_ids)
+              elsif col_num == 99
+                patient[:assigned_user] = validate_assigned_user(row[99], row_ind)
+              elsif col_num == 88 && workflow == :isolation
+                patient[:user_defined_symptom_onset] = row[88].present?
                 patient[field] = validate_field(field, row[col_num], row_ind)
               else
-                patient[field] = validate_field(field, row[col_num], row_ind) unless [85, 86].include?(col_num) && workflow != :isolation
+                patient[field] = validate_field(field, row[col_num], row_ind) unless [88, 89].include?(col_num) && workflow != :isolation
               end
             end
 
@@ -94,8 +94,8 @@ class ImportController < ApplicationController
 
           if format == :comprehensive_monitorees
             lab_results = []
-            lab_results.push(lab_result(row[87..90], row_ind)) if !row[87].blank? || !row[88].blank? || !row[89].blank? || !row[90].blank?
-            lab_results.push(lab_result(row[91..94], row_ind)) if !row[91].blank? || !row[92].blank? || !row[93].blank? || !row[94].blank?
+            lab_results.push(lab_result(row[90..93], row_ind)) if !row[90].blank? || !row[91].blank? || !row[92].blank? || !row[93].blank?
+            lab_results.push(lab_result(row[94..97], row_ind)) if !row[94].blank? || !row[95].blank? || !row[96].blank? || !row[97].blank?
             patient[:laboratories] = lab_results unless lab_results.empty?
           end
         rescue ValidationError => e
