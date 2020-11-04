@@ -89,6 +89,9 @@ gem 'local_time'
 # FHIR models
 gem 'fhir_models'
 
+# Auditing model changes
+gem 'audited'
+
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
