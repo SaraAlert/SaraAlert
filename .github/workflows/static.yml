@@ -42,8 +42,8 @@ jobs:
           sudo apt install hunspell
           sudo wget -O /usr/share/hunspell/es_PR.aff https://cgit.freedesktop.org/libreoffice/dictionaries/plain/es/es_PR.aff
           sudo wget -O /usr/share/hunspell/es_PR.dic https://cgit.freedesktop.org/libreoffice/dictionaries/plain/es/es_PR.dic
-          sudo wget -O /usr/share/hunspell/fr.aff https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.aff
-          sudo wget -O /usr/share/hunspell/fr.dic https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic
+          sudo wget -O /usr/share/hunspell/fr_FR.aff https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.aff
+          sudo wget -O /usr/share/hunspell/fr_FR.dic https://cgit.freedesktop.org/libreoffice/dictionaries/plain/fr_FR/fr.dic
       - name: Run Bundle Install
         run: |
           bundle config path vendor/bundle
