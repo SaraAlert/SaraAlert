@@ -7,9 +7,9 @@ require_relative '../../../lib/system_test_utils'
 class AssessmentFormVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
-  def verify_assessment(patient, assessment)
+  def verify_assessment(patient, assessment, submission_token)
     sleep(0.1) # wait for assessment to be saved
-    assert AssessmentReceipt.where('BINARY submission_token = ? AND created_at > ?', patient.submission_token, 5.seconds.ago).any?, 'Missing assessment receipt'
+    assert AssessmentReceipt.where('BINARY submission_token = ? AND created_at > ?', submission_token, 5.seconds.ago).any?, 'Missing assessment receipt'
     saved_assessment = Assessment.where('patient_id = ? AND assessments.created_at > ?', patient.id, 5.seconds.ago).joins(:patient).first
     assert saved_assessment.present?, @@system_test_utils.get_err_msg('Monitoree assessment', 'assessment', 'existent')
     saved_condition = Condition.where(assessment_id: saved_assessment['id']).first

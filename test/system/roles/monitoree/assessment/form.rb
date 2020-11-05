@@ -18,7 +18,7 @@ class AssessmentForm < ApplicationSystemTestCase
     submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
     err_msg = @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
     assert page.has_content?('Thank You For Completing Your Self Report'), err_msg
-    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label]) unless user_label.nil?
+    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label], patient.submission_token) unless user_label.nil?
     @@system_test_utils.logout unless user_label.nil?
   end
 
@@ -28,7 +28,7 @@ class AssessmentForm < ApplicationSystemTestCase
     submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
     err_msg = @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
     assert page.has_content?('Thank You For Completing Your Self Report'), err_msg
-    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label]) unless user_label.nil?
+    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label], patient.submission_token) unless user_label.nil?
     @@system_test_utils.logout unless user_label.nil?
   end
 
@@ -40,7 +40,7 @@ class AssessmentForm < ApplicationSystemTestCase
     submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
     err_msg = @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
     assert page.has_content?('Thank You For Completing Your Self Report'), err_msg
-    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label]) unless user_label.nil?
+    @@assessment_form_verifier.verify_assessment(patient, ASSESSMENTS[assessment_label], old_submission_token) unless user_label.nil?
     @@system_test_utils.logout unless user_label.nil?
   end
 
