@@ -72,7 +72,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         end
 
-        threshold_condition = ThresholdCondition.where(type: "ThresholdCondition").find_by(threshold_condition_hash: message['threshold_condition_hash'])
+        threshold_condition = ThresholdCondition.where(type: 'ThresholdCondition').find_by(threshold_condition_hash: message['threshold_condition_hash'])
         next unless threshold_condition
 
         if message['reported_symptoms_array']
