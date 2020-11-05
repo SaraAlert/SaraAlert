@@ -74,7 +74,7 @@ if Rails.env.test? || Rails.env.development?
   def customize_dictionary(dict_name, dict)
     customize_en_us_dictionary(dict) if dict_name == :en_US
     customize_es_pr_dictionary(dict) if dict_name == :es_PR
-    customize_fr_dictionary(dict) if dict_name == :fr
+    customize_fr_dictionary(dict) if dict_name == :fr_FR
   end
 
 
@@ -141,7 +141,7 @@ if Rails.env.test? || Rails.env.development?
         'config/locales/es-PR.yml',
         'config/locales/es.yml'
       ],
-      'fr': [
+      'fr_FR': [
         'config/locales/fr.yml'
       ]
     }
