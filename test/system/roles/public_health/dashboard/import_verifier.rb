@@ -76,33 +76,33 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
     sheet = get_xslx(file_name).sheet(0)
     find('.modal-body').all('div.card-body').each_with_index do |card, index|
       row = sheet.row(index + 2)
-      verify_existence(card, 'State/Local ID', row[18], index)
-      verify_existence(card, 'CDC ID', row[19], index)
+      verify_existence(card, 'State/Local ID', row[15], index)
+      verify_existence(card, 'CDC ID', row[16], index)
       verify_existence(card, 'First Name', row[0], index)
       verify_existence(card, 'Last Name', row[2], index)
       verify_existence(card, 'DOB', row[3], index)
-      verify_existence(card, 'Language', row[14], index)
-      verify_existence(card, 'Flight or Vessel Number', row[56], index)
-      verify_existence(card, 'Home Address Line 1', row[21], index)
-      verify_existence(card, 'Home Town/City', row[22], index)
-      verify_existence(card, 'Home State', normalize_state_field(row[23]), index)
-      verify_existence(card, 'Home Zip', row[25], index)
-      verify_existence(card, 'Monitored Address Line 1', row[34], index)
-      verify_existence(card, 'Monitored Town/City', row[35], index)
-      verify_existence(card, 'Monitored State', normalize_state_field(row[36]), index)
-      verify_existence(card, 'Monitored Zip', row[38], index)
-      verify_existence(card, 'Phone Number 1', row[31] ? Phonelib.parse(row[47], 'US').full_e164 : nil, index)
-      verify_existence(card, 'Phone Number 2', row[32] ? Phonelib.parse(row[49], 'US').full_e164 : nil, index)
-      verify_existence(card, 'Email', row[52], index)
-      verify_existence(card, 'Exposure Location', row[70], index)
-      verify_existence(card, 'Date of Departure', row[54], index)
-      verify_existence(card, 'Close Contact w/ Known Case', row[72] ? row[72].to_s.downcase : nil, index)
-      verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[75] ? row[75].to_s.downcase : nil, index)
+      verify_existence(card, 'Language', row[11], index)
+      verify_existence(card, 'Flight or Vessel Number', row[53], index)
+      verify_existence(card, 'Home Address Line 1', row[18], index)
+      verify_existence(card, 'Home Town/City', row[19], index)
+      verify_existence(card, 'Home State', normalize_state_field(row[20]), index)
+      verify_existence(card, 'Home Zip', row[22], index)
+      verify_existence(card, 'Monitored Address Line 1', row[31], index)
+      verify_existence(card, 'Monitored Town/City', row[32], index)
+      verify_existence(card, 'Monitored State', normalize_state_field(row[33]), index)
+      verify_existence(card, 'Monitored Zip', row[35], index)
+      verify_existence(card, 'Phone Number 1', row[28] ? Phonelib.parse(row[44], 'US').full_e164 : nil, index)
+      verify_existence(card, 'Phone Number 2', row[29] ? Phonelib.parse(row[46], 'US').full_e164 : nil, index)
+      verify_existence(card, 'Email', row[49], index)
+      verify_existence(card, 'Exposure Location', row[67], index)
+      verify_existence(card, 'Date of Departure', row[51], index)
+      verify_existence(card, 'Close Contact w/ Known Case', row[69] ? row[69].to_s.downcase : nil, index)
+      verify_existence(card, 'Was in HC Fac. w/ Known Cases', row[72] ? row[72].to_s.downcase : nil, index)
       if Jurisdiction.find(jurisdiction_id).all_patients.where(first_name: row[0], middle_name: row[1], last_name: row[2]).length > 1
         assert card.has_content?("Warning: This #{workflow == :exposure ? 'monitoree' : 'case'} already appears to exist in the system!")
       end
-      assert card.has_content?("This #{workflow == :exposure ? 'monitoree' : 'case'} will be imported into '#{row[98]}'") if row[98]
-      assert card.has_content?("This #{workflow == :exposure ? 'monitoree' : 'case'} will be assigned to user '#{row[99]}'") if row[99]
+      assert card.has_content?("This #{workflow == :exposure ? 'monitoree' : 'case'} will be imported into '#{row[95]}'") if row[95]
+      assert card.has_content?("This #{workflow == :exposure ? 'monitoree' : 'case'} will be assigned to user '#{row[96]}'") if row[96]
     end
   end
 
@@ -181,8 +181,8 @@ class PublicHealthMonitoringImportVerifier < ApplicationSystemTestCase
             assert_equal(row[index].to_s, patient[field].to_s, "#{field} mismatch in row #{row_num}")
           end
         end
-        verify_laboratory(patient, row[90..93])
-        verify_laboratory(patient, row[94..97])
+        verify_laboratory(patient, row[87..90])
+        verify_laboratory(patient, row[91..94])
         assert_equal(workflow == :isolation, patient[:isolation], "incorrect workflow in row #{row_num}")
       end
     end

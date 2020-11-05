@@ -9,8 +9,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                       'Transferred From', 'Transferred To', 'Expected Purge Date', 'Symptom Onset', 'Extended Isolation'].freeze
 
   COMPREHENSIVE_HEADERS = ['First Name', 'Middle Name', 'Last Name', 'Date of Birth', 'Sex at Birth', 'White', 'Black or African American',
-                           'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Race Unknown', 'Race Other', 'Race Refused to Answer', 
-                           'Ethnicity', 'Primary Language',
+                           'American Indian or Alaska Native', 'Asian', 'Native Hawaiian or Other Pacific Islander', 'Ethnicity', 'Primary Language',
                            'Secondary Language', 'Interpretation Required?', 'Nationality', 'Identifier (STATE/LOCAL)', 'Identifier (CDC)',
                            'Identifier (NNDSS)', 'Address Line 1', 'Address City', 'Address State', 'Address Line 2', 'Address Zip', 'Address County',
                            'Foreign Address Line 1', 'Foreign Address City', 'Foreign Address Country', 'Foreign Address Line 2', 'Foreign Address Zip',
@@ -31,7 +30,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                            'Exposure Risk Assessment', 'Monitoring Plan', 'Exposure Notes', 'Status', 'Symptom Onset Date',
                            'Case Status', 'Lab 1 Test Type', 'Lab 1 Specimen Collection Date', 'Lab 1 Report Date', 'Lab 1 Result', 'Lab 2 Test Type',
                            'Lab 2 Specimen Collection Date', 'Lab 2 Report Date', 'Lab 2 Result', 'Full Assigned Jurisdiction Path', 'Assigned User',
-                           'Gender Identity', 'Sexual Orientation'].freeze
+                           'Gender Identity', 'Sexual Orientation', 'Race Unknown', 'Race Other', 'Race Refused to Answer'].freeze
 
   MONITOREES_LIST_HEADERS = ['Patient ID'] + COMPREHENSIVE_HEADERS + ['Extended Isolation Date'].freeze
 
@@ -53,7 +52,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                    'Exposure Assessment', 'Contact Made?', 'Monitoring needed?', 'Notes'].freeze
 
   COMPREHENSIVE_FIELDS = [:first_name, :middle_name, :last_name, :date_of_birth, :sex, :white, :black_or_african_american, :american_indian_or_alaska_native,
-                          :asian, :native_hawaiian_or_other_pacific_islander, :race_unknown, :race_other, :race_refused_to_answer, :ethnicity, :primary_language, 
+                          :asian, :native_hawaiian_or_other_pacific_islander, :ethnicity, :primary_language, 
                           :secondary_language, :interpretation_required, :nationality, :user_defined_id_statelocal, :user_defined_id_cdc, :user_defined_id_nndss, 
                           :address_line_1, :address_city, :address_state, :address_line_2, :address_zip, :address_county, :foreign_address_line_1, :foreign_address_city,
                           :foreign_address_country, :foreign_address_line_2, :foreign_address_zip, :foreign_address_line_3, :foreign_address_state,
@@ -71,7 +70,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                           :healthcare_personnel, :healthcare_personnel_facility_name, :crew_on_passenger_or_cargo_flight, :member_of_a_common_exposure_cohort,
                           :member_of_a_common_exposure_cohort_type, :exposure_risk_assessment, :monitoring_plan, :exposure_notes, nil, :symptom_onset,
                           :case_status, nil, nil, nil, nil, nil, nil, nil, nil, :jurisdiction_path, :assigned_user, :gender_identity,
-                          :sexual_orientation].freeze
+                          :sexual_orientation, :race_unknown, :race_other, :race_refused_to_answer,].freeze
 
   EPI_X_FIELDS = [:user_defined_id_statelocal, :flight_or_vessel_number, nil, nil, :user_defined_id_cdc, nil, nil, :primary_language, :date_of_arrival,
                   :port_of_entry_into_usa, :last_name, :first_name, :date_of_birth, :sex, nil, nil, :address_line_1, :address_city, :address_state,
