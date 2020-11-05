@@ -15,7 +15,7 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         next if message.nil?
 
-        patient = Patient.find_by(submission_token: message['patient_submission_token'])
+        patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
         next if patient.nil?
 
         # Prevent duplicate patient assessment spam
@@ -72,7 +72,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         end
 
-        threshold_condition = ThresholdCondition.where(threshold_condition_hash: message['threshold_condition_hash']).first
+        threshold_condition = ThresholdCondition.where(type: "ThresholdCondition").find_by(threshold_condition_hash: message['threshold_condition_hash'])
         next unless threshold_condition
 
         if message['reported_symptoms_array']
@@ -84,7 +84,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
-          patient.active_dependents.uniq.each do |pat|
+          patient.active_dependents.each do |pat|
             typed_reported_symptoms = if message['experiencing_symptoms']
                                         # Remove values so that the values will appear as blank in a symptomatic report
                                         # this will indicate that the person needs to be reached out to to get the actual values
