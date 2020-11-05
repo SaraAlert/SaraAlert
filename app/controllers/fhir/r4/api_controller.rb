@@ -655,12 +655,6 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Convert to array of error strings given nested hash with arrays of error strings as values
-<<<<<<< HEAD
-  def error_messages_from_hash(errors)
-    errors&.values&.each_with_object([]) do |value, messages|
-      value.each do |val|
-        val.is_a?(Hash) ? messages.push(*error_messages_from_hash(val)) : messages << val
-=======
   def format_fhir_validation_errors(errors)
     errors&.values&.each_with_object([]) do |value, messages|
       value.each do |val|
@@ -675,7 +669,6 @@ class Fhir::R4::ApiController < ActionController::API
       msg_header = 'Validation Error' + (value ? " for value '#{value}'" : '') + " on '#{VALIDATION[attribute][:label]}':"
       errors.each do |error_message|
         messages << "#{msg_header} #{error_message}"
->>>>>>> afd42076d2b0843e163b6f7f43c040e4810cf290
       end
     end
   end
