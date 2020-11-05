@@ -140,7 +140,7 @@ class AdvancedFilter extends React.Component {
         {
           name: 'manual-contact-attempts',
           title: 'Manual Contact Attempts (Number)',
-          description: 'All records with certain number of manual contact attempts',
+          description: 'All records with the specified number of manual contact attempts',
           type: 'number',
         },
       ],
