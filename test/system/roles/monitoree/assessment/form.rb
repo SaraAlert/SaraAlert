@@ -45,7 +45,8 @@ class AssessmentForm < ApplicationSystemTestCase
   end
 
   def complete_multiple_assessments(user_label, patient, assessment_label, logged_in)
-    complete_assessment_new_link(user_label, patient, assessment_label, true)
+    complete_assessment_new_link(user_label, patient, assessment_label, patient.initials_age)
+    complete_assessment_old_link(user_label, patient, assessment_label)
     @@system_test_utils.login(user_label) if logged_in
     old_submission_token = PatientLookup.find_by('BINARY new_submission_token = ?', patient.submission_token).old_submission_token
     old_unique_identifier = JurisdictionLookup.find_by('BINARY new_unique_identifier = ?', patient.jurisdiction.unique_identifier).old_unique_identifier

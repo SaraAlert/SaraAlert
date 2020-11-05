@@ -9,8 +9,8 @@ class PatientMailer < ApplicationMailer
 
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    @patients = patient.active_dependents.uniq.collect do |p|
-      { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
+    @patients = patient.active_dependents.uniq.collect do |dependent|
+      { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
     @lang = patient.select_language
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.enrollment.subject', locale: @lang)) do |format|
@@ -69,13 +69,13 @@ class PatientMailer < ApplicationMailer
 
     num = patient.primary_telephone
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient.active_dependents.uniq.each do |p|
-      lang = p.select_language
-      url = new_patient_assessment_jurisdiction_lang_initials_url(p.submission_token,
-                                                                  p.jurisdiction.unique_identifier,
+    patient.active_dependents.uniq.each do |dependent|
+      lang = dependent.select_language
+      url = new_patient_assessment_jurisdiction_lang_initials_url(dependent.submission_token,
+                                                                  dependent.jurisdiction.unique_identifier,
                                                                   lang&.to_s || 'en',
-                                                                  p&.initials_age)
-      contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{p&.initials_age('-')}: #{url}"
+                                                                  dependent&.initials_age)
+      contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
       account_sid = ENV['TWILLIO_API_ACCOUNT']
       auth_token = ENV['TWILLIO_API_KEY']
       from = ENV['TWILLIO_SENDING_NUMBER']
@@ -85,7 +85,7 @@ class PatientMailer < ApplicationMailer
         to: Phonelib.parse(num, 'US').full_e164,
         body: contents
       )
-      add_success_history(p, patient)
+      add_success_history(dependent, patient)
     end
     patient.update(last_assessment_reminder_sent: DateTime.now)
   rescue Twilio::REST::RestError => e
@@ -122,7 +122,7 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient_names = patient.active_dependents.uniq.collect { |p| p&.initials_age('-') }
+    patient_names = patient.active_dependents.uniq.collect { |dependent| dependent&.initials_age('-') }
     contents = I18n.t('assessments.sms.prompt.daily1', locale: lang) + patient_names.join(', ') + '.'
 
     # Prepare text asking about anyone in the group
@@ -166,8 +166,9 @@ class PatientMailer < ApplicationMailer
     lang = patient.select_language
     lang = :en if %i[so].include?(lang) # Some languages are not supported via voice
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    patient_names = patient.active_dependents.uniq.collect do |p|
-      "#{p&.first_name&.first || ''}, #{p&.last_name&.first || ''}, #{I18n.t('assessments.phone.age', locale: lang)} #{p&.calc_current_age || '0'},"
+    patient_names = patient.active_dependents.uniq.collect do |dependent|
+      "#{dependent&.first_name&.first || ''}, #{dependent&.last_name&.first || ''}, "\
+        "#{I18n.t('assessments.phone.age', locale: lang)} #{dependent&.calc_current_age || '0'},"
     end
     contents = I18n.t('assessments.phone.daily1', locale: lang) + patient_names.join(', ')
 
@@ -213,8 +214,8 @@ class PatientMailer < ApplicationMailer
     @lang = patient.select_language
     # Gather patients and jurisdictions
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
-    @patients = patient.active_dependents.uniq.collect do |p|
-      { patient: p, jurisdiction_unique_id: Jurisdiction.find_by_id(p.jurisdiction_id).unique_identifier }
+    @patients = patient.active_dependents.uniq.collect do |dependent|
+      { patient: dependent, jurisdiction_unique_id: Jurisdiction.find_by_id(dependent.jurisdiction_id).unique_identifier }
     end
     mail(to: patient.email&.strip, subject: I18n.t('assessments.email.reminder.subject', locale: @lang || :en)) do |format|
       format.html { render layout: 'main_mailer' }
