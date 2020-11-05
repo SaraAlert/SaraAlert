@@ -25,6 +25,7 @@ class Fhir::R4::ApiController < ActionController::API
       :'system/QuestionnaireResponse.read'
     )
   end
+  before_action :check_client_type
 
   # Return a resource given a type and an id.
   #
@@ -450,6 +451,24 @@ class Fhir::R4::ApiController < ActionController::API
 
   private
 
+  # Check whether client is user or M2M flow
+  # Also return a 401 if user doesn't have API access
+  def check_client_type
+    return if doorkeeper_token.nil?
+
+    if current_resource_owner.present?
+      if current_resource_owner.can_use_api?
+        @user_workflow = true
+      else
+        head :unauthorized
+      end
+    end
+
+    return unless current_client_application.present?
+
+    @m2m_workflow = true
+  end
+
   # Current user account as authenticated via doorkeeper for user flow
   def current_resource_owner
     User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token&.resource_owner_id
@@ -462,36 +481,30 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Determine if the patient's jurisdiction is valid for the requesting application
   def jurisdiction_valid_for_client?(patient)
-    user_workflow = false
-    m2m_workflow = false
-    if current_resource_owner.nil?
-      # M2M auth workflow
-      m2m_workflow = true
+    if @user_workflow
+      allowed_jurisdiction_ids = current_resource_owner&.jurisdiction&.subtree&.pluck(:id)
+      if allowed_jurisdiction_ids.nil?
+        patient.errors.add(:jurisdiction_id, 'User does not have a jurisdiction')
+      elsif allowed_jurisdiction_ids.include?(patient.jurisdiction_id)
+        return true
+      else
+        patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the API user's jurisdiction hierarchy")
+      end
+    elsif @m2m_workflow
       allowed_jurisdiction_ids = current_client_application&.jurisdiction&.subtree&.pluck(:id)
       if allowed_jurisdiction_ids.nil?
         patient.errors.add(:jurisdiction_id, 'Client application does not have a jurisdiction')
-        false
-      end
-    else
-      # User auth workflow
-      user_workflow = true
-      allowed_jurisdiction_ids = current_resource_owner&.jurisdiction&.subtree&.pluck(:id)
-      if allowed_jurisdiction_ids.nil?
-        patient.errors.add(:jurisdiction_id, 'API user does not have a jurisdiction')
-        false
+      elsif allowed_jurisdiction_ids.include?(patient.jurisdiction_id)
+        return true
+      else
+        patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the client application's jurisdiction hierarchy")
       end
     end
 
-    if !patient.jurisdiction.nil? && allowed_jurisdiction_ids.include?(patient.jurisdiction[:id])
-      true
-    else
-      patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the API user's jurisdiction hierarchy") if user_workflow
-      patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the client application's jurisdiction hierarchy") if m2m_workflow
-      false
-    end
+    false
   end
 
-  # If no jurisdiction specified for a patient, default to the client's jurisdiction
+  # Default jurisdiction to assign to new monitorees
   def default_patient_jurisdiction
     current_resource_owner&.jurisdiction || current_client_application.jurisdiction
   end
