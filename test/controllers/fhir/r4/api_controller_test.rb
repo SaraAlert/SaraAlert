@@ -668,6 +668,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 3, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
+    assert_equal 'USA, State 1',
+                 json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
   end
 
   test 'SYSTEM FLOW: should calculate Patient age via create' do
@@ -1602,6 +1604,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 3, json_response['telecom'].count
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
+    assert_equal 'USA, State 1',
+                 json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
   end
 
   test 'USER FLOW: should calculate Patient age via create' do

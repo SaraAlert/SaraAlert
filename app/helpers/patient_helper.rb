@@ -179,7 +179,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   # Use the default if there is no path specified.
   def self.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction)
     jurisdiction_path = from_string_extension(patient, 'full-assigned-jurisdiction-path')
-    jurisdiction_path ? Jurisdiction.where(path: jurisdiction_path).first : default_jurisdiction
+    jurisdiction_path ? Jurisdiction.find_by(path: jurisdiction_path) : default_jurisdiction
   end
 
   def normalize_state_names(pat)
