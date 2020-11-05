@@ -462,23 +462,38 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Determine if the patient's jurisdiction is valid for the requesting application
   def jurisdiction_valid_for_client?(patient)
-    allowed_jurisdiction_ids = current_client_application.jurisdiction&.subtree&.pluck(:id) ||
-                               current_resource_owner&.jurisdiction&.subtree&.pluck(:id)
+    user_workflow = false
+    m2m_workflow = false
+    if current_resource_owner.nil?
+      # M2M auth workflow
+      m2m_workflow = true
+      allowed_jurisdiction_ids = current_client_application&.jurisdiction&.subtree&.pluck(:id)
+      if allowed_jurisdiction_ids.nil?
+        patient.errors.add(:jurisdiction_id, 'Client application does not have a jurisdiction')
+        false
+      end
+    else
+      # User auth workflow
+      user_workflow = true
+      allowed_jurisdiction_ids = current_resource_owner&.jurisdiction&.subtree&.pluck(:id)
+      if allowed_jurisdiction_ids.nil?
+        patient.errors.add(:jurisdiction_id, 'API user does not have a jurisdiction')
+        false
+      end
+    end
 
-    if allowed_jurisdiction_ids.nil?
-      patient.errors.add(:jurisdiction_id, 'Client application does not have a jurisdiction')
-      false
-    elsif !patient.jurisdiction.nil? && allowed_jurisdiction_ids.include?(patient.jurisdiction[:id])
+    if !patient.jurisdiction.nil? && allowed_jurisdiction_ids.include?(patient.jurisdiction[:id])
       true
     else
-      patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the client application's jurisdiction")
+      patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the API user's jurisdiction hierarchy") if user_workflow
+      patient.errors.add(:jurisdiction_id, "Jurisdiction must be within the client application's jurisdiction hierarchy") if m2m_workflow
       false
     end
   end
 
   # If no jurisdiction specified for a patient, default to the client's jurisdiction
   def default_patient_jurisdiction
-    current_client_application.jurisdiction || current_resource_owner&.jurisdiction
+    current_resource_owner&.jurisdiction || current_client_application.jurisdiction
   end
 
   # Determine the patient data that is accessible by either the current resource owner
