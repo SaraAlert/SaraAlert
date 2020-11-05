@@ -113,7 +113,7 @@ class ConsumeAssessmentsJob < ApplicationJob
       end
     end
   rescue Redis::ConnectionError, Redis::CannotConnectError => e
-    puts "ConsumeAssessmentsJob: Redis::ConnectionError (#{e}), retrying..."
+    Rails.logger.info "ConsumeAssessmentsJob: Redis::ConnectionError (#{e}), retrying..."
     sleep(1)
     retry
   end
