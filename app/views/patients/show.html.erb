@@ -45,7 +45,21 @@
       </div>
       <div class="modal-body">
         <%reporting_condition = @patient.jurisdiction.hierarchical_condition_unpopulated_symptoms%>
-        <%= react_component('assessment/Assessment', { current_user: current_user, assessment: {}, threshold_hash: reporting_condition.threshold_condition_hash, symptoms: reporting_condition.symptoms, idPre: 'new', patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: Assessment.new.translations, lang: 'en' }) %>
+        <%= react_component('assessment/Assessment', {
+                              current_user: current_user,
+                              assessment: {},
+                              threshold_hash: reporting_condition.threshold_condition_hash,
+                              symptoms: reporting_condition.symptoms,
+                              idPre: 'new',
+                              patient_submission_token: @patient.submission_token,
+                              patient_initials: @patient.initials,
+                              patient_age: @patient.calc_current_age,
+                              authenticity_token: form_authenticity_token,
+                              reload: true,
+                              patient_id: @patient.id,
+                              translations: Assessment.new.translations,
+                              lang: 'en'
+                            }) %>
       </div>
     </div>
   </div>
@@ -144,7 +158,21 @@
         </button>
       </div>
       <div class="modal-body">
-        <%= react_component('assessment/Assessment', { current_user: current_user, assessment: assessment, threshold_hash: assessment&.reported_condition&.threshold_condition_hash, symptoms: assessment&.reported_condition&.symptoms, idPre: assessment.id.to_s, updateId: assessment.id, patient_submission_token: @patient.submission_token, authenticity_token: form_authenticity_token, reload: true, patient_id: @patient.id, translations: assessment.translations, lang: 'en' }) %>
+        <%= react_component('assessment/Assessment', {
+                              current_user: current_user,
+                              assessment: assessment,
+                              threshold_hash: assessment&.reported_condition&.threshold_condition_hash,
+                              symptoms: assessment&.reported_condition&.symptoms,
+                              idPre: assessment.id.to_s,
+                              updateId: assessment.id,
+                              patient_submission_token: @patient.submission_token,
+                              patient_initials: @patient.initials,
+                              patient_age: @patient.calc_current_age,
+                              authenticity_token: form_authenticity_token,
+                              reload: true, patient_id: @patient.id,
+                              translations: assessment.translations,
+                              lang: 'en'
+                            }) %>
       </div>
     </div>
   </div>

@@ -128,7 +128,16 @@ class SymptomsAssessment extends React.Component {
     return (
       <React.Fragment>
         <Card className="mx-0 card-square">
-          <Card.Header as="h4">{this.props.translations[this.props.lang]['web']['title']}</Card.Header>
+          <Card.Header as="h4">
+            {this.props.translations[this.props.lang]['web']['title']}&nbsp;
+            {this.props.patient_initials && this.props.patient_age !== null && (
+              <span>
+                ({this.props.patient_initials}-{this.props.patient_age})
+              </span>
+            )}
+            {this.props.patient_initials && this.props.patient_age === null && <span>({this.props.patient_initials})</span>}
+            {!this.props.patient_initials && this.props.patient_age !== null && <span>({this.props.patient_age})</span>}
+          </Card.Header>
           <Card.Body>
             <Form.Row>
               <Form.Label className="nav-input-label pb-3">{this.props.translations[this.props.lang]['web']['bool-title']}</Form.Label>
@@ -170,6 +179,8 @@ class SymptomsAssessment extends React.Component {
 
 SymptomsAssessment.propTypes = {
   translations: PropTypes.object,
+  patient_initials: PropTypes.string,
+  patient_age: PropTypes.number,
   lang: PropTypes.string,
   currentState: PropTypes.object,
   setAssessmentState: PropTypes.func,

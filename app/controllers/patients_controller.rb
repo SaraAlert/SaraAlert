@@ -151,9 +151,8 @@ class PatientsController < ApplicationController
     valid_jurisdiction = current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id) unless patient.jurisdiction_id.nil?
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
-    # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
-    # included in the URL sent to the monitoree to allow them to report without having to type in a password
-    patient.submission_token = SecureRandom.hex(20) # 160 bits
+    # Generate submission token for assessments
+    patient.submission_token = patient.new_submission_token
 
     # Attempt to save and continue; else if failed redirect to index
     render(json: patient.errors, status: 422) && return unless patient.save

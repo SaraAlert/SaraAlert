@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_15_215616) do
+ActiveRecord::Schema.define(version: 2020_10_28_194626) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -91,6 +91,12 @@ ActiveRecord::Schema.define(version: 2020_10_15_215616) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["patient_id"], name: "index_histories_on_patient_id"
+  end
+
+  create_table "jurisdiction_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "old_unique_identifier"
+    t.string "new_unique_identifier"
+    t.index ["old_unique_identifier"], name: "index_jurisdiction_lookups_on_old_unique_identifier"
   end
 
   create_table "jurisdictions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -222,6 +228,13 @@ ActiveRecord::Schema.define(version: 2020_10_15_215616) do
     t.integer "password_archivable_id", null: false
     t.datetime "created_at"
     t.index ["password_archivable_type", "password_archivable_id"], name: "index_password_archivable"
+  end
+
+  create_table "patient_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "old_submission_token"
+    t.string "new_submission_token"
+    t.index ["new_submission_token"], name: "index_patient_lookups_on_new_submission_token"
+    t.index ["old_submission_token"], name: "index_patient_lookups_on_old_submission_token"
   end
 
   create_table "patients", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

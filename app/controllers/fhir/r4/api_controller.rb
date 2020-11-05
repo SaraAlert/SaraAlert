@@ -188,8 +188,8 @@ class Fhir::R4::ApiController < ActionController::API
       # Jurisdiction is the authenticated user's jurisdiction
       resource.jurisdiction = resource.creator.jurisdiction
 
-      # Generate a submission token for the new monitoree
-      resource.submission_token = SecureRandom.hex(20) # 160 bits
+      # Generate submission token for monitoree
+      resource.submission_token = resource.new_submission_token
     else
       status_not_found && return
     end

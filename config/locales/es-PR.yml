@@ -122,8 +122,7 @@ es-PR:
         try-again: "Lo siento, no entendí. Responda con \"Sí\" o \"No\""
         thanks: '¡Gracias por completar su informe diario!'
       weblink:
-        intro1: 'Este es el sistema Sara Alert. Favor de completar el reporte de'
-        intro2: 'en este enlace.'
+        intro: 'Complete el Informe diario de Sara Alert para'
     phone:
       intro: 'Hola, soy Sara, la asistente de salud pública automatizada que solicita su informe diario.'
       try-again: "Lo siento, no entendí. Intentemoslo de nuevo."

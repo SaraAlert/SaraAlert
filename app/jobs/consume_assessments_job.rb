@@ -16,6 +16,13 @@ class ConsumeAssessmentsJob < ApplicationJob
         next if message.nil?
 
         patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
+
+        # Perform patient lookup for old submission tokens
+        if patient.nil?
+          patient_lookup = PatientLookup.find_by(old_submission_token: message['patient_submission_token'])
+          patient = Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
+        end
+
         next if patient.nil?
 
         # Prevent duplicate patient assessment spam
@@ -84,7 +91,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
-          patient.active_dependents.each do |pat|
+          patient.active_dependents.each do |dependent|
             typed_reported_symptoms = if message['experiencing_symptoms']
                                         # Remove values so that the values will appear as blank in a symptomatic report
                                         # this will indicate that the person needs to be reached out to to get the actual values
@@ -95,16 +102,12 @@ class ConsumeAssessmentsJob < ApplicationJob
                                         threshold_condition.clone_symptoms_negate_bool_values
                                       end
             reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
-            assessment = Assessment.new(reported_condition: reported_condition, patient: pat)
+            assessment = Assessment.new(reported_condition: reported_condition, patient: dependent)
             assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
             # If current user in the collection of patient + patient dependents is the patient, then that means
             # that they reported for themselves, else we are creating an assessment for the dependent and
             # that means that it was the proxy who reported for them
-            assessment.who_reported = if message['patient_submission_token'] == pat.submission_token
-                                        'Monitoree'
-                                      else
-                                        'Proxy'
-                                      end
+            assessment.who_reported = patient.submission_token == dependent.submission_token ? 'Monitoree' : 'Proxy'
             assessment.save
           end
         end
