@@ -118,6 +118,7 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     secondary_telephone_type: { label: 'Secondary Telephone Type', checks: [:enum] },
     preferred_contact_time: { label: 'Preferred Contact Time', checks: [:enum] },
     email: { label: 'Email', checks: [:email] },
+    jurisdiction_id: { label: 'Jurisdiction ID', checks: [] },
     date_of_departure: { label: 'Date of Departure', checks: [:date] },
     date_of_arrival: { label: 'Date of Arrival', checks: [:date] },
     additional_planned_travel_type: { label: 'Additional Planned Travel Type', checks: [:enum] },

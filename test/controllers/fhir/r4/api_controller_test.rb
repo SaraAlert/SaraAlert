@@ -921,7 +921,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].starts_with?('Jurisdiction must be within'))
+    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
   end
 
   test 'SYSTEM FLOW: should be forbidden via update' do
@@ -1864,7 +1864,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response['issue'].length
-    assert(json_response['issue'][0]['diagnostics'].starts_with?('Jurisdiction must be within'))
+    assert(json_response['issue'][0]['diagnostics'].include?('Jurisdiction must be within'))
   end
 
   test 'USER FLOW: should be forbidden via update' do
