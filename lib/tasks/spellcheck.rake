@@ -104,6 +104,7 @@ if Rails.env.test? || Rails.env.development?
     dict.add('admin_authenticator')
     dict.add('apps')
     dict.add('Authy')
+    dict.add('cancelled')
     dict.add('captcha')
     dict.add('code_verifier')
     dict.add('HTTPS')
