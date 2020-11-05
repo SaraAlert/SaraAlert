@@ -57,7 +57,7 @@ class ImportController < ApplicationController
                 patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
               elsif col_num == 96
                 patient[:assigned_user] = validate_assigned_user(row[96], row_ind)
-              elsif col_num == 88 && workflow == :isolation
+              elsif col_num == 85 && workflow == :isolation
                 patient[:user_defined_symptom_onset] = row[85].present?
                 patient[field] = validate_field(field, row[col_num], row_ind)
               elsif col_num == 86

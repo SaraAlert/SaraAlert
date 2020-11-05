@@ -115,11 +115,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     # The resource.update method does not allow a context to be passed, so first we assign the updates, then save
     resource.assign_attributes(updates)
-<<<<<<< HEAD
-    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save(context: :api)
-=======
     status_unprocessable_entity(format_model_validation_errors(resource)) && return unless resource.save(context: :api)
->>>>>>> afd42076d2b0843e163b6f7f43c040e4810cf290
 
     if resource_type == 'patient'
       # Update patient history with detailed edit diff
@@ -142,11 +138,7 @@ class Fhir::R4::ApiController < ActionController::API
     # Parse in the FHIR::Patient
     contents = FHIR.from_contents(request.body.string)
     errors = contents&.validate
-<<<<<<< HEAD
-    status_bad_request(error_messages_from_hash(errors)) && return if contents.nil? || !errors.empty?
-=======
     status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
->>>>>>> afd42076d2b0843e163b6f7f43c040e4810cf290
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
@@ -204,11 +196,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     status_bad_request && return if resource.nil?
 
-<<<<<<< HEAD
-    status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save(context: :api)
-=======
     status_unprocessable_entity(format_model_validation_errors(resource)) && return unless resource.save(context: :api)
->>>>>>> afd42076d2b0843e163b6f7f43c040e4810cf290
 
     if resource_type == 'patient'
       # Send enrollment notification only to responders
