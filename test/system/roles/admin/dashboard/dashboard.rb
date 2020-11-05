@@ -29,6 +29,6 @@ class AdminDashboard < ApplicationSystemTestCase
   end
 
   def search_for_user(query)
-    fill_in 'search', with: query
+    page.execute_script %{ $("#search-input").val("#{query}") }
   end
 end

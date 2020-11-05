@@ -78,7 +78,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
                   :primary_telephone, :secondary_telephone, :email, nil, nil, nil, :potential_exposure_location, :potential_exposure_country,
                   :date_of_departure, nil, nil, nil, nil, :contact_of_known_case, :was_in_health_care_facility_with_known_cases].freeze
 
-  
   def unformat_enum_field(value)
     value.to_s.downcase.gsub(/[ -.]/, '')
   end

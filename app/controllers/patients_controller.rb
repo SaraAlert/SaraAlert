@@ -6,6 +6,7 @@ class PatientsController < ApplicationController
 
   # Enroller view to see enrolled subjects and button to enroll new subjects
   def index
+    @enrolled_patients = current_user.enrolled_patients.eager_load(:jurisdiction)
     redirect_to(root_url) && return unless current_user.can_create_patient?
   end
 
@@ -112,7 +113,7 @@ class PatientsController < ApplicationController
     end
 
     # Add patient details that were collected from the form
-    patient = Patient.new(params[:patient].permit(*allowed_params))
+    patient = Patient.new(allowed_params)
 
     # Default to copying *required address into monitored address if monitored address is nil
     if patient.monitored_address_line_1.nil? || patient.monitored_address_state.nil? ||
@@ -150,47 +151,31 @@ class PatientsController < ApplicationController
     valid_jurisdiction = current_user.jurisdiction.subtree_ids.include?(patient.jurisdiction_id) unless patient.jurisdiction_id.nil?
     patient.jurisdiction = current_user.jurisdiction unless valid_jurisdiction
 
-    # Create a secure random token to act as the monitoree's password when they submit assessments; this gets
-    # included in the URL sent to the monitoree to allow them to report without having to type in a password
-    patient.submission_token = SecureRandom.hex(20) # 160 bits
+    # Generate submission token for assessments
+    patient.submission_token = patient.new_submission_token
+
     # Attempt to save and continue; else if failed redirect to index
-    if patient.save
+    render(json: patient.errors, status: 422) && return unless patient.save
 
-      # Send enrollment notification only to responders
-      patient.send_enrollment_notification if patient.self_reporter_or_proxy?
+    # Send enrollment notification only to responders
+    patient.send_enrollment_notification if patient.self_reporter_or_proxy?
 
-      # Create a history for the enrollment
-      History.enrollment(patient: patient, created_by: current_user.email)
+    # Create a history for the enrollment
+    History.enrollment(patient: patient, created_by: current_user.email)
 
-      if params[:cc_id].present?
-        close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc_id)[:cc_id])&.first
-        close_contact.update(enrolled_id: patient.id)
-      end
-
-      # Create laboratories for patient if included in import
-      unless params.dig(:patient, :laboratories).nil?
-        params[:patient][:laboratories].each do |lab|
-          laboratory = Laboratory.new
-          laboratory.lab_type = lab[:lab_type]
-          laboratory.specimen_collection = lab[:specimen_collection]
-          laboratory.report = lab[:report]
-          laboratory.result = lab[:result]
-          laboratory.patient = patient
-          laboratory.save
-        end
-      end
-
-      render(json: patient) && return
-    else
-      render(file: File.join(Rails.root, 'public/422.html'), status: 422, layout: false)
+    if params[:cc_id].present?
+      close_contact = CloseContact.where(patient_id: current_user.viewable_patients).where(id: params.permit(:cc_id)[:cc_id])&.first
+      close_contact.update(enrolled_id: patient.id)
     end
+
+    render(json: patient) && return
   end
 
   # General updates to an existing subject.
   def update
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    content = params.require(:patient).permit(:patient, :id, *allowed_params)
+    content = params.require(:patient).permit(:id).merge!(allowed_params)
     patient = current_user.get_patient(content[:id])
 
     # If we failed to find a subject given the id, redirect to index
@@ -515,109 +500,130 @@ class PatientsController < ApplicationController
     render json: { removeable: !duplicate_contact }
   end
 
+  # Construct a diff for a patient update to keep track of changes
+  def patient_diff(patient_before, patient_after)
+    diffs = []
+    allowed_params.each_key do |attribute|
+      next if patient_before[attribute] == patient_after[attribute]
+
+      diffs << {
+        attribute: attribute,
+        before: attribute == :jurisdiction_id ? Jurisdiction.find(patient_before[attribute])[:path] : patient_before[attribute],
+        after: attribute == :jurisdiction_id ? Jurisdiction.find(patient_after[attribute])[:path] : patient_after[attribute]
+      }
+    end
+    diffs
+  end
+
   # Parameters allowed for saving to database
   def allowed_params
-    %i[
-      user_defined_id_statelocal
-      user_defined_id_cdc
-      user_defined_id_nndss
-      first_name
-      middle_name
-      last_name
-      date_of_birth
-      age
-      sex
-      white
-      black_or_african_american
-      american_indian_or_alaska_native
-      asian
-      native_hawaiian_or_other_pacific_islander
-      race_unknown
-      race_other
-      race_refused_to_answer
-      ethnicity
-      primary_language
-      secondary_language
-      interpretation_required
-      nationality
-      address_line_1
-      foreign_address_line_1
-      address_city
-      address_state
-      address_line_2
-      address_zip
-      address_county
-      monitored_address_line_1
-      monitored_address_city
-      monitored_address_state
-      monitored_address_line_2
-      monitored_address_zip
-      monitored_address_county
-      foreign_address_city
-      foreign_address_country
-      foreign_address_line_2
-      foreign_address_zip
-      foreign_address_line_3
-      foreign_address_state
-      foreign_monitored_address_line_1
-      foreign_monitored_address_city
-      foreign_monitored_address_state
-      foreign_monitored_address_line_2
-      foreign_monitored_address_zip
-      foreign_monitored_address_county
-      primary_telephone
-      primary_telephone_type
-      secondary_telephone
-      secondary_telephone_type
-      email
-      preferred_contact_method
-      preferred_contact_time
-      port_of_origin
-      source_of_report
-      source_of_report_specify
-      flight_or_vessel_number
-      flight_or_vessel_carrier
-      port_of_entry_into_usa
-      travel_related_notes
-      additional_planned_travel_type
-      additional_planned_travel_destination
-      additional_planned_travel_destination_state
-      additional_planned_travel_destination_country
-      additional_planned_travel_port_of_departure
-      date_of_departure
-      date_of_arrival
-      additional_planned_travel_start_date
-      additional_planned_travel_end_date
-      additional_planned_travel_related_notes
-      last_date_of_exposure
-      potential_exposure_location
-      potential_exposure_country
-      contact_of_known_case
-      contact_of_known_case_id
-      travel_to_affected_country_or_area
-      was_in_health_care_facility_with_known_cases
-      was_in_health_care_facility_with_known_cases_facility_name
-      laboratory_personnel
-      laboratory_personnel_facility_name
-      healthcare_personnel
-      healthcare_personnel_facility_name
-      exposure_notes
-      crew_on_passenger_or_cargo_flight
-      monitoring_plan
-      exposure_risk_assessment
-      member_of_a_common_exposure_cohort
-      member_of_a_common_exposure_cohort_type
-      isolation
-      jurisdiction_id
-      assigned_user
-      symptom_onset
-      extended_isolation
-      case_status
-      continuous_exposure
-      gender_identity
-      sexual_orientation
-      user_defined_symptom_onset
-    ]
+    params.require(:patient).permit(
+      :user_defined_id_statelocal,
+      :user_defined_id_cdc,
+      :user_defined_id_nndss,
+      :first_name,
+      :middle_name,
+      :last_name,
+      :date_of_birth,
+      :age,
+      :sex,
+      :white,
+      :black_or_african_american,
+      :american_indian_or_alaska_native,
+      :asian,
+      :native_hawaiian_or_other_pacific_islander,
+      :race_unknown,
+      :race_other,
+      :race_refused_to_answer,
+      :ethnicity,
+      :primary_language,
+      :secondary_language,
+      :interpretation_required,
+      :nationality,
+      :address_line_1,
+      :foreign_address_line_1,
+      :address_city,
+      :address_state,
+      :address_line_2,
+      :address_zip,
+      :address_county,
+      :monitored_address_line_1,
+      :monitored_address_city,
+      :monitored_address_state,
+      :monitored_address_line_2,
+      :monitored_address_zip,
+      :monitored_address_county,
+      :foreign_address_city,
+      :foreign_address_country,
+      :foreign_address_line_2,
+      :foreign_address_zip,
+      :foreign_address_line_3,
+      :foreign_address_state,
+      :foreign_monitored_address_line_1,
+      :foreign_monitored_address_city,
+      :foreign_monitored_address_state,
+      :foreign_monitored_address_line_2,
+      :foreign_monitored_address_zip,
+      :foreign_monitored_address_county,
+      :primary_telephone,
+      :primary_telephone_type,
+      :secondary_telephone,
+      :secondary_telephone_type,
+      :email,
+      :preferred_contact_method,
+      :preferred_contact_time,
+      :port_of_origin,
+      :source_of_report,
+      :source_of_report_specify,
+      :flight_or_vessel_number,
+      :flight_or_vessel_carrier,
+      :port_of_entry_into_usa,
+      :travel_related_notes,
+      :additional_planned_travel_type,
+      :additional_planned_travel_destination,
+      :additional_planned_travel_destination_state,
+      :additional_planned_travel_destination_country,
+      :additional_planned_travel_port_of_departure,
+      :date_of_departure,
+      :date_of_arrival,
+      :additional_planned_travel_start_date,
+      :additional_planned_travel_end_date,
+      :additional_planned_travel_related_notes,
+      :last_date_of_exposure,
+      :potential_exposure_location,
+      :potential_exposure_country,
+      :contact_of_known_case,
+      :contact_of_known_case_id,
+      :travel_to_affected_country_or_area,
+      :was_in_health_care_facility_with_known_cases,
+      :was_in_health_care_facility_with_known_cases_facility_name,
+      :laboratory_personnel,
+      :laboratory_personnel_facility_name,
+      :healthcare_personnel,
+      :healthcare_personnel_facility_name,
+      :exposure_notes,
+      :crew_on_passenger_or_cargo_flight,
+      :monitoring_plan,
+      :exposure_risk_assessment,
+      :member_of_a_common_exposure_cohort,
+      :member_of_a_common_exposure_cohort_type,
+      :isolation,
+      :jurisdiction_id,
+      :assigned_user,
+      :symptom_onset,
+      :extended_isolation,
+      :case_status,
+      :continuous_exposure,
+      :gender_identity,
+      :sexual_orientation,
+      :user_defined_symptom_onset,
+      laboratories_attributes: %i[
+        lab_type
+        specimen_collection
+        report
+        result
+      ]
+    )
   end
 
   # Fields that should be copied over from parent to group member for easier form completion

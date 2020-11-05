@@ -56,7 +56,7 @@ class Patient < ApplicationRecord
      sex].each do |enum_field|
     validates enum_field, on: :api, inclusion: {
       in: VALID_ENUMS[enum_field],
-      message: "%<value>s is not an acceptable value for '#{VALIDATION[enum_field][:label]}', acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
+      message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
     }, allow_blank: true
   end
 
@@ -78,19 +78,17 @@ class Patient < ApplicationRecord
      date_of_birth
      first_name
      last_name].each do |required_field|
-    validates required_field, on: :api, presence: { message: "Required field '#{VALIDATION[required_field][:label]}' is missing" }
+    validates required_field, on: :api, presence: { message: 'is required' }
   end
 
   validates :symptom_onset,
             on: :api,
-            presence: { message: "Required field '#{VALIDATION[:symptom_onset][:label]}' is missing."\
-                                 " '#{VALIDATION[:symptom_onset][:label]}' is required when 'Isolation' is 'true'" },
+            presence: { message: "is required when 'Isolation' is 'true'" },
             if: -> { isolation }
 
   validates :last_date_of_exposure,
             on: :api,
-            presence: { message: "Required field '#{VALIDATION[:last_date_of_exposure][:label]}' is missing."\
-                                 " '#{VALIDATION[:last_date_of_exposure][:label]}' is required when 'Isolation' is 'false'" },
+            presence: { message: "is required when 'Isolation' is 'false'" },
             if: -> { !isolation }
 
   validates :email, on: :api, email: true
@@ -98,6 +96,30 @@ class Patient < ApplicationRecord
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
 
   validates_with PrimaryContactValidator, on: :api
+  validates :last_date_of_exposure, earliest_date: { date: Date.new(2020, 1, 1) },
+                                    latest_date: { date: 30.days.from_now.to_date },
+                                    if: -> { last_date_of_exposure_changed? }
+  validates :symptom_onset, earliest_date: { date: Date.new(2020, 1, 1) },
+                            latest_date: { date: 30.days.from_now.to_date },
+                            if: -> { symptom_onset_changed? }
+  validates :date_of_birth, earliest_date: { date: Date.new(1900, 1, 1) },
+                            latest_date: { date: Time.now.to_date },
+                            if: -> { date_of_birth_changed? }
+  validates :date_of_departure, earliest_date: { date: Date.new(2020, 1, 1) },
+                                latest_date: { date: 30.days.from_now.to_date },
+                                if: -> { date_of_departure_changed? }
+  validates :date_of_arrival, earliest_date: { date: Date.new(2020, 1, 1) },
+                              latest_date: { date: 30.days.from_now.to_date },
+                              if: -> { date_of_arrival_changed? }
+  validates :additional_planned_travel_start_date, earliest_date: { date: Date.new(2020, 1, 1) },
+                                                   latest_date: { date: 30.days.from_now.to_date },
+                                                   if: -> { additional_planned_travel_start_date_changed? }
+  validates :additional_planned_travel_end_date, earliest_date: { date: Date.new(2020, 1, 1) },
+                                                 latest_date: { date: 30.days.from_now.to_date },
+                                                 if: -> { additional_planned_travel_end_date_changed? }
+  validates :extended_isolation, earliest_date: { date: 30.days.ago.to_date },
+                                 latest_date: { date: 30.days.from_now.to_date },
+                                 if: -> { extended_isolation_changed? }
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
@@ -111,6 +133,8 @@ class Patient < ApplicationRecord
 
   around_save :inform_responder, if: :responder_id_changed?
   around_destroy :inform_responder
+
+  accepts_nested_attributes_for :laboratories
 
   # Most recent assessment
   def latest_assessment
@@ -661,6 +685,16 @@ class Patient < ApplicationRecord
     end
   end
 
+  # Patient initials and age
+  def initials_age(separator = '')
+    "#{initials}#{separator}#{(calc_current_age || 0).to_s.truncate(3, omission: nil)}"
+  end
+
+  # Patient initials
+  def initials
+    "#{first_name&.gsub(/[^A-Za-z]/i, '')&.first || ''}#{last_name&.gsub(/[^A-Za-z]/i, '')&.first || ''}"
+  end
+
   # Return the calculated age based on the date of birth
   def calc_current_age
     Patient.calc_current_age_base(provided_date_of_birth: date_of_birth)
@@ -944,5 +978,16 @@ class Patient < ApplicationRecord
   def refresh_head_of_household
     hoh = dependents_exclude_self.where(purged: false).size.positive?
     update(head_of_household: hoh) unless head_of_household == hoh
+  end
+
+  # Create a secure random token to act as the monitoree's password when they submit assessments
+  # This gets included in the URL sent to the monitoree to allow them to report without having to type in a password
+  def new_submission_token
+    token = nil
+    loop do
+      token = SecureRandom.urlsafe_base64[0, 10]
+      break unless Patient.where('BINARY submission_token = ?', token).any?
+    end
+    token
   end
 end

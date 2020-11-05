@@ -73,12 +73,12 @@ class PurgeJobTest < ActiveSupport::TestCase
     assessment = create(:assessment, patient: patient)
     reported_condition = create(:reported_condition, assessment: assessment)
     create(:symptom, condition_id: reported_condition.id)
-
     patient.update(updated_at: (ADMIN_OPTIONS['purgeable_after'].minutes + 14.days).ago)
     PurgeJob.perform_now
     assert(Assessment.count.zero?)
     assert(ReportedCondition.count.zero?)
-    assert(Symptom.count.zero?)
+    assert_equal(Symptom.count, 1)
+    assert_equal(Symptom.first, patient.jurisdiction.threshold_conditions.first.symptoms.first)
   end
 
   test 'nils out everything but kept attributes' do
@@ -87,23 +87,24 @@ class PurgeJobTest < ActiveSupport::TestCase
                                last_assessment_reminder_sent: 1.month.ago, user_defined_id_statelocal: '1', user_defined_id_cdc: '1',
                                user_defined_id_nndss: '1', first_name: 'a', last_name: 'a', date_of_birth: 1.year.ago, age: 1, sex: 'Unknown',
                                white: false, black_or_african_american: false, american_indian_or_alaska_native: false, asian: false,
-                               native_hawaiian_or_other_pacific_islander: false, race_unknown: false, race_other: false, 
-                               race_refused_to_answer: false, ethnicity: 'a', primary_language: 'a', secondary_language: 'a', 
-                               interpretation_required: false, nationality: 'a', address_line_1: 'a', foreign_address_line_1: 'a', address_city: 'a',
-                               address_state: 'a', address_line_2: 'a', address_zip: 'a', address_county: 'a', monitored_address_line_1: 'a', 
-                               monitored_address_city: 'a', monitored_address_state: 'a', monitored_address_line_2: 'a', monitored_address_zip: 'a', 
-                               monitored_address_county: 'a', foreign_address_city: 'a', foreign_address_country: 'a', foreign_address_line_2: 'a', 
-                               foreign_address_zip: 'a', foreign_address_line_3: 'a', foreign_address_state: 'a', foreign_monitored_address_line_1: 'a',
-                               foreign_monitored_address_city: 'a', foreign_monitored_address_state: 'a', foreign_monitored_address_line_2: 'a',
-                               foreign_monitored_address_zip: 'a', foreign_monitored_address_county: 'a', primary_telephone: 'a',
-                               primary_telephone_type: 'a', secondary_telephone: 'a', secondary_telephone_type: 'a', email: 'a',
-                               preferred_contact_method: 'a', preferred_contact_time: 'a', port_of_origin: 'a', source_of_report: 'a',
+                               native_hawaiian_or_other_pacific_islander: false, race_unknown: false, 
+                               race_other: false, race_refused_to_answer: false, ethnicity: 'Hispanic or Latino', primary_language: 'a',
+                               secondary_language: 'a', interpretation_required: false, nationality: 'a', address_line_1: 'a',
+                               foreign_address_line_1: 'a', address_city: 'a', address_state: 'Texas', address_line_2: 'a', address_zip: 'a',
+                               address_county: 'a', monitored_address_line_1: 'a', monitored_address_city: 'a', monitored_address_state: 'Texas',
+                               monitored_address_line_2: 'a', monitored_address_zip: 'a', monitored_address_county: 'a',
+                               foreign_address_city: 'a', foreign_address_country: 'a', foreign_address_line_2: 'a', foreign_address_zip: 'a',
+                               foreign_address_line_3: 'a', foreign_address_state: 'a', foreign_monitored_address_line_1: 'a',
+                               foreign_monitored_address_city: 'a', foreign_monitored_address_state: '', foreign_monitored_address_line_2: 'a',
+                               foreign_monitored_address_zip: 'a', foreign_monitored_address_county: 'a', primary_telephone: '+11111111111',
+                               primary_telephone_type: 'a', secondary_telephone: '+11111111111', secondary_telephone_type: 'a', email: 'foo@bar.com',
+                               preferred_contact_method: 'Telephone call', preferred_contact_time: 'Morning', port_of_origin: 'a', source_of_report: 'a',
                                flight_or_vessel_number: 'a', flight_or_vessel_carrier: 'a', port_of_entry_into_usa: 'a',
                                travel_related_notes: 'a', additional_planned_travel_type: 'a', additional_planned_travel_destination: 'a',
                                additional_planned_travel_destination_state: 'a', additional_planned_travel_destination_country: 'a',
                                additional_planned_travel_port_of_departure: 'a', date_of_departure: 1.month.ago,
-                               date_of_arrival: 1.month.ago, additional_planned_travel_start_date: 1.month.from_now,
-                               additional_planned_travel_end_date: 2.months.from_now, additional_planned_travel_related_notes: 'a',
+                               date_of_arrival: 1.month.ago, additional_planned_travel_start_date: 30.days.from_now,
+                               additional_planned_travel_end_date: 30.days.from_now, additional_planned_travel_related_notes: 'a',
                                last_date_of_exposure: 1.month.ago, potential_exposure_location: 'a', potential_exposure_country: 'a',
                                contact_of_known_case: false, contact_of_known_case_id: '1', member_of_a_common_exposure_cohort: false,
                                member_of_a_common_exposure_cohort_type: 'a', travel_to_affected_country_or_area: false,

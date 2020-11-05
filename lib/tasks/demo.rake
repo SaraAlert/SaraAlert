@@ -341,14 +341,15 @@ namespace :demo do
       patient[:assigned_user] = assigned_users[patient[:jurisdiction_id]].sample if rand < 0.9
       patient[:exposure_risk_assessment] = ['High', 'Medium', 'Low', 'No Identified Risk', nil].sample
       patient[:monitoring_plan] = ['Self-monitoring with delegated supervision', 'Daily active monitoring',
-                                   'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
+                                  'Self-monitoring with public health supervision', 'Self-observation', 'None', nil].sample
 
       # Other fields populated upon enrollment
-      patient[:submission_token] = SecureRandom.hex(20)
+      patient[:submission_token] = SecureRandom.urlsafe_base64[0, 10]
       patient[:creator_id] = User.all.select { |u| u.role?('enroller') }.sample[:id]
       patient[:responder_id] = 1 # temporarily set responder_id to 1 to pass schema validation
-      patient[:created_at] = Faker::Time.between_dates(from: today, to: today, period: :day)
-      patient[:updated_at] = Faker::Time.between_dates(from: patient[:created_at], to: today, period: :day)
+      patient_ts = create_fake_timestamp(today, today)
+      patient[:created_at] = patient_ts
+      patient[:updated_at] = patient_ts
 
       # Update monitoring status
       patient[:isolation] = days_ago > 10 ? rand < 0.9 : rand < 0.4
@@ -356,12 +357,12 @@ namespace :demo do
       patient[:monitoring] = rand < 0.95
       patient[:closed_at] = patient[:updated_at] unless patient[:monitoring]
       patient[:monitoring_reason] = ['Completed Monitoring', 'Meets Case Definition', 'Lost to follow-up during monitoring period',
-                                     'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
-                                     'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
-                                     'Meets criteria to discontinue isolation', 'Deceased', 'Duplicate', 'Other'].sample unless patient[:monitoring].nil?
+                                    'Lost to follow-up (contact never established)', 'Transferred to another jurisdiction',
+                                    'Person Under Investigation (PUI)', 'Case confirmed', 'Past monitoring period',
+                                    'Meets criteria to discontinue isolation', 'Deceased', 'Duplicate', 'Other'].sample unless patient[:monitoring].nil?
       patient[:public_health_action] = patient[:isolation] || rand < 0.9 ? 'None' : ['Recommended medical evaluation of symptoms',
-                                                                                     'Document results of medical evaluation',
-                                                                                     'Recommended laboratory testing'].sample
+                                                                                    'Document results of medical evaluation',
+                                                                                    'Recommended laboratory testing'].sample
       patient[:pause_notifications] = rand < 0.1
 
       patients << patient
@@ -444,27 +445,36 @@ namespace :demo do
   def demo_populate_assessments(today, days_ago, existing_patients, jurisdictions)
     printf("Generating assessments...")
     assessments = []
+    assessment_receipts = []
     histories = []
-    patient_and_jur_ids_assessment = existing_patients.pluck(:id, :jurisdiction_id).sample(existing_patients.count * rand(55..60) / 100)
-    patient_and_jur_ids_assessment.each_with_index do |(patient_id, jur_id), index|
-      printf("\rGenerating assessment #{index+1} of #{patient_and_jur_ids_assessment.length}...")
-      timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+    patient_jur_ids_and_sub_tokens = existing_patients.pluck(:id, :jurisdiction_id, :submission_token).sample(existing_patients.count * rand(55..60) / 100)
+    patient_jur_ids_and_sub_tokens.each_with_index do |(patient_id, jur_id, sub_token), index|
+      printf("\rGenerating assessment #{index+1} of #{patient_jur_ids_and_sub_tokens.length}...")
+      assessment_ts = create_fake_timestamp(today, today)
       assessments << Assessment.new(
         patient_id: patient_id,
         symptomatic: false,
-        created_at: timestamp,
-        updated_at: timestamp
+        created_at: assessment_ts,
+        updated_at: assessment_ts
+      )
+      assessment_receipts << AssessmentReceipt.new(
+        submission_token: sub_token,
+        created_at: assessment_ts,
+        updated_at: assessment_ts
       )
       histories << History.new(
         patient_id: patient_id,
         created_by: 'Sara Alert System',
         comment: "User created a new report.",
         history_type: 'Report Created',
-        created_at: timestamp,
-        updated_at: timestamp
+        created_at: assessment_ts,
+        updated_at: assessment_ts
       )
     end
 
+    # Create assessment receipts and replace any existing ones
+    AssessmentReceipt.where(submission_token: assessment_receipts.map{ |assessment_receipt| assessment_receipt[:submission_token] }).destroy_all
+    AssessmentReceipt.import! assessment_receipts
     Assessment.import! assessments
     printf(" done.\n")
 
@@ -561,7 +571,7 @@ namespace :demo do
     end
     patient_ids_lab.each_with_index do |patient_id, index|
       printf("\rGenerating laboratory #{index+1} of #{patient_ids_lab.length}...")
-      timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+      lab_ts = create_fake_timestamp(today, today)
       if days_ago > 10
         result = (Array.new(12, 'positive') + ['negative', 'indeterminate', 'other']).sample
       elsif patient_id % 4 == 0
@@ -572,19 +582,19 @@ namespace :demo do
       laboratories << Laboratory.new(
         patient_id: patient_id,
         lab_type: ['PCR', 'Antigen', 'Total Antibody', 'IgG Antibody', 'IgM Antibody', 'IgA Antibody', 'Other'].sample,
-        specimen_collection: Faker::Time.between_dates(from: 1.week.ago, to: today, period: :day),
-        report: Faker::Time.between_dates(from: today, to: today, period: :day),
+        specimen_collection: create_fake_timestamp(1.week.ago, today),
+        report: create_fake_timestamp(today, today),
         result: result,
-        created_at: timestamp,
-        updated_at: timestamp
+        created_at: lab_ts,
+        updated_at: lab_ts
       )
       histories << History.new(
         patient_id: patient_id,
         created_by: 'Sara Alert System',
         comment: "User added a new lab result.",
         history_type: 'Lab Result',
-        created_at: timestamp,
-        updated_at: timestamp
+        created_at: lab_ts,
+        updated_at: lab_ts
       )
     end
     Laboratory.import! laboratories
@@ -602,7 +612,7 @@ namespace :demo do
     patients_transfer = existing_patients.pluck(:id, :jurisdiction_id, :assigned_user).sample(existing_patients.count * rand(5..10) / 100)
     patients_transfer.each_with_index do |(patient_id, jur_id, assigned_user), index|
       printf("\rGenerating transfer #{index+1} of #{patients_transfer.length}...")
-      timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+      transfer_ts = create_fake_timestamp(today, today)
       to_jurisdiction = (jurisdictions.ids - [jur_id]).sample
       patient_updates[patient_id] = {
         jurisdiction_id: to_jurisdiction,
@@ -613,16 +623,16 @@ namespace :demo do
         to_jurisdiction_id: to_jurisdiction,
         from_jurisdiction_id: jur_id,
         who_id: User.all.select { |u| u.role?('public_health') }.sample[:id],
-        created_at: timestamp,
-        updated_at: timestamp
+        created_at: transfer_ts,
+        updated_at: transfer_ts
       )
       histories << History.new(
         patient_id: patient_id,
         created_by: 'Sara Alert System',
         comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
         history_type: 'Monitoring Change',
-        created_at: timestamp,
-        updated_at: timestamp
+        created_at: transfer_ts,
+        updated_at: transfer_ts
       )
     end
     Patient.update(patient_updates.keys, patient_updates.values)
@@ -716,5 +726,9 @@ namespace :demo do
       Analytic.where('created_at > ?', 1.hour.ago).update_all(created_at: date_time_update, updated_at: date_time_update)
     end
     printf(" done.\n")
+  end
+
+  def create_fake_timestamp(from, to)
+    Faker::Time.between_dates(from: from, to: to >= Date.today ? Time.now : to, period: :day)
   end
 end

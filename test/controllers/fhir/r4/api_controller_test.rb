@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'rspec/mocks/minitest_integration'
 
 # rubocop:disable Metrics/ClassLength
 class ApiControllerTest < ActionDispatch::IntegrationTest
@@ -10,6 +11,10 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     setup_user_applications
     setup_system_applications
     setup_patients
+    # Suppress logging calls originating from:
+    # https://github.com/fhir-crucible/fhir_models/blob/v4.1.0/lib/fhir_models/bootstrap/json.rb
+    logger_double = double('logger_double', debug: nil, info: nil, warning: nil, error: nil)
+    FHIR.logger = logger_double
   end
 
   # Sets up applications registered for user flow
@@ -739,7 +744,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal json_response['issue'].length, 3
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
-    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
+    assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'SYSTEM FLOW: should be unauthorized via update' do
@@ -898,7 +903,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal json_response['issue'].length, 3
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
-    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
+    assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'SYSTEM FLOW: should be forbidden via update' do
@@ -1656,7 +1661,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal json_response['issue'].length, 3
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
-    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
+    assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'USER FLOW: should be unauthorized via update' do
@@ -1824,7 +1829,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal json_response['issue'].length, 3
     assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
     assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
-    assert_match(Regexp.new('Required.*Date of Birth'), json_response['issue'][2]['diagnostics'])
+    assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
   end
 
   test 'USER FLOW: should be forbidden via update' do

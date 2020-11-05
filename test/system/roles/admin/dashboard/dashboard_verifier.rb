@@ -8,14 +8,12 @@ class AdminDashboardVerifier < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
 
   def verify_user(user, should_exist: true)
-    Capybara.using_wait_time(5) do
+    Capybara.using_wait_time(8) do
       if should_exist
         assert page.has_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', user.email)
-        assert page.has_content?(user.jurisdiction[:path]), @@system_test_utils.get_err_msg('User info', 'jurisdiction', user.jurisdiction[:path])
         verify_lock_status(user.email, !user.locked_at.nil?)
       else
         assert page.has_no_content?(user.email), @@system_test_utils.get_err_msg('User info', 'email', 'nonexistent')
-        assert page.has_no_content?(user.jurisdiction[:path]), @@system_test_utils.get_err_msg('User info', 'jurisdiction', 'nonexistent')
       end
     end
   end

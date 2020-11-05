@@ -8,7 +8,6 @@ require 'rails/test_help'
 require 'rack/test'
 require 'mocha/test_unit'
 require 'mocha/minitest'
-
-def app
-  Rails.application
-end
+require 'fakeredis/minitest'
+require 'sidekiq/testing'
+Sidekiq::Testing.inline!

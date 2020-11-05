@@ -41,6 +41,9 @@ export default function reportError(error, reportToSentry = true) {
       case 404:
         errorExplanationString += 'Failed to communicate with the Sara Alert Server (Error 404).';
         break;
+      case 422:
+        errorExplanationString += 'Unprocessable entity (Error 422).';
+        break;
       case 500:
         errorExplanationString += 'An error occurred on the Sara Alert Server (Error 500).';
         break;

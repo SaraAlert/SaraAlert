@@ -122,8 +122,7 @@ en:
         try-again: "I'm sorry, I didn’t quite get that. Please reply with \"Yes\" or \"No\". If you have any questions, please contact your local health department."
         thanks: 'Thank you for completing your daily report!'
       weblink:
-        intro1: 'This is the Sara Alert system please complete the report for'
-        intro2: 'at the link provided.'
+        intro: 'Please complete the Sara Alert Daily Report for'
     phone:
       intro: 'Hello, this is Sara, the automated public health assistant calling for your daily report.'
       try-again: "I'm sorry, I didn’t quite get that. Let’s try again."

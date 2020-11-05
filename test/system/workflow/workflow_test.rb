@@ -82,7 +82,7 @@ class WorkflowTest < ApplicationSystemTestCase
     @@system_test_utils.login(epi_user_label)
     @@public_health_dashboard.search_for_and_view_monitoree('asymptomatic', monitoree_label)
     @@public_health_patient_page_reports_verifier.verify_current_status('asymptomatic')
-    @@assessment_form.complete_assessment(Patient.order(created_at: :desc).first, 'assessment_2')
+    @@assessment_form.complete_assessment(nil, Patient.order(created_at: :desc).first, 'assessment_2')
     visit '/'
     @@public_health_dashboard.search_for_and_view_monitoree('symptomatic', monitoree_label)
     @@public_health_patient_page_reports_verifier.verify_current_status('symptomatic')

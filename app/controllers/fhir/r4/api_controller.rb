@@ -2,6 +2,7 @@
 
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ActionController::API
+  include ValidationHelper
   include ActionController::MimeResponds
   before_action :cors_headers
   before_action only: %i[create update] do
@@ -80,7 +81,7 @@ class Fhir::R4::ApiController < ActionController::API
     # Parse in the FHIR::Patient
     contents = FHIR.from_contents(request.body.string)
     errors = contents&.validate
-    status_bad_request(error_messages_from_hash(errors)) && return if contents.nil? || !errors.empty?
+    status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
@@ -114,7 +115,11 @@ class Fhir::R4::ApiController < ActionController::API
 
     # The resource.update method does not allow a context to be passed, so first we assign the updates, then save
     resource.assign_attributes(updates)
+<<<<<<< HEAD
     status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save(context: :api)
+=======
+    status_unprocessable_entity(format_model_validation_errors(resource)) && return unless resource.save(context: :api)
+>>>>>>> afd42076d2b0843e163b6f7f43c040e4810cf290
 
     if resource_type == 'patient'
       # Update patient history with detailed edit diff
@@ -137,7 +142,11 @@ class Fhir::R4::ApiController < ActionController::API
     # Parse in the FHIR::Patient
     contents = FHIR.from_contents(request.body.string)
     errors = contents&.validate
+<<<<<<< HEAD
     status_bad_request(error_messages_from_hash(errors)) && return if contents.nil? || !errors.empty?
+=======
+    status_bad_request(format_fhir_validation_errors(errors)) && return if contents.nil? || !errors.empty?
+>>>>>>> afd42076d2b0843e163b6f7f43c040e4810cf290
 
     resource_type = params.permit(:resource_type)[:resource_type]&.downcase
     case resource_type
@@ -187,15 +196,19 @@ class Fhir::R4::ApiController < ActionController::API
       # Jurisdiction is the authenticated user's jurisdiction
       resource.jurisdiction = resource.creator.jurisdiction
 
-      # Generate a submission token for the new monitoree
-      resource.submission_token = SecureRandom.hex(20) # 160 bits
+      # Generate submission token for monitoree
+      resource.submission_token = resource.new_submission_token
     else
       status_not_found && return
     end
 
     status_bad_request && return if resource.nil?
 
+<<<<<<< HEAD
     status_unprocessable_entity(error_messages_from_hash(resource.errors)) && return unless resource.save(context: :api)
+=======
+    status_unprocessable_entity(format_model_validation_errors(resource)) && return unless resource.save(context: :api)
+>>>>>>> afd42076d2b0843e163b6f7f43c040e4810cf290
 
     if resource_type == 'patient'
       # Send enrollment notification only to responders
@@ -654,10 +667,27 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Convert to array of error strings given nested hash with arrays of error strings as values
+<<<<<<< HEAD
   def error_messages_from_hash(errors)
     errors&.values&.each_with_object([]) do |value, messages|
       value.each do |val|
         val.is_a?(Hash) ? messages.push(*error_messages_from_hash(val)) : messages << val
+=======
+  def format_fhir_validation_errors(errors)
+    errors&.values&.each_with_object([]) do |value, messages|
+      value.each do |val|
+        val.is_a?(Hash) ? messages.push(*format_fhir_validation_errors(val)) : messages << val
+      end
+    end
+  end
+
+  def format_model_validation_errors(resource)
+    resource.errors&.messages&.each_with_object([]) do |(attribute, errors), messages|
+      value = resource[attribute] || resource.public_send("#{attribute}_before_type_cast")
+      msg_header = 'Validation Error' + (value ? " for value '#{value}'" : '') + " on '#{VALIDATION[attribute][:label]}':"
+      errors.each do |error_message|
+        messages << "#{msg_header} #{error_message}"
+>>>>>>> afd42076d2b0843e163b6f7f43c040e4810cf290
       end
     end
   end

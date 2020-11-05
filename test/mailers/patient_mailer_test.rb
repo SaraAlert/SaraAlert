@@ -13,7 +13,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   def setup
     patient_email = Faker::Internet.email + rand(100).to_s
-    patient_submission_token = SecureRandom.hex(20)
+    patient_submission_token = SecureRandom.urlsafe_base64[0, 10]
     @patient = create(:patient)
     @patient.update(email: patient_email,
                     primary_language: 'en',
@@ -61,7 +61,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'enrollment email with dependents' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     email = PatientMailer.enrollment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -119,8 +119,11 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'enrollment sms weblink message contents' do
-    first_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.weblink.intro2', locale: 'en')}"
-    second_contents = new_patient_assessment_jurisdiction_report_lang_url(@patient.submission_token, 'en', @patient.jurisdiction.unique_identifier[0, 32])
+    url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                @patient.jurisdiction.unique_identifier,
+                                                                'en',
+                                                                @patient&.initials_age)
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
       true
@@ -128,12 +131,7 @@ class PatientMailerTest < ActionMailer::TestCase
     expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
                                                                                          from: 'test',
                                                                                          to: '+15555550111',
-                                                                                         body: first_contents
-                                                                                       ))
-    expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
-                                                                                         from: 'test',
-                                                                                         to: '+15555550111',
-                                                                                         body: second_contents
+                                                                                         body: contents
                                                                                        ))
 
     PatientMailer.enrollment_sms_weblink(@patient).deliver_now
@@ -155,8 +153,11 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   test 'assessment sms weblink message contents' do
-    first_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.weblink.intro2', locale: 'en')}"
-    second_contents = new_patient_assessment_jurisdiction_report_lang_url(@patient.submission_token, 'en', @patient.jurisdiction.unique_identifier[0, 32])
+    url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                @patient.jurisdiction.unique_identifier,
+                                                                'en',
+                                                                @patient&.initials_age)
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
       true
@@ -164,12 +165,7 @@ class PatientMailerTest < ActionMailer::TestCase
     expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
                                                                                          from: 'test',
                                                                                          to: '+15555550111',
-                                                                                         body: first_contents
-                                                                                       ))
-    expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
-                                                                                         from: 'test',
-                                                                                         to: '+15555550111',
-                                                                                         body: second_contents
+                                                                                         body: contents
                                                                                        ))
 
     PatientMailer.assessment_sms_weblink(@patient).deliver_now
@@ -177,7 +173,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment sms weblink message contents with dependents' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
 
     # Cannot do the same expectation as previous tests because the expectation that any instance gets called with create is taken up by the first loop of
     # sending messages. So instead we count the amount of times create was called. Cannot do this with typical rspec methods because when you use
@@ -190,7 +186,7 @@ class PatientMailerTest < ActionMailer::TestCase
     end)
 
     PatientMailer.assessment_sms_weblink(@patient).deliver_now
-    assert_equal create_count, 4
+    assert_equal create_count, 2
   end
 
   test 'assessment sms reminder message contents' do
@@ -275,7 +271,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment sms message content' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
 
     params = {
       language: 'EN',
@@ -286,7 +282,7 @@ class PatientMailerTest < ActionMailer::TestCase
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'en')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'en')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'en')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'en')}"
+      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'en')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'en')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'en')}"
       # rubocop:enable Layout/LineLength
     }
 
@@ -303,7 +299,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment voice message content' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     @patient.update(primary_language: 'so')
 
     params = {
@@ -316,7 +312,7 @@ class PatientMailerTest < ActionMailer::TestCase
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'en')}, , #{I18n.t('assessments.phone.age', locale: 'en')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'en')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'en')}#{I18n.t('assessments.phone.daily3', locale: 'en')}?#{I18n.t('assessments.phone.daily4', locale: 'en')}"
+      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'en')}, , #{I18n.t('assessments.phone.age', locale: 'en')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'en')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'en')}#{I18n.t('assessments.phone.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}?#{I18n.t('assessments.phone.daily4', locale: 'en')}"
       # rubocop:enable Layout/LineLength
     }
 
@@ -347,7 +343,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment email with dependents' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     email = PatientMailer.assessment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?
@@ -374,7 +370,7 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment email patient with dependents' do
     dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
+    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     email = PatientMailer.enrollment_email(@patient).deliver_now
     email_body = email.parts.first.body.to_s.gsub("\n", ' ')
     assert_not ActionMailer::Base.deliveries.empty?

@@ -122,8 +122,7 @@ so:
         try-again: "Waan ka xumahay, maan fahmin. Ku jawaab \"Haa\" ama \"Maya\""
         thanks: 'Waad ku mahadsan tahay dhammaystirka warbixin maalmeedkaaga!'
       weblink:
-        intro1: 'Tani waa warbixinta maalinlaha ah ee Sara Alert ee loogu talagalay'
-        intro2: 'Fadlan buuxi warbixintaada maalinlaha ah adoo adeegsanaya xiriiriyaha hoose.'
+        intro: 'Fadlan u buuxi Warbixinta Maalinlaha ee Sara Alert ee'
     phone:
       intro: 'Waa salaaman tahay Sara Alert oo ugu yeeraysa warbixintaada maalinlaha ah.'
       try-again: "Waan ka xumahay, maan fahmin. Aan isku dayno markale."

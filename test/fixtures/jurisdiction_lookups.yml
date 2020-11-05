@@ -1,0 +1,40 @@
+jurisdiction_1:
+  id: 1
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_2:
+  id: 2
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 1') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 1')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_3:
+  id: 3
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 2') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 2')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_4:
+  id: 4
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 1, County 1') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 1, County 1')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_5:
+  id: 5
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 1, County 2') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 1, County 2')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_6:
+  id: 6
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 2, County 3') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 2, County 3')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_7:
+  id: 7
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 2, County 4') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 2, County 4')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_8:
+  id: 8
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 3') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 3')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_9:
+  id: 9
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 4') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 4')].pack('H*')].pack('m0'))[0, 10] %>
+jurisdiction_10:
+  id: 10
+  old_unique_identifier: <%= Digest::SHA256.hexdigest('USA, State 5') %>
+  new_unique_identifier: <%= Base64::urlsafe_encode64([[Digest::SHA256.hexdigest('USA, State 5')].pack('H*')].pack('m0'))[0, 10] %>
