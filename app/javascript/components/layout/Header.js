@@ -22,12 +22,12 @@ class Header extends React.Component {
     return (
       <React.Fragment>
         <Navbar bg="primary" variant="dark" expand="lg" className={this.props.show_demo_warning ? '' : 'mb-3'}>
-          <Navbar.Brand href={this.props.report_mode ? '/' : this.props.root}>
+          <Navbar.Brand className="header-brand-text" href={this.props.report_mode ? '/' : this.props.root}>
             Sara Alert<small className="nav-version ml-1">{this.props.version}</small>
           </Navbar.Brand>
           {this.props.current_user && (
             <React.Fragment>
-              <Nav className="pt-2 mr-auto" activeKey={this.getActiveTabKey()}>
+              <Nav className="mr-auto" activeKey={this.getActiveTabKey()}>
                 {this.props.current_user?.can_see_enroller_dashboard_tab && (
                   <Nav.Link className="py-0 ml-3" href={`${window.BASE_PATH}/patients`}>
                     <i className="fas fa-table fa-fw mr-2"></i>Enroller Dashboard
@@ -49,7 +49,7 @@ class Header extends React.Component {
                   </Nav.Link>
                 )}
               </Nav>
-              <Form inline className="pt-2 ml-auto">
+              <Form inline className="ml-auto">
                 <Navbar.Text className="text-white py-0 px-3">
                   <i className="fas fa-user fa-fw mr-2"></i>
                   {this.props.current_user?.email}
