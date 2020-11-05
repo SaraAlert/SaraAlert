@@ -45,7 +45,7 @@ Sara Alert targets compatibility with MySQL 5.7.
 **macOS Installation Instructions:**
 
 **Migrating from a newer verison down to MySQL 5.7:**
-Before installing MySQL, if newer versions (i.e. version 8 of MySQL) have previoulsy been installed and database have been created in the newer format, these new-format databses will be incompatible with the older 5.7 version. A simple way to install 5.7 after newer versions is to delete the MySQL data directory and let the 5.7 version recreate it in the correct format. Take care to **back up** existing databases before executing the following command, as it will delete them:
+Before installing MySQL, if newer versions (i.e. version 8 of MySQL) have previously been installed and initialized in the newer format, these new-format databases will be incompatible with the older 5.7 version. A simple way to install 5.7 after newer versions is to delete the MySQL data directory and let the 5.7 version recreate it in the correct format. Take care to **back up** existing databases before executing the following command, as it will delete them:
 
 ```sh
 brew services stop mysql # stop current mysql version
@@ -53,7 +53,7 @@ rm -rf /usr/local/var/mysql # remove the macOS mysql data directory and any exis
 brew uninstall mysql # remove current mysql version
 ```
 
-If SaraAlert had already been installed with a newer version of MySQL, navigate to the project directory and uninstall the `mysql2` gem. It needs to build the correct native extensions for MySQL 5.7.
+If Sara Alert had already been installed with a newer version of MySQL, navigate to the project directory and uninstall the `mysql2` gem. It needs to build the correct native extensions for MySQL 5.7.
 
 ```sh
 gem uninstall mysql2 # uninstall mysql2
