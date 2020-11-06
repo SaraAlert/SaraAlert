@@ -177,9 +177,9 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
   # Convert from FHIR extension for Full Assigned Jurisdiction Path.
   # Use the default if there is no path specified.
-  def self.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction)
+  def self.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id)
     jurisdiction_path = from_string_extension(patient, 'full-assigned-jurisdiction-path')
-    jurisdiction_path ? Jurisdiction.find_by(path: jurisdiction_path) : default_jurisdiction
+    jurisdiction_path ? Jurisdiction.find_by(path: jurisdiction_path)&.id : default_jurisdiction_id
   end
 
   def normalize_state_names(pat)
