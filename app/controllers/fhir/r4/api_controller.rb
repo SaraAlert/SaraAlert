@@ -94,7 +94,7 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Patient.*'
       )
 
-      updates = Patient.from_fhir(contents, default_patient_jurisdiction)
+      updates = Patient.from_fhir(contents, default_patient_jurisdiction_id)
 
       resource = get_patient(params.permit(:id)[:id])
 
@@ -155,7 +155,7 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       # Construct a Sara Alert Patient
-      resource = Patient.new(Patient.from_fhir(contents, default_patient_jurisdiction))
+      resource = Patient.new(Patient.from_fhir(contents, default_patient_jurisdiction_id))
       # Responder is self
       resource.responder = resource
 
@@ -505,8 +505,8 @@ class Fhir::R4::ApiController < ActionController::API
   end
 
   # Default jurisdiction to assign to new monitorees
-  def default_patient_jurisdiction
-    current_resource_owner&.jurisdiction || current_client_application.jurisdiction
+  def default_patient_jurisdiction_id
+    current_resource_owner&.jurisdiction&.id || current_client_application&.jurisdiction&.id
   end
 
   # Determine the patient data that is accessible by either the current resource owner
