@@ -1,14 +1,17 @@
+
+@import 'analytics';
 @import 'bootstrap';
-@import '~bootstrap/scss/bootstrap';
-@import '~datatables.net-bs4/css/dataTables.bootstrap4';
-@import 'react-datepicker/dist/react-datepicker.css';
-@import 'react-checkbox-tree/lib/react-checkbox-tree.css';
-@import 'login';
-@import 'layout';
-@import 'recharts';
+@import 'custom_table';
 @import 'datatables';
 @import 'datepicker';
-@import 'toastify';
-@import 'analytics';
-@import 'custom_table';
 @import 'devise_authy';
+@import 'layout';
+@import 'login';
+@import 'rct';
+@import 'recharts';
+@import 'toastify';
+
+@import '~bootstrap/scss/bootstrap';
+@import '~datatables.net-bs4/css/dataTables.bootstrap4';
+@import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+@import 'react-datepicker/dist/react-datepicker.css';

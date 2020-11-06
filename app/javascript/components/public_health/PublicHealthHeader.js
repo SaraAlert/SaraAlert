@@ -166,10 +166,14 @@ class PublicHealthHeader extends React.Component {
           {this.props.abilities.export && (
             <Export
               authenticity_token={this.props.authenticity_token}
+              jurisdiction_paths={this.props.jurisdiction_paths}
+              jurisdiction={this.props.jurisdiction}
+              tabs={this.props.tabs}
               workflow={this.props.workflow}
               query={this.props.query}
-              allMonitoreesCount={this.state.counts.exposure + this.state.counts.isolation}
-              filteredMonitoreesCount={this.props.filteredMonitoreesCount}
+              all_monitorees_count={this.state.counts.exposure + this.state.counts.isolation}
+              filtered_monitorees_count={this.props.filtered_monitorees_count}
+              custom_export_options={this.props.custom_export_options}
             />
           )}
           {this.props.abilities.import && (
@@ -210,7 +214,10 @@ class PublicHealthHeader extends React.Component {
 
 PublicHealthHeader.propTypes = {
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
   workflow: PropTypes.oneOf(['exposure', 'isolation']),
+  jurisdiction: PropTypes.object,
+  tabs: PropTypes.object,
   abilities: PropTypes.exact({
     analytics: PropTypes.bool,
     enrollment: PropTypes.bool,
@@ -218,7 +225,8 @@ PublicHealthHeader.propTypes = {
     import: PropTypes.bool,
   }),
   query: PropTypes.object,
-  filteredMonitoreesCount: PropTypes.number,
+  filtered_monitorees_count: PropTypes.number,
+  custom_export_options: PropTypes.array,
 };
 
 export default PublicHealthHeader;

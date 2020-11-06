@@ -1,19 +1,23 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Badge, Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxTree from 'react-checkbox-tree';
 import axios from 'axios';
+import _ from 'lodash';
 
-import { customExportOptions } from '../../data/customExportOptions';
 import reportError from '../util/ReportError';
 
 class CustomExport extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      preset: this.props.preset || '',
+      preset: props.preset || '',
       format: 'xlsx',
-      filter: true,
+      filtered: true,
+      query: _.pickBy(props.query, (value, key) => {
+        return ['workflow', 'tab', 'jurisdiction', 'scope', 'user', 'search', 'filter'].includes(key);
+      }),
       checked: [],
       expanded: [],
     };
@@ -28,7 +32,7 @@ class CustomExport extends React.Component {
       url: `${window.BASE_PATH}/export/custom`,
       data: {
         format: this.state.format,
-        query: this.state.filtered ? this.props.query : {},
+        query: this.state.filtered ? this.state.query : {},
         checked: this.state.checked,
         preset: this.state.preset,
       },
@@ -103,57 +107,89 @@ class CustomExport extends React.Component {
               <p className="pt-1 mb-0 font-weight-bold">Export Monitorees:</p>
             </Col>
             <Col md="18">
-              <Form.Check
-                id="currentFilterMonitoreesBtn"
-                type="radio"
-                size="sm"
-                className="py-1"
-                label={`Current Filter (${this.props.filteredMonitoreesCount})`}
-                checked={!!this.state.filter}
-                onChange={() => this.setState({ filter: true })}
-              />
-              <Form.Check
-                id="allMonitoreesBtn"
-                type="radio"
-                size="sm"
-                className="py-1"
-                label={`All Monitorees (${this.props.allMonitoreesCount})`}
-                checked={!this.state.filter}
-                onChange={() => this.setState({ filter: false })}
-              />
+              <div className="py-1">
+                <Form.Check
+                  id="allMonitoreesBtn"
+                  type="radio"
+                  size="sm"
+                  label={`All Monitorees (${this.props.all_monitorees_count})`}
+                  checked={!this.state.filtered}
+                  onChange={() => this.setState({ filtered: false })}
+                />
+                {!this.state.filtered && (
+                  <div style={{ paddingLeft: '1.25rem' }}>
+                    <Badge variant="secondary">Jurisdiction: {this.props.jurisdiction?.path} (all)</Badge>
+                  </div>
+                )}
+              </div>
+              <div className="py-1">
+                <Form.Check
+                  id="currentFilterMonitoreesBtn"
+                  type="radio"
+                  size="sm"
+                  label={`Current Filter (${this.props.filtered_monitorees_count})`}
+                  checked={!!this.state.filtered}
+                  onChange={() => this.setState({ filtered: true })}
+                />
+                {this.state.filtered && (
+                  <div style={{ paddingLeft: '1.25rem' }}>
+                    {this.state.query.workflow && this.state.query.tab && (
+                      <Badge variant="secondary" className="mr-1">
+                        {this.state.query.workflow === 'isolation' ? 'Isolation' : 'Exposure'} - {this.props.tabs[this.state.query.tab]?.label}
+                      </Badge>
+                    )}
+                    {this.state.query.jurisdiction && (
+                      <Badge variant="secondary" className="mr-1">
+                        Jurisdiction: {this.props.jurisdiction_paths[this.state.query.jurisdiction]} ({this.state.query.scope})
+                      </Badge>
+                    )}
+                    {this.state.query.user && this.state.query.user !== 'all' && (
+                      <Badge variant="secondary" className="mr-1">
+                        Assigned User: {this.state.query.user}
+                      </Badge>
+                    )}
+                    {this.state.query.search && this.state.query.search !== '' && (
+                      <Badge variant="secondary" className="mr-1">
+                        Search: {this.state.query.search}
+                      </Badge>
+                    )}
+                    {this.state.query.filter &&
+                      this.state.query.filter.map(f => {
+                        return (
+                          <Badge variant="primary" className="mr-1" key={f?.filterOption?.name}>
+                            {f?.filterOption?.title}: {f?.value?.toString()}
+                          </Badge>
+                        );
+                      })}
+                  </div>
+                )}
+              </div>
             </Col>
           </Row>
-          <Row className="mx-3 pt-2">
+          <Row className="mx-3 pt-2 pb-1">
             <Col md="24" className="pl-1">
               <p className="pt-1 mb-1 font-weight-bold">Export Data:</p>
             </Col>
           </Row>
-          <CheckboxTree
-            nodes={customExportOptions}
-            checked={this.state.checked}
-            expanded={this.state.expanded}
-            onCheck={checked => {
-              console.log(checked);
-              this.setState({ checked });
-            }}
-            onExpand={expanded => {
-              console.log(expanded);
-              this.setState({ expanded });
-            }}
-            className="py-2"
-            icons={{
-              check: <i className="far fa-check-square" />,
-              uncheck: <i className="far fa-square" />,
-              halfCheck: <i className="far fa-minus-square" />,
-              expandClose: <i className="fas fa-chevron-down" />,
-              expandOpen: <i className="fas fa-chevron-right" />,
-              // expandAll: <i className="fas fa-chevron-down" />,
-              // collapseAll: <i className="fas fa-chevron-right" />,
-              // parentClose: <i className="fal fa-chevron-down" />,
-              // parentOpen: <i className="fal fa-chevron-right" />,
-              // leaf: <i className="fas fa-leaf" />,
-            }}
-          />
+          <Row className="mx-0 px-3" style={{ backgroundColor: '#ddd' }}>
+            <CheckboxTree
+              nodes={this.props.custom_export_options}
+              checked={this.state.checked}
+              expanded={this.state.expanded}
+              checkModel="all"
+              onCheck={checked => this.setState({ checked })}
+              onExpand={expanded => this.setState({ expanded })}
+              className="py-2"
+              showNodeIcon={false}
+              icons={{
+                check: <FontAwesomeIcon fixedWidth icon={['far', 'check-square']} />,
+                uncheck: <FontAwesomeIcon fixedWidth icon={['far', 'square']} />,
+                halfCheck: <FontAwesomeIcon fixedWidth icon={['far', 'minus-square']} />,
+                expandClose: <FontAwesomeIcon fixedWidth icon={['fas', 'chevron-right']} />,
+                expandOpen: <FontAwesomeIcon fixedWidth icon={['fas', 'chevron-down']} />,
+              }}
+            />
+          </Row>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary btn-square" onClick={this.props.onClose}>
@@ -170,10 +206,14 @@ class CustomExport extends React.Component {
 
 CustomExport.propTypes = {
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
+  jurisdiction: PropTypes.object,
+  tabs: PropTypes.object,
   preset: PropTypes.string,
   query: PropTypes.object,
-  allMonitoreesCount: PropTypes.number,
-  filteredMonitoreesCount: PropTypes.number,
+  all_monitorees_count: PropTypes.number,
+  filtered_monitorees_count: PropTypes.number,
+  custom_export_options: PropTypes.array,
   onClose: PropTypes.func,
 };
 
