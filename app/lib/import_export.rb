@@ -101,7 +101,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     extended_isolation: 'Extended Isolation',
     # computed fields
     name: 'Monitoree',
-    jurisdiction: 'Jurisdiction',
+    jurisdiction_name: 'Jurisdiction',
     jurisdiction_path: 'Full Assigned Jurisdiction Path',
     status: 'Status',
     end_of_monitoring: 'End of Monitoring',
@@ -111,6 +111,366 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     transferred_to: 'Transferred To',
     expected_purge_date: 'Expected Purge Date'
   }.freeze
+
+  CUSTOM_EXPORT_OPTIONS = [
+    {
+      value: 'patients',
+      label: 'Monitorees',
+      children: [
+        {
+          value: 'patients-enrollment',
+          label: 'Enrollment Info',
+          children: [
+            {
+              value: 'patients-enrollment-identification',
+              label: 'Identification',
+              children: [
+                {
+                  value: 'full_name',
+                  label: 'Name',
+                  children: [
+                    { value: 'first_name', label: 'First Name' },
+                    { value: 'middle_name', label: 'Middle Name' },
+                    { value: 'last_name', label: 'Last Name' }
+                  ]
+                },
+                {
+                  value: 'date_of_birth_and_age',
+                  label: 'Date of Birth and Age',
+                  children: [
+                    { value: 'date_of_birth', label: 'Date of Birth' },
+                    { value: 'age', label: 'Age' }
+                  ]
+                },
+                {
+                  value: 'sex_gender_and_orientation',
+                  label: 'Sex at Birth, Gender Identity, and Sexual Orientation',
+                  children: [
+                    { value: 'sex', label: 'Sex at Birth' },
+                    { value: 'gender_identity', label: 'Gender Identity' },
+                    { value: 'sexual_orientation', label: 'Sexual Orientation' }
+                  ]
+                },
+                {
+                  value: 'race_ethnicity_and_nationality',
+                  label: 'Race, Ethnicity, and Nationality',
+                  children: [
+                    { value: 'white', label: 'White' },
+                    { value: 'black_or_african_american', label: 'Black or African American' },
+                    { value: 'american_indian_or_alaska_native', label: 'American Indian or Alaska Native' },
+                    { value: 'asian', label: 'Asian' },
+                    { value: 'native_hawaiian_or_other_pacific_islander', label: 'Native Hawaiian or Other Pacific Islander' },
+                    { value: 'ethnicity', label: 'Ethnicity' },
+                    { value: 'nationality', label: 'Nationality' }
+                  ]
+                },
+                {
+                  value: 'language',
+                  label: 'Language',
+                  children: [
+                    { value: 'primary_language', label: 'Primary Language' },
+                    { value: 'secondary_language', label: 'Secondary Language' },
+                    { value: 'interpretation_required', label: 'Interpretation Required' }
+                  ]
+                },
+                {
+                  value: 'statelocal_cdc_nndss_ids',
+                  label: 'State/Local, CDC, and NNDSS Loc. Rec/Case IDs',
+                  children: [
+                    { value: 'user_defined_id_statelocal', label: 'State/Local ID' },
+                    { value: 'user_defined_id_cdc', label: 'CDC ID' },
+                    { value: 'user_defined_id_nndss', label: 'NNDSS Loc. Rec. ID/Case ID' }
+                  ]
+                }
+              ]
+            },
+            {
+              value: 'patients-enrollment-address',
+              label: 'Address',
+              children: [
+                {
+                  value: 'address',
+                  label: 'Home Address Within USA',
+                  children: [
+                    { value: 'address_line_1', label: 'Line 1' },
+                    { value: 'address_city', label: 'Town/City' },
+                    { value: 'address_state', label: 'State' },
+                    { value: 'address_line_2', label: 'Line 2' },
+                    { value: 'address_zip', label: 'Zip' },
+                    { value: 'address_county', label: 'County (District)' }
+                  ]
+                },
+                {
+                  value: 'monitored_address',
+                  label: 'Address at Destination in USA Where Monitored',
+                  children: [
+                    { value: 'monitored_address_line_1', label: 'Line 1' },
+                    { value: 'monitored_address_city', label: 'Town/City' },
+                    { value: 'monitored_address_state', label: 'State' },
+                    { value: 'monitored_address_line_2', label: 'Line 2' },
+                    { value: 'monitored_address_zip', label: 'Zip' },
+                    { value: 'monitored_address_county', label: 'County (District)' }
+                  ]
+                },
+                {
+                  value: 'foreign_address',
+                  label: 'Home Address Outside USA (Foreign)',
+                  children: [
+                    { value: 'foreign_address_line_1', label: 'Line 1' },
+                    { value: 'foreign_address_city', label: 'Town/City' },
+                    { value: 'foreign_address_country', label: 'Country' },
+                    { value: 'foreign_address_line_2', label: 'Line 2' },
+                    { value: 'foreign_address_zip', label: 'Postal Code' },
+                    { value: 'foreign_address_line_3', label: 'Line 3' },
+                    { value: 'foreign_address_state', label: 'State/Province' }
+                  ]
+                },
+                {
+                  value: 'foreign_monitored_address',
+                  label: 'Address at Destination in USA Where Monitored (Foreign)',
+                  children: [
+                    { value: 'foreign_monitored_address_line_1', label: 'Line 1' },
+                    { value: 'foreign_monitored_address_city', label: 'Town/City' },
+                    { value: 'foreign_monitored_address_state', label: 'State' },
+                    { value: 'foreign_monitored_address_line_2', label: 'Line 2' },
+                    { value: 'foreign_monitored_address_zip', label: 'Zip' },
+                    { value: 'foreign_monitored_address_county', label: 'County (District)' }
+                  ]
+                }
+              ]
+            },
+            {
+              value: 'patients-enrollment-contact_information',
+              label: 'Contact Information',
+              children: [
+                { value: 'preferred_contact_method', label: 'Preferred Contact Method' },
+                { value: 'preferred_contact_time', label: 'Preferred Contact Time' },
+                { value: 'primary_telephone', label: 'Primary Telephone' },
+                { value: 'primary_telephone_type', label: 'Primary Telephone Type' },
+                { value: 'secondary_telephone', label: 'Secondary Telephone' },
+                { value: 'secondary_telephone_type', label: 'Secondary Telephone Type' },
+                { value: 'email', label: 'Email' }
+              ]
+            },
+            {
+              value: 'patients-enrollment-arrival_information',
+              label: 'Arrival Information',
+              children: [
+                { value: 'port_of_origin', label: 'Port of Origin' },
+                { value: 'date_of_departure', label: 'Date of Departure' },
+                { value: 'flight_or_vessel_number', label: 'Flight or Vessel Number' },
+                { value: 'flight_or_vessel_carrier', label: 'Flight or Vessel Carrier' },
+                { value: 'port_of_entry_into_usa', label: 'Port of Entry into USA' },
+                { value: 'date_of_arrival', label: 'Date of Arrival' },
+                { value: 'source_of_report', label: 'Source of Report' },
+                { value: 'source_of_report_specify', label: 'Source of Report Specify' },
+                { value: 'travel_related_notes', label: 'Travel Related Notes' }
+              ]
+            },
+            {
+              value: 'patients-enrollment-additional_planned_travel',
+              label: 'Additional Planned Travel',
+              children: [
+                { value: 'additional_planned_travel_type', label: 'Type' },
+                { value: 'additional_planned_travel_destination', label: 'Destination' },
+                { value: 'additional_planned_travel_destination_state', label: 'Destination State' },
+                { value: 'additional_planned_travel_destination_country', label: 'Destination Country' },
+                { value: 'additional_planned_travel_port_of_departure', label: 'Port of Departure' },
+                { value: 'additional_planned_travel_start_date', label: 'Start Date' },
+                { value: 'additional_planned_travel_end_date', label: 'End Date' },
+                { value: 'additional_planned_travel_related_notes', label: 'Notes' }
+              ]
+            },
+            {
+              value: 'patients-enrollment-potential_exposure_information',
+              label: 'Potential Exposure Information',
+              children: [
+                { value: 'potential_exposure_location', label: 'Exposure Location' },
+                { value: 'potential_exposure_country', label: 'Exposure Country' },
+                { value: 'exposure_notes', label: 'Exposure Notes' },
+                {
+                  value: 'exposure_risk_factors',
+                  label: 'Exposure Risk Factors',
+                  children: [
+                    { value: 'contact_of_known_case', label: 'Close Contact with a Known Case' },
+                    { value: 'contact_of_known_case_id', label: 'Close Contact with a Known Case ID' },
+                    { value: 'travel_to_affected_country_or_area', label: 'Travel from Affected Country or Area' },
+                    { value: 'was_in_health_care_facility_with_known_cases', label: 'Was in Health Care Facility with Known Cases' },
+                    {
+                      value: 'was_in_health_care_facility_with_known_cases_facility_name',
+                      label: 'Was in Health Care Facility with Known Cases Facility Name'
+                    },
+                    { value: 'laboratory_personnel', label: 'Laboratory Personnel' },
+                    { value: 'laboratory_personnel_facility_name', label: 'Laboratory Personnel Facility Name' },
+                    { value: 'healthcare_personnel', label: 'Healthcare Personnel' },
+                    { value: 'healthcare_personnel_facility_name', label: 'Healthcare Personnel Facility Name' },
+                    { value: 'crew_on_passenger_or_cargo_flight', label: 'Crew on Passenger or Cargo Flight' },
+                    { value: 'member_of_a_common_exposure_cohort', label: 'Member of a Common Exposure Cohort' },
+                    { value: 'member_of_a_common_exposure_cohort_type', label: 'Member of a Common Exposure Cohort Type' }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          value: 'patients-monitoring',
+          label: 'Monitoring Info',
+          children: [
+            {
+              value: 'patients-monitoring-linelist',
+              label: 'Linelist Info',
+              children: [
+                { value: 'name', label: 'Monitoree' },
+                { value: 'isolation', label: 'Workflow' },
+                { value: 'status', label: 'Status' },
+                { value: 'latest_assessment_at', label: 'Latest Assessment At' },
+                { value: 'latest_fever_or_fever_reducer_at', label: 'Latest Fever or Fever Reducer At' },
+                { value: 'latest_positive_lab_at', label: 'Latest Positive Lab At' },
+                { value: 'negative_lab_count', label: 'Negative Lab Count' },
+                { value: 'latest_transfer_at', label: 'Latest Transfer At' },
+                { value: 'latest_transfer_from', label: 'Latest Transfer From' }
+              ]
+            },
+            {
+              value: 'patients-monitoring-actions',
+              label: 'Monitoring Actions',
+              children: [
+                { value: 'monitoring_status', label: 'Monitoring Status' },
+                { value: 'exposure_risk_assessment', label: 'Exposure Risk Assessment' },
+                { value: 'monitoring_plan', label: 'Monitoring Plan' },
+                { value: 'case_status', label: 'Case Status' },
+                { value: 'public_health_action', label: 'Latest Public Health Action' },
+                { value: 'jurisdiction_path', label: 'Full Assigned Jurisdiction Path' },
+                { value: 'jurisdiction_name', label: 'Jurisdiction' },
+                { value: 'assigned_user', label: 'Assigned User' }
+              ]
+            },
+            {
+              value: 'patients-monitoring-period',
+              label: 'Monitoring Period',
+              children: [
+                { value: 'last_date_of_exposure', label: 'Last Date of Exposure' },
+                { value: 'continuous_exposure', label: 'Continuous Exposure' },
+                { value: 'symptom_onset', label: 'Symptom Onset' },
+                { value: 'user_defined_symptom_onset', label: 'User Defined Sympton Onset' },
+                { value: 'extended_isolation', label: 'Extended Isolation' },
+                { value: 'end_of_monitoring', label: 'End of Monitoring' },
+                { value: 'closed_at', label: 'Closed At' },
+                { value: 'expected_purged_date', label: 'Expected Purge Date' }
+              ]
+            },
+            {
+              value: 'patients-monitoring-reporting',
+              label: 'Reporting Info',
+              children: [
+                { value: 'head_of_household', label: 'Head of Household' },
+                { value: 'responder_id', label: 'Responder ID' },
+                { value: 'last_assessment_reminder_sent', label: 'Last Assessment Reminder Sent' },
+                { value: 'pause_notifications', label: 'Notifications Paused' }
+
+              ]
+            },
+            {
+              value: 'patients-monitoring-meta',
+              label: 'Metadata',
+              children: [
+                { value: 'creator_id', label: 'Enroller' },
+                { value: 'created_at', label: 'Created At' },
+                { value: 'updated_at', label: 'Updated At' }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      value: 'assessments',
+      label: 'Reports',
+      children: [
+        {
+          value: 'assessments-status',
+          label: 'By Status',
+          children: [
+            { value: 'assessments-status-needs-review', label: 'Needs Review' },
+            { value: 'assessments-status-reviewed', label: 'Reviewed' }
+          ]
+        },
+        {
+          value: 'assessments-reporter',
+          label: 'By Reporter',
+          children: [
+            { value: 'assessments-reporter-monitoree', label: 'Monitoree' },
+            { value: 'assessments-reporter-user', label: 'User' }
+          ]
+        }
+      ]
+    },
+    {
+      value: 'laboratories',
+      label: 'Lab Results',
+      children: [
+        {
+          value: 'laboratories-type',
+          label: 'By Type',
+          children: [
+            { value: 'laboratories-type-pcr', label: 'PCR' },
+            { value: 'laboratories-type-antigen', label: 'Antigen' },
+            { value: 'laboratories-type-total-antibody', label: 'Total Antibody' },
+            { value: 'laboratories-type-igg-antibody', label: 'IgG Antibody' },
+            { value: 'laboratories-type-igm-antibody', label: 'IgM Antibody' },
+            { value: 'laboratories-type-iga-antibody', label: 'IgA Antibody' },
+            { value: 'laboratories-type-other', label: 'Other' },
+            { value: 'laboratories-type-blank', label: 'Blank' }
+          ]
+        },
+        {
+          value: 'laboratories-result',
+          label: 'By Result',
+          children: [
+            { value: 'laboratories-result-positive', label: 'Positive' },
+            { value: 'laboratories-result-negative', label: 'Negative' },
+            { value: 'laboratories-result-indeterminate', label: 'Indeterminate' },
+            { value: 'laboratories-result-other', label: 'Other' },
+            { value: 'laboratories-result-blank', label: 'Blank' }
+          ]
+        }
+      ]
+    },
+    {
+      value: 'close_contacts',
+      label: 'Close Contacts',
+      children: [
+        {
+          value: 'close_contacts-type',
+          label: 'By Type',
+          children: [
+            { value: 'close_contacts-type-enrolled', label: 'Enrolled' },
+            { value: 'close_contacts-type-not-enrolled', label: 'Not Enrolled' }
+          ]
+        }
+      ]
+    },
+    {
+      value: 'histories',
+      label: 'History',
+      children: [
+        {
+          value: 'histories-type',
+          label: 'By Type',
+          children: History::HISTORY_TYPES.map { |type, label| { value: "histories-type-#{type}", label: label } }
+        },
+        {
+          value: 'histories-creator',
+          label: 'By Creator',
+          children: [
+            { value: 'histories-creator-sara-alert-system', label: 'Sara Alert System' },
+            { value: 'histories-creator-user', label: 'User' }
+          ]
+        }
+      ]
+    }
+  ].freeze
 
   LINELIST_HEADERS = ['Patient ID', 'Monitoree', 'Jurisdiction', 'Assigned User', 'State/Local ID', 'Sex', 'Date of Birth', 'End of Monitoring', 'Risk Level',
                       'Monitoring Plan', 'Latest Report', 'Transferred At', 'Reason For Closure', 'Latest Public Health Action', 'Status', 'Closed At',

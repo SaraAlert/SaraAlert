@@ -93,8 +93,8 @@ class Export extends React.Component {
               <i className="fas fa-download"></i> Export{' '}
             </React.Fragment>
           }>
-          <Dropdown.Item onClick={() => this.setState({ showCSVModal: true })}>Line list CSV ({this.props.workflow})</Dropdown.Item>
-          <Dropdown.Item onClick={() => this.setState({ showSaraFormatModal: true })}>Sara Alert Format ({this.props.workflow})</Dropdown.Item>
+          <Dropdown.Item onClick={() => this.setState({ showCSVModal: true })}>Line list CSV ({this.props.query.workflow})</Dropdown.Item>
+          <Dropdown.Item onClick={() => this.setState({ showSaraFormatModal: true })}>Sara Alert Format ({this.props.query.workflow})</Dropdown.Item>
           <Dropdown.Item onClick={() => this.setState({ showAllPurgeEligibleModal: true })}>Excel Export For Purge-Eligible Monitorees</Dropdown.Item>
           <Dropdown.Item onClick={() => this.setState({ showAllModal: true })}>Excel Export For All Monitorees</Dropdown.Item>
           <Dropdown.Divider />
@@ -102,21 +102,21 @@ class Export extends React.Component {
         </DropdownButton>
         {this.state.showCSVModal &&
           this.createModal(
-            `Line list CSV (${this.props.workflow})`,
+            `Line list CSV (${this.props.query.workflow})`,
             () => {
               this.setState({ showCSVModal: false });
             },
             this.submit,
-            `/export/csv/patients/linelist/${this.props.workflow}`
+            `/export/csv/patients/linelist/${this.props.query.workflow}`
           )}
         {this.state.showSaraFormatModal &&
           this.createModal(
-            `Sara Alert Format (${this.props.workflow})`,
+            `Sara Alert Format (${this.props.query.workflow})`,
             () => {
               this.setState({ showSaraFormatModal: false });
             },
             this.submit,
-            `/export/excel/patients/comprehensive/${this.props.workflow}`
+            `/export/excel/patients/comprehensive/${this.props.query.workflow}`
           )}
         {this.state.showAllPurgeEligibleModal &&
           this.createModal(
@@ -149,10 +149,14 @@ class Export extends React.Component {
         {this.state.showCustomFormatModal && (
           <CustomExport
             authenticity_token={this.props.authenticity_token}
+            jurisdiction_paths={this.props.jurisdiction_paths}
+            jurisdiction={this.props.jurisdiction}
+            tabs={this.props.tabs}
             preset={null}
             query={this.props.query}
-            filteredMonitoreesCount={this.props.filteredMonitoreesCount}
-            allMonitoreesCount={this.props.allMonitoreesCount}
+            filtered_monitorees_count={this.props.filtered_monitorees_count}
+            all_monitorees_count={this.props.all_monitorees_count}
+            custom_export_options={this.props.custom_export_options}
             onClose={() => this.setState({ showCustomFormatModal: false })}
           />
         )}
@@ -162,11 +166,14 @@ class Export extends React.Component {
 }
 
 Export.propTypes = {
-  workflow: PropTypes.string,
   authenticity_token: PropTypes.string,
+  jurisdiction_paths: PropTypes.object,
+  jurisdiction: PropTypes.object,
+  tabs: PropTypes.object,
   query: PropTypes.object,
-  allMonitoreesCount: PropTypes.number,
-  filteredMonitoreesCount: PropTypes.number,
+  all_monitorees_count: PropTypes.number,
+  filtered_monitorees_count: PropTypes.number,
+  custom_export_options: PropTypes.array,
 };
 
 export default Export;
