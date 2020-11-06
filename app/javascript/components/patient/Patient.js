@@ -378,7 +378,7 @@ class Patient extends React.Component {
                       {this.props.details.symptom_onset && (
                         <React.Fragment>
                           <span>
-                            <b>Symptom Onset:</b> ${moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}
+                            <b>Symptom Onset:</b> {moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}
                           </span>
                           <br />
                         </React.Fragment>
