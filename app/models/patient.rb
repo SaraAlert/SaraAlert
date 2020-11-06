@@ -71,10 +71,7 @@ class Patient < ApplicationRecord
     validates date_field, on: :api, date: true
   end
 
-  %i[address_city
-     address_line_1
-     address_state
-     address_zip
+  %i[address_state
      date_of_birth
      first_name
      last_name].each do |required_field|

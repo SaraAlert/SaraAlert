@@ -1394,10 +1394,7 @@ class PatientTest < ActiveSupport::TestCase
 
   def valid_patient
     build(:patient,
-          address_city: 'city',
-          address_line_1: '123 Test Street',
           address_state: 'Oregon',
-          address_zip: '11111',
           date_of_birth: 25.years.ago,
           first_name: 'Test',
           last_name: 'Tester',
@@ -1606,42 +1603,12 @@ class PatientTest < ActiveSupport::TestCase
     assert patient.valid?
   end
 
-  test 'validates address_city is required in api context' do
-    patient = valid_patient
-
-    assert patient.valid?(:api)
-
-    patient.address_city = nil
-    assert_not patient.valid?(:api)
-    assert patient.valid?
-  end
-
-  test 'validates address_line_1 is required in api context' do
-    patient = valid_patient
-
-    assert patient.valid?(:api)
-
-    patient.address_line_1 = nil
-    assert_not patient.valid?(:api)
-    assert patient.valid?
-  end
-
   test 'validates address_state is required in api context' do
     patient = valid_patient
 
     assert patient.valid?(:api)
 
     patient.address_state = nil
-    assert_not patient.valid?(:api)
-    assert patient.valid?
-  end
-
-  test 'validates address_zip is required in api context' do
-    patient = valid_patient
-
-    assert patient.valid?(:api)
-
-    patient.address_zip = nil
     assert_not patient.valid?(:api)
     assert patient.valid?
   end
