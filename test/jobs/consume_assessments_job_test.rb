@@ -7,6 +7,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
   def setup
     Sidekiq::Testing.fake!
     @redis = Rails.application.config.redis
+    @redis_queue = Redis::Queue.new('q_bridge', 'bp_q_bridge', redis: @redis)
     @patient = create(:patient, submission_token: SecureRandom.hex(20), primary_telephone: '(555) 555-0111')
     @assessment_generator = ConsumeAssessmentsJobTestHelper::AssessmentGenerator.new(@patient)
   end
@@ -16,7 +17,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
   end
 
   test 'consume assessment bad json' do
-    @redis.publish('reports', 'not json')
+    @redis_queue.push 'not json'
     # The mocking framework will just return when a 'next' is called
     assert_nil ConsumeAssessmentsJob.perform_now
   end
@@ -25,7 +26,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
     test "response status #{response_status}" do
       @patient.update(last_assessment_reminder_sent: 1.day.ago)
       assert_difference '@patient.histories.count', 1 do
-        @redis.publish('reports', @assessment_generator.no_answer_assessment(response_status))
+        @redis_queue.push @assessment_generator.no_answer_assessment(response_status)
         ConsumeAssessmentsJob.perform_now
         @patient.reload
         assert_nil @patient.last_assessment_reminder_sent unless response_status == 'no_answer_sms'
@@ -37,7 +38,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
     test "#{response_status} contact attempt history for dependents" do
       dependent = create(:patient)
       dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
-      @redis.publish('reports', @assessment_generator.no_answer_assessment(response_status))
+      @redis_queue.push @assessment_generator.no_answer_assessment(response_status)
       assert_difference 'dependent.histories.count', 1 do
         ConsumeAssessmentsJob.perform_now
         dependent.reload
@@ -50,19 +51,19 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
   test 'consume assessment for a patient that has submitted recently' do
     # reporting limit defaults to 15 minutes
     @patient.update(assessments: [create(:assessment, patient: @patient)])
-    @redis.publish('reports', @assessment_generator.generic_assessment(symptomatic: false))
+    @redis_queue.push @assessment_generator.generic_assessment(symptomatic: false)
     # The mocking framework will just return when a 'next' is called
     assert_nil ConsumeAssessmentsJob.perform_now
   end
 
   test 'consume assessment no threshold condition' do
-    @redis.publish('reports', @assessment_generator.missing_threshold_condition)
+    @redis_queue.push @assessment_generator.missing_threshold_condition
     assert_nil ConsumeAssessmentsJob.perform_now
   end
 
   test 'consume assessment with reported symptoms' do
     assert_difference '@patient.assessments.count', 1 do
-      @redis.publish('reports', @assessment_generator.reported_symptom_assessment)
+      @redis_queue.push @assessment_generator.reported_symptom_assessment
       ConsumeAssessmentsJob.perform_now
     end
   end
@@ -70,7 +71,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
   test 'consume assessment with reported symptoms and experiencing symptoms' do
     assert_difference '@patient.assessments.count', 1 do
       # Force experiencing_symptoms to true
-      @redis.publish('reports', @assessment_generator.reported_symptom_assessment(symptomatic: true))
+      @redis_queue.push @assessment_generator.reported_symptom_assessment(symptomatic: true)
       ConsumeAssessmentsJob.perform_now
       @patient.reload
       assert @patient.assessments.first.symptomatic
@@ -79,7 +80,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
 
   test 'consume generic assessment symptomatic' do
     assert_difference '@patient.assessments.count', 1 do
-      @redis.publish('reports', @assessment_generator.generic_assessment(symptomatic: true))
+      @redis_queue.push @assessment_generator.generic_assessment(symptomatic: true)
       ConsumeAssessmentsJob.perform_now
       @patient.reload
       assert @patient.assessments.first.symptomatic
@@ -104,7 +105,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
     assert_difference 'dependent.assessments.count', 1 do
-      @redis.publish('reports', @assessment_generator.generic_assessment(symptomatic: true))
+      @redis_queue.push @assessment_generator.generic_assessment(symptomatic: true)
       ConsumeAssessmentsJob.perform_now
       dependent.reload
       assert dependent.assessments.first.symptomatic
