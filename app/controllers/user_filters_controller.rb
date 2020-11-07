@@ -14,7 +14,7 @@ class UserFiltersController < ApplicationController
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
         filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
-        value: filter.permit(:value)[:value] || filter.require(:value) || nil,
+        value: filter.permit(:value)[:value] || filter.require(:value) || false,
         dateOption: filter.permit(:dateOption)[:dateOption]
       }
     end
@@ -26,7 +26,7 @@ class UserFiltersController < ApplicationController
     active_filter_options = params.require(:activeFilterOptions).collect do |filter|
       {
         filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
-        value: filter.permit(:value)[:value] || filter.require(:value) || nil,
+        value: filter.permit(:value)[:value] || filter.require(:value) || false,
         dateOption: filter.permit(:dateOption)[:dateOption]
       }
     end

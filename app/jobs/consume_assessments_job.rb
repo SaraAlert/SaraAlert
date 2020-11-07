@@ -13,7 +13,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
                                          'patient_submission_token', 'experiencing_symptoms', 'response_status')
 
-        next if message.nil?
+        Rails.logger.info 'ConsumeAssessmentsJob: skipping nil message...' && next if message.nil?
 
         patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
 
@@ -23,11 +23,14 @@ class ConsumeAssessmentsJob < ApplicationJob
           patient = Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
         end
 
-        next if patient.nil?
+        Rails.logger.info "ConsumeAssessmentsJob: skipping nil patient (token #{message['patient_submission_token']})..." && next if patient.nil?
 
         # Prevent duplicate patient assessment spam
         # Only check for latest assessment if there is one
-        next if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+        if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+          Rails.logger.info "ConsumeAssessmentsJob: skipping duplicate assessment (patient #{patient.id})..."
+          next
+        end
 
         # Get list of dependents excluding the patient itself.
         dependents = patient.dependents_exclude_self
@@ -80,7 +83,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         end
 
         threshold_condition = ThresholdCondition.where(type: 'ThresholdCondition').find_by(threshold_condition_hash: message['threshold_condition_hash'])
-        next unless threshold_condition
+        Rails.logger.info "ConsumeAssessmentsJob: skipping nil threshold (patient #{patient.id})..." && next unless threshold_condition
 
         if message['reported_symptoms_array']
           typed_reported_symptoms = Condition.build_symptoms(message['reported_symptoms_array'])
