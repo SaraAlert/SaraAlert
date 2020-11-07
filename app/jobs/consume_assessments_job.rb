@@ -57,6 +57,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           end
 
           queue.commit
+          next
         when 'no_answer_sms'
           # No need to wipe out last_assessment_reminder_sent so that another sms will be sent because the sms studio flow is kept open for 18hrs
           History.contact_attempt(patient: patient, comment: "Sara Alert texted this monitoree's primary telephone \
@@ -68,6 +69,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           end
 
           queue.commit
+          next
         when 'error_voice'
           # If there was an error in completeing the call, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
@@ -79,6 +81,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           end
 
           queue.commit
+          next
         when 'error_sms'
           # If there was an error sending an SMS, nil out the last_reminder_sent field so the system will try calling again
           patient.update(last_assessment_reminder_sent: nil)
@@ -90,6 +93,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           end
 
           queue.commit
+          next
         end
 
         threshold_condition = ThresholdCondition.where(type: 'ThresholdCondition').find_by(threshold_condition_hash: message['threshold_condition_hash'])
