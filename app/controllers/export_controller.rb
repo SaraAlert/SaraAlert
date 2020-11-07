@@ -5,7 +5,7 @@ require 'axlsx'
 # ExportController: for exporting subjects
 class ExportController < ApplicationController
   include ImportExport
-  include PatientFiltersHelper
+  include PatientQueryHelper
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
@@ -20,7 +20,7 @@ class ExportController < ApplicationController
     else
       # Validate filters
       begin
-        filters = validate_filter_params(permitted_params)
+        filters = validate_patients_query(permitted_params)
       rescue StandardError
         return head :bad_request
       end
@@ -48,7 +48,7 @@ class ExportController < ApplicationController
     else
       # Validate filters
       begin
-        filters = validate_filter_params(permitted_params)
+        filters = validate_patients_query(permitted_params)
       rescue StandardError
         return head :bad_request
       end
@@ -76,7 +76,7 @@ class ExportController < ApplicationController
     else
       # Validate filters
       begin
-        filters = validate_filter_params(permitted_params)
+        filters = validate_patients_query(permitted_params)
       rescue StandardError
         return head :bad_request
       end
@@ -116,31 +116,30 @@ class ExportController < ApplicationController
   end
 
   def custom_export
-    permitted_params = params.permit(:format, :fields, :workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
-
     export_type = 'Sara-Alert-Custom-Export'
 
     # Figure out how to limit exports (1 hour limit might be annoying to users for custom export)
     if current_user.export_receipts.where(export_type: export_type).where('created_at > ?', 1.hour.ago).exists?
       render json: { message: 'You have already initiated an export of this type in the last hour. Please try again later.' }.to_json, status: 401
     else
-      # Validate filters
+      # Validate query
+      query = params.require(:query).permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
       begin
-        filters = validate_filter_params(permitted_params)
-      rescue StandardError
-        return head :bad_request
+        validate_patients_query(query)
+      rescue StandardError => e
+        return render json: e, status: :bad_request
       end
 
       # Validate format param
-      format = permitted_params.require(:format)
-      return head :bad_request unless %w[csv xlsx].include?(format)
+      format = params.require(:format)
+      return head :bad_request unless EXPORT_FORMATS.include?(format)
 
-      # Validate fields param
-      fields = permitted_params.require(:fields)
-      return head :bad_request unless fields.is_a?(Array)
-
-      fields.each do |field|
-        return head :bad_request unless PATIENT_FIELDS.keys.include?(field.to_sym)
+      # Validate checked param
+      checked = params.require(:checked)
+      begin
+        validate_checked_fields(checked)
+      rescue StandardError => e
+        return render json: e, status: :bad_request
       end
 
       # Clear out old receipts and create a new one
@@ -148,7 +147,7 @@ class ExportController < ApplicationController
       ExportReceipt.create(user_id: current_user.id, export_type: export_type)
 
       # Spawn job to handle export
-      ExportJob.perform_later(current_user.id, 'Custom', format, 'Monitorees', fields, filters)
+      ExportJob.perform_later(current_user.id, 'Custom', format, checked, query)
 
       respond_to do |f|
         f.any { head :ok }

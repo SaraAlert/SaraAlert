@@ -90,14 +90,18 @@ class CustomExport extends React.Component {
                 id="csvFormatBtn"
                 size="sm"
                 variant={this.state.format === 'csv' ? 'primary' : 'outline-secondary'}
+                style={{ outline: 'none', boxShadow: 'none' }}
                 onClick={() => this.setState({ format: 'csv' })}>
+                <FontAwesomeIcon className="mr-1" icon={['fas', 'file-csv']} />
                 CSV
               </Button>
               <Button
                 id="xlsxFormatBtn"
                 size="sm"
                 variant={this.state.format === 'xlsx' ? 'primary' : 'outline-secondary'}
+                style={{ outline: 'none', boxShadow: 'none' }}
                 onClick={() => this.setState({ format: 'xlsx' })}>
+                <FontAwesomeIcon className="mr-1" icon={['fas', 'file-excel']} />
                 Excel
               </Button>
             </Col>
@@ -118,7 +122,7 @@ class CustomExport extends React.Component {
                 />
                 {!this.state.filtered && (
                   <div style={{ paddingLeft: '1.25rem' }}>
-                    <Badge variant="secondary">Jurisdiction: {this.props.jurisdiction?.path} (all)</Badge>
+                    <Badge variant="primary">Jurisdiction: {this.props.jurisdiction?.path} (all)</Badge>
                   </div>
                 )}
               </div>
@@ -134,29 +138,29 @@ class CustomExport extends React.Component {
                 {this.state.filtered && (
                   <div style={{ paddingLeft: '1.25rem' }}>
                     {this.state.query.workflow && this.state.query.tab && (
-                      <Badge variant="secondary" className="mr-1">
+                      <Badge variant="primary" className="mr-1">
                         {this.state.query.workflow === 'isolation' ? 'Isolation' : 'Exposure'} - {this.props.tabs[this.state.query.tab]?.label}
                       </Badge>
                     )}
                     {this.state.query.jurisdiction && (
-                      <Badge variant="secondary" className="mr-1">
+                      <Badge variant="primary" className="mr-1">
                         Jurisdiction: {this.props.jurisdiction_paths[this.state.query.jurisdiction]} ({this.state.query.scope})
                       </Badge>
                     )}
                     {this.state.query.user && this.state.query.user !== 'all' && (
-                      <Badge variant="secondary" className="mr-1">
+                      <Badge variant="primary" className="mr-1">
                         Assigned User: {this.state.query.user}
                       </Badge>
                     )}
                     {this.state.query.search && this.state.query.search !== '' && (
-                      <Badge variant="secondary" className="mr-1">
+                      <Badge variant="primary" className="mr-1">
                         Search: {this.state.query.search}
                       </Badge>
                     )}
                     {this.state.query.filter &&
                       this.state.query.filter.map(f => {
                         return (
-                          <Badge variant="primary" className="mr-1" key={f?.filterOption?.name}>
+                          <Badge variant="secondary" className="mr-1" key={f?.filterOption?.name}>
                             {f?.filterOption?.title}: {f?.value?.toString()}
                           </Badge>
                         );

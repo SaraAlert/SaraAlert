@@ -2,32 +2,32 @@
 
 # PublicHealthController: handles all epi actions
 class PublicHealthController < ApplicationController
-  include PatientFiltersHelper
+  include PatientQueryHelper
 
   before_action :authenticate_user!
   before_action :authenticate_user_role
 
   def patients
-    permitted_params = params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :filter, :tz_offset)
+    query = params.require(:query).permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :entries, :page, :order, :direction, :filter, :tz_offset)
 
     # Require workflow and tab params
-    workflow = permitted_params.require(:workflow).to_sym
-    tab = permitted_params.require(:tab).to_sym
+    workflow = query.require(:workflow).to_sym
+    tab = query.require(:tab).to_sym
 
-    # Validate filter params
+    # Validate query
     begin
-      filters = validate_filter_params(permitted_params)
-    rescue StandardError
-      return head :bad_request
+      validate_patients_query(query)
+    rescue StandardError => e
+      return render json: e, status: :bad_request
     end
 
     # Validate pagination params
-    entries = permitted_params[:entries]&.to_i || 25
-    page = permitted_params[:page]&.to_i || 0
-    return head :bad_request unless entries >= 0 && page >= 0
+    entries = query[:entries]&.to_i || 25
+    page = query[:page]&.to_i || 0
+    return render json: { error: 'Invalid entries or page' }, status: :bad_request unless entries >= 0 && page >= 0
 
     # Get filtered patients
-    patients = filtered_patients(current_user, filters)
+    patients = patients_by_query(current_user, query)
 
     # Paginate
     patients = patients.paginate(per_page: entries, page: page + 1)

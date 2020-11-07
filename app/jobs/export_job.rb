@@ -4,13 +4,13 @@
 class ExportJob < ApplicationJob
   queue_as :exports
   include ImportExport
-  include PatientFiltersHelper
+  include PatientQueryHelper
 
   # Limits number of records to be considered for a single exported file to handle maximum file size limit.
   # Adds additional files as needed if records exceeds batch size.
   RECORD_BATCH_SIZE = 10_000
 
-  def perform(user_id, export_type, file_ext, fields, filters)
+  def perform(user_id, export_type, file_ext, checked, query)
     current_user = User.find_by(id: user_id)
     return if current_user.nil?
 
@@ -18,16 +18,16 @@ class ExportJob < ApplicationJob
     user.downloads.where(export_type: export_type).delete_all
 
     # Get filtered patients
-    patients = filtered_patients(current_user, filters)
+    patients = patients_by_query(current_user, query)
 
     # Construct export
     lookups = []
     patients.in_batches(of: RECORD_BATCH_SIZE).each_with_index do |group, index|
       case file_ext
       when 'csv'
-        data = csv_export(group, fields)
+        data = csv_export(group, checked)
       when 'xlsx'
-        data = xlsx_export(group, fields)
+        data = xlsx_export(group, checked)
       end
       lookups << get_file(user_id, data, build_filename(export_type, index + 1, file_extension), export_type)
     end
