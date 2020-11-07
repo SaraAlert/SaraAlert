@@ -4,6 +4,8 @@
 module ImportExport # rubocop:todo Metrics/ModuleLength
   include ValidationHelper
 
+  EXPORT_FORMATS = %w[csv xlsx].freeze
+
   PATIENT_FIELDS = {
     id: 'Patient ID',
     first_name: 'First Name',
@@ -552,6 +554,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
 
   def unformat_enum_field(value)
     value.to_s.downcase.gsub(/[ -.]/, '')
+  end
+
+  def validate_checked_fields(checked)
+    raise StandardError('Checked must be an array') unless checked.is_a?(Array)
   end
 
   def csv_export(patients, fields)

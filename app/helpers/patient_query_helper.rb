@@ -1,73 +1,62 @@
 # frozen_string_literal: true
 
 # Helper methods for filtering through patients
-module PatientFiltersHelper # rubocop:todo Metrics/ModuleLength
-  def validate_filter_params(params)
-    # Validate workflow param
-    workflow = params[:workflow].to_sym
-    raise InvalidFilterError.new(:workflow, workflow) unless %i[exposure isolation].include?(workflow)
+module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
+  def validate_patients_query(query)
+    # Validate workflow
+    workflow = query[:workflow].to_sym
+    raise InvalidQueryError.new(:workflow, workflow) unless %i[exposure isolation].include?(workflow)
 
-    # Validate tab param
-    tab = params[:tab].to_sym
+    # Validate tab
+    tab = query[:tab].to_sym
     if workflow == :exposure
-      raise InvalidFilterError.new(:tab, tab) unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
+      raise InvalidQueryError.new(:tab, tab) unless %i[all symptomatic non_reporting asymptomatic pui closed transferred_in transferred_out].include?(tab)
     else
-      raise InvalidFilterError.new(:tab, tab) unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
+      raise InvalidQueryError.new(:tab, tab) unless %i[all requiring_review non_reporting reporting closed transferred_in transferred_out].include?(tab)
     end
 
-    # Validate jurisdiction param
-    jurisdiction = params[:jurisdiction]
+    # Validate jurisdiction
+    jurisdiction = query[:jurisdiction]
     unless jurisdiction.nil? || jurisdiction == 'all' || current_user.jurisdiction.subtree_ids.include?(jurisdiction.to_i)
-      raise InvalidFilterError.new(:jurisdiction, jurisdiction)
+      raise InvalidQueryError.new(:jurisdiction, jurisdiction)
     end
 
-    # Validate scope param
-    scope = params[:scope]&.to_sym
-    raise InvalidFilterError.new(:scope, scope) unless scope.nil? || %i[all exact].include?(scope)
+    # Validate scope
+    scope = query[:scope]
+    raise InvalidQueryError.new(:scope, scope) unless scope.nil? || %w[all exact].include?(scope)
 
-    # Validate user param
-    user = params[:user]
-    raise InvalidFilterError.new(:user, user) unless user.nil? || %w[all none].include?(user) || user.to_i.between?(1, 9999)
+    # Validate user
+    user = query[:user]
+    raise InvalidQueryError.new(:user, user) unless user.nil? || %w[all none].include?(user) || user.to_i.between?(1, 9999)
 
-    # Validate sort params
-    order = params[:order]
-    raise InvalidFilterError.new(:order, order) unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user
-                                                                                        state_local_id dob end_of_monitoring risk_level monitoring_plan
-                                                                                        public_health_action expected_purge_date reason_for_closure closed_at
-                                                                                        transferred_at latest_report symptom_onset
-                                                                                        extended_isolation].include?(order)
+    # Validate sort
+    order = query[:order]
+    raise InvalidQueryError.new(:order, order) unless order.nil? || order.blank? || %w[name jurisdiction transferred_from transferred_to assigned_user
+                                                                                       state_local_id dob end_of_monitoring risk_level monitoring_plan
+                                                                                       public_health_action expected_purge_date reason_for_closure closed_at
+                                                                                       transferred_at latest_report symptom_onset
+                                                                                       extended_isolation].include?(order)
 
-    direction = params[:direction]
-    raise InvalidFilterError.new(:direction, direction) unless direction.nil? || direction.blank? || %w[asc desc].include?(direction)
-    raise InvalidFilterError.new(:direction, direction) unless (!order.blank? && !direction.blank?) || (order.blank? && direction.blank?)
-
-    params.permit(:workflow, :tab, :jurisdiction, :scope, :user, :search, :order, :direction, :filter)
+    direction = query[:direction]
+    raise InvalidQueryError.new(:direction, direction) unless direction.nil? || direction.blank? || %w[asc desc].include?(direction)
+    raise InvalidQueryError.new(:direction, direction) unless (!order.blank? && !direction.blank?) || (order.blank? && direction.blank?)
   end
 
-  def filtered_patients(current_user, filters)
-    workflow = filters[:workflow].to_sym
-    tab = filters[:tab].to_sym
-    jurisdiction = filters[:jurisdiction]
-    scope = filters[:scope]&.to_sym
-    user = filters[:user]
-    search = filters[:search]
-    order = filters[:order]
-    direction = filters[:direction]
-
+  def patients_by_query(current_user, query)
     # Get current user's viewable patients by linelist
-    patients = patients_by_linelist(current_user, workflow, tab)
+    patients = patients_by_linelist(current_user, query[:workflow].to_sym, query[:tab].to_sym)
 
     # Filter by assigned jurisdiction
-    unless jurisdiction.nil? || jurisdiction == 'all' || tab == :transferred_out
-      jur_id = jurisdiction.to_i
-      patients = scope == :all ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
+    unless query[:jurisdiction].nil? || query[:jurisdiction] == 'all' || query[:tab].to_sym == :transferred_out
+      jur_id = query[:jurisdiction].to_i
+      patients = query[:scope] == 'all' ? patients.where(jurisdiction_id: Jurisdiction.find(jur_id).subtree_ids) : patients.where(jurisdiction_id: jur_id)
     end
 
     # Filter by assigned user
-    patients = patients.where(assigned_user: user == 'none' ? nil : user.to_i) unless user.nil? || user == 'all'
+    patients = patients.where(assigned_user: query[:user] == 'none' ? nil : query[:user].to_i) unless query[:user].nil? || query[:user] == 'all'
 
     # Filter by search text
-    patients = filter_by_text(patients, search)
+    patients = filter_by_text(patients, query[:search])
 
     # Filter by advanced filter (if present)
     if params[:filter].present?
@@ -84,7 +73,7 @@ module PatientFiltersHelper # rubocop:todo Metrics/ModuleLength
     end
 
     # Sort
-    sort(patients, order, direction)
+    sort(patients, query[:order], query[:direction])
   end
 
   def patients_by_linelist(current_user, workflow, tab)
@@ -421,8 +410,8 @@ module PatientFiltersHelper # rubocop:todo Metrics/ModuleLength
 end
 
 # Exception used for reporting validation errors
-class InvalidFilterError < StandardError
-  def initialize(filter, value)
-    super("Invalid Filter (#{filter}): #{value}")
+class InvalidQueryError < StandardError
+  def initialize(field, value)
+    super("Invalid Query (#{field}): #{value}")
   end
 end
