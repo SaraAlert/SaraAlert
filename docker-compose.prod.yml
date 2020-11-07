@@ -13,9 +13,7 @@ services:
     image: ${SARA_ALERT_IMAGE}:latest
   sidekiq-enrollment-default:
     image: ${SARA_ALERT_IMAGE}:latest
-  sidekiq-bridge-enrollment_1:
-    image: ${SARA_ALERT_IMAGE}:latest
-  sidekiq-bridge-enrollment_2:
+  sidekiq-bridge-enrollment:
     image: ${SARA_ALERT_IMAGE}:latest
   sidekiq-bridge-assessment:
     image: ${SARA_ALERT_IMAGE}:latest
