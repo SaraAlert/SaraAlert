@@ -130,7 +130,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           end
         end
       rescue JSON::ParserError
-        Rails.logger.info "ConsumeAssessmentsJob: skipping invalid message..." && next
+        Rails.logger.info 'ConsumeAssessmentsJob: skipping invalid message...' && next
       end
     end
   rescue Redis::ConnectionError, Redis::CannotConnectError => e
