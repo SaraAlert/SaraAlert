@@ -18,6 +18,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         # Invalid message
         if message.nil?
           Rails.logger.info 'ConsumeAssessmentsJob: skipping nil message...'
+          queue.commit
           next
         end
 
@@ -32,6 +33,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         # Failed to find patient
         if patient.nil?
           Rails.logger.info "ConsumeAssessmentsJob: skipping nil patient (token: #{message['patient_submission_token']})..."
+          queue.commit
           next
         end
 
@@ -39,6 +41,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         # Only check for latest assessment if there is one
         if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
           Rails.logger.info "ConsumeAssessmentsJob: skipping duplicate assessment (patient: #{patient.id})..."
+          queue.commit
           next
         end
 
@@ -101,6 +104,7 @@ class ConsumeAssessmentsJob < ApplicationJob
         # Invalid threshold condition hash
         if threshold_condition.nil?
           Rails.logger.info "ConsumeAssessmentsJob: skipping nil threshold (patient: #{patient.id}, hash: #{message['threshold_condition_hash']})..."
+          queue.commit
           next
         end
 
