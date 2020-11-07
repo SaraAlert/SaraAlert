@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require 'redis'
+require 'redis-queue'
 
 # ProduceAssessmentJob: Publish a new assessment to redis to be consumed later
 class ProduceAssessmentJob < ApplicationJob
   queue_as :default
 
   def perform(assessment)
+    queue = Redis::Queue.new('q_bridge', 'bp_q_bridge', redis: Rails.application.config.redis)
     report = {
       response_status: assessment['response_status'],
       threshold_condition_hash: assessment['threshold_hash'],
@@ -14,7 +16,6 @@ class ProduceAssessmentJob < ApplicationJob
       experiencing_symptoms: assessment['experiencing_symptoms'],
       patient_submission_token: assessment['patient_submission_token']
     }
-    # report.except!(:reported_symptoms_array) if report[:reported_symptoms_array].blank?
-    Rails.application.config.redis.publish 'reports', report.to_json
+    queue.push report.to_json
   end
 end
