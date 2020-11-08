@@ -56,7 +56,7 @@ Workflow.propTypes = {
   jurisdiction: PropTypes.object,
   workflow: PropTypes.string,
   tabs: PropTypes.object,
-  custom_export_options: PropTypes.array,
+  custom_export_options: PropTypes.object,
 };
 
 export default Workflow;

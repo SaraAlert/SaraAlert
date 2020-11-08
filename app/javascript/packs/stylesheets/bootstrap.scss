@@ -127,6 +127,10 @@ select.form-control {
   border-right: 3px solid black !important;
 }
 
+.g-border-top {
+  border-top: 1px dotted rgba(0, 0, 0, 0.125) !important;
+}
+
 .g-border-bottom {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
 }
@@ -198,8 +202,9 @@ select.form-control {
   z-index: 2000;
 }
 
-.modal-import {
-  max-width: 95% !important;
+.modal-xl {
+  max-width: 99% !important;
+  margin: 0.75rem auto !important;
 }
 
 .modal-header {
