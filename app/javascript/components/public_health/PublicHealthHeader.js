@@ -54,7 +54,7 @@ class PublicHealthHeader extends React.Component {
   renderImportModal() {
     return (
       <Modal
-        dialogClassName="modal-import"
+        dialogClassName="modal-xl"
         backdrop={this.state.importData?.errors?.length > 0 ? true : 'static'}
         scrollable="true"
         show={this.state.showImportModal}
@@ -226,7 +226,7 @@ PublicHealthHeader.propTypes = {
   }),
   query: PropTypes.object,
   filtered_monitorees_count: PropTypes.number,
-  custom_export_options: PropTypes.array,
+  custom_export_options: PropTypes.object,
 };
 
 export default PublicHealthHeader;

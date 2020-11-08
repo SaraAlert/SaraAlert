@@ -20,6 +20,7 @@
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "base64toblob": "^0.0.2",
     "bootstrap": "^4.4.1",
+    "chroma-js": "2.1.0",
     "core-js": "^3.6.4",
     "datatables.net": "^1.10.20",
     "datatables.net-bs4": "^1.10.20",

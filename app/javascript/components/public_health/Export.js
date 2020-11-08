@@ -173,7 +173,7 @@ Export.propTypes = {
   query: PropTypes.object,
   all_monitorees_count: PropTypes.number,
   filtered_monitorees_count: PropTypes.number,
-  custom_export_options: PropTypes.array,
+  custom_export_options: PropTypes.object,
 };
 
 export default Export;
