@@ -12,6 +12,7 @@ class AddContactAttemptsToPatients < ActiveRecord::Migration[6.0]
         GROUP BY patient_id
       ) t ON patients.id = t.patient_id
       SET patients.contact_attempts = t.contact_attempts
+      WHERE purged = FALSE
     SQL
   end
 
