@@ -443,42 +443,6 @@ class Contact extends React.Component {
   }
 }
 
-yup.addMethod(yup.string, 'sms_eligible', function() {
-  return this.test({
-    name: 'sms_eligible',
-    exclusive: true,
-    message: 'This phone number has blocked SMS communications with SaraAlert',
-    test: value => {
-      let sms_eligible = true;
-      try {
-        // Make async request to see if phone_number has blocked SaraAlert
-        return new Promise(resolve => {
-          axios({
-            method: 'get',
-            url: '/patients/sms_eligibility_check',
-            params: { phone_number: phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) },
-          })
-            .then(response => {
-              if (response?.data?.sms_eligible != null) {
-                sms_eligible = response.data.sms_eligible;
-                resolve(sms_eligible);
-              } else {
-                // Default to non-block if error with request
-                resolve(false);
-              }
-            })
-            .catch(error => {
-              console.error(error);
-            });
-        });
-      } catch (e) {
-        // Default to non-block if error with request
-        return false;
-      }
-    },
-  });
-});
-
 yup.addMethod(yup.string, 'phone', function() {
   return this.test({
     name: 'phone',
