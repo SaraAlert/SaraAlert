@@ -27,7 +27,7 @@ class PatientMailer < ApplicationMailer
   def enrollment_sms_text_based(patient)
     # Should not be sending enrollment sms if no valid number
     return if patient&.primary_telephone.blank?
-    add_fail_history_sms_blocked(patient) && return unless patient.has_blocked_sms
+    add_fail_history_sms_blocked(patient) && return if patient.has_blocked_sms
 
     lang = patient.select_language
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
@@ -37,7 +37,7 @@ class PatientMailer < ApplicationMailer
   # Right now the wording of this message is the same as for enrollment
   def assessment_sms_weblink(patient)
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
-    add_fail_history_sms_blocked(patient) && return unless patient.has_blocked_sms
+    add_fail_history_sms_blocked(patient) && return if patient.has_blocked_sms
 
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
     patient.active_dependents.uniq.each do |dependent|
@@ -61,7 +61,7 @@ class PatientMailer < ApplicationMailer
 
   def assessment_sms_reminder(patient)
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
-    add_fail_history_sms_blocked(patient) && return unless patient.has_blocked_sms
+    add_fail_history_sms_blocked(patient) && return if patient.has_blocked_sms
 
     lang = patient.select_language
     contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
@@ -76,7 +76,7 @@ class PatientMailer < ApplicationMailer
 
   def assessment_sms(patient)
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
-    add_fail_history_sms_blocked(patient) && return unless patient.has_blocked_sms
+    add_fail_history_sms_blocked(patient) && return if patient.has_blocked_sms
 
     lang = patient.select_language
     # patient.dependents includes the patient themselves if patient.id = patient.responder_id (which should be the case)
