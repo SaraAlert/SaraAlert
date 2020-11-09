@@ -1,12 +1,13 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Card, Col, Collapse, Row, Table } from 'react-bootstrap';
+import { Col, Row, Button, Collapse, Card, Table, Form } from 'react-bootstrap';
 import moment from 'moment';
 
 import BadgeHOH from '../util/BadgeHOH';
 import ChangeHOH from '../subject/ChangeHOH';
 import MoveToHousehold from '../subject/MoveToHousehold';
 import RemoveFromHousehold from '../subject/RemoveFromHousehold';
+import InfoTooltip from '../util/InfoTooltip';
 
 class Patient extends React.Component {
   constructor(props) {
@@ -127,6 +128,11 @@ class Patient extends React.Component {
               <Col className="text-truncate">
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 <span className="text-danger">{this.props.details.blocked_sms && ' This Phone Number Has Blocked SMS Communication With Sara Alert'}</span>
+                {this.props.details.blocked_sms && (
+                  <Form.Label className="nav-input-label text-danger">
+                    SMS Communication Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="right"></InfoTooltip>
+                  </Form.Label>
+                )}
                 <br />
                 <b>Preferred Contact Time:</b> <span>{this.props.details.preferred_contact_time ? `${this.props.details.preferred_contact_time}` : '--'}</span>
                 <br />

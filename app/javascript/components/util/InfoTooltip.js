@@ -131,6 +131,17 @@ const TOOLTIP_TEXT = {
     </div>
   ),
 
+  blockedSMS: (
+    <div>
+      The owner of this phone number has texted<br></br>
+      &quot;STOP&quot; in response to a Sara Alert message.<br></br>
+      Please instruct the owner to text &quot;START&quot; to<br></br>
+      the Sara Alert number, or update the preferred<br></br>
+      reporting method so that this monitoree can<br></br>
+      receive messages.
+    </div>
+  ),
+
   continuousExposure: (
     <div>
       Allows a user to indicate that a monitoree has an ongoing exposure to one or more cases. If checked, the monitoring period will be extended indefinitely
