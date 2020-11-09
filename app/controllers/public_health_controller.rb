@@ -71,7 +71,7 @@ class PublicHealthController < ApplicationController
       advanced = params.require(:filter).collect do |filter|
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
-          value: filter.permit(:value)[:value] || filter.require(:value) || nil,
+          value: filter.permit(:value)[:value] || filter.require(:value) || false,
           dateOption: filter.permit(:dateOption)[:dateOption]
         }
       end
