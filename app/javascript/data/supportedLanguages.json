@@ -41,6 +41,14 @@
       }
     },
     {
+      "name": "Amharic",
+      "supported": {
+        "sms": false,
+        "email": false,
+        "phone": false
+      }
+    },
+    {
       "name": "Arabic",
       "supported": {
         "sms": false,
@@ -178,6 +186,14 @@
     },
     {
       "name": "Norwegian",
+      "supported": {
+        "sms": false,
+        "email": false,
+        "phone": false
+      }
+    },
+    {
+      "name": "Persian (Farsi)",
       "supported": {
         "sms": false,
         "email": false,
