@@ -2,6 +2,8 @@
 
 module ConsumeAssessmentsJobTestHelper
   class AssessmentGenerator
+    attr_reader :patient
+
     @@response_statuses = %w[no_answer_voice no_answer_sms error_voice error_sms]
 
     def initialize(patient)
@@ -10,6 +12,14 @@ module ConsumeAssessmentsJobTestHelper
 
     def self.response_statuses
       @@response_statuses
+    end
+
+    def invalid_submission_token
+      { response_status: nil,
+        threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
+        reported_symptoms_array: nil,
+        experiencing_symptoms: false,
+        patient_submission_token: 'invalid token' }.to_json
     end
 
     def reported_symptom_assessment(symptomatic: nil)
@@ -66,7 +76,7 @@ module ConsumeAssessmentsJobTestHelper
     def missing_threshold_condition
       {
         response_status: nil,
-        threshold_condition_hash: nil,
+        threshold_condition_hash: 'invalid thresholdcondition hash',
         reported_symptoms_array: nil,
         experiencing_symptoms: false,
         patient_submission_token: @patient.submission_token

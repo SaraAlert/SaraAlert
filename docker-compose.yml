@@ -143,6 +143,19 @@ services:
       - redis-enrollment
       - sara-alert-enrollment
       - mysql-enrollment
+  rake-bridge-queue-reports:
+    image: "${SARA_ALERT_IMAGE}:development-test"
+    environment:
+      - REDIS_URL=redis://redis-bridge:6379/1
+      - CONSUME_WORKERS=8
+    env_file:
+      - .env-prod-enrollment
+    restart: unless-stopped
+    networks:
+      - dt-net-bridge
+    command: "bin/bundle exec rake reports:queue_reports"
+    depends_on:
+      - redis-bridge
   sidekiq-bridge-enrollment:
     image: "${SARA_ALERT_IMAGE}:development-test"
     environment:
@@ -153,7 +166,7 @@ services:
     networks:
       - dt-net-bridge
       - dt-net-enrollment
-    command: "bin/bundle exec rake reports:receive_and_process_reports"
+    command: "bin/bundle exec sidekiq -q assessments"
     depends_on:
       - redis-bridge
       - sara-alert-enrollment
