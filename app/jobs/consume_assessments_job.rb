@@ -26,12 +26,20 @@ class ConsumeAssessmentsJob < ApplicationJob
           patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
         end
 
-        if message['response_status'].in? ['opt_out', 'opt_out']
-          patient = TwilioSender.get_responder_from_flow_execution(message['patient_submission_token'])
+        # When an opt_in or opt_out response_status is posted to us the patient_submission_token value is popuated with
+        # a flow execution id, this is because a monitoree may send STOP/START outside the context of an assessment and
+        # therefore the patient.submission_token will not be available. We get the responder associated with the opt_in
+        # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id   
+        patient = if message['response_status'].in? %w[opt_out opt_in]
+          phone_number = TwilioSender.get_phone_number_from_flow_execution(message['patient_submission_token'])
+          # Handle BlockedNumber manipulation here in case no monitorees are associated with this number
+          BlockedNumber.create(phone_number: phone_number) if message['response_status'] == 'opt_out'
+          BlockedNumber.where(phone_number: phone_number).destroy_all if message['response_status'] == 'opt_in'
+          Patient.responder_for_number(phone_number).first
         elsif patient.nil?
           # Perform patient lookup for old submission tokens
           patient_lookup = PatientLookup.find_by(old_submission_token: message['patient_submission_token'])
-          patient = Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
+          Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
         end
 
         # Failed to find patient
@@ -102,7 +110,6 @@ class ConsumeAssessmentsJob < ApplicationJob
           queue.commit
           next
         when 'opt_out'
-          BlockedNumber.create(phone_number: patient.primary_telephone)
           History.contact_attempt(patient: patient, comment: "Monitoree blocked communications with Sara Alert by sending a\
                                                              STOP keyword via primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
@@ -112,7 +119,6 @@ class ConsumeAssessmentsJob < ApplicationJob
           queue.commit
           next
         when 'opt_in'
-          BlockedNumber.where(phone_number: patient.primary_telephone).destroy_all
           History.contact_attempt(patient: patient, comment: "Monitoree re-enabled communications with Sara Alert by sending a\
                                                              START keyword via primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
