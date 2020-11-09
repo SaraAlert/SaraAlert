@@ -16,6 +16,6 @@ class ProduceAssessmentJob < ApplicationJob
       experiencing_symptoms: assessment['experiencing_symptoms'],
       patient_submission_token: assessment['patient_submission_token']
     }
-    queue.push report.to_json
+    queue.push(report.to_json)
   end
 end
