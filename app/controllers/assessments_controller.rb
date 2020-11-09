@@ -55,8 +55,11 @@ class AssessmentsController < ApplicationController
     submission_token_from_params = params[:patient_submission_token].gsub(/[^0-9a-z_-]/i, '')
 
     if ADMIN_OPTIONS['report_mode']
-      # Don't bother with this if the submission token isn't the correct length
-      return if submission_token_from_params.length != 10 && submission_token_from_params.length != 40
+      # patient.submission_token should be length 40 for old submission tokens
+      #                                    length 10 for new submission tokens
+      #                                    length 34 for execution flow IDs
+      token_len = submission_token_from_params.length
+      return if token_len != 10 && token_len != 40 && token_len != 34
 
       # Limit number of reports per time period
       unless AssessmentReceipt.where(submission_token: submission_token_from_params)
