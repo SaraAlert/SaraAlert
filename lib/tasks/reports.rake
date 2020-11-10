@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'redis'
+require 'redis-queue'
 
 namespace :reports do
   desc "Receive and Process Reports"
@@ -19,6 +20,7 @@ namespace :reports do
       retry
     else
       Rails.logger.info "ConsumeAssessmentsJob: Redis connection error > 3 times, cancelling queuing of this message."
+      Rails.logger.info "Dropped Message: #{msg}"
       tries = 0
     end
   end
