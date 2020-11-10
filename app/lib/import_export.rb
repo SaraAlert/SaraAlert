@@ -212,21 +212,6 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     histories: HISTORY_FIELD_NAMES
   }.freeze
 
-  # Creates react select options with children populated
-  def self.rs_options(schema, label, fields)
-    return if ALL_FIELDS_NAMES[schema].nil?
-
-    {
-      label: label,
-      options: fields.flat_map do |field|
-        [
-          { value: "#{field}-asc", label: "#{ALL_FIELDS_NAMES[schema][field]} (asc)", color: '#36B37E' },
-          { value: "#{field}-desc", label: "#{ALL_FIELDS_NAMES[schema][field]} (desc)", color: '#FF8B00' }
-        ]
-      end
-    }
-  end
-
   # Creates react checkbox tree node with children populated
   def self.rct_node(schema, label, fields)
     return if ALL_FIELDS_NAMES[schema].nil?
@@ -239,52 +224,10 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   end
 
   PATIENTS_EXPORT_OPTIONS = {
-    order: [
-      rs_options(:patients, 'Enrollment Info - Identification', %i[first_name last_name middle_name date_of_birth age sex gender_identity sexual_orientation
-                                                                   white black_or_african_american american_indian_or_alaska_native asian
-                                                                   native_hawaiian_or_other_pacific_islander ethnicity nationality primary_language
-                                                                   secondary_language interpretation_required user_defined_id_statelocal user_defined_id_cdc
-                                                                   user_defined_id_nndss]),
-      rs_options(:patients, 'Enrollment Info - Address', %i[address_line_1 address_city address_state address_line_2 address_zip address_county
-                                                            foreign_address_line_1 foreign_address_city foreign_address_country foreign_address_line_2
-                                                            foreign_address_zip foreign_address_line_3 foreign_address_state monitored_address_line_1
-                                                            monitored_address_city monitored_address_state monitored_address_line_2 monitored_address_zip
-                                                            monitored_address_county foreign_monitored_address_line_1 foreign_monitored_address_city
-                                                            foreign_monitored_address_state foreign_monitored_address_line_2 foreign_monitored_address_zip
-                                                            foreign_monitored_address_county]),
-      rs_options(:patients, 'Enrollment Info - Contact Information', %i[preferred_contact_method preferred_contact_time primary_telephone primary_telephone_type
-                                                                        secondary_telephone secondary_telephone_type email]),
-      rs_options(:patients, 'Enrollment Info - Arrival Information', %i[port_of_origin date_of_departure flight_or_vessel_number flight_or_vessel_carrier
-                                                                        port_of_entry_into_usa date_of_arrival source_of_report source_of_report_specify
-                                                                        travel_related_notes]),
-      rs_options(:patients, 'Enrollment Info - Additional Planned Travel', %i[additional_planned_travel_type additional_planned_travel_destination
-                                                                              additional_planned_travel_destination_state
-                                                                              additional_planned_travel_destination_country
-                                                                              additional_planned_travel_port_of_departure additional_planned_travel_start_date
-                                                                              additional_planned_travel_end_date additional_planned_travel_related_notes]),
-      rs_options(:patients, 'Enrollment Info - Potential Exposure Information', %i[potential_exposure_location potential_exposure_country exposure_notes
-                                                                                   contact_of_known_case contact_of_known_case_id
-                                                                                   travel_to_affected_country_or_area
-                                                                                   was_in_health_care_facility_with_known_cases
-                                                                                   was_in_health_care_facility_with_known_cases_facility_name
-                                                                                   laboratory_personnel laboratory_personnel_facility_name healthcare_personnel
-                                                                                   healthcare_personnel_facility_name crew_on_passenger_or_cargo_flight
-                                                                                   member_of_a_common_exposure_cohort member_of_a_common_exposure_cohort_type]),
-      rs_options(:patients, 'Enrollment Info - Metadata', %i[id creator created_at updated_at]),
-      rs_options(:patients, 'Monitoring Info - Linelist Info', %i[name isolation status latest_assessment_at latest_fever_or_fever_reducer_at
-                                                                  latest_positive_lab_at negative_lab_count latest_transfer_at latest_transfer_from
-                                                                  latest_transfer_to]),
-      rs_options(:patients, 'Monitoring Info - Monitoring Actions', %i[monitoring_status exposure_risk_assessment monitoring_plan case_status
-                                                                       public_health_action jurisdiction_path jurisdiction_name assigned_user]),
-      rs_options(:patients, 'Monitoring Info - Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset user_defined_symptom_onset
-                                                                      extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_date]),
-      rs_options(:patients, 'Monitoring Info - Reporting Info', %i[responder_id head_of_household contact_attempts pause_notifications
-                                                                   last_assessment_reminder_sent])
-    ],
     nodes: [
       {
         value: 'patients',
-        label: 'Monitorees',
+        label: 'Export Monitorees',
         children: [
           {
             value: 'patients-enrollment',
@@ -363,8 +306,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   ASSESSMENTS_EXPORT_OPTIONS = {
-    order: [rs_options(:assessments, 'Reports', %i[id patient_id symptomatic who_reported created_at updated_at])],
-    nodes: [rct_node(:assessments, 'Reports', %i[symptomatic who_reported created_at updated_at symptoms])],
+    nodes: [rct_node(:assessments, 'Export Reports', %i[symptomatic who_reported created_at updated_at symptoms])],
     checked: [],
     expanded: %w[assessments],
     filters: {
@@ -385,8 +327,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   LABORATORIES_EXPORT_OPTIONS = {
-    order: [rs_options(:laboratories, 'Lab Results', %i[id patient_id lab_type specimen_collection report result created_at updated_at])],
-    nodes: [rct_node(:laboratories, 'Lab Results', %i[lab_type specimen_collection report result created_at updated_at])],
+    nodes: [rct_node(:laboratories, 'Export Lab Results', %i[lab_type specimen_collection report result created_at updated_at])],
     checked: [],
     expanded: %w[laboratories],
     filters: {
@@ -417,8 +358,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   CLOSE_CONTACTS_EXPORT_OPTIONS = {
-    order: [rs_options(:close_contacts, 'Close Contacts', %i[id patient_id first_name last_name primary_telephone email contact_attempts notes enrolled_id])],
-    nodes: [rct_node(:close_contacts, 'Close Contacts', %i[first_name last_name primary_telephone email contact_attempts notes enrolled_id])],
+    nodes: [rct_node(:close_contacts, 'Export Close Contacts', %i[first_name last_name primary_telephone email contact_attempts notes enrolled_id])],
     checked: [],
     expanded: %w[close_contacts],
     filters: {
@@ -433,16 +373,14 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   TRANSFERS_EXPORT_OPTIONS = {
-    order: [rs_options(:transfers, 'Transfers', %i[id patient_id who from_jurisdiction to_jurisdiction created_at updated_at])],
-    nodes: [rct_node(:transfers, 'Transfers', %i[who from_jurisdiction to_jurisdiction created_at updated_at])],
+    nodes: [rct_node(:transfers, 'Export Transfers', %i[who from_jurisdiction to_jurisdiction created_at updated_at])],
     checked: [],
     expanded: %w[transfers],
     filters: []
   }.freeze
 
   HISTORIES_EXPORT_OPTIONS = {
-    order: [rs_options(:histories, 'History', %i[id patient_id created_by history_type comment created_at updated_at])],
-    nodes: [rct_node(:histories, 'History', %i[created_by history_type comment created_at updated_at])],
+    nodes: [rct_node(:histories, 'Export History', %i[created_by history_type comment created_at updated_at])],
     checked: [],
     expanded: %w[histories],
     filters: {
