@@ -26,6 +26,7 @@ class User < ApplicationRecord
   has_many :downloads
   has_many :export_receipts
   has_many :user_filters
+  has_many :user_export_presets
   has_many :contact_attempts
 
   belongs_to :jurisdiction
@@ -128,6 +129,11 @@ class User < ApplicationRecord
 
   # Can this user manage saved filters?
   def can_manage_saved_filters?
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  end
+
+  # Can this user manage saved export_presets?
+  def can_manage_saved_export_presets?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 

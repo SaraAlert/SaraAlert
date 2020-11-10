@@ -17,10 +17,19 @@ class Export extends React.Component {
       showAllModal: false,
       showCustomFormatModal: false,
     };
-    this.submit = this.submit.bind(this);
   }
 
-  submit(endpoint) {
+  componentDidMount() {
+    // Grab saved user presets
+    this.reloadExportPresets();
+  }
+
+  reloadExportPresets = () => {
+    axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
+    axios.get(window.BASE_PATH + '/user_export_presets').then(response => this.setState({ savedExportPresets: response.data }));
+  };
+
+  submit = endpoint => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios({
       method: 'get',
@@ -46,7 +55,7 @@ class Export extends React.Component {
           showAllModal: false,
         });
       });
-  }
+  };
 
   createModal(title, toggle, submit, endpoint) {
     return (
@@ -97,6 +106,14 @@ class Export extends React.Component {
           <Dropdown.Item onClick={() => this.setState({ showSaraFormatModal: true })}>Sara Alert Format ({this.props.query.workflow})</Dropdown.Item>
           <Dropdown.Item onClick={() => this.setState({ showAllPurgeEligibleModal: true })}>Excel Export For Purge-Eligible Monitorees</Dropdown.Item>
           <Dropdown.Item onClick={() => this.setState({ showAllModal: true })}>Excel Export For All Monitorees</Dropdown.Item>
+          {this.state.savedExportPresets && this.state.savedExportPresets.length > 0 && <Dropdown.Divider />}
+          {this.state.savedExportPresets?.map((savedPreset, index) => {
+            return (
+              <Dropdown.Item key={`sep-${index}`} onClick={() => this.setState({ showCustomFormatModal: true, savedPreset })}>
+                {savedPreset.name}
+              </Dropdown.Item>
+            );
+          })}
           <Dropdown.Divider />
           <Dropdown.Item onClick={() => this.setState({ showCustomFormatModal: true })}>Custom Format...</Dropdown.Item>
         </DropdownButton>
@@ -152,12 +169,13 @@ class Export extends React.Component {
             jurisdiction_paths={this.props.jurisdiction_paths}
             jurisdiction={this.props.jurisdiction}
             tabs={this.props.tabs}
-            preset={null}
+            preset={this.state.savedPreset}
             query={this.props.query}
             filtered_monitorees_count={this.props.filtered_monitorees_count}
             all_monitorees_count={this.props.all_monitorees_count}
-            custom_export_options={this.props.custom_export_options}
-            onClose={() => this.setState({ showCustomFormatModal: false })}
+            options={this.props.custom_export_options}
+            onClose={() => this.setState({ showCustomFormatModal: false, savedPreset: null })}
+            reloadExportPresets={this.reloadExportPresets}
           />
         )}
       </React.Fragment>
