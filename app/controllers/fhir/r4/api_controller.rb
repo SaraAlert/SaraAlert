@@ -123,7 +123,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     if resource_type == 'patient'
       # Update patient history with detailed edit diff
-      Patient.detailed_history_edit(patient_before, resource, resource.creator&.email, updates.keys, is_api_edit: true)
+      Patient.detailed_history_edit(patient_before, resource, resource.creator&.email, updates, is_api_edit: true)
     end
 
     status_ok(resource.as_fhir) && return
