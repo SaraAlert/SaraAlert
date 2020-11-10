@@ -133,12 +133,12 @@ const TOOLTIP_TEXT = {
 
   blockedSMS: (
     <div>
-      The owner of this phone number has texted<br></br>
-      &quot;STOP&quot; in response to a Sara Alert message.<br></br>
-      Please instruct the owner to text &quot;START&quot; to<br></br>
-      the Sara Alert number, or update the preferred<br></br>
-      reporting method so that this monitoree can<br></br>
-      receive messages.
+      The owner of this phone number has <br></br>
+      texted &quot;STOP&quot; in response to a Sara Alert <br></br>
+      message. Please instruct the owner <br></br>
+      to text &quot;START&quot; to the Sara Alert number, <br></br>
+      and they will be eligible to receive SMS <br></br>
+      messages from Sara Alert again.
     </div>
   ),
 
