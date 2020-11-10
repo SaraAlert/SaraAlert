@@ -38,7 +38,7 @@ class AdvancedFilter extends React.Component {
           type: 'option',
           options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
         },
-        { name: 'latest-report', title: 'Latest Report (Date picker)', description: 'Monitorees with latest report during specified date range', type: 'date' },
+        { name: 'latest-report', title: 'Latest Report (Date)', description: 'Monitorees with latest report during specified date range', type: 'date' },
         { name: 'hoh', title: 'Daily Reporters (Boolean)', description: 'Monitorees that are a Head of Household or self-reporter', type: 'boolean' },
         {
           name: 'household-member',
@@ -46,18 +46,24 @@ class AdvancedFilter extends React.Component {
           description: 'Monitorees that are in a household but not the Head of Household',
           type: 'boolean',
         },
-        { name: 'enrolled', title: 'Enrolled (Date picker)', description: 'Monitorees enrolled in system during specified date range', type: 'date' },
+        { name: 'enrolled', title: 'Enrolled (Date)', description: 'Monitorees enrolled in system during specified date range', type: 'date' },
         {
           name: 'last-date-exposure',
-          title: 'Last date of exposure (Date picker)',
+          title: 'Last date of exposure (Date)',
           description: 'Monitorees who have a last date of exposure during specified date range',
           type: 'date',
         },
         {
           name: 'symptom-onset',
-          title: 'Symptom onset (Date picker)',
+          title: 'Symptom Onset (Date)',
           description: 'Monitorees who have a symptom onset date during specified date range',
           type: 'date',
+        },
+        {
+          name: 'symptom-onset-relative',
+          title: 'Symptom Onset (Relative Date)',
+          description: 'Monitorees who have a symptom onset date during specified date range CHANGE ME',
+          type: 'relative',
         },
         { name: 'continous-exposure', title: 'Continuous Exposure (Boolean)', description: 'Monitorees who have continuous exposure enabled', type: 'boolean' },
         {
@@ -252,6 +258,8 @@ class AdvancedFilter extends React.Component {
     } else if (filterOption.type === 'date') {
       // Default to "within" type
       value = { start: moment().add(-72, 'hours'), end: moment() };
+    } else if (filterOption.type === 'relative') {
+      value = { days: 1, when: 'past' };
     } else if (filterOption.type === 'search') {
       value = '';
     }
@@ -264,7 +272,7 @@ class AdvancedFilter extends React.Component {
     this.setState({ activeFilterOptions });
   };
 
-  // Change an index filter option for date
+  // Change an index filter option for type date
   changeFilterDateOption = (index, value) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
     let defaultValue = null;
@@ -486,6 +494,11 @@ class AdvancedFilter extends React.Component {
               {this.renderDateOptions(dateOption, index)}
             </Col>
           )}
+          {filterOption?.type === 'relative' && (
+            <Col className="py-0" md="4">
+              {this.renderRelativeOptions(relativeOption, index, value)}
+            </Col>
+          )}
           <Col className="py-0">
             {filterOption?.type === 'boolean' && (
               <ButtonGroup toggle>
@@ -642,6 +655,35 @@ class AdvancedFilter extends React.Component {
                         .format('YYYY-MM-DD')}
                     />
                   </Col>
+                </Row>
+              </Form.Group>
+            )}
+            {filterOption?.type === 'relative' && relativeOption === 'custom' && (
+              <Form.Group className="py-0 my-0">
+                <Row>
+                  <Col className="py-0 px-0 text-center my-auto">
+                    <b>IN THE</b>
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      as="select"
+                      value={value.when}
+                      onChange={event => {
+                        this.changeValue(index, { days: value.days, when: event.target.value });
+                      }}>
+                      <option value="past">past</option>
+                      <option value="next">next</option>
+                    </Form.Control>
+                  </Col>
+                  <Col>
+                    <Form.Control
+                      value={value.days}
+                      type="number"
+                      min="1"
+                      onChange={event => this.changeValue(index, { days: event.target.value, when: value.when })}
+                    />
+                  </Col>
+                  <Col className="py-0 px-0 ml-2 my-auto">{value.days === 1 ? <b>DAY</b> : <b>DAYS</b>}</Col>
                 </Row>
               </Form.Group>
             )}
