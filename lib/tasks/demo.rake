@@ -658,7 +658,7 @@ namespace :demo do
       )
     end
 
-    # update patient contact atttempts
+    # update patient contact attempts
     Patient.update(patient_ids, patient_ids_and_contact_attempts.collect(&:second).map { |contact_attempts| { contact_attempts: contact_attempts + 1 } })
 
     # write histories
