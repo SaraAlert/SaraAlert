@@ -6,6 +6,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   def us_core_race(race_array)
     # Don't return an extension if all race categories are false or nil
     return nil unless race_array.include?(true)
+    
     # Build out extension based on what race categories are true
     FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race', extension: [
       race_array[0] ? FHIR::Extension.new(
