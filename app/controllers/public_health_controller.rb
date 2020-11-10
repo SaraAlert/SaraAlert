@@ -365,6 +365,42 @@ class PublicHealthController < ApplicationController
           compare_date_end = Chronic.parse(filter[:value][:end])
           patients = patients.where('Date(symptom_onset) > ?', compare_date_start).where('Date(symptom_onset) < ?', compare_date_end)
         end
+      when 'symptom-onset-relative'
+        case filter[:relativeOption]
+        when 'today'
+          patients = patients.where('Date(symptom_onset) = ?', Date.today)
+        when 'tomorrow'
+          patients = patients.where('Date(symptom_onset) = ?', Date.tomorrow)
+        when 'yesterday'
+          patients = patients.where('Date(symptom_onset) = ?', Date.yesterday)
+        when 'custom'
+          case filter[:value][:when]
+          when 'past'
+            case filter[:value][:unit]
+            when 'days'
+              number = filter[:value][:number].to_i
+              patients = patients.where('symptom_onset >= ?',  number.days.ago).where('symptom_onset <= ?', Date.today)
+            when 'weeks'
+              number = filter[:value][:number].to_i
+              patients = patients.where('symptom_onset >= ?',  number.weeks.ago).where('symptom_onset <= ?', Date.today)
+            when 'months'
+              number = filter[:value][:number].to_i
+              patients = patients.where('symptom_onset >= ?',  number.months.ago).where('symptom_onset <= ?', Date.today)
+            end
+          when 'next'
+            case filter[:value][:unit]
+            when 'days'
+              number = filter[:value][:number].to_i
+              patients = patients.where('symptom_onset <= ?',  number.days.from_now).where('symptom_onset >= ?', Date.today)
+            when 'weeks'
+              number = filter[:value][:number].to_i
+              patients = patients.where('symptom_onset <= ?',  number.weeks.from_now).where('symptom_onset >= ?', Date.today)
+            when 'months'
+              number = filter[:value][:number].to_i
+              patients = patients.where('symptom_onset <= ?',  number.months.from_now).where('symptom_onset >= ?', Date.today)
+            end
+          end
+        end
       when 'continous-exposure'
         patients = patients.where(continuous_exposure: filter[:value].present? ? true : [nil, false])
       when 'telephone-number'
