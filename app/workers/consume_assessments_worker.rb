@@ -6,13 +6,16 @@ class ConsumeAssessmentsWorker
   sidekiq_options queue: :default, retry: 2
 
   def perform(msg)
-    message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array', 'patient_submission_token', 'experiencing_symptoms', 'response_status')
+    message = JSON.parse(msg)&.slice('threshold_condition_hash',
+                                     'reported_symptoms_array',
+                                     'patient_submission_token',
+                                     'experiencing_symptoms',
+                                     'response_status')
 
     if message.nil?
       Rails.logger.info 'ConsumeAssessmentsJob: skipping nil message...'
       return
     end
-
 
     patient = Patient.find_by(submission_token: message['patient_submission_token'])
 
@@ -93,7 +96,8 @@ class ConsumeAssessmentsWorker
                                     # The person is not experiencing symptoms, we can infer that the bool symptoms are the opposite
                                     # of the threshold values that represent symptomatic
                                     threshold_condition.clone_symptoms_negate_bool_values
-                                    reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
+                                    reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms,
+                                                                               threshold_condition_hash: message['threshold_condition_hash'])
                                     assessment = Assessment.new(reported_condition: reported_condition, patient: pat)
                                     assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
                                     # If current user in the collection of patient + patient dependents is the patient, then that means
