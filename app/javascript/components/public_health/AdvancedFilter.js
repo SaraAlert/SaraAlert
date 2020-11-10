@@ -255,7 +255,7 @@ class AdvancedFilter extends React.Component {
       filterOption,
       value,
       dateOption: filterOption.type === 'date' ? 'within' : null,
-      numberOption: filterOption.type === 'number' ? 'equal' : null,
+      operatorOption: filterOption.type === 'number' ? 'equal' : null,
     };
     this.setState({ activeFilterOptions });
   };
@@ -274,9 +274,9 @@ class AdvancedFilter extends React.Component {
   };
 
   // Change an index filter option for number
-  changeFilterNumberOption = (index, value, numberOption) => {
+  changeFilterOperatorOption = (index, value, operatorOption) => {
     let activeFilterOptions = [...this.state.activeFilterOptions];
-    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, numberOption: numberOption };
+    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, operatorOption: operatorOption };
     this.setState({ activeFilterOptions });
   };
 
@@ -425,14 +425,14 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render number specific options
-  renderNumberOptions = (current, index, value) => {
+  renderOperatorOptions = (current, index, value) => {
     return (
       <Form.Control
         as="select"
         value={current}
         className="form-control-number"
         onChange={event => {
-          this.changeFilterNumberOption(index, value, event.target.value);
+          this.changeFilterOperatorOption(index, value, event.target.value);
         }}>
         <option value="less-than">{'<'}</option>
         <option value="less-than-equal">{'≤'}</option>
@@ -489,7 +489,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render a single line "statement"
-  renderStatement = (filterOption, value, index, total, dateOption, numberOption) => {
+  renderStatement = (filterOption, value, index, total, dateOption, operatorOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -555,7 +555,7 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'number' && (
               <Form.Group className="py-0 my-0">
                 <Row>
-                  <Col md="auto">{this.renderNumberOptions(numberOption, index, value)}</Col>
+                  <Col md="auto">{this.renderOperatorOptions(operatorOption, index, value)}</Col>
                   <Col>
                     <Form.Control
                       className="form-control-number"
@@ -705,7 +705,7 @@ class AdvancedFilter extends React.Component {
                 index,
                 this.state.activeFilterOptions?.length,
                 statement.dateOption,
-                statement.numberOption
+                statement.operatorOption
               );
             })}
             <Row className="pt-2 pb-1">

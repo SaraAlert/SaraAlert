@@ -73,7 +73,7 @@ class PublicHealthController < ApplicationController
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
           value: filter.permit(:value)[:value] || filter.require(:value) || false,
           dateOption: filter.permit(:dateOption)[:dateOption],
-          numberOption: filter.permit(:numberOption)[:numberOption]
+          operatorOption: filter.permit(:operatorOption)[:operatorOption]
         }
       end
       patients = advanced_filter(patients, advanced) unless advanced.nil?
@@ -459,7 +459,7 @@ class PublicHealthController < ApplicationController
       when 'preferred-contact-time'
         patients = patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'manual-contact-attempts'
-        case filter[:numberOption]
+        case filter[:operatorOption]
         when 'less-than'
           patients = patients.where('contact_attempts < ?', filter[:value])
         when 'less-than-equal'
