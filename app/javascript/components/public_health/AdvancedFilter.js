@@ -62,7 +62,7 @@ class AdvancedFilter extends React.Component {
         {
           name: 'symptom-onset-relative',
           title: 'Symptom Onset (Relative Date)',
-          description: 'Monitorees who have a symptom onset date during specified date range CHANGE ME',
+          description: 'Monitorees who have a symptom onset date during specified date range (relative to the current date)',
           type: 'relative',
         },
         { name: 'continous-exposure', title: 'Continuous Exposure (Boolean)', description: 'Monitorees who have continuous exposure enabled', type: 'boolean' },
