@@ -259,7 +259,7 @@ class AdvancedFilter extends React.Component {
       // Default to "within" type
       value = { start: moment().add(-72, 'hours'), end: moment() };
     } else if (filterOption.type === 'relative') {
-      value = { days: 1, when: 'past' };
+      value = { number: 1, unit: 'days', when: 'past' };
     } else if (filterOption.type === 'search') {
       value = '';
     }
@@ -661,29 +661,40 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'relative' && relativeOption === 'custom' && (
               <Form.Group className="py-0 my-0">
                 <Row>
-                  <Col className="py-0 px-0 text-center my-auto">
+                  <Col className="py-0 px-0 text-center my-auto" md="auto">
                     <b>IN THE</b>
                   </Col>
-                  <Col>
+                  <Col md="6" className="pr-0">
                     <Form.Control
                       as="select"
                       value={value.when}
                       onChange={event => {
-                        this.changeValue(index, { days: value.days, when: event.target.value });
+                        this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
                       }}>
                       <option value="past">past</option>
                       <option value="next">next</option>
                     </Form.Control>
                   </Col>
-                  <Col>
+                  <Col md="5" className="pr-0">
                     <Form.Control
-                      value={value.days}
+                      value={value.number}
                       type="number"
                       min="1"
-                      onChange={event => this.changeValue(index, { days: event.target.value, when: value.when })}
+                      onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
                     />
                   </Col>
-                  <Col className="py-0 px-0 ml-2 my-auto">{value.days === 1 ? <b>DAY</b> : <b>DAYS</b>}</Col>
+                  <Col md="8" className="pr-0">
+                    <Form.Control
+                      as="select"
+                      value={value.unit}
+                      onChange={event => {
+                        this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
+                      }}>
+                      <option value="days">day(s)</option>
+                      <option value="weeks">week(s)</option>
+                      <option value="months">month(s)</option>
+                    </Form.Control>
+                  </Col>
                 </Row>
               </Form.Group>
             )}
