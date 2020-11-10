@@ -527,6 +527,7 @@ class PatientsController < ApplicationController
   # Check to see if a phone number has blocked SMS communications with SaraAlert
   def sms_eligibility_check
     redirect_to(root_url) && return unless current_user.can_edit_patient?
+
     phone_number = params.permit(:phone_number)[:phone_number]
     blocked = BlockedNumber.exists?(phone_number: phone_number)
     render json: { sms_eligible: !blocked }

@@ -63,7 +63,8 @@ class AssessmentsController < ApplicationController
 
       # Limit number of reports per time period
       unless AssessmentReceipt.where(submission_token: submission_token_from_params)
-                              .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists?
+                              .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists? &&
+                              (!params.permit(:response_status)['response_status'].in? %w[opt_out opt_in])
         assessment_placeholder = {}
         assessment_placeholder = assessment_placeholder.merge(params.permit(:response_status).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
