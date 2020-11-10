@@ -39,6 +39,12 @@ class AdvancedFilter extends React.Component {
           options: ['Unknown', 'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message', 'Opt-out', ''],
         },
         { name: 'latest-report', title: 'Latest Report (Date)', description: 'Monitorees with latest report during specified date range', type: 'date' },
+        {
+          name: 'latest-report-relative',
+          title: 'Latest Report (Relative Date)',
+          description: 'Monitorees with latest report during specified date range (relative to the current date)',
+          type: 'relative',
+        },
         { name: 'hoh', title: 'Daily Reporters (Boolean)', description: 'Monitorees that are a Head of Household or self-reporter', type: 'boolean' },
         {
           name: 'household-member',
@@ -48,10 +54,22 @@ class AdvancedFilter extends React.Component {
         },
         { name: 'enrolled', title: 'Enrolled (Date)', description: 'Monitorees enrolled in system during specified date range', type: 'date' },
         {
+          name: 'enrolled-relative',
+          title: 'Enrolled (Relative Date)',
+          description: 'Monitorees enrolled in system during specified date range (relative to the current date)',
+          type: 'relative',
+        },
+        {
           name: 'last-date-exposure',
-          title: 'Last date of exposure (Date)',
+          title: 'Last Date of Exposure (Date)',
           description: 'Monitorees who have a last date of exposure during specified date range',
           type: 'date',
+        },
+        {
+          name: 'last-date-exposure-relative',
+          title: 'Last Date of Exposure (Relative Date)',
+          description: 'Monitorees who have a last date of exposure during specified date range (relative to the current date)',
+          type: 'relative',
         },
         {
           name: 'symptom-onset',
