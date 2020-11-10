@@ -10,5 +10,5 @@
                       has_dependents: @dependents_exclude_hoh.count.positive?,
                       jurisdiction_paths: Hash[current_user.jurisdiction.subtree.pluck(:id, :path).map { |id, path| [id, path] }],
                       assigned_users: @patient.jurisdiction.assigned_users
-                      blocked_sms: @patient.has_blocked_sms
+                      blocked_sms: @patient.blocked_sms
                     }) %>
