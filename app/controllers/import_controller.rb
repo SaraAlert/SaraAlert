@@ -60,9 +60,8 @@ class ImportController < ApplicationController
               elsif col_num == 85 && workflow == :isolation
                 patient[:user_defined_symptom_onset] = row[85].present?
                 patient[field] = validate_field(field, row[col_num], row_ind)
-              # TODO: when workflow specific case status validation re-enabled: uncomment
-              # elsif col_num == 86
-              #   patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
+              elsif col_num == 101 || col_num == 103
+                patient[field] = validate_exclusive_race_field(field, row, col_num, row_ind)
               else
                 # TODO: when workflow specific case status validation re-enabled: this line can be updated to not have to check the 86 col
                 patient[field] = validate_field(field, row[col_num], row_ind) unless [85, 86].include?(col_num) && workflow != :isolation
@@ -220,6 +219,21 @@ class ImportController < ApplicationController
 
     err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are: 'True' and 'False'"
     raise ValidationError.new(err_msg, row_ind)
+  end
+
+  def validate_exclusive_race_field(field, row, col_num, row_ind)
+    value = validate_bool_field(field, row[col_num], row_ind)
+    return value if value.blank?
+    race_col_nums = [7,8,9,10,11,101,102,103]
+    race_col_nums.each do |race_col|
+      unless race_col == col_num
+        if value && row[race_col].to_s.downcase == 'true'
+          err_msg = "'#{VALIDATION[field][:label]}' cannot be true if any other race field is true"
+          raise ValidationError.new(err_msg, row_ind)
+        end
+      end
+    end
+    return value
   end
 
   def validate_date_field(field, value, row_ind)
