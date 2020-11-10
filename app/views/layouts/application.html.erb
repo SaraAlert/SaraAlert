@@ -9,6 +9,7 @@
                           root: root_path,
                           current_user: !current_user.nil? ? {
                             email: current_user&.email,
+                            role: current_user&.role,
                             is_usa_admin: current_user&.usa_admin?,
                             can_see_enroller_dashboard_tab: current_user&.can_see_enroller_dashboard_tab?,
                             can_see_monitoring_dashboards_tab: current_user&.can_see_monitoring_dashboards_tab?,
