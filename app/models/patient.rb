@@ -938,7 +938,7 @@ class Patient < ApplicationRecord
   # Construct a diff for a patient update to keep track of changes
   def self.patient_diff(patient_before, patient_after, allowed_fields)
     diffs = []
-    allowed_fields&.keys.each do |attribute|
+    allowed_fields&.keys&.each do |attribute|
       next if patient_before[attribute] == patient_after[attribute]
 
       diffs << {
