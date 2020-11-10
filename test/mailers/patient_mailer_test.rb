@@ -193,9 +193,9 @@ class PatientMailerTest < ActionMailer::TestCase
 
   test 'assessment sms weblink message contents using messaging service' do
     url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
-      @patient.jurisdiction.unique_identifier,
-      'en',
-      @patient&.initials_age)
+                                                                @patient.jurisdiction.unique_identifier,
+                                                                'en',
+                                                                @patient&.initials_age)
     contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do

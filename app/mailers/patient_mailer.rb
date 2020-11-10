@@ -47,14 +47,13 @@ class PatientMailer < ApplicationMailer
                                                                   lang&.to_s || 'en',
                                                                   dependent&.initials_age)
       contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{dependent&.initials_age('-')}: #{url}"
-      
+
       success = TwilioSender.send_sms(patient, contents)
       if success
         add_success_history(dependent, patient)
       else
         add_fail_history_sms(dependent)
       end
-
     end
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end

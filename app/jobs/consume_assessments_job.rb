@@ -21,10 +21,10 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         end
 
-        if !message['response_status'].in? ['opt_out', 'opt_out']
+        unless message['response_status'].in? %w[opt_out opt_out]
           patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
         end
-        
+
         if message['response_status'].in? %w[opt_out opt_in]
           # When an opt_in or opt_out response_status is posted to us the patient_submission_token value is popuated with
           # a flow execution id, this is because a monitoree may send STOP/START outside the context of an assessment and
@@ -32,7 +32,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id
           phone_numbers = TwilioSender.get_phone_numbers_from_flow_execution(message['patient_submission_token'])
           if phone_numbers.nil?
-            Rails.logger.info "ConsumeAssessmentsJob: skipping nil flow execution"
+            Rails.logger.info 'ConsumeAssessmentsJob: skipping nil flow execution'
             queue.commit
             next
           end
@@ -58,7 +58,8 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         # Prevent duplicate patient assessment spam
         # Only check for latest assessment if there is one
-        if (!patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)) && !(message['response_status'].in? ['opt_out', 'opt_out'])
+        if (!patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)) &&
+           !(message['response_status'].in? %w[opt_out opt_out])
           Rails.logger.info "ConsumeAssessmentsJob: skipping duplicate assessment (patient: #{patient.id})..."
           queue.commit
           next

@@ -48,9 +48,8 @@ class TwilioSender
     end
     phone_number_from = execution.context['trigger']['message']['From'] || nil
     phone_number_to = execution.context['trigger']['message']['To'] || nil
-    if !phone_number_from.nil? && !phone_number_to.nil?
-      return { monitoree_number: phone_number_from, sara_number: phone_number_to }
-    end
+    return { monitoree_number: phone_number_from, sara_number: phone_number_to } if !phone_number_from.nil? && !phone_number_to.nil?
+
     nil
   end
 end
