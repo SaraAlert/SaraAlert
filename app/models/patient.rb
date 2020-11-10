@@ -589,7 +589,7 @@ class Patient < ApplicationRecord
   end
 
   # Determine if this patient's phone number has blocked communication with SaraAlert
-  def has_blocked_sms
+  def blocked_sms
     BlockedNumber.exists?(phone_number: primary_telephone)
   end
 
