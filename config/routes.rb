@@ -89,6 +89,8 @@ Rails.application.routes.draw do
 
   resources :user_filters, only: [:index, :create, :update, :destroy]
 
+  resources :user_export_presets, only: [:index, :create, :update, :destroy]
+
   post '/report/patients/:patient_submission_token/:unique_identifier', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report
   post '/twilio', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report_twilio
   post '/report/twilio', to: 'assessments#create', as: :create_patient_assessment_jurisdiction_report_twilio_report

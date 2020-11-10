@@ -462,6 +462,15 @@ ActiveRecord::Schema.define(version: 2020_12_09_221804) do
     t.index ["who_id"], name: "index_transfers_on_who_id"
   end
 
+  create_table "user_export_presets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "name", null: false
+    t.json "config", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_user_export_presets_on_user_id"
+  end
+
   create_table "user_filters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "user_id"
     t.json "contents", null: false
