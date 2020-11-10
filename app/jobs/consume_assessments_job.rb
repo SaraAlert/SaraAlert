@@ -14,7 +14,6 @@ class ConsumeAssessmentsJob < ApplicationJob
       begin
         message = JSON.parse(msg)&.slice('threshold_condition_hash', 'reported_symptoms_array',
                                          'patient_submission_token', 'experiencing_symptoms', 'response_status')
-
         # Invalid message
         if message.nil?
           Rails.logger.info 'ConsumeAssessmentsJob: skipping nil message...'
@@ -25,21 +24,27 @@ class ConsumeAssessmentsJob < ApplicationJob
         if !message['response_status'].in? ['opt_out', 'opt_out']
           patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
         end
-
-        # When an opt_in or opt_out response_status is posted to us the patient_submission_token value is popuated with
-        # a flow execution id, this is because a monitoree may send STOP/START outside the context of an assessment and
-        # therefore the patient.submission_token will not be available. We get the responder associated with the opt_in
-        # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id
-        patient = if message['response_status'].in? %w[opt_out opt_in]
+        
+        if message['response_status'].in? %w[opt_out opt_in]
+          # When an opt_in or opt_out response_status is posted to us the patient_submission_token value is popuated with
+          # a flow execution id, this is because a monitoree may send STOP/START outside the context of an assessment and
+          # therefore the patient.submission_token will not be available. We get the responder associated with the opt_in
+          # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id
           phone_numbers = TwilioSender.get_phone_numbers_from_flow_execution(message['patient_submission_token'])
+          if phone_numbers.nil?
+            Rails.logger.info "ConsumeAssessmentsJob: skipping nil flow execution"
+            queue.commit
+            next
+          end
           monitoree_number = phone_numbers[:monitoree_number]
           sara_number = phone_numbers[:sara_number]
           # Handle BlockedNumber manipulation here in case no monitorees are associated with this number
           BlockedNumber.create(phone_number: monitoree_number) if message['response_status'] == 'opt_out'
           BlockedNumber.where(phone_number: monitoree_number).destroy_all if message['response_status'] == 'opt_in'
-          Patient.responder_for_number(monitoree_number)&.first
+          patient = Patient.responder_for_number(monitoree_number)&.first
         elsif patient.nil?
-          # Perform patient lookup for old submission tokens
+          # Perform patient lookup for old submission tokens if new submission token didn't resolve
+          # and this message is not an opt_in or opt_out message
           patient_lookup = PatientLookup.find_by(old_submission_token: message['patient_submission_token'])
           Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
         end
@@ -53,7 +58,7 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         # Prevent duplicate patient assessment spam
         # Only check for latest assessment if there is one
-        if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
+        if (!patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)) && !(message['response_status'].in? ['opt_out', 'opt_out'])
           Rails.logger.info "ConsumeAssessmentsJob: skipping duplicate assessment (patient: #{patient.id})..."
           queue.commit
           next
@@ -145,7 +150,7 @@ class ConsumeAssessmentsJob < ApplicationJob
                                                              primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
             create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment SMS response\
-                                                                      rertries via primary telephone number #{patient.primary_telephone}.")
+                                                                      retries via primary telephone number #{patient.primary_telephone}.")
           end
           queue.commit
           next
