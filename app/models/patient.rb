@@ -913,7 +913,7 @@ class Patient < ApplicationRecord
       ].reject(&:nil?),
       extension: [
         us_core_race([white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander,
-          race_unknown, race_other, race_refused_to_answer]),
+                      race_unknown, race_other, race_refused_to_answer]),
         us_core_ethnicity(ethnicity),
         us_core_birthsex(sex),
         to_preferred_contact_method_extension(preferred_contact_method),
