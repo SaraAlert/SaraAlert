@@ -39,16 +39,15 @@ class TwilioSender
     true
   end
 
-  def self.get_phone_number_from_flow_execution(execution_id)
+  def self.get_phone_numbers_from_flow_execution(execution_id)
     begin
-      execution = @client.studio.v1
-                         .flows(ENV['TWILLIO_STUDIO_FLOW'])
-                         .executions(execution_id)
-                         .fetch
+      execution = @client.studio.v1.flows(ENV['TWILLIO_STUDIO_FLOW']).executions(execution_id).execution_context.fetch
     rescue Twilio::REST::RestError => e
       Rails.logger.warn e.error_message
       return
     end
-    phone_number = execution.contact_channel_address
+    phone_number_from = execution.context['trigger']['message']['From']
+    phone_number_to = execution.context['trigger']['message']['To']
+    { monitoree_number: phone_number_from, sara_number: phone_number_to }
   end
 end
