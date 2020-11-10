@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxTree from 'react-checkbox-tree';
 import Select from 'react-select';
 import axios from 'axios';
-import chroma from 'chroma-js';
 import _ from 'lodash';
 
 import reportError from '../util/ReportError';
@@ -18,43 +17,6 @@ const rctIcons = {
   halfCheck: <FontAwesomeIcon fixedWidth icon={['far', 'minus-square']} />,
   expandClose: <FontAwesomeIcon fixedWidth icon={['fas', 'chevron-right']} />,
   expandOpen: <FontAwesomeIcon fixedWidth icon={['fas', 'chevron-down']} />,
-};
-
-const colorStyles = {
-  control: styles => ({ ...styles, backgroundColor: 'white' }),
-  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    const color = chroma(data.color);
-    return {
-      ...styles,
-      backgroundColor: isDisabled ? null : isSelected ? data.color : isFocused ? color.alpha(0.1).css() : null,
-      color: isDisabled ? '#ccc' : isSelected ? (chroma.contrast(color, 'white') > 2 ? 'white' : 'black') : data.color,
-      cursor: isDisabled ? 'not-allowed' : 'default',
-
-      ':active': {
-        ...styles[':active'],
-        backgroundColor: !isDisabled && (isSelected ? data.color : color.alpha(0.3).css()),
-      },
-    };
-  },
-  multiValue: (styles, { data }) => {
-    const color = chroma(data.color);
-    return {
-      ...styles,
-      backgroundColor: color.alpha(0.1).css(),
-    };
-  },
-  multiValueLabel: (styles, { data }) => ({
-    ...styles,
-    color: data.color,
-  }),
-  multiValueRemove: (styles, { data }) => ({
-    ...styles,
-    color: data.color,
-    ':hover': {
-      backgroundColor: data.color,
-      color: 'white',
-    },
-  }),
 };
 
 class CustomExport extends React.Component {
@@ -86,7 +48,6 @@ class CustomExport extends React.Component {
         },
       },
     };
-    console.log(this.state);
   }
 
   // Save a new preset
@@ -158,21 +119,10 @@ class CustomExport extends React.Component {
           <Modal.Title>Custom Export Format</Modal.Title>
         </Modal.Header>
         <Modal.Body className="p-0">
-          <Row className="mx-3 py-1">
-            <Col md="8" className="px-0 py-1">
-              <CheckboxTree
-                nodes={this.props.options?.patients?.nodes}
-                checked={this.state.preset?.config?.queries?.patients?.checked}
-                expanded={this.state.preset?.config?.queries?.patients?.expanded}
-                onCheck={checked => this.handlePresetChange(['config', 'queries', 'patients', 'checked'], checked)}
-                onExpand={expanded => this.handlePresetChange(['config', 'queries', 'patients', 'expanded'], expanded)}
-                showNodeIcon={false}
-                icons={rctIcons}
-              />
-            </Col>
-            <Col md="8" className="px-2 py-1">
+          <Row className="mx-3 pt-3 pb-1">
+            <Col md={12} className="px-2 py-1">
               <Form.Group>
-                <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
+                <Form.Label className="nav-input-label mb-0">Select Monitorees:</Form.Label>
                 <div className="py-1">
                   <Form.Check
                     id="allMonitoreesBtn"
@@ -234,23 +184,25 @@ class CustomExport extends React.Component {
                 </div>
               </Form.Group>
             </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Group>
-                <Form.Label className="nav-input-label mb-0">Order:</Form.Label>
-                <Select
-                  isMulti
-                  className="my-1"
-                  options={this.props.options?.patients?.order}
-                  value={this.state.preset?.config?.queries?.patients?.order}
-                  onChange={order => this.handlePresetChange(['config', 'queries', 'patients', 'order'], order)}
-                  placeholder="Order by..."
-                  styles={colorStyles}
-                />
-              </Form.Group>
+            <Col md={12} className="px-0 py-1">
+              <CheckboxTree
+                nodes={this.props.options?.patients?.nodes}
+                checked={this.state.preset?.config?.queries?.patients?.checked}
+                expanded={this.state.preset?.config?.queries?.patients?.expanded}
+                onCheck={checked => this.handlePresetChange(['config', 'queries', 'patients', 'checked'], checked)}
+                onExpand={expanded => this.handlePresetChange(['config', 'queries', 'patients', 'expanded'], expanded)}
+                showNodeIcon={false}
+                icons={rctIcons}
+              />
             </Col>
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md="8" className="px-0 py-1">
+            <Col md={12} className="px-2 py-1">
+              <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
+              <Select isMulti className="my-1" options={this.props.options?.assessments?.filters?.symptomatic?.options} placeholder="Filter by status..." />
+              <Select isMulti className="my-1" options={this.props.options?.assessments?.filters?.who_reported?.options} placeholder="Filter by reporter..." />
+            </Col>
+            <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.assessments?.nodes}
                 checked={this.state.preset?.config?.queries?.assessments?.checked}
@@ -261,26 +213,14 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-              <Select isMulti className="my-1" options={this.props.options?.assessments?.filters?.symptomatic?.options} placeholder="Filter by status..." />
-              <Select isMulti className="my-1" options={this.props.options?.assessments?.filters?.who_reported?.options} placeholder="Filter by reporter..." />
-            </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Order:</Form.Label>
-              <Select
-                isMulti
-                className="my-1"
-                options={this.props.options?.assessments?.order}
-                value={this.state.preset?.config?.queries?.assessments?.order}
-                onChange={order => this.handlePresetChange(['config', 'queries', 'assessments', 'order'], order)}
-                placeholder="Order by..."
-                styles={colorStyles}
-              />
-            </Col>
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md="8" className="px-0 py-1">
+            <Col md={12} className="px-2 py-1">
+              <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
+              <Select isMulti className="my-1" options={this.props.options?.laboratories?.filters?.lab_type?.options} placeholder="Filter by type..." />
+              <Select isMulti className="my-1" options={this.props.options?.laboratories?.filters?.result?.options} placeholder="Filter by result..." />
+            </Col>
+            <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.laboratories?.nodes}
                 checked={this.state.preset?.config?.queries?.laboratories?.checked}
@@ -291,26 +231,13 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-              <Select isMulti className="my-1" options={this.props.options?.laboratories?.filters?.lab_type?.options} placeholder="Filter by type..." />
-              <Select isMulti className="my-1" options={this.props.options?.laboratories?.filters?.result?.options} placeholder="Filter by result..." />
-            </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Order:</Form.Label>
-              <Select
-                isMulti
-                className="my-1"
-                options={this.props.options?.laboratories?.order}
-                value={this.state.preset?.config?.queries?.laboratories?.order}
-                onChange={order => this.handlePresetChange(['config', 'queries', 'laboratories', 'order'], order)}
-                placeholder="Order by..."
-                styles={colorStyles}
-              />
-            </Col>
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md="8" className="px-0 py-1">
+            <Col md={12} className="px-2 py-1">
+              <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
+              <Select isMulti className="my-1" options={this.props.options?.close_contacts?.filters?.enrolled_id?.options} placeholder="Filter by type..." />
+            </Col>
+            <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.close_contacts?.nodes}
                 checked={this.state.preset?.config?.queries?.close_contacts?.checked}
@@ -321,25 +248,12 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-              <Select isMulti className="my-1" options={this.props.options?.close_contacts?.filters?.enrolled_id?.options} placeholder="Filter by type..." />
-            </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Order:</Form.Label>
-              <Select
-                isMulti
-                className="my-1"
-                options={this.props.options?.close_contacts?.order}
-                value={this.state.preset?.config?.queries?.close_contacts?.order}
-                onChange={order => this.handlePresetChange(['config', 'queries', 'close_contacts', 'order'], order)}
-                placeholder="Order by..."
-                styles={colorStyles}
-              />
-            </Col>
           </Row>
           <Row className="mx-3 py-1 g-border-top">
-            <Col md="8" className="px-0 py-1">
+            <Col md={12} className="px-2 py-1">
+              <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
+            </Col>
+            <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.transfers?.nodes}
                 checked={this.state.preset?.config?.queries?.transfers?.checked}
@@ -350,24 +264,19 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            <Col md="8" className="px-2 py-1">
+          </Row>
+          <Row className="mx-3 py-1 g-border-top">
+            <Col md={12} className="px-2 py-1">
               <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-            </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Order:</Form.Label>
               <Select
                 isMulti
                 className="my-1"
-                options={this.props.options?.transfers?.order}
-                value={this.state.preset?.config?.queries?.transfers?.order}
-                onChange={order => this.handlePresetChange(['config', 'queries', 'transfers', 'order'], order)}
-                placeholder="Order by..."
-                styles={colorStyles}
+                options={this.props.options?.histories?.filters?.history_type?.options}
+                placeholder="Filter by history type..."
               />
+              <Select isMulti className="my-1" options={this.props.options?.histories?.filters?.created_by?.options} placeholder="Filter by creator..." />
             </Col>
-          </Row>
-          <Row className="mx-3 py-1 g-border-top">
-            <Col md="8" className="px-0 py-1">
+            <Col md={12} className="px-0 py-1">
               <CheckboxTree
                 nodes={this.props.options?.histories?.nodes}
                 checked={this.state.preset?.config?.queries?.histories?.checked}
@@ -378,32 +287,10 @@ class CustomExport extends React.Component {
                 icons={rctIcons}
               />
             </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Filter:</Form.Label>
-              <Select
-                isMulti
-                className="my-1"
-                options={this.props.options?.histories?.filters?.history_type?.options}
-                placeholder="Filter by history type..."
-              />
-              <Select isMulti className="my-1" options={this.props.options?.histories?.filters?.created_by?.options} placeholder="Filter by creator..." />
-            </Col>
-            <Col md="8" className="px-2 py-1">
-              <Form.Label className="nav-input-label mb-0">Order:</Form.Label>
-              <Select
-                isMulti
-                className="my-1"
-                options={this.props.options?.histories?.order}
-                value={this.state.preset?.config?.queries?.histories?.order}
-                onChange={order => this.handlePresetChange(['config', 'queries', 'histories', 'order'], order)}
-                placeholder="Order by..."
-                styles={colorStyles}
-              />
-            </Col>
           </Row>
           <Row className="mx-3 pt-3 g-border-top">
-            <Col md="8" className="px-1">
-              <Form.Label className="nav-input-label">EXPORT PRESET NAME</Form.Label>
+            <Col md={8} className="px-1">
+              <Form.Label className="nav-input-label">PRESET NAME</Form.Label>
               <Form.Control
                 id="preset"
                 as="input"
@@ -417,8 +304,8 @@ class CustomExport extends React.Component {
                 disabled={this.state.preset?.id}
               />
             </Col>
-            <Col md="8" className="px-1">
-              <Form.Label className="nav-input-label">EXPORT FILE NAME PREFIX</Form.Label>
+            <Col md={8} className="px-1">
+              <Form.Label className="nav-input-label">FILE NAME PREFIX</Form.Label>
               <Form.Control
                 id="filename"
                 as="input"
@@ -431,8 +318,8 @@ class CustomExport extends React.Component {
                 onChange={event => this.handlePresetChange(['config', 'filename'], event?.target?.value)}
               />
             </Col>
-            <Col md="4" className="px-1">
-              <Form.Label className="nav-input-label">EXPORT FORMAT</Form.Label>
+            <Col md={4} className="px-1">
+              <Form.Label className="nav-input-label">FILE FORMAT</Form.Label>
               <Form.Group>
                 <Button
                   size="sm"
@@ -452,7 +339,7 @@ class CustomExport extends React.Component {
                 </Button>
               </Form.Group>
             </Col>
-            <Col md="4" className="px-1">
+            <Col md={4} className="px-1">
               <Form.Label className="nav-input-label">MANAGE PRESET</Form.Label>
               <Form.Group>
                 <Button
@@ -461,12 +348,15 @@ class CustomExport extends React.Component {
                   disabled={this.state.preset?.name === ''}
                   style={{ outline: 'none', boxShadow: 'none' }}
                   onClick={this.save}>
+                  <FontAwesomeIcon className="mr-1" icon={['fas', 'save']} />
                   Save
                 </Button>
                 <Button size="sm" variant="warning" disabled={!this.state.preset?.id} style={{ outline: 'none', boxShadow: 'none' }} onClick={this.update}>
+                  <FontAwesomeIcon className="mr-1" icon={['fas', 'pen-alt']} />
                   Update
                 </Button>
                 <Button size="sm" variant="danger" disabled={!this.state.preset?.id} style={{ outline: 'none', boxShadow: 'none' }} onClick={this.delete}>
+                  <FontAwesomeIcon className="mr-1" icon={['fas', 'trash']} />
                   Delete
                 </Button>
               </Form.Group>
