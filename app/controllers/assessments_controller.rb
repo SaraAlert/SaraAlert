@@ -61,10 +61,10 @@ class AssessmentsController < ApplicationController
       token_len = submission_token_from_params.length
       return if token_len != 10 && token_len != 40 && token_len != 34
 
-      # Limit number of reports per time period
+      # Limit number of reports per time period except for opt_in/opt_out messages
       unless AssessmentReceipt.where(submission_token: submission_token_from_params)
                               .where('created_at >= ?', ADMIN_OPTIONS['reporting_limit'].minutes.ago).exists? &&
-                              (!params.permit(:response_status)['response_status'].in? %w[opt_out opt_in])
+                              !(params.permit(:response_status)['response_status'].in? %w[opt_out opt_in])
         assessment_placeholder = {}
         assessment_placeholder = assessment_placeholder.merge(params.permit(:response_status).to_h)
         assessment_placeholder = assessment_placeholder.merge(params.permit(:threshold_hash).to_h)
