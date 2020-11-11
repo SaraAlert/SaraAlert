@@ -194,7 +194,13 @@ class CustomTable extends React.Component {
                       <span className="ml-1">Show</span>
                     </InputGroup.Text>
                   </InputGroup.Prepend>
-                  <Form.Control as="select" size="md" name="entries" value={this.props.entries} onChange={this.props.handleEntriesChange}>
+                  <Form.Control
+                    as="select"
+                    size="md"
+                    name="entries"
+                    value={this.props.entries}
+                    onChange={this.props.handleEntriesChange}
+                    aria-label="Adjust number of records">
                     {this.props.entryOptions.map(num => {
                       return (
                         <option key={num} value={num}>

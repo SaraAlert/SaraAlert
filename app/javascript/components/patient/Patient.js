@@ -116,17 +116,17 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>
+                  <div className="h5">
                     <u>Identification</u>:{' '}
                     {`${this.props.details.first_name ? this.props.details.first_name : ''}${
                       this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
                     }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
-                  </h5>
+                  </div>
                 </div>
                 <div className="float-right">
                   {this.props.goto && (
                     <Button variant="link" className="pt-0" onClick={() => this.props.goto(0)}>
-                      <h5>Edit</h5>
+                      <div className="h5">Edit</div>
                     </Button>
                   )}
                 </div>
@@ -188,14 +188,14 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>
+                  <div className="h5">
                     <u>Contact Information</u>
-                  </h5>
+                  </div>
                 </div>
                 <div className="float-right">
                   {this.props.goto && (
                     <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
-                      <h5>Edit</h5>
+                      <div className="h5">Edit</div>
                     </Button>
                   )}
                 </div>
@@ -232,14 +232,14 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
+                      <div className="h5">
                         <u>Address</u>
-                      </h5>
+                      </div>
                     </div>
                     <div className="float-right">
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}>
-                          <h5>Edit</h5>
+                          <div className="h5">Edit</div>
                         </Button>
                       )}
                     </div>
@@ -273,14 +273,14 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
+                      <div className="h5">
                         <u>Arrival Information</u>
-                      </h5>
+                      </div>
                     </div>
                     <div className="float-right">
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}>
-                          <h5>Edit</h5>
+                          <div className="h5">Edit</div>
                         </Button>
                       )}
                     </div>
@@ -289,7 +289,7 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col className="text-truncate">
-                    <h6>DEPARTED</h6>
+                    <div className="h6">DEPARTED</div>
                     <span className="font-weight-light">{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
                     <br />
                     <span className="font-weight-light">{`${
@@ -297,7 +297,7 @@ class Patient extends React.Component {
                     }`}</span>
                   </Col>
                   <Col className="text-truncate">
-                    <h6>ARRIVAL</h6>
+                    <div className="h6">ARRIVAL</div>
                     <span className="font-weight-light">{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
                     <br />
                     <span className="font-weight-light">{`${
@@ -319,14 +319,14 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
+                      <div className="h5">
                         <u>Additional Planned Travel</u>
-                      </h5>
+                      </div>
                     </div>
                     <div className="float-right">
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}>
-                          <h5>Edit</h5>
+                          <div className="h5">Edit</div>
                         </Button>
                       )}
                     </div>
@@ -376,15 +376,15 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
+                      <div className="h5">
                         {!this.props.details.isolation && <u>Potential Exposure Information</u>}
                         {this.props.details.isolation && <u>Case Information</u>}
-                      </h5>
+                      </div>
                     </div>
                     <div className="float-right">
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
-                          <h5>Edit</h5>
+                          <div className="h5">Edit</div>
                         </Button>
                       )}
                     </div>
@@ -394,7 +394,7 @@ class Patient extends React.Component {
                 <Row>
                   {!this.props.details.isolation && (
                     <Col className="text-truncate">
-                      <h6>LAST EXPOSURE</h6>
+                      <div className="h6">LAST EXPOSURE</div>
                       <span className="font-weight-light">
                         {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
                         {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}

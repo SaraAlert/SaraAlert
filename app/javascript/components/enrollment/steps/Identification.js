@@ -198,8 +198,9 @@ class Identification extends React.Component {
     };
     return (
       <React.Fragment>
+        <h1 className="sr-only">Monitoree Identification</h1>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Monitoree Identification</Card.Header>
+          <Card.Header as="h2">Monitoree Identification</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row>
@@ -212,6 +213,7 @@ class Identification extends React.Component {
                     options={WORKFLOW_OPTIONS}
                     onChange={e => this.handleWorkflowChange(e)}
                     placeholder=""
+                    aria-label="Workflow select"
                     theme={theme => ({
                       ...theme,
                       borderRadius: 0,
@@ -418,6 +420,7 @@ class Identification extends React.Component {
                     onChange={e => this.handleLanguageChange('primary_language', e)}
                     placeholder=""
                     styles={cursorPointerStyle}
+                    aria-label="Primary Language Select"
                     theme={theme => ({
                       ...theme,
                       borderRadius: 0,
@@ -437,6 +440,7 @@ class Identification extends React.Component {
                     onChange={e => this.handleLanguageChange('secondary_language', e)}
                     placeholder=""
                     styles={cursorPointerStyle}
+                    aria-label="Secondary Language Select"
                     theme={theme => ({
                       ...theme,
                       borderRadius: 0,

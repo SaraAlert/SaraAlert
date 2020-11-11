@@ -60,8 +60,9 @@ class Review extends React.Component {
   render() {
     return (
       <React.Fragment>
+        <h1 className="sr-only">Monitoree Review</h1>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Monitoree Review</Card.Header>
+          <Card.Header as="h2">Monitoree Review</Card.Header>
           <Card.Body>
             <Patient
               goto={this.props.goto}

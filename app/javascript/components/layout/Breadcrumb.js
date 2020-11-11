@@ -77,7 +77,7 @@ class Breadcrumb extends React.Component {
                   </li>
                 );
               })}
-              <span className="lead lead-bc ml-auto">Your Jurisdiction: {this.props.jurisdiction}</span>
+              <li className="lead lead-bc ml-auto">Your Jurisdiction: {this.props.jurisdiction}</li>
             </ol>
           </nav>
         </div>

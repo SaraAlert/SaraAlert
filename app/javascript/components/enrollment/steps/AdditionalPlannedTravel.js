@@ -70,8 +70,9 @@ class AdditionalPlannedTravel extends React.Component {
   render() {
     return (
       <React.Fragment>
+        <h1 className="sr-only">Additional Planned Travel</h1>
         <Card className="mx-2 card-square">
-          <Card.Header as="h5">Additional Planned Travel</Card.Header>
+          <Card.Header as="h2">Additional Planned Travel</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row>

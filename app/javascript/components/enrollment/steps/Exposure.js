@@ -408,6 +408,7 @@ class Exposure extends React.Component {
               placeholder="enter case ID"
               value={this.state.current.patient.contact_of_known_case_id || ''}
               onChange={this.handleChange}
+              aria-label="Enter Case Id"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['contact_of_known_case_id']}
@@ -445,6 +446,7 @@ class Exposure extends React.Component {
               placeholder="enter facility name"
               value={this.state.current.patient.was_in_health_care_facility_with_known_cases_facility_name || ''}
               onChange={this.handleChange}
+              aria-label="Enter Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['was_in_health_care_facility_with_known_cases_facility_name']}
@@ -470,6 +472,7 @@ class Exposure extends React.Component {
               placeholder="enter facility name"
               value={this.state.current.patient.laboratory_personnel_facility_name || ''}
               onChange={this.handleChange}
+              aria-label="Enter Laboratory Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['laboratory_personnel_facility_name']}
@@ -495,6 +498,7 @@ class Exposure extends React.Component {
               placeholder="enter facility name"
               value={this.state.current.patient.healthcare_personnel_facility_name || ''}
               onChange={this.handleChange}
+              aria-label="Enter Healthcare Facility Name"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['healthcare_personnel_facility_name']}
@@ -531,6 +535,7 @@ class Exposure extends React.Component {
               placeholder="enter description"
               value={this.state.current.patient.member_of_a_common_exposure_cohort_type || ''}
               onChange={this.handleChange}
+              aria-label="Enter Cohort Description"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
               {this.state.errors['member_of_a_common_exposure_cohort_type']}
@@ -564,9 +569,11 @@ class Exposure extends React.Component {
   render() {
     return (
       <React.Fragment>
+        {!this.props.currentState.isolation && <h1 className="sr-only">Monitoree Potential Exposure Information</h1>}
+        {this.props.currentState.isolation && <h1 className="sr-only">Monitoree Case Information</h1>}
         <Card className="mx-2 card-square">
-          {!this.props.currentState.isolation && <Card.Header as="h5">Monitoree Potential Exposure Information</Card.Header>}
-          {this.props.currentState.isolation && <Card.Header as="h5">Monitoree Case Information</Card.Header>}
+          {!this.props.currentState.isolation && <Card.Header as="h2">Monitoree Potential Exposure Information</Card.Header>}
+          {this.props.currentState.isolation && <Card.Header as="h2">Monitoree Case Information</Card.Header>}
           <Card.Body>
             <Form>
               <Form.Row className="pb-3 h-100">
