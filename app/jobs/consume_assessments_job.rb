@@ -46,7 +46,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           # Perform patient lookup for old submission tokens if new submission token didn't resolve
           # and this message is not an opt_in or opt_out message
           patient_lookup = PatientLookup.find_by(old_submission_token: message['patient_submission_token'])
-          Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
+          patient = Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
         end
 
         # Failed to find patient
