@@ -233,7 +233,6 @@ class ImportController < ApplicationController
 
       err_msg = "'#{VALIDATION[field][:label]}' cannot be true if any other race field is true"
       raise ValidationError.new(err_msg, row_ind)
-      end
     end
     value
   end
