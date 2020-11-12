@@ -227,7 +227,7 @@ class ImportController < ApplicationController
 
     race_col_nums = [7, 8, 9, 10, 11, 101, 102, 103]
     race_col_nums.each do |race_col|
-      next if race_col == col_num
+      next unless race_col != col_num
 
       next unless value && row[race_col].to_s.downcase == 'true'
 
