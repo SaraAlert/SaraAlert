@@ -602,6 +602,54 @@ Get a monitoree via an id, e.g.:
     {
         "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
         "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valueString": "9999"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/departure-date",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/arrival-date",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -618,12 +666,24 @@ Get a monitoree via an id, e.g.:
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -888,6 +948,54 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Morning"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/assigned-user",
+              "valueString": "9999"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+              "valueDate": "2020-04-30"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+              "valueString": "West Margarete"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/departure-date",
+              "valueDate": "2020-04-24"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-number",
+              "valueString": "X639"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+              "valueString": "Annamae Airlines"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/arrival-date",
+              "valueDate": "2020-04-04"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+              "valueString": "these are exposure notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/travel-notes",
+              "valueString": "these are travel related notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+              "valueString": "these are additional planned travel notes"
           }
         ],
         "active": true,
@@ -904,12 +1012,24 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 1
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Smartphone"
+              }
+            ]
           },
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 2
+            "rank": 2,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Landline"
+              }
+            ]
           },
           {
             "system": "email",
@@ -1186,6 +1306,54 @@ To create a new monitoree, simply POST a FHIR Patient resource.
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valueString": "9999"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/departure-date",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/arrival-date",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -1202,12 +1370,24 @@ To create a new monitoree, simply POST a FHIR Patient resource.
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -1316,6 +1496,54 @@ On success, the server will return the newly created resource with an id. This i
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valueString": "9999"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/departure-date",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/arrival-date",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -1332,12 +1560,24 @@ On success, the server will return the newly created resource with an id. This i
     {
       "system": "phone",
       "value": "+13333333333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "+13333333333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -1451,6 +1691,54 @@ An update request creates a new current version for an existing resource.
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valueString": "9999"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/departure-date",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/arrival-date",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -1467,12 +1755,24 @@ An update request creates a new current version for an existing resource.
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "(333) 333-3333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -1581,6 +1881,54 @@ On success, the server will update the existing resource given the id.
     {
       "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
       "valueString": "USA, State 1"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+      "valueString": "Morning"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+      "valueString": "Daily active monitoring"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/assigned-user",
+        "valueString": "9999"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+        "valueDate": "2020-04-30"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+        "valueString": "West Margarete"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/departure-date",
+        "valueDate": "2020-04-24"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-number",
+        "valueString": "X639"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+        "valueString": "Annamae Airlines"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/arrival-date",
+        "valueDate": "2020-04-04"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+        "valueString": "these are exposure notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/travel-notes",
+        "valueString": "these are travel related notes"
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+        "valueString": "these are additional planned travel notes"
     }
   ],
   "active": true,
@@ -1597,12 +1945,24 @@ On success, the server will update the existing resource given the id.
     {
       "system": "phone",
       "value": "+13333333333",
-      "rank": 1
+      "rank": 1,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Smartphone"
+        }
+      ]
     },
     {
       "system": "phone",
       "value": "+13333333333",
-      "rank": 2
+      "rank": 2,
+      "extension": [
+        {
+          "url": "http://saraalert.org/StructureDefinition/phone-type",
+          "valueString": "Landline"
+        }
+      ]
     },
     {
       "system": "email",
@@ -1731,6 +2091,54 @@ GET `[base]/Patient?given=testy&family=mctest`
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Morning"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/assigned-user",
+              "valueString": "9999"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+              "valueDate": "2020-04-30"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+              "valueString": "West Margarete"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/departure-date",
+              "valueDate": "2020-04-24"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-number",
+              "valueString": "X639"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+              "valueString": "Annamae Airlines"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/arrival-date",
+              "valueDate": "2020-04-04"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+              "valueString": "these are exposure notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/travel-notes",
+              "valueString": "these are travel related notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+              "valueString": "these are additional planned travel notes"
           }
         ],
         "active": true,
@@ -1747,12 +2155,24 @@ GET `[base]/Patient?given=testy&family=mctest`
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 1
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Smartphone"
+              }
+            ]
           },
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 2
+            "rank": 2,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Landline"
+              }
+            ]
           },
           {
             "system": "email",
@@ -2110,6 +2530,54 @@ GET `[base]/Patient?_count=2`
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Morning"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/assigned-user",
+              "valueString": "9999"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+              "valueDate": "2020-04-30"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+              "valueString": "West Margarete"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/departure-date",
+              "valueDate": "2020-04-24"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-number",
+              "valueString": "X639"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+              "valueString": "Annamae Airlines"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/arrival-date",
+              "valueDate": "2020-04-04"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+              "valueString": "these are exposure notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/travel-notes",
+              "valueString": "these are travel related notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+              "valueString": "these are additional planned travel notes"
           }
         ],
         "active": true,
@@ -2126,12 +2594,24 @@ GET `[base]/Patient?_count=2`
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 1
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Smartphone"
+              }
+            ]
           },
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 2
+            "rank": 2,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Landline"
+              }
+            ]
           },
           {
             "system": "email",
@@ -2231,6 +2711,54 @@ GET `[base]/Patient?_count=2`
           {
             "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
             "valueString": "USA, State 1"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/preferred-contact-time",
+            "valueString": "Morning"
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/monitoring-plan",
+            "valueString": "Daily active monitoring"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/assigned-user",
+              "valueString": "9999"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-start-date",
+              "valueDate": "2020-04-30"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/port-of-origin",
+              "valueString": "West Margarete"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/departure-date",
+              "valueDate": "2020-04-24"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-number",
+              "valueString": "X639"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/flight-carrier",
+              "valueString": "Annamae Airlines"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/arrival-date",
+              "valueDate": "2020-04-04"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/exposure-notes",
+              "valueString": "these are exposure notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/travel-notes",
+              "valueString": "these are travel related notes"
+          },
+          {
+              "url": "http://saraalert.org/StructureDefinition/additional-planned-travel-notes",
+              "valueString": "these are additional planned travel notes"
           }
         ],
         "active": true,
@@ -2247,12 +2775,24 @@ GET `[base]/Patient?_count=2`
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 1
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Smartphone"
+              }
+            ]
           },
           {
             "system": "phone",
             "value": "(333) 333-3333",
-            "rank": 2
+            "rank": 2,
+            "extension": [
+              {
+                "url": "http://saraalert.org/StructureDefinition/phone-type",
+                "valueString": "Landline"
+              }
+            ]
           },
           {
             "system": "email",

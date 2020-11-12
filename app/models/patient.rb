@@ -8,6 +8,7 @@ class Patient < ApplicationRecord
   include PatientDetailsHelper
   include ValidationHelper
   include ActiveModel::Validations
+  include Rails.application.routes.url_helpers
 
   columns.each do |column|
     case column.type
@@ -35,12 +36,10 @@ class Patient < ApplicationRecord
                                                   'Other',
                                                   nil, ''] }
 
-  validates :monitoring_plan, inclusion: { in: ['None',
-                                                'Daily active monitoring',
-                                                'Self-monitoring with public health supervision',
-                                                'Self-monitoring with delegated supervision',
-                                                'Self-observation',
-                                                nil, ''] }
+  validates :monitoring_plan, inclusion: {
+    in: VALID_ENUMS[:monitoring_plan],
+    message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:monitoring_plan].join("', '")}'"
+  }, allow_blank: true
 
   validates :exposure_risk_assessment, inclusion: { in: ['High',
                                                          'Medium',
@@ -53,7 +52,9 @@ class Patient < ApplicationRecord
      monitored_address_state
      preferred_contact_method
      preferred_contact_time
-     sex].each do |enum_field|
+     sex
+     primary_telephone_type
+     secondary_telephone_type].each do |enum_field|
     validates enum_field, on: :api, inclusion: {
       in: VALID_ENUMS[enum_field],
       message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[enum_field].join("', '")}'"
@@ -67,7 +68,10 @@ class Patient < ApplicationRecord
 
   %i[date_of_birth
      last_date_of_exposure
-     symptom_onset].each do |date_field|
+     symptom_onset
+     additional_planned_travel_start_date
+     date_of_departure
+     date_of_arrival].each do |date_field|
     validates date_field, on: :api, date: true
   end
 
@@ -821,14 +825,52 @@ class Patient < ApplicationRecord
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
   def as_fhir
+    creator_agent_ref = FHIR::Reference.new
+    creator_app = OauthApplication.where(user_id: creator.id).first
+    if creator_app
+      # Created with an M2M workflow client, use the application URL path to identify the creator
+      creator_agent_ref.reference = oauth_application_path(creator_app)
+    else
+      # Created with a user worfklow client
+      # We don't have an endpoint for GETting Users, so just use the user ID as an identifier to have something
+      creator_agent_ref.identifier = FHIR::Identifier.new(value: creator.id)
+    end
+
     FHIR::Patient.new(
       meta: FHIR::Meta.new(lastUpdated: updated_at.strftime('%FT%T%:z')),
+      contained: [FHIR::Provenance.new(
+        # Would like to use a Rails URL Helper here, but we don't get one for this endpoint
+        target: [FHIR::Reference.new(reference: "/fhir/r4/Patient/#{id}")],
+        agent: [
+          FHIR::Provenance::Agent.new(
+            who: creator_agent_ref
+          )
+        ],
+        recorded: created_at.strftime('%FT%T%:z'),
+        activity: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/v3-DataOperation',
+              code: 'CREATE',
+              display: 'create'
+            }
+          ]
+        }
+      )],
       id: id,
       active: monitoring,
       name: [FHIR::HumanName.new(given: [first_name, middle_name].reject(&:blank?), family: last_name)],
       telecom: [
-        primary_telephone ? FHIR::ContactPoint.new(system: 'phone', value: primary_telephone, rank: 1) : nil,
-        secondary_telephone ? FHIR::ContactPoint.new(system: 'phone', value: secondary_telephone, rank: 2) : nil,
+        primary_telephone ? FHIR::ContactPoint.new(system: 'phone',
+                                                   value: primary_telephone,
+                                                   rank: 1,
+                                                   extension: [to_string_extension(primary_telephone_type, 'phone-type')])
+                          : nil,
+        secondary_telephone ? FHIR::ContactPoint.new(system: 'phone',
+                                                     value: secondary_telephone,
+                                                     rank: 2,
+                                                     extension: [to_string_extension(secondary_telephone_type, 'phone-type')])
+                            : nil,
         email ? FHIR::ContactPoint.new(system: 'email', value: email, rank: 1) : nil
       ].reject(&:nil?),
       birthDate: date_of_birth&.strftime('%F'),
@@ -851,12 +893,23 @@ class Patient < ApplicationRecord
         us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander),
         us_core_ethnicity(ethnicity),
         us_core_birthsex(sex),
-        to_preferred_contact_method_extension(preferred_contact_method),
-        to_preferred_contact_time_extension(preferred_contact_time),
-        to_symptom_onset_date_extension(symptom_onset),
-        to_last_exposure_date_extension(last_date_of_exposure),
-        to_isolation_extension(isolation),
-        to_string_extension(jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path')
+        to_string_extension(preferred_contact_method, 'preferred-contact-method'),
+        to_string_extension(preferred_contact_time, 'preferred-contact-time'),
+        to_date_extension(symptom_onset, 'symptom-onset-date'),
+        to_date_extension(last_date_of_exposure, 'last-exposure-date'),
+        to_bool_extension(isolation, 'isolation'),
+        to_string_extension(jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path'),
+        to_string_extension(monitoring_plan, 'monitoring-plan'),
+        to_string_extension(assigned_user, 'assigned-user'),
+        to_date_extension(additional_planned_travel_start_date, 'additional-planned-travel-start-date'),
+        to_string_extension(port_of_origin, 'port-of-origin'),
+        to_date_extension(date_of_departure, 'departure-date'),
+        to_string_extension(flight_or_vessel_number, 'flight-or-vessel-number'),
+        to_string_extension(flight_or_vessel_carrier, 'flight-or-vessel-carrier'),
+        to_date_extension(date_of_arrival, 'arrival-date'),
+        to_string_extension(exposure_notes, 'exposure-notes'),
+        to_string_extension(travel_related_notes, 'travel-notes'),
+        to_string_extension(additional_planned_travel_related_notes, 'additional-planned-travel-notes')
       ].reject(&:nil?)
     )
   end
@@ -895,12 +948,25 @@ class Patient < ApplicationRecord
       native_hawaiian_or_other_pacific_islander: PatientHelper.race_code?(patient, '2076-8'),
       ethnicity: PatientHelper.ethnicity(patient),
       sex: PatientHelper.birthsex(patient),
-      preferred_contact_method: PatientHelper.from_preferred_contact_method_extension(patient),
-      preferred_contact_time: PatientHelper.from_preferred_contact_time_extension(patient),
-      symptom_onset: PatientHelper.from_symptom_onset_date_extension(patient),
-      last_date_of_exposure: PatientHelper.from_last_exposure_date_extension(patient),
+      preferred_contact_method: PatientHelper.from_string_extension(patient, 'preferred-contact-method'),
+      preferred_contact_time: PatientHelper.from_string_extension(patient, 'preferred-contact-time'),
+      symptom_onset: PatientHelper.from_date_extension(patient, 'symptom-onset-date'),
+      last_date_of_exposure: PatientHelper.from_date_extension(patient, 'last-exposure-date'),
       isolation: PatientHelper.from_isolation_extension(patient),
-      jurisdiction_id: PatientHelper.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id)
+      jurisdiction_id: PatientHelper.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id),
+      monitoring_plan: PatientHelper.from_string_extension(patient, 'monitoring-plan'),
+      assigned_user: PatientHelper.from_string_extension(patient, 'assigned-user'),
+      additional_planned_travel_start_date: PatientHelper.from_date_extension(patient, 'additional-planned-travel-start-date'),
+      port_of_origin: PatientHelper.from_string_extension(patient, 'port-of-origin'),
+      date_of_departure: PatientHelper.from_date_extension(patient, 'departure-date'),
+      flight_or_vessel_number: PatientHelper.from_string_extension(patient, 'flight-or-vessel-number'),
+      flight_or_vessel_carrier: PatientHelper.from_string_extension(patient, 'flight-or-vessel-carrier'),
+      date_of_arrival: PatientHelper.from_date_extension(patient, 'arrival-date'),
+      exposure_notes: PatientHelper.from_string_extension(patient, 'exposure-notes'),
+      travel_related_notes: PatientHelper.from_string_extension(patient, 'travel-notes'),
+      additional_planned_travel_related_notes: PatientHelper.from_string_extension(patient, 'additional-planned-travel-notes'),
+      primary_telephone_type: PatientHelper.from_primary_phone_type_extension(patient),
+      secondary_telephone_type: PatientHelper.from_secondary_phone_type_extension(patient)
     }
   end
 
