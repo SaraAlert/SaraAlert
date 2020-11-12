@@ -23,8 +23,7 @@ class PatientTest < ActiveSupport::TestCase
 
   test 'active dependents does NOT include dependents that are purged' do
     responder = create(:patient, purged: false, monitoring: true)
-    dependent = create(:patient, purged: true, monitoring: false)
-    dependent.update!(responder_id: responder.id)
+    dependent = create(:patient, purged: true, monitoring: false, responder_id: responder.id)
 
     assert_not responder.active_dependents.pluck(:id).include?(dependent.id)
   end
