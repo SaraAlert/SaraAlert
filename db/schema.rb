@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_28_204903) do
+ActiveRecord::Schema.define(version: 2020_11_12_173603) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -95,7 +95,7 @@ ActiveRecord::Schema.define(version: 2020_10_28_204903) do
 
   create_table "jurisdiction_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "old_unique_identifier"
-    t.string "new_unique_identifier"
+    t.string "new_unique_identifier", collation: "utf8_bin"
     t.index ["old_unique_identifier"], name: "index_jurisdiction_lookups_on_old_unique_identifier"
   end
 
@@ -103,7 +103,7 @@ ActiveRecord::Schema.define(version: 2020_10_28_204903) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "name"
-    t.string "unique_identifier"
+    t.string "unique_identifier", collation: "utf8_bin"
     t.string "ancestry"
     t.string "path"
     t.string "phone"
@@ -232,7 +232,7 @@ ActiveRecord::Schema.define(version: 2020_10_28_204903) do
 
   create_table "patient_lookups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "old_submission_token"
-    t.string "new_submission_token"
+    t.string "new_submission_token", collation: "utf8_bin"
     t.index ["new_submission_token"], name: "index_patient_lookups_on_new_submission_token"
     t.index ["old_submission_token"], name: "index_patient_lookups_on_old_submission_token"
   end
@@ -243,7 +243,7 @@ ActiveRecord::Schema.define(version: 2020_10_28_204903) do
     t.integer "responder_id"
     t.integer "creator_id"
     t.integer "jurisdiction_id"
-    t.string "submission_token"
+    t.string "submission_token", collation: "utf8_bin"
     t.boolean "monitoring", default: true
     t.string "monitoring_reason"
     t.boolean "purged", default: false

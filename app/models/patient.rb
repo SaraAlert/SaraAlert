@@ -982,7 +982,7 @@ class Patient < ApplicationRecord
     token = nil
     loop do
       token = SecureRandom.urlsafe_base64[0, 10]
-      break unless Patient.where('BINARY submission_token = ?', token).any?
+      break unless Patient.where(submission_token: token).any?
     end
     token
   end
