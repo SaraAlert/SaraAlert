@@ -99,69 +99,27 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     code
   end
 
-  # Helper to create an extension for preferred contact method
-  def to_preferred_contact_method_extension(preferred_contact_method)
-    preferred_contact_method.nil? ? nil : FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/preferred-contact-method',
-      valueString: preferred_contact_method
-    )
-  end
-
-  # Helper to understand an extension for preferred contact method
-  def self.from_preferred_contact_method_extension(patient)
-    patient&.extension&.select { |e| e.url.include?('preferred-contact-method') }&.first&.valueString
-  end
-
-  # Helper to create an extension for preferred contact time
-  def to_preferred_contact_time_extension(_preferred_contact_method)
-    preferred_contact_time.nil? ? nil : FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/preferred-contact-time',
-      valueString: preferred_contact_time
-    )
-  end
-
-  # Helper to understand an extension for preferred contact time
-  def self.from_preferred_contact_time_extension(patient)
-    patient&.extension&.select { |e| e.url.include?('preferred-contact-time') }&.first&.valueString
-  end
-
-  # Helper to create an extension for symptom onset date
-  def to_symptom_onset_date_extension(symptom_onset)
-    symptom_onset.nil? ? nil : FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/symptom-onset-date',
-      valueDate: symptom_onset
-    )
-  end
-
-  # Helper to understand an extension for symptom onset date
-  def self.from_symptom_onset_date_extension(patient)
-    patient&.extension&.select { |e| e.url.include?('symptom-onset-date') }&.first&.valueDate
-  end
-
-  # Helper to create an extension for last exposure date
-  def to_last_exposure_date_extension(last_exposure)
-    last_exposure.nil? ? nil : FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/last-exposure-date',
-      valueDate: last_exposure
-    )
-  end
-
-  # Helper to understand an extension for last exposure date
-  def self.from_last_exposure_date_extension(patient)
-    patient&.extension&.select { |e| e.url.include?('last-exposure-date') }&.first&.valueDate
-  end
-
-  # Helper to create an extension for isolation status
-  def to_isolation_extension(isolation)
-    FHIR::Extension.new(
-      url: 'http://saraalert.org/StructureDefinition/isolation',
-      valueBoolean: isolation
-    )
-  end
-
   # Helper to understand an extension for last exposure date
   def self.from_isolation_extension(patient)
     patient&.extension&.select { |e| e.url.include?('isolation') }&.first&.valueBoolean == true
+  end
+
+  def to_bool_extension(value, extension_id)
+    value.nil? ? nil : FHIR::Extension.new(
+      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      valueBoolean: value
+    )
+  end
+
+  def to_date_extension(value, extension_id)
+    value.nil? ? nil : FHIR::Extension.new(
+      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      valueDate: value
+    )
+  end
+
+  def self.from_date_extension(patient, extension_id)
+    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueDate
   end
 
   def to_string_extension(value, extension_id)
@@ -180,6 +138,16 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   def self.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id)
     jurisdiction_path = from_string_extension(patient, 'full-assigned-jurisdiction-path')
     jurisdiction_path ? Jurisdiction.find_by(path: jurisdiction_path)&.id : default_jurisdiction_id
+  end
+
+  def self.from_primary_phone_type_extension(patient)
+    phone_telecom = patient&.telecom&.select { |t| t&.system == 'phone' }&.first
+    phone_telecom&.extension&.select { |e| e.url.include?('phone-type') }&.first&.valueString
+  end
+
+  def self.from_secondary_phone_type_extension(patient)
+    phone_telecom = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
+    phone_telecom&.extension&.select { |e| e.url.include?('phone-type') }&.first&.valueString
   end
 
   def normalize_state_names(pat)
