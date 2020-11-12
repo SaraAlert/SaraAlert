@@ -34,8 +34,8 @@ class AssessmentForm < ApplicationSystemTestCase
 
   def complete_assessment_old_link(user_label, patient, assessment_label)
     @@system_test_utils.login(user_label) unless user_label.nil?
-    old_submission_token = PatientLookup.find_by('BINARY new_submission_token = ?', patient.submission_token).old_submission_token
-    old_unique_identifier = JurisdictionLookup.find_by('BINARY new_unique_identifier = ?', patient.jurisdiction.unique_identifier).old_unique_identifier
+    old_submission_token = PatientLookup.find_by(new_submission_token: patient.submission_token).old_submission_token
+    old_unique_identifier = JurisdictionLookup.find_by(new_unique_identifier: patient.jurisdiction.unique_identifier).old_unique_identifier
     visit "/report/patients/#{old_submission_token}/en/#{old_unique_identifier}"
     submit_assessment(ASSESSMENTS[assessment_label]['symptoms'])
     err_msg = @@system_test_utils.get_err_msg('Monitoree assessment', 'submission message', 'existent')
@@ -48,8 +48,8 @@ class AssessmentForm < ApplicationSystemTestCase
     complete_assessment_new_link(user_label, patient, assessment_label, patient.initials_age)
     complete_assessment_old_link(user_label, patient, assessment_label)
     @@system_test_utils.login(user_label) if logged_in
-    old_submission_token = PatientLookup.find_by('BINARY new_submission_token = ?', patient.submission_token).old_submission_token
-    old_unique_identifier = JurisdictionLookup.find_by('BINARY new_unique_identifier = ?', patient.jurisdiction.unique_identifier).old_unique_identifier
+    old_submission_token = PatientLookup.find_by(new_submission_token: patient.submission_token).old_submission_token
+    old_unique_identifier = JurisdictionLookup.find_by(new_unique_identifier: patient.jurisdiction.unique_identifier).old_unique_identifier
     [
       "/patients/#{patient.submission_token}/assessments/new",
       "/r/#{patient.submission_token}/#{patient.jurisdiction.unique_identifier}/en",

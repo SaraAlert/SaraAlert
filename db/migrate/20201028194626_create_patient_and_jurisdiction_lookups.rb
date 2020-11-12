@@ -39,7 +39,7 @@ class CreatePatientAndJurisdictionLookups < ActiveRecord::Migration[6.0]
           new_submission_token = nil
           loop do
             new_submission_token = SecureRandom.urlsafe_base64[0, 10]
-          break unless PatientLookup.where('BINARY new_submission_token = ?', new_submission_token).any?
+          break unless PatientLookup.where(new_submission_token: new_submission_token).any?
           end
 
           # Update patient lookup
