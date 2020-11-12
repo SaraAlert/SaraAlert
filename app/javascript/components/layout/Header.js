@@ -56,17 +56,8 @@ class Header extends React.Component {
               <Form inline className="ml-auto">
                 <Navbar.Text className="text-white py-0 px-3">
                   <i className="fas fa-user fa-fw mr-2"></i>
-                  {this.props.current_user?.email} ({this.props.current_user?.role.split('_').join(' ')})
+                  {this.props.current_user?.email} (<span className="capitalize">{this.props.current_user?.role.split('_').join(' ')}</span>)
                 </Navbar.Text>
-                <span className="fas-stack fa-3x">
-                  <i className="fas fa-user fa-fw mr-2 fa-stack-2x"></i>
-                  <strong className="fa-fw mr-2 fa-stack-1x calendar-text">27</strong>
-                </span>
-
-                {/* <a className="white-border-right"></a>
-                <Navbar.Text className="text-white py-0 px-3">
-                  {this.props.current_user?.role.split('_').join(' ')}
-                </Navbar.Text> */}
                 <a className="white-border-right"></a>
                 <div className="dropdown">
                   <Nav.Link className="text-white py-0" id="helpMenuButton" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
