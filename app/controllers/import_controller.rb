@@ -224,13 +224,13 @@ class ImportController < ApplicationController
   def validate_exclusive_race_field(field, row, col_num, row_ind)
     value = validate_bool_field(field, row[col_num], row_ind)
     return value if value.blank?
-    race_col_nums = [7,8,9,10,11,101,102,103]
+
+    race_col_nums = [7, 8, 9, 10, 11, 101, 102, 103]
     race_col_nums.each do |race_col|
       unless race_col == col_num
-        if value && row[race_col].to_s.downcase == 'true'
-          err_msg = "'#{VALIDATION[field][:label]}' cannot be true if any other race field is true"
-          raise ValidationError.new(err_msg, row_ind)
-        end
+        next unless value && row[race_col].to_s.downcase == 'true'
+        err_msg = "'#{VALIDATION[field][:label]}' cannot be true if any other race field is true"
+        raise ValidationError.new(err_msg, row_ind)
       end
     end
     return value
