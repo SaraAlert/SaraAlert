@@ -261,6 +261,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
   # Sets up FHIR patients used for testing
   def setup_patients
+    Patient.find_by(id: 1).update!(
+      assigned_user: '1234',
+      exposure_notes: 'exposure notes',
+      travel_related_notes: 'travel notes',
+      additional_planned_travel_related_notes: 'additional travel notes'
+    )
     @patient_1 = Patient.find_by(id: 1).as_fhir
 
     # Update Patient 2 before created FHIR resource from it
@@ -271,7 +277,20 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       symptom_onset: 3.days.ago,
       isolation: true,
       primary_telephone: '+15555559999',
-      jurisdiction_id: 4
+      jurisdiction_id: 4,
+      monitoring_plan: 'Daily active monitoring',
+      assigned_user: '2345',
+      additional_planned_travel_start_date: 5.days.from_now,
+      port_of_origin: 'Tortuga',
+      date_of_departure: 2.days.ago,
+      flight_or_vessel_number: 'XYZ123',
+      flight_or_vessel_carrier: 'FunAirlines',
+      date_of_arrival: 2.days.from_now,
+      exposure_notes: 'exposure notes',
+      travel_related_notes: 'travel related notes',
+      additional_planned_travel_related_notes: 'additional travel related notes',
+      primary_telephone_type: 'Plain Cell',
+      secondary_telephone_type: 'Landline'
     )
     @patient_2 = Patient.find_by(id: 2).as_fhir
 
@@ -584,8 +603,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'SYSTEM FLOW: should get patient via show' do
+    patient_id = 1
+    patient = Patient.find_by(id: patient_id)
+    resource_path = "/fhir/r4/Patient/#{patient_id}"
     get(
-      '/fhir/r4/Patient/1',
+      resource_path,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
@@ -599,6 +621,21 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
     assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
+    assert_equal resource_path, json_response['contained'].first['target'].first['reference']
+    assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
+    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
+    assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
+    assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
   test 'SYSTEM FLOW: should get observation via show' do
@@ -651,6 +688,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'SYSTEM FLOW: should create Patient via create' do
+    patient = Patient.find_by(id: 1)
     post(
       '/fhir/r4/Patient',
       params: @patient_1.to_json,
@@ -670,6 +708,21 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
     assert_equal 'USA, State 1',
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
+    assert_equal "/fhir/r4/Patient/#{id}", json_response['contained'].first['target'].first['reference']
+    assert_equal "/oauth/applications/#{@system_patient_read_write_app.id}", json_response['contained'].first['agent'].first['who']['reference']
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
+    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
+    assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
+    assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
   test 'SYSTEM FLOW: should calculate Patient age via create' do
@@ -767,8 +820,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'SYSTEM FLOW: should update Patient via update' do
+    patient_id = 1
+    patient = Patient.find_by(id: 2)
+    resource_path = "/fhir/r4/Patient/#{patient_id}"
     put(
-      '/fhir/r4/Patient/1',
+      resource_path,
       params: @patient_2.to_json,
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
@@ -786,6 +842,21 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal 'USA, State 1, County 1',
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
+    assert_equal resource_path, json_response['contained'].first['target'].first['reference']
+    assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
+    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
+    assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
+    assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
   test 'SYSTEM FLOW: should update Patient via update and set omitted fields to nil ' do
@@ -1537,8 +1608,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'USER FLOW: should get patient via show' do
+    patient_id = 1
+    patient = Patient.find_by(id: patient_id)
+    resource_path = "/fhir/r4/Patient/#{patient_id}"
     get(
-      '/fhir/r4/Patient/1',
+      resource_path,
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Accept': 'application/fhir+json' }
     )
     assert_response :ok
@@ -1552,6 +1626,21 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
     assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
+    assert_equal resource_path, json_response['contained'].first['target'].first['reference']
+    assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
+    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
+    assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
+    assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
   test 'USER FLOW: should get observation via show' do
@@ -1610,6 +1699,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'USER FLOW: should create Patient via create' do
+    patient = Patient.find_by(id: 1)
     post(
       '/fhir/r4/Patient', params: @patient_1.to_json,
                           headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
@@ -1628,6 +1718,21 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert response.headers['Location'].ends_with?(json_response['id'].to_s)
     assert_equal 'USA, State 1',
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
+    assert_equal "/fhir/r4/Patient/#{id}", json_response['contained'].first['target'].first['reference']
+    assert_equal Patient.find_by(id: id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
+    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
+    assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
+    assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
   test 'USER FLOW: should calculate Patient age via create' do
@@ -1732,8 +1837,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'USER FLOW: should update Patient via update' do
+    patient_id = 1
+    patient = Patient.find_by(id: 2)
+    resource_path = "/fhir/r4/Patient/#{patient_id}"
     put(
-      '/fhir/r4/Patient/1',
+      resource_path,
       params: @patient_2.to_json,
       headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
@@ -1751,6 +1859,21 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal 'USA, State 1, County 1',
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
+    assert_equal resource_path, json_response['contained'].first['target'].first['reference']
+    assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
+    assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
+    assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
+    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
+    assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
+    assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
   test 'USER FLOW: should update Patient via update and set omitted fields to nil' do
@@ -2145,5 +2268,21 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal ADMIN_OPTIONS['version'], json_response['software']['version']
   end
   # ----- end user flow tests -----
+
+  private
+
+  def fhir_ext(obj, ext_id)
+    obj['extension'].find { |e| e['url'].include? ext_id }
+  end
+
+  def fhir_ext_str(obj, ext_id)
+    ext = fhir_ext(obj, ext_id)
+    ext && ext['valueString']
+  end
+
+  def fhir_ext_date(obj, ext_id)
+    ext = fhir_ext(obj, ext_id)
+    ext && ext['valueDate']
+  end
 end
 # rubocop:enable Metrics/ClassLength
