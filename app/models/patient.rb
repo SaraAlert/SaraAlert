@@ -955,7 +955,7 @@ class Patient < ApplicationRecord
   def head_of_household?
     return head_of_household unless head_of_household.nil?
 
-    dependents_exclude_self.where(purged: false).size.positive?
+    dependents_exclude_self.size.positive?
   end
 
   def inform_responder
@@ -966,13 +966,13 @@ class Patient < ApplicationRecord
     return if responder.nil?
 
     # update the initial responder if it changed
-    Patient.find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
+    Patient.where(purged: false).find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
     # update the current responder
     responder.refresh_head_of_household
   end
 
   def refresh_head_of_household
-    hoh = dependents_exclude_self.where(purged: false).size.positive?
+    hoh = dependents_exclude_self.size.positive?
     update(head_of_household: hoh) unless head_of_household == hoh
   end
 
