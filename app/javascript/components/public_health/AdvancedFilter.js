@@ -430,15 +430,14 @@ class AdvancedFilter extends React.Component {
       <Form.Control
         as="select"
         value={current}
-        className="form-control-number"
         onChange={event => {
           this.changeFilterOperatorOption(index, value, event.target.value);
         }}>
-        <option value="less-than">{'<'}</option>
-        <option value="less-than-equal">{'≤'}</option>
-        <option value="equal">{'='}</option>
-        <option value="greater-than-equal">{'≥'}</option>
-        <option value="greater-than">{'>'}</option>
+        <option value="less-than">{'less than'}</option>
+        <option value="less-than-equal">{'less than or equal to'}</option>
+        <option value="equal">{'equal to'}</option>
+        <option value="greater-than-equal">{'greater than or equal to'}</option>
+        <option value="greater-than">{'greater than'}</option>
       </Form.Control>
     );
   };
