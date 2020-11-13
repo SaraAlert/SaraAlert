@@ -12,6 +12,10 @@ import InfoTooltip from '../util/InfoTooltip';
 class Patient extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      showCaseInfo: props.details.isolation || (!props.details.isolation && props.details.exposure_notes),
+      expandNotes: false,
+    };
   }
 
   formatPhoneNumber(phone) {
@@ -305,7 +309,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
             <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
-              <Col id="potential-exposure-information" md="8">
+              <Col id="potential-exposure-information" md="12">
                 <Row>
                   <Col>
                     <div className="float-left">
@@ -395,7 +399,7 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
               </Col>
-              <Col id="exposure-notes" md="16">
+              <Col id="exposure-notes" md="12">
                 <Row>
                   <Col>
                     <div className="float-left">
@@ -407,51 +411,69 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col>{this.props.details.exposure_notes ? <span>{this.props.details.exposure_notes}</span> : <span>None (update me)</span>}</Col>
-                </Row>
-              </Col>
-            </Row>
-            <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
-              <Col id="case-information" md="8">
-                <Row>
                   <Col>
-                    <div className="float-left">
-                      <h5>
-                        <b>CASE INFORMATION</b>
-                      </h5>
-                    </div>
-                    <div>
-                      {this.props.goto && (
-                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
-                          <h5>(Edit)</h5>
-                        </Button>
-                      )}
-                    </div>
-                    <div className="clearfix"></div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col className="text-truncate">
-                    {this.props.details.symptom_onset && (
+                    {this.props.details.exposure_notes && (
                       <React.Fragment>
-                        <span>
-                          <b>Symptom Onset:</b> {moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}
-                        </span>
-                        <br />
+                        {this.props.details.exposure_notes.length < 500 && <span>{this.props.details.exposure_notes}</span>}
+                        {this.props.details.exposure_notes.length >= 500 && (
+                          <React.Fragment>
+                            <span>{this.state.expandNotes ? this.props.details.exposure_notes : this.props.details.exposure_notes.slice(0, 500) + ' ...'}</span>
+                            <br />
+                            <Button variant="link" className="px-0 btn btn-link" onClick={() => this.setState({ expandNotes: !this.state.expandNotes })}>
+                              {this.state.expandNotes ? '(Collapse)' : '(View all)'}
+                            </Button>
+                          </React.Fragment>
+                        )}
                       </React.Fragment>
                     )}
-                    {this.props.details.case_status && (
-                      <React.Fragment>
-                        <span>
-                          <b>Case Status:</b> {this.props.details.case_status}
-                        </span>
-                        <br />
-                      </React.Fragment>
-                    )}
+                    {!this.props.details.exposure_notes && <span>None (update me)</span>}
                   </Col>
                 </Row>
               </Col>
             </Row>
+            {this.state.showCaseInfo && (
+              <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
+                <Col id="case-information" md="12">
+                  <Row>
+                    <Col>
+                      <div className="float-left">
+                        <h5>
+                          <b>CASE INFORMATION</b>
+                        </h5>
+                      </div>
+                      <div>
+                        {this.props.goto && (
+                          <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
+                            <h5>(Edit)</h5>
+                          </Button>
+                        )}
+                      </div>
+                      <div className="clearfix"></div>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="text-truncate">
+                      {this.props.details.symptom_onset && (
+                        <React.Fragment>
+                          <span>
+                            <b>Symptom Onset:</b> {moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}
+                          </span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                      {this.props.details.case_status && (
+                        <React.Fragment>
+                          <span>
+                            <b>Case Status:</b> {this.props.details.case_status}
+                          </span>
+                          <br />
+                        </React.Fragment>
+                      )}
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            )}
           </Card.Body>
         </Collapse>
         {this.props?.details?.responder_id && this.props.details.responder_id != this.props.details.id && (
