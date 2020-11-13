@@ -52,7 +52,7 @@ class Patient extends React.Component {
           </Col>
         </Row>
         <Row className="pt-4 mx-1 mb-2">
-          <Col id="identification" md="11">
+          <Col id="identification" md="12">
             <Row>
               <Col>
                 <div className="float-left">
@@ -60,10 +60,10 @@ class Patient extends React.Component {
                     <b>IDENTIFICATION</b>
                   </h5>
                 </div>
-                <div className="float-right">
+                <div>
                   {this.props.goto && (
                     <Button variant="link" className="pt-0" onClick={() => this.props.goto(0)}>
-                      <h5>Edit</h5>
+                      <h5>(Edit)</h5>
                     </Button>
                   )}
                 </div>
@@ -71,7 +71,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col className="text-truncate">
+              <Col className="text-truncate" md="auto">
                 <b>DOB:</b> <span>{this.props.details.date_of_birth && `${moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}`}</span>
                 <br />
                 <b>Age:</b> <span>{`${this.props.details.age ? this.props.details.age : '--'}`}</span>
@@ -84,7 +84,7 @@ class Patient extends React.Component {
                 <br />
                 <b>NNDSS ID:</b> <span>{`${this.props.details.user_defined_id_nndss ? this.props.details.user_defined_id_nndss : '--'}`}</span>
               </Col>
-              <Col className="text-truncate">
+              <Col className="text-truncate pr-2">
                 <b>Birth Sex:</b> <span>{`${this.props.details.sex ? this.props.details.sex : '--'}`}</span>
                 <br />
                 <b>Gender Identity:</b> <span>{`${this.props.details.gender_identity ? this.props.details.gender_identity : '--'}`}</span>
@@ -105,8 +105,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
           </Col>
-          <Col md="2"></Col>
-          <Col id="contact-information" md="11">
+          <Col id="contact-information" md="12">
             <Row>
               <Col>
                 <div className="float-left">
@@ -114,10 +113,10 @@ class Patient extends React.Component {
                     <b>CONTACT INFORMATION</b>
                   </h5>
                 </div>
-                <div className="float-right">
+                <div>
                   {this.props.goto && (
                     <Button variant="link" className="pt-0" onClick={() => this.props.goto(2)}>
-                      <h5>Edit</h5>
+                      <h5>(Edit)</h5>
                     </Button>
                   )}
                 </div>
@@ -163,7 +162,7 @@ class Patient extends React.Component {
           <Card.Body className="mx-0 px-0 my-0 py-0">
             <Row className="g-border-bottom-2 mx-2 pb-4 mb-2"></Row>
             <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
-              <Col id="address" md="11">
+              <Col id="address" md="8">
                 <Row>
                   <Col>
                     <div className="float-left">
@@ -171,10 +170,10 @@ class Patient extends React.Component {
                         <b>ADDRESS</b>
                       </h5>
                     </div>
-                    <div className="float-right">
+                    <div>
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(1)}>
-                          <h5>Edit</h5>
+                          <h5>(Edit)</h5>
                         </Button>
                       )}
                     </div>
@@ -203,8 +202,7 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
               </Col>
-              <Col md="2"></Col>
-              <Col id="arrival-information" md="11">
+              <Col id="arrival-information" md="8">
                 <Row>
                   <Col>
                     <div className="float-left">
@@ -212,10 +210,10 @@ class Patient extends React.Component {
                         <b>ARRIVAL INFORMATION</b>
                       </h5>
                     </div>
-                    <div className="float-right">
+                    <div>
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(3)}>
-                          <h5>Edit</h5>
+                          <h5>(Edit)</h5>
                         </Button>
                       )}
                     </div>
@@ -248,20 +246,18 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
               </Col>
-            </Row>
-            <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
-              <Col id="additional-planned-travel" md="11">
+              <Col id="additional-planned-travel" md="8">
                 <Row>
                   <Col>
                     <div className="float-left">
                       <h5>
-                        <b>ADDITIONAL PLANNED TRAVEL</b>
+                        <b>PLANNED TRAVEL</b>
                       </h5>
                     </div>
-                    <div className="float-right">
+                    <div>
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(4)}>
-                          <h5>Edit</h5>
+                          <h5>(Edit)</h5>
                         </Button>
                       )}
                     </div>
@@ -307,20 +303,20 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
               </Col>
-              <Col md="2"></Col>
-              <Col id="exposure-case-information" md="11">
+            </Row>
+            <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
+              <Col id="potential-exposure-information" md="8">
                 <Row>
                   <Col>
                     <div className="float-left">
                       <h5>
-                        {!this.props.details.isolation && <b>POTENTIAL EXPOSURE INFORMATION</b>}
-                        {this.props.details.isolation && <b>CASE INFORMATION</b>}
+                        <b>POTENTIAL EXPOSURE INFORMATION</b>
                       </h5>
                     </div>
-                    <div className="float-right">
+                    <div>
                       {this.props.goto && (
                         <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
-                          <h5>Edit</h5>
+                          <h5>(Edit)</h5>
                         </Button>
                       )}
                     </div>
@@ -328,91 +324,131 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
                 <Row>
-                  {!this.props.details.isolation && (
-                    <Col className="text-truncate">
-                      <b>LAST EXPOSURE</b>
-                      <br />
-                      {(this.props.details.potential_exposure_location || this.props.details.potential_exposure_country) && (
-                        <React.Fragment>
-                          <span>
-                            {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
-                            {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
-                          </span>
-                          <br />
-                        </React.Fragment>
+                  <Col>
+                    <b>LAST EXPOSURE</b>
+                    <br />
+                    {(this.props.details.potential_exposure_location || this.props.details.potential_exposure_country) && (
+                      <React.Fragment>
+                        <span>
+                          {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
+                          {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
+                        </span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {this.props.details.last_date_of_exposure && (
+                      <React.Fragment>
+                        <span>{moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    <br />
+                    <b>RISK FACTORS</b>
+                    <br />
+                    {this.props.details.contact_of_known_case && (
+                      <React.Fragment>
+                        <b className="text-danger">CLOSE CONTACT WITH A KNOWN CASE:</b>
+                        <span> {this.props.details.contact_of_known_case_id}</span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {this.props.details.member_of_a_common_exposure_cohort && (
+                      <React.Fragment>
+                        <b className="text-danger">MEMBER OF A COMMON EXPOSURE COHORT:</b>
+                        <span> {this.props.details.member_of_a_common_exposure_cohort_type}</span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {this.props.details.travel_to_affected_country_or_area && (
+                      <React.Fragment>
+                        <b className="text-danger">TRAVEL FROM AFFECTED COUNTRY OR AREA</b>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {this.props.details.was_in_health_care_facility_with_known_cases && (
+                      <React.Fragment>
+                        <b className="text-danger">WAS IN HEALTH CARE FACILITY WITH KNOWN CASES:</b>
+                        <span> {this.props.details.was_in_health_care_facility_with_known_cases_facility_name || ''}</span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {this.props.details.laboratory_personnel && (
+                      <React.Fragment>
+                        <b className="text-danger">LABORATORY PERSONNEL:</b>
+                        <span> {this.props.details.laboratory_personnel_facility_name || ''}</span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {this.props.details.healthcare_personnel && (
+                      <React.Fragment>
+                        <b className="text-danger">HEALTHCARE PERSONNEL:</b>
+                        <span> {this.props.details.healthcare_personnel_facility_name || ''}</span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {this.props.details.crew_on_passenger_or_cargo_flight && (
+                      <React.Fragment>
+                        <b className="text-danger">CREW ON PASSENGER OR CARGO FLIGHT</b>
+                        <br />
+                      </React.Fragment>
+                    )}
+                  </Col>
+                </Row>
+              </Col>
+              <Col id="exposure-notes" md="16">
+                <Row>
+                  <Col>
+                    <div className="float-left">
+                      <h5>
+                        <b>EXPOSURE NOTES</b>
+                      </h5>
+                    </div>
+                    <div className="clearfix"></div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>{this.props.details.exposure_notes ? <span>{this.props.details.exposure_notes}</span> : <span>None (update me)</span>}</Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
+              <Col id="case-information" md="8">
+                <Row>
+                  <Col>
+                    <div className="float-left">
+                      <h5>
+                        <b>CASE INFORMATION</b>
+                      </h5>
+                    </div>
+                    <div>
+                      {this.props.goto && (
+                        <Button variant="link" className="pt-0" onClick={() => this.props.goto(5)}>
+                          <h5>(Edit)</h5>
+                        </Button>
                       )}
-                      {this.props.details.last_date_of_exposure && (
-                        <React.Fragment>
-                          <span>{moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                      {this.props.details.contact_of_known_case && (
-                        <React.Fragment>
-                          <span className="text-danger">CLOSE CONTACT WITH A KNOWN CASE: {this.props.details.contact_of_known_case_id}</span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                      {this.props.details.member_of_a_common_exposure_cohort && (
-                        <React.Fragment>
-                          <span className="text-danger">MEMBER OF A COMMON EXPOSURE COHORT: {this.props.details.member_of_a_common_exposure_cohort_type}</span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                      {this.props.details.travel_to_affected_country_or_area && (
-                        <React.Fragment>
-                          <span className="text-danger">TRAVEL FROM AFFECTED COUNTRY OR AREA</span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                      {this.props.details.was_in_health_care_facility_with_known_cases && (
-                        <React.Fragment>
-                          <span className="text-danger">
-                            WAS IN HEALTH CARE FACILITY WITH KNOWN CASES: {this.props.details.was_in_health_care_facility_with_known_cases_facility_name || ''}
-                          </span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                      {this.props.details.laboratory_personnel && (
-                        <React.Fragment>
-                          <span className="text-danger">LABORATORY PERSONNEL: {this.props.details.laboratory_personnel_facility_name || ''}</span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                      {this.props.details.healthcare_personnel && (
-                        <React.Fragment>
-                          <span className="text-danger">HEALTHCARE PERSONNEL: {this.props.details.healthcare_personnel_facility_name || ''}</span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                      {this.props.details.crew_on_passenger_or_cargo_flight && (
-                        <React.Fragment>
-                          <span className="text-danger">CREW ON PASSENGER OR CARGO FLIGHT</span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                    </Col>
-                  )}
-                  {this.props.details.isolation && (
-                    <Col className="text-truncate">
-                      {this.props.details.symptom_onset && (
-                        <React.Fragment>
-                          <span>
-                            <b>Symptom Onset:</b> {moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}
-                          </span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                      {this.props.details.case_status && (
-                        <React.Fragment>
-                          <span>
-                            <b>Case Status:</b> {this.props.details.case_status}
-                          </span>
-                          <br />
-                        </React.Fragment>
-                      )}
-                    </Col>
-                  )}
+                    </div>
+                    <div className="clearfix"></div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col className="text-truncate">
+                    {this.props.details.symptom_onset && (
+                      <React.Fragment>
+                        <span>
+                          <b>Symptom Onset:</b> {moment(this.props.details.symptom_onset, 'YYYY-MM-DD').format('MM/DD/YYYY')}
+                        </span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {this.props.details.case_status && (
+                      <React.Fragment>
+                        <span>
+                          <b>Case Status:</b> {this.props.details.case_status}
+                        </span>
+                        <br />
+                      </React.Fragment>
+                    )}
+                  </Col>
                 </Row>
               </Col>
             </Row>
