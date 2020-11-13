@@ -31,7 +31,13 @@ class PatientMailer < ApplicationMailer
 
     lang = patient.select_language
     contents = "#{I18n.t('assessments.sms.prompt.intro1', locale: lang)} #{patient&.initials_age('-')} #{I18n.t('assessments.sms.prompt.intro2', locale: lang)}"
-    TwilioSender.send_sms(patient, contents)
+
+    success = TwilioSender.send_sms(patient, contents)
+    add_success_history(patient, patient) if success
+    add_fail_history_sms(patient) unless success
+
+    # Always update the last contact time so the system does not try and send sms again.
+    patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
   # Right now the wording of this message is the same as for enrollment
@@ -98,7 +104,7 @@ class PatientMailer < ApplicationMailer
     params = { prompt: contents, patient_submission_token: patient.submission_token,
                threshold_hash: threshold_hash, medium: 'SMS', language: lang.to_s.split('-').first.upcase,
                try_again: I18n.t('assessments.sms.prompt.try-again', locale: lang),
-               max_retries_message: I18n.t('assessments.sms.max-retries-message', locale: lang),
+               max_retries_message: I18n.t('assessments.sms.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.sms.prompt.thanks', locale: lang) }
 
     if TwilioSender.start_studio_flow(patient, params)
@@ -141,7 +147,7 @@ class PatientMailer < ApplicationMailer
                threshold_hash: threshold_hash, medium: 'VOICE', language: lang.to_s.split('-').first.upcase,
                intro: I18n.t('assessments.phone.intro', locale: lang),
                try_again: I18n.t('assessments.phone.try-again', locale: lang),
-               max_retries_message: I18n.t('assessments.phone.max-retries-message', locale: lang),
+               max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: lang),
                thanks: I18n.t('assessments.phone.thanks', locale: lang) }
 
     if TwilioSender.start_studio_flow(patient, params)
