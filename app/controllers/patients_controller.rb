@@ -197,8 +197,7 @@ class PatientsController < ApplicationController
       if current_user.jurisdiction.subtree_ids.include?(content[:jurisdiction_id].to_i)
         old_jurisdiction = patient.jurisdiction[:path]
         new_jurisdiction = Jurisdiction.find(content[:jurisdiction_id])[:path]
-        patient.transfer_jurisdiction(content[:jurisdiction_id], current_user)
-        content.delete[:jurisdiction_id] = patient.jurisdiction_id
+        transfer = Transfer.create(patient: patient, from_jurisdiction: patient.jurisdiction, to_jurisdiction_id: content[:jurisdiction_id], who: current_user)
         comment = "User changed Jurisdiction from \"#{old_jurisdiction}\" to \"#{new_jurisdiction}\"."
         history = History.monitoring_change(patient: patient, created_by: current_user.email, comment: comment)
         if propagated_fields.include?('jurisdiction_id')
@@ -240,6 +239,7 @@ class PatientsController < ApplicationController
     end
 
     # Reset symptom onset date if moving from isolation to exposure
+    # TODO: handle this method not existing anymore
     patient.reset_symptom_onset if !content[:isolation].nil? && !content[:isolation]
 
     # Update patient history with detailed edit diff
@@ -368,12 +368,12 @@ class PatientsController < ApplicationController
     # Figure out what exactly changed, and limit update to only those fields
     diff_state = params[:diffState]&.map(&:to_sym)
     permitted_params = if diff_state.nil?
-                        PatientHelper.monitoring_fields
+                         PatientHelper.monitoring_fields
                        else
-                        PatientHelper.monitoring_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
+                         PatientHelper.monitoring_fields & diff_state # Set intersection between what the front end is saying changed, and status fields
                        end
     updates = params.require(:patient).permit(permitted_params).to_h.deep_symbolize_keys
-    
+
     patient_before = patient.dup
 
     # Get any additional updates that may need to occur based on initial changes
@@ -401,7 +401,6 @@ class PatientsController < ApplicationController
     # NOTE: We use updates rather than all updates here because we want to determine what History
     # messages are needed based on the original changes
     patient.update_patient_monitoring_history(updates, patient_before, history_data)
-    
   end
 
   def clear_assessments

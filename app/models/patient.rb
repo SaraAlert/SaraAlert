@@ -880,7 +880,7 @@ class Patient < ApplicationRecord
   end
 
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
-  def self.detailed_history_edit(patient_before, patient_after, attributes, history_creator_label, is_api_edit=false)
+  def self.detailed_history_edit(patient_before, patient_after, attributes, history_creator_label, is_api_edit: false)
     diffs = patient_diff(patient_before, patient_after, attributes)
     return if diffs.length.zero?
 
@@ -955,13 +955,13 @@ class Patient < ApplicationRecord
       case attribute
       when :monitoring
         # If record should be closed
-        if !new_attribute_value
+        unless new_attribute_value
           all_updates[:closed_at] = DateTime.now
           all_updates[:continuous_exposure] = false
         end
       when :isolation
         # If record is being moved to Exposure workflow from Isolation workflow
-        if !new_attribute_value
+        unless new_attribute_value
           all_updates[:extended_isolation] = nil
           # NOTE: The below will overwrite any new value they may set for symptom onset as they can not be set in the exposure workflow.
           all_updates[:user_defined_symptom_onset] = false
@@ -970,25 +970,22 @@ class Patient < ApplicationRecord
       when :case_status
         # If Case Status has been updated to one of the values meant for the Exposure workflow, reset the Public Health Action.
         if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && patient[:public_health_action] != 'None'
-          all_updates[:public_health_action] = "None"
+          all_updates[:public_health_action] = 'None'
         end
       when :symptom_onset
-        #If symptom onset is being cleared, reset with calculated value. 
+        # If symptom onset is being cleared, reset with calculated value.
         if new_attribute_value.nil?
           all_updates[:user_defined_symptom_onset] = false
           all_updates[:symptom_onset] = calculated_symptom_onset
         end
       when :continuous_exposure
         # Do not allow continuous exposure to be set for records that are closed
-        if all_updates[:continuous_exposure] && !all_updates[:monitoring].nil? && !all_updates[:monitoring]
-          all_updates.delete(:continuous_exposure)
-        end
+        all_updates.delete(:continuous_exposure) if all_updates[:continuous_exposure] && !all_updates[:monitoring].nil? && !all_updates[:monitoring]
       end
     end
 
     all_updates
   end
-
 
   def update_patient_monitoring_history(all_updates, patient_before, history_data)
     all_updates&.keys&.each do |attribute|
@@ -1024,7 +1021,7 @@ class Patient < ApplicationRecord
       when :continuous_exposure
         History.continuous_exposure(history_data)
       when :isolation
-        if !updated_value
+        unless updated_value
           # If moved from Isolation workflow to Exposure workflow and Extended Isolation was cleared
           if !patient_before[:extended_isolation].nil? && extended_isolation.nil?
             History.monitoring_change(
@@ -1058,7 +1055,7 @@ class Patient < ApplicationRecord
         History.case_status(history, diff_state)
 
         # If Case Status was updated to one of the values meant for the Exposure workflow and the Public Health Action was reset.
-        if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && patient_before[:public_health_action] != 'None' && public_health_action == "None"
+        if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && patient_before[:public_health_action] != 'None' && public_health_action == 'None'
           message = monitoring ?
           "System changed Latest Public Health Action from \"#{public_health_action}\" to \"None\" so that the monitoree will appear on
           the appropriate line list in the exposure workflow to continue monitoring." : "System changed Latest Public Health Action

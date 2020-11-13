@@ -204,7 +204,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def self.monitoring_fields
-    return %i[
+    %i[
       monitoring
       monitoring_reason
       monitoring_plan
@@ -223,34 +223,34 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def self.info_fields
-    return [
-      :first_name,
-      :middle_name,
-      :last_name,  
-      :secondary_telephone, 
-      :email, 
-      :date_of_birth,
-      :address_line_1, 
-      :address_line_2, 
-      :address_city,     
-      :address_state, 
-      :address_zip,
-      :monitored_address_line_1,
-      :monitored_address_line_2, 
-      :monitored_address_city,     
-      :monitored_address_state, 
-      :monitored_address_zip,
-      :primary_language, 
-      :interpretation_required,
-      :white,
-      :black_or_african_american,
-      :american_indian_or_alaska_native,
-      :asian, 
-      :native_hawaiian_or_other_pacific_islander,
-      :ethnicity,
-      :sex, 
-      :preferred_contact_method,
-      :preferred_contact_time
+    %i[
+      first_name
+      middle_name
+      last_name
+      secondary_telephone
+      email
+      date_of_birth
+      address_line_1
+      address_line_2
+      address_city
+      address_state
+      address_zip
+      monitored_address_line_1
+      monitored_address_line_2
+      monitored_address_city
+      monitored_address_state
+      monitored_address_zip
+      primary_language
+      interpretation_required
+      white
+      black_or_african_american
+      american_indian_or_alaska_native
+      asian
+      native_hawaiian_or_other_pacific_islander
+      ethnicity
+      sex
+      preferred_contact_method
+      preferred_contact_time
     ]
   end
 end
