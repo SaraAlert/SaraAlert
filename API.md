@@ -598,6 +598,10 @@ Get a monitoree via an id, e.g.:
     {
       "url": "http://saraalert.org/StructureDefinition/isolation",
       "valueBoolean": false
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+        "valueString": "USA, State 1"
     }
   ],
   "active": true,
@@ -880,6 +884,10 @@ Use this route to retrieve a FHIR Bundle containing the monitoree, all their lab
           {
             "url": "http://saraalert.org/StructureDefinition/isolation",
             "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 1"
           }
         ],
         "active": true,
@@ -1174,6 +1182,10 @@ To create a new monitoree, simply POST a FHIR Patient resource.
     {
       "url": "http://saraalert.org/StructureDefinition/isolation",
       "valueBoolean": false
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+      "valueString": "USA, State 1"
     }
   ],
   "active": true,
@@ -1300,6 +1312,10 @@ On success, the server will return the newly created resource with an id. This i
     {
       "url": "http://saraalert.org/StructureDefinition/isolation",
       "valueBoolean": false
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+      "valueString": "USA, State 1"
     }
   ],
   "active": true,
@@ -1431,6 +1447,10 @@ An update request creates a new current version for an existing resource.
     {
       "url": "http://saraalert.org/StructureDefinition/isolation",
       "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+      "valueString": "USA, State 1"
     }
   ],
   "active": true,
@@ -1557,6 +1577,10 @@ On success, the server will update the existing resource given the id.
     {
       "url": "http://saraalert.org/StructureDefinition/isolation",
       "valueBoolean": true
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+      "valueString": "USA, State 1"
     }
   ],
   "active": true,
@@ -1703,6 +1727,10 @@ GET `[base]/Patient?given=testy&family=mctest`
           {
             "url": "http://saraalert.org/StructureDefinition/isolation",
             "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 1"
           }
         ],
         "active": true,
@@ -2078,6 +2106,10 @@ GET `[base]/Patient?_count=2`
           {
             "url": "http://saraalert.org/StructureDefinition/isolation",
             "valueBoolean": false
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 1"
           }
         ],
         "active": true,
@@ -2195,6 +2227,10 @@ GET `[base]/Patient?_count=2`
           {
             "url": "http://saraalert.org/StructureDefinition/isolation",
             "valueBoolean": true
+          },
+          {
+            "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+            "valueString": "USA, State 1"
           }
         ],
         "active": true,

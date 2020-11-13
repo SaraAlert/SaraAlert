@@ -938,7 +938,7 @@ class Patient < ApplicationRecord
   # Construct a diff for a patient update to keep track of changes
   def self.patient_diff(patient_before, patient_after, allowed_fields)
     diffs = []
-    allowed_fields.each do |attribute|
+    allowed_fields&.keys&.each do |attribute|
       next if patient_before[attribute] == patient_after[attribute]
 
       diffs << {
@@ -966,7 +966,7 @@ class Patient < ApplicationRecord
     return if responder.nil?
 
     # update the initial responder if it changed
-    Patient.find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
+    Patient.where(purged: false).find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
     # update the current responder
     responder.refresh_head_of_household
   end
@@ -982,7 +982,7 @@ class Patient < ApplicationRecord
     token = nil
     loop do
       token = SecureRandom.urlsafe_base64[0, 10]
-      break unless Patient.where('BINARY submission_token = ?', token).any?
+      break unless Patient.where(submission_token: token).any?
     end
     token
   end

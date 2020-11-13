@@ -112,7 +112,7 @@ namespace :admin do
       unique_identifier = Base64::urlsafe_encode64([[Digest::SHA256.hexdigest(jurisdiction.jurisdiction_path_string)].pack('H*')].pack('m0'))[0, 10]
 
       # Warn user if collision has occured
-      if Jurisdiction.where('BINARY unique_identifier = ?', unique_identifier).where.not(id: jurisdiction.id).any?
+      if Jurisdiction.where(unique_identifier: unique_identifier).where.not(id: jurisdiction.id).any?
         raise "JURISDICTION IDENTIFIER HASH COLLISION FOR: #{jurisdiction[:path]}"
       end
 

@@ -282,6 +282,8 @@ GEM
       railties (>= 3.2)
       tilt
     redis (4.2.2)
+    redis-queue (0.1.0)
+      redis (>= 3.3.5, < 5)
     regexp_parser (1.8.1)
     responders (3.0.1)
       actionpack (>= 5.0)
@@ -427,6 +429,7 @@ DEPENDENCIES
   rack-test
   rails (~> 6.0.2, >= 6.0.2.1)
   react-rails
+  redis-queue
   rolify
   roo
   rspec-mocks

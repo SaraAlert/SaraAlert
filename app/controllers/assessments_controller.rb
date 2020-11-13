@@ -33,9 +33,9 @@ class AssessmentsController < ApplicationController
 
     # Figure out the jurisdiction to know which symptoms to render
     jurisdiction = if ADMIN_OPTIONS['report_mode']
-                     Jurisdiction.find_by('BINARY unique_identifier = ?', @unique_identifier)
+                     Jurisdiction.find_by(unique_identifier: @unique_identifier)
                    else
-                     Patient.find_by('BINARY submission_token = ?', get_newest_submission_token(@patient_submission_token))&.jurisdiction
+                     Patient.find_by(submission_token: get_newest_submission_token(@patient_submission_token))&.jurisdiction
                    end
     redirect_to(inv_link_url) && return if jurisdiction.nil?
 
@@ -93,7 +93,7 @@ class AssessmentsController < ApplicationController
       redirect_to(root_url) && return if newest_submission_token.nil?
 
       # The patient providing this assessment is identified through the submission_token
-      patient = Patient.find_by('BINARY submission_token = ?', newest_submission_token)
+      patient = Patient.find_by(submission_token: newest_submission_token)
       redirect_to(root_url) && return unless patient
 
       threshold_condition_hash = params.permit(:threshold_hash)[:threshold_hash]
@@ -116,7 +116,7 @@ class AssessmentsController < ApplicationController
       @assessment.save
 
       # Save a new receipt and clear out any older ones
-      AssessmentReceipt.where('BINARY submission_token = ?', submission_token_from_params).delete_all
+      AssessmentReceipt.where(submission_token: submission_token_from_params).delete_all
       @assessment_receipt = AssessmentReceipt.new(submission_token: submission_token_from_params)
       @assessment_receipt.save
 
@@ -137,7 +137,7 @@ class AssessmentsController < ApplicationController
     redirect_to(root_url) && return if patient.nil?
 
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
-    patient = Patient.find_by('BINARY submission_token = ?', params.permit(:patient_submission_token)[:patient_submission_token])
+    patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
 
