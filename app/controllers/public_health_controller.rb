@@ -72,8 +72,7 @@ class PublicHealthController < ApplicationController
         {
           filterOption: filter.require(:filterOption).permit(:name, :title, :description, :type, options: []),
           value: filter.permit(:value)[:value] || filter.require(:value) || false,
-          dateOption: filter.permit(:dateOption)[:dateOption],
-          operatorOption: filter.permit(:operatorOption)[:operatorOption]
+          dateOption: filter.permit(:dateOption)[:dateOption]
         }
       end
       patients = advanced_filter(patients, advanced) unless advanced.nil?
