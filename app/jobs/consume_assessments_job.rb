@@ -7,7 +7,6 @@ require 'redis-queue'
 class ConsumeAssessmentsJob < ApplicationJob
   queue_as :default
 
-  # rubocop:disable Metrics/MethodLength
   def perform
     queue = Redis::Queue.new('q_bridge', 'bp_q_bridge', redis: Rails.application.config.redis)
 
@@ -22,30 +21,15 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         end
 
-        unless message['response_status'].in? %w[opt_out opt_out]
-          patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
+        if message['response_status'].in? %w[opt_out opt_in]
+          handle_opt_in_opt_out(message)
+          queue.commit
+          next
         end
 
-        if message['response_status'].in? %w[opt_out opt_in]
-          # When an opt_in or opt_out response_status is posted to us the patient_submission_token value is popuated with
-          # a flow execution id, this is because a monitoree may send STOP/START outside the context of an assessment and
-          # therefore the patient.submission_token will not be available. We get the responder associated with the opt_in
-          # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id
-          phone_numbers = TwilioSender.get_phone_numbers_from_flow_execution(message['patient_submission_token'])
-          if phone_numbers.nil?
-            Rails.logger.info 'ConsumeAssessmentsJob: skipping nil flow execution'
-            queue.commit
-            next
-          end
-          monitoree_number = Phonelib.parse(phone_numbers[:monitoree_number], 'US').full_e164
-          sara_number = phone_numbers[:sara_number]
-          # Handle BlockedNumber manipulation here in case no monitorees are associated with this number
-          BlockedNumber.create(phone_number: monitoree_number) if message['response_status'] == 'opt_out'
-          BlockedNumber.where(phone_number: monitoree_number).destroy_all if message['response_status'] == 'opt_in'
-          patient = Patient.responder_for_number(monitoree_number)&.first
-        elsif patient.nil?
+        patient = Patient.where(purged: false).find_by(submission_token: message['patient_submission_token'])
+        if patient.nil?
           # Perform patient lookup for old submission tokens if new submission token didn't resolve
-          # and this message is not an opt_in or opt_out message
           patient_lookup = PatientLookup.find_by(old_submission_token: message['patient_submission_token'])
           patient = Patient.find_by(submission_token: patient_lookup[:new_submission_token]) unless patient_lookup.nil?
         end
@@ -59,8 +43,7 @@ class ConsumeAssessmentsJob < ApplicationJob
 
         # Prevent duplicate patient assessment spam
         # Only check for latest assessment if there is one
-        if (!patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)) &&
-           !(message['response_status'].in? %w[opt_out opt_out])
+        if !patient.latest_assessment.nil? && (patient.latest_assessment.created_at > ADMIN_OPTIONS['reporting_limit'].minutes.ago)
           Rails.logger.info "ConsumeAssessmentsJob: skipping duplicate assessment (patient: #{patient.id})..."
           queue.commit
           next
@@ -118,32 +101,6 @@ class ConsumeAssessmentsJob < ApplicationJob
 
           queue.commit
           next
-        when 'opt_out'
-          # In cases of opt_in/opt_out the sara_number should always be available
-          sara_number ||= '<Number Unavailable>'
-          History.contact_attempt(patient: patient, comment: "Monitoree blocked SMS communications with Sara Alert by sending a\
-                                                             STOP keyword via primary telephone number #{patient.primary_telephone} to\
-                                                             the Sara Alert number #{sara_number}.")
-          unless dependents.blank?
-            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household blocked SMS communications with Sara Alert by sending a\
-                                                                      STOP keyword via primary telephone number #{patient.primary_telephone} to\
-                                                                      the Sara Alert number #{sara_number}.")
-          end
-          queue.commit
-          next
-        when 'opt_in'
-          # In cases of opt_in/opt_out the sara_number should always be available
-          sara_number ||= '<Number Unavailable>'
-          History.contact_attempt(patient: patient, comment: "Monitoree unblocked SMS communications with Sara Alert by sending a\
-                                                             START keyword via primary telephone number #{patient.primary_telephone} to\
-                                                             the Sara Alert number #{sara_number}.")
-          unless dependents.blank?
-            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household unblocked SMS communications with Sara Alert by sending a\
-                                                                      START keyword via primary telephone number #{patient.primary_telephone} to\
-                                                                      the Sara Alert number #{sara_number}.")
-          end
-          queue.commit
-          next
         when 'max_retries_sms'
           # Maximum amount of SMS response retries reached
           # nil out the last_reminder_sent field so the system will try sending another SMS assessment
@@ -184,7 +141,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
           assessment.symptomatic = assessment.symptomatic?
           queue.commit if assessment.save
-        elsif !message['response_status'].in? %w[opt_out opt_in]
+        else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
           patient.active_dependents.each do |dependent|
@@ -218,9 +175,54 @@ class ConsumeAssessmentsJob < ApplicationJob
     sleep(1)
     retry
   end
-  # rubocop:enable Metrics/MethodLength
 
   private
+
+  def handle_opt_in_opt_out(message)
+    # When an opt_in or opt_out response_status is posted to us the patient_submission_token value is popuated with
+    # a flow execution id, this is because a monitoree may send STOP/START outside the context of an assessment and
+    # therefore the patient.submission_token will not be available. We get the responder associated with the opt_in
+    # or opt_out phone number by requesting the phone number who sent the message in the associated flow execution id
+    phone_numbers = TwilioSender.get_phone_numbers_from_flow_execution(message['patient_submission_token'])
+    return if phone_numbers.nil?
+
+    monitoree_number = Phonelib.parse(phone_numbers[:monitoree_number], 'US').full_e164
+    sara_number = phone_numbers[:sara_number]
+    # Handle BlockedNumber manipulation here in case no monitorees are associated with this number
+    BlockedNumber.create(phone_number: monitoree_number) if message['response_status'] == 'opt_out'
+    BlockedNumber.where(phone_number: monitoree_number).destroy_all if message['response_status'] == 'opt_in'
+
+    patient = Patient.responder_for_number(monitoree_number)&.first
+    return if patient.nil?
+
+    # Get list of dependents excluding the patient itself.
+    dependents = patient.dependents_exclude_self
+
+    case message['response_status']
+    when 'opt_out'
+      # In cases of opt_in/opt_out the sara_number should always be available
+      sara_number ||= '<Number Unavailable>'
+      History.contact_attempt(patient: patient, comment: "Monitoree blocked SMS communications with Sara Alert by sending a\
+                                                         STOP keyword via primary telephone number #{patient.primary_telephone} to\
+                                                         the Sara Alert number #{sara_number}.")
+      unless dependents.blank?
+        create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household blocked SMS communications with Sara Alert by sending a\
+                                                                  STOP keyword via primary telephone number #{patient.primary_telephone} to\
+                                                                  the Sara Alert number #{sara_number}.")
+      end
+    when 'opt_in'
+      # In cases of opt_in/opt_out the sara_number should always be available
+      sara_number ||= '<Number Unavailable>'
+      History.contact_attempt(patient: patient, comment: "Monitoree unblocked SMS communications with Sara Alert by sending a\
+                                                         START keyword via primary telephone number #{patient.primary_telephone} to\
+                                                         the Sara Alert number #{sara_number}.")
+      unless dependents.blank?
+        create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household unblocked SMS communications with Sara Alert by sending a\
+                                                                  START keyword via primary telephone number #{patient.primary_telephone} to\
+                                                                  the Sara Alert number #{sara_number}.")
+      end
+    end
+  end
 
   # Use the import method here to generate less SQL statements for a bulk insert of
   # dependent histories instead of 1 statement per dependent.
