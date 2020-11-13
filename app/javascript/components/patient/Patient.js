@@ -225,29 +225,44 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col className="text-truncate">
-                    <b>DEPARTED</b>
-                    <br />
-                    <span>{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
-                    <br />
-                    <span>{`${
-                      this.props.details.date_of_departure ? moment(this.props.details.date_of_departure, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
-                    }`}</span>
-                  </Col>
-                  <Col className="text-truncate">
-                    <b>ARRIVAL</b>
-                    <br />
-                    <span>{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
-                    <br />
-                    <span>{`${this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''}`}</span>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col className="text-truncate pt-1">
-                    <span>{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
-                    <br />
-                    <span>{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
-                  </Col>
+                  {!this.props.details.port_of_origin && !this.props.details.port_of_entry_into_usa && (
+                    <Col className="text-truncate">
+                      <span className="none-text">None</span>
+                    </Col>
+                  )}
+                  {(this.props.details.port_of_origin || this.props.details.port_of_entry_into_usa) && (
+                    <React.Fragment>
+                      <Col>
+                        <Row>
+                          <Col className="text-truncate">
+                            <b>DEPARTED</b>
+                            <br />
+                            <span>{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
+                            <br />
+                            <span>{`${
+                              this.props.details.date_of_departure ? moment(this.props.details.date_of_departure, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
+                            }`}</span>
+                          </Col>
+                          <Col className="text-truncate">
+                            <b>ARRIVAL</b>
+                            <br />
+                            <span>{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
+                            <br />
+                            <span>{`${
+                              this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
+                            }`}</span>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col className="text-truncate pt-1">
+                            <span>{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
+                            <br />
+                            <span>{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </React.Fragment>
+                  )}
                 </Row>
               </Col>
               <Col id="additional-planned-travel" md="8">
@@ -270,40 +285,47 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col className="text-truncate">
-                    <b>Type:</b>{' '}
-                    <span>{this.props.details.additional_planned_travel_type ? `${this.props.details.additional_planned_travel_type}` : '--'}</span>
-                    <br />
-                    <b>Place:</b>{' '}
-                    <span>
-                      {`${
-                        this.props.details.additional_planned_travel_destination_country ? this.props.details.additional_planned_travel_destination_country : ''
-                      }`}
-                      {`${
-                        this.props.details.additional_planned_travel_destination_state ? this.props.details.additional_planned_travel_destination_state : ''
-                      }`}
-                      {!this.props.details.additional_planned_travel_destination_country &&
-                        !this.props.details.additional_planned_travel_destination_state &&
-                        '--'}
-                    </span>
-                    <br />
-                    <b>Port Of Departure:</b>{' '}
-                    <span>{`${
-                      this.props.details.additional_planned_travel_port_of_departure ? this.props.details.additional_planned_travel_port_of_departure : '--'
-                    }`}</span>
-                    <br />
-                    <b>End Date:</b>{' '}
-                    <span>{`${
-                      this.props.details.additional_planned_travel_start_date
-                        ? moment(this.props.details.additional_planned_travel_start_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
-                        : '--'
-                    }`}</span>
-                    <br />
-                    <b>Start Date:</b>{' '}
-                    <span>{`${
-                      this.props.details.additional_planned_travel_end_date
-                        ? moment(this.props.details.additional_planned_travel_end_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
-                        : '--'
-                    }`}</span>
+                    {!this.props.details.additional_planned_travel_type && <span className="none-text">None</span>}
+                    {this.props.details.additional_planned_travel_type && (
+                      <React.Fragment>
+                        <b>Type:</b>{' '}
+                        <span>{this.props.details.additional_planned_travel_type ? `${this.props.details.additional_planned_travel_type}` : '--'}</span>
+                        <br />
+                        <b>Place:</b>{' '}
+                        <span>
+                          {`${
+                            this.props.details.additional_planned_travel_destination_country
+                              ? this.props.details.additional_planned_travel_destination_country
+                              : ''
+                          }`}
+                          {`${
+                            this.props.details.additional_planned_travel_destination_state ? this.props.details.additional_planned_travel_destination_state : ''
+                          }`}
+                          {!this.props.details.additional_planned_travel_destination_country &&
+                            !this.props.details.additional_planned_travel_destination_state &&
+                            '--'}
+                        </span>
+                        <br />
+                        <b>Port Of Departure:</b>{' '}
+                        <span>{`${
+                          this.props.details.additional_planned_travel_port_of_departure ? this.props.details.additional_planned_travel_port_of_departure : '--'
+                        }`}</span>
+                        <br />
+                        <b>End Date:</b>{' '}
+                        <span>{`${
+                          this.props.details.additional_planned_travel_start_date
+                            ? moment(this.props.details.additional_planned_travel_start_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                            : '--'
+                        }`}</span>
+                        <br />
+                        <b>Start Date:</b>{' '}
+                        <span>{`${
+                          this.props.details.additional_planned_travel_end_date
+                            ? moment(this.props.details.additional_planned_travel_end_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                            : '--'
+                        }`}</span>
+                      </React.Fragment>
+                    )}
                   </Col>
                 </Row>
               </Col>
@@ -426,7 +448,7 @@ class Patient extends React.Component {
                         )}
                       </React.Fragment>
                     )}
-                    {!this.props.details.exposure_notes && <span>None (update me)</span>}
+                    {!this.props.details.exposure_notes && <span className="none-text">None</span>}
                   </Col>
                 </Row>
               </Col>
