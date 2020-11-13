@@ -24,7 +24,7 @@ class PatientMailerTest < ActionMailer::TestCase
     ENV['TWILLIO_API_ACCOUNT'] = 'test'
     ENV['TWILLIO_API_KEY'] = 'test'
     ENV['TWILLIO_STUDIO_FLOW'] = 'test'
-    ENV['TWILIO_MESSAGING_SERVICE_SID'] = 'test_messaging_sid'
+    ENV['TWILLIO_MESSAGING_SERVICE_SID'] = 'test_messaging_sid'
   end
 
   def teardown
@@ -138,22 +138,19 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'enrollment sms weblink message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
 
-    first_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.weblink.intro2', locale: 'en')}"
-    second_contents = new_patient_assessment_jurisdiction_report_lang_url(@patient.submission_token, 'en', @patient.jurisdiction.unique_identifier[0, 32])
+    url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                @patient.jurisdiction.unique_identifier,
+                                                                'en',
+                                                                @patient&.initials_age)
 
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
     # Assert correct REST call when messaging_service is NOT used falls back to from number
-    ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
       true
     end)
     expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
                                                                                          to: '+15555550111',
-                                                                                         body: first_contents,
-                                                                                         from: 'test'
-                                                                                       ))
-    expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
-                                                                                         to: '+15555550111',
-                                                                                         body: second_contents,
+                                                                                         body: contents,
                                                                                          from: 'test'
                                                                                        ))
 
@@ -213,20 +210,18 @@ class PatientMailerTest < ActionMailer::TestCase
   test 'assessment sms weblink message contents not using messaging service' do
     ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
 
-    first_contents = "#{I18n.t('assessments.sms.weblink.intro1', locale: 'en')} -0 #{I18n.t('assessments.sms.weblink.intro2', locale: 'en')}"
-    second_contents = new_patient_assessment_jurisdiction_report_lang_url(@patient.submission_token, 'en', @patient.jurisdiction.unique_identifier[0, 32])
+    url = new_patient_assessment_jurisdiction_lang_initials_url(@patient.submission_token,
+                                                                @patient.jurisdiction.unique_identifier,
+                                                                'en',
+                                                                @patient&.initials_age)
+    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: 'en')} -0: #{url}"
 
     allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
       true
     end)
     expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
                                                                                          to: '+15555550111',
-                                                                                         body: first_contents,
-                                                                                         from: 'test'
-                                                                                       ))
-    expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
-                                                                                         to: '+15555550111',
-                                                                                         body: second_contents,
+                                                                                         body: contents,
                                                                                          from: 'test'
                                                                                        ))
 
@@ -356,6 +351,7 @@ class PatientMailerTest < ActionMailer::TestCase
       try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'en'),
       thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'en'),
       medium: 'SMS',
+      max_retries_message: I18n.t('assessments.sms.max_retries_message', locale: 'en'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
@@ -385,11 +381,12 @@ class PatientMailerTest < ActionMailer::TestCase
       try_again: I18n.t('assessments.sms.prompt.try-again', locale: 'en'),
       thanks: I18n.t('assessments.sms.prompt.thanks', locale: 'en'),
       medium: 'SMS',
+      max_retries_message: I18n.t('assessments.sms.max_retries_message', locale: 'en'),
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'en')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'en')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'en')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'en')}"
+      prompt: "#{I18n.t('assessments.sms.prompt.daily1', locale: 'en')}-0, -0.#{I18n.t('assessments.sms.prompt.daily2-p', locale: 'en')}#{I18n.t('assessments.sms.prompt.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}.#{I18n.t('assessments.sms.prompt.daily4', locale: 'en')}"
       # rubocop:enable Layout/LineLength
     }
 
@@ -404,7 +401,7 @@ class PatientMailerTest < ActionMailer::TestCase
     PatientMailer.assessment_sms(@patient).deliver_now
   end
 
-  test 'assessment voice message content using messaging service' do
+  test 'assessment voice message content should not use messaging service' do
     dependent = create(:patient)
     dependent.update(responder_id: @patient.id, submission_token: SecureRandom.urlsafe_base64[0, 10])
     @patient.update(primary_language: 'so')
@@ -414,44 +411,13 @@ class PatientMailerTest < ActionMailer::TestCase
       intro: I18n.t('assessments.phone.intro', locale: 'en'),
       try_again: I18n.t('assessments.phone.try-again', locale: 'en'),
       thanks: I18n.t('assessments.phone.thanks', locale: 'en'),
+      max_retries_message: I18n.t('assessments.phone.max_retries_message', locale: 'en'),
       medium: 'VOICE',
       patient_submission_token: @patient.submission_token,
       # Don't have any symptoms set up for this jurisdiction.
       threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
       # rubocop:disable Layout/LineLength
       prompt: "#{I18n.t('assessments.phone.daily1', locale: 'en')}, , #{I18n.t('assessments.phone.age', locale: 'en')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'en')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'en')}#{I18n.t('assessments.phone.daily3', locale: 'en')}#{@patient.jurisdiction.hierarchical_condition_bool_symptoms_string('en')}?#{I18n.t('assessments.phone.daily4', locale: 'en')}"
-      # rubocop:enable Layout/LineLength
-    }
-
-    allow_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Studio::V1::FlowContext::ExecutionList).to(receive(:create)).with({
-                                                                                                               from: 'test_messaging_sid',
-                                                                                                               to: '+15555550111',
-                                                                                                               parameters: params
-                                                                                                             })
-    PatientMailer.assessment_voice(@patient).deliver_now
-  end
-
-  test 'assessment voice message content not using messaging service' do
-    ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-
-    dependent = create(:patient)
-    dependent.update(responder_id: @patient.id, submission_token: SecureRandom.hex(20))
-    @patient.update(primary_language: 'so')
-
-    params = {
-      language: 'EN',
-      intro: I18n.t('assessments.phone.intro', locale: 'en'),
-      try_again: I18n.t('assessments.phone.try-again', locale: 'en'),
-      thanks: I18n.t('assessments.phone.thanks', locale: 'en'),
-      medium: 'VOICE',
-      patient_submission_token: @patient.submission_token,
-      # Don't have any symptoms set up for this jurisdiction.
-      threshold_hash: @patient.jurisdiction.jurisdiction_path_threshold_hash,
-      # rubocop:disable Layout/LineLength
-      prompt: "#{I18n.t('assessments.phone.daily1', locale: 'en')}, , #{I18n.t('assessments.phone.age', locale: 'en')} 0,, , , #{I18n.t('assessments.phone.age', locale: 'en')} 0,#{I18n.t('assessments.phone.daily2-p', locale: 'en')}#{I18n.t('assessments.phone.daily3', locale: 'en')}?#{I18n.t('assessments.phone.daily4', locale: 'en')}"
       # rubocop:enable Layout/LineLength
     }
 
