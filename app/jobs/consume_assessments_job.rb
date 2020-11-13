@@ -7,6 +7,7 @@ require 'redis-queue'
 class ConsumeAssessmentsJob < ApplicationJob
   queue_as :default
 
+  # rubocop:disable Metrics/MethodLength
   def perform
     queue = Redis::Queue.new('q_bridge', 'bp_q_bridge', redis: Rails.application.config.redis)
 
@@ -169,13 +170,21 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         end
 
+        threshold_condition = ThresholdCondition.where(type: 'ThresholdCondition').find_by(threshold_condition_hash: message['threshold_condition_hash'])
+        # Invalid threshold condition hash
+        if threshold_condition.nil?
+          Rails.logger.info "ConsumeAssessmentsJob: skipping nil threshold (patient: #{patient.id}, hash: #{message['threshold_condition_hash']})..."
+          queue.commit
+          next
+        end
+
         if message['reported_symptoms_array']
           typed_reported_symptoms = Condition.build_symptoms(message['reported_symptoms_array'])
           reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
           assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
           queue.commit if assessment.save
-        else
+        elsif !message['response_status'].in? %w[opt_out opt_in]
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
           patient.active_dependents.each do |dependent|
@@ -209,6 +218,7 @@ class ConsumeAssessmentsJob < ApplicationJob
     sleep(1)
     retry
   end
+  # rubocop:enable Metrics/MethodLength
 
   private
 
