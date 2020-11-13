@@ -197,4 +197,60 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     }
     languages[language&.downcase&.to_sym].present? ? languages[language&.downcase&.to_sym] : nil
   end
+
+  # Calculated symptom onset date is based on latest symptomatic assessment.
+  def calculated_symptom_onset
+    assessments.where(symptomatic: true).minimum(:created_at)&.to_date
+  end
+
+  def self.monitoring_fields
+    return %i[
+      monitoring
+      monitoring_reason
+      monitoring_plan
+      exposure_risk_assessment
+      public_health_action
+      isolation
+      pause_notifications
+      symptom_onset
+      case_status
+      assigned_user
+      last_date_of_exposure
+      continuous_exposure
+      user_defined_symptom_onset
+      extended_isolation
+    ]
+  end
+
+  def self.info_fields
+    return [
+      :first_name,
+      :middle_name,
+      :last_name,  
+      :secondary_telephone, 
+      :email, 
+      :date_of_birth,
+      :address_line_1, 
+      :address_line_2, 
+      :address_city,     
+      :address_state, 
+      :address_zip,
+      :monitored_address_line_1,
+      :monitored_address_line_2, 
+      :monitored_address_city,     
+      :monitored_address_state, 
+      :monitored_address_zip,
+      :primary_language, 
+      :interpretation_required,
+      :white,
+      :black_or_african_american,
+      :american_indian_or_alaska_native,
+      :asian, 
+      :native_hawaiian_or_other_pacific_islander,
+      :ethnicity,
+      :sex, 
+      :preferred_contact_method,
+      :preferred_contact_time
+    ]
+  end
 end
