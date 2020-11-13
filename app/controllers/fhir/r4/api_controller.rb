@@ -153,7 +153,7 @@ class Fhir::R4::ApiController < ActionController::API
     created_by_label = "#{@m2m_workflow ? current_client_application&.name : current_resource_owner&.email} (API)"
 
     # Handle History for monitoree details information updates
-    info_updates = updates.filter { |attr, value| PatientHelper.info_fields.include?(attr)}
+    info_updates = updates.filter { |attr, _value| PatientHelper.info_fields.include?(attr) }
     Patient.detailed_history_edit(patient_before, patient, info_updates&.keys, created_by_label)
 
     # Handle History for monitoree monitoring information updates
@@ -165,8 +165,8 @@ class Fhir::R4::ApiController < ActionController::API
       household_status: :patient,
       propagation: :none
     }
-
-    patient.update_patient_monitoring_history(updates, patient_before, history_data)  end
+    patient.update_patient_monitoring_history(updates, patient_before, history_data)
+  end
 
   # Create a resource given a type.
   #
@@ -490,7 +490,7 @@ class Fhir::R4::ApiController < ActionController::API
       if current_resource_owner.can_use_api?
         @user_workflow = true
         @current_actor = current_resource_owner
-        return
+        nil
       else
         head :unauthorized
       end

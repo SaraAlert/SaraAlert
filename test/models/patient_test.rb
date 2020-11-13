@@ -2144,23 +2144,18 @@ class PatientTest < ActiveSupport::TestCase
   end
   
   test 'get_updates_from_monitoring_changes handles monitoring change' do
-    
   end
 
   test 'get_updates_from_monitoring_changes handles workflow change' do
-    
   end
 
   test 'get_updates_from_monitoring_changes handles symptom_onset change' do
-    
   end
 
   test 'get_updates_from_monitoring_changes handles case_status change' do
-    
   end
 
   test 'get_updates_from_monitoring_changes handles continuous_exposure change' do
-    
   end
 end
 # rubocop:enable Metrics/ClassLength
