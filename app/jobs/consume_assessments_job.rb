@@ -37,7 +37,7 @@ class ConsumeAssessmentsJob < ApplicationJob
             queue.commit
             next
           end
-          monitoree_number = phone_numbers[:monitoree_number]
+          monitoree_number = Phonelib.parse(phone_numbers[:monitoree_number], 'US').full_e164
           sara_number = phone_numbers[:sara_number]
           # Handle BlockedNumber manipulation here in case no monitorees are associated with this number
           BlockedNumber.create(phone_number: monitoree_number) if message['response_status'] == 'opt_out'
