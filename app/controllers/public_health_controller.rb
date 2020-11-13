@@ -458,46 +458,26 @@ class PublicHealthController < ApplicationController
       when 'preferred-contact-time'
         patients = patients.where(preferred_contact_time: filter[:value].blank? ? [nil, ''] : filter[:value])
       when 'manual-contact-attempts'
+        operator = :==
+        case filter[:value][:operator]
+        when 'less-than'
+          operator = :<
+        when 'less-than-equal'
+          operator = :<=
+        when 'equal'
+          operator = :==
+        when 'greater-than-equal'
+          operator = :>=
+        when 'greater-than'
+          operator = :>
+        end
         case filter[:value][:contactAttemptType]
         when 'successful'
-          case filter[:value][:operator]
-          when 'less-than'
-            patients = patients.where('contact_attempts_successful < ?', filter[:value][:number])
-          when 'less-than-equal'
-            patients = patients.where('contact_attempts_successful <= ?', filter[:value][:number])
-          when 'equal'
-            patients = patients.where('contact_attempts_successful = ?', filter[:value][:number])
-          when 'greater-than-equal'
-            patients = patients.where('contact_attempts_successful >= ?', filter[:value][:number])
-          when 'greater-than'
-            patients = patients.where('contact_attempts_successful > ?', filter[:value][:number])
-          end
+          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: true)
         when 'unsuccessful'
-          case filter[:value][:operator]
-          when 'less-than'
-            patients = patients.where('contact_attempts_unsuccessful < ?', filter[:value][:number])
-          when 'less-than-equal'
-            patients = patients.where('contact_attempts_unsuccessful <= ?', filter[:value][:number])
-          when 'equal'
-            patients = patients.where('contact_attempts_unsuccessful = ?', filter[:value][:number])
-          when 'greater-than-equal'
-            patients = patients.where('contact_attempts_unsuccessful >= ?', filter[:value][:number])
-          when 'greater-than'
-            patients = patients.where('contact_attempts_unsuccessful > ?', filter[:value][:number])
-          end
+          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: false)
         when 'all'
-          case filter[:value][:operator]
-          when 'less-than'
-            patients = patients.where('contact_attempts < ?', filter[:value][:number])
-          when 'less-than-equal'
-            patients = patients.where('contact_attempts <= ?', filter[:value][:number])
-          when 'equal'
-            patients = patients.where('contact_attempts = ?', filter[:value][:number])
-          when 'greater-than-equal'
-            patients = patients.where('contact_attempts >= ?', filter[:value][:number])
-          when 'greater-than'
-            patients = patients.where('contact_attempts > ?', filter[:value][:number])
-          end
+          patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts)
         end
       end
     end

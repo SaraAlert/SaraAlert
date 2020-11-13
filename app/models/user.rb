@@ -23,6 +23,7 @@ class User < ApplicationRecord
   has_many :downloads
   has_many :export_receipts
   has_many :user_filters
+  has_many :contact_attempts
 
   belongs_to :jurisdiction
 
@@ -209,6 +210,11 @@ class User < ApplicationRecord
 
   # Can this user create subject history?
   def can_create_subject_history?
+    role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
+  end
+
+  # Can this user create subject history?
+  def can_create_subject_contact_attempt?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 

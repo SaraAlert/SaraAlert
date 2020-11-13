@@ -19,6 +19,8 @@ class History < ApplicationRecord
     report_note: 'Report Note',
     lab_result: 'Lab Result',
     lab_result_edit: 'Lab Result Edit',
+    close_contact: 'Close Contact',
+    close_contact_edit: 'Close Contact Edit',
     contact_attempt: 'Contact Attempt',
     welcome_message_sent: 'Welcome Message Sent',
     record_automatically_closed: 'Record Automatically Closed'
@@ -93,6 +95,14 @@ class History < ApplicationRecord
 
   def self.lab_result_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a lab result.')
     create_history(patient, created_by, HISTORY_TYPES[:lab_result_edit], comment)
+  end
+
+  def self.close_contact(patient: nil, created_by: 'Sara Alert System', comment: 'User added a new close contact.')
+    create_history(patient, created_by, HISTORY_TYPES[:close_contact], comment)
+  end
+
+  def self.close_contact_edit(patient: nil, created_by: 'Sara Alert System', comment: 'User edited a close contact.')
+    create_history(patient, created_by, HISTORY_TYPES[:close_contact_edit], comment)
   end
 
   def self.contact_attempt(patient: nil, created_by: 'Sara Alert System', comment: 'The system attempted to make contact with the monitoree.')

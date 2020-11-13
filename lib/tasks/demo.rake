@@ -186,6 +186,14 @@ namespace :demo do
       transfer_histories = demo_populate_transfers(today, existing_patients, jurisdictions, assigned_users)
       histories = histories.concat(transfer_histories)
 
+      # Create close contacts
+      close_contacts_histories = demo_populate_close_contacts(today, days_ago, existing_patients)
+      histories = histories.concat(close_contacts_histories)
+
+      # Create contact attempts
+      contact_attempt_histories = demo_populate_contact_attempts(today, existing_patients)
+      histories = histories.concat(contact_attempt_histories)
+
       # Create histories
       demo_populate_histories(today, histories)
     end
@@ -642,33 +650,86 @@ namespace :demo do
     return histories
   end
 
-  def demo_populate_histories(today, histories)
-    # add manual contact attempts
-    patient_updates = []
-    patient_ids_and_contact_attempts = Patient.monitoring_open
-                                              .pluck(:id, :contact_attempts, :contact_attempts_successful, :contact_attempts_unsuccessful)
-                                              .sample(Patient.monitoring_open.size * 0.25)
-    patient_ids_and_contact_attempts.each do |(id, contact_attempts, contact_attempts_successful, contact_attempts_unsuccessful)|
-      timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
-      successful = rand < 0.35
+  def demo_populate_close_contacts(today, days_ago, existing_patients)
+    printf("Generating close contacts...")
+    close_contacts = []
+    histories = []
+    patient_ids = existing_patients.pluck(:id).sample(existing_patients.count * rand(15..25) / 100)
+    enrolled_close_contacts_ids = existing_patients.where.not(id: patient_ids).pluck(:id).sample(existing_patients.count * rand(5..15) / 100)
+    enrolled_close_contacts = Patient.where(id: enrolled_close_contacts_ids).pluck(:id, :first_name, :last_name, :primary_telephone, :email)
+    patient_ids.each_with_index do |patient_id, index|
+      printf("\rGenerating close contact #{index+1} of #{patient_ids.length}...")
+      close_contact_ts = create_fake_timestamp(today, today)
+      close_contact = {
+        patient_id: patient_id,
+        created_at: close_contact_ts,
+        updated_at: close_contact_ts,
+        notes: rand < 0.7 ? Faker::Hacker.say_something_smart : nil,
+        contact_attempts: rand < 0.4 ? rand(1..5) : nil
+      }
+      if index < enrolled_close_contacts.size
+        close_contact[:enrolled_id] = enrolled_close_contacts[index][0]
+        close_contact[:first_name] = enrolled_close_contacts[index][1]
+        close_contact[:last_name] = enrolled_close_contacts[index][2]
+        close_contact[:primary_telephone] = enrolled_close_contacts[index][3]
+        close_contact[:email] = enrolled_close_contacts[index][4]
+      else
+        close_contact[:enrolled_id] = nil
+        close_contact[:first_name] = "#{rand < 0.5 ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
+        close_contact[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
+        close_contact[:primary_telephone] = rand < 0.85 ? "+155555501#{rand(9)}#{rand(9)}" : nil
+        close_contact[:email] = rand < 0.75 ? "#{rand(1000000000..9999999999)}fake@example.com" : nil
+      end
+      close_contacts << close_contact
       histories << History.new(
-        patient_id: id,
-        created_by: rand < 0.7 ? User.all.select { |u| u.role?('public_health') }.sample[:email] : 'Sara Alert System',
-        comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt.#{rand < 0.65 ? " #{Faker::Marketing.buzzwords}" : ''}",
-        history_type: 'Contact Attempt',
-        created_at: timestamp,
-        updated_at: timestamp,
+        patient_id: patient_id,
+        created_by: 'Sara Alert System',
+        comment: "User created a new close contact.",
+        history_type: 'Close Contact',
+        created_at: close_contact_ts,
+        updated_at: close_contact_ts
       )
-      patient_update = { contact_attempts: contact_attempts + 1 }
-      patient_update[:contact_attempts_successful] = contact_attempts_successful + 1 if successful
-      patient_update[:contact_attempts_unsuccessful] = contact_attempts_unsuccessful + 1 unless successful
-      patient_updates << patient_update
     end
+    CloseContact.import! close_contacts
+    printf(" done.\n")
 
-    # update patient contact attempts
-    Patient.update(patient_ids_and_contact_attempts.collect(&:first), patient_updates)
+    return histories
+  end
 
-    # write histories
+  def demo_populate_contact_attempts(today, existing_patients)
+    printf("Generating contact attempts...")
+    contact_attempts = []
+    histories = []
+    patients_contact_attempts = existing_patients.pluck(:id).sample(existing_patients.count * rand(10..20) / 100)
+    patients_contact_attempts.each_with_index do |patient_id, index|
+      printf("\rGenerating contact attempt #{index+1} of #{patients_contact_attempts.length}...")
+      successful = rand < 0.45
+      note = rand < 0.65 ? " #{Faker::TvShows::GameOfThrones.quote}" : ''
+      contact_attempt_ts = create_fake_timestamp(today, today)
+      contact_attempts << ContactAttempt.new(
+        patient_id: patient_id,
+        user_id: User.all.select { |u| u.role?('public_health') }.sample[:id],
+        successful: successful,
+        note: note,
+        created_at: contact_attempt_ts,
+        updated_at: contact_attempt_ts
+      )
+      histories << History.new(
+        patient_id: patient_id,
+        created_by: rand < 0.7 ? User.all.select { |u| u.role?('public_health') }.sample[:email] : 'Sara Alert System',
+        comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
+        history_type: 'Contact Attempt',
+        created_at: contact_attempt_ts,
+        updated_at: contact_attempt_ts
+      )
+    end
+    ContactAttempt.import! contact_attempts
+    printf(" done.\n")
+
+    return histories
+  end
+
+  def demo_populate_histories(today, histories)
     printf("Writing histories...")
     History.import! histories
     printf(" done.\n")

@@ -47,6 +47,7 @@ Rails.application.routes.draw do
   post 'admin/email_all', to: 'admin#email_all'
 
   resources :histories, only: [:create]
+  resources :contact_attempts, only: [:create]
 
   post '/laboratories', to: 'laboratories#create'
   post '/laboratories/:id', to: 'laboratories#update'
