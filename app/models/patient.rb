@@ -1052,7 +1052,7 @@ class Patient < ApplicationRecord
       when :symptom_onset
         History.symptom_onset(history_data)
       when :case_status
-        History.case_status(history, diff_state)
+        History.case_status(history_data, diff_state)
 
         # If Case Status was updated to one of the values meant for the Exposure workflow and the Public Health Action was reset.
         if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && patient_before[:public_health_action] != 'None' && public_health_action == 'None'
