@@ -213,7 +213,7 @@ class User < ApplicationRecord
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
 
-  # Can this user create subject history?
+  # Can this user create contact attempt?
   def can_create_subject_contact_attempt?
     role?(Roles::PUBLIC_HEALTH) || role?(Roles::CONTACT_TRACER) || role?(Roles::PUBLIC_HEALTH_ENROLLER) || role?(Roles::SUPER_USER)
   end
