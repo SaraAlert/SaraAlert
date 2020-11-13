@@ -471,12 +471,12 @@ class PublicHealthController < ApplicationController
         when 'greater-than'
           operator = :>
         end
-        case filter[:value][:contactAttemptType]
-        when 'successful'
+        case filter[:value][:option]
+        when 'Successful'
           patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: true)
-        when 'unsuccessful'
+        when 'Unsuccessful'
           patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts, successful: false)
-        when 'all'
+        when 'All'
           patients = patients.where_assoc_count(filter[:value][:number], operator, :contact_attempts)
         end
       end
