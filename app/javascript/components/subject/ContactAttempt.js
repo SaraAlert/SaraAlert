@@ -10,7 +10,7 @@ class ContactAttempt extends React.Component {
     super(props);
     this.state = {
       showContactAttemptModal: false,
-      comment: '',
+      note: '',
       attempt: 'Successful',
       loading: false,
     };
@@ -34,10 +34,11 @@ class ContactAttempt extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/histories', {
+        .post(window.BASE_PATH + '/contact_attempts', {
           patient_id: this.props.patient.id,
+          successful: this.state.attempt === 'Successful',
+          note: this.state.note,
           comment: this.state.attempt + ' contact attempt.' + (this.state.comment ? ' Note: ' + this.state.comment : ''),
-          type: 'Contact Attempt',
         })
         .then(() => {
           location.reload(true);
@@ -64,7 +65,7 @@ class ContactAttempt extends React.Component {
           </Form.Group>
           <p>Please include any additional details:</p>
           <Form.Group>
-            <Form.Control as="textarea" rows="2" id="comment" onChange={this.handleChange} />
+            <Form.Control as="textarea" rows="2" id="note" onChange={this.handleChange} />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
