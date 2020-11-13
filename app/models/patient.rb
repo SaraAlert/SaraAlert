@@ -3,6 +3,7 @@
 require 'chronic'
 
 # Patient: patient model
+# rubocop:disable Metrics/ClassLength
 class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
@@ -883,20 +884,22 @@ class Patient < ApplicationRecord
   end
 
   # Creates a diff between a patient before and after updates, and creates a detailed record edit History item with the changes.
-  def self.detailed_history_edit(patient_before, patient_after, user_email, allowed_fields, is_api_edit: false)
-    diffs = patient_diff(patient_before, patient_after, allowed_fields)
+  def self.detailed_history_edit(patient_before, patient_after, attributes, history_creator_label, is_api_edit=false)
+    diffs = patient_diff(patient_before, patient_after, attributes)
     return if diffs.length.zero?
 
     pretty_diff = diffs.collect { |d| "#{d[:attribute].to_s.humanize} (\"#{d[:before]}\" to \"#{d[:after]}\")" }
     comment = is_api_edit ? 'Monitoree record edited via API. ' : 'User edited a monitoree record. '
     comment += "Changes were: #{pretty_diff.join(', ')}."
-    History.record_edit(patient: patient_after, created_by: user_email, comment: comment)
+
+    History.record_edit(patient: patient_after, created_by: history_creator_label, comment: comment)
   end
 
   # Construct a diff for a patient update to keep track of changes
-  def self.patient_diff(patient_before, patient_after, allowed_fields)
+  def self.patient_diff(patient_before, patient_after, attributes)
     diffs = []
-    allowed_fields&.keys&.each do |attribute|
+    attributes&.each do |attribute|
+      # Skip if no value change
       next if patient_before[attribute] == patient_after[attribute]
 
       diffs << {
@@ -924,7 +927,7 @@ class Patient < ApplicationRecord
     return if responder.nil?
 
     # update the initial responder if it changed
-    Patient.where(purged: false).find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
+    Patient.find(initial_responder).refresh_head_of_household if !initial_responder.nil? && initial_responder != responder.id
     # update the current responder
     responder.refresh_head_of_household
   end
@@ -944,4 +947,132 @@ class Patient < ApplicationRecord
     end
     token
   end
+
+  def get_updates_from_monitoring_changes(monitoring_changes)
+    all_updates = monitoring_changes.deep_dup
+
+    monitoring_changes&.keys&.each do |attribute|
+      new_attribute_value = monitoring_changes[attribute]
+      next if self[attribute] == new_attribute_value
+
+      # Handle reacting to specific attributes as need be
+      case attribute
+      when :monitoring
+        # If record should be closed
+        if !new_attribute_value
+          all_updates[:closed_at] = DateTime.now
+          all_updates[:continuous_exposure] = false
+        end
+      when :isolation
+        # If record is being moved to Exposure workflow from Isolation workflow
+        if !new_attribute_value
+          all_updates[:extended_isolation] = nil
+          # NOTE: The below will overwrite any new value they may set for symptom onset as they can not be set in the exposure workflow.
+          all_updates[:user_defined_symptom_onset] = false
+          all_updates[:symptom_onset] = calculated_symptom_onset
+        end
+      when :case_status
+        # If Case Status has been updated to one of the values meant for the Exposure workflow, reset the Public Health Action.
+        if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && patient[:public_health_action] != 'None'
+          all_updates[:public_health_action] = "None"
+        end
+      when :symptom_onset
+        #If symptom onset is being cleared, reset with calculated value. 
+        if new_attribute_value.nil?
+          all_updates[:user_defined_symptom_onset] = false
+          all_updates[:symptom_onset] = calculated_symptom_onset
+        end
+      when :continuous_exposure
+        # Do not allow continuous exposure to be set for records that are closed
+        if all_updates[:continuous_exposure] && !all_updates[:monitoring].nil? && !all_updates[:monitoring]
+          all_updates.delete(:continuous_exposure)
+        end
+      end
+    end
+
+    all_updates
+  end
+
+
+  def update_patient_monitoring_history(all_updates, patient_before, history_data)
+    all_updates&.keys&.each do |attribute|
+      updated_value = self[attribute]
+      next if patient_before[attribute] == self[attribute]
+
+      case attribute
+      when :monitoring
+        History.monitoring_status(history_data)
+
+        # If the record was in continuous exposure and then it was closed and continuous exposure was turned off
+        if !updated_value && patient_before[:continuous_exposure] && !continuous_exposure
+          History.monitoring_change(
+            patient: self,
+            created_by: 'Sara Alert System',
+            comment: 'System turned off Continuous Exposure because the record was moved to the closed line list.'
+          )
+        end
+      when :exposure_risk_assessment
+        History.exposure_risk_assessment(history_data)
+      when :monitoring_plan
+        History.monitoring_plan(history_data)
+      when :public_health_action
+        History.public_health_action(history_data)
+      when :assigned_user
+        History.assigned_user(history_data)
+      when :pause_notifications
+        History.pause_notifications(history_data)
+      when :last_date_of_exposure
+        History.last_date_of_exposure(history_data)
+      when :extended_isolation
+        History.extended_isolation(history_data)
+      when :continuous_exposure
+        History.continuous_exposure(history_data)
+      when :isolation
+        if !updated_value
+          # If moved from Isolation workflow to Exposure workflow and Extended Isolation was cleared
+          if !patient_before[:extended_isolation].nil? && extended_isolation.nil?
+            History.monitoring_change(
+              patient: self,
+              created_by: 'Sara Alert System',
+              comment: 'System cleared Extended Isolation Date because monitoree was moved from isolation to exposure workflow.'
+            )
+          end
+
+          # If moved from Isolation worklflow to Exposure and symptom onset had to be cleared
+          if !patient_before[:symptom_onset].nil? && symptom_onset.nil?
+            comment = if !patient_before[:symptom_onset].nil? && !new_symptom_onset.nil?
+                        "System changed Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to #{new_symptom_onset.strftime('%m/%d/%Y')}
+                        because monitoree was moved from isolation to exposure workflow. This allows the system to show monitoree on appropriate line list based on
+                        daily reports."
+                      elsif patient_before[:symptom_onset].nil? && !new_symptom_onset.nil?
+                        "System changed Symptom Onset Date from blank to #{new_symptom_onset.strftime('%m/%d/%Y')} because monitoree was moved from isolation to
+                        exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
+                      elsif !patient_before[:symptom_onset].nil? && new_symptom_onset.nil?
+                        "System cleared Symptom Onset Date from #{patient_before[:symptom_onset].strftime('%m/%d/%Y')} to blank because monitoree was moved from isolation to
+                        exposure workflow. This allows the system to show monitoree on appropriate line list based on daily reports."
+                      else
+                        'System changed Symptom Onset Date. This allows the system to show monitoree on appropriate line list based on daily reports.'
+                      end
+            History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: comment)
+          end
+        end
+      when :symptom_onset
+        History.symptom_onset(history_data)
+      when :case_status
+        History.case_status(history, diff_state)
+
+        # If Case Status was updated to one of the values meant for the Exposure workflow and the Public Health Action was reset.
+        if ['Suspect', 'Unknown', 'Not a Case'].include?(new_attribute_value) && patient_before[:public_health_action] != 'None' && public_health_action == "None"
+          message = monitoring ?
+          "System changed Latest Public Health Action from \"#{public_health_action}\" to \"None\" so that the monitoree will appear on
+          the appropriate line list in the exposure workflow to continue monitoring." : "System changed Latest Public Health Action
+          from \"#{public_health_action}\" to \"None\"."
+          History.monitoring_change(patient: self, created_by: 'Sara Alert System', comment: message)
+        end
+      when :jurisdiction_id
+        History.jurisdiction(history_data)
+      end
+    end
+  end
 end
+# rubocop:enable Metrics/ClassLength

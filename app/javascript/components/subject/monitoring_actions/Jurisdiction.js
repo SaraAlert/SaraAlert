@@ -68,7 +68,7 @@ class Jurisdiction extends React.Component {
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/status', {
           patient: this.props.patient,
-          jurisdiction: Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === this.state.jurisdiction_path),
+          jurisdiction_id: Object.keys(this.props.jurisdiction_paths).find(id => this.props.jurisdiction_paths[parseInt(id)] === this.state.jurisdiction_path),
           reasoning: this.state.reasoning,
           apply_to_household: this.state.apply_to_household,
           diffState: diffState,
