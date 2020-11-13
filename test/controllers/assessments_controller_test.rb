@@ -134,7 +134,6 @@ class AssessmentsControllerTest < ActionController::TestCase
 
   test 'successfuly update report as user' do
     patient_submission_token = patients(:patient_1).submission_token
-    unique_identifier = patients(:patient_1).jurisdiction.unique_identifier
     assessment = assessments(:patient_1_assessment_2)
 
     # edit the assessment
@@ -219,10 +218,10 @@ class AssessmentsControllerTest < ActionController::TestCase
     end
     assessment.reload
 
-    assert_equal 99.8, symptoms.find{|d| d[:name] == 'temperature'}[:value]
+    assert_equal 99.8, symptoms.find { |d| d[:name] == 'temperature' }[:value]
 
     # update the new symptom
-    symptoms.find{|d| d[:name] == 'temperature'}[:value] = 100.4
+    symptoms.find { |d| d[:name] == 'temperature' }[:value] = 100.4
     assert_changes 'History.count' do
       assert_no_difference 'AssessmentReceipt.count' do
         assert_no_difference 'Assessment.count' do
@@ -238,7 +237,7 @@ class AssessmentsControllerTest < ActionController::TestCase
     end
     assessment.reload
     symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    assert_equal 100.4, symptoms.find{|d| d[:name] == 'temperature'}[:value]
+    assert_equal 100.4, symptoms.find { |d| d[:name] == 'temperature' }[:value]
   end
 
   test 'updating with a new arbitrary integer symptom' do
@@ -272,10 +271,10 @@ class AssessmentsControllerTest < ActionController::TestCase
     end
     assessment.reload
 
-    assert_equal 2, symptoms.find{|d| d[:name] == 'daysWithoutFever'}[:value]
+    assert_equal 2, symptoms.find { |d| d[:name] == 'daysWithoutFever' }[:value]
 
     # update the new symptom
-    symptoms.find{|d| d[:name] == 'daysWithoutFever'}[:value] = 3
+    symptoms.find { |d| d[:name] == 'daysWithoutFever' }[:value] = 3
     assert_changes 'History.count' do
       assert_no_difference 'AssessmentReceipt.count' do
         assert_no_difference 'Assessment.count' do
@@ -291,7 +290,7 @@ class AssessmentsControllerTest < ActionController::TestCase
     end
     assessment.reload
     symptoms = symptoms_param(assessment.reported_condition.symptoms)
-    assert_equal 3, symptoms.find{|d| d[:name] == 'daysWithoutFever'}[:value]
+    assert_equal 3, symptoms.find { |d| d[:name] == 'daysWithoutFever' }[:value]
   end
 
   # test 'succesful get landing' do
