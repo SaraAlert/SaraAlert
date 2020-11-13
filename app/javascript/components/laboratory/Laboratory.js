@@ -76,12 +76,13 @@ class Laboratory extends React.Component {
     return (
       <Modal size="lg" show centered onHide={toggle}>
         <Modal.Header>
+          <h1 className="sr-only">{title}</h1>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="lab_type">
                 <Form.Label className="nav-input-label">Lab Test Type</Form.Label>
                 <Form.Control as="select" className="form-control-lg" id="lab_type" onChange={this.handleChange} value={this.state.lab_type}>
                   <option disabled></option>
@@ -96,7 +97,7 @@ class Laboratory extends React.Component {
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="specimen_collection">
                 <Form.Label className="nav-input-label">Specimen Collection Date</Form.Label>
                 <DateInput
                   id="specimen_collection"
@@ -110,7 +111,7 @@ class Laboratory extends React.Component {
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="report">
                 <Form.Label className="nav-input-label">Report Date</Form.Label>
                 <DateInput
                   id="report"
@@ -128,7 +129,7 @@ class Laboratory extends React.Component {
               </Form.Group>
             </Row>
             <Row>
-              <Form.Group as={Col}>
+              <Form.Group as={Col} controlId="result">
                 <Form.Label className="nav-input-label">Result</Form.Label>
                 <Form.Control as="select" className="form-control-lg" id="result" onChange={this.handleChange} value={this.state.result}>
                   <option disabled></option>

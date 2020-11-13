@@ -15,7 +15,7 @@ class ReportingSummary extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="h5">Today&apos;s Reporting Summary</Card.Header>
+          <Card.Header className="h5">Today&apos;s Reporting Summary</Card.Header>
           <Card.Body>
             <Row className="mx-4 mt-3">
               <Col md="12">

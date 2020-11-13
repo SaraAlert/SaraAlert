@@ -67,6 +67,7 @@ class SymptomsAssessment extends React.Component {
         type="checkbox"
         checked={noSymptomsChecked}
         disabled={boolSymptomsSelected}
+        aria-label="No Symptoms check"
         label={
           <div>
             <b>{this.props.translations[this.props.lang]['symptoms']['no-symptoms']}</b>

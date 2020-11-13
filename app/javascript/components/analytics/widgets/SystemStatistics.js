@@ -11,7 +11,7 @@ class SystemStatistics extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="h5">System Statistics</Card.Header>
+          <Card.Header className="h5">System Statistics</Card.Header>
           <Card.Body>
             <Row className="mx-4 mt-3 g-border-bottom-2">
               <Col>

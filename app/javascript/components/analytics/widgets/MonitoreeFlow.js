@@ -16,9 +16,7 @@ class MonitoreeFlow extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <Card.Header as="h5" className="text-left">
-            Monitoree Flow Over Time
-          </Card.Header>
+          <Card.Header className="text-left h5">Monitoree Flow Over Time</Card.Header>
           <Card.Body className="card-body">
             <Row className="mx-md-5 mx-lg-0">
               {/* Any height: 0px <tr>s are to ensure proper Bootstrap striping. */}

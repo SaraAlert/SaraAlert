@@ -20,7 +20,7 @@ class PatientPage extends React.Component {
       <React.Fragment>
         <Card className="mx-2 card-square">
           <Card.Header
-            as="h5"
+            className="h5"
             id="patient-info-header"
             onClick={() => {
               this.setState({ hideBody: !this.state.hideBody });

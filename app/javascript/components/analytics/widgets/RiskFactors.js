@@ -151,7 +151,7 @@ class RiskFactors extends React.Component {
   renderTable() {
     return (
       <div>
-        <h4 className="text-left">Exposure Risk Factors</h4>
+        <div className="text-left h4">Exposure Risk Factors</div>
         <Table striped hover className="border mt-2 mb-0">
           <thead>
             <tr>

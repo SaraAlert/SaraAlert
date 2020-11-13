@@ -208,13 +208,13 @@ class LastDateExposure extends React.Component {
           )}
         <Row>
           <SymptomOnset authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
-          <Col>
+          <Form.Group as={Col} controlId="last_date_of_exposure">
             <Row className="reports-actions-title">
               <Col>
-                <h6 className="nav-input-label">
+                <Form.Label className="nav-input-label h6">
                   LAST DATE OF EXPOSURE
                   <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
-                </h6>
+                </Form.Label>
               </Col>
             </Row>
             <Row>
@@ -258,7 +258,7 @@ class LastDateExposure extends React.Component {
                 <InfoTooltip tooltipTextKey="continuousExposure" location="right"></InfoTooltip>
               </Col>
             </Row>
-          </Col>
+          </Form.Group>
           {this.props.patient.isolation ? (
             <ExtendedIsolation authenticity_token={this.props.authenticity_token} patient={this.props.patient} />
           ) : (

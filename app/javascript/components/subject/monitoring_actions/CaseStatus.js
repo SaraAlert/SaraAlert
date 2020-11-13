@@ -234,7 +234,13 @@ class CaseStatus extends React.Component {
             CASE STATUS
             <InfoTooltip tooltipTextKey="caseStatus" location="right"></InfoTooltip>
           </Form.Label>
-          <Form.Control as="select" className="form-control-lg" id="case_status" onChange={this.handleCaseStatusChange} value={this.state.case_status}>
+          <Form.Control
+            as="select"
+            className="form-control-lg"
+            id="case_status"
+            aria-label="Case Status Select"
+            onChange={this.handleCaseStatusChange}
+            value={this.state.case_status}>
             <option></option>
             <option>Confirmed</option>
             <option>Probable</option>

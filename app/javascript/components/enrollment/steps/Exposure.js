@@ -258,22 +258,23 @@ class Exposure extends React.Component {
     return (
       <React.Fragment>
         <Form.Row>
-          <Form.Group as={Col} md="7" controlId="symptom_onset">
-            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
+          <Form.Group as={Col} md="7" controlId="symptom_onset_date">
+            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
             <DateInput
-              id="symptom_onset"
+              id="symptom_onset_date"
+              aria-label="Symptom Onset Date"
               date={this.state.current.patient.symptom_onset}
               minDate={'2020-01-01'}
               maxDate={moment()
                 .add(30, 'days')
                 .format('YYYY-MM-DD')}
-              onChange={date => this.handleDateChange('symptom_onset', date)}
+              onChange={date => this.handleDateChange('symptom_onset_date', date)}
               placement="bottom"
-              isInvalid={!!this.state.errors['symptom_onset']}
+              isInvalid={!!this.state.errors['symptom_onset_date']}
               customClass="form-control-lg"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['symptom_onset']}
+              {this.state.errors['symptom_onset_date']}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="8" controlId="case_status">
@@ -283,6 +284,7 @@ class Exposure extends React.Component {
               as="select"
               size="lg"
               className="form-square"
+              aria-label="Case Status Select"
               onChange={this.handleChange}
               value={this.state.current.patient.case_status || ''}>
               <option></option>
@@ -303,6 +305,7 @@ class Exposure extends React.Component {
               rows="4"
               size="lg"
               className="form-square"
+              aria-label="Additional Info on Case"
               placeholder="enter additional information about case"
               maxLength="2000"
               value={this.state.current.patient.exposure_notes || ''}
@@ -322,21 +325,22 @@ class Exposure extends React.Component {
     return (
       <React.Fragment>
         <Form.Row>
-          <Form.Group as={Col} md="7" controlId="last_date_of_exposure" className="mb-2">
+          <Form.Group as={Col} md="7" controlId="last_date_of_exposure_patient" className="mb-2">
             <Form.Label className="nav-input-label">
               LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
             </Form.Label>
             <DateInput
-              id="last_date_of_exposure"
+              id="last_date_of_exposure_patient"
+              aria-label="Last Date of Exposure"
               date={this.state.current.patient.last_date_of_exposure}
               minDate={'2020-01-01'}
               maxDate={moment()
                 .add(30, 'days')
                 .format('YYYY-MM-DD')}
-              onChange={date => this.handleDateChange('last_date_of_exposure', date)}
+              onChange={date => this.handleDateChange('last_date_of_exposure_patient', date)}
               placement="bottom"
-              isInvalid={!!this.state.errors['last_date_of_exposure']}
+              isInvalid={!!this.state.errors['last_date_of_exposure_patient']}
               customClass="form-control-lg"
               isClearable
             />
@@ -364,6 +368,7 @@ class Exposure extends React.Component {
               as="select"
               size="lg"
               className="form-square"
+              aria-label="Potential Exposure Country Select"
               value={this.state.current.patient.potential_exposure_country || ''}
               onChange={this.handleChange}>
               <option></option>

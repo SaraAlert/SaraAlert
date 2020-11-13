@@ -66,9 +66,7 @@ class RiskStratification extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <Card.Header as="h5" className="text-left">
-            Monitoring Status by Risk Level Amongst Those Currently Under Active Monitoring
-          </Card.Header>
+          <Card.Header className="text-left h5">Monitoring Status by Risk Level Amongst Those Currently Under Active Monitoring</Card.Header>
           <Card.Body>
             <Table striped borderless hover>
               <thead>

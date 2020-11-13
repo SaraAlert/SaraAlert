@@ -16,9 +16,9 @@ const history = ({ history }) => {
           .format('YYYY-MM-DD HH:mm z')}
         )
         <span className="float-right">
-          <h5 className="badge-padding">
+          <div className="badge-padding h5">
             <span className="badge badge-secondary">{history.history_type}</span>
-          </h5>
+          </div>
         </span>
       </Card.Header>
       <Card.Body>

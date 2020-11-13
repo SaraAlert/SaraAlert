@@ -29,9 +29,7 @@ class MonitoreeCount extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <Card.Header as="h5" className="text-left">
-            System Statistics
-          </Card.Header>
+          <Card.Header className="text-left h5">System Statistics</Card.Header>
           <Card.Body>
             <div className="display-6">
               {' '}

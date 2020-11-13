@@ -13,7 +13,7 @@ class MonitoringDistributionDay extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="h5">Monitoring Distribution by Day</Card.Header>
+          <Card.Header className="h5">Monitoring Distribution by Day</Card.Header>
           <Card.Body>
             <h5 className="pb-4">DISTRIBUTION OF MONITOREES UNDER MONITORING</h5>
             <div style={{ width: '100%', height: '286px' }} className="recharts-wrapper">

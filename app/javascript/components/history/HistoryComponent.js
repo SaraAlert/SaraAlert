@@ -119,10 +119,10 @@ class HistoryComponent extends React.Component {
         <Card className="mx-2 mt-3 mb-4 card-square">
           <Card.Header>
             <div className="d-flex flex-row align-items-center">
-              <h5 className="float-left flex-grow-1 mb-0">
+              <div className="float-left flex-grow-1 mb-0 h5">
                 <span>History </span>
                 <InfoTooltip tooltipTextKey="history" location="right"></InfoTooltip>
-              </h5>
+              </div>
             </div>
           </Card.Header>
           <Card.Body className="py-0 px-1">
@@ -145,6 +145,7 @@ class HistoryComponent extends React.Component {
                 closeMenuOnSelect={false}
                 isMulti
                 name="Filters"
+                aria-label="Filter History"
                 options={this.typeFilterData}
                 className="basic-multi-select w-25 pl-2"
                 classNamePrefix="select"
@@ -166,6 +167,7 @@ class HistoryComponent extends React.Component {
                 <textarea
                   id="comment"
                   name="comment"
+                  aria-label="Add comment"
                   className="form-control"
                   style={{ resize: 'none' }}
                   rows="3"

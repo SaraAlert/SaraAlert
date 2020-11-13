@@ -20,7 +20,7 @@
 
 <% if current_user.can_modify_subject_status? %>
 <div class="card mx-2 mt-4 mb-4 card-square">
-  <h5 class="card-header">Monitoring Actions</h5>
+  <div class="card-header h5">Monitoring Actions</div>
   <%= react_component('subject/monitoring_actions/MonitoringActions', {
                         current_user: current_user,
                         user_can_transfer: current_user.can_transfer_patients?,
@@ -65,7 +65,7 @@
   </div>
 </div>
 <div class="card mx-2 mt-3 mb-4 card-square">
-  <h5 class="card-header"> Reports</h5>
+  <div class="card-header h5"> Reports</div>
   <div class="m-4">
     <%= react_component('subject/CurrentStatus', { report_eligibility: @patient.report_eligibility, status: @patient.status, isolation: @patient.isolation }) %>
     <div class="pb-4 pt-2">
@@ -97,54 +97,67 @@
         </tr>
       </thead>
       <tbody>
-        <% @patient.assessments.order('created_at').each do |assessment| -%>
-        <% if assessment.symptomatic %>
-          <tr class="table-danger">
+        <% if @assessments.length > 0 %>
+          <% @assessments.each do |assessment| -%>
+            <% if assessment.symptomatic %>
+              <tr class="table-danger">
+            <% else %>
+              <tr>
+            <% end %>
+              <td><%= assessment.id %></td>
+              <% unless @patient.isolation %>
+              <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
+              <% end %>
+              <td><%= assessment.who_reported %></td>
+              <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
+              <% columns.each do |column| -%>
+              <% if assessment.get_reported_symptom_by_name(column) == nil %>
+              <td></td>
+              <% end %>
+              <%passes_threshold = assessment.symptom_passes_threshold(column)%>
+              <%symptom_value = assessment.get_reported_symptom_value(column)%>
+              <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
+              <% if symptom_value == true %>
+              <% symptom_value = 'Yes' %>
+              <% elsif symptom_value == false %>
+              <% symptom_value = 'No'%>
+              <%end%>
+              <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
+              <% end %>
+              <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
+              <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
+              <% end %>
+              <% end -%>
+              <td>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-primary dropdown-toggle btn-block a-dropdown" type="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-cogs fw"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton">
+                    <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
+                    <%= react_component('subject/AddReportNote', { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                    <% unless @patient.isolation %>
+                    <%= react_component('subject/ClearSingleReport', { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                    <% end %>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          <% end %>
         <% else %>
           <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr> 
         <% end %>
-          <td><%= assessment.id %></td>
-          <% unless @patient.isolation %>
-          <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
-          <% end %>
-          <td><%= assessment.who_reported %></td>
-          <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
-          <% columns.each do |column| -%>
-          <% if assessment.get_reported_symptom_by_name(column) == nil %>
-          <td></td>
-          <% end %>
-          <%passes_threshold = assessment.symptom_passes_threshold(column)%>
-          <%symptom_value = assessment.get_reported_symptom_value(column)%>
-          <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
-          <% if symptom_value == true %>
-          <% symptom_value = 'Yes' %>
-          <% elsif symptom_value == false %>
-          <% symptom_value = 'No'%>
-          <%end%>
-          <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
-          <% end %>
-          <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
-          <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
-          <% end %>
-          <% end -%>
-          <td>
-            <div class="dropdown">
-              <button class="btn btn-sm btn-outline-primary dropdown-toggle btn-block a-dropdown" type="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-cogs fw"></i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton">
-                <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
-                <%= react_component('subject/AddReportNote', { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
-                <% unless @patient.isolation %>
-                <%= react_component('subject/ClearSingleReport', { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
-                <% end %>
-              </div>
-            </div>
-          </td>
-        </tr>
-        <% end -%>
       </tbody>
     </table>
+    <% if @assessments.empty? %>
+      <div class="text-center mb-4">No data available in table.</div>
+    <% end %>
     <%= react_component('subject/LastDateExposure', { authenticity_token: form_authenticity_token, patient: @patient, is_household_member: @household_members.count > 1 }) %>
   </div>
 </div>
@@ -182,10 +195,10 @@
 
 <% if current_user.can_view_patient_laboratories? %>
 <div class="card mx-2 mt-3 mb-4 card-square">
-  <h5 class="card-header">
+  <div class="card-header h5">
     Lab Results
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'labResults', location: 'right' }, { style: 'display:inline' }) %>
-  </h5>
+  </div>
   <div class="m-4">
     <table class="lab_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
       <thead>
@@ -199,22 +212,36 @@
         </tr>
       </thead>
       <tbody>
-        <% @patient.laboratories.order('created_at').each do |lab| -%>
-        <tr>
-          <td><%= lab.id %></td>
-          <td><%= lab.lab_type %></td>
-          <td><%= lab.specimen_collection %></td>
-          <td><%= lab.report %></td>
-          <td><%= lab.result %></td>
-          <td>
-            <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: lab }) %>
-            </div>
-          </td>
-        </tr>
+        <% if @laboratories.length > 0 %>
+          <% @laboratories.each do |lab| -%>
+          <tr>
+            <td><%= lab.id %></td>
+            <td><%= lab.lab_type %></td>
+            <td><%= lab.specimen_collection %></td>
+            <td><%= lab.report %></td>
+            <td><%= lab.result %></td>
+            <td>
+              <div class="btn-group btn-group-sm" role="group">
+                <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: lab }) %>
+              </div>
+            </td>
+          </tr>
+          <% end -%>
+        <% else %>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         <% end -%>
       </tbody>
     </table>
+    <% if @laboratories.empty? %>
+      <div class="text-center mb-4">No data available in table.</div>
+    <% end %>
     <div class="pb-1">
       <div class="btn-group" role="group">
         <%= react_component('laboratory/Laboratory', { authenticity_token: form_authenticity_token, patient: @patient, lab: Laboratory.new }) %>
@@ -226,10 +253,10 @@
 
 <% if current_user.can_view_patient_close_contacts? %>
 <div class="card mx-2 mt-3 mb-4 card-square">
-  <h5 class="card-header">
+  <div class="card-header h5">
     Close Contacts
     <%= react_component('util/InfoTooltip', { tooltipTextKey: 'closeContacts', location: 'right' }, { style: 'display:inline' }) %>
-  </h5>
+  </div>
   <div class="m-4">
     <table class="cc_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
       <thead>
@@ -243,22 +270,36 @@
         </tr>
       </thead>
       <tbody>
-        <% @patient.close_contacts.order('created_at').each do |cc| -%>
-        <tr>
-          <td><%= cc.first_name %></td>
-          <td><%= cc.last_name %></td>
-          <td><%= cc.primary_telephone %></td>
-          <td><%= cc.email %></td>
-          <td><%= cc.contact_attempts %></td>
-          <td>
-            <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>
-            </div>
-          </td>
-        </tr>
+        <% if @close_contacts.length > 0 %>
+          <% @close_contacts.each do |cc| -%>
+          <tr>
+            <td><%= cc.first_name %></td>
+            <td><%= cc.last_name %></td>
+            <td><%= cc.primary_telephone %></td>
+            <td><%= cc.email %></td>
+            <td><%= cc.contact_attempts %></td>
+            <td>
+              <div class="btn-group btn-group-sm" role="group">
+                <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>
+              </div>
+            </td>
+          </tr>
+          <% end -%>
+        <% else %>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         <% end -%>
       </tbody>
     </table>
+    <% if @close_contacts.empty? %>
+      <div class="text-center mb-4">No data available in table.</div>
+    <% end %>
     <div class="pb-1">
       <div class="btn-group" role="group">
         <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>

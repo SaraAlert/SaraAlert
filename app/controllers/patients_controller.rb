@@ -16,6 +16,10 @@ class PatientsController < ApplicationController
 
     @patient = current_user.get_patient(params.permit(:id)[:id])
 
+    @laboratories = @patient.laboratories.order('created_at')
+    @close_contacts = @patient.close_contacts.order('created_at')
+    @assessments = @patient.assessments.order('created_at')
+
     # If we failed to find a subject given the id, redirect to index
     redirect_to(root_url) && return if @patient.nil?
 
