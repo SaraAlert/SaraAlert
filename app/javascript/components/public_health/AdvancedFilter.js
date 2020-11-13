@@ -507,16 +507,6 @@ class AdvancedFilter extends React.Component {
           <Col className="py-0" md="9">
             {this.renderOptions(filterOption?.name, index)}
           </Col>
-          {filterOption?.type === 'date' && (
-            <Col className="py-0" md="3">
-              {this.renderDateOptions(dateOption, index)}
-            </Col>
-          )}
-          {filterOption?.type === 'relative' && (
-            <Col className="py-0" md="4">
-              {this.renderRelativeOptions(relativeOption, index, value)}
-            </Col>
-          )}
           <Col className="py-0">
             {filterOption?.type === 'boolean' && (
               <ButtonGroup toggle>
@@ -623,98 +613,114 @@ class AdvancedFilter extends React.Component {
                 </Row>
               </Form.Group>
             )}
-            {filterOption?.type === 'date' && dateOption != 'within' && (
-              <Form.Group className="py-0 my-0">
-                <DateInput
-                  date={value}
-                  onChange={date => {
-                    this.changeValue(index, date);
-                  }}
-                  placement="bottom"
-                  customClass="form-control-md"
-                  minDate={'1900-01-01'}
-                  maxDate={moment()
-                    .add(2, 'years')
-                    .format('YYYY-MM-DD')}
-                />
-              </Form.Group>
+            {filterOption?.type === 'date' && (
+              <Row>
+                <Col className="py-0" md="6">
+                  {this.renderDateOptions(dateOption, index)}
+                </Col>
+                {dateOption != 'within' && (
+                  <Col className="py-0">
+                    <Form.Group className="py-0 my-0">
+                      <DateInput
+                        date={value}
+                        onChange={date => {
+                          this.changeValue(index, date);
+                        }}
+                        placement="bottom"
+                        customClass="form-control-md"
+                        minDate={'1900-01-01'}
+                        maxDate={moment()
+                          .add(2, 'years')
+                          .format('YYYY-MM-DD')}
+                      />
+                    </Form.Group>
+                  </Col>
+                )}
+                {dateOption === 'within' && (
+                  <React.Fragment>
+                    <Col className="pr-0" md="8">
+                      <Form.Group className="py-0 my-0">
+                        <DateInput
+                          date={value.start}
+                          onChange={date => {
+                            this.changeValue(index, { start: date, end: value.end });
+                          }}
+                          placement="bottom"
+                          customClass="form-control-md"
+                          minDate={'1900-01-01'}
+                          maxDate={moment()
+                            .add(2, 'years')
+                            .format('YYYY-MM-DD')}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col className="py-0 px-0 text-center my-auto" md="2">
+                      <b>TO</b>
+                    </Col>
+                    <Col className="pl-0" md="8">
+                      <Form.Group className="py-0 my-0">
+                        <DateInput
+                          date={value.end}
+                          onChange={date => {
+                            this.changeValue(index, { start: value.start, end: date });
+                          }}
+                          placement="bottom"
+                          customClass="form-control-md"
+                          minDate={'1900-01-01'}
+                          maxDate={moment()
+                            .add(2, 'years')
+                            .format('YYYY-MM-DD')}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </React.Fragment>
+                )}
+              </Row>
             )}
-            {filterOption?.type === 'date' && dateOption === 'within' && (
-              <Form.Group className="py-0 my-0">
-                <Row>
-                  <Col className="pr-0">
-                    <DateInput
-                      date={value?.start}
-                      onChange={date => {
-                        this.changeValue(index, { start: date, end: value?.end });
-                      }}
-                      placement="bottom"
-                      customClass="form-control-md"
-                      minDate={'1900-01-01'}
-                      maxDate={moment()
-                        .add(2, 'years')
-                        .format('YYYY-MM-DD')}
-                    />
-                  </Col>
-                  <Col className="py-0 px-0 text-center my-auto" md="2">
-                    <b>TO</b>
-                  </Col>
-                  <Col className="pl-0">
-                    <DateInput
-                      date={value?.end}
-                      onChange={date => {
-                        this.changeValue(index, { start: value?.start, end: date });
-                      }}
-                      placement="bottom"
-                      customClass="form-control-md"
-                      minDate={'1900-01-01'}
-                      maxDate={moment()
-                        .add(2, 'years')
-                        .format('YYYY-MM-DD')}
-                    />
-                  </Col>
-                </Row>
-              </Form.Group>
-            )}
-            {filterOption?.type === 'relative' && relativeOption === 'custom' && (
-              <Form.Group className="py-0 my-0">
-                <Row>
-                  <Col className="py-0 px-0 text-center my-auto" md="auto">
-                    <b>IN THE</b>
-                  </Col>
-                  <Col md="6" className="pr-0">
-                    <Form.Control
-                      as="select"
-                      value={value.when}
-                      onChange={event => {
-                        this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
-                      }}>
-                      <option value="past">past</option>
-                      <option value="next">next</option>
-                    </Form.Control>
-                  </Col>
-                  <Col md="5" className="pr-0">
-                    <Form.Control
-                      value={value.number}
-                      type="number"
-                      min="1"
-                      onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
-                    />
-                  </Col>
-                  <Col md="8" className="pr-0">
-                    <Form.Control
-                      as="select"
-                      value={value.unit}
-                      onChange={event => {
-                        this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
-                      }}>
-                      <option value="days">day(s)</option>
-                      <option value="weeks">week(s)</option>
-                      <option value="months">month(s)</option>
-                    </Form.Control>
-                  </Col>
-                </Row>
-              </Form.Group>
+            {filterOption?.type === 'relative' && (
+              <Row>
+                <Col className="py-0" md="7">
+                  {this.renderRelativeOptions(relativeOption, index, value)}
+                </Col>
+                {relativeOption === 'custom' && (
+                  <React.Fragment>
+                    <Col className="py-0 px-0 text-center my-auto" md="auto">
+                      <b>IN THE</b>
+                    </Col>
+                    <Col md="4" className="pr-0">
+                      <Form.Control
+                        as="select"
+                        value={value.when}
+                        onChange={event => {
+                          this.changeValue(index, { number: value.number, unit: value.unit, when: event.target.value });
+                        }}>
+                        <option value="past">past</option>
+                        <option value="next">next</option>
+                      </Form.Control>
+                    </Col>
+                    <Col md="4" className="pr-0">
+                      <Form.Control
+                        value={value.number}
+                        type="number"
+                        min="1"
+                        onChange={event => this.changeValue(index, { number: event.target.value, unit: value.unit, when: value.when })}
+                      />
+                    </Col>
+                    <Col md="6" className="pr-0">
+                      <Form.Control
+                        as="select"
+                        value={value.unit}
+                        onChange={event => {
+                          this.changeValue(index, { number: value.number, unit: event.target.value, when: value.when });
+                        }}>
+                        <option value="days">day(s)</option>
+                        <option value="weeks">week(s)</option>
+                        <option value="months">month(s)</option>
+                      </Form.Control>
+                    </Col>
+                  </React.Fragment>
+                )}
+              </Row>
             )}
             {filterOption?.type === 'search' && (
               <Form.Group className="py-0 my-0">
