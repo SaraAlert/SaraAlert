@@ -328,25 +328,25 @@ class PublicHealthController < ApplicationController
             case filter[:value][:unit]
             when 'days'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(latest_assessment_at) >= ?',  number.days.ago).where('Date(latest_assessment_at) <= ?', Date.today)
-            when 'weeks' 
+              patients = patients.where('Date(latest_assessment_at) >= ?', number.days.ago).where('Date(latest_assessment_at) <= ?', Date.today)
+            when 'weeks'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(latest_assessment_at) >= ?',  number.weeks.ago).where('Date(latest_assessment_at) <= ?', Date.today)
+              patients = patients.where('Date(latest_assessment_at) >= ?', number.weeks.ago).where('Date(latest_assessment_at) <= ?', Date.today)
             when 'months'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(latest_assessment_at) >= ?',  number.months.ago).where('Date(latest_assessment_at) <= ?', Date.today)
+              patients = patients.where('Date(latest_assessment_at) >= ?', number.months.ago).where('Date(latest_assessment_at) <= ?', Date.today)
             end
           when 'next'
             case filter[:value][:unit]
             when 'days'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(latest_assessment_at) <= ?',  number.days.from_now).where('Date(latest_assessment_at) >= ?', Date.today)
+              patients = patients.where('Date(latest_assessment_at) <= ?', number.days.from_now).where('Date(latest_assessment_at) >= ?', Date.today)
             when 'weeks'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(latest_assessment_at) <= ?',  number.weeks.from_now).where('Date(latest_assessment_at) >= ?', Date.today)
+              patients = patients.where('Date(latest_assessment_at) <= ?', number.weeks.from_now).where('Date(latest_assessment_at) >= ?', Date.today)
             when 'months'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(latest_assessment_at) <= ?',  number.months.from_now).where('Date(latest_assessment_at) >= ?', Date.today)
+              patients = patients.where('Date(latest_assessment_at) <= ?', number.months.from_now).where('Date(latest_assessment_at) >= ?', Date.today)
             end
           end
         end
@@ -389,25 +389,25 @@ class PublicHealthController < ApplicationController
             case filter[:value][:unit]
             when 'days'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(patients.created_at) >= ?',  number.days.ago).where('Date(patients.created_at) <= ?', Date.today)
-            when 'weeks' 
+              patients = patients.where('Date(patients.created_at) >= ?', number.days.ago).where('Date(patients.created_at) <= ?', Date.today)
+            when 'weeks'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(patients.created_at) >= ?',  number.weeks.ago).where('Date(patients.created_at) <= ?', Date.today)
+              patients = patients.where('Date(patients.created_at) >= ?', number.weeks.ago).where('Date(patients.created_at) <= ?', Date.today)
             when 'months'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(patients.created_at) >= ?',  number.months.ago).where('Date(patients.created_at) <= ?', Date.today)
+              patients = patients.where('Date(patients.created_at) >= ?', number.months.ago).where('Date(patients.created_at) <= ?', Date.today)
             end
           when 'next'
             case filter[:value][:unit]
             when 'days'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(patients.created_at) <= ?',  number.days.from_now).where('Date(patients.created_at) >= ?', Date.today)
+              patients = patients.where('Date(patients.created_at) <= ?', number.days.from_now).where('Date(patients.created_at) >= ?', Date.today)
             when 'weeks'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(patients.created_at) <= ?',  number.weeks.from_now).where('Date(patients.created_at) >= ?', Date.today)
+              patients = patients.where('Date(patients.created_at) <= ?', number.weeks.from_now).where('Date(patients.created_at) >= ?', Date.today)
             when 'months'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(patients.created_at) <= ?',  number.months.from_now).where('Date(patients.created_at) >= ?', Date.today)
+              patients = patients.where('Date(patients.created_at) <= ?', number.months.from_now).where('Date(patients.created_at) >= ?', Date.today)
             end
           end
         end
@@ -438,25 +438,25 @@ class PublicHealthController < ApplicationController
             case filter[:value][:unit]
             when 'days'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(last_date_of_exposure) >= ?',  number.days.ago).where('Date(last_date_of_exposure) <= ?', Date.today)
-            when 'weeks' 
+              patients = patients.where('Date(last_date_of_exposure) >= ?', number.days.ago).where('Date(last_date_of_exposure) <= ?', Date.today)
+            when 'weeks'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(last_date_of_exposure) >= ?',  number.weeks.ago).where('Date(last_date_of_exposure) <= ?', Date.today)
+              patients = patients.where('Date(last_date_of_exposure) >= ?', number.weeks.ago).where('Date(last_date_of_exposure) <= ?', Date.today)
             when 'months'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(last_date_of_exposure) >= ?',  number.months.ago).where('Date(last_date_of_exposure) <= ?', Date.today)
+              patients = patients.where('Date(last_date_of_exposure) >= ?', number.months.ago).where('Date(last_date_of_exposure) <= ?', Date.today)
             end
           when 'next'
             case filter[:value][:unit]
             when 'days'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(last_date_of_exposure) <= ?',  number.days.from_now).where('Date(last_date_of_exposure) >= ?', Date.today)
+              patients = patients.where('Date(last_date_of_exposure) <= ?', number.days.from_now).where('Date(last_date_of_exposure) >= ?', Date.today)
             when 'weeks'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(last_date_of_exposure) <= ?',  number.weeks.from_now).where('Date(last_date_of_exposure) >= ?', Date.today)
+              patients = patients.where('Date(last_date_of_exposure) <= ?', number.weeks.from_now).where('Date(last_date_of_exposure) >= ?', Date.today)
             when 'months'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(last_date_of_exposure) <= ?',  number.months.from_now).where('Date(last_date_of_exposure) >= ?', Date.today)
+              patients = patients.where('Date(last_date_of_exposure) <= ?', number.months.from_now).where('Date(last_date_of_exposure) >= ?', Date.today)
             end
           end
         end
@@ -487,25 +487,25 @@ class PublicHealthController < ApplicationController
             case filter[:value][:unit]
             when 'days'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(symptom_onset) >= ?',  number.days.ago).where('Date(symptom_onset) <= ?', Date.today)
+              patients = patients.where('Date(symptom_onset) >= ?', number.days.ago).where('Date(symptom_onset) <= ?', Date.today)
             when 'weeks'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(symptom_onset) >= ?',  number.weeks.ago).where('Date(symptom_onset) <= ?', Date.today)
+              patients = patients.where('Date(symptom_onset) >= ?', number.weeks.ago).where('Date(symptom_onset) <= ?', Date.today)
             when 'months'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(symptom_onset) >= ?',  number.months.ago).where('Date(symptom_onset) <= ?', Date.today)
+              patients = patients.where('Date(symptom_onset) >= ?', number.months.ago).where('Date(symptom_onset) <= ?', Date.today)
             end
           when 'next'
             case filter[:value][:unit]
             when 'days'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(symptom_onset) <= ?',  number.days.from_now).where('Date(symptom_onset) >= ?', Date.today)
+              patients = patients.where('Date(symptom_onset) <= ?', number.days.from_now).where('Date(symptom_onset) >= ?', Date.today)
             when 'weeks'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(symptom_onset) <= ?',  number.weeks.from_now).where('Date(symptom_onset) >= ?', Date.today)
+              patients = patients.where('Date(symptom_onset) <= ?', number.weeks.from_now).where('Date(symptom_onset) >= ?', Date.today)
             when 'months'
               number = filter[:value][:number].to_i
-              patients = patients.where('Date(symptom_onset) <= ?',  number.months.from_now).where('Date(symptom_onset) >= ?', Date.today)
+              patients = patients.where('Date(symptom_onset) <= ?', number.months.from_now).where('Date(symptom_onset) >= ?', Date.today)
             end
           end
         end
