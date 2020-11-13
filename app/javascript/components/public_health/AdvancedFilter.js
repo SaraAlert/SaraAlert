@@ -255,7 +255,11 @@ class AdvancedFilter extends React.Component {
     } else if (filterOption.type === 'option') {
       value = filterOption.options[0];
     } else if (filterOption.type === 'number') {
-      value = 0;
+      value = {
+        number: 0,
+        operator: 'equal',
+        contactAttemptType: filterOption.name === 'manual-contact-attempts' ? 'successful' : null,
+      };
     } else if (filterOption.type === 'date') {
       // Default to "within" type
       value = { start: moment().add(-72, 'hours'), end: moment() };
@@ -267,7 +271,6 @@ class AdvancedFilter extends React.Component {
       filterOption,
       value,
       dateOption: filterOption.type === 'date' ? 'within' : null,
-      operatorOption: filterOption.type === 'number' ? 'equal' : null,
     };
     this.setState({ activeFilterOptions });
   };
@@ -282,13 +285,6 @@ class AdvancedFilter extends React.Component {
       defaultValue = moment();
     }
     activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: defaultValue, dateOption: value };
-    this.setState({ activeFilterOptions });
-  };
-
-  // Change an index filter option for number
-  changeFilterOperatorOption = (index, value, operatorOption) => {
-    let activeFilterOptions = [...this.state.activeFilterOptions];
-    activeFilterOptions[parseInt(index)] = { filterOption: activeFilterOptions[parseInt(index)].filterOption, value: value, operatorOption: operatorOption };
     this.setState({ activeFilterOptions });
   };
 
@@ -436,41 +432,6 @@ class AdvancedFilter extends React.Component {
     );
   };
 
-  // Render number specific options
-  renderOperatorOptions = (current, index, value) => {
-    return (
-      <Form.Control
-        as="select"
-        value={current}
-        onChange={event => {
-          this.changeFilterOperatorOption(index, value, event.target.value);
-        }}>
-        <option value="less-than">{'less than'}</option>
-        <option value="less-than-equal">{'less than or equal to'}</option>
-        <option value="equal">{'equal to'}</option>
-        <option value="greater-than-equal">{'greater than or equal to'}</option>
-        <option value="greater-than">{'greater than'}</option>
-      </Form.Control>
-    );
-  };
-
-  // Render number specific options
-  // renderContactAttemptOptions = (current, index, value) => {
-  //   return (
-  //     <Form.Control
-  //       as="select"
-  //       // value={current}
-  //       // onChange={event => {
-  //       //   this.changeFilterOperatorOption(index, value, event.target.value);
-  //       // }}
-  //     >
-  //       <option value="successful">Successful Contact Attempts</option>
-  //       <option value="unsuccessful">Unsuccessful Contact Attempts</option>
-  //       <option value="all">All Contact Attempts</option>
-  //     </Form.Control>
-  //   );
-  // };
-
   // Modal to specify filter name
   renderFilterNameModal = () => {
     return (
@@ -517,9 +478,7 @@ class AdvancedFilter extends React.Component {
   };
 
   // Render a single line "statement"
-  renderStatement = (filterOption, value, index, total, dateOption, operatorOption) => {
-    console.log(index);
-    console.log(filterOption);
+  renderStatement = (filterOption, value, index, total, dateOption) => {
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -587,32 +546,52 @@ class AdvancedFilter extends React.Component {
                 <Row>
                   {filterOption?.name === 'manual-contact-attempts' && (
                     // specific dropdown for manual contact attempts ONLY
-                    <Col md="14">
+                    <Col md="8">
                       <Form.Control
                         as="select"
-                        // value={current}
-                        // onChange={event => {
-                        //   this.changeFilterOperatorOption(index, value, event.target.value);
-                        // }}
-                      >
-                        <option value="successful">Successful Contact Attempts</option>
-                        <option value="unsuccessful">Unsuccessful Contact Attempts</option>
-                        <option value="all">All Contact Attempts</option>
+                        value={value.contactAttemptType}
+                        onChange={event =>
+                          this.changeValue(index, {
+                            number: value.number,
+                            operator: value.operator,
+                            contactAttempts: event.target.value,
+                          })
+                        }>
+                        <option value="successful">Successful</option>
+                        <option value="unsuccessful">Unsuccessful</option>
+                        <option value="all">All</option>
                       </Form.Control>
                     </Col>
                   )}
-                  <Col md="auto">{this.renderOperatorOptions(operatorOption, index, value)}</Col>
+                  <Col md="11">
+                    <Form.Control
+                      as="select"
+                      value={value.operator}
+                      onChange={event =>
+                        this.changeValue(index, {
+                          number: value.number,
+                          operator: event.target.value,
+                          contactAttempts: value.contactAttemptType,
+                        })
+                      }>
+                      <option value="less-than">{'less than'}</option>
+                      <option value="less-than-equal">{'less than or equal to'}</option>
+                      <option value="equal">{'equal to'}</option>
+                      <option value="greater-than-equal">{'greater than or equal to'}</option>
+                      <option value="greater-than">{'greater than'}</option>
+                    </Form.Control>
+                  </Col>
                   <Col>
                     <Form.Control
                       className="form-control-number"
-                      value={value}
+                      value={value.number}
                       type="number"
                       min="0"
                       onChange={event =>
-                        this.changeValue({
+                        this.changeValue(index, {
                           number: event.target.value,
                           operator: value.operator,
-                          contactAttempts: value.contactAttempts,
+                          contactAttempts: value.contactAttemptType,
                         })
                       }
                     />
@@ -751,14 +730,7 @@ class AdvancedFilter extends React.Component {
               </Col>
             </Row>
             {this.state.activeFilterOptions?.map((statement, index) => {
-              return this.renderStatement(
-                statement.filterOption,
-                statement.value,
-                index,
-                this.state.activeFilterOptions?.length,
-                statement.dateOption,
-                statement.operatorOption
-              );
+              return this.renderStatement(statement.filterOption, statement.value, index, this.state.activeFilterOptions?.length, statement.dateOption);
             })}
             <Row className="pt-2 pb-1">
               <Col>
