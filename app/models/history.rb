@@ -175,6 +175,7 @@ class History < ApplicationRecord
     }
 
     return if field[:old_value] == field[:new_value]
+
     create_history(history[:patient], history[:created_by], HISTORY_TYPES[:monitoring_change], compose_message(history, field))
   end
 
