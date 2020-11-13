@@ -538,12 +538,12 @@ class AdvancedFilter extends React.Component {
                     <Col md="8">
                       <Form.Control
                         as="select"
-                        value={value.option}
+                        value={value?.option}
                         onChange={event =>
                           this.changeValue(index, {
-                            number: value.number,
-                            operator: value.operator,
-                            option: event.target.value,
+                            number: value?.number,
+                            operator: value?.operator,
+                            option: event?.target?.value,
                           })
                         }>
                         {filterOption.options.map((option, op_index) => {
@@ -559,12 +559,12 @@ class AdvancedFilter extends React.Component {
                   <Col md="11">
                     <Form.Control
                       as="select"
-                      value={value.operator}
+                      value={value?.operator}
                       onChange={event =>
                         this.changeValue(index, {
-                          number: value.number,
-                          operator: event.target.value,
-                          option: value.option,
+                          number: value?.number,
+                          operator: event?.target?.value,
+                          option: value?.option,
                         })
                       }>
                       <option value="less-than">{'less than'}</option>
@@ -577,14 +577,14 @@ class AdvancedFilter extends React.Component {
                   <Col>
                     <Form.Control
                       className="form-control-number"
-                      value={value.number}
+                      value={value?.number}
                       type="number"
                       min="0"
                       onChange={event =>
                         this.changeValue(index, {
-                          number: event.target.value,
-                          operator: value.operator,
-                          option: value.option,
+                          number: event?.target?.value,
+                          operator: value?.operator,
+                          option: value?.option,
                         })
                       }
                     />
@@ -613,9 +613,9 @@ class AdvancedFilter extends React.Component {
                 <Row>
                   <Col className="pr-0">
                     <DateInput
-                      date={value.start}
+                      date={value?.start}
                       onChange={date => {
-                        this.changeValue(index, { start: date, end: value.end });
+                        this.changeValue(index, { start: date, end: value?.end });
                       }}
                       placement="bottom"
                       customClass="form-control-md"
@@ -630,9 +630,9 @@ class AdvancedFilter extends React.Component {
                   </Col>
                   <Col className="pl-0">
                     <DateInput
-                      date={value.end}
+                      date={value?.end}
                       onChange={date => {
-                        this.changeValue(index, { start: value.start, end: date });
+                        this.changeValue(index, { start: value?.start, end: date });
                       }}
                       placement="bottom"
                       customClass="form-control-md"

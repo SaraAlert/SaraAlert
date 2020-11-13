@@ -5,7 +5,7 @@ class CreateContactAttempts < ActiveRecord::Migration[6.0]
       t.references :user, index: true
 
       t.boolean :successful, index: true
-      t.string :note
+      t.text :note
 
       t.timestamps
     end
@@ -15,7 +15,7 @@ class CreateContactAttempts < ActiveRecord::Migration[6.0]
       INSERT INTO contact_attempts (patient_id, user_id, successful, note, created_at, updated_at)
       SELECT histories.patient_id as patient_id,
             users.id as user_id,
-            histories.comment NOT LIKE '%unsuccessful%' as successful,
+            histories.comment NOT LIKE '%unsuccessful contact attempt%' as successful,
             SUBSTRING_INDEX(histories.comment, 'uccessful contact attempt. Note: ', -1) as comment,
             histories.created_at as created_at,
             histories.updated_at as updated_at
@@ -26,7 +26,7 @@ class CreateContactAttempts < ActiveRecord::Migration[6.0]
       UNION
       SELECT histories.patient_id as patient_id,
             users.id as user_id,
-            histories.comment NOT LIKE '%unsuccessful%' as successful,
+            histories.comment NOT LIKE '%unsuccessful contact attempt%' as successful,
             SUBSTRING_INDEX(histories.comment, 'uccessful contact attempt. Note: ', -1) as comment,
             histories.created_at as created_at,
             histories.updated_at as updated_at
