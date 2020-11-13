@@ -186,23 +186,70 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col className="text-truncate">
-                    <span>
-                      {this.props.details.address_line_1 && `${this.props.details.address_line_1}`}
-                      {this.props.details.address_line_2 && ` ${this.props.details.address_line_2}`}
-                      {this.props.details.foreign_address_line_1 && `${this.props.details.foreign_address_line_1}`}
-                      {this.props.details.foreign_address_line_2 && ` ${this.props.details.foreign_address_line_2}`}
-                    </span>
+                    <b>HOME ADDRESS</b>
                     <br />
-                    <span>
-                      {this.props.details.address_city ? this.props.details.address_city : ''}
-                      {this.props.details.address_state ? ` ${this.props.details.address_state}` : ''}
-                      {this.props.details.address_county ? ` ${this.props.details.address_county}` : ''}
-                      {this.props.details.address_zip ? ` ${this.props.details.address_zip}` : ''}
-                      {this.props.details.foreign_address_city ? this.props.details.foreign_address_city : ''}
-                      {this.props.details.foreign_address_country ? ` ${this.props.details.foreign_address_country}` : ''}
-                      {this.props.details.foreign_address_zip ? ` ${this.props.details.foreign_address_zip}` : ''}
-                    </span>
-                    <br />
+                    {(this.props.details.address_line_1 ||
+                      this.props.details.address_line_2 ||
+                      this.props.details.address_city ||
+                      this.props.details.address_state ||
+                      this.props.details.address_zip) && (
+                      <React.Fragment>
+                        <Row>
+                          <Col>
+                            <b>Address 1:</b> <span>{this.props.details.address_line_1 ? `${this.props.details.address_line_1}` : '--'}</span>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <b>Address 2:</b> <span>{this.props.details.address_line_2 ? `${this.props.details.address_line_2}` : '--'}</span>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <b>Town/City:</b> <span>{this.props.details.address_city ? `${this.props.details.address_city}` : '--'}</span>
+                          </Col>
+                          <Col>
+                            <b>State:</b> <span>{this.props.details.address_state ? `${this.props.details.address_state}` : '--'}</span>
+                          </Col>
+                          <Col>
+                            <b>Zip:</b> <span>{this.props.details.address_zip ? `${this.props.details.address_zip}` : '--'}</span>
+                          </Col>
+                        </Row>
+                        <br />
+                      </React.Fragment>
+                    )}
+                    {(this.props.details.foreign_address_line_1 ||
+                      this.props.details.foreign_address_line_2 ||
+                      this.props.details.foreign_address_city ||
+                      this.props.details.foreign_address_zip ||
+                      this.props.details.foreign_address_country) && (
+                      <React.Fragment>
+                        <Row>
+                          <Col>
+                            <b>Address 1:</b> <span>{this.props.details.foreign_address_line_1 ? `${this.props.details.foreign_address_line_1}` : '--'}</span>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <b>Address 2:</b> <span>{this.props.details.foreign_address_line_2 ? `${this.props.details.foreign_address_line_2}` : '--'}</span>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <b>Town/City:</b> <span>{this.props.details.foreign_address_city ? `${this.props.details.foreign_address_city}` : '--'}</span>
+                          </Col>
+                          <Col>
+                            <b>Zip:</b> <span>{this.props.details.foreign_address_zip ? `${this.props.details.foreign_address_zip}` : '--'}</span>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <b>Country:</b> <span>{this.props.details.foreign_address_country ? `${this.props.details.foreign_address_country}` : '--'}</span>
+                          </Col>
+                        </Row>
+                        <br />
+                      </React.Fragment>
+                    )}
                   </Col>
                 </Row>
               </Col>
@@ -237,8 +284,9 @@ class Patient extends React.Component {
                           <Col className="text-truncate">
                             <b>DEPARTED</b>
                             <br />
-                            <span>{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
+                            <b>Port of Origin:</b> <span>{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
                             <br />
+                            <b>Date of Departure:</b>{' '}
                             <span>{`${
                               this.props.details.date_of_departure ? moment(this.props.details.date_of_departure, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
                             }`}</span>
@@ -246,8 +294,9 @@ class Patient extends React.Component {
                           <Col className="text-truncate">
                             <b>ARRIVAL</b>
                             <br />
-                            <span>{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
+                            <b>Port of Entry:</b> <span>{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
                             <br />
+                            <b>Date of Arrival:</b>{' '}
                             <span>{`${
                               this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
                             }`}</span>
@@ -255,8 +304,9 @@ class Patient extends React.Component {
                         </Row>
                         <Row>
                           <Col className="text-truncate pt-1">
-                            <span>{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
+                            <b>Carrier:</b> <span>{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
                             <br />
+                            <b>Flight or Vessel Number:</b>{' '}
                             <span>{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
                           </Col>
                         </Row>
@@ -353,18 +403,27 @@ class Patient extends React.Component {
                   <Col>
                     <b>LAST EXPOSURE</b>
                     <br />
-                    {(this.props.details.potential_exposure_location || this.props.details.potential_exposure_country) && (
-                      <React.Fragment>
-                        <span>
-                          {`${this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : ''}`}
-                          {`${this.props.details.potential_exposure_country ? ' ' + this.props.details.potential_exposure_country : ''}`}
-                        </span>
-                        <br />
-                      </React.Fragment>
-                    )}
+                    <Row>
+                      <Col>
+                        {this.props.details.potential_exposure_location && (
+                          <React.Fragment>
+                            <b>Exposure Location:</b> <span>{this.props.details.potential_exposure_location}</span>
+                            <br />
+                          </React.Fragment>
+                        )}
+                      </Col>
+                      <Col>
+                        {this.props.details.potential_exposure_country && (
+                          <React.Fragment>
+                            <b>Exposure Country:</b> <span>{this.props.details.potential_exposure_country}</span>
+                            <br />
+                          </React.Fragment>
+                        )}
+                      </Col>
+                    </Row>
                     {this.props.details.last_date_of_exposure && (
                       <React.Fragment>
-                        <span>{moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
+                        <b>Last Date of Exposure:</b> <span>{moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
                         <br />
                       </React.Fragment>
                     )}
