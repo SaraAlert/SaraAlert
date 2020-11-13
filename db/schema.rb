@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2020_11_16_214553) do
   end
 
   create_table "blocked_numbers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "phone_number"
+    t.string "phone_number", null: false
     t.index ["phone_number"], name: "index_blocked_phone_number"
   end
 
