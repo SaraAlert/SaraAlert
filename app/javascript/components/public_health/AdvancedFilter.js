@@ -142,6 +142,7 @@ class AdvancedFilter extends React.Component {
           title: 'Manual Contact Attempts (Number)',
           description: 'All records with the specified number of manual contact attempts',
           type: 'number',
+          options: ['Successful', 'Unsuccessful', 'All'],
         },
       ],
       savedFilters: [],
@@ -246,7 +247,7 @@ class AdvancedFilter extends React.Component {
       value = {
         number: 0,
         operator: 'equal',
-        contactAttemptType: filterOption.name === 'manual-contact-attempts' ? 'successful' : null,
+        option: filterOption.options ? filterOption[0] : null,
       };
     } else if (filterOption.type === 'date') {
       // Default to "within" type
@@ -532,22 +533,26 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'number' && (
               <Form.Group className="py-0 my-0">
                 <Row>
-                  {filterOption?.name === 'manual-contact-attempts' && (
-                    // specific dropdown for manual contact attempts ONLY
+                  {filterOption?.options && (
+                    // specific dropdown for filters with number type but require additional options
                     <Col md="8">
                       <Form.Control
                         as="select"
-                        value={value.contactAttemptType}
+                        value={value.option}
                         onChange={event =>
                           this.changeValue(index, {
                             number: value.number,
                             operator: value.operator,
-                            contactAttempts: event.target.value,
+                            option: event.target.value,
                           })
                         }>
-                        <option value="successful">Successful</option>
-                        <option value="unsuccessful">Unsuccessful</option>
-                        <option value="all">All</option>
+                        {filterOption.options.map((option, op_index) => {
+                          return (
+                            <option key={index + 'opkeyop-f' + op_index} value={option}>
+                              {option}
+                            </option>
+                          );
+                        })}
                       </Form.Control>
                     </Col>
                   )}
@@ -559,7 +564,7 @@ class AdvancedFilter extends React.Component {
                         this.changeValue(index, {
                           number: value.number,
                           operator: event.target.value,
-                          contactAttempts: value.contactAttemptType,
+                          option: value.option,
                         })
                       }>
                       <option value="less-than">{'less than'}</option>
@@ -579,7 +584,7 @@ class AdvancedFilter extends React.Component {
                         this.changeValue(index, {
                           number: event.target.value,
                           operator: value.operator,
-                          contactAttempts: value.contactAttemptType,
+                          option: value.option,
                         })
                       }
                     />
