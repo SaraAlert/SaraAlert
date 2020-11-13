@@ -2142,5 +2142,25 @@ class PatientTest < ActiveSupport::TestCase
     patient.update(last_assessment_reminder_sent: 11.hours.ago)
     assert_not patient.last_assessment_reminder_sent_eligible?
   end
+  
+  test 'get_updates_from_monitoring_changes handles monitoring change' do
+    
+  end
+
+  test 'get_updates_from_monitoring_changes handles workflow change' do
+    
+  end
+
+  test 'get_updates_from_monitoring_changes handles symptom_onset change' do
+    
+  end
+
+  test 'get_updates_from_monitoring_changes handles case_status change' do
+    
+  end
+
+  test 'get_updates_from_monitoring_changes handles continuous_exposure change' do
+    
+  end
 end
 # rubocop:enable Metrics/ClassLength
