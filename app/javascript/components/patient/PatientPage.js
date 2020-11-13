@@ -9,7 +9,7 @@ import Patient from './Patient';
 class PatientPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { showAddAssessment: false, hideBody: props.hideBody };
+    this.state = { hideBody: props.hideBody };
   }
 
   reloadHook = () => {
