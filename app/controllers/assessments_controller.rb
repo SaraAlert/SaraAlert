@@ -137,7 +137,7 @@ class AssessmentsController < ApplicationController
     redirect_to(root_url) && return if patient.nil?
 
     redirect_to root_url unless current_user&.can_edit_patient_assessments?
-    patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
+    # patient = Patient.find_by(submission_token: params.permit(:patient_submission_token)[:patient_submission_token])
     assessment = Assessment.find_by(id: params.permit(:id)[:id])
     reported_symptoms_array = params.permit({ symptoms: %i[name value type label notes required] }).to_h['symptoms']
 
@@ -146,12 +146,19 @@ class AssessmentsController < ApplicationController
     # Figure out the change
     delta = []
     typed_reported_symptoms.each do |symptom|
-      new_val = symptom.bool_value
-      old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
-      is_bool_and_changed = [true, false].include?(new_val) && [true, false].include?(old_val) && new_val != old_val
-      is_non_bool_and_changed = new_val.present? && old_val.present? && new_val != old_val
-      if is_bool_and_changed || is_non_bool_and_changed
-        delta << symptom.name + '=' + (new_val ? 'Yes' : 'No')
+      if symptom.is_a? BoolSymptom
+        new_val = symptom.bool_value
+        old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
+        has_changed = [true, false].include?(new_val) && [true, false].include?(old_val) && new_val != old_val
+        delta << symptom.name + '=' + (new_val ? 'Yes' : 'No') if has_changed
+      elsif (symptom.is_a? FloatSymptom)
+        new_val = symptom.float_value
+        old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.float_value
+        delta << "#{symptom.name}=#{new_val}" if new_val != old_val
+      elsif (symptom.is_a? IntegerSymptom)
+        new_val = symptom.int_value
+        old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.int_value
+        delta << "#{symptom.name}=#{new_val}" if new_val != old_val
       end
     end
 
