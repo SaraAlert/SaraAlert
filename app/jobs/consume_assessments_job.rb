@@ -7,7 +7,6 @@ require 'redis-queue'
 class ConsumeAssessmentsJob < ApplicationJob
   queue_as :default
 
-  # rubocop:disable Metrics/MethodLength
   def perform
     queue = Redis::Queue.new('q_bridge', 'bp_q_bridge', redis: Rails.application.config.redis)
 
@@ -140,7 +139,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
           assessment.symptomatic = assessment.symptomatic?
           queue.commit if assessment.save
-        elsif !message['response_status'].in? %w[opt_out opt_in]
+        else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
           # a generic channel ie: SMS where monitorees are asked YES/NO if they are experiencing symptoms
           patient.active_dependents.each do |dependent|
@@ -174,7 +173,6 @@ class ConsumeAssessmentsJob < ApplicationJob
     sleep(1)
     retry
   end
-  # rubocop:enable Metrics/MethodLength
 
   private
 
