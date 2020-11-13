@@ -143,18 +143,18 @@ class AdvancedFilter extends React.Component {
           description: 'All records with the specified number of manual contact attempts',
           type: 'number',
         },
-        {
-          name: 'manual-contact-attempts-unsuccessful',
-          title: 'Unsuccessful Manual Contact Attempts (Number)',
-          description: 'All records with the specified number of unsuccessful manual contact attempts',
-          type: 'number',
-        },
-        {
-          name: 'manual-contact-attempts-successful',
-          title: 'Successful Manual Contact Attempts (Number)',
-          description: 'All records with the specified number of successful manual contact attempts',
-          type: 'number',
-        },
+        // {
+        //   name: 'manual-contact-attempts-unsuccessful',
+        //   title: 'Unsuccessful Manual Contact Attempts (Number)',
+        //   description: 'All records with the specified number of unsuccessful manual contact attempts',
+        //   type: 'number',
+        // },
+        // {
+        //   name: 'manual-contact-attempts-successful',
+        //   title: 'Successful Manual Contact Attempts (Number)',
+        //   description: 'All records with the specified number of successful manual contact attempts',
+        //   type: 'number',
+        // },
       ],
       savedFilters: [],
       activeFilter: null,
@@ -454,6 +454,23 @@ class AdvancedFilter extends React.Component {
     );
   };
 
+  // Render number specific options
+  // renderContactAttemptOptions = (current, index, value) => {
+  //   return (
+  //     <Form.Control
+  //       as="select"
+  //       // value={current}
+  //       // onChange={event => {
+  //       //   this.changeFilterOperatorOption(index, value, event.target.value);
+  //       // }}
+  //     >
+  //       <option value="successful">Successful Contact Attempts</option>
+  //       <option value="unsuccessful">Unsuccessful Contact Attempts</option>
+  //       <option value="all">All Contact Attempts</option>
+  //     </Form.Control>
+  //   );
+  // };
+
   // Modal to specify filter name
   renderFilterNameModal = () => {
     return (
@@ -501,6 +518,8 @@ class AdvancedFilter extends React.Component {
 
   // Render a single line "statement"
   renderStatement = (filterOption, value, index, total, dateOption, operatorOption) => {
+    console.log(index);
+    console.log(filterOption);
     return (
       <React.Fragment key={'rowkey-filter-p' + index}>
         {index > 0 && index < total && (
@@ -566,6 +585,22 @@ class AdvancedFilter extends React.Component {
             {filterOption?.type === 'number' && (
               <Form.Group className="py-0 my-0">
                 <Row>
+                  {filterOption?.name === 'manual-contact-attempts' && (
+                    // specific dropdown for manual contact attempts ONLY
+                    <Col md="14">
+                      <Form.Control
+                        as="select"
+                        // value={current}
+                        // onChange={event => {
+                        //   this.changeFilterOperatorOption(index, value, event.target.value);
+                        // }}
+                      >
+                        <option value="successful">Successful Contact Attempts</option>
+                        <option value="unsuccessful">Unsuccessful Contact Attempts</option>
+                        <option value="all">All Contact Attempts</option>
+                      </Form.Control>
+                    </Col>
+                  )}
                   <Col md="auto">{this.renderOperatorOptions(operatorOption, index, value)}</Col>
                   <Col>
                     <Form.Control
@@ -573,7 +608,13 @@ class AdvancedFilter extends React.Component {
                       value={value}
                       type="number"
                       min="0"
-                      onChange={event => this.changeValue(index, event.target.value)}
+                      onChange={event =>
+                        this.changeValue({
+                          number: event.target.value,
+                          operator: value.operator,
+                          contactAttempts: value.contactAttempts,
+                        })
+                      }
                     />
                   </Col>
                 </Row>
