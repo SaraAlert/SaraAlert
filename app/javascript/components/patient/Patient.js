@@ -399,82 +399,85 @@ class Patient extends React.Component {
                     <div className="clearfix"></div>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="pt-2">
                   <Col>
-                    <b>LAST EXPOSURE</b>
+                    <b>Last Date of Exposure:</b> <span>{moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
                     <br />
-                    <Row>
+                    <Row className="pt-2">
                       <Col>
-                        {this.props.details.potential_exposure_location && (
-                          <React.Fragment>
-                            <b>Exposure Location:</b> <span>{this.props.details.potential_exposure_location}</span>
-                            <br />
-                          </React.Fragment>
-                        )}
+                        <b>Exposure Location:</b>{' '}
+                        <span>{this.props.details.potential_exposure_location ? `${this.props.details.potential_exposure_location}` : '--'}</span>
                       </Col>
                       <Col>
-                        {this.props.details.potential_exposure_country && (
-                          <React.Fragment>
-                            <b>Exposure Country:</b> <span>{this.props.details.potential_exposure_country}</span>
-                            <br />
-                          </React.Fragment>
-                        )}
+                        <b>Exposure Country:</b>{' '}
+                        <span>{this.props.details.potential_exposure_country ? `${this.props.details.potential_exposure_country}` : '--'}</span>
                       </Col>
                     </Row>
-                    {this.props.details.last_date_of_exposure && (
-                      <React.Fragment>
-                        <b>Last Date of Exposure:</b> <span>{moment(this.props.details.last_date_of_exposure, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
-                        <br />
-                      </React.Fragment>
-                    )}
                     <br />
-                    <b>RISK FACTORS</b>
+                    <b>Risk Factors</b>
                     <br />
-                    {this.props.details.contact_of_known_case && (
+                    {!this.props.details.contact_of_known_case &&
+                      !this.props.details.member_of_a_common_exposure_cohort &&
+                      !this.props.details.travel_to_affected_country_or_area &&
+                      !this.props.details.was_in_health_care_facility_with_known_cases &&
+                      !this.props.details.laboratory_personnel &&
+                      !this.props.details.healthcare_personnel &&
+                      !this.props.details.crew_on_passenger_or_cargo_flight && <span className="none-text">None</span>}
+                    {(this.props.details.contact_of_known_case ||
+                      this.props.details.member_of_a_common_exposure_cohort ||
+                      this.props.details.travel_to_affected_country_or_area ||
+                      this.props.details.was_in_health_care_facility_with_known_cases ||
+                      this.props.details.laboratory_personnel ||
+                      this.props.details.healthcare_personnel ||
+                      this.props.details.crew_on_passenger_or_cargo_flight) && (
                       <React.Fragment>
-                        <b className="text-danger">CLOSE CONTACT WITH A KNOWN CASE:</b>
-                        <span> {this.props.details.contact_of_known_case_id}</span>
-                        <br />
-                      </React.Fragment>
-                    )}
-                    {this.props.details.member_of_a_common_exposure_cohort && (
-                      <React.Fragment>
-                        <b className="text-danger">MEMBER OF A COMMON EXPOSURE COHORT:</b>
-                        <span> {this.props.details.member_of_a_common_exposure_cohort_type}</span>
-                        <br />
-                      </React.Fragment>
-                    )}
-                    {this.props.details.travel_to_affected_country_or_area && (
-                      <React.Fragment>
-                        <b className="text-danger">TRAVEL FROM AFFECTED COUNTRY OR AREA</b>
-                        <br />
-                      </React.Fragment>
-                    )}
-                    {this.props.details.was_in_health_care_facility_with_known_cases && (
-                      <React.Fragment>
-                        <b className="text-danger">WAS IN HEALTH CARE FACILITY WITH KNOWN CASES:</b>
-                        <span> {this.props.details.was_in_health_care_facility_with_known_cases_facility_name || ''}</span>
-                        <br />
-                      </React.Fragment>
-                    )}
-                    {this.props.details.laboratory_personnel && (
-                      <React.Fragment>
-                        <b className="text-danger">LABORATORY PERSONNEL:</b>
-                        <span> {this.props.details.laboratory_personnel_facility_name || ''}</span>
-                        <br />
-                      </React.Fragment>
-                    )}
-                    {this.props.details.healthcare_personnel && (
-                      <React.Fragment>
-                        <b className="text-danger">HEALTHCARE PERSONNEL:</b>
-                        <span> {this.props.details.healthcare_personnel_facility_name || ''}</span>
-                        <br />
-                      </React.Fragment>
-                    )}
-                    {this.props.details.crew_on_passenger_or_cargo_flight && (
-                      <React.Fragment>
-                        <b className="text-danger">CREW ON PASSENGER OR CARGO FLIGHT</b>
-                        <br />
+                        {this.props.details.contact_of_known_case && (
+                          <React.Fragment>
+                            <b className="text-danger">CLOSE CONTACT WITH A KNOWN CASE:</b>
+                            <span> {this.props.details.contact_of_known_case_id}</span>
+                            <br />
+                          </React.Fragment>
+                        )}
+                        {this.props.details.member_of_a_common_exposure_cohort && (
+                          <React.Fragment>
+                            <b className="text-danger">MEMBER OF A COMMON EXPOSURE COHORT:</b>
+                            <span> {this.props.details.member_of_a_common_exposure_cohort_type}</span>
+                            <br />
+                          </React.Fragment>
+                        )}
+                        {this.props.details.travel_to_affected_country_or_area && (
+                          <React.Fragment>
+                            <b className="text-danger">TRAVEL FROM AFFECTED COUNTRY OR AREA</b>
+                            <br />
+                          </React.Fragment>
+                        )}
+                        {this.props.details.was_in_health_care_facility_with_known_cases && (
+                          <React.Fragment>
+                            <b className="text-danger">WAS IN HEALTH CARE FACILITY WITH KNOWN CASES:</b>
+                            <span> {this.props.details.was_in_health_care_facility_with_known_cases_facility_name || ''}</span>
+                            <br />
+                          </React.Fragment>
+                        )}
+                        {this.props.details.laboratory_personnel && (
+                          <React.Fragment>
+                            <b className="text-danger">LABORATORY PERSONNEL:</b>
+                            <span> {this.props.details.laboratory_personnel_facility_name || ''}</span>
+                            <br />
+                          </React.Fragment>
+                        )}
+                        {this.props.details.healthcare_personnel && (
+                          <React.Fragment>
+                            <b className="text-danger">HEALTHCARE PERSONNEL:</b>
+                            <span> {this.props.details.healthcare_personnel_facility_name || ''}</span>
+                            <br />
+                          </React.Fragment>
+                        )}
+                        {this.props.details.crew_on_passenger_or_cargo_flight && (
+                          <React.Fragment>
+                            <b className="text-danger">CREW ON PASSENGER OR CARGO FLIGHT</b>
+                            <br />
+                          </React.Fragment>
+                        )}
                       </React.Fragment>
                     )}
                   </Col>
