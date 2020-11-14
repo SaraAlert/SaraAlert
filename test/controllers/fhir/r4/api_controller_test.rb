@@ -1054,6 +1054,46 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
+  test 'SYSTEM FLOW: should update Patient via patch update' do
+    patch = [
+      { 'op': 'remove', 'path': '/communication/0/language' },
+      { 'op': 'add', 'path': '/address/0/line/-', 'value': 'Unit 123' },
+      { 'op': 'replace', 'path': '/name/0/family', 'value': 'Foo' }
+    ]
+    patch(
+      '/fhir/r4/Patient/1',
+      params: patch.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/json-patch+json' }
+    )
+    assert_response :ok
+    json_response = JSON.parse(response.body)
+    assert_equal 1, json_response['id']
+    assert_nil json_response['communication']
+    assert_equal 'Unit 123', json_response['address'][0]['line'][1]
+    assert_equal 'Foo', json_response['name'][0]['family']
+  end
+
+  test 'SYSTEM FLOW: should be bad request when patch update is invalid' do
+    patch = [{ 'op': 'replace', 'path': '/uh/oh/path', 'value': 'Foo' }]
+    patch(
+      '/fhir/r4/Patient/1',
+      params: patch.to_json,
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/json-patch+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal 'OperationOutcome', json_response['resourceType']
+  end
+
+  test 'SYSTEM FLOW: should be 415 when bad content type header via patch update' do
+    patch(
+      '/fhir/r4/Patient/1',
+      params: @patient_1.to_json,
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'foo/bar' }
+    )
+    assert_response :unsupported_media_type
+  end
+
   test 'SYSTEM FLOW: should be unauthorized via search' do
     get '/fhir/r4/Patient?family=Kirlin44'
     assert_response :unauthorized

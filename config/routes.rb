@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       get '/.well-known/smart-configuration', to: 'api#well_known'
       get '/:resource_type/:id', to: 'api#show'
       put '/:resource_type/:id', to: 'api#update'
+      patch '/:resource_type/:id', to: 'api#update'
       post '/:resource_type', to: 'api#create'
       get '/:resource_type', to: 'api#search'
       post '/:resource_type/_search', to: 'api#search'
