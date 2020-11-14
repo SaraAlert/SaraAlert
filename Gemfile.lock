@@ -416,6 +416,7 @@ DEPENDENCIES
   ffi-hunspell
   fhir_models
   gemsurance
+  hana
   jbuilder (~> 2.7)
   letter_opener
   listen (>= 3.0.5, < 3.2)
