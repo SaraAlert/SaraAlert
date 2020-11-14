@@ -91,6 +91,9 @@ gem 'fhir_models'
 # Split-arch queue support
 gem 'redis-queue'
 
+# JSON Patch and JSON Pointer implementation
+gem 'hana'
+
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
