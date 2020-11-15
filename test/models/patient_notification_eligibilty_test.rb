@@ -2,6 +2,13 @@
 
 require 'test_case'
 
+
+
+# if HoH preferred contact method is unknown, opt-out, or blank
+# are they still eligible for notifications for dependents?
+
+# What determines if a patient is in the exposure workflow?
+
 # rubocop:disable Metrics/ClassLength
 class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   def setup
@@ -31,6 +38,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         preferred_contact_method: report_method
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -51,6 +59,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         report_method, pause_notifications: true
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -71,11 +80,12 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: false,
         closed_at: 1.hour.ago
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -93,12 +103,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: true
       )
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 1, Patient.reminder_eligible.count
     end
   end
 
@@ -117,13 +128,18 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false
       )
-      create(:assessment, patient: patient, symptomatic: false, created_at: 23.hours.ago)
+      create(:assessment,
+        patient: patient,
+        symptomatic: false,
+        created_at: Time.now.getlocal('-04:00').beginning_of_day
+      )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -143,13 +159,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
-        last_assessment_reminder_sent: 23.hours.ago
+        last_assessment_reminder_sent: 11.hours.ago
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -169,13 +186,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
         last_assessment_reminder_sent: 25.hours.ago
       )
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 1, Patient.reminder_eligible.count
     end
   end
 
@@ -196,9 +214,10 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 20.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 15.days.ago  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 15.days.ago
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
 
       # Created within montoring period without exposure date
       Patient.destroy_all
@@ -206,9 +225,10 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 5.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -227,11 +247,12 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 5.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 5.days.ago,
         monitoring: false,
         closed_at: 1.day.ago
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
 
 
       # Created within moniroring period without exposure date
@@ -240,11 +261,12 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 5.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: false,
         closed_at: 1.day.ago
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -264,12 +286,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 5.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 5.days.ago,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: true
       )
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 1, Patient.reminder_eligible.count
 
 
       # Created within moniroring period without exposure date
@@ -278,12 +301,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 5.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: true
       )
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 1, Patient.reminder_eligible.count
     end
   end
 
@@ -304,13 +328,18 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 5.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 5.days.ago,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false
       )
-      create(:assessment, patient: patient, symptomatic: false, created_at: 23.hours.ago)
+      create(:assessment,
+        patient: patient,
+        symptomatic: false,
+        created_at: Time.now.getlocal('-04:00').beginning_of_day
+      )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
 
       # Created within moniroring period without exposure date
       Patient.destroy_all
@@ -318,13 +347,18 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 5.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false
       )
-      create(:assessment, patient: patient, symptomatic: false, created_at: 23.hours.ago)
+      create(:assessment,
+        patient: patient,
+        symptomatic: false,
+        created_at: Time.now.getlocal('-04:00').beginning_of_day
+      )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -346,13 +380,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 5.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 5.days.ago,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
-        last_assessment_reminder_sent: 23.hours.ago
+        last_assessment_reminder_sent: 11.hours.ago
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
 
       # Created within moniroring period without exposure date
       Patient.destroy_all
@@ -360,13 +395,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 5.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
-        last_assessment_reminder_sent: 23.hours.ago
+        last_assessment_reminder_sent: 11.hours.ago
       )
       assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 0, Patient.reminder_eligible.count
     end
   end
 
@@ -389,13 +425,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           created_at: 15.days.ago,
           preferred_contact_method: report_method,
           pause_notifications: false,
-          last_date_of_exposure: 5.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+          last_date_of_exposure: 5.days.ago,
           monitoring: true,
           closed_at: nil,
           continuous_exposure: false,
           last_assessment_reminder_sent: last_reminder_date
         )
         assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+        assert_equal 1, Patient.reminder_eligible.count
 
         # Created within moniroring period without exposure date
         Patient.destroy_all
@@ -403,13 +440,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           created_at: 5.days.ago,
           preferred_contact_method: report_method,
           pause_notifications: false,
-          last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+          last_date_of_exposure: nil,
           monitoring: true,
           closed_at: nil,
           continuous_exposure: false,
           last_assessment_reminder_sent: last_reminder_date
         )
         assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+        assert_equal 1, Patient.reminder_eligible.count
       end
     end
   end
@@ -434,13 +472,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: true
       )
       dependent = create(:patient, responder: patient)
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 1, Patient.reminder_eligible.count
     end
   end
 
@@ -463,7 +502,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
@@ -471,14 +510,15 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       )
       dependent = create(:patient, responder: patient)
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 1, Patient.reminder_eligible.count
 
-      # Sent a reminder > 24 hours ago
+      # Sent a reminder > 12 hours ago
       Patient.destroy_all
       patient = create(:patient,
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
@@ -486,6 +526,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       )
       dependent = create(:patient, responder: patient)
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 1, Patient.reminder_eligible.count
     end
   end
 
@@ -506,13 +547,14 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: true
       )
       dependent = create(:patient, responder: patient)
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+      assert_equal 1, Patient.reminder_eligible.count
     end
   end
 
@@ -537,7 +579,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           created_at: 15.days.ago,
           preferred_contact_method: report_method,
           pause_notifications: false,
-          last_date_of_exposure: 5.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+          last_date_of_exposure: 5.days.ago,
           monitoring: true,
           closed_at: nil,
           continuous_exposure: false,
@@ -545,6 +587,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         )
         dependent = create(:patient, responder: patient)
         assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+        assert_equal 1, Patient.reminder_eligible.count
 
         # Created within moniroring period without exposure date
         Patient.destroy_all
@@ -552,15 +595,20 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           created_at: 5.days.ago,
           preferred_contact_method: report_method,
           pause_notifications: false,
-          last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+          last_date_of_exposure: nil,
           monitoring: true,
           closed_at: nil,
           continuous_exposure: false,
           last_assessment_reminder_sent: last_reminder_date
         )
         dependent = create(:patient, responder: patient)
-        create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
+        create(:assessment,
+        patient: patient,
+        symptomatic: false,
+        created_at: (Time.now.getlocal('-04:00').beginning_of_day - 10.hours)
+      )
         assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+        assert_equal 1, Patient.reminder_eligible.count
       end
     end
   end
@@ -575,6 +623,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       last_date_of_exposure: 15.days.ago
     )
     assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+    assert_equal 0, Patient.reminder_eligible.count
     dependent.destroy
   end
 
@@ -584,11 +633,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       last_date_of_exposure: 5.days.ago,
       continuous_exposure: true
     )
-    assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+    assert_equal 1, Patient.reminder_eligible.count
     dependent.destroy
   end
 
   def do_closed_line_list_cases(patient)
+    # not on closed line list
     dependent = create(:patient,
       responder: patient,
       last_date_of_exposure: 18.days.ago,
@@ -596,8 +647,27 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       monitoring: true,
       closed_at: nil
     )
-    assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
+    assert_equal 1, Patient.reminder_eligible.count
     dependent.destroy
+
+    # all on closed line list
+    patient.update(closed_at: 1.day.ago)
+    dependent = create(:patient,
+      responder: patient,
+      last_date_of_exposure: 18.days.ago,
+      continuous_exposure: false,
+      monitoring: true,
+      closed_at: 1.day.ago
+    )
+    assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+    assert_equal 0, Patient.reminder_eligible.count
+    dependent.destroy
+  end
+
+  def do_currently_ineligible(patient)
+    assert Patient.reminder_eligible.find_by(id: patient.id).nil?
+    assert_equal 0, Patient.reminder_eligible.count
   end
 
   # In household?                        => Yes
@@ -613,6 +683,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           created_at: 15.days.ago,
           preferred_contact_method: report_method
         )
+        do_currently_ineligible(patient)
         do_continuous_exposure_case(patient)
         do_closed_line_list_cases(patient)
       end
@@ -633,6 +704,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         preferred_contact_method: report_method,
         pause_notifications: true
       )
+      do_currently_ineligible(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
     end
@@ -653,10 +725,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: false,
         closed_at: 1.hour.ago
       )
+      do_currently_ineligible(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
     end
@@ -679,12 +752,17 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false
       )
-      create(:assessment, patient: patient, symptomatic: false, created_at: 23.hours.ago)
+      create(:assessment,
+        patient: patient,
+        symptomatic: false,
+        created_at: Time.now.getlocal('-04:00').beginning_of_day
+      )
+      do_currently_ineligible(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
     end
@@ -708,12 +786,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
-        last_assessment_reminder_sent: 24.hours.ago
+        last_assessment_reminder_sent: 11.hours.ago
       )
+      do_currently_ineligible(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
     end
@@ -736,10 +815,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 5.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 5.days.ago,
         monitoring: false,
         closed_at: 1.day.ago
       )
+      do_currently_ineligible(patient)
       do_all_in_exposure_workflow_past_monitoring_date_case(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
@@ -750,10 +830,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 5.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: false,
         closed_at: 1.day.ago
       )
+      do_currently_ineligible(patient)
       do_all_in_exposure_workflow_past_monitoring_date_case(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
@@ -775,8 +856,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 15.days.ago  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 15.days.ago
       )
+      do_currently_ineligible(patient)
       do_all_in_exposure_workflow_past_monitoring_date_case(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
@@ -787,8 +869,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil
       )
+      do_currently_ineligible(patient)
       do_all_in_exposure_workflow_past_monitoring_date_case(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
@@ -813,12 +896,17 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 13.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false
       )
-      create(:assessment, patient: patient, symptomatic: false, created_at: 23.hours.ago)
+      create(:assessment,
+        patient: patient,
+        symptomatic: false,
+        created_at: Time.now.getlocal('-04:00').beginning_of_day
+      )
+      do_currently_ineligible(patient)
       do_all_in_exposure_workflow_past_monitoring_date_case(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
@@ -828,12 +916,17 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 10.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 10.days.ago,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false
       )
-      create(:assessment, patient: patient, symptomatic: false, created_at: 23.hours.ago)
+      create(:assessment,
+        patient: patient,
+        symptomatic: false,
+        created_at: Time.now.getlocal('-04:00').beginning_of_day
+      )
+      do_currently_ineligible(patient)
       do_all_in_exposure_workflow_past_monitoring_date_case(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
@@ -859,12 +952,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 13.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: nil,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: nil,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
-        last_assessment_reminder_sent: 23.hours.ago
+        last_assessment_reminder_sent: 11.hours.ago
       )
+      do_currently_ineligible(patient)
       do_all_in_exposure_workflow_past_monitoring_date_case(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
@@ -874,144 +968,16 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: 15.days.ago,
         preferred_contact_method: report_method,
         pause_notifications: false,
-        last_date_of_exposure: 10.days.ago,  # ASK IF THIS DETERMINES THE EXPOSURE WORKFLOW
+        last_date_of_exposure: 10.days.ago,
         monitoring: true,
         closed_at: nil,
         continuous_exposure: false,
-        last_assessment_reminder_sent: 23.hours.ago
+        last_assessment_reminder_sent: 11.hours.ago
       )
+      do_currently_ineligible(patient)
       do_all_in_exposure_workflow_past_monitoring_date_case(patient)
       do_continuous_exposure_case(patient)
       do_closed_line_list_cases(patient)
     end
   end
-
-  # ------------------------- #
-  # HOH eligibility Flowchart #
-  # ------------------------- #
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => Yes
-  # # All HH members past monitoring period?  => Yes
-  # # :NOT ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => Yes
-  # # All HH members past monitoring period?  => No
-  # # Any HH members on continuous exposure?  => Yes
-  # # :ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => No
-  # # All HH members past monitoring period?  => Yes
-  # # Any HH members on continuous exposure?  => Yes
-  # # :ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => No
-  # # All HH members past monitoring period?  => No
-  # # Any HH members on continuous exposure?  => Yes
-  # # :ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => Yes
-  # # All HH members past monitoring period?  => No
-  # # Any HH members on continuous exposure?  => No
-  # # All HH members on closed line list?     => Yes
-  # # :NOT ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => No
-  # # All HH members past monitoring period?  => Yes
-  # # Any HH members on continuous exposure?  => No
-  # # All HH members on closed line list?     => Yes
-  # # :NOT ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => No
-  # # All HH members past monitoring period?  => No
-  # # Any HH members on continuous exposure?  => No
-  # # All HH members on closed line list?     => Yes
-  # # :NOT ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => Yes
-  # # All HH members past monitoring period?  => No
-  # # Any HH members on continuous exposure?  => No
-  # # All HH members on closed line list?     => No
-  # # :ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => No
-  # # All HH members past monitoring period?  => Yes
-  # # Any HH members on continuous exposure?  => No
-  # # All HH members on closed line list?     => No
-  # # :ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
-
-  # # In household?                           => Yes
-  # # Is head of household?                   => Yes
-  # # HoH is eligible to be notified?         => No
-  # # All HH members in exposure workflow     => No
-  # # All HH members past monitoring period?  => No
-  # # Any HH members on continuous exposure?  => No
-  # # All HH members on closed line list?     => No
-  # # :ELIGIBLE:
-  # test '' do
-  #   Patient.destroy_all
-
-  # end
 end
