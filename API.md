@@ -31,6 +31,7 @@ This API is intended for use by public health organizations using Sara Alert, an
 	  - [POST [base]/Patient](#create-post-pat)
 	- [Updating](#update)
 	  - [PUT [base]/Patient/[:id]](#update-put-pat)
+	  - [PATCH [base]/Patient/[:id]](#update-patch-pat)
 	- [Searching](#search)
 	  - [GET [base]/Patient?parameter(s)](#search-get)
 	  - [GET [base]/QuestionnaireResponse?subject=Patient/[:id]](#search-questionnaire-subj)
@@ -1658,7 +1659,7 @@ On success, the server will return the newly created resource with an id. This i
 ### Updating
 An update request creates a new current version for an existing resource.
 
-**PLEASE NOTE:** This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with `nil` values, as is expected with `PUT` requests. The Sara Alert team is planning on supporting `PATCH` requests in the future to support updates where only fields that should be changed need to be included.
+**PLEASE NOTE:** The API supports `PUT` and `PATCH` requests, which update an existing resource in different ways. A `PUT` request will replace the entire existing resource. This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with `nil` values. A `PATCH` request will only modify the attributes indicated in the request, which must follow the [JSON Patch specification](https://tools.ietf.org/html/rfc6902). Omitted attributes are unchanged.
 
 <a name="update-put-pat"/>
 
@@ -2060,6 +2061,142 @@ On success, the server will update the existing resource given the id.
           }
         ]
       }
+    }
+  ],
+  "resourceType": "Patient"
+}
+```
+</details>
+
+<a name="update-patch-pat"/>
+
+#### PATCH `[base]/Patient/[:id]`
+
+#### Request Body
+
+Assume the Patient resource was originally as shown in the example [GET](read-get-pat).
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+
+```json
+[
+  { "op": "remove", "path": "/communication" },
+  { "op": "replace", "path": "/birthDate", "value": "1985-03-30" }
+]
+```
+</details>
+
+
+#### Response
+
+On success, the server will update the attributes indicated by the request.
+
+<details>
+  <summary>Click to expand JSON snippet</summary>
+
+```json
+{
+  "id": 5,
+  "meta": {
+    "lastUpdated": "2020-05-29T00:19:18+00:00"
+  },
+  "extension": [
+    {
+      "extension": [
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2054-5",
+            "display": "Black or African American"
+          }
+        },
+        {
+          "url": "text",
+          "valueString": "Black or African American"
+        }
+      ],
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+    },
+    {
+      "extension": [
+        {
+          "url": "ombCategory",
+          "valueCoding": {
+            "system": "urn:oid:2.16.840.1.113883.6.238",
+            "code": "2186-5",
+            "display": "Not Hispanic or Latino"
+          }
+        },
+        {
+          "url": "text",
+          "valueString": "Not Hispanic or Latino"
+        }
+      ],
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+    },
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+      "valueCode": "M"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/preferred-contact-method",
+      "valueString": "E-mailed Web Link"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/symptom-onset-date",
+      "valueDate": "2020-05-23"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/last-exposure-date",
+      "valueDate": "2020-05-18"
+    },
+    {
+      "url": "http://saraalert.org/StructureDefinition/isolation",
+      "valueBoolean": false
+    },
+    {
+        "url": "http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path",
+        "valueString": "USA, State 1"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "family": "O'Kon89",
+      "given": [
+        "Malcolm94",
+        "Bogan39"
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "(333) 333-3333",
+      "rank": 1
+    },
+    {
+      "system": "phone",
+      "value": "(333) 333-3333",
+      "rank": 2
+    },
+    {
+      "system": "email",
+      "value": "2966977816fake@example.com",
+      "rank": 1
+    }
+  ],
+  "birthDate": "1985-03-30",
+  "address": [
+    {
+      "line": [
+        "22424 Daphne Key"
+      ],
+      "city": "West Gabrielmouth",
+      "state": "Maine",
+      "postalCode": "24683"
     }
   ],
   "resourceType": "Patient"
