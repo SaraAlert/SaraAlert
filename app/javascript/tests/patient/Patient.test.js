@@ -1,14 +1,13 @@
 import React from 'react'
 import { shallow } from 'enzyme';
-import { Badge, Button, Col, Collapse, Row } from 'react-bootstrap';
+import { Button, Collapse, Row } from 'react-bootstrap';
 import Patient from '../../components/patient/Patient.js'
 import BadgeHOH from '../../components/util/BadgeHOH';
 import ChangeHOH from '../../components/subject/ChangeHOH';
 import MoveToHousehold from '../../components/subject/MoveToHousehold';
 import RemoveFromHousehold from '../../components/subject/RemoveFromHousehold';
-import { mockPatient1, mockPatient2, blankMockPatient } from '../mocks/mockPatients'
-import { nameFormatter, addressLine1Formatter, addressLine2Formatter, dateFormatter } from '../util.js'
-import { faHandMiddleFinger } from '@fortawesome/free-solid-svg-icons';
+import { mockPatient1, mockPatient2, mockPatient3, mockPatient4, blankMockPatient } from '../mocks/mockPatients'
+import { nameFormatter, dateFormatter } from '../util.js'
 
 const goToMock = jest.fn();
 const authyToken = "Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==";
@@ -28,11 +27,6 @@ const potentialExposureFields = [
     'CREW ON PASSENGER OR CARGO FLIGHT'
 ]
 
-// when case info section is hidden 
-// expand collapse exposure notes
-// truncate exposure notes
-// None sections
-
 describe('Patient', () => {
     it('Properly renders all main components', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2 ]} goto={goToMock} hideBody={true}
@@ -48,7 +42,7 @@ describe('Patient', () => {
         expect(wrapper.find('#contact-information').exists()).toBeTruthy();
         expect(wrapper.find('#address').exists()).toBeTruthy();
         expect(wrapper.find('#arrival-information').exists()).toBeTruthy();
-        expect(wrapper.find('#additional-planned-travel').exists()).toBeTruthy();
+        expect(wrapper.find('#planned-travel').exists()).toBeTruthy();
         expect(wrapper.find('#potential-exposure-information').exists()).toBeTruthy();
         expect(wrapper.find('#exposure-notes').exists()).toBeTruthy();
         expect(wrapper.find('#case-information').exists()).toBeTruthy();
@@ -90,19 +84,19 @@ describe('Patient', () => {
         });
     });
 
-    // it('Properly renders address section for foreign address', () => {
-    //     const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
-    //         jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
-    //     const section = wrapper.find('#address');
-    //     expect(section.find(Row).first().text()).toEqual('ADDRESS');
-    //     expect(section.find(Button).length).toEqual(0);
+    it('Properly renders address section for foreign address', () => {
+        const wrapper = shallow(<Patient details={mockPatient4} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const section = wrapper.find('#address');
+        expect(section.find(Row).first().text()).toEqual('ADDRESS');
+        expect(section.find(Button).length).toEqual(0);
 
-    //     const detailRow = section.find(Row).at(1);
-    //     expect(detailRow.find('b').first().text()).toEqual('HOME ADDRESS');
-    //     foreignAddressFields.forEach(function(field, index) {
-    //         expect(detailRow.find('b').at(index+1).text()).toEqual(field+':');
-    //     });
-    // });
+        const detailRow = section.find(Row).at(1);
+        expect(detailRow.find('b').first().text()).toEqual('HOME ADDRESS');
+        foreignAddressFields.forEach(function(field, index) {
+            expect(detailRow.find('b').at(index+1).text()).toEqual(field+':');
+        });
+    });
 
     it('Properly renders arrival information section', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
@@ -127,15 +121,31 @@ describe('Patient', () => {
         expect(section.find('.carrier-row').find('span').at(1).text()).toEqual(mockPatient1.flight_or_vessel_number);
     });
 
-    it('Properly renders additional planned travel section', () => {
+    it('Displays "None" if arrival information is empty', () => {
+        const wrapper = shallow(<Patient details={blankMockPatient} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const section = wrapper.find('#arrival-information');
+        expect(section.exists()).toBeTruthy();
+        expect(section.find(Row).at(1).find('span').text()).toEqual('None');
+    });
+
+    it('Properly renders planned travel section', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
-        const section = wrapper.find('#additional-planned-travel');
+        const section = wrapper.find('#planned-travel');
         expect(section.find(Row).first().text()).toEqual('PLANNED TRAVEL');
         expect(section.find(Button).length).toEqual(0);
         additionalTravelFields.forEach(function(field, index) {
             expect(section.find('b').at(index+1).text()).toEqual(field+':');
         });
+    });
+
+    it('Displays "None" if planned travel is empty', () => {
+        const wrapper = shallow(<Patient details={blankMockPatient} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
+        const section = wrapper.find('#planned-travel');
+        expect(section.exists()).toBeTruthy();
+        expect(section.find(Row).at(1).find('span').text()).toEqual('None');
     });
 
     it('Properly renders potential exposure information section', () => {
@@ -156,19 +166,39 @@ describe('Patient', () => {
         });
     });
 
-    // it('Properly renders exposure notes section', () => {
-    //     const wrapper = shallow(<Patient details={mockPatient2} dependents={[ ]} hideBody={true}
-    //         jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
-    //     const section = wrapper.find('#exposure-case-information');
-    //     expect(section.find(Row).first().text()).toEqual('POTENTIAL EXPOSURE INFORMATION');
-    //     expect(section.find(Button).length).toEqual(0);
-    //     expect(section.find('b').at(1).text()).toEqual('LAST EXPOSURE');
-    //     expect(section.find('span').at(0).text()).toEqual(`${mockPatient2.potential_exposure_location} ${mockPatient2.potential_exposure_country}`);
-    //     expect(section.find('span').at(1).text()).toEqual(dateFormatter(mockPatient2.last_date_of_exposure));
-    //     potentialExposureFields.forEach(function(field, index) {
-    //         expect(section.find('.text-danger').at(index).text().includes(field)).toBeTruthy();
-    //     });
-    // });
+    it('Properly renders exposure notes section', () => {
+        const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
+        expect(wrapper.find('#exposure-notes').find(Row).first().text()).toEqual('EXPOSURE NOTES');
+        expect(wrapper.find('#exposure-notes').find(Button).exists()).toBeFalsy();
+        expect(wrapper.find('#exposure-notes').find(Row).at(1).find('span').text()).toEqual(mockPatient1.exposure_notes);
+    });
+
+    it('Displays "None" if exposure notes is empty', () => {
+        const wrapper = shallow(<Patient details={mockPatient2} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
+        expect(wrapper.find('#exposure-notes').exists()).toBeTruthy();
+        expect(wrapper.find('#exposure-notes').find(Button).exists()).toBeFalsy();
+        expect(wrapper.find('#exposure-notes').find(Row).at(1).find('span').text()).toEqual('None');
+    });
+
+    it('Collapses/expands exposure notes if longer than 500 characters', () => {
+        const wrapper = shallow(<Patient details={mockPatient3} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
+        expect(wrapper.find('#exposure-notes').find(Row).first().text()).toEqual('EXPOSURE NOTES');
+        expect(wrapper.find('#exposure-notes').find(Button).exists()).toBeTruthy();
+
+        expect(wrapper.find('#exposure-notes').find(Button).text()).toEqual('(View all)');
+        expect(wrapper.find('#exposure-notes').find(Row).at(1).find('span').text()).toEqual(mockPatient3.exposure_notes.slice(0, 500) + ' ...');
+
+        wrapper.find('#exposure-notes').find(Button).simulate('click');
+        expect(wrapper.find('#exposure-notes').find(Button).text()).toEqual('(Collapse)');
+        expect(wrapper.find('#exposure-notes').find(Row).at(1).find('span').text()).toEqual(mockPatient3.exposure_notes);
+
+        wrapper.find('#exposure-notes').find(Button).simulate('click');
+        expect(wrapper.find('#exposure-notes').find(Button).text()).toEqual('(View all)');
+        expect(wrapper.find('#exposure-notes').find(Row).at(1).find('span').text()).toEqual(mockPatient3.exposure_notes.slice(0, 500) + ' ...');
+    });
 
     it('Properly renders case information section', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ ]} hideBody={true}
@@ -181,6 +211,12 @@ describe('Patient', () => {
         expect(section.find(Row).at(1).find('span').at(0).text().includes(dateFormatter(mockPatient1.symptom_onset))).toBeTruthy();
         expect(section.find(Row).at(1).find('b').at(1).text()).toEqual('Case Status:');
         expect(section.find(Row).at(1).find('span').at(1).text().includes(mockPatient1.case_status)).toBeTruthy();
+    });
+
+    it('Hides case information section when monitoree is in the exposure workflow and exposure notes is empty', () => {
+        const wrapper = shallow(<Patient details={mockPatient2} dependents={[ ]} hideBody={true}
+            jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />)
+        expect(wrapper.find('#case-information').exists()).toBeFalsy();
     });
 
     it('Properly renders HoH section and name HoH badge', () => {
