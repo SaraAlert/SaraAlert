@@ -129,8 +129,8 @@ class Patient extends React.Component {
                 <b>Phone:</b> <span>{this.props.details.primary_telephone ? `${this.formatPhoneNumber(this.props.details.primary_telephone)}` : '--'}</span>
                 <span className="text-danger">{this.props.details.blocked_sms && ' This Phone Number Has Blocked SMS Communication With Sara Alert'}</span>
                 {this.props.details.blocked_sms && (
-                  <Form.Label className="nav-input-label text-danger">
-                    SMS Communication Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
+                  <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
+                    SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
                   </Form.Label>
                 )}
                 <br />
@@ -140,8 +140,20 @@ class Patient extends React.Component {
                 <br />
                 <b>Email:</b> <span>{`${this.props.details.email ? this.props.details.email : '--'}`}</span>
                 <br />
-                <b>Preferred Reporting Method:</b>{' '}
-                <span>{`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : '--'}`}</span>
+                <span className="font-weight-normal">Preferred Reporting Method:</span>{' '}
+                {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method.includes('SMS')) && (
+                  <span className="font-weight-light">{`${
+                    this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : '--'
+                  }`}</span>
+                )}
+                {this.props.details.blocked_sms && this.props.details.preferred_contact_method.includes('SMS') && (
+                  <span className="font-weight-bold text-danger">
+                    {`${this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : '--'}`}
+                    <Form.Label className="tooltip-whitespace">
+                      <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
+                    </Form.Label>
+                  </span>
+                )}
               </Col>
             </Row>
           </Col>
