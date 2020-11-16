@@ -337,7 +337,7 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
     offset = timezone.nil? ? -4 : timezone[:offset]
 
     # Adjust for DST (if observed)
-    offset -= 1 if timezone && timezone[:observes_dst] && !Time.now.in_time_zone('Eastern Time (US & Canada)').dst?
+    offset -= 1 if timezone && timezone[:observes_dst] && !Time.use_zone('Eastern Time (US & Canada)') { Time.now.dst? }
 
     # Format and return
     (offset.negative? ? '' : '+') + format('%<offset>.2d', offset: offset) + ':00'
