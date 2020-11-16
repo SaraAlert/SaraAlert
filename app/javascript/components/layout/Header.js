@@ -55,9 +55,9 @@ class Header extends React.Component {
                   <i className="fas fa-user fa-fw mr-2"></i>
                   {this.props.current_user?.email} (
                   {this.props.current_user?.role
-                    .split('_')
-                    .map(_.capitalize)
-                    .join(' ')}
+                    ?.split('_')
+                    ?.map(_.capitalize)
+                    ?.join(' ')}
                   )
                 </Navbar.Text>
                 <a className="white-border-right"></a>
