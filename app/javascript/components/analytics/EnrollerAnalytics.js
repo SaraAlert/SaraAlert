@@ -13,6 +13,7 @@ class EnrollerAnalytics extends React.Component {
   render() {
     return (
       <React.Fragment>
+        <h1 className="sr-only">Analytics</h1>
         <div className="mx-2">
           <Row className="pt-4">
             <Col md="12">

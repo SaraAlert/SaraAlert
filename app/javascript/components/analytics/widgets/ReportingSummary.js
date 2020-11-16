@@ -20,20 +20,20 @@ class ReportingSummary extends React.Component {
             <Row className="mx-4 mt-3">
               <Col md="12">
                 <Row>
-                  <h5>REPORTED TODAY</h5>
+                  <div className="h5">REPORTED TODAY</div>
                 </Row>
                 <Row>
-                  <h1 className="display-1" style={{ color: '#0088FE' }}>
+                  <div className="display-1 h1" style={{ color: '#0088FE' }}>
                     {data[0]['value']}
-                  </h1>
+                  </div>
                 </Row>
                 <Row>
-                  <h5>NOT YET REPORTED</h5>
+                  <div className="h5">NOT YET REPORTED</div>
                 </Row>
                 <Row>
-                  <h1 className="display-1" style={{ color: '#00C49F' }}>
+                  <div className="display-1 h1" style={{ color: '#00C49F' }}>
                     {data[1]['value']}
-                  </h1>
+                  </div>
                 </Row>
               </Col>
               <Col md="12">

@@ -15,7 +15,7 @@ class MonitoringDistributionDay extends React.Component {
         <Card className="card-square">
           <Card.Header className="h5">Monitoring Distribution by Day</Card.Header>
           <Card.Body>
-            <h5 className="pb-4">DISTRIBUTION OF MONITOREES UNDER MONITORING</h5>
+            <div className="pb-4 h5">DISTRIBUTION OF MONITOREES UNDER MONITORING</div>
             <div style={{ width: '100%', height: '286px' }} className="recharts-wrapper">
               <ResponsiveContainer>
                 <BarChart data={data}>

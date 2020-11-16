@@ -16,36 +16,36 @@ class SystemStatistics extends React.Component {
             <Row className="mx-4 mt-3 g-border-bottom-2">
               <Col>
                 <Row>
-                  <h5>TOTAL SUBJECTS</h5>
+                  <div className="h5">TOTAL SUBJECTS</div>
                 </Row>
                 <Row>
-                  <h1 className="display-1">{this.props.stats.system_subjects}</h1>
+                  <div className="display-1 h1">{this.props.stats.system_subjects}</div>
                 </Row>
               </Col>
               <Col>
                 <Row>
-                  <h5>NEW LAST 24 HOURS</h5>
+                  <div className="h5">NEW LAST 24 HOURS</div>
                 </Row>
                 <Row>
-                  <h1 className="display-1">{this.props.stats.system_subjects_last_24}</h1>
+                  <div className="display-1 h1">{this.props.stats.system_subjects_last_24}</div>
                 </Row>
               </Col>
             </Row>
             <Row className="mx-4 mt-4">
               <Col>
                 <Row>
-                  <h5>TOTAL REPORTS</h5>
+                  <div className="h5">TOTAL REPORTS</div>
                 </Row>
                 <Row>
-                  <h1 className="display-1">{this.props.stats.system_assessments}</h1>
+                  <div className="display-1 h1">{this.props.stats.system_assessments}</div>
                 </Row>
               </Col>
               <Col>
                 <Row>
-                  <h5>NEW LAST 24 HOURS</h5>
+                  <div className="h5">NEW LAST 24 HOURS</div>
                 </Row>
                 <Row>
-                  <h1 className="display-1">{this.props.stats.system_assessments_last_24}</h1>
+                  <div className="display-1 h1">{this.props.stats.system_assessments_last_24}</div>
                 </Row>
               </Col>
             </Row>
