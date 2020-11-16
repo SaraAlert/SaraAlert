@@ -45,38 +45,43 @@ class Contact extends React.Component {
     if (event.target.id === 'primary_telephone' || event.target.id === 'secondary_telephone') {
       value = value.replace(/-/g, '');
     }
-    this.updatePrimaryContactMethodValidations(event);
 
-    if (event.target.id === 'primary_telephone' && event.target.value.replace('_', '').length === 12) {
-      axios({
-        method: 'get',
-        url: '/patients/sms_eligibility_check',
-        params: { phone_number: phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) },
-      })
-        .then(response => {
-          let sms_eligible = true;
-          if (response?.data?.sms_eligible != null) {
-            sms_eligible = response.data.sms_eligible;
-          }
-          this.setState({ current: { ...this.state.current, blocked_sms: !sms_eligible } });
-          this.props.setEnrollmentState({ ...this.state.current, blocked_sms: !sms_eligible });
+    let blocked_sms = this.state.current.blocked_sms;
+    if (event.target.id === 'primary_telephone') {
+      if (event.target.value.replace('_', '').length === 12) {
+        axios({
+          method: 'get',
+          url: '/patients/sms_eligibility_check',
+          params: { phone_number: phoneUtil.format(phoneUtil.parse(value, 'US'), PNF.E164) },
         })
-        .catch(error => {
-          console.error(error);
-        });
+          .then(response => {
+            let sms_eligible = true;
+            if (response?.data?.sms_eligible != null) {
+              sms_eligible = response.data.sms_eligible;
+            }
+            this.setState({ current: { ...this.state.current, blocked_sms: !sms_eligible } });
+            this.props.setEnrollmentState({ ...this.state.current, blocked_sms: !sms_eligible });
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      } else {
+        blocked_sms = false;
+      }
     }
 
     let current = this.state.current;
     let modified = this.state.modified;
     this.setState(
       {
-        current: { ...current, patient: { ...current.patient, [event.target.id]: value } },
-        modified: { ...modified, patient: { ...modified.patient, [event.target.id]: value } },
+        current: { ...current, blocked_sms: blocked_sms, patient: { ...current.patient, [event.target.id]: value } },
+        modified: { ...modified, blocked_sms: blocked_sms, patient: { ...modified.patient, [event.target.id]: value } },
       },
       () => {
         this.props.setEnrollmentState({ ...this.state.modified });
       }
     );
+    this.updatePrimaryContactMethodValidations(event);
   };
 
   updatePrimaryContactMethodValidations = event => {
@@ -186,7 +191,7 @@ class Contact extends React.Component {
       .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
-        self.state.setEnrollmentState({ ...self.state.current });
+        self.props.setEnrollmentState({ ...self.state.current });
         self.setState({ errors: {} }, () => {
           callback();
         });
@@ -198,7 +203,7 @@ class Contact extends React.Component {
           for (var issue of err.inner) {
             issues[issue['path']] = issue['errors'];
           }
-          self.state.setEnrollmentState({ ...self.state.current });
+          self.props.setEnrollmentState({ ...self.state.current });
           self.setState({ errors: issues });
         }
       });
@@ -280,15 +285,36 @@ class Contact extends React.Component {
               <Form.Row>
                 <Form.Group as={Col} md="11" controlId="primary_telephone">
                   <Form.Label className="nav-input-label">PRIMARY TELEPHONE NUMBER{schema?.fields?.primary_telephone?._exclusive?.required && ' *'}</Form.Label>
-                  <PhoneInput
-                    id="primary_telephone"
-                    value={this.state.current.patient.primary_telephone}
-                    onChange={this.handleChange}
-                    isInvalid={!!this.state.errors['primary_telephone']}
-                  />
+                  <Form.Row>
+                    <Form.Group as={Col}>
+                      <PhoneInput
+                        id="primary_telephone"
+                        value={this.state.current.patient.primary_telephone}
+                        onChange={this.handleChange}
+                        isInvalid={!!this.state.errors['primary_telephone']}
+                      />
+                    </Form.Group>
+                    <Form.Group as={Col}>
+                      {this.state.current.blocked_sms && (
+                        <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold py-2">
+                          SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
+                        </Form.Label>
+                      )}
+                    </Form.Group>
+                  </Form.Row>
                   <Form.Control.Feedback className="d-block" type="invalid">
                     {this.state.errors['primary_telephone']}
                   </Form.Control.Feedback>
+                  <Form.Label>
+                    {this.state.current.patient.preferred_contact_method.includes('SMS') && this.state.current.blocked_sms === true && (
+                      <Form.Label className="tooltip-whitespace">
+                        <i>
+                          <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert.
+                        </i>
+                        <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
+                      </Form.Label>
+                    )}
+                  </Form.Label>
                 </Form.Group>
                 <Form.Group as={Col} md="2"></Form.Group>
                 <Form.Group as={Col} md="11" controlId="secondary_telephone">
@@ -367,15 +393,6 @@ class Contact extends React.Component {
                         <i>
                           <b>* Warning:</b> Landline phones cannot receive text messages. Please make sure the monitoree has a compatible device to receive this
                           type of message.
-                        </i>
-                      )}
-                  </Form.Row>
-                  <Form.Row>
-                    {(this.state.current.patient.preferred_contact_method === 'SMS Text-message' ||
-                      this.state.current.patient.preferred_contact_method === 'SMS Texted Weblink') &&
-                      this.state.current.blocked_sms === true && (
-                        <i>
-                          <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with SaraAlert.
                         </i>
                       )}
                   </Form.Row>
