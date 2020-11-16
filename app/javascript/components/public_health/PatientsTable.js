@@ -21,6 +21,7 @@ import {
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import moment from 'moment-timezone';
+import _ from 'lodash';
 
 import AdvancedFilter from './AdvancedFilter';
 import CloseRecords from './actions/CloseRecords';
@@ -283,47 +284,50 @@ class PatientsTable extends React.Component {
     }
 
     this.setState({ query, cancelToken, loading: true }, () => {
-      axios
-        .post('/public_health/patients', {
-          workflow: this.props.workflow,
-          ...query,
-          filter: this.state.filter,
-          cancelToken: this.state.cancelToken.token,
-        })
-
-        .catch(error => {
-          if (!axios.isCancel(error)) {
-            this.setState(state => {
-              return {
-                table: { ...state.table, rowData: [], totalRows: 0 },
-                loading: false,
-              };
-            });
-          }
-        })
-        .then(response => {
-          if (response && response.data && response.data.linelist) {
-            this.setState(state => {
-              const displayedColData = this.state.table.colData.filter(colData => response.data.fields.includes(colData.field));
-              return {
-                table: { ...state.table, displayedColData, rowData: response.data.linelist, totalRows: response.data.total },
-                selectedPatients: [],
-                selectAll: false,
-                loading: false,
-                actionsEnabled: false,
-              };
-            });
-          } else {
-            this.setState({
-              selectedPatients: [],
-              selectAll: false,
-              actionsEnabled: false,
-              loading: false,
-            });
-          }
-        });
+      this.queryServer(query);
     });
   };
+
+  queryServer = _.debounce(query => {
+    axios
+      .post('/public_health/patients', {
+        workflow: this.props.workflow,
+        ...query,
+        filter: this.state.filter,
+        cancelToken: this.state.cancelToken.token,
+      })
+      .catch(error => {
+        if (!axios.isCancel(error)) {
+          this.setState(state => {
+            return {
+              table: { ...state.table, rowData: [], totalRows: 0 },
+              loading: false,
+            };
+          });
+        }
+      })
+      .then(response => {
+        if (response && response.data && response.data.linelist) {
+          this.setState(state => {
+            const displayedColData = this.state.table.colData.filter(colData => response.data.fields.includes(colData.field));
+            return {
+              table: { ...state.table, displayedColData, rowData: response.data.linelist, totalRows: response.data.total },
+              selectedPatients: [],
+              selectAll: false,
+              loading: false,
+              actionsEnabled: false,
+            };
+          });
+        } else {
+          this.setState({
+            selectedPatients: [],
+            selectAll: false,
+            actionsEnabled: false,
+            loading: false,
+          });
+        }
+      });
+  }, 500);
 
   advancedFilterUpdate(filter) {
     localStorage.removeItem(`SaraPage`);
