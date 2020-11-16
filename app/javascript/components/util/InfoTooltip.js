@@ -133,12 +133,16 @@ const TOOLTIP_TEXT = {
 
   blockedSMS: (
     <div>
-      The owner of this phone number has <br></br>
-      texted &quot;STOP&quot; in response to a Sara Alert <br></br>
-      message. Please instruct the owner <br></br>
-      to text &quot;START&quot; to the Sara Alert number, <br></br>
-      and they will be eligible to receive SMS <br></br>
-      messages from Sara Alert again.
+      The owner of this phone number has texted &quot;STOP&quot; in response to a Sara Alert message. Please instruct the owner to text &quot;START&quot; to the
+      Sara Alert number, and they will be eligible to receive SMS messages from Sara Alert again.
+    </div>
+  ),
+
+  blockedSMSContactMethod: (
+    <div>
+      This Preferred Reporting method is currently invalid because this phone number has blocked SMS communications with Sara Alert. To fix this issue, the
+      monitoree may either select email or telephone as their Preferred Reporting Method or reply &quot;START&quot; to a Sara Alert message to unblock SMS
+      communications.
     </div>
   ),
 
@@ -156,7 +160,7 @@ const TOOLTIP_TEXT = {
       The “Needs Review” column tells you which reports the system considers as symptomatic (red highlight). The “Review” and “Mark All As Reviewed” functions
       allow a user to tell the system not to consider that report as symptomatic. This indicates that the disease of interest is not suspected after review of
       the monitoree&apos;s symptom report(s).
-      <br></br>
+      <br />
       The system will automatically generate the{' '}
       <i>
         <b>Symptom Onset</b>
@@ -169,20 +173,20 @@ const TOOLTIP_TEXT = {
   exposureSymptomOnset: (
     <div>
       <b>Exposure Workflow</b>
-      <br></br>
+      <br />
       <i>
         <b>Symptom Onset</b>
       </i>{' '}
       date is used by the system to determine if a record should appear on the <i>Symptomatic</i> line list. This field is auto-populated with the date of the
       earliest report flagged as symptomatic (red highlighted) in the report history table <i>unless a date has been entered by a user.</i>
-      <br></br>A{' '}
+      <br />A{' '}
       <i>
         <b>Symptom Onset</b>
       </i>{' '}
       date should only be entered by a user in the exposure workflow if the monitoree is under investigation for the disease of interest and the monitoree
       indicates their symptom onset date differs from what is available in the reports table. If a user entered a symptom onset date, the field will need to be
       manually cleared by a user to move the record off of the <i>Symptomatic</i> line list.
-      <br></br>
+      <br />
       To clear an auto-populated{' '}
       <i>
         <b>Symptom Onset</b>
@@ -194,14 +198,14 @@ const TOOLTIP_TEXT = {
   isolationSymptomOnset: (
     <div>
       <b>Isolation Workflow</b>
-      <br></br>
+      <br />
       <i>
         <b>Symptom Onset</b>
       </i>{' '}
       date is used by the system to determine if the non-test based recovery definition has been met which determines if a record should appear on the{' '}
       <i>Records Requiring Review </i>line list. This field is auto-populated with the date of the earliest report flagged as symptomatic (red highlighted) in
       the report history table <i>unless a date has been entered by a user.</i>
-      <br></br>
+      <br />
       If a record is moved from the isolation workflow to the exposure workflow (e.g., case ruled out and returned to monitoring due to exposure), the system
       will clear a user entered{' '}
       <i>
