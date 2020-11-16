@@ -112,7 +112,7 @@ class PatientsControllerTest < ActionController::TestCase
     %i[admin_user analyst_user].each do |role|
       user = create(role)
       sign_in user
-      post :bulk_update_status
+      post :bulk_update
       assert_redirected_to @controller.root_url
       sign_out user
     end
@@ -124,32 +124,32 @@ class PatientsControllerTest < ActionController::TestCase
       sign_in user
 
       error = assert_raises(ActionController::ParameterMissing) do
-        post :bulk_update_status
+        post :bulk_update
       end
       assert_includes(error.message, 'ids')
 
       error = assert_raises(ActionController::ParameterMissing) do
-        post :bulk_update_status, params: { ids: [] }
+        post :bulk_update, params: { ids: [] }
       end
       assert_includes(error.message, 'ids')
 
       error = assert_raises(ActionController::ParameterMissing) do
-        post :bulk_update_status, params: { ids: [1] }
+        post :bulk_update, params: { ids: [1] }
       end
       assert_includes(error.message, 'apply_to_household')
 
       not_found_id = Patient.last.id + 1
 
       # If apply_to_household is true: Patient.dependent_ids_for_patients
-      post :bulk_update_status, params: { ids: [not_found_id], apply_to_household: true }
+      post :bulk_update, params: { ids: [not_found_id], apply_to_household: true }
       assert_redirected_to('/errors#not_found')
 
       # If apply_to_household is false: current_user.get_patients
-      post :bulk_update_status, params: { ids: [not_found_id], apply_to_household: false }
+      post :bulk_update, params: { ids: [not_found_id], apply_to_household: false }
       assert_redirected_to('/errors#not_found')
 
       # Normal operation
-      post :bulk_update_status, params: {
+      post :bulk_update, params: {
         ids: [patient.id],
         apply_to_household: false,
         patient: {
@@ -157,7 +157,8 @@ class PatientsControllerTest < ActionController::TestCase
           monitoring_reason: 'Meets Case Definition',
           public_health_action: '',
           isolation: true,
-          case_status: 'Confirmed'
+          case_status: 'Confirmed',
+          assigned_user: 50
         }
       }
       assert_response :success
@@ -175,7 +176,7 @@ class PatientsControllerTest < ActionController::TestCase
 
       # Apply to group logic
       assert_no_changes('dependent.updated_at') do
-        post :bulk_update_status, params: {
+        post :bulk_update, params: {
           ids: [patient.id],
           apply_to_household: false,
           patient: {
@@ -183,14 +184,15 @@ class PatientsControllerTest < ActionController::TestCase
             monitoring_reason: 'Meets Case Definition',
             public_health_action: '',
             isolation: true,
-            case_status: 'Confirmed'
+            case_status: 'Confirmed',
+            assigned_user: 50
           }
         }
         assert_response :success
       end
 
       # Apply to group logic
-      post :bulk_update_status, params: {
+      post :bulk_update, params: {
         ids: [patient.id],
         apply_to_household: true,
         patient: {
@@ -198,7 +200,8 @@ class PatientsControllerTest < ActionController::TestCase
           monitoring_reason: 'Meets Case Definition',
           public_health_action: '',
           isolation: true,
-          case_status: 'Confirmed'
+          case_status: 'Confirmed',
+          assigned_user: 50
         }
       }
       assert_response :success
@@ -214,7 +217,7 @@ class PatientsControllerTest < ActionController::TestCase
       patient.update(dependents: [dependent, outside_dependent])
       outside_dependent.update(responder: patient)
 
-      post :bulk_update_status, params: {
+      post :bulk_update, params: {
         ids: [patient.id],
         apply_to_household: true,
         patient: {
@@ -222,7 +225,8 @@ class PatientsControllerTest < ActionController::TestCase
           monitoring_reason: 'Meets Case Definition',
           public_health_action: '',
           isolation: true,
-          case_status: 'Confirmed'
+          case_status: 'Confirmed',
+          assigned_user: 50
         }
       }
       assert_response 401

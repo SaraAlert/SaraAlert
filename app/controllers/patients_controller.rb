@@ -294,7 +294,7 @@ class PatientsController < ApplicationController
     end
   end
 
-  def bulk_update_status
+  def bulk_update
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
     # Nothing to do in this function if there isn't a list of patient ids.
