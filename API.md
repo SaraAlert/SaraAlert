@@ -2074,7 +2074,7 @@ On success, the server will update the existing resource given the id.
 
 #### Request Body
 
-Assume the Patient resource was originally as shown in the example [GET](read-get-pat).
+Assume the Patient resource was originally as shown in the example Patient [GET](#read-get-pat), and the patch is specified as below.
 
 <details>
   <summary>Click to expand JSON snippet</summary>
