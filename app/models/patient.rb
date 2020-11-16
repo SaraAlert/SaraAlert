@@ -144,16 +144,65 @@ class Patient < ApplicationRecord
   end
 
   # Patients who are eligible for reminders
+  # scope :reminder_eligible, lambda {
+  #   where(purged: false)
+  #     .where(pause_notifications: false)
+  #     .where('patients.id = patients.responder_id')
+  #     .where.not('latest_assessment_at >= ?', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
+  #     .or(
+  #       where(purged: false)
+  #         .where(pause_notifications: false)
+  #         .where('patients.id = patients.responder_id')
+  #         .where(latest_assessment_at: nil)
+  #     )
+  #     .distinct
+  # }
+
+  # Patients who are eligible for reminders
   scope :reminder_eligible, lambda {
-    where(purged: false)
-      .where(pause_notifications: false)
+    monitoring_open
+      .joins(:dependents)
+      .where(head_of_household: false)
       .where('patients.id = patients.responder_id')
-      .where.not('latest_assessment_at >= ?', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
+      .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+      .where(pause_notifications: false)
+      .where(
+        'patients.isolation = ? '\
+        'OR patients.continuous_exposure = ? '\
+        'OR patients.last_date_of_exposure >= ? '\
+        'OR (patients.last_date_of_exposure IS NULL AND patients.created_at >= ?)',
+        true,
+        true,
+        ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day,
+        ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
+      )
+      .where(
+        'patients.latest_assessment_at < ? '\
+        'OR patients.latest_assessment_at IS NULL',
+        Time.now.getlocal('-04:00').beginning_of_day
+      )
+      .where(
+        'patients.last_assessment_reminder_sent <= ? '\
+        'OR patients.last_assessment_reminder_sent IS NULL',
+        12.hours.ago
+      )
       .or(
-        where(purged: false)
-          .where(pause_notifications: false)
+        monitoring_open
+          .joins(:dependents)
+          .where(head_of_household: true)
           .where('patients.id = patients.responder_id')
-          .where(latest_assessment_at: nil)
+          .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+          .where('dependents_patients.monitoring = ?', true)
+          .where(
+            'dependents_patients.isolation = ? '\
+            'OR dependents_patients.continuous_exposure = ? '\
+            'OR dependents_patients.last_date_of_exposure >= ? '\
+            'OR (dependents_patients.last_date_of_exposure IS NULL AND dependents_patients.created_at >= ?)',
+            true,
+            true,
+            ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day,
+            ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
+          )
       )
       .distinct
   }
