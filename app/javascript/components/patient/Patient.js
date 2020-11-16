@@ -399,7 +399,7 @@ class Patient extends React.Component {
                   )}
                 </Row>
               </Col>
-              <Col id="additional-planned-travel" md="7">
+              <Col id="planned-travel" md="7">
                 <Row>
                   <Col>
                     <div className="float-left">
