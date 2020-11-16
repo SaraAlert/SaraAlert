@@ -93,30 +93,7 @@ class Patient < ApplicationRecord
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
 
   validates_with PrimaryContactValidator, on: :api
-  validates :last_date_of_exposure, earliest_date: { date: Date.new(2020, 1, 1) },
-                                    latest_date: { date: 30.days.from_now.to_date },
-                                    if: -> { last_date_of_exposure_changed? }
-  validates :symptom_onset, earliest_date: { date: Date.new(2020, 1, 1) },
-                            latest_date: { date: 30.days.from_now.to_date },
-                            if: -> { symptom_onset_changed? }
-  validates :date_of_birth, earliest_date: { date: Date.new(1900, 1, 1) },
-                            latest_date: { date: Time.now.to_date },
-                            if: -> { date_of_birth_changed? }
-  validates :date_of_departure, earliest_date: { date: Date.new(2020, 1, 1) },
-                                latest_date: { date: 30.days.from_now.to_date },
-                                if: -> { date_of_departure_changed? }
-  validates :date_of_arrival, earliest_date: { date: Date.new(2020, 1, 1) },
-                              latest_date: { date: 30.days.from_now.to_date },
-                              if: -> { date_of_arrival_changed? }
-  validates :additional_planned_travel_start_date, earliest_date: { date: Date.new(2020, 1, 1) },
-                                                   latest_date: { date: 30.days.from_now.to_date },
-                                                   if: -> { additional_planned_travel_start_date_changed? }
-  validates :additional_planned_travel_end_date, earliest_date: { date: Date.new(2020, 1, 1) },
-                                                 latest_date: { date: 30.days.from_now.to_date },
-                                                 if: -> { additional_planned_travel_end_date_changed? }
-  validates :extended_isolation, earliest_date: { date: 30.days.ago.to_date },
-                                 latest_date: { date: 30.days.from_now.to_date },
-                                 if: -> { extended_isolation_changed? }
+  validates_with PatientDateValidator
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'

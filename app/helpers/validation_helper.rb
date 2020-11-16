@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# ValidationHelper: Helper constants and methods for validation.
 module ValidationHelper # rubocop:todo Metrics/ModuleLength
   SEX_ABBREVIATIONS = {
     M: 'Male',
@@ -142,4 +143,26 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     report: { label: 'Lab Report Date', checks: [:date] },
     result: { label: 'Result', check: [:enum] }
   }.freeze
+
+  def validate_date; end
+
+  # Validates if a given date value is between (inclusive) two dates.
+  def validate_between_dates(record, attribute, earliest_date, latest_date)
+    return if attribute.nil? || record.nil? || !record.has_attribute?(attribute)
+
+    # Get the new value to validate
+    value = record[attribute]
+    return if value.nil?
+
+    # Validate that the value acts like a Date and add error otherwise
+    attribute_label = attribute&.to_s&.humanize&.titleize
+    record.errors.add(attribute, "#{value} is not valid for the #{attribute_label} field. Must be a valid date.") && return unless value.acts_like?(:date)
+
+    # Validate inclusivity of Date, and add error if not valid
+    is_valid = value >= earliest_date && value <= latest_date
+    return if is_valid
+
+    err_message = "#{value} is not valid for the #{attribute_label} field. Must be a valid date between (inclusive) #{earliest_date} and #{latest_date}."
+    record.errors.add(attribute, err_message)
+  end
 end
