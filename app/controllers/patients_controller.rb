@@ -528,7 +528,7 @@ class PatientsController < ApplicationController
   def sms_eligibility_check
     redirect_to(root_url) && return unless current_user.can_edit_patient?
 
-    phone_number = params.permit(:phone_number)[:phone_number]
+    phone_number = params.require(:phone_number)
     blocked = BlockedNumber.exists?(phone_number: phone_number)
     render json: { sms_eligible: !blocked }
   end
