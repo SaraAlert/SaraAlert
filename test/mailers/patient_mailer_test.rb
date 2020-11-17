@@ -95,7 +95,7 @@ class PatientMailerTest < ActionMailer::TestCase
     end
   end
 
-  %i[enrollment_sms_text_based enrollment_sms_weblink assessment_sms_weblink assessment_sms_reminder].each do |mthd|
+  %i[enrollment_sms_text_based enrollment_sms_weblink assessment_sms_weblink].each do |mthd|
     test "#{mthd} twilio rest error" do
       def twilio_error
         response_object = double('response_object',
@@ -246,38 +246,7 @@ class PatientMailerTest < ActionMailer::TestCase
     assert_equal create_count, 2
   end
 
-  test 'assessment sms reminder message contents using messaging service' do
-    contents = I18n.t('assessments.sms.prompt.reminder', locale: 'en')
-
-    allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
-                                                                                         to: '+15555550111',
-                                                                                         body: contents,
-                                                                                         from: 'test_messaging_sid'
-                                                                                       ))
-
-    PatientMailer.assessment_sms_reminder(@patient).deliver_now
-  end
-
-  test 'assessment sms reminder message contents not using messaging service' do
-    ENV['TWILLIO_MESSAGING_SERVICE_SID'] = nil
-    contents = I18n.t('assessments.sms.prompt.reminder', locale: 'en')
-
-    allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
-      true
-    end)
-    expect_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create).with(
-                                                                                         to: '+15555550111',
-                                                                                         body: contents,
-                                                                                         from: 'test'
-                                                                                       ))
-
-    PatientMailer.assessment_sms_reminder(@patient).deliver_now
-  end
-
-  %i[assessment_sms_weblink assessment_sms_reminder].each do |mthd|
+  %i[assessment_sms_weblink].each do |mthd|
     test "#{mthd} success histories" do
       allow_any_instance_of(::Twilio::REST::Api::V2010::AccountContext::MessageList).to(receive(:create) do
         true
@@ -293,7 +262,7 @@ class PatientMailerTest < ActionMailer::TestCase
     end
   end
 
-  %i[assessment_sms_weblink assessment_sms_reminder].each do |mthd|
+  %i[assessment_sms_weblink].each do |mthd|
     test "#{mthd} no phone provided" do
       @patient.update(primary_telephone: nil)
       assert_difference '@patient.histories.length', 1 do
