@@ -1103,27 +1103,27 @@ patient_55:
   last_date_of_exposure: <%= 4.days.ago %>
 patient_56:
   id: 56
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
-  responder_id: 1
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
+  responder_id: 56
   creator_id: 1
   jurisdiction_id: 2
   submission_token: 'agu4DLdERW'
   monitoring: true
   first_name: 'Debra23'
   last_name: 'Riddle03'
-  date_of_birth: <%= 34.years.ago %>
-  sex: 'Male'
+  sex: 'Female'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '740 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Florida'
+  address_state: 'New Mexico'
   address_zip: '01937'
   preferred_contact_method: 'Unknown'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_57:
   id: 57
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 57
   creator_id: 1
   jurisdiction_id: 2
@@ -1132,17 +1132,18 @@ patient_57:
   monitoring: true
   first_name: 'Fred93'
   last_name: 'Bostwick48'
-  date_of_birth: <%= 34.years.ago %>
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '740 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'New Mexico'
   address_zip: '01937'
   preferred_contact_method: 'Unknown'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_58:
   id: 58
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 58
   creator_id: 1
   jurisdiction_id: 2
@@ -1151,17 +1152,18 @@ patient_58:
   monitoring: true
   first_name: 'Marie79'
   last_name: 'Tellwick84'
-  date_of_birth: <%= 43.years.ago %>
+  sex: 'Female'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '7829 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'Utah'
   address_zip: '01937'
   preferred_contact_method: 'Unknown'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_59:
   id: 59
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 59
   creator_id: 1
   jurisdiction_id: 2
@@ -1170,17 +1172,18 @@ patient_59:
   monitoring: true
   first_name: 'Elwind85'
   last_name: 'Norris78'
-  date_of_birth: <%= 85.years.ago %>
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '983 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'Utah'
   address_zip: '01937'
   preferred_contact_method: 'Unknown'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_60:
   id: 60
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 60
   creator_id: 1
   jurisdiction_id: 2
@@ -1188,19 +1191,20 @@ patient_60:
   monitoring: true
   first_name: 'Theodore43'
   last_name: 'Maxwell18'
-  date_of_birth: <%= 54.years.ago %>
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '40 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'New Mexico'
   address_zip: '01937'
   primary_telephone: '+15555554321'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_61:
   id: 61
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 60
   creator_id: 1
   jurisdiction_id: 2
@@ -1208,20 +1212,20 @@ patient_61:
   monitoring: true
   first_name: 'Madeline43'
   last_name: 'Maxwell18'
-  date_of_birth: <%= 55.years.ago %>
+  sex: 'Female'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '40 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'New Mexico'
   address_zip: '01937'
   primary_telephone: '+15555554321'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
-  exposure_risk_assessment: 'High'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_62:
   id: 62
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 60
   creator_id: 1
   jurisdiction_id: 2
@@ -1229,20 +1233,20 @@ patient_62:
   monitoring: true
   first_name: 'Robert53'
   last_name: 'Maxwell18'
-  date_of_birth: <%= 13.years.ago %>
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '40 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'New Mexico'
   address_zip: '01937'
   primary_telephone: '+15555554321'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
-  exposure_risk_assessment: 'High'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_63:
   id: 63
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 63
   creator_id: 1
   jurisdiction_id: 2
@@ -1251,19 +1255,20 @@ patient_63:
   isolation: true
   first_name: 'Dimitri11'
   last_name: 'Haverford73'
+  sex: 'Male'
   date_of_birth: <%= 45.years.ago %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'Utah'
   address_zip: '01937'
   primary_telephone: '+15555554322'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_64:
   id: 64
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 63
   creator_id: 1
   jurisdiction_id: 2
@@ -1272,20 +1277,20 @@ patient_64:
   isolation: true
   first_name: 'Tiffany89'
   last_name: 'Haverford73'
-  date_of_birth: <%= 47.years.ago %>
+  sex: 'Female'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'Utah'
   address_zip: '01937'
   primary_telephone: '+15555554322'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
-  exposure_risk_assessment: 'High'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
 patient_65:
   id: 65
-  created_at: <%= 4.hours.ago %>
-  updated_at: <%= 4.hours.ago %>
+  created_at: <%= 5.days.ago %>
+  updated_at: <%= 5.days.ago %>
   responder_id: 63
   creator_id: 1
   jurisdiction_id: 2
@@ -1294,13 +1299,13 @@ patient_65:
   isolation: true
   first_name: 'River75'
   last_name: 'Haverford73'
-  date_of_birth: <%= 21.years.ago %>
+  sex: 'Male'
+  date_of_birth: <%= 45.years.ago %>
   address_line_1: '98 Lanney Street'
   address_city: 'Bighton'
-  address_state: 'Montana'
+  address_state: 'Utah'
   address_zip: '01937'
   primary_telephone: '+15555554322'
   primary_telephone_type: 'Plain Cell'
   preferred_contact_method: 'Telephone call'
-  exposure_risk_assessment: 'High'
-  last_date_of_exposure: <%= 1.week.ago %>
+  last_date_of_exposure: <%= 5.days.ago %>
