@@ -79,19 +79,19 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_string_extension(patient.preferred_contact_method, 'preferred-contact-method'),
         to_string_extension(patient.preferred_contact_time, 'preferred-contact-time'),
         to_date_extension(patient.symptom_onset, 'symptom-onset-date'),
-        to_date_extension(patient.last_date_of_exposure, 'last-exposure-date'),
+        to_date_extension(patient.last_date_of_exposure, 'last-date-of-exposure'),
         to_bool_extension(patient.isolation, 'isolation'),
         to_string_extension(patient.jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path'),
         to_string_extension(patient.monitoring_plan, 'monitoring-plan'),
         to_positive_integer_extension(patient.assigned_user, 'assigned-user'),
         to_date_extension(patient.additional_planned_travel_start_date, 'additional-planned-travel-start-date'),
         to_string_extension(patient.port_of_origin, 'port-of-origin'),
-        to_date_extension(patient.date_of_departure, 'departure-date'),
+        to_date_extension(patient.date_of_departure, 'date-of-departure'),
         to_string_extension(patient.flight_or_vessel_number, 'flight-or-vessel-number'),
         to_string_extension(patient.flight_or_vessel_carrier, 'flight-or-vessel-carrier'),
-        to_date_extension(patient.date_of_arrival, 'arrival-date'),
+        to_date_extension(patient.date_of_arrival, 'date-of-arrival'),
         to_string_extension(patient.exposure_notes, 'exposure-notes'),
-        to_string_extension(patient.travel_related_notes, 'travel-notes'),
+        to_string_extension(patient.travel_related_notes, 'travel-related-notes'),
         to_string_extension(patient.additional_planned_travel_related_notes, 'additional-planned-travel-notes')
       ].reject(&:nil?)
     )
@@ -133,20 +133,20 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       sex: from_us_core_birthsex(patient),
       preferred_contact_method: from_string_extension(patient, 'preferred-contact-method'),
       preferred_contact_time: from_string_extension(patient, 'preferred-contact-time'),
-      symptom_onset: from_date_extension(patient, 'symptom-onset-date'),
-      last_date_of_exposure: from_date_extension(patient, 'last-exposure-date'),
+      symptom_onset: from_date_extension(patient, ['symptom-onset-date']),
+      last_date_of_exposure: from_date_extension(patient, %w[last-date-of-exposure last-exposure-date]),
       isolation: from_isolation_extension(patient),
       jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id),
       monitoring_plan: from_string_extension(patient, 'monitoring-plan'),
       assigned_user: from_positive_integer_extension(patient, 'assigned-user'),
-      additional_planned_travel_start_date: from_date_extension(patient, 'additional-planned-travel-start-date'),
+      additional_planned_travel_start_date: from_date_extension(patient, ['additional-planned-travel-start-date']),
       port_of_origin: from_string_extension(patient, 'port-of-origin'),
-      date_of_departure: from_date_extension(patient, 'departure-date'),
+      date_of_departure: from_date_extension(patient, ['date-of-departure']),
       flight_or_vessel_number: from_string_extension(patient, 'flight-or-vessel-number'),
       flight_or_vessel_carrier: from_string_extension(patient, 'flight-or-vessel-carrier'),
-      date_of_arrival: from_date_extension(patient, 'arrival-date'),
+      date_of_arrival: from_date_extension(patient, ['date-of-arrival']),
       exposure_notes: from_string_extension(patient, 'exposure-notes'),
-      travel_related_notes: from_string_extension(patient, 'travel-notes'),
+      travel_related_notes: from_string_extension(patient, 'travel-related-notes'),
       additional_planned_travel_related_notes: from_string_extension(patient, 'additional-planned-travel-notes'),
       primary_telephone_type: from_primary_phone_type_extension(patient),
       secondary_telephone_type: from_secondary_phone_type_extension(patient)
@@ -274,8 +274,14 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
     )
   end
 
-  def from_date_extension(patient, extension_id)
-    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueDate
+  # Check for multiple extension IDs for the sake of backwards compatibility with IDs that have changed
+  def from_date_extension(patient, extension_ids)
+    val = nil
+    extension_ids.each do |eid|
+      val = patient&.extension&.select { |e| e.url.include?(eid) }&.first&.valueDate
+      break unless val.nil?
+    end
+    val
   end
 
   def to_string_extension(value, extension_id)
