@@ -133,16 +133,16 @@ const TOOLTIP_TEXT = {
 
   blockedSMS: (
     <div>
-      The owner of this phone number has texted &quot;STOP&quot; in response to a Sara Alert message. Please instruct the owner to text &quot;START&quot; to the
-      Sara Alert number, and they will be eligible to receive SMS messages from Sara Alert again.
+      The owner of this phone number has texted &quot;STOP&quot; in response to a Sara Alert text message. This means that this phone number cannot receive text
+      messages from Sara Alert and should not be assigned SMS Preferred Reporting Methods unless the user replies &quot;START&quot; to a Sara Alert message.
     </div>
   ),
 
   blockedSMSContactMethod: (
     <div>
-      This Preferred Reporting method is currently invalid because this phone number has blocked SMS communications with Sara Alert. To fix this issue, the
-      monitoree may either select email or telephone as their Preferred Reporting Method or reply &quot;START&quot; to a Sara Alert message to unblock SMS
-      communications.
+      This Preferred Reporting Method is currently invalid because this phone number has blocked SMS communication with Sara Alert by texting &quot;STOP&quot;.
+      To fix this issue, the monitoree may either select email or telephone as their Preferred Reporting Method or reply &quot;START&quot; to a Sara Alert
+      message to unblock SMS communication.
     </div>
   ),
 

@@ -311,7 +311,9 @@ class Contact extends React.Component {
                         <i>
                           <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert.
                         </i>
-                        <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
+                        <b>
+                          <InfoTooltip tooltipTextKey="blockedSMSContactMethod" location="top"></InfoTooltip>
+                        </b>
                       </Form.Label>
                     )}
                   </Form.Label>
