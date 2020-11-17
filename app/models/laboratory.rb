@@ -5,7 +5,9 @@ class Laboratory < ApplicationRecord
   belongs_to :patient
 
   validates :result, inclusion: { in: ['positive', 'negative', 'indeterminate', 'other', nil, ''] }
-  validates_with LaboratoryDateValidator
+
+  # NOTE: Commented out until additional testing
+  # validates_with LaboratoryDateValidator
 
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
