@@ -88,7 +88,7 @@ class PatientMailerTest < ActionMailer::TestCase
   end
 
   %i[enrollment_sms_text_based enrollment_sms_weblink].each do |mthd|
-    test "#{mthd} no messaging service SID provided" do
+    test "#{mthd} no phone provided" do
       @patient.update(primary_telephone: nil)
       email = PatientMailer.send(mthd, @patient)
       assert_nil email.deliver_now
