@@ -591,6 +591,7 @@ class Patient < ApplicationRecord
   # Determine if this patient's phone number has blocked communication with SaraAlert
   def blocked_sms
     return false if primary_telephone.nil?
+
     BlockedNumber.exists?(phone_number: primary_telephone)
   end
 
