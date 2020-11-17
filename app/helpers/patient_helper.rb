@@ -2,163 +2,11 @@
 
 # Helper methods for the patient model
 module PatientHelper # rubocop:todo Metrics/ModuleLength
-  # Build a FHIR US Core Race Extension given Sara Alert race booleans.
-  def us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander)
-    # Don't return an extension if all race categories are false or nil
-    return nil unless [white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander].include?(true)
-
-    # Build out extension based on what race categories are true
-    FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race', extension: [
-      white ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: '2106-3', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'White')
-      ) : nil,
-      black_or_african_american ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: '2054-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Black or African American')
-      ) : nil,
-      american_indian_or_alaska_native ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: '1002-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'American Indian or Alaska Native')
-      ) : nil,
-      asian ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: '2028-9', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Asian')
-      ) : nil,
-      native_hawaiian_or_other_pacific_islander ? FHIR::Extension.new(
-        url: 'ombCategory',
-        valueCoding: FHIR::Coding.new(code: '2076-8', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Native Hawaiian or Other Pacific Islander')
-      ) : nil,
-      FHIR::Extension.new(
-        url: 'text',
-        valueString: [white ? 'White' : nil,
-                      black_or_african_american ? 'Black or African American' : nil,
-                      american_indian_or_alaska_native ? 'American Indian or Alaska Native' : nil,
-                      asian ? 'Asian' : nil,
-                      native_hawaiian_or_other_pacific_islander ? 'Native Hawaiian or Other Pacific Islander' : nil].reject(&:nil?).join(', ')
-      )
-    ].reject(&:nil?))
-  end
-
-  # Return a boolean indicating if the given race code is present on the given FHIR::Patient.
-  def self.race_code?(patient, code)
-    url = 'us-core-race'
-    patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.first&.valueCoding&.code == code
-  end
-
-  # Build a FHIR US Core Ethnicity Extension given Sara Alert ethnicity information.
-  def us_core_ethnicity(ethnicity)
-    # Don't return an extension if no ethnicity specified
-    return nil unless ['Hispanic or Latino', 'Not Hispanic or Latino'].include?(ethnicity)
-
-    # Build out extension based on what ethnicity was specified
-    FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity', extension: [
-                          ethnicity == 'Hispanic or Latino' ? FHIR::Extension.new(
-                            url: 'ombCategory',
-                            valueCoding: FHIR::Coding.new(code: '2135-2', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Hispanic or Latino')
-                          ) : nil,
-                          ethnicity == 'Not Hispanic or Latino' ? FHIR::Extension.new(
-                            url: 'ombCategory',
-                            valueCoding: FHIR::Coding.new(code: '2186-5', system: 'urn:oid:2.16.840.1.113883.6.238', display: 'Not Hispanic or Latino')
-                          ) : nil,
-                          FHIR::Extension.new(
-                            url: 'text',
-                            valueString: ethnicity
-                          )
-                        ])
-  end
-
-  # Return a string representing the ethnicity of the given FHIR::Patient
-  def self.ethnicity(patient)
-    url = 'us-core-ethnicity'
-    code = patient&.extension&.select { |e| e.url.include?(url) }&.first&.extension&.select { |e| e.url == 'ombCategory' }&.first&.valueCoding&.code
-    return 'Hispanic or Latino' if code == '2135-2'
-    return 'Not Hispanic or Latino' if code == '2186-5'
-
-    code
-  end
-
-  # Build a FHIR US Core BirthSex Extension given Sara Alert sex information.
-  def us_core_birthsex(sex)
-    # Don't return an extension if no sex specified
-    return nil unless %w[Male Female Unknown].include?(sex)
-
-    # Build out extension based on what sex was specified
-    code = sex == 'Unknown' ? 'UNK' : sex.first
-    FHIR::Extension.new(url: 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex', valueCode: code)
-  end
-
-  # Return a string representing the birthsex of the given FHIR::Patient
-  def self.birthsex(patient)
-    url = 'us-core-birthsex'
-    code = patient&.extension&.select { |e| e.url.include?(url) }&.first&.valueCode
-    return 'Male' if code == 'M'
-    return 'Female' if code == 'F'
-    return 'Unknown' if code == 'UNK'
-
-    code
-  end
-
-  # Helper to understand an extension for last exposure date
-  def self.from_isolation_extension(patient)
-    patient&.extension&.select { |e| e.url.include?('isolation') }&.first&.valueBoolean == true
-  end
-
-  def to_bool_extension(value, extension_id)
-    value.nil? ? nil : FHIR::Extension.new(
-      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
-      valueBoolean: value
-    )
-  end
-
-  def to_date_extension(value, extension_id)
-    value.nil? ? nil : FHIR::Extension.new(
-      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
-      valueDate: value
-    )
-  end
-
-  def self.from_date_extension(patient, extension_id)
-    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueDate
-  end
-
-  def to_string_extension(value, extension_id)
-    value.nil? ? nil : FHIR::Extension.new(
-      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
-      valueString: value
-    )
-  end
-
-  def self.from_string_extension(patient, extension_id)
-    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueString
-  end
-
-  # Convert from FHIR extension for Full Assigned Jurisdiction Path.
-  # Use the default if there is no path specified.
-  def self.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id)
-    jurisdiction_path = from_string_extension(patient, 'full-assigned-jurisdiction-path')
-    jurisdiction_path ? Jurisdiction.find_by(path: jurisdiction_path)&.id : default_jurisdiction_id
-  end
-
-  def self.from_primary_phone_type_extension(patient)
-    phone_telecom = patient&.telecom&.select { |t| t&.system == 'phone' }&.first
-    phone_telecom&.extension&.select { |e| e.url.include?('phone-type') }&.first&.valueString
-  end
-
-  def self.from_secondary_phone_type_extension(patient)
-    phone_telecom = patient&.telecom&.select { |t| t&.system == 'phone' }&.second
-    phone_telecom&.extension&.select { |e| e.url.include?('phone-type') }&.first&.valueString
-  end
-
   def normalize_state_names(pat)
     pat.monitored_address_state = normalize_and_get_state_name(pat.monitored_address_state) || pat.monitored_address_state
     pat.address_state = normalize_and_get_state_name(pat.address_state) || pat.address_state
     adpt = pat.additional_planned_travel_destination_state
     pat.additional_planned_travel_destination_state = normalize_and_get_state_name(adpt) || adpt
-  end
-
-  def self.from_fhir_phone_number(value)
-    Phonelib.parse(value, 'US').full_e164.presence || value
   end
 
   def normalize_name(name)
@@ -309,11 +157,6 @@ module PatientHelper # rubocop:todo Metrics/ModuleLength
 
     # Format and return
     (offset.negative? ? '' : '+') + format('%<offset>.2d', offset: offset) + ':00'
-  end
-
-  # Given a language string, try to find the corresponding BCP 47 code for it and construct a FHIR::Coding.
-  def language_coding(language)
-    PatientHelper.languages(language&.downcase) ? FHIR::Coding.new(**PatientHelper.languages(language&.downcase)) : nil
   end
 
   def self.languages(language)

@@ -3,6 +3,7 @@
 # ApiController: API for interacting with Sara Alert
 class Fhir::R4::ApiController < ActionController::API
   include ValidationHelper
+  include FhirHelper
   include ActionController::MimeResponds
   before_action :cors_headers
   before_action only: %i[create update] do
@@ -94,7 +95,7 @@ class Fhir::R4::ApiController < ActionController::API
         :'system/Patient.*'
       )
 
-      updates = Patient.from_fhir(contents, default_patient_jurisdiction_id)
+      updates = patient_from_fhir(contents, default_patient_jurisdiction_id)
 
       resource = get_patient(params.permit(:id)[:id])
 
@@ -157,7 +158,7 @@ class Fhir::R4::ApiController < ActionController::API
       )
 
       # Construct a Sara Alert Patient
-      resource = Patient.new(Patient.from_fhir(contents, default_patient_jurisdiction_id))
+      resource = Patient.new(patient_from_fhir(contents, default_patient_jurisdiction_id))
       # Responder is self
       resource.responder = resource
 
