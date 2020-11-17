@@ -627,7 +627,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
-    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
     assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
@@ -715,7 +715,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
-    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
     assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
@@ -850,7 +850,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
-    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
     assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
@@ -1635,7 +1635,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
-    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
     assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
@@ -1728,7 +1728,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
-    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
     assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
@@ -1870,7 +1870,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
-    assert_equal patient.assigned_user, fhir_ext_str(json_response, 'assigned-user')
+    assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
     assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
@@ -2289,6 +2289,11 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   def fhir_ext_date(obj, ext_id)
     ext = fhir_ext(obj, ext_id)
     ext && ext['valueDate']
+  end
+
+  def fhir_ext_pos_int(obj, ext_id)
+    ext = fhir_ext(obj, ext_id)
+    ext && ext['valuePositiveInt']
   end
 end
 # rubocop:enable Metrics/ClassLength

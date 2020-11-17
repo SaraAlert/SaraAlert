@@ -157,7 +157,8 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     lab_type: { label: 'Lab Test Type', checks: [:enum] },
     specimen_collection: { label: 'Lab Specimen Collection Date', checks: [:date] },
     report: { label: 'Lab Report Date', checks: [:date] },
-    result: { label: 'Result', check: [:enum] }
+    result: { label: 'Result', check: [:enum] },
+    assigned_user: { label: 'Assigned User', checks: [] }
   }.freeze
 
   def validate_date; end
