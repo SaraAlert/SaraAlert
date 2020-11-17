@@ -618,7 +618,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert_equal 'Telephone call', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
     assert_equal 'Morning', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
+    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
     assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
@@ -630,12 +630,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
-    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-departure')
     assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
     assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
-    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-arrival')
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
-    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
@@ -718,12 +718,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
-    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-departure')
     assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
     assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
-    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-arrival')
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
-    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
@@ -839,7 +839,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Kirlin44', json_response['name'].first['family']
     assert_equal 'SMS Texted Weblink', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
     assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
+    assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal 'USA, State 1, County 1',
@@ -853,12 +853,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
-    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-departure')
     assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
     assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
-    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-arrival')
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
-    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
@@ -869,7 +869,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
-      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-date-of-exposure' },
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -899,7 +899,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
-      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-date-of-exposure' },
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
@@ -1626,7 +1626,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Boehm62', json_response['name'].first['family']
     assert_equal 'Telephone call', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
     assert_equal 'Morning', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
+    assert_equal 45.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
     assert_equal 5.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
@@ -1638,12 +1638,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
-    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-departure')
     assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
     assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
-    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-arrival')
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
-    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
@@ -1731,12 +1731,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
-    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-departure')
     assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
     assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
-    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-arrival')
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
-    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
@@ -1859,7 +1859,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'Kirlin44', json_response['name'].first['family']
     assert_equal 'SMS Texted Weblink', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-method' }.first['valueString']
     assert_equal 'Afternoon', json_response['extension'].filter { |e| e['url'].include? 'preferred-contact-time' }.first['valueString']
-    assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-exposure-date' }.first['valueDate']
+    assert_equal 4.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'last-date-of-exposure' }.first['valueDate']
     assert_equal 3.days.ago.strftime('%Y-%m-%d'), json_response['extension'].filter { |e| e['url'].include? 'symptom-onset-date' }.first['valueDate']
     assert json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal 'USA, State 1, County 1',
@@ -1873,12 +1873,12 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal patient.assigned_user, fhir_ext_pos_int(json_response, 'assigned-user')
     assert_equal patient.additional_planned_travel_start_date.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'additional-planned-travel-start-date')
     assert_equal patient.port_of_origin, fhir_ext_str(json_response, 'port-of-origin')
-    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'departure-date')
+    assert_equal patient.date_of_departure.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-departure')
     assert_equal patient.flight_or_vessel_number, fhir_ext_str(json_response, 'flight-or-vessel-number')
     assert_equal patient.flight_or_vessel_carrier, fhir_ext_str(json_response, 'flight-or-vessel-carrier')
-    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'arrival-date')
+    assert_equal patient.date_of_arrival.strftime('%Y-%m-%d'), fhir_ext_date(json_response, 'date-of-arrival')
     assert_equal patient.exposure_notes, fhir_ext_str(json_response, 'exposure-notes')
-    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-notes')
+    assert_equal patient.travel_related_notes, fhir_ext_str(json_response, 'travel-related-notes')
     assert_equal patient.additional_planned_travel_related_notes, fhir_ext_str(json_response, 'additional-planned-travel-notes')
   end
 
@@ -1889,7 +1889,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
-      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-date-of-exposure' },
       'active' => false,
       'resourceType' => 'Patient'
     }
@@ -1919,7 +1919,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       'birthDate' => @patient_2.birthDate,
       'name' => @patient_2.name,
       'address' => @patient_2.address,
-      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-exposure-date' },
+      'extension' => @patient_2.extension.find { |e| e.url.include? 'last-date-of-exposure' },
       'active' => false,
       'resourceType' => 'Patient',
       'telecom' => [
