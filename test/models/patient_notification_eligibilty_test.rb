@@ -5,53 +5,57 @@ require 'test_case'
 
 # If HoH preferred contact method is unknown, opt-out, or blank
 # are they still eligible for notifications for dependents? How are they notified?
-
+# - no notification
 
 # What is HoH pauses notifications but has a dependent that is eligible for notifications?
-
+# - they do not recieve notifications for dependents when HoH has notifications paused.
 
 # What if notifications are paused for a dependent?
-
+# - doesn't matter because notification is dependending on the HoH
 
 # What if a report for an otherwise eligible dependent has already been submitted in the past day?
+# - Right now they will still get a notification
+# - Later we may want to change this.
 
 
 # What if a reminder has already been sent in the past day for an otherwise eligible dependent?
-
+# - Right now they will still get a notification
+# - Later we may want to change this.
 
 # Reminder sent < 12 hours ago means system already sent a reminder today?
-
+# - This is intended
 
 # What determines if a patient is in the exposure workflow?
 # * seems like (isolation: false, continuous exposure: false,
 # * and seems that monitoring date passed is determined by
 # * (last_exposure_date: > 14 days ago) OR (last_exposure_date: nil, created_at: > 14 days ago))
-
+# - isolation: true is the ONLY thing that determines if someone is in the exposure workflow
 
 # When do patients get purged?
 # - see purge_job.rb and :purge_eligible scope
 
-
 # Does (continuous_exposure: true) exclusively determine continuous montioring?
-
+# - YES
 
 # How does `isolation` affect notification eligibility? In the flowchart?
 # * seems like it is an automatic NO for "is in exposure workflow"?
-
+# - see above
 
 # What if a patient under continuous monitoring has already submitted a report in the past day?
-
+# - continuous monitoring DOES NOT override
 
 # What if a patient under continuous monitoring has already been sent a reminder in the past day?
-
+# - continuous monitoring DOES NOT override
 
 # Can (monitoring: false) exclusively determine if the record is closed?
-
+# - YES
 
 # What is the isolation workflow? (Referenced in Patient model scopes)
 # * it seems like it is just if not in exposure workflow on the flowchart.
+# - You are EITHER in the exposure workflow or the isolation workflow
 
-
+# Data dictionary?
+# - https://saraalert.org/wp-content/uploads/2020/11/Sara_Alert_Data_Dictionary_1.16.pdf
 
 # rubocop:disable Metrics/ClassLength
 class PatientNotificationEligibilityTest < ActiveSupport::TestCase
@@ -114,7 +118,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   # In household?                        => No
   # Preferred reporting method?          => Email link, SMS link, Telephone, SMS texts
   # Notifications paused?                => No
-  # In exposure workflow?                => No
+  # Is in isolation?                     => Yes
   # Is record closed?                    => Yes
   # :NOT ELIGIBLE:
   test 'non-household patient record has been closed' do
@@ -125,6 +129,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         preferred_contact_method: report_method,
         pause_notifications: false,
         last_date_of_exposure: nil,
+        isolation: true,
         purged: false,
         monitoring: false,
         closed_at: 1.hour.ago
@@ -137,9 +142,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   # In household?                        => No
   # Preferred reporting method?          => Email link, SMS link, Telephone, SMS texts
   # Notifications paused?                => No
-  # In exposure workflow?                => No
+  # Is in isolation?                     => Yes
   # Is record closed?                    => No
-  # Continuous monitoring?               => Yes
   # :ELIGIBLE:
   test 'non-household patient under continuous monitoring' do
     ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |report_method|
@@ -152,7 +156,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         purged: false,
         monitoring: true,
         closed_at: nil,
-        continuous_exposure: true
+        isolation: true
       )
       assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
       assert_equal 1, Patient.reminder_eligible.count
