@@ -60,8 +60,7 @@ class CacheAnalyticsJob < ApplicationJob
     counts.concat(monitoree_counts_by_age_group(analytic_id, monitorees, false))
     counts.concat(monitoree_counts_by_sex(analytic_id, monitorees, true))
     counts.concat(monitoree_counts_by_sex(analytic_id, monitorees, false))
-    counts.concat(monitoree_counts_by_reporting_method(analytic_id, monitorees, true))
-    counts.concat(monitoree_counts_by_reporting_method(analytic_id, monitorees, false))
+    counts.concat(monitoree_counts_by_reporting_method(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees, true))
     counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees, false))
     counts.concat(monitoree_counts_by_exposure_country(analytic_id, monitorees, true))
@@ -139,14 +138,15 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
 # Monitoree counts by monitoring status (symptomatic, non-reporting, asymptomatic)
-  def self.monitoree_counts_by_reporting_method(analytic_id, monitorees, active_monitoring)
+  def self.monitoree_counts_by_reporting_method(analytic_id, monitorees)
+    counts = []
     LINELIST_STATUSES.each do |linelist_status|
       monitorees.monitoring_status(linelist_status)
                 .group(:preferred_contact_method)
                 .order(:preferred_contact_method)
                 .size
                 .map do |preferred_contact_method, total|
-                  monitoree_count(analytic_id, active_monitoring, 'Contact Method', preferred_contact_method.nil? ? 'Missing' : preferred_contact_method, nil, total, linelist_status)
+                  counts.append(monitoree_count(analytic_id, true, 'Contact Method', preferred_contact_method.nil? ? 'Missing' : preferred_contact_method, nil, total, linelist_status))
                 end
     end
   end
