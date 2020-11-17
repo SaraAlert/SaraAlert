@@ -93,7 +93,9 @@ class Patient < ApplicationRecord
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
 
   validates_with PrimaryContactValidator, on: :api
-  validates_with PatientDateValidator
+
+  # NOTE: Commented out until additional testing
+  # validates_with PatientDateValidator
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'

@@ -86,14 +86,15 @@ class ImportController < ApplicationController
           validate_required_primary_contact(patient, row_ind)
 
           # Validate using Patient model validators without saving
-          # NOTE: Using dummy values for rrequired fields to satisfy basic checks on those fields that will be added later outside of import
-          temp_patient_data = patient.merge({ responder_id: 1, creator_id: 1, jurisdiction_id: 1 })
-          temp_patient = Patient.new(temp_patient_data)
-          unless temp_patient.valid?
-            temp_patient.errors.messages.each_value do |err_message|
-              @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
-            end
-          end
+          # NOTE: Using dummy values for required fields to satisfy basic checks on those fields that will be added later outside of import
+          # NOTE: Commented out until additional testing
+          # temp_patient_data = patient.merge({ responder_id: 1, creator_id: 1, jurisdiction_id: 1 })
+          # temp_patient = Patient.new(temp_patient_data)
+          # unless temp_patient.valid?
+          #   temp_patient.errors.messages.each_value do |err_message|
+          #     @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
+          #   end
+          # end
 
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
           patient[:duplicate_data] = current_user.viewable_patients.duplicate_data(patient[:first_name],
@@ -110,15 +111,16 @@ class ImportController < ApplicationController
 
             # Validate using Laboratory model validators without saving
             # NOTE: Using dummy values for patient to satisfy basic validation on that field
-            lab_results.each do |lab_data|
-              temp_lab_data = lab_data.merge({ patient_id: 1 })
-              temp_lab_result = Laboratory.new(temp_lab_data)
-              next if temp_lab_result.valid?
+            # NOTE: Commented out until additional testing
+            # lab_results.each do |lab_data|
+            #   temp_lab_data = lab_data.merge({ patient_id: 1 })
+            #   temp_lab_result = Laboratory.new(temp_lab_data)
+            #   next if temp_lab_result.valid?
 
-              temp_lab_result.errors.messages.each_value do |err_message|
-                @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
-              end
-            end
+            #   temp_lab_result.errors.messages.each_value do |err_message|
+            #     @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
+            #   end
+            # end
 
           end
         rescue ValidationError => e
