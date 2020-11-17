@@ -64,21 +64,6 @@ class PatientMailer < ApplicationMailer
     patient.update(last_assessment_reminder_sent: DateTime.now)
   end
 
-  def assessment_sms_reminder(patient)
-    add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
-    add_fail_history_sms_blocked(patient) && return if patient.blocked_sms
-
-    lang = patient.select_language
-    contents = I18n.t('assessments.sms.prompt.reminder', locale: lang)
-
-    success = TwilioSender.send_sms(patient, contents)
-    add_success_history(patient, patient) if success
-    add_fail_history_sms(patient) unless success
-
-    # Always update the last contact time so the system does not try and send emails again.
-    patient.update(last_assessment_reminder_sent: DateTime.now)
-  end
-
   def assessment_sms(patient)
     add_fail_history_blank_field(patient, 'primary phone number') && return if patient&.primary_telephone.blank?
     add_fail_history_sms_blocked(patient) && return if patient.blocked_sms
