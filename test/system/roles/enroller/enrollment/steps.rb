@@ -32,7 +32,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'address_state', type: 'select', required: true, info_page: true, tab: 'Home Address Within USA', copiable: true },
         { id: 'address_line_2', type: 'text', required: false, info_page: true, tab: 'Home Address Within USA', copiable: true },
         { id: 'address_zip', type: 'text', required: true, info_page: true, tab: 'Home Address Within USA', copiable: true },
-        { id: 'address_county', type: 'text', required: false, info_page: true, tab: 'Home Address Within USA', copiable: true },
+        { id: 'address_county', type: 'text', required: false, info_page: false, tab: 'Home Address Within USA', copiable: true },
         { id: 'monitored_address_line_1', type: 'text', required: false, info_page: false, tab: 'Home Address Within USA' },
         { id: 'monitored_address_city', type: 'text', required: false, info_page: false, tab: 'Home Address Within USA' },
         { id: 'monitored_address_state', type: 'select', required: false, info_page: false, tab: 'Home Address Within USA' },
