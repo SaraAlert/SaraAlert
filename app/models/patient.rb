@@ -3,7 +3,6 @@
 require 'chronic'
 
 # Patient: patient model
-# rubocop:disable Metrics/ClassLength
 class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
@@ -1000,4 +999,3 @@ class Patient < ApplicationRecord
     token
   end
 end
-# rubocop:enable Metrics/ClassLength
