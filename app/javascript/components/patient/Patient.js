@@ -130,7 +130,7 @@ class Patient extends React.Component {
                 <span className="text-danger">{this.props.details.blocked_sms && ' This Phone Number Has Blocked SMS Communication With Sara Alert'}</span>
                 {this.props.details.blocked_sms && (
                   <Form.Label className="tooltip-whitespace nav-input-label font-weight-bold">
-                    SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
+                    &nbsp;SMS Blocked <InfoTooltip tooltipTextKey="blockedSMS" location="top"></InfoTooltip>
                   </Form.Label>
                 )}
                 <br />
