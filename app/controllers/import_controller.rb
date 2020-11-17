@@ -54,7 +54,7 @@ class ImportController < ApplicationController
           begin
             if format == :comprehensive_monitorees
               if col_num == 95
-                patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
+                patient[:jurisdiction_id] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
               elsif col_num == 96
                 patient[:assigned_user] = validate_assigned_user(row[96], row_ind)
               elsif col_num == 85 && workflow == :isolation
@@ -85,6 +85,16 @@ class ImportController < ApplicationController
           # Run validations on fields that have restrictions conditional on other fields
           validate_required_primary_contact(patient, row_ind)
 
+          # Validate using Patient model validators without saving
+          # NOTE: Using dummy values for rrequired fields to satisfy basic checks on those fields that will be added later outside of import
+          temp_patient_data = patient.merge({ responder_id: 1, creator_id: 1, jurisdiction_id: 1 })
+          temp_patient = Patient.new(temp_patient_data)
+          unless temp_patient.valid?
+            temp_patient.errors.messages.each_value do |err_message|
+              @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
+            end
+          end
+
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
           patient[:duplicate_data] = current_user.viewable_patients.duplicate_data(patient[:first_name],
                                                                                    patient[:last_name],
@@ -97,6 +107,19 @@ class ImportController < ApplicationController
             lab_results.push(lab_result(row[87..90], row_ind)) if !row[87].blank? || !row[88].blank? || !row[89].blank? || !row[90].blank?
             lab_results.push(lab_result(row[91..94], row_ind)) if !row[91].blank? || !row[92].blank? || !row[93].blank? || !row[94].blank?
             patient[:laboratories_attributes] = lab_results unless lab_results.empty?
+
+            # Validate using Laboratory model validators without saving
+            # NOTE: Using dummy values for patient to satisfy basic validation on that field
+            lab_results.each do |lab_data|
+              temp_lab_data = lab_data.merge({ patient_id: 1 })
+              temp_lab_result = Laboratory.new(temp_lab_data)
+              next if temp_lab_result.valid?
+
+              temp_lab_result.errors.messages.each_value do |err_message|
+                @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
+              end
+            end
+
           end
         rescue ValidationError => e
           @errors << e&.message || "Unknown error on row #{row_ind}"
@@ -261,7 +284,7 @@ class ImportController < ApplicationController
       raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path', please provide the full path instead of just the name", row_ind)
     end
 
-    return jurisdiction[:id], jurisdiction[:path] if valid_jurisdiction_ids.include?(jurisdiction[:id])
+    return jurisdiction[:id] if valid_jurisdiction_ids.include?(jurisdiction[:id])
 
     raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it", row_ind)
   end
