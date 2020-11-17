@@ -192,7 +192,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
     click_on 'Isolation Monitoring' if workflow == :isolation
     @@system_test_utils.go_to_tab(tab)
-    @@system_test_utils.go_to_tab(tab)
+    sleep(2)
     patient_labels.each { |patient| check_patient(patient) }
   end
 
