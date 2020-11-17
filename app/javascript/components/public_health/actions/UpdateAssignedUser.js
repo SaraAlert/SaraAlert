@@ -37,7 +37,7 @@ class UpdateAssignedUser extends React.Component {
   handleChange(event) {
     event.persist();
     if (
-      event.target.id === 'assigned_user' &&
+      event.target.id === 'assigned_user_input' &&
       (event.target.value === '' ||
         (event.target.value && !isNaN(event.target.value) && parseInt(event.target.value) > 0 && parseInt(event.target.value) <= 9999))
     ) {
@@ -80,7 +80,7 @@ class UpdateAssignedUser extends React.Component {
           </div>
           <Form.Control
             as="input"
-            id="assigned_user"
+            id="assigned_user_input"
             autoComplete="off"
             className="form-control-lg"
             onChange={this.handleChange}
