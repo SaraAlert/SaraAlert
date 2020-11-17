@@ -533,18 +533,6 @@ class PatientsController < ApplicationController
     render json: { sms_eligible: !blocked }
   end
 
-  def send_reminder
-    # Send a new report reminder to the monitoree
-    redirect_to(root_url) && return unless current_user.can_remind_patient?
-
-    patient = current_user.get_patient(params.permit(:id)[:id])
-    redirect_to(root_url) && return if patient.nil?
-
-    patient.send_assessment(force: true)
-
-    History.report_reminder(patient: patient, created_by: current_user)
-  end
-
   # Construct a diff for a patient update to keep track of changes
   def patient_diff(patient_before, patient_after)
     diffs = []
