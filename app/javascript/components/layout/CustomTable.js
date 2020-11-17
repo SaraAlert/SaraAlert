@@ -211,6 +211,7 @@ class CustomTable extends React.Component {
           {this.props.totalRows > 0 && (
             <ReactPaginate
               className=""
+              disableInitialCallback={true}
               pageCount={Math.ceil(this.props.totalRows / this.props.entries)}
               pageRangeDisplayed={4}
               marginPagesDisplayed={1}
