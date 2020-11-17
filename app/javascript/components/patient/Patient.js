@@ -85,45 +85,44 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <b>Age:</b> <span>{`${this.props.details.age ? this.props.details.age : '--'}`}</span>
+                    <b>Age:</b> <span>{this.props.details.age ? this.props.details.age : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>Language:</b> <span>{`${this.props.details.primary_language ? this.props.details.primary_language : '--'}`}</span>
+                    <b>Language:</b> <span>{this.props.details.primary_language ? this.props.details.primary_language : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>State/Local ID:</b>{' '}
-                    <span>{`${this.props.details.user_defined_id_statelocal ? this.props.details.user_defined_id_statelocal : '--'}`}</span>
+                    <b>State/Local ID:</b> <span>{this.props.details.user_defined_id_statelocal ? this.props.details.user_defined_id_statelocal : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>CDC ID:</b> <span>{`${this.props.details.user_defined_id_cdc ? this.props.details.user_defined_id_cdc : '--'}`}</span>
+                    <b>CDC ID:</b> <span>{this.props.details.user_defined_id_cdc ? this.props.details.user_defined_id_cdc : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>NNDSS ID:</b> <span>{`${this.props.details.user_defined_id_nndss ? this.props.details.user_defined_id_nndss : '--'}`}</span>
+                    <b>NNDSS ID:</b> <span>{this.props.details.user_defined_id_nndss ? this.props.details.user_defined_id_nndss : '--'}</span>
                   </Col>
                 </Row>
               </Col>
               <Col className="text-truncate pr-2">
                 <Row>
                   <Col>
-                    <b>Birth Sex:</b> <span>{`${this.props.details.sex ? this.props.details.sex : '--'}`}</span>
+                    <b>Birth Sex:</b> <span>{this.props.details.sex ? this.props.details.sex : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>Gender Identity:</b> <span>{`${this.props.details.gender_identity ? this.props.details.gender_identity : '--'}`}</span>
+                    <b>Gender Identity:</b> <span>{this.props.details.gender_identity ? this.props.details.gender_identity : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>Sexual Orientation:</b> <span>{`${this.props.details.sexual_orientation ? this.props.details.sexual_orientation : '--'}`}</span>
+                    <b>Sexual Orientation:</b> <span>{this.props.details.sexual_orientation ? this.props.details.sexual_orientation : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
@@ -138,12 +137,12 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <b>Ethnicity:</b> <span>{`${this.props.details.ethnicity ? this.props.details.ethnicity : '--'}`}</span>
+                    <b>Ethnicity:</b> <span>{this.props.details.ethnicity ? this.props.details.ethnicity : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>Nationality:</b> <span>{`${this.props.details.nationality ? this.props.details.nationality : '--'}`}</span>
+                    <b>Nationality:</b> <span>{this.props.details.nationality ? this.props.details.nationality : '--'}</span>
                   </Col>
                 </Row>
               </Col>
@@ -181,18 +180,17 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <b>Preferred Contact Time:</b>{' '}
-                    <span>{this.props.details.preferred_contact_time ? `${this.props.details.preferred_contact_time}` : '--'}</span>
+                    <b>Preferred Contact Time:</b> <span>{this.props.details.preferred_contact_time ? this.props.details.preferred_contact_time : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>Type:</b> <span>{`${this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : '--'}`}</span>
+                    <b>Type:</b> <span>{this.props.details.primary_telephone_type ? this.props.details.primary_telephone_type : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <b>Email:</b> <span>{`${this.props.details.email ? this.props.details.email : '--'}`}</span>
+                    <b>Email:</b> <span>{this.props.details.email ? this.props.details.email : '--'}</span>
                   </Col>
                 </Row>
                 <Row>
@@ -254,23 +252,23 @@ class Patient extends React.Component {
                       <React.Fragment>
                         <Row>
                           <Col>
-                            <b>Address 1:</b> <span>{this.props.details.address_line_1 ? `${this.props.details.address_line_1}` : '--'}</span>
+                            <b>Address 1:</b> <span>{this.props.details.address_line_1 ? this.props.details.address_line_1 : '--'}</span>
                           </Col>
                         </Row>
                         <Row>
                           <Col>
-                            <b>Address 2:</b> <span>{this.props.details.address_line_2 ? `${this.props.details.address_line_2}` : '--'}</span>
+                            <b>Address 2:</b> <span>{this.props.details.address_line_2 ? this.props.details.address_line_2 : '--'}</span>
                           </Col>
                         </Row>
                         <Row>
                           <Col>
-                            <b>Town/City:</b> <span>{this.props.details.address_city ? `${this.props.details.address_city}` : '--'}</span>
+                            <b>Town/City:</b> <span>{this.props.details.address_city ? this.props.details.address_city : '--'}</span>
                           </Col>
                           <Col>
-                            <b>State:</b> <span>{this.props.details.address_state ? `${this.props.details.address_state}` : '--'}</span>
+                            <b>State:</b> <span>{this.props.details.address_state ? this.props.details.address_state : '--'}</span>
                           </Col>
                           <Col>
-                            <b>Zip:</b> <span>{this.props.details.address_zip ? `${this.props.details.address_zip}` : '--'}</span>
+                            <b>Zip:</b> <span>{this.props.details.address_zip ? this.props.details.address_zip : '--'}</span>
                           </Col>
                         </Row>
                       </React.Fragment>
@@ -283,25 +281,25 @@ class Patient extends React.Component {
                       <React.Fragment>
                         <Row>
                           <Col>
-                            <b>Address 1:</b> <span>{this.props.details.foreign_address_line_1 ? `${this.props.details.foreign_address_line_1}` : '--'}</span>
+                            <b>Address 1:</b> <span>{this.props.details.foreign_address_line_1 ? this.props.details.foreign_address_line_1 : '--'}</span>
                           </Col>
                         </Row>
                         <Row>
                           <Col>
-                            <b>Address 2:</b> <span>{this.props.details.foreign_address_line_2 ? `${this.props.details.foreign_address_line_2}` : '--'}</span>
+                            <b>Address 2:</b> <span>{this.props.details.foreign_address_line_2 ? this.props.details.foreign_address_line_2 : '--'}</span>
                           </Col>
                         </Row>
                         <Row>
                           <Col>
-                            <b>Town/City:</b> <span>{this.props.details.foreign_address_city ? `${this.props.details.foreign_address_city}` : '--'}</span>
+                            <b>Town/City:</b> <span>{this.props.details.foreign_address_city ? this.props.details.foreign_address_city : '--'}</span>
                           </Col>
                           <Col>
-                            <b>Zip:</b> <span>{this.props.details.foreign_address_zip ? `${this.props.details.foreign_address_zip}` : '--'}</span>
+                            <b>Zip:</b> <span>{this.props.details.foreign_address_zip ? this.props.details.foreign_address_zip : '--'}</span>
                           </Col>
                         </Row>
                         <Row>
                           <Col>
-                            <b>Country:</b> <span>{this.props.details.foreign_address_country ? `${this.props.details.foreign_address_country}` : '--'}</span>
+                            <b>Country:</b> <span>{this.props.details.foreign_address_country ? this.props.details.foreign_address_country : '--'}</span>
                           </Col>
                         </Row>
                       </React.Fragment>
@@ -345,15 +343,17 @@ class Patient extends React.Component {
                             </Row>
                             <Row>
                               <Col>
-                                <b>Port of Origin:</b> <span>{this.props.details.port_of_origin && `${this.props.details.port_of_origin}`}</span>
+                                <b>Port of Origin:</b> <span>{this.props.details.port_of_origin ? this.props.details.port_of_origin : '--'}</span>
                               </Col>
                             </Row>
                             <Row>
                               <Col>
                                 <b>Date of Departure:</b>{' '}
-                                <span>{`${
-                                  this.props.details.date_of_departure ? moment(this.props.details.date_of_departure, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
-                                }`}</span>
+                                <span>
+                                  {this.props.details.date_of_departure
+                                    ? moment(this.props.details.date_of_departure, 'YYYY-MM-DD').format('MM/DD/YYYY')
+                                    : '--'}
+                                </span>
                               </Col>
                             </Row>
                           </Col>
@@ -366,15 +366,15 @@ class Patient extends React.Component {
                             <Row>
                               <Col>
                                 <b>Port of Entry:</b>{' '}
-                                <span>{`${this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : ''}`}</span>
+                                <span>{this.props.details.port_of_entry_into_usa ? this.props.details.port_of_entry_into_usa : '--'}</span>
                               </Col>
                             </Row>
                             <Row>
                               <Col>
                                 <b>Date of Arrival:</b>{' '}
-                                <span>{`${
-                                  this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''
-                                }`}</span>
+                                <span>
+                                  {this.props.details.date_of_arrival ? moment(this.props.details.date_of_arrival, 'YYYY-MM-DD').format('MM/DD/YYYY') : ''}
+                                </span>
                               </Col>
                             </Row>
                           </Col>
@@ -383,13 +383,13 @@ class Patient extends React.Component {
                           <Col className="text-truncate pt-1">
                             <Row>
                               <Col>
-                                <b>Carrier:</b> <span>{this.props.details.flight_or_vessel_carrier && `${this.props.details.flight_or_vessel_carrier}`}</span>
+                                <b>Carrier:</b> <span>{this.props.details.flight_or_vessel_carrier ? this.props.details.flight_or_vessel_carrier : '--'}</span>
                               </Col>
                             </Row>
                             <Row>
                               <Col>
                                 <b>Flight or Vessel Number:</b>{' '}
-                                <span>{this.props.details.flight_or_vessel_number && `${this.props.details.flight_or_vessel_number}`}</span>
+                                <span>{this.props.details.flight_or_vessel_number ? this.props.details.flight_or_vessel_number : '--'}</span>
                               </Col>
                             </Row>
                           </Col>
@@ -425,23 +425,19 @@ class Patient extends React.Component {
                         <Row>
                           <Col>
                             <b>Type:</b>{' '}
-                            <span>{this.props.details.additional_planned_travel_type ? `${this.props.details.additional_planned_travel_type}` : '--'}</span>
+                            <span>{this.props.details.additional_planned_travel_type ? this.props.details.additional_planned_travel_type : '--'}</span>
                           </Col>
                         </Row>
                         <Row>
                           <Col>
                             <b>Place:</b>{' '}
                             <span>
-                              {`${
-                                this.props.details.additional_planned_travel_destination_country
-                                  ? this.props.details.additional_planned_travel_destination_country
-                                  : ''
-                              }`}
-                              {`${
-                                this.props.details.additional_planned_travel_destination_state
-                                  ? this.props.details.additional_planned_travel_destination_state
-                                  : ''
-                              }`}
+                              {this.props.details.additional_planned_travel_destination_country
+                                ? this.props.details.additional_planned_travel_destination_country
+                                : ''}
+                              {this.props.details.additional_planned_travel_destination_state
+                                ? this.props.details.additional_planned_travel_destination_state
+                                : ''}
                               {!this.props.details.additional_planned_travel_destination_country &&
                                 !this.props.details.additional_planned_travel_destination_state &&
                                 '--'}
@@ -451,31 +447,31 @@ class Patient extends React.Component {
                         <Row>
                           <Col>
                             <b>Port Of Departure:</b>{' '}
-                            <span>{`${
-                              this.props.details.additional_planned_travel_port_of_departure
+                            <span>
+                              {this.props.details.additional_planned_travel_port_of_departure
                                 ? this.props.details.additional_planned_travel_port_of_departure
-                                : '--'
-                            }`}</span>
+                                : '--'}
+                            </span>
                           </Col>
                         </Row>
                         <Row>
                           <Col>
                             <b>End Date:</b>{' '}
-                            <span>{`${
-                              this.props.details.additional_planned_travel_start_date
+                            <span>
+                              {this.props.details.additional_planned_travel_start_date
                                 ? moment(this.props.details.additional_planned_travel_start_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
-                                : '--'
-                            }`}</span>
+                                : '--'}
+                            </span>
                           </Col>
                         </Row>
                         <Row>
                           <Col>
                             <b>Start Date:</b>{' '}
-                            <span>{`${
-                              this.props.details.additional_planned_travel_end_date
+                            <span>
+                              {this.props.details.additional_planned_travel_end_date
                                 ? moment(this.props.details.additional_planned_travel_end_date, 'YYYY-MM-DD').format('MM/DD/YYYY')
-                                : '--'
-                            }`}</span>
+                                : '--'}
+                            </span>
                           </Col>
                         </Row>
                       </React.Fragment>
@@ -513,11 +509,11 @@ class Patient extends React.Component {
                     <Row className="pt-2">
                       <Col>
                         <b>Exposure Location:</b>{' '}
-                        <span>{this.props.details.potential_exposure_location ? `${this.props.details.potential_exposure_location}` : '--'}</span>
+                        <span>{this.props.details.potential_exposure_location ? this.props.details.potential_exposure_location : '--'}</span>
                       </Col>
                       <Col>
                         <b>Exposure Country:</b>{' '}
-                        <span>{this.props.details.potential_exposure_country ? `${this.props.details.potential_exposure_country}` : '--'}</span>
+                        <span>{this.props.details.potential_exposure_country ? this.props.details.potential_exposure_country : '--'}</span>
                       </Col>
                     </Row>
                     <Row className="pt-3">
@@ -673,7 +669,7 @@ class Patient extends React.Component {
                       </Row>
                       <Row>
                         <Col>
-                          <b>Case Status:</b> <span>{this.props.details.case_status ? `${this.props.details.case_status}` : '--'}</span>
+                          <b>Case Status:</b> <span>{this.props.details.case_status ? this.props.details.case_status : '--'}</span>
                         </Col>
                       </Row>
                     </Col>
