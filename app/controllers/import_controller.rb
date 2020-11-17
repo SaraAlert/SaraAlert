@@ -86,8 +86,8 @@ class ImportController < ApplicationController
           validate_required_primary_contact(patient, row_ind)
 
           # Validate using Patient model validators without saving
-          # NOTE: Using dummy values for responder and creator to satisfy basic validation on those fields
-          temp_patient_data = patient.merge({ responder_id: 1, creator_id: 1 })
+          # NOTE: Using dummy values for rrequired fields to satisfy basic checks on those fields that will be added later outside of import
+          temp_patient_data = patient.merge({ responder_id: 1, creator_id: 1, jurisdiction_id: 1 })
           temp_patient = Patient.new(temp_patient_data)
           unless temp_patient.valid?
             temp_patient.errors.messages.each_value do |err_message|
