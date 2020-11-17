@@ -8,7 +8,7 @@ class Patient < ApplicationRecord
   include PatientDetailsHelper
   include ValidationHelper
   include ActiveModel::Validations
-  include Rails.application.routes.url_helpers
+  include FhirHelper
 
   columns.each do |column|
     case column.type
@@ -825,149 +825,7 @@ class Patient < ApplicationRecord
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
   def as_fhir
-    creator_agent_ref = FHIR::Reference.new
-    creator_app = OauthApplication.where(user_id: creator.id).first
-    if creator_app
-      # Created with an M2M workflow client, use the application URL path to identify the creator
-      creator_agent_ref.reference = oauth_application_path(creator_app)
-    else
-      # Created with a user worfklow client
-      # We don't have an endpoint for GETting Users, so just use the user ID as an identifier to have something
-      creator_agent_ref.identifier = FHIR::Identifier.new(value: creator.id)
-    end
-
-    FHIR::Patient.new(
-      meta: FHIR::Meta.new(lastUpdated: updated_at.strftime('%FT%T%:z')),
-      contained: [FHIR::Provenance.new(
-        # Would like to use a Rails URL Helper here, but we don't get one for this endpoint
-        target: [FHIR::Reference.new(reference: "/fhir/r4/Patient/#{id}")],
-        agent: [
-          FHIR::Provenance::Agent.new(
-            who: creator_agent_ref
-          )
-        ],
-        recorded: created_at.strftime('%FT%T%:z'),
-        activity: {
-          coding: [
-            {
-              system: 'http://terminology.hl7.org/CodeSystem/v3-DataOperation',
-              code: 'CREATE',
-              display: 'create'
-            }
-          ]
-        }
-      )],
-      id: id,
-      active: monitoring,
-      name: [FHIR::HumanName.new(given: [first_name, middle_name].reject(&:blank?), family: last_name)],
-      telecom: [
-        primary_telephone ? FHIR::ContactPoint.new(system: 'phone',
-                                                   value: primary_telephone,
-                                                   rank: 1,
-                                                   extension: [to_string_extension(primary_telephone_type, 'phone-type')])
-                          : nil,
-        secondary_telephone ? FHIR::ContactPoint.new(system: 'phone',
-                                                     value: secondary_telephone,
-                                                     rank: 2,
-                                                     extension: [to_string_extension(secondary_telephone_type, 'phone-type')])
-                            : nil,
-        email ? FHIR::ContactPoint.new(system: 'email', value: email, rank: 1) : nil
-      ].reject(&:nil?),
-      birthDate: date_of_birth&.strftime('%F'),
-      address: [
-        FHIR::Address.new(
-          line: [address_line_1, address_line_2].reject(&:blank?),
-          city: address_city,
-          district: address_county,
-          state: address_state,
-          postalCode: address_zip
-        )
-      ],
-      communication: [
-        language_coding(primary_language) ? FHIR::Patient::Communication.new(
-          language: FHIR::CodeableConcept.new(coding: [language_coding(primary_language)]),
-          preferred: interpretation_required
-        ) : nil
-      ].reject(&:nil?),
-      extension: [
-        us_core_race(white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander),
-        us_core_ethnicity(ethnicity),
-        us_core_birthsex(sex),
-        to_string_extension(preferred_contact_method, 'preferred-contact-method'),
-        to_string_extension(preferred_contact_time, 'preferred-contact-time'),
-        to_date_extension(symptom_onset, 'symptom-onset-date'),
-        to_date_extension(last_date_of_exposure, 'last-exposure-date'),
-        to_bool_extension(isolation, 'isolation'),
-        to_string_extension(jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path'),
-        to_string_extension(monitoring_plan, 'monitoring-plan'),
-        to_string_extension(assigned_user, 'assigned-user'),
-        to_date_extension(additional_planned_travel_start_date, 'additional-planned-travel-start-date'),
-        to_string_extension(port_of_origin, 'port-of-origin'),
-        to_date_extension(date_of_departure, 'departure-date'),
-        to_string_extension(flight_or_vessel_number, 'flight-or-vessel-number'),
-        to_string_extension(flight_or_vessel_carrier, 'flight-or-vessel-carrier'),
-        to_date_extension(date_of_arrival, 'arrival-date'),
-        to_string_extension(exposure_notes, 'exposure-notes'),
-        to_string_extension(travel_related_notes, 'travel-notes'),
-        to_string_extension(additional_planned_travel_related_notes, 'additional-planned-travel-notes')
-      ].reject(&:nil?)
-    )
-  end
-
-  # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
-  # create new ones, or update existing ones), using the given FHIR::Patient.
-  def self.from_fhir(patient, default_jurisdiction_id)
-    {
-      monitoring: patient&.active.nil? ? false : patient.active,
-      first_name: patient&.name&.first&.given&.first,
-      middle_name: patient&.name&.first&.given&.second,
-      last_name: patient&.name&.first&.family,
-      primary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.first&.value),
-      secondary_telephone: PatientHelper.from_fhir_phone_number(patient&.telecom&.select { |t| t&.system == 'phone' }&.second&.value),
-      email: patient&.telecom&.select { |t| t&.system == 'email' }&.first&.value,
-      date_of_birth: patient&.birthDate,
-      age: Patient.calc_current_age_fhir(patient&.birthDate),
-      address_line_1: patient&.address&.first&.line&.first,
-      address_line_2: patient&.address&.first&.line&.second,
-      address_city: patient&.address&.first&.city,
-      address_county: patient&.address&.first&.district,
-      address_state: patient&.address&.first&.state,
-      address_zip: patient&.address&.first&.postalCode,
-      monitored_address_line_1: patient&.address&.first&.line&.first,
-      monitored_address_line_2: patient&.address&.first&.line&.second,
-      monitored_address_city: patient&.address&.first&.city,
-      monitored_address_county: patient&.address&.first&.district,
-      monitored_address_state: patient&.address&.first&.state,
-      monitored_address_zip: patient&.address&.first&.postalCode,
-      primary_language: patient&.communication&.first&.language&.coding&.first&.display,
-      interpretation_required: patient&.communication&.first&.preferred,
-      white: PatientHelper.race_code?(patient, '2106-3'),
-      black_or_african_american: PatientHelper.race_code?(patient, '2054-5'),
-      american_indian_or_alaska_native: PatientHelper.race_code?(patient, '1002-5'),
-      asian: PatientHelper.race_code?(patient, '2028-9'),
-      native_hawaiian_or_other_pacific_islander: PatientHelper.race_code?(patient, '2076-8'),
-      ethnicity: PatientHelper.ethnicity(patient),
-      sex: PatientHelper.birthsex(patient),
-      preferred_contact_method: PatientHelper.from_string_extension(patient, 'preferred-contact-method'),
-      preferred_contact_time: PatientHelper.from_string_extension(patient, 'preferred-contact-time'),
-      symptom_onset: PatientHelper.from_date_extension(patient, 'symptom-onset-date'),
-      last_date_of_exposure: PatientHelper.from_date_extension(patient, 'last-exposure-date'),
-      isolation: PatientHelper.from_isolation_extension(patient),
-      jurisdiction_id: PatientHelper.from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id),
-      monitoring_plan: PatientHelper.from_string_extension(patient, 'monitoring-plan'),
-      assigned_user: PatientHelper.from_string_extension(patient, 'assigned-user'),
-      additional_planned_travel_start_date: PatientHelper.from_date_extension(patient, 'additional-planned-travel-start-date'),
-      port_of_origin: PatientHelper.from_string_extension(patient, 'port-of-origin'),
-      date_of_departure: PatientHelper.from_date_extension(patient, 'departure-date'),
-      flight_or_vessel_number: PatientHelper.from_string_extension(patient, 'flight-or-vessel-number'),
-      flight_or_vessel_carrier: PatientHelper.from_string_extension(patient, 'flight-or-vessel-carrier'),
-      date_of_arrival: PatientHelper.from_date_extension(patient, 'arrival-date'),
-      exposure_notes: PatientHelper.from_string_extension(patient, 'exposure-notes'),
-      travel_related_notes: PatientHelper.from_string_extension(patient, 'travel-notes'),
-      additional_planned_travel_related_notes: PatientHelper.from_string_extension(patient, 'additional-planned-travel-notes'),
-      primary_telephone_type: PatientHelper.from_primary_phone_type_extension(patient),
-      secondary_telephone_type: PatientHelper.from_secondary_phone_type_extension(patient)
-    }
+    patient_as_fhir(self)
   end
 
   # Override as_json to include linelist
