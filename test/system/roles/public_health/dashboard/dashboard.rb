@@ -219,6 +219,14 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     click_on 'Submit'
   end
 
+  def bulk_edit_update_assigned_user(assigned_user, apply_to_household)
+    click_on 'Actions'
+    click_on 'Update Assigned User'
+    fill_in 'assigned_user_input', with: assigned_user
+    find_by_id('apply_to_household', { visible: :all }).check({ allow_label_click: true }) if apply_to_household
+    click_on 'Submit'
+  end
+
   def go_to_other_workflow(workflow)
     click_on 'Isolation Monitoring' if workflow == :exposure
 

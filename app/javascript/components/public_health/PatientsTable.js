@@ -585,7 +585,7 @@ class PatientsTable extends React.Component {
                       </Dropdown.Item>
                       <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Assigned User' })}>
                         <i className="fas fa-user-edit text-center" style={{ width: '1em' }}></i>
-                        <span className="ml-2">Update Case Status</span>
+                        <span className="ml-2">Update Assigned User</span>
                       </Dropdown.Item>
                     </DropdownButton>
                   )}
