@@ -15,6 +15,14 @@ class Patient extends React.Component {
     this.state = {
       showCaseInfo: props?.details?.isolation || (!props?.details?.isolation && props?.details?.exposure_notes),
       expandNotes: false,
+      hasRiskFactors:
+        props?.details?.contact_of_known_case ||
+        props?.details?.member_of_a_common_exposure_cohort ||
+        props?.details?.travel_to_affected_country_or_area ||
+        props?.details?.was_in_health_care_facility_with_known_cases ||
+        props?.details?.laboratory_personnel ||
+        props?.details?.healthcare_personnel ||
+        props?.details?.crew_on_passenger_or_cargo_flight,
     };
   }
 
@@ -79,8 +87,7 @@ class Patient extends React.Component {
               <Col className="text-truncate" md="auto">
                 <Row>
                   <Col>
-                    <b>DOB:</b>{' '}
-                    <span>{this.props.details.date_of_birth && `${moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}`}</span>
+                    <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
                   </Col>
                 </Row>
                 <Row>
@@ -432,12 +439,8 @@ class Patient extends React.Component {
                           <Col>
                             <b>Place:</b>{' '}
                             <span>
-                              {this.props.details.additional_planned_travel_destination_country
-                                ? this.props.details.additional_planned_travel_destination_country
-                                : ''}
-                              {this.props.details.additional_planned_travel_destination_state
-                                ? this.props.details.additional_planned_travel_destination_state
-                                : ''}
+                              {this.props.details.additional_planned_travel_destination_country}
+                              {this.props.details.additional_planned_travel_destination_state}
                               {!this.props.details.additional_planned_travel_destination_country &&
                                 !this.props.details.additional_planned_travel_destination_state &&
                                 '--'}
@@ -521,20 +524,8 @@ class Patient extends React.Component {
                         <b>Risk Factors</b>
                       </Col>
                     </Row>
-                    {!this.props.details.contact_of_known_case &&
-                      !this.props.details.member_of_a_common_exposure_cohort &&
-                      !this.props.details.travel_to_affected_country_or_area &&
-                      !this.props.details.was_in_health_care_facility_with_known_cases &&
-                      !this.props.details.laboratory_personnel &&
-                      !this.props.details.healthcare_personnel &&
-                      !this.props.details.crew_on_passenger_or_cargo_flight && <span className="none-text">None</span>}
-                    {(this.props.details.contact_of_known_case ||
-                      this.props.details.member_of_a_common_exposure_cohort ||
-                      this.props.details.travel_to_affected_country_or_area ||
-                      this.props.details.was_in_health_care_facility_with_known_cases ||
-                      this.props.details.laboratory_personnel ||
-                      this.props.details.healthcare_personnel ||
-                      this.props.details.crew_on_passenger_or_cargo_flight) && (
+                    {!this.state.hasRiskFactors && <span className="none-text">None</span>}
+                    {this.state.hasRiskFactors && (
                       <React.Fragment>
                         {this.props.details.contact_of_known_case && (
                           <Row>
