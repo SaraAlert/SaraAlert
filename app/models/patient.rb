@@ -3,6 +3,7 @@
 require 'chronic'
 
 # Patient: patient model
+# rubocop:disable Metrics/ClassLength
 class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
@@ -144,25 +145,9 @@ class Patient < ApplicationRecord
   end
 
   # Patients who are eligible for reminders
-  # scope :reminder_eligible, lambda {
-  #   where(purged: false)
-  #     .where(pause_notifications: false)
-  #     .where('patients.id = patients.responder_id')
-  #     .where.not('latest_assessment_at >= ?', Time.now.in_time_zone('Eastern Time (US & Canada)').beginning_of_day)
-  #     .or(
-  #       where(purged: false)
-  #         .where(pause_notifications: false)
-  #         .where('patients.id = patients.responder_id')
-  #         .where(latest_assessment_at: nil)
-  #     )
-  #     .distinct
-  # }
-
-  # Patients who are eligible for reminders
   scope :reminder_eligible, lambda {
     monitoring_open
       .joins(:dependents)
-      .where(head_of_household: false)
       .where('patients.id = patients.responder_id')
       .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
       .where(pause_notifications: false)
@@ -187,11 +172,13 @@ class Patient < ApplicationRecord
         12.hours.ago
       )
       .or(
-        monitoring_open
-          .joins(:dependents)
+        joins(:dependents)
+          .where(purged: false)
           .where(head_of_household: true)
           .where('patients.id = patients.responder_id')
+          .where('dependents_patients.id != dependents_patients.responder_id')
           .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
+          .where(pause_notifications: false)
           .where('dependents_patients.monitoring = ?', true)
           .where(
             'dependents_patients.isolation = ? '\
@@ -1036,3 +1023,4 @@ class Patient < ApplicationRecord
     token
   end
 end
+# rubocop:enable Metrics/ClassLength

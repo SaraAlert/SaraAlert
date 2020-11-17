@@ -1187,66 +1187,6 @@ class PatientTest < ActiveSupport::TestCase
     assessment.destroy
   end
 
-  test 'isolation non reporting send report when latest assessment was more than 1 day ago' do
-    # patient was created more than 24 hours ago
-    Patient.destroy_all
-    patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 2.days.ago)
-
-    # patient has asymptomatic assessment more than 24 hours ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
-
-    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
-  end
-
-  test 'isolation non reporting send report when no assessments and patient was created more than 1 day ago' do
-    # patient was created more than 24 hours ago
-    Patient.destroy_all
-    patient = create(:patient, monitoring: true, purged: false, isolation: true, created_at: 2.days.ago)
-
-    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
-  end
-
-  test 'exposure send report when latest assessment was more than 1 day ago' do
-    # patient was created more than 24 hours ago
-    Patient.destroy_all
-    patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 20.days.ago, last_date_of_exposure: 14.days.ago)
-
-    # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
-
-    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
-  end
-
-  test 'exposure send report when no assessments and patient was created more than 1 day ago' do
-    # patient was created more than 24 hours ago
-    Patient.destroy_all
-    patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 2.days.ago, last_date_of_exposure: 14.days.ago)
-
-    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
-  end
-
-  test 'exposure send report without continuous exposure' do
-    # patient was created more than 24 hours ago
-    Patient.destroy_all
-    patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 4.days.ago, last_date_of_exposure: 5.days.ago)
-
-    # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
-
-    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
-  end
-
-  test 'exposure send report with continuous exposure' do
-    # patient was created more than 24 hours ago
-    Patient.destroy_all
-    patient = create(:patient, monitoring: true, purged: false, isolation: false, created_at: 4.days.ago, continuous_exposure: true)
-
-    # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
-    create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
-
-    assert_not Patient.reminder_eligible.find_by(id: patient.id).nil?
-  end
-
   test 'address timezone offset' do
     jur = Jurisdiction.create
     user = User.create!(
