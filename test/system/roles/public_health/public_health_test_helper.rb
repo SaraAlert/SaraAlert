@@ -60,6 +60,20 @@ class PublicHealthTestHelper < ApplicationSystemTestCase
     @@system_test_utils.logout
   end
 
+  def bulk_edit_update_assigned_user(user_label, patient_labels, workflow, tab, assigned_user, apply_to_household: false)
+    @@system_test_utils.login(user_label)
+    @@public_health_dashboard.select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
+    @@public_health_dashboard.bulk_edit_update_assigned_user(assigned_user, apply_to_household: apply_to_household)
+    assertions = {
+      assigned_user: assigned_user
+    }
+    patient_labels.each do |label|
+      @@public_health_dashboard_verifier.search_for_and_verify_patient_monitoring_actions(label, assertions,
+                                                                                          apply_to_household: apply_to_household)
+    end
+    @@system_test_utils.logout
+  end
+
   def update_monitoring_status(user_label, patient_label, old_tab, new_tab, monitoring_status, monitoring_reason, reasoning)
     @@system_test_utils.login(user_label)
     @@public_health_dashboard.search_for_and_view_patient(old_tab, patient_label)
