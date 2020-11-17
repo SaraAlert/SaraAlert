@@ -60,7 +60,7 @@ class PublicHealthDashboardVerifier < ApplicationSystemTestCase
       verify_patient_info(patient, workflow, tab) if patient.jurisdiction[:path].include?(jur[:name])
 
       find_by_id('exactJurisdiction').click
-      sleep(0.1) # wait for data to load
+      sleep(1.5) # wait for data to load
       if verify_scope && tab == :all
         page.all('tbody tr').each do |row|
           assigned_jurisdiction_cell = row.all('td')[1]
