@@ -623,6 +623,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
@@ -709,7 +710,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'USA, State 1',
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
     assert_equal "/fhir/r4/Patient/#{id}", json_response['contained'].first['target'].first['reference']
-    assert_equal "/oauth/applications/#{@system_patient_read_write_app.id}", json_response['contained'].first['agent'].first['who']['reference']
+    assert_equal @system_patient_read_write_app.uid, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal @system_patient_read_write_app.name, json_response['contained'].first['agent'].first['who']['display']
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
@@ -844,6 +846,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
@@ -1628,6 +1631,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_not json_response['extension'].filter { |e| e['url'].include? 'isolation' }.first['valueBoolean']
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
@@ -1720,6 +1724,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
     assert_equal "/fhir/r4/Patient/#{id}", json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal Patient.find_by(id: id).creator.email, json_response['contained'].first['agent'].first['who']['display']
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
@@ -1861,6 +1866,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
                  json_response['extension'].find { |e| e['url'] == 'http://saraalert.org/StructureDefinition/full-assigned-jurisdiction-path' }['valueString']
     assert_equal resource_path, json_response['contained'].first['target'].first['reference']
     assert_equal Patient.find_by(id: patient_id).creator_id, json_response['contained'].first['agent'].first['who']['identifier']['value']
+    assert_equal Patient.find_by(id: patient_id).creator.email, json_response['contained'].first['agent'].first['who']['display']
     assert_equal patient.primary_telephone_type, fhir_ext_str(json_response['telecom'].first, 'phone-type')
     assert_equal patient.secondary_telephone_type, fhir_ext_str(json_response['telecom'].second, 'phone-type')
     assert_equal patient.monitoring_plan, fhir_ext_str(json_response, 'monitoring-plan')
