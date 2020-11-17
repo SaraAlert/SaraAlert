@@ -83,7 +83,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
         to_bool_extension(patient.isolation, 'isolation'),
         to_string_extension(patient.jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path'),
         to_string_extension(patient.monitoring_plan, 'monitoring-plan'),
-        to_string_extension(patient.assigned_user, 'assigned-user'),
+        to_positive_integer_extension(patient.assigned_user, 'assigned-user'),
         to_date_extension(patient.additional_planned_travel_start_date, 'additional-planned-travel-start-date'),
         to_string_extension(patient.port_of_origin, 'port-of-origin'),
         to_date_extension(patient.date_of_departure, 'departure-date'),
@@ -138,7 +138,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
       isolation: from_isolation_extension(patient),
       jurisdiction_id: from_full_assigned_jurisdiction_path_extension(patient, default_jurisdiction_id),
       monitoring_plan: from_string_extension(patient, 'monitoring-plan'),
-      assigned_user: from_string_extension(patient, 'assigned-user'),
+      assigned_user: from_positive_integer_extension(patient, 'assigned-user'),
       additional_planned_travel_start_date: from_date_extension(patient, 'additional-planned-travel-start-date'),
       port_of_origin: from_string_extension(patient, 'port-of-origin'),
       date_of_departure: from_date_extension(patient, 'departure-date'),
@@ -287,6 +287,17 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
 
   def from_string_extension(patient, extension_id)
     patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valueString
+  end
+
+  def to_positive_integer_extension(value, extension_id)
+    value.nil? ? nil : FHIR::Extension.new(
+      url: "http://saraalert.org/StructureDefinition/#{extension_id}",
+      valuePositiveInt: value
+    )
+  end
+
+  def from_positive_integer_extension(patient, extension_id)
+    patient&.extension&.select { |e| e.url.include?(extension_id) }&.first&.valuePositiveInt
   end
 
   # Convert from FHIR extension for Full Assigned Jurisdiction Path.
