@@ -54,7 +54,7 @@ class ImportController < ApplicationController
           begin
             if format == :comprehensive_monitorees
               if col_num == 95
-                patient[:jurisdiction_id] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
+                patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
               elsif col_num == 96
                 patient[:assigned_user] = validate_assigned_user(row[96], row_ind)
               elsif col_num == 85 && workflow == :isolation
@@ -286,7 +286,7 @@ class ImportController < ApplicationController
       raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path', please provide the full path instead of just the name", row_ind)
     end
 
-    return jurisdiction[:id] if valid_jurisdiction_ids.include?(jurisdiction[:id])
+    return jurisdiction[:id], jurisdiction[:path] if valid_jurisdiction_ids.include?(jurisdiction[:id])
 
     raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it", row_ind)
   end
