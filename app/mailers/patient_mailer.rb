@@ -199,14 +199,12 @@ class PatientMailer < ApplicationMailer
   end
 
   def add_fail_history_sms_blocked(patient)
-    comment = "Sara Alert attempted to send an SMS to #{patient.primary_telephone}, but the message could not be sent because monitoree \
-    blocked SMS communications with Sara Alert."
+    comment = "The system was unable to send an SMS to this monitoree #{patient.primary_telephone}, because monitoree blocked Sara Alert."
     History.contact_attempt(patient: patient, comment: comment)
     return if patient.dependents_exclude_self.blank?
 
-    create_contact_attempt_history_for_dependents(patient.dependents_exclude_self, "Sara Alert attempted to send an SMS to #{patient.primary_telephone}, \
-                                                               but the message could not be sent because monitoree's head of household blocked SMS \
-                                                               communications with Sara Alert.")
+    create_contact_attempt_history_for_dependents(patient.dependents_exclude_self, "The system was unable to send an SMS to this monitoree's
+       HoH #{patient.primary_telephone}, because the monitoree's head of household blocked Sara Alert.")
   end
 
   # Use the import method here to generate less SQL statements for a bulk insert of

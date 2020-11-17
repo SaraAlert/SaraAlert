@@ -105,11 +105,11 @@ class ConsumeAssessmentsJob < ApplicationJob
           # Maximum amount of SMS response retries reached
           # nil out the last_reminder_sent field so the system will try sending another SMS assessment
           patient.update(last_assessment_reminder_sent: nil)
-          History.contact_attempt(patient: patient, comment: "Monitoree exceeded the maximum number of assessment SMS response retries via\
-                                                             primary telephone number #{patient.primary_telephone}.")
+          History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
+             of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
-            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment SMS response\
-                                                                      retries via primary telephone number #{patient.primary_telephone}.")
+            create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
+              exceeded the maximum number of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
           end
           queue.commit
           next
@@ -117,11 +117,11 @@ class ConsumeAssessmentsJob < ApplicationJob
           # Maximum amount of voice response retries reached
           # nil out the last_reminder_sent field so the system will try sending another voice assessment
           patient.update(last_assessment_reminder_sent: nil)
-          History.contact_attempt(patient: patient, comment: "Monitoree exceeded the maximum number of assessment voice response retries via\
-                                                             primary telephone number #{patient.primary_telephone}.")
+          History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
+            of daily report voice response retries via primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
-            create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household exceeded the maximum number of assessment voice response\
-                                                                      retries via primary telephone number #{patient.primary_telephone}.")
+            create_contact_attempt_history_for_dependents(dependents, "The system could not record a response because the monitoree's head of household
+              exceeded the maximum number of daily report voice response retries via primary telephone number #{patient.primary_telephone}.")
           end
           queue.commit
           next
@@ -191,7 +191,6 @@ class ConsumeAssessmentsJob < ApplicationJob
     # Handle BlockedNumber manipulation here in case no monitorees are associated with this number
     BlockedNumber.create(phone_number: monitoree_number) if message['response_status'] == 'opt_out'
     BlockedNumber.where(phone_number: monitoree_number).destroy_all if message['response_status'] == 'opt_in'
-
     patient = Patient.responder_for_number(monitoree_number)&.first
     return if patient.nil?
 
@@ -202,24 +201,21 @@ class ConsumeAssessmentsJob < ApplicationJob
     when 'opt_out'
       # In cases of opt_in/opt_out the sara_number should always be available
       sara_number ||= '<Number Unavailable>'
-      History.contact_attempt(patient: patient, comment: "Monitoree blocked SMS communications with Sara Alert by sending a\
-                                                         STOP keyword via primary telephone number #{patient.primary_telephone} to\
-                                                         the Sara Alert number #{sara_number}.")
+      History.contact_attempt(patient: patient, comment: "The system will no longer be able to send an SMS to this monitoree #{patient.primary_telephone},
+         because the monitoree blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
       unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household blocked SMS communications with Sara Alert by sending a\
-                                                                  STOP keyword via primary telephone number #{patient.primary_telephone} to\
-                                                                  the Sara Alert number #{sara_number}.")
+        create_contact_attempt_history_for_dependents(dependents, "The system will no longer be able to send an SMS to this monitoree's head of household
+           #{patient.primary_telephone}, because the head of household blocked communications with Sara Alert by sending a STOP keyword to #{sara_number}.")
       end
     when 'opt_in'
       # In cases of opt_in/opt_out the sara_number should always be available
       sara_number ||= '<Number Unavailable>'
-      History.contact_attempt(patient: patient, comment: "Monitoree unblocked SMS communications with Sara Alert by sending a\
-                                                         START keyword via primary telephone number #{patient.primary_telephone} to\
-                                                         the Sara Alert number #{sara_number}.")
+      History.contact_attempt(patient: patient, comment: "The system will now be able to send an SMS to this monitoree #{patient.primary_telephone},
+         because the monitoree re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
+
       unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, "Monitoree's head of household unblocked SMS communications with Sara Alert by sending a\
-                                                                  START keyword via primary telephone number #{patient.primary_telephone} to\
-                                                                  the Sara Alert number #{sara_number}.")
+        create_contact_attempt_history_for_dependents(dependents, "The system will now be able to send an SMS to this monitoree's head of household
+          #{patient.primary_telephone}, because the head of household re-enabled communications with Sara Alert by sending a START keyword to #{sara_number}.")
       end
     end
   end
