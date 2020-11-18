@@ -31,6 +31,6 @@ every 1.hours do
   runner "SendAssessmentsJob.perform_later"
 end
 
-# every 1.minutes do
-#   runner "SendPurgeWarningsJob.perform_later"
-# end
+every 1.hours do
+  runner "SendPatientDigestJob.perform_later"
+end
