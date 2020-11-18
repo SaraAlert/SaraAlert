@@ -11,8 +11,8 @@ class PublicHealthControllerTest < ActionController::TestCase
     post :patients
     assert_redirected_to(new_user_session_path)
 
-    %i[admin_user analyst_user enroller_user].each do |role|
-      user = create(role)
+    Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
+      user = create(:public_health_enroller_user, jurisdiction: user_jur)
       sign_in user
       post :patients
       assert_redirected_to @controller.root_url
@@ -39,8 +39,12 @@ class PublicHealthControllerTest < ActionController::TestCase
         end
         assert_includes(error.message, 'tab')
 
-        sign_out user
+      error = assert_raises(ActionController::ParameterMissing) do
+        get :patients, params: { workflow: 'exposure' }
       end
+      assert_includes(error.message, 'tab')
+
+      sign_out user
     end
   end
 
@@ -259,6 +263,7 @@ class PublicHealthControllerTest < ActionController::TestCase
 
     post :patients, params: { query: { workflow: 'exposure', tab: 'all', jurisdiction: jur[:id], scope: 'all' } }, as: :json
     JSON.parse(response.body)['linelist'].each do |patient|
+      puts "patient: #{patient.to_json}"
       assert jur.subtree.pluck(:name).include?(patient['jurisdiction'])
     end
 
@@ -358,27 +363,17 @@ class PublicHealthControllerTest < ActionController::TestCase
     get :workflow_counts
     assert_redirected_to(new_user_session_path)
 
-    %i[admin_user analyst_user enroller_user].each do |role|
-      user = create(role)
+    Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
+      user = create(:public_health_enroller_user, jurisdiction: user_jur)
       sign_in user
+
       get :workflow_counts
-      assert_redirected_to @controller.root_url
+      json_response = JSON.parse(response.body)
+
+      assert_equal user.viewable_patients.where(isolation: false, purged: false).size, json_response['exposure']
+      assert_equal user.viewable_patients.where(isolation: true, purged: false).size, json_response['isolation']
+
       sign_out user
-    end
-
-    %i[public_health_user public_health_enroller_user contact_tracer_user super_user].each do |role|
-      Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
-        user = create(role, jurisdiction: user_jur)
-        sign_in user
-
-        get :workflow_counts
-        json_response = JSON.parse(response.body)
-
-        assert_equal user.viewable_patients.where(isolation: false, purged: false).size, json_response['exposure']
-        assert_equal user.viewable_patients.where(isolation: true, purged: false).size, json_response['isolation']
-
-        sign_out user
-      end
     end
   end
 
@@ -396,75 +391,65 @@ class PublicHealthControllerTest < ActionController::TestCase
     get :tab_counts, params: { workflow: 'exposure', tab: 'all' }
     assert_redirected_to(new_user_session_path)
 
-    %i[admin_user analyst_user enroller_user].each do |role|
-      user = create(role)
+    Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
+      user = create(:public_health_enroller_user, jurisdiction: user_jur)
       sign_in user
+
+      get :tab_counts, params: { workflow: 'asdf', tab: 'all' }
+      assert_response :bad_request
+
+      get :tab_counts, params: { workflow: 'exposure', tab: 'requiring_review' }
+      assert_response :bad_request
+
+      get :tab_counts, params: { workflow: 'isolation', tab: 'pui' }
+      assert_response :bad_request
+
+      get :tab_counts, params: { workflow: 'exposure', tab: 'symptomatic' }
+      assert_equal user.viewable_patients.exposure_symptomatic.size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'exposure', tab: 'non_reporting' }
+      assert_equal user.viewable_patients.exposure_non_reporting.size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'exposure', tab: 'asymptomatic' }
+      assert_equal user.viewable_patients.exposure_asymptomatic.size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'exposure', tab: 'pui' }
+      assert_equal user.viewable_patients.exposure_under_investigation.size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'exposure', tab: 'closed' }
+      assert_equal user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'exposure', tab: 'transferred_in' }
+      assert_equal user.jurisdiction.transferred_in_patients.where(isolation: false).size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'exposure', tab: 'transferred_out' }
+      assert_equal user.jurisdiction.transferred_out_patients.where(isolation: false).size, JSON.parse(response.body)['total']
+
       get :tab_counts, params: { workflow: 'exposure', tab: 'all' }
-      assert_redirected_to @controller.root_url
+      assert_equal user.viewable_patients.where(isolation: false, purged: false).size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'isolation', tab: 'requiring_review' }
+      assert_equal user.viewable_patients.isolation_requiring_review.size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'isolation', tab: 'non_reporting' }
+      assert_equal user.viewable_patients.isolation_non_reporting.size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'isolation', tab: 'reporting' }
+      assert_equal user.viewable_patients.isolation_reporting.size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'isolation', tab: 'closed' }
+      assert_equal user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'isolation', tab: 'transferred_in' }
+      assert_equal user.jurisdiction.transferred_in_patients.where(isolation: true).size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'isolation', tab: 'transferred_out' }
+      assert_equal user.jurisdiction.transferred_out_patients.where(isolation: true).size, JSON.parse(response.body)['total']
+
+      get :tab_counts, params: { workflow: 'isolation', tab: 'all' }
+      assert_equal user.viewable_patients.where(isolation: true, purged: false).size, JSON.parse(response.body)['total']
+
       sign_out user
-    end
-
-    %i[public_health_user public_health_enroller_user contact_tracer_user super_user].each do |role|
-      Jurisdiction.where(path: ['USA', 'USA, State 1', 'USA, State 1, County 1']).find_each do |user_jur|
-        user = create(role, jurisdiction: user_jur)
-        sign_in user
-
-        get :tab_counts, params: { workflow: 'asdf', tab: 'all' }
-        assert_response :bad_request
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'requiring_review' }
-        assert_response :bad_request
-
-        get :tab_counts, params: { workflow: 'isolation', tab: 'pui' }
-        assert_response :bad_request
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'symptomatic' }
-        assert_equal user.viewable_patients.exposure_symptomatic.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'non_reporting' }
-        assert_equal user.viewable_patients.exposure_non_reporting.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'asymptomatic' }
-        assert_equal user.viewable_patients.exposure_asymptomatic.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'pui' }
-        assert_equal user.viewable_patients.exposure_under_investigation.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'closed' }
-        assert_equal user.viewable_patients.monitoring_closed_without_purged.where(isolation: false).size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'transferred_in' }
-        assert_equal user.jurisdiction.transferred_in_patients.where(isolation: false).size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'transferred_out' }
-        assert_equal user.jurisdiction.transferred_out_patients.where(isolation: false).size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'exposure', tab: 'all' }
-        assert_equal user.viewable_patients.where(isolation: false, purged: false).size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'isolation', tab: 'requiring_review' }
-        assert_equal user.viewable_patients.isolation_requiring_review.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'isolation', tab: 'non_reporting' }
-        assert_equal user.viewable_patients.isolation_non_reporting.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'isolation', tab: 'reporting' }
-        assert_equal user.viewable_patients.isolation_reporting.size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'isolation', tab: 'closed' }
-        assert_equal user.viewable_patients.monitoring_closed_without_purged.where(isolation: true).size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'isolation', tab: 'transferred_in' }
-        assert_equal user.jurisdiction.transferred_in_patients.where(isolation: true).size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'isolation', tab: 'transferred_out' }
-        assert_equal user.jurisdiction.transferred_out_patients.where(isolation: true).size, JSON.parse(response.body)['total']
-
-        get :tab_counts, params: { workflow: 'isolation', tab: 'all' }
-        assert_equal user.viewable_patients.where(isolation: true, purged: false).size, JSON.parse(response.body)['total']
-
-        sign_out user
-      end
     end
   end
 

@@ -5,7 +5,6 @@ class PublicHealthController < ApplicationController
   include PatientQueryHelper
 
   before_action :authenticate_user!
-  before_action :authenticate_user_role
 
   def patients
     # Require workflow and tab params
@@ -96,7 +95,8 @@ class PublicHealthController < ApplicationController
                                'patients.responder_id, patients.pause_notifications, patients.preferred_contact_method, '\
                                'patients.last_assessment_reminder_sent, patients.preferred_contact_time, patients.extended_isolation, '\
                                'patients.latest_fever_or_fever_reducer_at, patients.latest_positive_lab_at, patients.negative_lab_count, '\
-                               'jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path, jurisdictions.id AS jurisdiction_id')
+                               'patients.head_of_household, jurisdictions.name AS jurisdiction_name, jurisdictions.path AS jurisdiction_path, '\
+                               'jurisdictions.id AS jurisdiction_id')
 
     # execute query and get total count
     total = patients.total_entries
@@ -138,6 +138,8 @@ class PublicHealthController < ApplicationController
   end
 
   def linelist_specific_fields(workflow, tab)
+    # This is specifically for the call from the Move to Household modal table which only needs a limited number of columns.
+    return %i[jurisdiction] if workflow == :all
     return %i[jurisdiction assigned_user expected_purge_date reason_for_closure closed_at] if tab == :closed
 
     if workflow == :isolation
