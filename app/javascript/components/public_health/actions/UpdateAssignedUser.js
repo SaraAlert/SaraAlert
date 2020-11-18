@@ -16,8 +16,6 @@ class UpdateAssignedUser extends React.Component {
       apply_to_household: false,
       loading: false,
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
   }
 
   componentDidMount() {
@@ -34,7 +32,7 @@ class UpdateAssignedUser extends React.Component {
     }
   }
 
-  handleChange(event) {
+  handleChange = event => {
     event.persist();
     if (
       event.target.id === 'assigned_user_input' &&
@@ -45,9 +43,9 @@ class UpdateAssignedUser extends React.Component {
     } else if (event.target.id === 'apply_to_household') {
       this.setState({ apply_to_household: event.target.checked });
     }
-  }
+  };
 
-  submit() {
+  submit = () => {
     let idArray = this.props.patients.map(x => x['id']);
     let diffState = Object.keys(this.state).filter(k => _.get(this.state, k) !== _.get(this.origState, k));
 
@@ -68,7 +66,7 @@ class UpdateAssignedUser extends React.Component {
           this.setState({ loading: false });
         });
     });
-  }
+  };
 
   render() {
     return (
