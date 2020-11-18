@@ -11,7 +11,6 @@ const MONITOREE_FLOW_HEADERS = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 
 class MonitoreeFlow extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
     this.tableData = WORKFLOWS.map(workflow => {
       return MONITOREE_FLOW_HEADERS.map(time_frame => {
         let thisTimeFrameData = props.stats.monitoree_snapshots.find(
@@ -26,8 +25,6 @@ class MonitoreeFlow extends React.Component {
         };
       });
     });
-    console.log(this.tableData);
-    this.selectedWorkflow = this.tableData[0];
   }
 
   render() {
