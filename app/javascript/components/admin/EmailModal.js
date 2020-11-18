@@ -16,10 +16,10 @@ class EmailModal extends React.Component {
 
   render() {
     return (
-      <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal" centered>
+      <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
         <h1 className="sr-only">{this.props.title}</h1>
         <Modal.Header closeButton>
-          <Modal.Title id="contained-modal">{this.props.title}</Modal.Title>
+          <Modal.Title id="contained-modal-title-vcenter">{this.props.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>{this.props.prompt}</p>

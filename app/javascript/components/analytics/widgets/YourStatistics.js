@@ -19,7 +19,7 @@ class YourStatistics extends React.Component {
                   <div className="h5">TOTAL MONITOREES</div>
                 </Row>
                 <Row>
-                  <div className="display-1">{this.props.stats.user_subjects}</div>
+                  <div className="display-1 h1">{this.props.stats.user_subjects}</div>
                 </Row>
               </Col>
               <Col>
@@ -27,7 +27,7 @@ class YourStatistics extends React.Component {
                   <div className="h5">NEW LAST 24 HOURS</div>
                 </Row>
                 <Row>
-                  <div className="display-1">{this.props.stats.user_subjects_last_24}</div>
+                  <div className="display-1 h1">{this.props.stats.user_subjects_last_24}</div>
                 </Row>
               </Col>
             </Row>
@@ -37,7 +37,7 @@ class YourStatistics extends React.Component {
                   <div className="h5">TOTAL REPORTS</div>
                 </Row>
                 <Row>
-                  <div className="display-1">{this.props.stats.user_assessments}</div>
+                  <div className="display-1 h1">{this.props.stats.user_assessments}</div>
                 </Row>
               </Col>
               <Col>
@@ -45,7 +45,7 @@ class YourStatistics extends React.Component {
                   <div className="h5">NEW LAST 24 HOURS</div>
                 </Row>
                 <Row>
-                  <div className="display-1">{this.props.stats.user_assessments_last_24}</div>
+                  <div className="display-1 h1">{this.props.stats.user_assessments_last_24}</div>
                 </Row>
               </Col>
             </Row>
