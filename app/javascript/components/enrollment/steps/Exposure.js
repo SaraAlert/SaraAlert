@@ -259,7 +259,7 @@ class Exposure extends React.Component {
       <React.Fragment>
         <Form.Row>
           <Form.Group as={Col} md="7" controlId="symptom_onset">
-            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
+            <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
             <DateInput
               id="symptom_onset"
               aria-label="Symptom Onset Date"

@@ -75,8 +75,8 @@ class Laboratory extends React.Component {
   createModal(title, toggle, submit) {
     return (
       <Modal size="lg" show centered onHide={toggle}>
+        <h1 className="sr-only">{title}</h1>
         <Modal.Header>
-          <h1 className="sr-only">{title}</h1>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
