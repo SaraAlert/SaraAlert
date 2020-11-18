@@ -23,3 +23,27 @@
   font-size: 20px !important;
 }
 
+.close {
+  color: #fff !important;
+  text-shadow: 0 1px 0 #000 !important;
+}
+
+.badge-purple {
+  background-color: #6f42c1;
+  color: #ffffff;
+}
+
+.badge-success {
+  background-color: #388038 !important;
+  border-color: #306e30 !important;
+}
+
+.btn-success{
+  background-color: #388038 !important;
+  border-color: #306e30 !important;
+}
+
+.active.btn-success {
+  background-color: #285d28 !important;
+  border-color: #1e441e !important;
+}

@@ -16,14 +16,15 @@ class EmailModal extends React.Component {
 
   render() {
     return (
-      <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal" centered>
+        <h1 className="sr-only">{this.props.title}</h1>
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.title}</Modal.Title>
+          <Modal.Title id="contained-modal">{this.props.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>{this.props.prompt}</p>
           <Form.Group>
-            <Form.Control as="textarea" rows="10" id="comment" onChange={this.handleCommentChange} />
+            <Form.Control as="textarea" rows="10" id="comment" onChange={this.handleCommentChange} aria-label="Email Text Area" />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

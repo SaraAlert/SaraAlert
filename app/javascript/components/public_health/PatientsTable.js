@@ -613,6 +613,7 @@ class PatientsTable extends React.Component {
           </Card>
         </TabContent>
         <Modal size="lg" centered show={this.state.action !== undefined} onHide={() => this.setState({ action: undefined })}>
+          <h1 className="sr-only">{this.state.action}</h1>
           <Modal.Header closeButton>
             <Modal.Title>{this.state.action}</Modal.Title>
           </Modal.Header>

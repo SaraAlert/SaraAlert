@@ -377,6 +377,7 @@ class AdvancedFilter extends React.Component {
           this.changeFilterOption(index, event?.value);
         }}
         placeHolder="Select Field...."
+        aria-label="Filter Type"
         theme={theme => ({
           ...theme,
           borderRadius: 0,
@@ -392,6 +393,7 @@ class AdvancedFilter extends React.Component {
         <Form.Control
           as="select"
           value={current}
+          aria-label="Filter Date"
           className="py-0 my-0"
           onChange={event => {
             this.changeFilterDateOption(index, event.target.value);
@@ -413,12 +415,14 @@ class AdvancedFilter extends React.Component {
         onHide={() => {
           this.setState({ showFilterNameModal: false });
         }}>
+        <h1 className="sr-only">Filter Name</h1>
         <Modal.Header>
           <Modal.Title>Filter Name</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Control
             as="input"
+            aria-label="Input Filter Name"
             value={this.state.filterName || ''}
             className="py-0 my-0"
             onChange={event => {
@@ -499,6 +503,7 @@ class AdvancedFilter extends React.Component {
                 <Form.Control
                   as="select"
                   value={value}
+                  aria-label="Filter Text Area"
                   className="py-0 my-0"
                   onChange={event => {
                     this.changeValue(index, event.target.value);
@@ -514,8 +519,10 @@ class AdvancedFilter extends React.Component {
               </Form.Group>
             )}
             {filterOption?.type === 'date' && dateOption != 'within' && (
-              <Form.Group className="py-0 my-0">
+              <Form.Group className="py-0 my-0" controlId="filter_date_at">
+                <Form.Label className="sr-only">Filter Date</Form.Label>
                 <DateInput
+                  id="filter_date_at"
                   date={value}
                   onChange={date => {
                     this.changeValue(index, date);
@@ -530,11 +537,13 @@ class AdvancedFilter extends React.Component {
               </Form.Group>
             )}
             {filterOption?.type === 'date' && dateOption === 'within' && (
-              <Form.Group className="py-0 my-0">
-                <Row>
-                  <Col className="pr-0">
+              <Row>
+                <Col className="pr-0">
+                  <Form.Group className="py-0 my-0" controlId="filter_start_date">
+                    <Form.Label className="sr-only">Filter Start Date</Form.Label>
                     <DateInput
                       date={value.start}
+                      id="filter_start_date"
                       onChange={date => {
                         this.changeValue(index, { start: date, end: value.end });
                       }}
@@ -545,13 +554,17 @@ class AdvancedFilter extends React.Component {
                         .add(2, 'years')
                         .format('YYYY-MM-DD')}
                     />
-                  </Col>
-                  <Col className="py-0 px-0 text-center my-auto" md="2">
-                    <b>TO</b>
-                  </Col>
-                  <Col className="pl-0">
+                  </Form.Group>
+                </Col>
+                <Col className="py-0 px-0 text-center my-auto" md="2">
+                  <b>TO</b>
+                </Col>
+                <Col className="pl-0">
+                  <Form.Group className="py-0 my-0" controlId="filter_end_date">
+                    <Form.Label className="sr-only">Filter End Date</Form.Label>
                     <DateInput
                       date={value.end}
+                      id="filter_end_date"
                       onChange={date => {
                         this.changeValue(index, { start: value.start, end: date });
                       }}
@@ -562,14 +575,15 @@ class AdvancedFilter extends React.Component {
                         .add(2, 'years')
                         .format('YYYY-MM-DD')}
                     />
-                  </Col>
-                </Row>
-              </Form.Group>
+                  </Form.Group>
+                </Col>
+              </Row>
             )}
             {filterOption?.type === 'search' && (
               <Form.Group className="py-0 my-0">
                 <Form.Control
                   as="input"
+                  aria-label="Search"
                   value={value}
                   className="py-0 my-0"
                   onChange={event => {
@@ -581,7 +595,7 @@ class AdvancedFilter extends React.Component {
           </Col>
           <Col className="py-0" md={2}>
             <div className="float-right">
-              <Button variant="danger" onClick={() => this.remove(index)}>
+              <Button variant="danger" aria-label="Remove filter" onClick={() => this.remove(index)}>
                 <i className="fas fa-minus"></i>
               </Button>
             </div>
@@ -599,6 +613,7 @@ class AdvancedFilter extends React.Component {
     return (
       <React.Fragment>
         <Modal show={this.state.show} centered dialogClassName="modal-af" onHide={this.onHide}>
+          <h1 className="sr-only">Advanced Filter</h1>
           <Modal.Header>
             <Modal.Title>Advanced Filter: {this.state.activeFilter ? this.state.activeFilter.name : 'untitled'}</Modal.Title>
           </Modal.Header>
@@ -648,7 +663,7 @@ class AdvancedFilter extends React.Component {
             })}
             <Row className="pt-2 pb-1">
               <Col>
-                <Button variant="primary" disabled={this.state.activeFilterOptions?.length > 4} onClick={() => this.add()}>
+                <Button variant="primary" aria-label="Add new filter" disabled={this.state.activeFilterOptions?.length > 4} onClick={() => this.add()}>
                   <i className="fas fa-plus"></i>
                 </Button>
               </Col>
@@ -698,7 +713,7 @@ class AdvancedFilter extends React.Component {
               </React.Fragment>
             )}
             <Dropdown.Divider />
-            <Dropdown.Header>Saved Filters</Dropdown.Header>
+            <Dropdown.Header aria-level="1">Saved Filters</Dropdown.Header>
             {this.state.savedFilters?.map((filter, index) => {
               return (
                 <Dropdown.Item href="#" key={`di${index}`} onClick={() => this.setFilter(filter)}>

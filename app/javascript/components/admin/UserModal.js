@@ -40,9 +40,10 @@ class UserModal extends React.Component {
 
   render() {
     return (
-      <Modal id="user-modal" show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal id="user-modal" show={this.props.show} onHide={this.props.onClose} backdrop="static" aria-labelledby="contained-modal" centered>
+        <h1 className="sr-only">{this.props.title}</h1>
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.title}</Modal.Title>
+          <Modal.Title id="contained-modal">{this.props.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -70,6 +71,7 @@ class UserModal extends React.Component {
               <Select
                 id="jurisdiction-select"
                 name="jurisdiction"
+                aria-label="Jurisdiction Select"
                 defaultValue={
                   this.props.initialUserData.jurisdiction_path
                     ? { label: this.props.initialUserData.jurisdiction_path, value: this.props.initialUserData.jurisdiction_path }
@@ -91,6 +93,7 @@ class UserModal extends React.Component {
               <Select
                 id="role-select"
                 name="role"
+                aria-label="Role Select"
                 defaultValue={
                   this.props.initialUserData.role_title
                     ? { label: this.props.initialUserData.role_title, value: this.props.initialUserData.jurisdiction_path }

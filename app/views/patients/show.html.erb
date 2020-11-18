@@ -106,38 +106,56 @@
             <% end %>
               <td><%= assessment.id %></td>
               <% unless @patient.isolation %>
-              <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
+                <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
               <% end %>
               <td><%= assessment.who_reported %></td>
               <td><%= local_time(assessment.created_at, '%Y-%m-%d %H:%M %Z') %></td>
               <% columns.each do |column| -%>
-              <% if assessment.get_reported_symptom_by_name(column) == nil %>
-              <td></td>
-              <% end %>
-              <%passes_threshold = assessment.symptom_passes_threshold(column)%>
-              <%symptom_value = assessment.get_reported_symptom_value(column)%>
-              <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom"%>
-              <% if symptom_value == true %>
-              <% symptom_value = 'Yes' %>
-              <% elsif symptom_value == false %>
-              <% symptom_value = 'No'%>
-              <%end%>
-              <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
-              <% end %>
-              <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
-              <td><% if passes_threshold==true -%><span class="concern"><%=symptom_value%></span><% elsif passes_threshold==false -%><%=symptom_value%><%else -%><% end -%></td>
-              <% end %>
+                <% if assessment.get_reported_symptom_by_name(column) == nil %>
+                  <td></td>
+                <% end %>
+                <% passes_threshold = assessment.symptom_passes_threshold(column) %>
+                <% symptom_value = assessment.get_reported_symptom_value(column) %>
+                <% if assessment.get_reported_symptom_by_name(column)&.type == "BoolSymptom" %>
+                  <% if symptom_value == true %>
+                    <% symptom_value = 'Yes' %>
+                  <% elsif symptom_value == false %>
+                    <% symptom_value = 'No'%>
+                  <% end %>
+                  <td>
+                    <% if passes_threshold==true -%>
+                      <span class="font-weight-bold">
+                        <%= symptom_value %>
+                      </span>
+                    <% elsif passes_threshold==false -%>
+                      <%= symptom_value %>
+                    <% else -%>
+                    <% end -%>
+                  </td>
+                <% end %>
+                <% if assessment.get_reported_symptom_by_name(column)&.type == "FloatSymptom" || assessment.get_reported_symptom_by_name(column)&.type == "IntegerSymptom"%>
+                  <td>
+                    <% if passes_threshold==true -%>
+                      <span class="font-weight-bold">
+                        <%= symptom_value %>
+                      </span>
+                    <% elsif passes_threshold==false -%>
+                      <%= symptom_value %>
+                    <% else -%>
+                    <% end -%>
+                  </td>
+                <% end %>
               <% end -%>
               <td>
                 <div class="dropdown">
-                  <button class="btn btn-sm btn-outline-primary dropdown-toggle btn-block a-dropdown" type="button" id="actionsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button class="btn btn-sm btn-outline-primary dropdown-toggle btn-block a-dropdown" type="button" id="actionsButton_<%= assessment.id %>" data-toggle="dropdown" aria-label="Edit" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-cogs fw"></i>
                   </button>
-                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton">
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="actionsButton_<%= assessment.id %>">
                     <button type="button" data-toggle="modal" data-target="#modal-<%= assessment.id %>" class="dropdown-item"><i class="fas fa-edit fa-fw"></i> Edit</button>
                     <%= react_component('subject/AddReportNote', { assessment: assessment, patient: @patient, authenticity_token: form_authenticity_token }) %>
                     <% unless @patient.isolation %>
-                    <%= react_component('subject/ClearSingleReport', { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
+                      <%= react_component('subject/ClearSingleReport', { assessment_id: assessment.id, patient: @patient, authenticity_token: form_authenticity_token }) %>
                     <% end %>
                   </div>
                 </div>

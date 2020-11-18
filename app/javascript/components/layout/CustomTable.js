@@ -3,6 +3,7 @@ import { PropTypes } from 'prop-types';
 import { Spinner, Table, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import InfoTooltip from '../util/InfoTooltip';
+import _ from 'lodash';
 
 class CustomTable extends React.Component {
   constructor(props) {
@@ -149,6 +150,14 @@ class CustomTable extends React.Component {
             </tr>
           </thead>
           <tbody>
+            {this.props.rowData.length === 0 && (
+              // If the dataset is empty, fill in table with an empty row for a11y
+              <tr>
+                {_.times(this.props.columnData.length, count => {
+                  return <td key={count}></td>;
+                })}
+              </tr>
+            )}
             {this.props.rowData.map((data, row) => {
               return (
                 <tr key={row} id={data.id ? data.id : row}>
