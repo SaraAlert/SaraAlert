@@ -421,16 +421,6 @@ class Patient < ApplicationRecord
     end
   }
 
-  scope :workflow, lambda { |workflow|
-    if (workflow == 'Exposure')
-      exposure_symptomatic.or(exposure_non_reporting).or(exposure_asymptomatic).or(exposure_under_investigation)
-    elsif (worflow == 'Isolation')
-      isolation_requiring_review.or(isolation_non_reporting).or(isolation_reporting)
-    else
-      []
-    end
-  }
-
   # All individuals with a last date of exposure within the given time frame
   scope :exposed_in_time_frame, lambda { |time_frame|
     where('last_date_of_exposure >= ?', time_frame)
