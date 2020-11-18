@@ -131,7 +131,6 @@ bundle exec whenever --update-crontab
   * `ConsumeAssessmentsJob`
       - Should always be running in order to be ready to consume assessments at any time.
       - Handles consuming assessments from the assessment container into the enrollment container.
-      - Subscribes to the Redis `reports` channel and consumes on every message in that channel.
 
   The following jobs are configured to run periodically (their run timing parameters are specified in `config/schedule.rb`):
   * `ClosePatientsJob`
