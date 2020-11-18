@@ -56,4 +56,9 @@ namespace :mailers do
   task send_purge_warning: :environment do
     SendPurgeWarningsJob.perform_later
   end
+  
+  desc "Sends patient digest to users"
+  task send_patient_digest: :environment do
+    SendPatientDigestJob.perform_later
+  end
 end
