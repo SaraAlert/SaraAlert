@@ -15,10 +15,11 @@ class SendPurgeWarningsJob < ApplicationJob
     # Loop through and send each admin information about their purge eligible monitorees
     recipients.each do |user|
       # Skip for USA admins
-      next if user.jurisdiction&.name == 'USA'
+      # next if user.jurisdiction&.name == 'USA'
+      # puts "sending"
 
       # Get num purgeable underneath this admin's purview
-      num_purgeable_records = user.viewable_patients.purge_eligible.size
+      num_purgeable_records = user.viewable_patients.purge_eligible.size + 1
 
       # Send email to use with info
       UserMailer.purge_notification(user, num_purgeable_records).deliver_later

@@ -8,6 +8,7 @@
 Total patients reported symptomatic in the last hour: <%= @eligible %>
 <br />
 Links to symptomatic patients in the last hour:
+<br />
 <% @patients.each do |patient| %>
     <%= link_to patient.first_name + ' ' + patient.last_name, patient %>
     <br>
