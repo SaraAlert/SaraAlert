@@ -88,7 +88,7 @@ class PublicHealthAnalytics extends React.Component {
             <Col xl="14" lg="24" sm="24" className="mx-0 pr-xl-3">
               <PreferredReportingMethod stats={this.props.stats} />
             </Col>
-            <Col xl="10" lg="24" sm="24" className="mx-0 pl-xl-3">
+            <Col xl="10" lg="24" sm="24" className="mx-0 mt-5 mt-xl-0 pl-xl-3">
               <MonitoreeFlow stats={this.props.stats} />
             </Col>
           </Row>

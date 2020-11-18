@@ -13,9 +13,10 @@ class CacheAnalyticsJob < ApplicationJob
         analytic = Analytic.create!(jurisdiction_id: jur.id)
         patients = jur.all_patients
         MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
-        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id)
         MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
         MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
+        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id, 'Exposure')
+        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id, 'Isolation')
       end
       cached << { id: jur.id, name: jur.jurisdiction_path_string }
     rescue StandardError => e
@@ -38,7 +39,7 @@ class CacheAnalyticsJob < ApplicationJob
     crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
     laboratory_personnel: 'Laboratory Personnel'
   }.freeze
-  MONITOREE_SNAPSHOT_TIME_FRAMES ||= ['Last 24 Hours', 'Last 14 Days', 'Total'].freeze
+  MONITOREE_SNAPSHOT_TIME_FRAMES ||= ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days','Total'].freeze
   NUM_EXPOSURE_COUNTRIES ||= 5
   NUM_PAST_EXPOSURE_DAYS ||= 28
   NUM_PAST_EXPOSURE_WEEKS ||= 53
@@ -264,7 +265,8 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   # Monitoree flow over time and monitoree action summary
-  def self.all_monitoree_snapshots(analytic_id, monitorees, jurisdiction_id)
+  # in_workflow(workflow)
+  def self.all_monitoree_snapshots(analytic_id, monitorees, jurisdiction_id, workflow)
     MONITOREE_SNAPSHOT_TIME_FRAMES.map do |time_frame|
       MonitoreeSnapshot.new(
         analytic_id: analytic_id,
@@ -272,7 +274,8 @@ class CacheAnalyticsJob < ApplicationJob
         new_enrollments: monitorees.enrolled_in_time_frame(time_frame).size,
         transferred_in: Transfer.with_incoming_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
         closed: monitorees.monitoring_closed.closed_in_time_frame(time_frame).size,
-        transferred_out: Transfer.with_outgoing_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size
+        transferred_out: Transfer.with_outgoing_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
+        status: workflow
       )
     end
   end
