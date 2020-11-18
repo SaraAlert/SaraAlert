@@ -200,7 +200,7 @@ class Identification extends React.Component {
       <React.Fragment>
         <h1 className="sr-only">Monitoree Identification</h1>
         <Card className="mx-2 card-square">
-          <Card.Header as="h2">Monitoree Identification</Card.Header>
+          <Card.Header className="h5">Monitoree Identification</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row>

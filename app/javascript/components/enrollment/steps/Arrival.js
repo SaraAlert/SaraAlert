@@ -70,7 +70,7 @@ class Arrival extends React.Component {
       <React.Fragment>
         <h1 className="sr-only">Monitoree Arrival nformation</h1>
         <Card className="mx-2 card-square">
-          <Card.Header as="h2">Monitoree Arrival Information</Card.Header>
+          <Card.Header className="h5">Monitoree Arrival Information</Card.Header>
           <Card.Body>
             <Form>
               <Form.Row>

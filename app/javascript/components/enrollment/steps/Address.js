@@ -102,7 +102,7 @@ class Address extends React.Component {
       <React.Fragment>
         <h1 className="sr-only">Monitoree Address</h1>
         <Card className="mx-2 card-square">
-          <Card.Header as="h2">Monitoree Address</Card.Header>
+          <Card.Header className="h5">Monitoree Address</Card.Header>
           <Card.Body>
             <Tabs
               defaultActiveKey={this.state.selectedTab}
@@ -214,7 +214,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="h-100">
                     <Form.Group as={Col} className="my-auto">
-                      <h3>
+                      <div className="h5">
                         Address at Destination in USA Where Monitored
                         <Button
                           id="copy_home_address"
@@ -224,7 +224,7 @@ class Address extends React.Component {
                           onClick={this.whereMonitoredSameAsHome}>
                           Copy from Home Address
                         </Button>
-                      </h3>
+                      </div>
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pt-1 pb-2">
@@ -455,7 +455,7 @@ class Address extends React.Component {
                   </Form.Row>
                   <Form.Row className="h-100">
                     <Form.Group as={Col} md={24} className="my-auto">
-                      <h3>Address at Destination in USA Where Monitored</h3>
+                      <div className="h5">Address at Destination in USA Where Monitored</div>
                     </Form.Group>
                   </Form.Row>
                   <Form.Row className="pb-2">
