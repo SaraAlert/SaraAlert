@@ -119,15 +119,15 @@ en:
         daily2-s: ' Is this person '
         daily3: 'experiencing any of the following symptoms: '
         daily4: ' Please reply with "Yes" or "No"'
-        try-again: "I'm sorry, I didn’t quite get that. Please reply with \"Yes\" or \"No\". If you have any questions, please contact your local health department."
-        max_retries_message: "We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911."
+        try-again: 'I'm sorry, I didn’t quite get that. Please reply with \"Yes\" or \"No\". If you have any questions, please contact your local health department.'
+        max_retries_message: 'We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911.'
         thanks: 'Thank you for completing your daily report!'
       weblink:
         intro: 'Please complete the Sara Alert Daily Report for'
     phone:
       intro: 'Hello, this is Sara, the automated public health assistant calling for your daily report.'
-      try-again: "I'm sorry, I didn’t quite get that. Let’s try again."
-      max_retries_message: "We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911."
+      try-again: 'I'm sorry, I didn’t quite get that. Let’s try again.'
+      max_retries_message: 'We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911.'
       thanks: 'Thank you for completing your daily report! Goodbye.'
       age: 'Age'
       daily1: ' This is the report for: '
