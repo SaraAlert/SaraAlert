@@ -339,6 +339,13 @@ class Patient < ApplicationRecord
       .distinct
   }
 
+  scope :recently_symptomatic, lambda {
+    where(monitoring: true)
+      .where(purged: false)
+      .where('latest_assessment_at >= ?', 60.minutes.ago)
+      .distinct
+  }
+
   # Individuals not meeting review but are reporting (isolation workflow only)
   scope :isolation_reporting, lambda {
     where.not(id: Patient.unscoped.isolation_requiring_review)

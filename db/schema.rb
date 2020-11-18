@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_12_173603) do
+ActiveRecord::Schema.define(version: 2020_11_16_214553) do
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -110,6 +110,7 @@ ActiveRecord::Schema.define(version: 2020_11_12_173603) do
     t.string "email"
     t.string "webpage"
     t.string "message"
+    t.boolean "send_digest"
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
@@ -352,6 +353,9 @@ ActiveRecord::Schema.define(version: 2020_11_12_173603) do
     t.string "sexual_orientation"
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
+    t.boolean "race_unknown"
+    t.boolean "race_other"
+    t.boolean "race_refused_to_answer"
     t.boolean "head_of_household"
     t.integer "contact_attempts", default: 0
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
