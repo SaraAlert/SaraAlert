@@ -60,7 +60,7 @@ class AssessmentsController < ApplicationController
     jurisdiction = if ADMIN_OPTIONS['report_mode']
                      Jurisdiction.find_by(unique_identifier: @unique_identifier)
                    else
-                     Patient.find_by(submission_token: get_newest_submission_token(@patient_submission_token))&.jurisdiction
+                     Patient.where(purged: false).find_by(submission_token: get_newest_submission_token(@patient_submission_token))&.jurisdiction
                    end
     redirect_to(inv_link_url) && return if jurisdiction.nil?
 

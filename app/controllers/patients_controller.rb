@@ -275,16 +275,14 @@ class PatientsController < ApplicationController
     end
     History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
 
+    current_user_patients = current_user.patients
+
     # update_all below does not invoke ActiveRecord callbacks and will not automatically check if this incomming
     # id exists. Patient.exists?(nil) => false
-    redirect_to(root_url) && return unless Patient.exists?(new_hoh_id.to_i)
+    redirect_to(root_url) && return unless Patient.where(purged: false).exists?(new_hoh_id.to_i)
 
     patients_to_update = household_ids + [current_patient_id]
-    current_user_patients = if current_user.role?(Roles::ENROLLER)
-                              current_user.enrolled_patients
-                            else
-                              current_user.viewable_patients
-                            end
+
     # Make sure all household ids are within jurisdiction
     redirect_to(root_url) && return if patients_to_update.any? do |patient_id|
       !current_user_patients.exists?(patient_id)
@@ -292,7 +290,7 @@ class PatientsController < ApplicationController
 
     # Change all of the patients in the household, including the current patient to have new_hoh_id as the responder
     current_user_patients.where(id: patients_to_update).each do |patient|
-      patient.update(responder_id: new_hoh_id)
+      patient.update!(responder_id: new_hoh_id)
     end
   end
 
@@ -494,21 +492,6 @@ class PatientsController < ApplicationController
     comment = 'User reviewed a report (ID: ' + assessment.id.to_s + ').'
     comment += ' Reason: ' + params.permit(:reasoning)[:reasoning] unless params.permit(:reasoning)[:reasoning].blank?
     History.report_reviewed(patient: patient, created_by: current_user.email, comment: comment)
-  end
-
-  # Get all individuals whose responder_id = id, these people are "HOH eligible"
-  def self_reporting
-    redirect_to(root_url) && return unless current_user.can_edit_patient?
-
-    patients = if current_user.role?(Roles::ENROLLER)
-                 current_user.enrolled_patients.where('patients.responder_id = patients.id')
-               else
-                 current_user.viewable_patients.where('patients.responder_id = patients.id')
-               end
-    patients = patients.pluck(:id, :first_name, :last_name, :age, :user_defined_id_statelocal).map do |p|
-      { id: p[0], first_name: p[1], last_name: p[2], age: p[3], state_id: p[4] }
-    end
-    render json: { self_reporting: patients.sort_by { |p| p[:last_name] || 'ZZZ' }.to_json }
   end
 
   # A patient is eligible to be removed from a household if their responder doesn't have the same contact

@@ -1,3 +1,6 @@
+<% if !current_user.can_view_public_health_dashboard? %>
+  <%= controller.redirect_to '/patients/' %>
+<% end %>
 <% content_for :assets do %>
   <%= javascript_packs_with_chunks_tag 'moment' %>
 <% end %>

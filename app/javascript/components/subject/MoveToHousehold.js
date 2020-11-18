@@ -1,69 +1,201 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Form, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Form, Row, Col, Button, Modal, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
 
-import reportError from '../util/ReportError';
+import CustomTable from '../layout/CustomTable';
+import _ from 'lodash';
 
 class MoveToHousehold extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      table: {
+        colData: [
+          { field: 'name', label: 'Monitoree', isSortable: true, tooltip: null },
+          { field: 'state_local_id', label: 'State/Local ID', isSortable: true, tooltip: null },
+          { field: 'jurisdiction', label: 'Jurisdiction', isSortable: true, tooltip: null },
+          { field: 'dob', label: 'Date of Birth', isSortable: true, tooltip: null, filter: this.formatDate },
+          { field: 'select', label: '', isSortable: false, tooltip: null, filter: this.createSelectButton, className: 'text-center', onClick: this.submit },
+        ],
+        rowData: [],
+        totalRows: 0,
+        selectedRows: [],
+        selectAll: false,
+      },
+      query: {
+        page: 0,
+        search: '',
+        entries: 5,
+        workflow: 'all',
+        tab: 'all',
+        scope: 'all',
+        tz_offset: new Date().getTimezoneOffset(),
+        // This query should always filter out records that are not self-reporters
+        filter: [
+          {
+            dateOption: null,
+            filterOption: {
+              description: 'Monitorees that are a Head of Household or self-reporter',
+              name: 'hoh',
+              title: 'Daily Reporters (Boolean)',
+              type: 'boolean',
+            },
+            value: true,
+          },
+        ],
+      },
+      entryOptions: [5, 10],
+      isLoading: false,
       updateDisabled: true,
       showModal: false,
-      loading: false,
-      dependents: [],
+      cancelToken: axios.CancelToken.source(),
     };
-    this.toggleModal = this.toggleModal.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.submit = this.submit.bind(this);
-    this.getResponders = this.getResponders.bind(this);
   }
 
-  toggleModal() {
+  /**
+   * Creates a "Select" button for each row of the table.
+   * @param {string} patientId
+   */
+  createSelectButton(_, patientId) {
+    return (
+      <Button id={patientId} variant="primary" size="lg">
+        Select
+      </Button>
+    );
+  }
+
+  /**
+   * Toggles the Move To Household modal.
+   */
+  toggleModal = () => {
     let current = this.state.showModal;
-    this.setState({
-      updateDisabled: true,
-      showModal: !current,
-      loading: !current,
+    this.setState(
+      {
+        updateDisabled: true,
+        showModal: !current,
+        isLoading: !current,
+      },
+      () => {
+        // Make initial call for table data when modal is shown.
+        if (this.state.showModal) {
+          this.updateTable(this.state.query);
+        }
+      }
+    );
+  };
+
+  /**
+   * Handles change of input in the search input.
+   * @param {SyntheticEvent} event - Event when the search input changes
+   */
+  handleSearchChange = event => {
+    const value = event.target.value;
+    this.setState(
+      state => {
+        return { query: { ...state.query, search: value } };
+      },
+      () => {
+        this.updateTable(this.state.query);
+      }
+    );
+  };
+
+  /**
+   * Called when the number of entries to be shown on a page changes.
+   * Updates state and then calls table update handler.
+   * @param {SyntheticEvent} event - Event when num entries changes
+   */
+  handleEntriesChange = event => {
+    const value = event?.target?.value || event;
+    this.setState(
+      state => {
+        return {
+          query: { ...state.query, entries: parseInt(value), page: 0 },
+        };
+      },
+      () => {
+        this.updateTable(this.state.query);
+      }
+    );
+  };
+
+  /**
+   * Called when a page is clicked in the pagination component.
+   * Updates the table based on the selected page.
+   *
+   * @param {Object} page - Page object from react-paginate
+   */
+  handlePageUpdate = page => {
+    this.setState(
+      state => {
+        return {
+          query: { ...state.query, page: page.selected },
+        };
+      },
+      () => {
+        this.updateTable(this.state.query);
+      }
+    );
+  };
+
+  updateTable = query => {
+    // cancel any previous unfinished requests to prevent race condition inconsistencies
+    this.state.cancelToken.cancel();
+
+    // generate new cancel token for this request
+    const cancelToken = axios.CancelToken.source();
+
+    this.setState({ query, cancelToken, isLoading: true }, () => {
+      this.queryServer(query);
     });
-    if (!current) {
-      this.getResponders();
-    }
-  }
+  };
 
-  handleChange(event) {
-    let updateDisabled = true;
-    if (event.target.id == 'hoh_selection') {
-      updateDisabled = event.target.value === -1;
-    }
-    this.setState({ [event.target.id]: event.target.value, updateDisabled: updateDisabled });
-  }
-
-  getResponders() {
+  queryServer = _.debounce(query => {
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
-    axios({
-      method: 'get',
-      url: window.BASE_PATH + '/patients/households/self_reporting',
-      params: {},
-    })
-      .then(response => {
-        this.setState({
-          loading: false,
-          dependents: JSON.parse(response['data']['self_reporting']),
-        });
+    axios
+      .post('/public_health/patients', {
+        query,
+        cancelToken: this.state.cancelToken.token,
       })
-      .catch(err => {
-        reportError(err);
+      .catch(error => {
+        if (!axios.isCancel(error)) {
+          this.setState(state => {
+            return {
+              table: { ...state.table, rowData: [], totalRows: 0 },
+              isLoading: false,
+            };
+          });
+        } else {
+          console.log(error);
+          this.setState({ isLoading: false });
+        }
+      })
+      .then(response => {
+        if (response && response.data && response.data.linelist) {
+          this.setState(state => {
+            const displayedColData = this.state.table.colData.filter(colData => response.data.fields.includes(colData.field));
+            return {
+              table: { ...state.table, displayedColData, rowData: response.data.linelist, totalRows: response.data.total },
+              isLoading: false,
+            };
+          });
+        } else {
+          this.setState({ isLoading: false });
+        }
       });
-  }
+  }, 500);
 
-  submit() {
-    this.setState({ loading: true }, () => {
+  /**
+   * Makes a POST to update the HoH for the current patient.
+   * @param {string} new_hoh_id
+   */
+  submit = new_hoh_id => {
+    this.setState({ isLoading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
         .post(window.BASE_PATH + '/patients/' + this.props.patient.id + '/update_hoh', {
-          new_hoh_id: this.state.hoh_selection,
+          new_hoh_id: new_hoh_id,
         })
         .then(() => {
           this.setState({ updateDisabled: false });
@@ -73,51 +205,83 @@ class MoveToHousehold extends React.Component {
           console.error(error);
         });
     });
+  };
+
+  /**
+   * Grabs a formatted string with the name of the patient who is being moved to a household.
+   */
+  getPatientName = () => {
+    return `${this.props.patient?.last_name || ''}, ${this.props.patient?.first_name || ''} ${this.props.patient?.middle_name || ''}`;
+  };
+
+  /**
+   * Handles a key press event on the search form control.
+   * Checks for enter button press and prevents submisson event.
+   * @param {Object} event
+   */
+  handleKeyPress(event) {
+    if (event.which === 13) {
+      event.preventDefault();
+    }
   }
 
-  createModal(title, toggle, submit) {
+  createModal(title, toggle) {
     return (
-      <Modal size="lg" show centered onHide={toggle}>
+      <Modal dialogClassName="modal-move-household" show centered onHide={toggle}>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="modal-move-household-body">
           <Form>
             <Row>
               <Form.Group as={Col}>
-                <Form.Label htmlFor="hoh_selection" className="nav-input-label">
-                  Select The New Monitoree That Will Respond For The Current Monitoree
+                <Form.Label>
+                  Please select the new monitoree that will respond for <b>{this.getPatientName()}</b>.
                 </Form.Label>
-                <Form.Label size="sm" className="nav-input-label">
-                  Note: The current monitoree will be moved into the selected monitoree&apos;s household
-                </Form.Label>
-                <Form.Control as="select" className="form-control-lg" id="hoh_selection" onChange={this.handleChange} defaultValue={-1}>
-                  <option value={-1} disabled>
-                    --
-                  </option>
-                  {this.state?.dependents?.map((member, index) => {
-                    return (
-                      <option key={`option-${index}`} value={member.id}>
-                        {member.last_name}, {member.first_name} Age: {member.age}, State ID: {member.state_id}
-                      </option>
-                    );
-                  })}
-                </Form.Control>
+                <p>
+                  Monitorees that are shown below as potential Heads of Households are monitorees that are already HoHs or are self reporting. &nbsp;
+                  {this.getPatientName()} will be immediately moved into the selected monitoree&apos;s household.
+                </p>
+                <InputGroup size="md">
+                  <InputGroup.Prepend>
+                    <OverlayTrigger overlay={<Tooltip>Search by name or state/local ID.</Tooltip>}>
+                      <InputGroup.Text className="rounded-0 p-1">
+                        <i className="fas fa-search"></i>
+                        <span className="ml-1">Search</span>
+                      </InputGroup.Text>
+                    </OverlayTrigger>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    id="search-input"
+                    autoComplete="off"
+                    size="md"
+                    name="search"
+                    value={this.state.query.search}
+                    onChange={this.handleSearchChange}
+                    onKeyPress={this.handleKeyPress}
+                  />
+                </InputGroup>
               </Form.Group>
             </Row>
           </Form>
+          <CustomTable
+            columnData={this.state.table.colData}
+            rowData={this.state.table.rowData}
+            totalRows={this.state.table.totalRows}
+            handleTableUpdate={query => this.updateTable({ ...this.state.query, order: query.orderBy, page: query.page, direction: query.sortDirection })}
+            handleEntriesChange={this.handleEntriesChange}
+            isSelectable={false}
+            isEditable={false}
+            isLoading={this.state.isLoading}
+            page={this.state.query.page}
+            handlePageUpdate={this.handlePageUpdate}
+            entryOptions={this.state.entryOptions}
+            entries={this.state.query.entries}
+          />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary btn-square" onClick={toggle}>
             Cancel
-          </Button>
-          <Button variant="primary btn-square" onClick={submit} disabled={this.state.updateDisabled || this.state.loading}>
-            {this.state.loading && (
-              <React.Fragment>
-                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
-              </React.Fragment>
-            )}
-            Update
           </Button>
         </Modal.Footer>
       </Modal>
@@ -130,7 +294,7 @@ class MoveToHousehold extends React.Component {
         <Button size="sm" className="my-2" onClick={this.toggleModal}>
           <i className="fas fa-house-user"></i> Move To Household
         </Button>
-        {this.state.showModal && this.createModal('Move To Household', this.toggleModal, this.submit)}
+        {this.state.showModal && this.createModal('Move To Household', this.toggleModal)}
       </React.Fragment>
     );
   }
