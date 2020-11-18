@@ -258,23 +258,23 @@ class Exposure extends React.Component {
     return (
       <React.Fragment>
         <Form.Row>
-          <Form.Group as={Col} md="7" controlId="symptom_onset_date">
+          <Form.Group as={Col} md="7" controlId="symptom_onset">
             <Form.Label className="nav-input-label">SYMPTOM ONSET DATE{this.schema?.fields?.symptom_onset?._exclusive?.required && ' *'}</Form.Label>
             <DateInput
-              id="symptom_onset_date"
+              id="symptom_onset"
               aria-label="Symptom Onset Date"
               date={this.state.current.patient.symptom_onset}
               minDate={'2020-01-01'}
               maxDate={moment()
                 .add(30, 'days')
                 .format('YYYY-MM-DD')}
-              onChange={date => this.handleDateChange('symptom_onset_date', date)}
+              onChange={date => this.handleDateChange('symptom_onset', date)}
               placement="bottom"
-              isInvalid={!!this.state.errors['symptom_onset_date']}
+              isInvalid={!!this.state.errors['symptom_onset']}
               customClass="form-control-lg"
             />
             <Form.Control.Feedback className="d-block" type="invalid">
-              {this.state.errors['symptom_onset_date']}
+              {this.state.errors['symptom_onset']}
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="8" controlId="case_status">
@@ -325,22 +325,22 @@ class Exposure extends React.Component {
     return (
       <React.Fragment>
         <Form.Row>
-          <Form.Group as={Col} md="7" controlId="last_date_of_exposure_patient" className="mb-2">
+          <Form.Group as={Col} md="7" controlId="last_date_of_exposure" className="mb-2">
             <Form.Label className="nav-input-label">
               LAST DATE OF EXPOSURE{schema?.fields?.last_date_of_exposure?._exclusive?.required && ' *'}
               <InfoTooltip tooltipTextKey="lastDateOfExposure" location="right"></InfoTooltip>
             </Form.Label>
             <DateInput
-              id="last_date_of_exposure_patient"
+              id="last_date_of_exposure"
               aria-label="Last Date of Exposure"
               date={this.state.current.patient.last_date_of_exposure}
               minDate={'2020-01-01'}
               maxDate={moment()
                 .add(30, 'days')
                 .format('YYYY-MM-DD')}
-              onChange={date => this.handleDateChange('last_date_of_exposure_patient', date)}
+              onChange={date => this.handleDateChange('last_date_of_exposure', date)}
               placement="bottom"
-              isInvalid={!!this.state.errors['last_date_of_exposure_patient']}
+              isInvalid={!!this.state.errors['last_date_of_exposure']}
               customClass="form-control-lg"
               isClearable
             />

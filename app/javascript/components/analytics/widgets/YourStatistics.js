@@ -11,9 +11,7 @@ class YourStatistics extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square">
-          <Card.Header as="div" className="h5">
-            Your Statistics
-          </Card.Header>
+          <Card.Header className="h5">Your Statistics</Card.Header>
           <Card.Body>
             <Row className="mx-4 mt-3 g-border-bottom-2">
               <Col>

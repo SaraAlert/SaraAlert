@@ -191,7 +191,7 @@ class CustomTable extends React.Component {
             })}
           </tbody>
         </Table>
-        {this.props.rowData.length === 0 && <div className="text-center">No data in table.</div>}
+        {this.props.rowData.length === 0 && <div className="text-center">No data available in table.</div>}
         <div className="d-flex justify-content-between">
           <Form inline className="align-middle">
             <Row className="fixed-row-size">

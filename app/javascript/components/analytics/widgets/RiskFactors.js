@@ -254,7 +254,7 @@ class RiskFactors extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <Card.Header as="div" className="text-left h5">
+          <Card.Header className="text-left h5">
             Among Those {this.state.viewTotal ? 'Ever Monitored (includes current)' : 'Currently Under Active Monitoring'}
           </Card.Header>
           <Card.Body>{this.ERRORS ? this.renderErrors() : this.renderCard()}</Card.Body>
