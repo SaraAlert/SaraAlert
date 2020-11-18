@@ -72,14 +72,14 @@
   height: 50px; // the height of each row
 }
 
-.analytics-table tbody tr:hover {
-  background-color: rgba(122, 118, 144, .05);
-}
-
 .analytics-zebra-bg {
   background-color: #0000000d;
 }
 
+.analytics-mf-subheader {
+  font-size: .8rem;
+  color: #4c4c4c;
+}
 
 .analytics-card-header {
   position: absolute;

@@ -421,6 +421,16 @@ class Patient < ApplicationRecord
     end
   }
 
+  scope :workflow, lambda { |workflow|
+    if (workflow == 'Exposure')
+      exposure_symptomatic.or(exposure_non_reporting).or(exposure_asymptomatic).or(exposure_under_investigation)
+    elsif (worflow == 'Isolation')
+      isolation_requiring_review.or(isolation_non_reporting).or(isolation_reporting)
+    else
+      []
+    end
+  }
+
   # All individuals with a last date of exposure within the given time frame
   scope :exposed_in_time_frame, lambda { |time_frame|
     where('last_date_of_exposure >= ?', time_frame)
@@ -431,6 +441,8 @@ class Patient < ApplicationRecord
     case time_frame
     when 'Last 24 Hours'
       where('patients.created_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('patients.created_at >= ? AND patients.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('patients.created_at >= ? AND patients.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'
@@ -445,6 +457,8 @@ class Patient < ApplicationRecord
     case time_frame
     when 'Last 24 Hours'
       where('patients.closed_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('patients.closed_at >= ? AND patients.closed_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('patients.closed_at >= ? AND patients.closed_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'

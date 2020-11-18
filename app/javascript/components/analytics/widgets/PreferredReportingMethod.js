@@ -12,8 +12,50 @@ const reportingMethods = ['email', ''];
 class RiskStratification extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
-    console.log(props.stats.monitoree_counts.find(x => x.category_type === 'Preferred Contact Method'));
+    let contactMethodMonitoreeCounts = props.stats.monitoree_counts.filter(x => x.category_type === 'Contact Method');
+    const linelistOptions = _.uniq(props.stats.monitoree_counts.filter(x => x.category_type === 'Contact Method').map(x => x.status));
+    this.tableData = WORKFLOWS.map(workflow => {
+      const thisWorkflowMC = contactMethodMonitoreeCounts.filter(x => x.status.includes(workflow));
+      let workflowData = {};
+      workflowData['workflow'] = _.upperCase(workflow);
+      workflowData['data'] = linelistOptions
+        .filter(option => option.includes(workflow))
+        .map(linelistOption => {
+          const linelistOptions = LINELIST_STYLE_OPTIONS.find(x => x.linelist === _.join(_.tail(linelistOption.split(' ')), ' '));
+          return {
+            linelist: linelistOptions['linelistRewording'] || linelistOptions['linelist'], // Some Linelists need to slightly re-worded
+            linelistColor: linelistOptions.color,
+            contactMethodData: _.initial(CONTACT_METHOD_HEADERS).map(contactMethod => {
+              const thisContactMethodData = thisWorkflowMC.filter(x => x.category === _.findKey(CONTACT_METHOD_MAPPINGS, x => x === contactMethod));
+              const value = thisContactMethodData.find(x => x.status.includes(linelistOption))?.total || 0;
+              const cumulativeSum = _.sum(thisContactMethodData.map(x => x.total));
+              return {
+                contactMethod,
+                value,
+                percentageOfTotal: value ? ((value / cumulativeSum) * 100).toFixed(1).toString() + '%' : 'None',
+              };
+            }),
+          };
+        });
+      workflowData['data'].push({
+        linelist: 'Total',
+        contactMethodData: _.initial(CONTACT_METHOD_HEADERS).map(contactMethod => {
+          const thisContactMethodData = thisWorkflowMC.filter(x => x.category === _.findKey(CONTACT_METHOD_MAPPINGS, x => x === contactMethod));
+          const value = _.sum(thisContactMethodData.map(x => x.total));
+          return {
+            contactMethod,
+            value,
+          };
+        }),
+      });
+      workflowData['data'].forEach(linelist => {
+        const value = _.sum(linelist.contactMethodData.map(x => x.value));
+        const cumuluativeSum = _.sum(workflowData['data'].find(x => x.linelist === 'Total').contactMethodData.map(x => x.value));
+        const percentageOfTotal = ((value / cumuluativeSum) * 100).toFixed(1);
+        linelist.contactMethodData.push({ contactMethod: 'Total', value, percentageOfTotal });
+      });
+      return workflowData;
+    });
     this.reportingData = {};
   }
 
@@ -36,100 +78,30 @@ class RiskStratification extends React.Component {
                   <th>Total</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr style={{ height: '0px' }}></tr>
-                <tr>
-                  <td className="font-weight-bold text-left">
-                    <u>EXPOSURE WORKFLOW</u>{' '}
-                  </td>
-                </tr>
-                <tr className="analytics-zebra-bg">
-                  <td className="text-right font-weight-bold">Symptomatic</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                </tr>
-                <tr>
-                  <td className="text-right font-weight-bold">Asymptomatic</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>tesst</td>
-                  <td>tesst</td>
-                  <td>tesst</td>
-                  <td>tesst</td>
-                  <td>tesst</td>
-                </tr>
-                <tr className="analytics-zebra-bg">
-                  <td className="text-right font-weight-bold">Non-Reporting</td>
-                  <td>Larry</td>
-                  <td>Bob</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                </tr>
-                <tr>
-                  <td className="text-right font-weight-bold border-none">Total</td>
-                  <td>Larry</td>
-                  <td>Bob</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                </tr>
-                <tr style={{ height: '0px' }}></tr>
-                <tr>
-                  <td className="font-weight-bold text-left">
-                    <u>ISOLATION WORKFLOW</u>{' '}
-                  </td>
-                </tr>
-                <tr className="analytics-zebra-bg">
-                  <td className="text-right font-weight-bold">Symptomatic</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                </tr>
-                <tr>
-                  <td className="text-right font-weight-bold">Asymptomatic</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>tesst</td>
-                  <td>tesst</td>
-                  <td>tesst</td>
-                  <td>tesst</td>
-                  <td>tesst</td>
-                </tr>
-                <tr className="analytics-zebra-bg">
-                  <td className="text-right font-weight-bold">Non-Reporting</td>
-                  <td>Larry</td>
-                  <td>Bob</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                </tr>
-                <tr>
-                  <td className="text-right font-weight-bold">Total</td>
-                  <td>Larry</td>
-                  <td>Bob</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                  <td>test</td>
-                </tr>
-              </tbody>
+              {this.tableData.map((workflow, index1) => (
+                <tbody key={`workflow-table-${index1}`}>
+                  <tr style={{ height: '0px' }}></tr>
+                  <tr>
+                    <td className="font-weight-bold text-left">
+                      <u>{workflow['workflow']} WORKFLOW</u>{' '}
+                    </td>
+                  </tr>
+                  {workflow.data.map((data, index2) => (
+                    <tr key={`data-${index2}`} style={{ backgroundColor: data.linelistColor }}>
+                      <td className="text-right font-weight-bold">{data.linelist}</td>
+                      {data.contactMethodData.map((value, index3) => (
+                        <td key={`value-${index3}`}>
+                          {value.value}
+                          {index2 < workflow.data.length - 1 && (
+                            // Don't show the percentages for the Total
+                            <span className="analytics-percentage"> {`(${value.percentageOfTotal})`} </span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              ))}
             </table>
           </Card.Body>
         </Card>

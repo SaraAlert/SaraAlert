@@ -193,6 +193,7 @@ ActiveRecord::Schema.define(version: 2020_11_23_184158) do
     t.integer "results_of_public_health_test_negative"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "status", default: "Missing"
     t.index ["analytic_id"], name: "index_monitoree_snapshots_on_analytic_id"
   end
 
