@@ -13,6 +13,14 @@ module ConsumeAssessmentsJobTestHelper
     end
 
     def reported_symptom_assessment(symptomatic: nil)
+      if symptomatic
+        return {
+          response_status: nil,
+          threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
+          experiencing_symptoms: symptomatic,
+          patient_submission_token: @patient.submission_token
+        }.to_json
+      end
       {
         response_status: nil,
         threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
@@ -25,7 +33,6 @@ module ConsumeAssessmentsJobTestHelper
             notes: 'Have you coughed today?'
           }
         ],
-        experiencing_symptoms: symptomatic,
         patient_submission_token: @patient.submission_token
       }.to_json
     end
