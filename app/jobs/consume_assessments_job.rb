@@ -112,7 +112,7 @@ class ConsumeAssessmentsJob < ApplicationJob
           typed_reported_symptoms = Condition.build_symptoms(message['reported_symptoms_array'])
           reported_condition = ReportedCondition.new(symptoms: typed_reported_symptoms, threshold_condition_hash: message['threshold_condition_hash'])
           assessment = Assessment.new(reported_condition: reported_condition, patient: patient, who_reported: 'Monitoree')
-          assessment.symptomatic = assessment.symptomatic? || message['experiencing_symptoms']
+          assessment.symptomatic = assessment.symptomatic?
           queue.commit if assessment.save
         else
           # If message['reported_symptoms_array'] is not populated then this assessment came in through
