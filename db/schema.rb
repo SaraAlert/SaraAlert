@@ -110,7 +110,7 @@ ActiveRecord::Schema.define(version: 2020_11_16_214553) do
     t.string "email"
     t.string "webpage"
     t.string "message"
-    t.boolean "send_digest"
+    t.boolean "send_digest", default: false
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
