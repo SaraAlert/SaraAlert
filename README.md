@@ -134,7 +134,7 @@ bundle exec whenever --update-crontab
       - Subscribes to the Redis `reports` channel and consumes on every message in that channel.
 
   The following jobs are configured to run periodically (their run timing parameters are specified in `config/schedule.rb`):
-  * `ClosePatientsJob`.
+  * `ClosePatientsJob`
       - Closes (stops active monitoring of) monitorees that meet duration/symptomatic conditions
   * `PurgeJob`
       - Purges eligible records
