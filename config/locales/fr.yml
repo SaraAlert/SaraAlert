@@ -120,14 +120,14 @@ fr:
         daily3: ' y en a-t-il qui présentent un des symptômes suivants: '
         daily4: ' Veuillez répondre par "Oui" ou par "Non"'
         try-again: "Je suis désolé, je n'ai pas compris. Veuillez répondre par \"Oui\" ou par \"Non\""
-        max_retries_message: "We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911."
+        max_retries_message: "Nous sommes désolés que vous n’ayez pas pu compléter votre rapport quotidien. Nous voulons nous assurer que vous allez bien. Si vous avez des difficultés à respirer ou si vous vous sentez malade, restez calme et appelez le 911."
         thanks: "Merci d'avoir rempli votre rapport quotidien!"
       weblink:
         intro: 'Veuillez remplir le rapport quotidien de Sara Alert pour'
     phone:
       intro: "Bonjour, voici Sara, l'assistante de santé publique automatisée qui demande votre rapport quotidien."
       try-again: "Je suis désolé, je n'ai pas compris. Essayons encore."
-      max_retries_message: "We are sorry you were not able to complete your daily report. We want to make sure you are okay. If you are having problems breathing or feel sick, stay calm, and call 911."
+      max_retries_message: "Nous sommes désolés que vous n’ayez pas pu compléter votre rapport quotidien. Nous voulons nous assurer que vous allez bien. Si vous avez des difficultés à respirer ou si vous vous sentez malade, restez calme et appelez le 911."
       thanks: "Merci d'avoir rempli votre rapport quotidien! Au revoir."
       age: 'âge'
       daily1: ' Il s’agit d’un rapport d’alerte Sara quotidien destiné aux: '
