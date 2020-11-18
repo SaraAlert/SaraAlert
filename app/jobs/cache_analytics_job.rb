@@ -15,8 +15,7 @@ class CacheAnalyticsJob < ApplicationJob
         MonitoreeCount.import! self.class.all_monitoree_counts(analytic.id, patients)
         MonitoreeMap.import! self.class.state_level_maps(analytic.id, patients)
         MonitoreeMap.import! self.class.county_level_maps(analytic.id, patients) unless jur.root?
-        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id, 'Exposure')
-        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id, 'Isolation')
+        MonitoreeSnapshot.import! self.class.all_monitoree_snapshots(analytic.id, patients, jur.id)
       end
       cached << { id: jur.id, name: jur.jurisdiction_path_string }
     rescue StandardError => e
@@ -265,19 +264,22 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   # Monitoree flow over time and monitoree action summary
-  # in_workflow(workflow)
-  def self.all_monitoree_snapshots(analytic_id, monitorees, jurisdiction_id, workflow)
+  def self.all_monitoree_snapshots(analytic_id, monitorees, jurisdiction_id)
+    counts = []
     MONITOREE_SNAPSHOT_TIME_FRAMES.map do |time_frame|
-      MonitoreeSnapshot.new(
-        analytic_id: analytic_id,
-        time_frame: time_frame,
-        new_enrollments: monitorees.enrolled_in_time_frame(time_frame).size,
-        transferred_in: Transfer.with_incoming_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
-        closed: monitorees.monitoring_closed.closed_in_time_frame(time_frame).size,
-        transferred_out: Transfer.with_outgoing_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
-        status: workflow
-      )
-    end
+      ['Exposure', 'Isolation'].map do |workflow|
+        counts.append(MonitoreeSnapshot.new(
+          analytic_id: analytic_id,
+          time_frame: time_frame,
+          new_enrollments: monitorees.where(isolation: workflow == 'Isolation').enrolled_in_time_frame(time_frame).size,
+          transferred_in: Transfer.where_assoc_exists(:patient, isolation: workflow == 'Isolation').with_incoming_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
+          closed: monitorees.where(isolation: workflow == 'Isolation').monitoring_closed.closed_in_time_frame(time_frame).size,
+          transferred_out: Transfer.where_assoc_exists(:patient, isolation: workflow == 'Isolation').with_outgoing_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
+          status: workflow
+          ))
+        end
+      end
+    return counts
   end
 
   # Compute state level maps
