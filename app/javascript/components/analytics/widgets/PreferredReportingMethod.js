@@ -52,7 +52,7 @@ class RiskStratification extends React.Component {
         const value = _.sum(linelist.contactMethodData.map(x => x.value));
         const cumuluativeSum = _.sum(workflowData['data'].find(x => x.linelist === 'Total').contactMethodData.map(x => x.value));
         const percentageOfTotal = ((value / cumuluativeSum) * 100).toFixed(1);
-        linelist.contactMethodData.push({ contactMethod: 'Total', value, percentageOfTotal });
+        linelist.contactMethodData.push({ contactMethod: 'Total', value, percentageOfTotal: percentageOfTotal ? percentageOfTotal + '%' : 'None' });
       });
       return workflowData;
     });
