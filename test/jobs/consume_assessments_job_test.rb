@@ -68,7 +68,7 @@ class ConsumeAssessmentsJobTest < ActiveJob::TestCase
     end
   end
 
-  test 'consume assessment with reported symptoms and experiencing symptoms' do
+  test 'consume assessment with experiencing symptoms' do
     assert_difference '@patient.assessments.count', 1 do
       # Force experiencing_symptoms to true
       @redis_queue.push @assessment_generator.reported_symptom_assessment(symptomatic: true)
