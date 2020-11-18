@@ -912,8 +912,7 @@ class Patient < ApplicationRecord
         ) : nil
       ].reject(&:nil?),
       extension: [
-        us_core_race([white, black_or_african_american, american_indian_or_alaska_native, asian, native_hawaiian_or_other_pacific_islander,
-                      race_unknown, race_other, race_refused_to_answer]),
+        us_core_race(races_as_hash),
         us_core_ethnicity(ethnicity),
         us_core_birthsex(sex),
         to_preferred_contact_method_extension(preferred_contact_method),
@@ -924,6 +923,19 @@ class Patient < ApplicationRecord
         to_string_extension(jurisdiction.jurisdiction_path_string, 'full-assigned-jurisdiction-path')
       ].reject(&:nil?)
     )
+  end
+
+  def races_as_hash
+    {
+      white: white,
+      black_or_african_american: black_or_african_american,
+      american_indian_or_alaska_native: american_indian_or_alaska_native,
+      asian: asian,
+      native_hawaiian_or_other_pacific_islander: native_hawaiian_or_other_pacific_islander,
+      race_unknown: race_unknown,
+      race_other: race_other,
+      race_refused_to_answer: race_refused_to_answer
+    }
   end
 
   # Create a hash of atttributes that corresponds to a Sara Alert Patient (and can be used to
