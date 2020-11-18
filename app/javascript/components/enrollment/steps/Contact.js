@@ -306,7 +306,7 @@ class Contact extends React.Component {
                     {this.state.errors['primary_telephone']}
                   </Form.Control.Feedback>
                   <Form.Label>
-                    {this.state.current.patient.preferred_contact_method.includes('SMS') && this.state.current.blocked_sms === true && (
+                    {this.state.current.patient?.preferred_contact_method?.includes('SMS') && this.state.current.blocked_sms === true && (
                       <Form.Label className="tooltip-whitespace">
                         <i>
                           <b>* Warning:</b> SMS-based reporting selected and this phone number has blocked SMS communications with Sara Alert.
