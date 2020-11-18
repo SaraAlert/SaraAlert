@@ -44,6 +44,8 @@ class History < ApplicationRecord
     case time_frame
     when 'Last 24 Hours'
       where('histories.created_at >= ?', 24.hours.ago)
+    when 'Last 7 Days'
+      where('histories.created_at >= ? AND histories.created_at < ?', 7.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Last 14 Days'
       where('histories.created_at >= ? AND histories.created_at < ?', 14.days.ago.to_date.to_datetime, Date.today.to_datetime)
     when 'Total'

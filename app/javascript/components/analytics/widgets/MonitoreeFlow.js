@@ -1,76 +1,94 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Table, Row } from 'react-bootstrap';
+import _ from 'lodash';
+import { Card } from 'react-bootstrap';
+
+const WORKFLOWS = ['Exposure', 'Isolation'];
+
+// Provide a separate array, as object-iteration order is not guaranteed in JS
+const MONITOREE_FLOW_HEADERS = ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'];
 
 class MonitoreeFlow extends React.Component {
   constructor(props) {
     super(props);
-    // These should be indexes 0, 1, and 2. But making that assumption is risky, so search the array for them
-    // To ensure we're dealing with the correct objects
-    this.data_last_24_hours = props.stats.monitoree_snapshots.find(x => x.time_frame === 'Last 24 Hours');
-    this.data_last_14_days = props.stats.monitoree_snapshots.find(x => x.time_frame === 'Last 14 Days');
-    this.data_total = props.stats.monitoree_snapshots.find(x => x.time_frame === 'Total');
+    console.log(props);
+    this.tableData = WORKFLOWS.map(workflow => {
+      return MONITOREE_FLOW_HEADERS.map(time_frame => {
+        let thisTimeFrameData = props.stats.monitoree_snapshots.find(
+          monitoree_snapshot => monitoree_snapshot.status === workflow && monitoree_snapshot.time_frame === time_frame
+        );
+        return {
+          time_frame,
+          new_enrollments: thisTimeFrameData.new_enrollments,
+          transferred_in: thisTimeFrameData.transferred_in,
+          closed: thisTimeFrameData.closed,
+          transferred_out: thisTimeFrameData.transferred_out,
+        };
+      });
+    });
+    console.log(this.tableData);
+    this.selectedWorkflow = this.tableData[0];
   }
 
   render() {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <Card.Header as="h5" className="text-left">
-            Monitoree Flow Over Time
-          </Card.Header>
-          <Card.Body className="card-body">
-            <Row className="mx-md-5 mx-lg-0">
-              {/* Any height: 0px <tr>s are to ensure proper Bootstrap striping. */}
-              <Table striped borderless>
-                <thead>
+          <div className="analytics-card-header font-weight-bold h5"> Monitoree Flow Over Time ​</div>
+          <Card.Body className="mt-4">
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {MONITOREE_FLOW_HEADERS.map((monitoreeFlowHeader, index) => (
+                    <th key={index}> {monitoreeFlowHeader} </th>
+                  ))}
+                </tr>
+              </thead>
+              {this.tableData.map((data, index) => (
+                <tbody key={index}>
                   <tr>
-                    <th className="py-0"></th>
-                    <th className="py-0"> Last 24 Hours </th>
-                    <th className="py-0"> Last 14 Days </th>
-                    <th className="py-0"> Total </th>
+                    <td className="font-weight-bold text-left p-0">
+                      <u>{_.upperCase(WORKFLOWS[Number(index)])} WORKFLOW</u>{' '}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  <tr style={{ height: '0px' }}></tr>
-                  <tr>
-                    <td className="py-1 font-weight-bold text-left">
+                  <tr style={{ height: '20px' }}>
+                    <td className="font-weight-bold text-left analytics-mf-subheader">
                       <u>INCOMING</u>{' '}
                     </td>
                   </tr>
-                  <tr>
+                  <tr className="analytics-zebra-bg">
                     <td className="text-right">NEW ENROLLMENTS</td>
-                    <td>{this.data_last_24_hours.new_enrollments}</td>
-                    <td>{this.data_last_14_days.new_enrollments}</td>
-                    <td>{this.data_total.new_enrollments}</td>
+                    {data.map((x, index) => (
+                      <td key={index}>{x.new_enrollments}</td>
+                    ))}
                   </tr>
                   <tr>
                     <td className="text-right">TRANSFERRED IN</td>
-                    <td>{this.data_last_24_hours.transferred_in}</td>
-                    <td>{this.data_last_14_days.transferred_in}</td>
-                    <td>{this.data_total.transferred_in}</td>
+                    {data.map((x, index) => (
+                      <td key={index}>{x.transferred_in}</td>
+                    ))}
                   </tr>
-                  <tr style={{ height: '0px' }}></tr>
-                  <tr>
-                    <td className="py-1 font-weight-bold text-left">
+                  <tr style={{ height: '20px' }}>
+                    <td className="font-weight-bold text-left analytics-mf-subheader">
                       <u>OUTGOING</u>{' '}
                     </td>
                   </tr>
-                  <tr className="pt-5">
+                  <tr className="analytics-zebra-bg">
                     <td className="text-right">CLOSED</td>
-                    <td>{this.data_last_24_hours.closed}</td>
-                    <td>{this.data_last_14_days.closed}</td>
-                    <td>{this.data_total.closed}</td>
+                    {data.map((x, index) => (
+                      <td key={index}>{x.closed}</td>
+                    ))}
                   </tr>
                   <tr>
                     <td className="text-right">TRANSFERRED OUT</td>
-                    <td>{this.data_last_24_hours.transferred_out}</td>
-                    <td>{this.data_last_14_days.transferred_out}</td>
-                    <td>{this.data_total.transferred_out}</td>
+                    {data.map((x, index) => (
+                      <td key={index}>{x.transferred_out}</td>
+                    ))}
                   </tr>
                 </tbody>
-              </Table>
-            </Row>
+              ))}
+            </table>
           </Card.Body>
         </Card>
       </React.Fragment>
