@@ -13,16 +13,7 @@ class Patient extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showCaseInfo: props?.details?.isolation || (!props?.details?.isolation && props?.details?.exposure_notes),
       expandNotes: false,
-      hasRiskFactors:
-        props?.details?.contact_of_known_case ||
-        props?.details?.member_of_a_common_exposure_cohort ||
-        props?.details?.travel_to_affected_country_or_area ||
-        props?.details?.was_in_health_care_facility_with_known_cases ||
-        props?.details?.laboratory_personnel ||
-        props?.details?.healthcare_personnel ||
-        props?.details?.crew_on_passenger_or_cargo_flight,
     };
   }
 
@@ -38,6 +29,42 @@ class Patient extends React.Component {
     if (!this.props.details) {
       return <React.Fragment>No monitoree details to show.</React.Fragment>;
     }
+
+    const showDomesticAddress =
+      this.props.details.address_line_1 ||
+      this.props.details.address_line_2 ||
+      this.props.details.address_city ||
+      this.props.details.address_state ||
+      this.props.details.address_zip;
+    const showForeignAddress =
+      this.props.details.foreign_address_line_1 ||
+      this.props.details.foreign_address_line_2 ||
+      this.props.details.foreign_address_city ||
+      this.props.details.foreign_address_zip ||
+      this.props.details.foreign_address_country;
+    const showArrivalSection =
+      this.props.details.port_of_origin ||
+      this.props.details.date_of_departure ||
+      this.props.details.port_of_entry_into_usa ||
+      this.props.details.date_of_arrival ||
+      this.props.details.flight_or_vessel_carrier ||
+      this.props.details.flight_or_vessel_number;
+    const showPlannedTravel =
+      this.props.details.additional_planned_travel_type ||
+      this.props.details.additional_planned_travel_destination_country ||
+      this.props.details.additional_planned_travel_destination_state ||
+      this.props.details.additional_planned_travel_port_of_departure ||
+      this.props.details.additional_planned_travel_start_date ||
+      this.props.details.additional_planned_travel_end_date;
+    const showRiskFactors =
+      this.props.details.contact_of_known_case ||
+      this.props.details.member_of_a_common_exposure_cohort ||
+      this.props.details.travel_to_affected_country_or_area ||
+      this.props.details.was_in_health_care_facility_with_known_cases ||
+      this.props.details.laboratory_personnel ||
+      this.props.details.healthcare_personnel ||
+      this.props.details.crew_on_passenger_or_cargo_flight;
+
     return (
       <React.Fragment>
         <Row id="monitoree-details-header">
@@ -251,11 +278,7 @@ class Patient extends React.Component {
                         <b>HOME ADDRESS</b>
                       </Col>
                     </Row>
-                    {(this.props.details.address_line_1 ||
-                      this.props.details.address_line_2 ||
-                      this.props.details.address_city ||
-                      this.props.details.address_state ||
-                      this.props.details.address_zip) && (
+                    {showDomesticAddress && (
                       <React.Fragment>
                         <Row>
                           <Col>
@@ -280,11 +303,7 @@ class Patient extends React.Component {
                         </Row>
                       </React.Fragment>
                     )}
-                    {(this.props.details.foreign_address_line_1 ||
-                      this.props.details.foreign_address_line_2 ||
-                      this.props.details.foreign_address_city ||
-                      this.props.details.foreign_address_zip ||
-                      this.props.details.foreign_address_country) && (
+                    {showForeignAddress && (
                       <React.Fragment>
                         <Row>
                           <Col>
@@ -333,12 +352,12 @@ class Patient extends React.Component {
                   </Col>
                 </Row>
                 <Row>
-                  {!this.props.details.port_of_origin && !this.props.details.port_of_entry_into_usa && (
+                  {!showArrivalSection && (
                     <Col className="text-truncate">
                       <span className="none-text">None</span>
                     </Col>
                   )}
-                  {(this.props.details.port_of_origin || this.props.details.port_of_entry_into_usa) && (
+                  {showArrivalSection && (
                     <React.Fragment>
                       <Col>
                         <Row>
@@ -424,8 +443,8 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col className="text-truncate">
-                    {!this.props.details.additional_planned_travel_type && <span className="none-text">None</span>}
-                    {this.props.details.additional_planned_travel_type && (
+                    {!showPlannedTravel && <span className="none-text">None</span>}
+                    {showPlannedTravel && (
                       <React.Fragment>
                         <Row>
                           <Col>
@@ -514,8 +533,8 @@ class Patient extends React.Component {
                         <b>Risk Factors</b>
                       </Col>
                     </Row>
-                    {!this.state.hasRiskFactors && <span className="none-text">None</span>}
-                    {this.state.hasRiskFactors && (
+                    {!showRiskFactors && <span className="none-text">None</span>}
+                    {showRiskFactors && (
                       <React.Fragment>
                         {this.props.details.contact_of_known_case && (
                           <Row>
@@ -631,7 +650,7 @@ class Patient extends React.Component {
                 </Row>
               </Col>
             </Row>
-            {this.state.showCaseInfo && (
+            {(this.props.details.isolation || (!this.props.details.isolation && this.props.details.exposure_notes)) && (
               <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
                 <Col id="case-information" md="12">
                   <Row>
