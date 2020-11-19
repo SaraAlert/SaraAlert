@@ -14,7 +14,7 @@ const RACES = [
   'Asian',
   'American Indian or Alaska Native',
   'Native Hawaiian or Other Pacific Islander',
-  'Biracial',
+  'More Than One Race',
   'Unknown',
 ];
 const SEXUAL_ORIENTATIONS = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'];
