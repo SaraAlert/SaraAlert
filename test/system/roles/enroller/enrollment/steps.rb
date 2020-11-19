@@ -53,7 +53,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'foreign_monitored_address_zip', type: 'text', required: false, info_page: false, tab: 'Home Address Outside USA (Foreign)' },
         { id: 'foreign_monitored_address_county', type: 'text', required: false, info_page: false, tab: 'Home Address Outside USA (Foreign)' }
       ],
-      contact_info: [
+      contact_information: [
         { id: 'preferred_contact_method', type: 'select', required: true, info_page: false },
         { id: 'preferred_contact_time', type: 'select', required: false, info_page: true },
         { id: 'primary_telephone', type: 'phone', required: false, info_page: true },
@@ -63,7 +63,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'email', type: 'text', required: false, info_page: true },
         { id: 'confirm_email', type: 'text', required: false, info_page: false }
       ],
-      arrival_info: [
+      arrival_information: [
         { id: 'port_of_origin', type: 'text', required: false, info_page: true },
         { id: 'date_of_departure', type: 'date', required: false, info_page: true },
         { id: 'source_of_report', type: 'select', required: false, info_page: false },
@@ -73,7 +73,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'date_of_arrival', type: 'date', required: false, info_page: true },
         { id: 'travel_related_notes', type: 'text', required: false, info_page: false }
       ],
-      additional_planned_travel: [
+      planned_travel: [
         { id: 'additional_planned_travel_type', type: 'select', required: false, info_page: true },
         { id: 'additional_planned_travel_destination', type: 'text', required: false, info_page: false },
         { id: 'additional_planned_travel_destination_state', type: 'select', required: false, info_page: true },
@@ -84,7 +84,7 @@ class EnrollmentFormSteps < ApplicationSystemTestCase
         { id: 'additional_planned_travel_end_date', type: 'date', required: false, info_page: true },
         { id: 'additional_planned_travel_related_notes', type: 'text', required: false, info_page: false }
       ],
-      potential_exposure_info: [
+      potential_exposure_information: [
         { id: 'last_date_of_exposure', type: 'current_date', required: true, info_page: true },
         { id: 'potential_exposure_location', type: 'text', required: false, info_page: true },
         { id: 'potential_exposure_country', type: 'select', required: false, info_page: true },
