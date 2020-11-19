@@ -100,10 +100,10 @@
       <tbody>
         <% @patient.assessments.order('created_at').each do |assessment| -%>
         <% if assessment.symptomatic %>
-          <tr class="table-danger">
-        <% else %>
-          <tr>
-        <% end %>
+        <tr class="table-danger">
+          <% else %>
+        <tr>
+          <% end %>
           <td><%= assessment.id %></td>
           <% unless @patient.isolation %>
           <td><% if assessment.symptomatic %>Yes<% else %>No<% end %></td>
@@ -248,7 +248,7 @@
         <tr>
           <td><%= cc.first_name %></td>
           <td><%= cc.last_name %></td>
-          <td><%= cc.primary_telephone %></td>
+          <td><%= cc.primary_telephone&.gsub('+1', '')&.gsub(/\D/, '')&.insert(3, '-')&.insert(7, '-') %></td>
           <td><%= cc.email %></td>
           <td><%= cc.contact_attempts %></td>
           <td>
@@ -270,7 +270,7 @@
 <% end %>
 
 <% if current_user.can_modify_subject_status? %>
-  <%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
+<%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
 <% end %>
 
 <script>
