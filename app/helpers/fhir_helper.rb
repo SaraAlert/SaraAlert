@@ -6,14 +6,16 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   # extensions for sex, race, and ethnicity.
   # https://www.hl7.org/fhir/us/core/StructureDefinition-us-core-patient.html
   def patient_as_fhir(patient)
+    return nil if patient.nil?
+
     creator_agent_ref = FHIR::Reference.new
-    creator_app = OauthApplication.where(user_id: patient.creator.id).first
-    if creator_app
+    if patient.creator.is_api_proxy
       # Created with an M2M workflow client
+      creator_app = OauthApplication.find_by(user_id: patient.creator.id)
       creator_agent_ref.identifier = FHIR::Identifier.new(value: creator_app.uid)
       creator_agent_ref.display = creator_app.name
     else
-      # Created with a user worfklow client
+      # Created with a user worfklow client or a human user
       creator_agent_ref.identifier = FHIR::Identifier.new(value: patient.creator.id)
       creator_agent_ref.display = patient.creator.email
     end
