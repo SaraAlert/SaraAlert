@@ -18,13 +18,14 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     end
 
     options.add_preference('download.default_directory', download_path)
+    options.add_argument('window-size=1920,1080')
 
     Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
   end
 
   begin
-    driven_by driver, using: :chrome, screen_size: [1400, 1400]
+    driven_by driver, using: :chrome
   rescue Webdrivers::BrowserNotFound
-    driven_by :selenium, using: :firefox, screen_size: [1400, 1400]
+    driven_by :selenium, using: :firefox
   end
 end
