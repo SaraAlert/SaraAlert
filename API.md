@@ -1659,11 +1659,13 @@ On success, the server will return the newly created resource with an id. This i
 ### Updating
 An update request creates a new current version for an existing resource.
 
-**PLEASE NOTE:** The API supports `PUT` and `PATCH` requests, which update an existing resource in different ways. A `PUT` request will replace the entire existing resource. This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with `nil` values. A `PATCH` request will only modify the attributes indicated in the request, which must follow the [JSON Patch specification](https://tools.ietf.org/html/rfc6902). Omitted attributes are unchanged.
+**PLEASE NOTE:** The API supports `PUT` and `PATCH` requests, which update an existing resource in different ways. A `PUT` request will replace the entire existing resource. This means that if certain attributes of the resource are omitted in the `PUT` requests, they will be replaced with null values. A `PATCH` request will only modify the attributes indicated in the request, which must follow the [JSON Patch specification](https://tools.ietf.org/html/rfc6902). Omitted attributes are unchanged. For further details on the contents of a `PATCH` request, see the [JSON Patch documentation](http://jsonpatch.com/).
 
 <a name="update-put-pat"/>
 
 #### PUT `[base]/Patient/[:id]`
+
+**NOTE:** This is a `PUT` operation, it will replace the entire resource. If you intend to modify specific attributes instead, see [PATCH](#update-patch-pat).
 
 #### Request Body
 
@@ -2071,6 +2073,8 @@ On success, the server will update the existing resource given the id.
 <a name="update-patch-pat"/>
 
 #### PATCH `[base]/Patient/[:id]`
+
+**NOTE:** This is a `PATCH` operation, it will only modify specified attributes. If you intend to replace the entire resource instead, see [PUT](#update-put-pat).
 
 #### Request Body
 
