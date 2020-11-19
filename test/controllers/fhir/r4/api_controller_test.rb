@@ -143,7 +143,8 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
       jurisdiction: Jurisdiction.find_by(id: 2),
       force_password_change: false,
       api_enabled: true,
-      role: 'public_health_enroller'
+      role: 'public_health_enroller',
+      is_api_proxy: true
     )
     shadow_user.lock_access!
 
