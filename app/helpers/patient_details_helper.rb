@@ -69,9 +69,6 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       american_indian_or_alaska_native: american_indian_or_alaska_native || false,
       asian: asian || false,
       native_hawaiian_or_other_pacific_islander: native_hawaiian_or_other_pacific_islander || false,
-      race_unknown: race_unknown || false,
-      race_other: race_other || false,
-      race_refused_to_answer: race_refused_to_answer || false,
       ethnicity: ethnicity || '',
       primary_language: primary_language || '',
       secondary_language: secondary_language || '',
@@ -160,7 +157,10 @@ module PatientDetailsHelper # rubocop:todo Metrics/ModuleLength
       jurisdiction_path: jurisdiction[:path] || '',
       assigned_user: assigned_user || '',
       gender_identity: gender_identity || '',
-      sexual_orientation: sexual_orientation || ''
+      sexual_orientation: sexual_orientation || '',
+      race_unknown: race_unknown || false,
+      race_other: race_other || false,
+      race_refused_to_answer: race_refused_to_answer || false
     }
   end
 end
