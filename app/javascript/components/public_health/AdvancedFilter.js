@@ -247,7 +247,7 @@ class AdvancedFilter extends React.Component {
       value = {
         number: 0,
         operator: 'equal',
-        option: filterOption.options ? filterOption[0] : null,
+        option: filterOption.options ? filterOption.options[0] : null,
       };
     } else if (filterOption.type === 'date') {
       // Default to "within" type
