@@ -343,6 +343,8 @@ class Patient < ApplicationRecord
     where(monitoring: true)
       .where(purged: false)
       .where('latest_assessment_at >= ?', 60.minutes.ago)
+      .where(public_health_action: 'None')
+      .where.not(symptom_onset: nil)
       .distinct
   }
 

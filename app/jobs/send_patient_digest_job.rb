@@ -10,7 +10,7 @@ class SendPatientDigestJob < ApplicationJob
       if jur.send_digest
         jurisdiction_patients = jur.all_patients.recently_symptomatic
         jurisdiction_addressees = User.where(jurisdiction_id: jur.id, role: %w[super_user public_health public_health_enroller])
-        jurisdiction_addressees.each do |user|
+        jurisdiction_addressees.find_each do |user|
           eligible = jurisdiction_patients.count
           UserMailer.send_patient_digest_job_email(jurisdiction_patients, user, eligible).deliver_now
         end
