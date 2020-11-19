@@ -280,14 +280,13 @@ class Patient extends React.Component {
                         </Col>
                       </Row>
                     )}
-                    {showDomesticAddress ||
-                      (showForeignAddress && (
-                        <Row className="py-1">
-                          <Col>
-                            <b>HOME ADDRESS</b>
-                          </Col>
-                        </Row>
-                      ))}
+                    {(showDomesticAddress || showForeignAddress) && (
+                      <Row className="py-1">
+                        <Col>
+                          <b>HOME ADDRESS</b>
+                        </Col>
+                      </Row>
+                    )}
                     {showDomesticAddress && (
                       <React.Fragment>
                         <Row>
