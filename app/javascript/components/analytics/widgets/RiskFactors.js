@@ -1,100 +1,49 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Table, Button, Row, Col } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import Switch from 'react-switch';
 import _ from 'lodash';
 
-const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
-let RISK_FACTORS = [];
-let COUNTRIES_OF_INTEREST = []; // If certain countries are desired, they can be specified here
-const NUMBER_OF_COUNTRIES_TO_SHOW = 5;
+const WORKFLOWS = ['Exposure', 'Isolation'];
+const RISKFACTORS = [
+  'Close Contact with Known Case',
+  'Travel from Affected Country or Area',
+  'Was in Healthcare Facility with Known Cases',
+  'Healthcare Personnel',
+  'Common Exposure Cohort',
+  'Crew on Passenger or Cargo Flight',
+  'Laboratory Personnel',
+];
+const NUM_COUNTRIES_TO_SHOW = 5;
 
 class RiskFactors extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { checked: false, viewTotal: this.props.viewTotal };
-    this.exportFullCountryData = this.exportFullCountryData.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
-    this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
-    this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
-    this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
-    this.NO_COUNTRY_DATA = false;
-    COUNTRIES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).sort();
-    COUNTRIES_OF_INTEREST = [...COUNTRIES_OF_INTEREST.filter(riskFactor => riskFactor !== 'Total'), 'Total']; // Risk Factor has a category of Total
-    // // COUNTRIES_OF_INTEREST = COUNTRIES_OF_INTEREST.filter(country => country !== 'Total');
-    RISK_FACTORS = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === 'Risk Factor').map(x => x.category)).sort();
-    RISK_FACTORS = [...RISK_FACTORS.filter(riskFactor => riskFactor !== 'Total'), 'Total']; // Risk Factor has a category of Total
-    // This complex looking statement essentially removes the hardcoded string Total from the array, and makes sure that it is at the end
-    // So that the UI shows Total at the bottom of the table
-    if (!this.ERRORS) {
-      this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', this.state.viewTotal);
-      this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
-      this.coiData = this.coiData.filter(data => data.name && data.name != null);
-      this.NO_COUNTRY_DATA = this.coiData.length === 0;
-      this.fullCountryData = JSON.parse(JSON.stringify(this.coiData));
-      // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
-      // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
-      // for each country, then sort them, then take the top NUMBER_OF_COUNTRIES_TO_SHOW.
-      this.coiData = this.coiData
-        .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
-        .slice(0, NUMBER_OF_COUNTRIES_TO_SHOW + 1); // the +1 is for one extra row for `Total`
-      // 'Total' will always the most number of monitorees, so it will be at [0]
-      // This array/spread creation essentially just reorders 'Total' to be at the bottom
-      this.coiData = [...this.coiData.slice(1, 6), this.coiData[0]];
-    }
-  }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.viewTotal !== prevProps.viewTotal) {
-      this.toggleBetweenActiveAndTotal(this.props.viewTotal);
-    }
-  }
-
-  obtainValueFromMonitoreeCounts(enumerations, category_type, onlyActive) {
-    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === onlyActive);
-    let categoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
-    return enumerations.map(x => {
-      let thisGroup = categoryGroups.filter(group => group.category === x);
-      let retVal = { name: x, total: 0 };
-      RISKLEVELS.forEach(val => {
-        retVal[String(val)] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
-        retVal.total += _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
-      });
-      return retVal;
+    let topTenCountries = _.uniq(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).map(country => {
+      return {
+        country,
+        total: _.sum(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country' && x.category === country).map(x => x.total)),
+      };
     });
+    this.COUNTRY_HEADERS = topTenCountries
+      .sort((a, b) => b.total - a.total)
+      .map(x => x.country)
+      .slice(0, NUM_COUNTRIES_TO_SHOW);
+
+    this.rfData = this.parseOutFields(RISKFACTORS, 'Risk Factor');
+    this.countryData = this.parseOutFields(this.COUNTRY_HEADERS, 'Exposure Country');
   }
 
-  exportFullCountryData = () => {
-    let entryArray = this.fullCountryData.map(x => _.join(_.valuesIn(x).map(y => _.startCase(y))));
-    let contentString = _.join(entryArray, '\n');
-    let headerString = _.join(_.keysIn(this.fullCountryData[0]).map(x => _.startCase(x)));
-    let csvContent = _.join([headerString, contentString], '\n');
-    const url = window.URL.createObjectURL(new Blob([csvContent]));
-    const link = document.createElement('a');
-    link.href = url;
-    self.csvFileName = `CompleteCountryData.csv`;
-    link.setAttribute('download', `${self.csvFileName}`);
-    document.body.appendChild(link);
-    link.click();
-  };
-  handleChange = checked => this.setState({ checked });
+  parseOutFields = (masterList, categoryTypeName) =>
+    masterList
+      .map(ml =>
+        WORKFLOWS.map(
+          wf => this.props.stats.monitoree_counts.find(x => x.status === wf && x.category_type === categoryTypeName && x.category === ml)?.total || 0
+        )
+      )
+      .map(x => x.concat(_.sum(x)));
 
-  toggleBetweenActiveAndTotal = viewTotal => {
-    this.riskData = this.obtainValueFromMonitoreeCounts(RISK_FACTORS, 'Risk Factor', viewTotal);
-    this.coiData = this.obtainValueFromMonitoreeCounts(COUNTRIES_OF_INTEREST, 'Exposure Country', this.state.viewTotal);
-    this.fullCountryData = JSON.parse(JSON.stringify(this.coiData));
-    // obtainValueFromMonitoreeCounts returns the data in a format that recharts can read
-    // but is not the easiest to parse. The gross lodash functions here just sum the total count of each category
-    // for each country, then sort them, then take the top NUMBER_OF_COUNTRIES_TO_SHOW.
-    this.coiData = this.coiData
-      .sort((v1, v2) => _.sumBy(_.valuesIn(v2), a => (isNaN(a) ? 0 : a)) - _.sumBy(_.valuesIn(v1), a => (isNaN(a) ? 0 : a)))
-      .slice(0, NUMBER_OF_COUNTRIES_TO_SHOW + 1); // the +1 is for one extra row for `Total`
-    // 'Total' will always the most number of monitorees, so it will be at [0]
-    // This array/spread creation essentially just reorders 'Total' to be at the bottom
-    this.coiData = [...this.coiData.slice(1, 6), this.coiData[0]];
-  };
   renderBarGraph() {
     return (
       <div className="mx-3 mt-2">
@@ -102,7 +51,7 @@ class RiskFactors extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.riskData.filter(x => x.name !== 'Total')}
+            data={{}}
             margin={{
               top: 20,
               right: 30,
@@ -125,7 +74,7 @@ class RiskFactors extends React.Component {
           <BarChart
             width={500}
             height={300}
-            data={this.coiData.filter(x => x.name !== 'Total')}
+            data={this.sexData}
             margin={{
               top: 20,
               right: 30,
@@ -148,116 +97,63 @@ class RiskFactors extends React.Component {
     );
   }
 
-  renderTable() {
-    return (
-      <div>
-        <h4 className="text-left">Exposure Risk Factors</h4>
-        <Table striped hover className="border mt-2 mb-0">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {RISK_FACTORS.map(riskGroup => (
-              <tr key={riskGroup.toString() + '1'}>
-                <td key={riskGroup.toString() + '2'} className="font-weight-bold">
-                  {riskGroup}
-                </td>
-                {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={riskGroup.toString() + risklevelIndex.toString()}>{this.riskData.find(x => x.name === riskGroup)[String(risklevel)]}</td>
-                ))}
-                <td>{this.riskData.find(x => x.name === riskGroup)['total']}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <div className="text-secondary text-right mb-3">
-          <i className="fas fa-info-circle mr-1"></i>
-          Cumulative percentage may not sum to 100 as monitorees may report more than one exposure risk factor
-        </div>
-        {this.NO_COUNTRY_DATA ? (
-          <div>
-            <Row>
-              <Col className="h4 text-left">Country of Exposure</Col>
-            </Row>
-            <div className="text-info display-6"> No Country Data Available </div>
-          </div>
-        ) : (
-          <div>
-            <Row>
-              <Col className="h4 text-left">Country of Exposure</Col>
-              <Col className="text-right">
-                <Button variant="primary" className="ml-2 btn-square" onClick={this.exportFullCountryData}>
-                  <i className="fas fa-download mr-1"></i>
-                  Export Complete Country Data
-                </Button>
-              </Col>
-            </Row>
-            <Table striped hover className="border mt-2 mb-0">
-              <thead>
-                <tr>
-                  <th></th>
-                  {RISKLEVELS.map(risklevel => (
-                    <th key={risklevel.toString()}>{risklevel}</th>
-                  ))}
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.coiData
-                  .map(x => x.name)
-                  .map(coiGroup => (
-                    <tr key={coiGroup.toString() + '1'}>
-                      <td key={coiGroup.toString() + '2'} className="font-weight-bold">
-                        {coiGroup}
-                      </td>
-                      {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                        <td key={coiGroup.toString() + risklevelIndex.toString()}>{this.coiData.find(x => x.name === coiGroup)[String(risklevel)]}</td>
-                      ))}
-                      <td>{this.coiData.find(x => x.name === coiGroup)['total']}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </Table>
-            <div className="text-secondary text-right mb-3">
-              <i className="fas fa-info-circle mr-1"></i>
-              Excludes monitorees where exposure country is not reported
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  renderErrors() {
-    return <div className="text-danger display-6"> ERROR: {this.ERRORSTRING}. </div>;
-  }
-
-  renderCard() {
-    return (
-      <span>
-        <div className="text-right">
-          <span className="mr-2 display-6"> View Data as Graph </span>
-          <Switch onChange={this.handleChange} onColor="#82A0E4" height={18} width={40} uncheckedIcon={false} checked={this.state.checked} />
-        </div>
-        {this.state.checked ? this.renderBarGraph() : this.renderTable()}
-      </span>
-    );
-  }
-
   render() {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <Card.Header as="h5" className="text-left">
-            Among Those {this.state.viewTotal ? 'Ever Monitored (includes current)' : 'Currently Under Active Monitoring'}
-          </Card.Header>
-          <Card.Body>{this.ERRORS ? this.renderErrors() : this.renderCard()}</Card.Body>
+          <div className="analytics-card-header font-weight-bold h5"> Demographics ​</div>
+          <Card.Body className="mt-5">
+            <h4 className="text-left"> Risk Factors </h4>
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {WORKFLOWS.map((header, index) => (
+                    <th key={index} className="font-weight-bold">
+                      {' '}
+                      <u>{_.upperCase(header)}</u>{' '}
+                    </th>
+                  ))}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              {RISKFACTORS.map((val, index1) => (
+                <tbody key={`workflow-table-${index1}`}>
+                  <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
+                    <td className="font-weight-bold"> {val} </td>
+                    {this.rfData[Number(index1)].map((data, subIndex1) => (
+                      <td key={subIndex1}> {data} </td>
+                    ))}
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+            <h4 className="text-left mt-3"> Country of Exposure </h4>
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {WORKFLOWS.map((header, index) => (
+                    <th key={index} className="font-weight-bold">
+                      {' '}
+                      <u>{_.upperCase(header)}</u>{' '}
+                    </th>
+                  ))}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              {this.COUNTRY_HEADERS.map((val, index2) => (
+                <tbody key={`workflow-table-${index2}`}>
+                  <tr className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
+                    <td className="font-weight-bold"> {val} </td>
+                    {this.countryData[Number(index2)].map((data, subIndex2) => (
+                      <td key={subIndex2}> {data} </td>
+                    ))}
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+          </Card.Body>
         </Card>
       </React.Fragment>
     );
@@ -266,7 +162,6 @@ class RiskFactors extends React.Component {
 
 RiskFactors.propTypes = {
   stats: PropTypes.object,
-  viewTotal: PropTypes.bool,
 };
 
 export default RiskFactors;

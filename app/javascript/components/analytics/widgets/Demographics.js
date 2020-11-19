@@ -5,7 +5,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import _ from 'lodash';
 
 const WORKFLOWS = ['Exposure', 'Isolation'];
-const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80'];
+const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80', 'FAKE_BIRTHDATE'];
 const SEXES = ['Male', 'Female', 'Unknown'];
 const ETHNICITIES = ['Hispanic or Latino', 'Not Hispanic or Latino'];
 const RACES = [
@@ -27,6 +27,19 @@ class Demographics extends React.Component {
     this.ethnicityData = this.parseOutFields(ETHNICITIES, 'Ethnicity');
     this.raceData = this.parseOutFields(RACES, 'Race');
     this.soData = this.parseOutFields(SEXUAL_ORIENTATIONS, 'Sexual Orientation');
+    this.hasFakeBirthdateData = false;
+    this.numberOfFakeBirthdates = 0;
+
+    if (_.last(_.last(this.ageData)) !== 0) {
+      // Meaning we have monitorees with fake birthdates
+      this.hasFakeBirthdateData = true;
+      this.numberOfFakeBirthdates = _.last(_.last(this.ageData));
+      let indexOfGreaterThan80 = AGEGROUPS.findIndex(x => x === '>=80');
+      // This overly complex statement just adds every value from the `110+` fields to the `>=80` fields
+      this.ageData[Number(indexOfGreaterThan80)] = this.ageData[Number(indexOfGreaterThan80)].map(
+        (x, i) => this.ageData[Number(indexOfGreaterThan80)][Number(i)] + _.last(this.ageData)[Number(i)]
+      );
+    }
   }
 
   parseOutFields = (masterList, categoryTypeName) =>
@@ -111,7 +124,7 @@ class Demographics extends React.Component {
                   <th>Total</th>
                 </tr>
               </thead>
-              {AGEGROUPS.map((val, index1) => (
+              {_.initial(AGEGROUPS).map((val, index1) => (
                 <tbody key={`workflow-table-${index1}`}>
                   <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
                     <td className="font-weight-bold"> {val} </td>
@@ -122,6 +135,12 @@ class Demographics extends React.Component {
                 </tbody>
               ))}
             </table>
+            {this.hasFakeBirthdateData && (
+              <div className="text-secondary fake-demographic-text mb-3">
+                <i className="fas fa-info-circle mr-3"></i>
+                &gt;=80 years category includes {this.numberOfFakeBirthdates} monitorees where age is greater than 110.
+              </div>
+            )}
             <h4 className="text-left mt-3 mb-n1">Sex</h4>
             <table className="analytics-table">
               <thead>
