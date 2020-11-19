@@ -28,7 +28,6 @@ This API is intended for use by public health organizations using Sara Alert, an
 	  - [GET [base]/QuestionaireResponse/[:id]](#read-get-que)
 	  - [GET [base]/Patient/[:id]/$everything](#read-get-all)
 	- [Creating](#create)
-	  - [Extensions](#create-ext)
 	  - [POST [base]/Patient](#create-post-pat)
 	- [Updating](#update)
 	  - [PUT [base]/Patient/[:id]](#update-put-pat)
