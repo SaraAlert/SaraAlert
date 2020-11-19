@@ -27,6 +27,7 @@ class CacheAnalyticsJob < ApplicationJob
     UserMailer.cache_analytics_job_email(cached, not_cached, Jurisdiction.count).deliver_now
   end
 
+  WORKFLOWS = ['Exposure', 'Isolation']
   MONITORING_STATUSES ||= %w[Symptomatic Non-Reporting Asymptomatic].freeze
   LINELIST_STATUSES = ['Exposure Symptomatic','Exposure Non-Reporting','Exposure Asymptomatic','Exposure PUI','Isolation Requiring Review','Isolation Non-Reporting','Isolation Reporting'].freeze
   RISK_FACTORS ||= {
@@ -56,10 +57,11 @@ class CacheAnalyticsJob < ApplicationJob
     counts.concat(monitoree_counts_by_monitoring_status(analytic_id, monitorees))
 
     # Active and overall counts for epidemiological summary
-    counts.concat(monitoree_counts_by_age_group(analytic_id, monitorees, true))
-    counts.concat(monitoree_counts_by_age_group(analytic_id, monitorees, false))
-    counts.concat(monitoree_counts_by_sex(analytic_id, monitorees, true))
-    counts.concat(monitoree_counts_by_sex(analytic_id, monitorees, false))
+    counts.concat(monitoree_counts_by_age_group(analytic_id, monitorees))
+    counts.concat(monitoree_counts_by_sex(analytic_id, monitorees))
+    counts.concat(monitoree_counts_by_ethnicity(analytic_id, monitorees))
+    counts.concat(monitoree_counts_by_race(analytic_id, monitorees))
+    counts.concat(monitoree_counts_by_sexual_orientation(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_reporting_method(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees, true))
     counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees, false))
@@ -104,7 +106,8 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   # Monitoree counts by age group
-  def self.monitoree_counts_by_age_group(analytic_id, monitorees, active_monitoring)
+  def self.monitoree_counts_by_age_group(analytic_id, monitorees)
+    counts = []
     age_groups = <<-SQL
       CASE
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 20 THEN '0-19'
@@ -117,24 +120,91 @@ class CacheAnalyticsJob < ApplicationJob
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 80 THEN '>=80'
       END
     SQL
-    monitorees.monitoring_active(active_monitoring)
-              .group(age_groups, :exposure_risk_assessment)
-              .order(Arel.sql(age_groups), :exposure_risk_assessment)
-              .size
-              .map do |(age_group, risk), total|
-                monitoree_count(analytic_id, active_monitoring, 'Age Group', age_group, risk, total)
-              end
+    WORKFLOWS.map do |workflow|
+      monitorees.where(isolation: workflow == 'Isolation').monitoring_active(true)
+                .group(age_groups)
+                .order(Arel.sql(age_groups))
+                .size
+                .map do |(age_group), total|
+                  counts.append(monitoree_count(analytic_id, true, 'Age Group', age_group, nil, total, workflow))
+                end
+    end
+    counts
   end
 
   # Monitoree counts by sex
-  def self.monitoree_counts_by_sex(analytic_id, monitorees, active_monitoring)
-    monitorees.monitoring_active(active_monitoring)
-              .group(:sex, :exposure_risk_assessment)
-              .order(:sex, :exposure_risk_assessment)
-              .size
-              .map do |(sex, risk), total|
-                monitoree_count(analytic_id, active_monitoring, 'Sex', sex.nil? ? 'Missing' : sex, risk, total)
-              end
+  def self.monitoree_counts_by_sex(analytic_id, monitorees)
+    counts = []
+    WORKFLOWS.map do |workflow|
+      monitorees.where(isolation: workflow == 'Isolation').monitoring_active(true)
+                .group(:sex)
+                .order(:sex)
+                .size
+                .map do |sex, total|
+                  counts.append(monitoree_count(analytic_id, true, 'Sex', sex.nil? ? 'Missing' : sex, nil, total, workflow))
+                end
+    end
+    counts
+  end
+
+  # Monitoree counts by sexual orientation
+  def self.monitoree_counts_by_sexual_orientation(analytic_id, monitorees)
+    counts = []
+    WORKFLOWS.map do |workflow|
+      monitorees.where(isolation: workflow == 'Isolation').monitoring_active(true)
+                .group(:sexual_orientation)
+                .order(:sexual_orientation)
+                .size
+                .map do |sexual_orientation, total|
+                  counts.append(monitoree_count(analytic_id, true, 'Sexual Orientation', sexual_orientation.nil? ? 'Missing' : sexual_orientation, nil, total, workflow))
+                end
+    end
+    counts
+  end
+
+  # Monitoree counts by race
+  def self.monitoree_counts_by_race(analytic_id, monitorees)
+    counts = []
+    racial_groups = <<-SQL
+      (CASE
+        WHEN (COALESCE(white, 0) +
+              COALESCE(black_or_african_american, 0) +
+              COALESCE(asian, 0) +
+              COALESCE(american_indian_or_alaska_native, 0) +
+              COALESCE(native_hawaiian_or_other_pacific_islander, 0) > 1) THEN "Biracial"
+        WHEN (white = 1) THEN "White"
+        WHEN (black_or_african_american = 1) THEN "Black or African American"
+        WHEN (asian = 1) THEN "Asian"
+        WHEN (american_indian_or_alaska_native = 1) THEN "American Indian or Alaska Native"
+        WHEN (native_hawaiian_or_other_pacific_islander = 1) THEN "Native Hawaiian or Other Pacific Islander"
+        ELSE "Unknown"
+      END)
+    SQL
+    WORKFLOWS.map do |workflow|
+      monitorees.where(isolation: workflow == 'Isolation').monitoring_active(true)
+                .group(racial_groups)
+                .order(Arel.sql(racial_groups))
+                .size
+                .map do |racial_group, total|
+                  counts.append(monitoree_count(analytic_id, true, 'Race', racial_group.nil? ? 'Missing' : racial_group, nil, total, workflow))
+                end
+    end
+    counts
+  end
+
+  # Monitoree counts by ethnicity
+  def self.monitoree_counts_by_ethnicity(analytic_id, monitorees)
+    counts = []
+    WORKFLOWS.map do |workflow|
+      monitorees.where(isolation: workflow == 'Isolation').monitoring_active(true)
+                .group(:ethnicity)
+                .order(:ethnicity)
+                .size
+                .map do |(ethnicity), total|
+                  counts.append(monitoree_count(analytic_id, true, 'Ethnicity', ethnicity.nil? ? 'Missing' : ethnicity, nil, total, workflow))
+                end
+    end
+    counts
   end
 
 # Monitoree counts by monitoring status (symptomatic, non-reporting, asymptomatic)
@@ -267,7 +337,7 @@ class CacheAnalyticsJob < ApplicationJob
   def self.all_monitoree_snapshots(analytic_id, monitorees, jurisdiction_id)
     counts = []
     MONITOREE_SNAPSHOT_TIME_FRAMES.map do |time_frame|
-      ['Exposure', 'Isolation'].map do |workflow|
+      WORKFLOWS.map do |workflow|
         counts.append(MonitoreeSnapshot.new(
           analytic_id: analytic_id,
           time_frame: time_frame,
