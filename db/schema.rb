@@ -353,9 +353,6 @@ ActiveRecord::Schema.define(version: 2020_11_16_214553) do
     t.string "sexual_orientation"
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
-    t.boolean "race_unknown"
-    t.boolean "race_other"
-    t.boolean "race_refused_to_answer"
     t.boolean "head_of_household"
     t.integer "contact_attempts", default: 0
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
