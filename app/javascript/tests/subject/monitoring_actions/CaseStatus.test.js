@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { Button, Modal, Form } from 'react-bootstrap';
 import CaseStatus from '../../../components/subject/monitoring_actions/CaseStatus'
 import InfoTooltip from '../../../components/util/InfoTooltip';
-import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4 } from '../../mocks/mockPatients';
+import { blankMockPatient, mockPatient1, mockPatient2, mockPatient3, mockPatient4, mockPatient5 } from '../../mocks/mockPatients';
 
 const authyToken = 'Q1z4yZXLdN+tZod6dBSIlMbZ3yWAUFdY44U06QWffEP76nx1WGMHIz8rYxEUZsl9sspS3ePF2ZNmSue8wFpJGg==';
 const caseStatusValues = [ '', 'Confirmed', 'Probable', 'Suspect', 'Unknown', 'Not a Case' ];
@@ -123,6 +123,19 @@ describe('CaseStatus', () => {
         expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
         expect(wrapper.state('isolation')).toBeFalsy();
         expect(modalBody.find('p').text()).toEqual('The case status for the selected record will be updated to Suspect.');
+    });
+
+    it('Correctly renders modal body and changes line list but not workflow when changing Case Status to Suspect, Unknown or Not A Case in the PUI line list of the exposure workflow', () => {
+        const wrapper = getWrapper(mockPatient5, false);
+        wrapper.find('#case_status').simulate('change', { target: { id: 'case_status', value: 'Suspect' }, persist: jest.fn() });
+        const modalBody = wrapper.find(Modal.Body);
+
+        expect(wrapper.state('showCaseStatusModal')).toBeTruthy();
+        expect(wrapper.state('showMonitoringDropdown')).toBeFalsy();
+        expect(wrapper.state('case_status')).toEqual('Suspect');
+        expect(wrapper.state('confirmedOrProbable')).toBeFalsy();
+        expect(wrapper.state('isolation')).toBeFalsy();
+        expect(modalBody.find('p').text()).toEqual('Are you sure you want to change case status to "Suspect"? The monitoree will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring and the Latest Public Health Action will be set to "None".');
     });
 
     it('Correctly renders modal body when changing Case Status to Confirmed or Probable (all other cases)', () => {
