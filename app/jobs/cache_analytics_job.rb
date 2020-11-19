@@ -63,10 +63,8 @@ class CacheAnalyticsJob < ApplicationJob
     counts.concat(monitoree_counts_by_race(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_sexual_orientation(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_reporting_method(analytic_id, monitorees))
-    counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees, true))
-    counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees, false))
-    counts.concat(monitoree_counts_by_exposure_country(analytic_id, monitorees, true))
-    counts.concat(monitoree_counts_by_exposure_country(analytic_id, monitorees, false))
+    counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees))
+    counts.concat(monitoree_counts_by_exposure_country(analytic_id, monitorees))
 
     # Active and overall counts for date of last exposure
     counts.concat(monitoree_counts_by_last_exposure_date(analytic_id, monitorees, true))
@@ -108,6 +106,10 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by age group
   def self.monitoree_counts_by_age_group(analytic_id, monitorees)
     counts = []
+    # Some jurisdictions are using `1-1-1900` as a "fake birthdate" where data might be invalid or unknown
+    # This can skew the `>=80` analytics data, so we collect the count of monitoree's over 110 years old
+    # And inform the user that that number is bundled in with `>=80`
+    # The client will perform the logic to combine the "FAKE_BIRTHDATE" in with `>=80`
     age_groups = <<-SQL
       CASE
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 20 THEN '0-19'
@@ -117,7 +119,8 @@ class CacheAnalyticsJob < ApplicationJob
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 50 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 60 THEN '50-59'
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 60 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 70 THEN '60-69'
         WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 70 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 80 THEN '70-79'
-        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 80 THEN '>=80'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 80 AND TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) < 115 THEN '>=80'
+        WHEN TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) >= 115 THEN 'FAKE_BIRTHDATE'
       END
     SQL
     WORKFLOWS.map do |workflow|
@@ -222,59 +225,43 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   # Monitoree counts by exposure risk factors
-  def self.monitoree_counts_by_risk_factor(analytic_id, monitorees, active_monitoring)
+  def self.monitoree_counts_by_risk_factor(analytic_id, monitorees)
     counts = []
-    # Individual risk factors
-    RISK_FACTORS.each do |risk_factor, label|
-      monitorees.monitoring_active(active_monitoring)
-                .where(risk_factor => true)
-                .group(risk_factor, :exposure_risk_assessment)
-                .order(:exposure_risk_assessment)
-                .size
-                .map do |(_, risk), total|
-                  counts.append(monitoree_count(analytic_id, active_monitoring, 'Risk Factor', label, risk, total))
-                end
+    WORKFLOWS.map do |workflow|
+      RISK_FACTORS.each do |risk_factor, label|
+        monitorees.where(isolation: workflow == 'Isolation').monitoring_active(true)
+                  .where(risk_factor => true)
+                  .group(risk_factor)
+                  .size
+                  .map do |(_, risk), total|
+                    counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, risk, total, workflow))
+                  end
+      end
     end
-    # Total
-    monitorees.monitoring_active(active_monitoring)
-              .where(RISK_FACTORS.keys.join(' OR '))
-              .group(:exposure_risk_assessment)
-              .order(:exposure_risk_assessment)
-              .size
-              .map do |risk_level, total|
-                counts.append(monitoree_count(analytic_id, active_monitoring, 'Risk Factor', 'Total', risk_level, total))
-              end
     counts
   end
 
   # Monitoree counts by exposure country
-  def self.monitoree_counts_by_exposure_country(analytic_id, monitorees, active_monitoring)
+  def self.monitoree_counts_by_exposure_country(analytic_id, monitorees)
     counts = []
-    # Individual countries
-    exposure_countries = monitorees.monitoring_active(active_monitoring)
-                                   .where.not(potential_exposure_country: nil)
-                                   .group(:potential_exposure_country)
-                                   .order(count_potential_exposure_country: :desc)
-                                   .order(:potential_exposure_country)
-                                   .limit(NUM_EXPOSURE_COUNTRIES)
-                                   .count(:potential_exposure_country)
-                                   .map { |c| c[0] }
-    monitorees.monitoring_active(active_monitoring)
-              .where(potential_exposure_country: exposure_countries)
-              .group(:potential_exposure_country, :exposure_risk_assessment)
-              .order(:potential_exposure_country, :exposure_risk_assessment)
-              .size
-              .map do |(country, risk), total|
-                counts.append(monitoree_count(analytic_id, active_monitoring, 'Exposure Country', country, risk, total))
-              end
-    # Total
-    monitorees.monitoring_active(active_monitoring)
-              .where.not(potential_exposure_country: [nil, ''])
-              .group(:exposure_risk_assessment).order(:exposure_risk_assessment)
-              .size
-              .map do |risk_level, total|
-                counts.append(monitoree_count(analytic_id, active_monitoring, 'Exposure Country', 'Total', risk_level, total))
-              end
+    WORKFLOWS.map do |workflow|
+      exposure_countries = monitorees.where(isolation: workflow == 'Isolation').monitoring_active(true)
+                                    .where.not(potential_exposure_country: nil)
+                                    .group(:potential_exposure_country)
+                                    .order(count_potential_exposure_country: :desc)
+                                    .order(:potential_exposure_country)
+                                    .limit(NUM_EXPOSURE_COUNTRIES)
+                                    .count(:potential_exposure_country)
+                                    .map { |c| c[0] }
+      monitorees.where(isolation: workflow == 'Isolation').monitoring_active(true)
+                .where(potential_exposure_country: exposure_countries)
+                .group(:potential_exposure_country)
+                .order(:potential_exposure_country)
+                .size
+                .map do |country, total|
+                  counts.append(monitoree_count(analytic_id, true, 'Exposure Country', country, nil, total, workflow))
+                end
+    end
     counts
   end
 
