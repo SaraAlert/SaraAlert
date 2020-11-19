@@ -139,6 +139,8 @@ bundle exec whenever --update-crontab
       - Purges eligible records
   * `SendPurgeWarningsJob`
       - Send warnings to users of upcoming PurgeJob
+  * `SendPatientDigestJob`
+      - Send hourly reports on recently symptomatic patients to jurisdictions that opt in. 
   * `CacheAnalyticsJob`
       - Caches analytics information for faster retrieval
   * `SendAssessmentsJob`
