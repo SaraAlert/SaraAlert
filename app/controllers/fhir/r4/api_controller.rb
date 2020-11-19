@@ -560,7 +560,7 @@ class Fhir::R4::ApiController < ActionController::API
 
   # Check content type header for correct mime type
   def content_type_header?(header)
-    request.headers['Content-Type']&.include?(header)
+    request.content_type == header
   end
 
   # Generic 406 not acceptable
