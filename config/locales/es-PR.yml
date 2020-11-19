@@ -112,7 +112,7 @@ es-PR:
     sms:
       prompt:
         intro1: 'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para'
-        intro2: 'a este número de teléfono.'
+        intro2: 'a este número de teléfono. Para privacidad y más información, visite saraalert.org'
         reminder: 'Este es el sistema Sara Alert recordándole que por favor responda a nuestros mensajes de reporte diario.'
         daily1: 'Este es el informe diario de Sara Alert para: '
         daily2-p: ' ¿Esta alguna de estas personas '
