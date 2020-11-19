@@ -1,55 +1,42 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Table } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import Switch from 'react-switch';
 import _ from 'lodash';
 
+const WORKFLOWS = ['Exposure', 'Isolation'];
 const AGEGROUPS = ['0-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80'];
-const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
 const SEXES = ['Male', 'Female', 'Unknown'];
+const ETHNICITIES = ['Hispanic or Latino', 'Not Hispanic or Latino'];
+const RACES = [
+  'White',
+  'Black or African American',
+  'Asian',
+  'American Indian or Alaska Native',
+  'Native Hawaiian or Other Pacific Islander',
+  'Biracial',
+  'Unknown',
+];
+const SEXUAL_ORIENTATIONS = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'];
 
 class Demographics extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { checked: false, viewTotal: this.props.viewTotal };
-    this.handleChange = this.handleChange.bind(this);
-    this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
-    this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
-    this.ERRORS = !Object.prototype.hasOwnProperty.call(this.props.stats, 'monitoree_counts');
-    this.ERRORSTRING = this.ERRORS ? 'Incorrect Object Schema' : null;
-    if (!this.ERRORS) {
-      this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', this.state.viewTotal);
-      this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', this.state.viewTotal);
-    }
+    this.ageData = this.parseOutFields(AGEGROUPS, 'Age Group');
+    this.sexData = this.parseOutFields(SEXES, 'Sex');
+    this.ethnicityData = this.parseOutFields(ETHNICITIES, 'Ethnicity');
+    this.raceData = this.parseOutFields(RACES, 'Race');
+    this.soData = this.parseOutFields(SEXUAL_ORIENTATIONS, 'Sexual Orientation');
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.viewTotal !== prevProps.viewTotal) {
-      this.toggleBetweenActiveAndTotal(this.props.viewTotal);
-    }
-  }
-
-  obtainValueFromMonitoreeCounts(enumerations, category_type, onlyActive) {
-    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring === onlyActive);
-    let categoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
-    return enumerations.map(x => {
-      let thisGroup = categoryGroups.filter(group => group.category === x);
-      let retVal = { name: x, total: 0 };
-      RISKLEVELS.forEach(val => {
-        retVal[String(val)] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
-        retVal.total += _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
-      });
-      return retVal;
-    });
-  }
-
-  handleChange = checked => this.setState({ checked });
-
-  toggleBetweenActiveAndTotal = viewTotal => {
-    this.ageData = this.obtainValueFromMonitoreeCounts(AGEGROUPS, 'Age Group', viewTotal);
-    this.sexData = this.obtainValueFromMonitoreeCounts(SEXES, 'Sex', viewTotal);
-  };
+  parseOutFields = (masterList, categoryTypeName) =>
+    masterList
+      .map(ml =>
+        WORKFLOWS.map(
+          wf => this.props.stats.monitoree_counts.find(x => x.status === wf && x.category_type === categoryTypeName && x.category === ml)?.total || 0
+        )
+      )
+      .map(x => x.concat(_.sum(x)));
 
   renderBarGraph() {
     return (
@@ -104,88 +91,135 @@ class Demographics extends React.Component {
     );
   }
 
-  renderTable() {
-    return (
-      <div>
-        <h4 className="text-left">Age (Years)</h4>
-        <Table striped hover className="border mt-2">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {AGEGROUPS.map(agegroup => (
-              <tr key={agegroup.toString() + '1'}>
-                <td key={agegroup.toString() + '2'} className="font-weight-bold">
-                  {' '}
-                  {agegroup}{' '}
-                </td>
-                {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={agegroup.toString() + risklevelIndex.toString()}>{this.ageData.find(x => x.name === agegroup)[String(risklevel)]}</td>
-                ))}
-                <td>{this.ageData.find(x => x.name === agegroup)['total']}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <h4 className="text-left">Sex</h4>
-        <Table striped hover className="border mt-2">
-          <thead>
-            <tr>
-              <th></th>
-              {RISKLEVELS.map(risklevel => (
-                <th key={risklevel.toString()}>{risklevel}</th>
-              ))}
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {SEXES.map(sexgroup => (
-              <tr key={sexgroup.toString() + '1'}>
-                <td key={sexgroup.toString() + '2'} className="font-weight-bold">
-                  {sexgroup}
-                </td>
-                {RISKLEVELS.map((risklevel, risklevelIndex) => (
-                  <td key={sexgroup.toString() + risklevelIndex.toString()}>{this.sexData.find(x => x.name === sexgroup)[String(risklevel)]}</td>
-                ))}
-                <td>{this.sexData.find(x => x.name === sexgroup)['total']}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
-
-  renderErrors() {
-    return <div className="text-danger display-6"> ERROR: {this.ERRORSTRING}. </div>;
-  }
-
-  renderCard() {
-    return (
-      <span>
-        <div className="text-right">
-          <span className="mr-2 display-6"> View Data as Graph </span>
-          <Switch onChange={this.handleChange} onColor="#82A0E4" height={18} width={40} uncheckedIcon={false} checked={this.state.checked} />
-        </div>
-        {this.state.checked ? this.renderBarGraph() : this.renderTable()}
-      </span>
-    );
-  }
-
   render() {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <Card.Header as="h5" className="text-left">
-            Among Those {this.state.viewTotal ? 'Ever Monitored (includes current)' : 'Currently Under Active Monitoring'}
-          </Card.Header>
-          <Card.Body>{this.ERRORS ? this.renderErrors() : this.renderCard()}</Card.Body>
+          <div className="analytics-card-header font-weight-bold h5"> Demographics ​</div>
+          <Card.Body className="mt-5">
+            <h4 className="text-left">Age (Years)</h4>
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {WORKFLOWS.map((header, index) => (
+                    <th key={index} className="font-weight-bold">
+                      {' '}
+                      <u>{_.upperCase(header)}</u>{' '}
+                    </th>
+                  ))}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              {AGEGROUPS.map((val, index1) => (
+                <tbody key={`workflow-table-${index1}`}>
+                  <tr className={index1 % 2 ? '' : 'analytics-zebra-bg'}>
+                    <td className="font-weight-bold"> {val} </td>
+                    {this.ageData[Number(index1)].map((data, subIndex1) => (
+                      <td key={subIndex1}> {data} </td>
+                    ))}
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+            <h4 className="text-left mt-3 mb-n1">Sex</h4>
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {WORKFLOWS.map((header, index) => (
+                    <th key={index} className="font-weight-bold">
+                      {' '}
+                      <u>{_.upperCase(header)}</u>{' '}
+                    </th>
+                  ))}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              {SEXES.map((val, index2) => (
+                <tbody key={`workflow-table-${index2}`}>
+                  <tr className={index2 % 2 ? '' : 'analytics-zebra-bg'}>
+                    <td className="font-weight-bold"> {val} </td>
+                    {this.sexData[Number(index2)].map((data, subIndex2) => (
+                      <td key={subIndex2}> {data} </td>
+                    ))}
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+            <h4 className="text-left mt-3 mb-n1">Race</h4>
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {WORKFLOWS.map((header, index) => (
+                    <th key={index} className="font-weight-bold">
+                      {' '}
+                      <u>{_.upperCase(header)}</u>{' '}
+                    </th>
+                  ))}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              {RACES.map((val, index4) => (
+                <tbody key={`workflow-table-${index4}`}>
+                  <tr className={index4 % 2 ? '' : 'analytics-zebra-bg'}>
+                    <td className="font-weight-bold"> {val} </td>
+                    {this.raceData[Number(index4)].map((data, subIndex4) => (
+                      <td key={subIndex4}> {data} </td>
+                    ))}
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+            <h4 className="text-left mt-3 mb-n1">Ethnicity</h4>
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {WORKFLOWS.map((header, index) => (
+                    <th key={index} className="font-weight-bold">
+                      {' '}
+                      <u>{_.upperCase(header)}</u>{' '}
+                    </th>
+                  ))}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              {ETHNICITIES.map((val, index3) => (
+                <tbody key={`workflow-table-${index3}`}>
+                  <tr className={index3 % 2 ? '' : 'analytics-zebra-bg'}>
+                    <td className="font-weight-bold"> {val} </td>
+                    {this.ethnicityData[Number(index3)].map((data, subIndex3) => (
+                      <td key={subIndex3}> {data} </td>
+                    ))}
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+            {/* <h4 className="text-left mt-3 mb-n1">Sexual Orientation</h4>
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th className="py-0"></th>
+                  {WORKFLOWS.map((header, index) => (
+                    <th key={index} className="font-weight-bold"> <u>{_.upperCase(header)}</u> </th>
+                  ))}
+                  <th>Total</th>
+                </tr>
+              </thead>
+              {SEXUAL_ORIENTATIONS.map((val, index5) => (
+                <tbody key={`workflow-table-${index5}`}>
+                  <tr className={ index5 % 2 ? '' : 'analytics-zebra-bg' }>
+                    <td className="font-weight-bold"> {val} </td>
+                    {this.soData[index5].map((data, subIndex5) => (
+                      <td key={subIndex5}> {data} </td>
+                    ))}
+                  </tr>
+                </tbody>
+               ))}
+            </table> */}
+          </Card.Body>
         </Card>
       </React.Fragment>
     );
@@ -194,7 +228,6 @@ class Demographics extends React.Component {
 
 Demographics.propTypes = {
   stats: PropTypes.object,
-  viewTotal: PropTypes.bool,
 };
 
 export default Demographics;
