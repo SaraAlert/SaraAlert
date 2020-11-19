@@ -18,7 +18,6 @@ class PublicHealthAnalytics extends React.Component {
   constructor(props) {
     super(props);
     this.exportAsPNG = this.exportAsPNG.bind(this);
-    this.toggleBetweenActiveAndTotal = this.toggleBetweenActiveAndTotal.bind(this);
     this.state = {
       checked: false,
       viewTotal: false,
@@ -51,8 +50,6 @@ class PublicHealthAnalytics extends React.Component {
         });
     }
   }
-
-  toggleBetweenActiveAndTotal = viewTotal => this.setState({ viewTotal });
 
   render() {
     if (this.state.hasErrors) {
@@ -92,29 +89,18 @@ class PublicHealthAnalytics extends React.Component {
               <MonitoreeFlow stats={this.props.stats} />
             </Col>
           </Row>
-          <Row className="mb-4 mx-2 px-0 pt-4">
+          <Row className="mb-4 mx-2 px-0 pt-2">
             <Col md="24" className="mx-0 px-0">
-              <span className="display-5">Epidemiological Summary</span>
-              {/* <span className="float-right display-6">
-                View Overall
-                <Switch
-                className="ml-2"
-                onChange={this.toggleBetweenActiveAndTotal}
-                onColor="#82A0E4"
-                height={18}
-                width={40}
-                uncheckedIcon={false}
-                checked={this.state.viewTotal}
-                />
-              </span> */}
+              <div className="display-5">Epidemiological Summary</div>
+              <h5 className="text-secondary">Among Those Currently Under Active Monitoring</h5>
             </Col>
           </Row>
           <Row className="mb-4 mx-2 px-0">
             <Col md="12" className="ml-0 pl-0">
-              <Demographics stats={this.props.stats} viewTotal={this.state.viewTotal} />
+              <Demographics stats={this.props.stats} />
             </Col>
             <Col md="12" className="mr-0 pr-0">
-              <RiskFactors stats={this.props.stats} viewTotal={this.state.viewTotal} />
+              <RiskFactors stats={this.props.stats} viewTotal={false} />
             </Col>
           </Row>
           <Row className="mb-1 mx-2 px-0">
