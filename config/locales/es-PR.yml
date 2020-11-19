@@ -94,7 +94,7 @@ es-PR:
         dear: 'Estimado/a'
         thank-you: 'Gracias por participar en el programa de monitoreo de Sara Alert. Favor de completar su informe diario utilizando el siguiente enlace.'
         report: 'Reporte diario'
-        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org'
+        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
       enrollment:
         subject: 'Inscripción de Sara Alert'
         header: 'Bienvenido al sistema Sara Alert'
@@ -102,17 +102,17 @@ es-PR:
         info1: 'Usted ha sido inscrito en el sistema de monitoreo Sara Alert. Le pedimos que proporcione informes diarios de su estado de salud. Simplemente haga clic en el botón a continuación y siga las instrucciones en pantalla.'
         info2: 'Usted recibirá un recordatorio diario similar hasta que finalice su período de monitoreo. Si tiene alguna pregunta, por favor pónganse en contacto con el proveedor de atención médica que le ayudó a inscribirse.'
         report: 'Reporte diario'
-        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org'
+        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
       closed:
         subject: 'Reporte de Sara Alert completo'
         header: 'Reporte de Sara Alert completo'
         dear: 'Estimado/a'
         thank-you: '¡Su reporte de Sara Alert está completo! Gracias por su participación.'
-        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org'
+        footer: 'No responda o reenvíe este correo electrónico, ni tampoco comparta este enlace. Este mensaje fue generado automáticamente por el sistema Sara Alert y es único y está destinado solo para usted. Si desea dejar de recibir estas notificaciones o piensa que fue un error, por favor pónganse en contacto con su departamento de salud pública local. Para privacidad y más información, visite saraalert.org.'
     sms:
       prompt:
         intro1: 'Bienvenido al sistema Sara Alert, le enviaremos sus reportes diarios para'
-        intro2: 'a este número de teléfono. Para privacidad y más información, visite saraalert.org'
+        intro2: 'a este número de teléfono. Para privacidad y más información, visite saraalert.org.'
         reminder: 'Este es el sistema Sara Alert recordándole que por favor responda a nuestros mensajes de reporte diario.'
         daily1: 'Este es el informe diario de Sara Alert para: '
         daily2-p: ' ¿Esta alguna de estas personas '
