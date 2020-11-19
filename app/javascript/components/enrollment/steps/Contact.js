@@ -59,8 +59,18 @@ class Contact extends React.Component {
             if (response?.data?.sms_eligible != null) {
               sms_eligible = response.data.sms_eligible;
             }
-            this.setState({ current: { ...this.state.current, blocked_sms: !sms_eligible } });
-            this.props.setEnrollmentState({ ...this.state.current, blocked_sms: !sms_eligible });
+
+            let current = this.state.current;
+            let modified = this.state.modified;
+            this.setState(
+              {
+                current: { ...current, blocked_sms: !sms_eligible },
+                modified: { ...modified, blocked_sms: !sms_eligible },
+              },
+              () => {
+                this.props.setEnrollmentState({ ...this.state.modified });
+              }
+            );
           })
           .catch(error => {
             console.error(error);
@@ -191,7 +201,6 @@ class Contact extends React.Component {
       .validate(this.state.current.patient, { abortEarly: false })
       .then(function() {
         // No validation issues? Invoke callback (move to next step)
-        self.props.setEnrollmentState({ ...self.state.current });
         self.setState({ errors: {} }, () => {
           callback();
         });
@@ -203,7 +212,6 @@ class Contact extends React.Component {
           for (var issue of err.inner) {
             issues[issue['path']] = issue['errors'];
           }
-          self.props.setEnrollmentState({ ...self.state.current });
           self.setState({ errors: issues });
         }
       });
