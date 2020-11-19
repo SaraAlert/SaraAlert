@@ -273,11 +273,21 @@ class Patient extends React.Component {
                 </Row>
                 <Row>
                   <Col className="text-truncate">
-                    <Row className="py-1">
-                      <Col>
-                        <b>HOME ADDRESS</b>
-                      </Col>
-                    </Row>
+                    {!showDomesticAddress && !showForeignAddress && (
+                      <Row className="py-1">
+                        <Col className="text-truncate">
+                          <span className="none-text">None</span>
+                        </Col>
+                      </Row>
+                    )}
+                    {showDomesticAddress ||
+                      (showForeignAddress && (
+                        <Row className="py-1">
+                          <Col>
+                            <b>HOME ADDRESS</b>
+                          </Col>
+                        </Row>
+                      ))}
                     {showDomesticAddress && (
                       <React.Fragment>
                         <Row>
