@@ -171,7 +171,7 @@ class CacheAnalyticsJob < ApplicationJob
               COALESCE(black_or_african_american, 0) +
               COALESCE(asian, 0) +
               COALESCE(american_indian_or_alaska_native, 0) +
-              COALESCE(native_hawaiian_or_other_pacific_islander, 0) > 1) THEN "Biracial"
+              COALESCE(native_hawaiian_or_other_pacific_islander, 0) > 1) THEN 'More Than One Race'
         WHEN (white = 1) THEN "White"
         WHEN (black_or_african_american = 1) THEN "Black or African American"
         WHEN (asian = 1) THEN "Asian"
