@@ -228,15 +228,15 @@ namespace :demo do
 
       # Identification
       sex = Faker::Gender.binary_type
-      sexualOrientation = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'].freeze
+      sexualOrientations = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know', 'Unknown'].freeze
       patient[:sex] = rand < 0.9 ? sex : 'Unknown' if rand < 0.9
-      patient[:sexual_orientation] = rand < 0.9 ? sexualOrientation[rand(0..5)] : 'Unknown' if rand < 0.9
+      patient[:sexual_orientation] = sexualOrientations.sample() if rand < 0.9
       patient[:first_name] = "#{sex == 'Male' ? Faker::Name.male_first_name : Faker::Name.female_first_name}#{rand(10)}#{rand(10)}"
       patient[:middle_name] = "#{Faker::Name.middle_name}#{rand(10)}#{rand(10)}" if rand < 0.7
       patient[:last_name] = "#{Faker::Name.last_name}#{rand(10)}#{rand(10)}"
       patient[:date_of_birth] = Faker::Date.birthday(min_age: 1, max_age: 85)
       patient[:age] = ((Date.today - patient[:date_of_birth]) / 365.25).round
-      patient[%i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample] = true
+      %i[white black_or_african_american american_indian_or_alaska_native asian native_hawaiian_or_other_pacific_islander].sample(rand(0..4)).each { |race| patient[race] = true }
       patient[:ethnicity] = rand < 0.82 ? 'Not Hispanic or Latino' : 'Hispanic or Latino'
       patient[:primary_language] = rand < 0.7 ? 'English' : Faker::Nation.language
       patient[:secondary_language] = Faker::Nation.language if rand < 0.4
@@ -332,7 +332,7 @@ namespace :demo do
       patient[:continuous_exposure] = rand < 0.3
       patient[:last_date_of_exposure] = today - rand(5).days unless patient[:continuous_exposure]
       patient[:potential_exposure_location] = Faker::Address.city if rand < 0.7
-      patient[:potential_exposure_country] = Faker::Address.country if rand < 0.8
+      patient[:potential_exposure_country] =  Faker::Address.country if rand < 0.8
       if rand < 0.85
         patient[:contact_of_known_case] = rand < 0.3
         patient[:contact_of_known_case_id] = Faker::Code.ean if patient[:contact_of_known_case] && rand < 0.5
