@@ -16,7 +16,11 @@ class HistoriesController < ApplicationController
     # Increment number of contact attempts if applicable
     if params.permit(:type)[:type] == 'Contact Attempt'
       patient = current_user.patients.find(params.permit(:patient_id)[:patient_id])
-      patient&.increment!(:contact_attempts)
+      if params.permit(:comment)[:comment].downcase.include?('unsuccessful')
+        patient&.update(contact_attempts: patient.contact_attempts + 1, contact_attempts_unsuccessful: patient.contact_attempts_unsuccessful + 1)
+      else
+        patient&.update(contact_attempts: patient.contact_attempts + 1, contact_attempts_successful: patient.contact_attempts_successful + 1)
+      end
     end
 
     redirect_back fallback_location: root_path

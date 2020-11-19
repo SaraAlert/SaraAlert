@@ -143,6 +143,18 @@ class AdvancedFilter extends React.Component {
           description: 'All records with the specified number of manual contact attempts',
           type: 'number',
         },
+        {
+          name: 'manual-contact-attempts-unsuccessful',
+          title: 'Unsuccessful Manual Contact Attempts (Number)',
+          description: 'All records with the specified number of unsuccessful manual contact attempts',
+          type: 'number',
+        },
+        {
+          name: 'manual-contact-attempts-successful',
+          title: 'Successful Manual Contact Attempts (Number)',
+          description: 'All records with the specified number of successful manual contact attempts',
+          type: 'number',
+        },
       ],
       savedFilters: [],
       activeFilter: null,

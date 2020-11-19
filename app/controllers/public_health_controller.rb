@@ -471,6 +471,32 @@ class PublicHealthController < ApplicationController
         when 'greater-than'
           patients = patients.where('contact_attempts > ?', filter[:value])
         end
+      when 'manual-contact-attempts-unsuccessful'
+        case filter[:operatorOption]
+        when 'less-than'
+          patients = patients.where('contact_attempts_unsuccessful < ?', filter[:value])
+        when 'less-than-equal'
+          patients = patients.where('contact_attempts_unsuccessful <= ?', filter[:value])
+        when 'equal'
+          patients = patients.where('contact_attempts_unsuccessful = ?', filter[:value])
+        when 'greater-than-equal'
+          patients = patients.where('contact_attempts_unsuccessful >= ?', filter[:value])
+        when 'greater-than'
+          patients = patients.where('contact_attempts_unsuccessful > ?', filter[:value])
+        end
+      when 'manual-contact-attempts-successful'
+        case filter[:operatorOption]
+        when 'less-than'
+          patients = patients.where('contact_attempts_successful < ?', filter[:value])
+        when 'less-than-equal'
+          patients = patients.where('contact_attempts_successful <= ?', filter[:value])
+        when 'equal'
+          patients = patients.where('contact_attempts_successful = ?', filter[:value])
+        when 'greater-than-equal'
+          patients = patients.where('contact_attempts_successful >= ?', filter[:value])
+        when 'greater-than'
+          patients = patients.where('contact_attempts_successful > ?', filter[:value])
+        end
       end
     end
     patients

@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2020_11_16_214553) do
+=======
+ActiveRecord::Schema.define(version: 2020_11_17_184413) do
+>>>>>>> 2822162a... add successful and unsuccessful contact attempts
 
   create_table "analytics", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "jurisdiction_id"
@@ -67,6 +71,18 @@ ActiveRecord::Schema.define(version: 2020_11_16_214553) do
     t.index ["type", "assessment_id"], name: "conditions_index_chain_1"
     t.index ["type", "jurisdiction_id"], name: "conditions_index_chain_3"
     t.index ["type", "threshold_condition_hash", "id"], name: "conditions_index_chain_2"
+  end
+
+  create_table "contact_attempts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "patient_id"
+    t.bigint "user_id"
+    t.boolean "successful"
+    t.text "note"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_contact_attempts_on_patient_id"
+    t.index ["successful"], name: "index_contact_attempts_on_successful"
+    t.index ["user_id"], name: "index_contact_attempts_on_user_id"
   end
 
   create_table "downloads", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -379,6 +395,8 @@ ActiveRecord::Schema.define(version: 2020_11_16_214553) do
     t.index ["potential_exposure_country"], name: "index_patients_on_potential_exposure_country"
     t.index ["primary_telephone", "responder_id", "id", "jurisdiction_id"], name: "patients_index_chain_two_1"
     t.index ["public_health_action"], name: "index_patients_on_public_health_action"
+    t.index ["purged", "isolation", "jurisdiction_id"], name: "patients_index_chain_three_2"
+    t.index ["purged", "isolation", "last_name", "first_name", "jurisdiction_id"], name: "patients_index_chain_five_1"
     t.index ["purged"], name: "index_patients_on_purged"
     t.index ["responder_id"], name: "index_patients_on_responder_id"
     t.index ["sex"], name: "index_patients_on_sex"
