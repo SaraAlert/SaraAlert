@@ -644,22 +644,29 @@ namespace :demo do
 
   def demo_populate_histories(today, histories)
     # add manual contact attempts
-    patient_ids_and_contact_attempts = Patient.monitoring_open.pluck(:id, :contact_attempts).sample(Patient.monitoring_open.size * 0.2)
-    patient_ids = patient_ids_and_contact_attempts.collect(&:first)
-    patient_ids.each do |patient_id|
+    patient_updates = []
+    patient_ids_and_contact_attempts = Patient.monitoring_open
+                                              .pluck(:id, :contact_attempts, :contact_attempts_successful, :contact_attempts_unsuccessful)
+                                              .sample(Patient.monitoring_open.size * 0.25)
+    patient_ids_and_contact_attempts.each do |(id, contact_attempts, contact_attempts_successful, contact_attempts_unsuccessful)|
       timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
+      successful = rand < 0.35
       histories << History.new(
-        patient_id: patient_id,
+        patient_id: id,
         created_by: rand < 0.7 ? User.all.select { |u| u.role?('public_health') }.sample[:email] : 'Sara Alert System',
-        comment: "#{rand < 0.5 ? 'Successful' : 'Unsuccessful'} contact attempt.#{rand < 0.65 ? " #{Faker::Marketing.buzzwords}" : ''}",
+        comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt.#{rand < 0.65 ? " #{Faker::Marketing.buzzwords}" : ''}",
         history_type: 'Contact Attempt',
         created_at: timestamp,
         updated_at: timestamp,
       )
+      patient_update = { contact_attempts: contact_attempts + 1 }
+      patient_update[:contact_attempts_successful] = contact_attempts_successful + 1 if successful
+      patient_update[:contact_attempts_unsuccessful] = contact_attempts_unsuccessful + 1 unless successful
+      patient_updates << patient_update
     end
 
     # update patient contact attempts
-    Patient.update(patient_ids, patient_ids_and_contact_attempts.collect(&:second).map { |contact_attempts| { contact_attempts: contact_attempts + 1 } })
+    Patient.update(patient_ids_and_contact_attempts.collect(&:first), patient_updates)
 
     # write histories
     printf("Writing histories...")
