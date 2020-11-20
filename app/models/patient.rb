@@ -157,6 +157,9 @@ class Patient < ApplicationRecord
           .where(pause_notifications: false)
           .where('dependents_patients.monitoring = ?', true)
           .where(
+            # This is basically the same as active_dependents()
+            # but we cannot use it here because it's a method and even if it was, then
+            # it wouldnt use the join table, 'dependents_patients'.
             'dependents_patients.isolation = ? '\
             'OR dependents_patients.continuous_exposure = ? '\
             'OR dependents_patients.last_date_of_exposure >= ? '\
