@@ -287,7 +287,7 @@ module FhirHelper # rubocop:todo Metrics/ModuleLength
   end
 
   def to_string_extension(value, extension_id)
-    value.nil? ? nil : FHIR::Extension.new(
+    value.nil? || value.empty? ? nil : FHIR::Extension.new(
       url: "http://saraalert.org/StructureDefinition/#{extension_id}",
       valueString: value
     )
