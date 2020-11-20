@@ -236,6 +236,11 @@ class User < ApplicationRecord
     role?(Roles::SUPER_USER)
   end
 
+  # Does this user recieve purge warnings
+  def can_receive_purge_warning?
+    (role?(Roles::ADMIN) || role?(Roles::SUPER_USER)) && jurisdiction&.name != 'USA'
+  end
+
   # Does this user need to see the Analytics tab?
   # NOTE: Analysts don't need to see this tab because it is their only option
   def can_see_analytics_tab?
