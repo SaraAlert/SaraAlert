@@ -39,7 +39,7 @@ class Patient < ApplicationRecord
   validates :monitoring_plan, inclusion: {
     in: VALID_ENUMS[:monitoring_plan],
     message: "is not an acceptable value, acceptable values are: '#{VALID_ENUMS[:monitoring_plan].join("', '")}'"
-  }, allow_blank: true
+  }
 
   validates :exposure_risk_assessment, inclusion: { in: ['High',
                                                          'Medium',
