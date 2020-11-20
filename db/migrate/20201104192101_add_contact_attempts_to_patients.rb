@@ -9,6 +9,7 @@ class AddContactAttemptsToPatients < ActiveRecord::Migration[6.0]
         SELECT patient_id, COUNT(*) AS contact_attempts
         FROM histories
         WHERE history_type = 'Contact Attempt'
+        AND created_by <> 'Sara Alert System'
         GROUP BY patient_id
       ) t ON patients.id = t.patient_id
       SET patients.contact_attempts = t.contact_attempts
