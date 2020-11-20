@@ -69,8 +69,7 @@ Rails.application.routes.draw do
 
   get '/patients/households/self_reporting', to: 'patients#self_reporting'
   get '/patients/:id/household_removeable', to: 'patients#household_removeable'
-  post '/patients/bulk_edit/status', to: 'patients#bulk_update'
-  post '/patients/bulk_edit/assigned_user', to: 'patients#bulk_update'
+  post '/patients/bulk_edit', to: 'patients#bulk_update'
   post '/patients/:id/status', to: 'patients#update_status'
   post '/patients/:id/status/clear', to: 'patients#clear_assessments'
   post '/patients/:id/status/clear/:assessment_id', to: 'patients#clear_assessment'

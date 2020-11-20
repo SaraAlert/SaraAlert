@@ -89,7 +89,7 @@ class UpdateCaseStatus extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/patients/bulk_edit/status', {
+        .post(window.BASE_PATH + '/patients/bulk_edit', {
           ids: idArray,
           case_status: this.state.case_status,
           isolation: this.state.isolation,

@@ -52,7 +52,7 @@ class UpdateAssignedUser extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/patients/bulk_edit/assigned_user', {
+        .post(window.BASE_PATH + '/patients/bulk_edit', {
           ids: idArray,
           assigned_user: this.state.assigned_user,
           apply_to_household: this.state.apply_to_household,
@@ -79,25 +79,33 @@ class UpdateAssignedUser extends React.Component {
           <Form.Control
             as="input"
             id="assigned_user_input"
+            list="assigned_users"
             autoComplete="off"
             className="form-control-lg"
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
             value={this.state.assigned_user}
           />
-          {this.state.case_status !== '' && (
-            <React.Fragment>
-              <Form.Group className="my-2">
-                <Form.Check
-                  type="switch"
-                  id="apply_to_household"
-                  label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
-                  checked={this.state.apply_to_household}
-                  onChange={this.handleChange}
-                />
-              </Form.Group>
-            </React.Fragment>
-          )}
+          <datalist id="assigned_users">
+            {this.props.assigned_users.map(num => {
+              return (
+                <option value={num} key={num}>
+                  {num}
+                </option>
+              );
+            })}
+          </datalist>
+          <React.Fragment>
+            <Form.Group className="my-2">
+              <Form.Check
+                type="switch"
+                id="apply_to_household"
+                label="Apply this change to the entire household that these monitorees are responsible for, if it applies."
+                checked={this.state.apply_to_household}
+                onChange={this.handleChange}
+              />
+            </Form.Group>
+          </React.Fragment>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary btn-square" onClick={this.props.close}>
@@ -121,6 +129,7 @@ UpdateAssignedUser.propTypes = {
   authenticity_token: PropTypes.string,
   patients: PropTypes.array,
   close: PropTypes.func,
+  assigned_users: PropTypes.array,
 };
 
 export default UpdateAssignedUser;
