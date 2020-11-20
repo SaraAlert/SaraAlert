@@ -16,7 +16,7 @@ const RISKFACTORS = [
 ];
 const NUM_COUNTRIES_TO_SHOW = 5;
 
-class RiskFactors extends React.Component {
+class ExposureSummary extends React.Component {
   constructor(props) {
     super(props);
 
@@ -161,9 +161,9 @@ class RiskFactors extends React.Component {
   }
 }
 
-RiskFactors.propTypes = {
+ExposureSummary.propTypes = {
   stats: PropTypes.object,
   showGraphs: PropTypes.bool,
 };
 
-export default RiskFactors;
+export default ExposureSummary;

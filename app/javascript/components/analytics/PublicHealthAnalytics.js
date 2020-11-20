@@ -9,7 +9,7 @@ import 'rc-slider/assets/index.css';
 import RiskStratificationTable from './widgets/RiskStratificationTable';
 import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
-import RiskFactors from './widgets/RiskFactors';
+import ExposureSummary from './widgets/ExposureSummary';
 import PreferredReportingMethod from './widgets/PreferredReportingMethod';
 import reportError from '../util/ReportError';
 import MonitoreesByDateOfExposure from './widgets/MonitoreesByDateOfExposure';
@@ -20,7 +20,7 @@ class PublicHealthAnalytics extends React.Component {
     super(props);
     this.exportAsPNG = this.exportAsPNG.bind(this);
     this.state = {
-      showEpidemiologicalGraphs: true,
+      showEpidemiologicalGraphs: false,
       hasErrors: !this.props.stats || Object.entries(this.props.stats).length === 0,
     };
   }
@@ -51,7 +51,7 @@ class PublicHealthAnalytics extends React.Component {
     }
   }
 
-  toggleEpidemiologicalGraphs = val => this.setState({ showEpidemiologicalGraphs: val });
+  toggleEpidemiologicalGraphs = showEpidemiologicalGraphs => this.setState({ showEpidemiologicalGraphs });
 
   render() {
     if (this.state.hasErrors) {
@@ -93,10 +93,10 @@ class PublicHealthAnalytics extends React.Component {
           </Row>
           <Row className="mx-2 mt-2 px-0">
             {/* <Col md="24" className="mx-0 px-0"> */}
-            <Col xs="20" style={{ SbackgroundColor: 'red' }}>
+            <Col xs="20">
               <span className="display-5">Epidemiological Summary</span>
             </Col>
-            <Col xs="4" style={{ SbackgroundColor: 'blue' }}>
+            <Col xs="4">
               <span className="float-right">
                 <Switch
                   className="ml-2 mt-4 custom-react-switch"
@@ -111,10 +111,10 @@ class PublicHealthAnalytics extends React.Component {
             </Col>
           </Row>
           <Row className="mb-4 mx-2 px-0">
-            <Col xs="16" style={{ SbackgroundColor: 'green' }}>
+            <Col xs="16">
               <h5 className="text-secondary">Among Those Currently Under Active Monitoring</h5>
             </Col>
-            <Col xs="8" style={{ SbackgroundColor: 'rebeccapurple' }}>
+            <Col xs="8">
               <h5 className="float-right text-secondary">View Data as Graph</h5>
             </Col>
           </Row>
@@ -123,7 +123,7 @@ class PublicHealthAnalytics extends React.Component {
               <Demographics stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
             </Col>
             <Col md="12" className="mr-0 pr-0">
-              <RiskFactors stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
+              <ExposureSummary stats={this.props.stats} showGraphs={this.state.showEpidemiologicalGraphs} />
             </Col>
           </Row>
           <Row className="mb-1 mx-2 px-0">

@@ -1,18 +1,17 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card, Form, Col } from 'react-bootstrap';
+import { Card, Form, Col, Row } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import _ from 'lodash';
 
+const WORKFLOWS = ['Exposure', 'Isolation'];
 let DATES_OF_INTEREST = []; // If certain dates are desired, they can be specified here
-const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
 
 class MonitoreesByDateOfExposure extends React.Component {
   constructor(props) {
     super(props);
-    this.obtainValueFromMonitoreeCounts = this.obtainValueFromMonitoreeCounts.bind(this);
-    this.setTimeResolution = this.setTimeResolution.bind(this);
     this.state = {
+      graphData: {},
       lastExposureDateDate: [],
     };
   }
@@ -21,49 +20,50 @@ class MonitoreesByDateOfExposure extends React.Component {
     this.setTimeResolution('Day');
   }
 
-  obtainValueFromMonitoreeCounts = (enumerations, category_type) => {
-    let activeMonitorees = this.props.stats.monitoree_counts.filter(x => x.active_monitoring);
-    let categoryGroups = activeMonitorees.filter(x => x.category_type === category_type);
-    return enumerations.map(x => {
-      let thisGroup = categoryGroups.filter(group => group.category === x);
-      let retVal = { name: x };
-      RISKLEVELS.forEach(val => {
-        retVal[String(val)] = _.sum(thisGroup.filter(z => z.risk_level === val).map(z => z.total));
-      });
+  parseOutFields = (masterList, categoryTypeName) =>
+    masterList
+      .map(ml =>
+        WORKFLOWS.map(
+          wf => this.props.stats.monitoree_counts.find(x => x.status === wf && x.category_type === categoryTypeName && x.category === ml)?.total || 0
+        )
+      )
+      .map(x => x.concat(_.sum(x)));
+
+  // This instance of mapToChartFormat is slightly different from its neighbor components due to this unique use case
+  mapToChartFormat = (masterList, values, workflow) =>
+    masterList.map((ml, index0) => {
+      let retVal = {};
+      retVal['name'] = ml;
+      retVal[`${workflow}`] = values[Number(index0)][WORKFLOWS.findIndex(x => x === workflow)];
       return retVal;
     });
-  };
 
   setTimeResolution(timeRes) {
-    let categoryString;
+    let dateRangeInQuestion;
     if (timeRes === 'Day') {
-      categoryString = 'Last Exposure Date';
+      dateRangeInQuestion = 'Last Exposure Date';
     } else if (timeRes === 'Week') {
-      categoryString = 'Last Exposure Week';
+      dateRangeInQuestion = 'Last Exposure Week';
     } else if (timeRes === 'Month') {
-      categoryString = 'Last Exposure Month';
+      dateRangeInQuestion = 'Last Exposure Month';
     }
-    DATES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === categoryString).map(x => x.category))
+    DATES_OF_INTEREST = _.uniq(this.props.stats.monitoree_counts.filter(x => x.category_type === dateRangeInQuestion).map(x => x.category))
       .sort()
       .slice(0, 14);
-    this.setState({ lastExposureDateDate: _.cloneDeep(this.obtainValueFromMonitoreeCounts(DATES_OF_INTEREST, categoryString)) });
+    this.setState({
+      graphData: WORKFLOWS.map(workflow => this.mapToChartFormat(DATES_OF_INTEREST, this.parseOutFields(DATES_OF_INTEREST, dateRangeInQuestion), workflow)),
+      lastDateInQuestion: _.last(DATES_OF_INTEREST),
+    });
   }
 
   render() {
     return (
       <React.Fragment>
-        <Card className="card-square text-center">
-          <Card.Header as="h5" className="text-left">
-            Total Monitorees by Date of Last Exposure By Risk Status
-          </Card.Header>
-          <Card.Body>
+        <Card className="card-square text-center mt-4">
+          <div className="analytics-card-header font-weight-bold h5"> Monitorees by Date of Last Exposure ​</div>
+          <Card.Body className="mt-4">
             <Form.Row className="justify-content-md-center">
-              <Form.Group
-                as={Col}
-                md="8"
-                onChange={val => {
-                  this.setTimeResolution(val.target.value);
-                }}>
+              <Form.Group as={Col} md="8" onChange={val => this.setTimeResolution(val.target.value)}>
                 <Form.Label>Time Resolution</Form.Label>
                 <Form.Control as="select" size="md">
                   <option>Day</option>
@@ -72,34 +72,53 @@ class MonitoreesByDateOfExposure extends React.Component {
                 </Form.Control>
               </Form.Group>
             </Form.Row>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                width={500}
-                height={300}
-                data={this.state.lastExposureDateDate}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="High" stackId="a" fill="#FA897B" />
-                <Bar dataKey="Medium" stackId="a" fill="#FFDD94" />
-                <Bar dataKey="Low" stackId="a" fill="#D0E6A5" />
-                <Bar dataKey="No Identified Risk" stackId="a" fill="#333" />
-                <Bar dataKey="Missing" stackId="a" fill="#BABEC4" />
-              </BarChart>
-            </ResponsiveContainer>
+            <Row className="mx-2 mt-2 px-0">
+              <Col xs="12">
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={this.state.graphData[0]}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="Exposure" stackId="a" fill="#557385" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Col>
+              <Col xs="12">
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={this.state.graphData[1]}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="Isolation" stackId="a" fill="#cbcfd2" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Col>
+            </Row>
             <div className="text-secondary text-right">
               <i className="fas fa-exclamation-circle mr-1"></i>
-              Illnesses that began
-              {` ${this.state.lastExposureDateDate[this.state.lastExposureDateDate.length - 1]?.name} `}
-              may not yet be reported
+              Illnesses that began {this.state.lastDateInQuestion} may not yet be reported
             </div>
           </Card.Body>
         </Card>
