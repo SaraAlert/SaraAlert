@@ -60,11 +60,11 @@ class ImportController < ApplicationController
               elsif col_num == 85 && workflow == :isolation
                 patient[:user_defined_symptom_onset] = row[85].present?
                 patient[field] = validate_field(field, row[col_num], row_ind)
-              # TODO: Commented out temporarily until we're comfortable with this validation
+              # TODO when workflow specific case status validation re-enabled: uncomment
               # elsif col_num == 86
               #   patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
               else
-                # TODO: Once the above is uncommented, this line can be updated to not have to check the 86 col
+                # TODO when workflow specific case status validation re-enabled: this line can be updated to not have to check the 86 col
                 patient[field] = validate_field(field, row[col_num], row_ind) unless [85, 86].include?(col_num) && workflow != :isolation
               end
             end
