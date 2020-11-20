@@ -22,7 +22,6 @@ const rctIcons = {
 class CustomExport extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
     this.state = {
       preset: {
         id: props.preset?.id || null,
@@ -81,7 +80,6 @@ class CustomExport extends React.Component {
 
   // Delete an existing filter
   delete = () => {
-    console.log(this.state);
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .delete(`${window.BASE_PATH}/user_export_presets/${this.props.preset?.id}`)
@@ -95,7 +93,6 @@ class CustomExport extends React.Component {
 
   // Export data with current configurations
   export = () => {
-    console.log(this.state);
     axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
     axios
       .post(`${window.BASE_PATH}/export/custom`, this.state)

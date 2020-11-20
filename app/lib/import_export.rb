@@ -5,60 +5,58 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   include ValidationHelper
 
   PATIENT_FIELD_NAMES = {
-    # Enrollment Info - Identification - Name
+    # Enrollment Info - Identification and Demographics - Identifiers
+    id: 'Monitoree ID',
+    user_defined_id_statelocal: 'State/Local ID',
+    user_defined_id_cdc: 'CDC ID',
+    user_defined_id_nndss: 'NNDSS ID',
+    # Enrollment Info - Identification and Demographics - Name
     first_name: 'First Name',
-    middle_name: 'Middle Name',
     last_name: 'Last Name',
-    # Enrollment Info - Identification - Date of Birth and Age
+    middle_name: 'Middle Name',
+    # Enrollment Info - Identification and Demographics - Date of Birth
     date_of_birth: 'Date of Birth',
     age: 'Age',
-    # Enrollment Info - Identification - Sex, Gender Identity, and Sexual Orientation
+    # Enrollment Info - Identification and Demographics - Sex at Birth
     sex: 'Sex at Birth',
+    # Enrollment Info - Identification and Demographics - Gender Identity and Sexual Orientation
     gender_identity: 'Gender Identity',
     sexual_orientation: 'Sexual Orientation',
-    # Enrollment Info - Identification - Race, Ethnicity, and Nationality
-    white: 'White?',
-    black_or_african_american: 'Black or African American?',
-    american_indian_or_alaska_native: 'American Indian or Alaska Native?',
-    asian: 'Asian?',
-    native_hawaiian_or_other_pacific_islander: 'Native Hawaiian or Other Pacific Islander?',
+    # Enrollment Info - Identification and Demographics - Race, Ethnicity, and Nationality
+    race: 'Race (All Race Fields)',
     ethnicity: 'Ethnicity',
     nationality: 'Nationality',
-    # Enrollment Info - Identification - Language
+    # Enrollment Info - Identification and Demographics - Language
     primary_language: 'Primary Language',
     secondary_language: 'Secondary Language',
-    interpretation_required: 'Interpretation Required?',
-    # Enrollment Info - Identification - State/Local, CDC, and NNDSS IDs
-    user_defined_id_statelocal: 'Identifier (STATE/LOCAL)',
-    user_defined_id_cdc: 'Identifier (CDC)',
-    user_defined_id_nndss: 'Identifier (NNDSS)',
-    # Enrollment Info - Address - Home Address (USA)
+    interpretation_required: 'Interpretation Required',
+    # Enrollment Info - Home and Monitored Address - Home Address (USA)
     address_line_1: 'Address Line 1',
+    address_line_2: 'Address Line 2',
     address_city: 'Address City',
     address_state: 'Address State',
-    address_line_2: 'Address Line 2',
     address_zip: 'Address Zip',
     address_county: 'Address County',
-    # Enrollment Info - Address - Home Address (Foreign)
+    # Enrollment Info - Home and Monitored Address - Home Address (Foreign)
     foreign_address_line_1: 'Foreign Address Line 1',
+    foreign_address_line_2: 'Foreign Address Line 2',
     foreign_address_city: 'Foreign Address City',
     foreign_address_country: 'Foreign Address Country',
-    foreign_address_line_2: 'Foreign Address Line 2',
     foreign_address_zip: 'Foreign Address Zip',
     foreign_address_line_3: 'Foreign Address Line 3',
     foreign_address_state: 'Foreign Address State',
-    # Enrollment Info - Address - Monitored Address (USA)
+    # Enrollment Info - Home and Monitored Address - Monitored Address (USA)
     monitored_address_line_1: 'Monitored Address Line 1',
+    monitored_address_line_2: 'Monitored Address Line 2',
     monitored_address_city: 'Monitored Address City',
     monitored_address_state: 'Monitored Address State',
-    monitored_address_line_2: 'Monitored Address Line 2',
     monitored_address_zip: 'Monitored Address Zip',
     monitored_address_county: 'Monitored Address County',
-    # Enrollment Info - Address - Monitored Address (Foreign)
+    # Enrollment Info - Home and Monitored Address - Monitored Address (Foreign)
     foreign_monitored_address_line_1: 'Foreign Monitored Address Line 1',
+    foreign_monitored_address_line_2: 'Foreign Monitored Address Line 2',
     foreign_monitored_address_city: 'Foreign Monitored Address City',
     foreign_monitored_address_state: 'Foreign Monitored Address State',
-    foreign_monitored_address_line_2: 'Foreign Monitored Address Line 2',
     foreign_monitored_address_zip: 'Foreign Monitored Address Zip',
     foreign_monitored_address_county: 'Foreign Monitored Address County',
     # Enrollment Info - Contact Information
@@ -69,7 +67,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     secondary_telephone: 'Secondary Telephone',
     secondary_telephone_type: 'Secondary Telephone Type',
     email: 'Email',
-    # Enrollment Info - Arrival Information
+    # Enrollment Info - Travel - Arrival Information
     port_of_origin: 'Port of Origin',
     date_of_departure: 'Date of Departure',
     flight_or_vessel_number: 'Flight or Vessel Number',
@@ -79,7 +77,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     source_of_report: 'Source of Report',
     source_of_report_specify: 'Source of Report Specify',
     travel_related_notes: 'Travel Related Notes',
-    # Enrollment Info - Additional Planned Travel
+    # Enrollment Info - Travel - Additional Planned Travel
     additional_planned_travel_type: 'Additional Planned Travel Type',
     additional_planned_travel_destination: 'Additional Planned Travel Destination',
     additional_planned_travel_destination_state: 'Additional Planned Travel Destination State',
@@ -91,87 +89,77 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     # Enrollment Info - Potential Exposure Information - Exposure Location and Notes
     potential_exposure_location: 'Potential Exposure Location',
     potential_exposure_country: 'Potential Exposure Country',
-    exposure_notes: 'Exposure Notes',
     # Enrollment Info - Potential Exposure Information - Risk Factors
-    contact_of_known_case: 'Contact of Known Case?',
+    contact_of_known_case: 'Contact of Known Case',
     contact_of_known_case_id: 'Contact of Known Case ID',
-    travel_to_affected_country_or_area: 'Travel from Affected Country or Area?',
-    was_in_health_care_facility_with_known_cases: 'Was in Health Care Facility With Known Cases?',
+    travel_to_affected_country_or_area: 'Travel from Affected Country or Area',
+    was_in_health_care_facility_with_known_cases: 'Was in Health Care Facility With Known Cases',
     was_in_health_care_facility_with_known_cases_facility_name: 'Health Care Facility with Known Cases Name',
-    laboratory_personnel: 'Laboratory Personnel?',
+    laboratory_personnel: 'Laboratory Personnel',
     laboratory_personnel_facility_name: 'Laboratory Personnel Facility Name',
-    healthcare_personnel: 'Health Care Personnel?',
+    healthcare_personnel: 'Health Care Personnel',
     healthcare_personnel_facility_name: 'Health Care Personnel Facility Name',
-    crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight?',
-    member_of_a_common_exposure_cohort: 'Member of a Common Exposure Cohort?',
+    crew_on_passenger_or_cargo_flight: 'Crew on Passenger or Cargo Flight',
+    member_of_a_common_exposure_cohort: 'Member of a Common Exposure Cohort',
     member_of_a_common_exposure_cohort_type: 'Common Exposure Cohort Name',
+    exposure_notes: 'Exposure Notes',
+    # Enrollment Info - Record Creation and Updates
+    creator: 'Enroller',
+    created_at: 'Monitoree Created Date',
+    updated_at: 'Monitoree Updated Date',
     # Monitoring Info - Linelist Info
-    name: 'Monitoree',
-    isolation: 'Isolation?',
+    workflow: 'Current Workflow',
     status: 'Status',
-    latest_assessment_at: 'Latest Assessment At',
-    latest_fever_or_fever_reducer_at: 'Latest Fever or Fever Reducer At',
-    latest_positive_lab_at: 'Latest Positive Lab At',
-    negative_lab_count: 'Negative Lab Count',
-    latest_transfer_at: 'Latest Transfer At',
-    latest_transfer_from: 'Latest Transfer From',
-    latest_transfer_to: 'Latest Transfer To',
     # Monitoring Info - Monitoring Actions
-    monitoring_status: 'Monitoring?',
+    monitoring_status: 'Monitoring Status',
     exposure_risk_assessment: 'Exposure Risk Assessment',
     monitoring_plan: 'Monitoring Plan',
     case_status: 'Case Status',
     public_health_action: 'Latest Public Health Action',
     jurisdiction_path: 'Full Assigned Jurisdiction Path',
-    jurisdiction_name: 'Jurisdiction',
+    jurisdiction_name: 'Assigned Jurisdiction',
     assigned_user: 'Assigned User',
     # Monitoring Info - Monitoring Period
     last_date_of_exposure: 'Last Date of Exposure',
-    continuous_exposure: 'Continuous Exposure?',
+    continuous_exposure: 'Continuous Exposure',
     symptom_onset: 'Symptom Onset Date',
-    user_defined_symptom_onset: 'User Defined Symptom Onset?',
-    extended_isolation: 'Extended Isolation',
+    symptom_onset_defined_by: 'Symptom Onset Defined By',
+    extended_isolation: 'Extended Isolation Date',
     end_of_monitoring: 'End of Monitoring',
-    closed_at: 'Closed At',
+    closed_at: 'Closure Date',
     monitoring_reason: 'Reason For Closure',
     expected_purge_date: 'Expected Purge Date',
     # Monitoring Info - Reporting Info
-    responder_id: 'Responder ID',
-    head_of_household: 'Head of Household?',
-    contact_attempts: 'Contact Attempts',
-    pause_notifications: 'Pause Notifications?',
-    last_assessment_reminder_sent: 'Last Assessment Reminder Sent',
-    # Metadata,
-    id: 'Monitoree ID',
-    creator: 'Enroller',
-    created_at: 'Created At',
-    updated_at: 'Updated At'
+    responder_id: 'ID of Reporter',
+    head_of_household: 'Head of Household',
+    pause_notifications: 'Paused Notifications',
+    last_assessment_reminder_sent: 'Last Assessment Reminder Sent Date'
   }.freeze
 
   ASSESSMENT_FIELD_NAMES = {
-    id: 'Assessment ID',
-    patient_id: 'Patient ID',
+    id: 'Report ID',
+    patient_id: 'Monitoree ID',
     symptomatic: 'Needs Review',
     who_reported: 'Who Reported',
-    created_at: 'Created At',
-    updated_at: 'Updated At',
-    symptoms: 'Symptoms'
+    created_at: 'Report Created Date',
+    updated_at: 'Report Updated Date',
+    symptoms: 'Symptoms Reported'
   }.freeze
 
   LABORATORY_FIELD_NAMES = {
-    id: 'Laboratory ID',
-    patient_id: 'Patient ID',
+    id: 'Lab Report ID',
+    patient_id: 'Monitoree ID',
     lab_type: 'Lab Type',
     specimen_collection: 'Specimen Collection Date',
     report: 'Report Date',
-    result: 'Result',
-    created_at: 'Created At',
-    updated_at: 'Updated At'
+    result: 'Lab Result',
+    created_at: 'Lab Report Created Date',
+    updated_at: 'Lab Report Updated Date'
   }.freeze
 
   CLOSE_CONTACT_FIELD_NAMES = {
     id: 'Close Contact ID',
-    patient_id: 'Patient ID',
+    patient_id: 'Monitoree ID',
     first_name: 'First Name',
     last_name: 'Last Name',
     primary_telephone: 'Primary Telephone',
@@ -179,28 +167,28 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
     contact_attempts: 'Contact Attempts',
     notes: 'Notes',
     enrolled_id: 'Enrolled ID',
-    created_at: 'Created At',
-    updated_at: 'Updated At'
+    created_at: 'Close Contact Created Date',
+    updated_at: 'Close Contact Updated Date'
   }.freeze
 
   TRANSFER_FIELD_NAMES = {
     id: 'Transfer ID',
-    patient_id: 'Patient ID',
-    who: 'Who',
+    patient_id: 'Monitoree ID',
+    who: 'Who Initiated Transfer',
     from_jurisdiction: 'From Jurisdiction',
     to_jurisdiction: 'To Jurisdiction',
-    created_at: 'Created At',
-    updated_at: 'Updated At'
+    created_at: 'Transfer Created Date',
+    updated_at: 'Transfer Updated Date'
   }.freeze
 
   HISTORY_FIELD_NAMES = {
     id: 'History ID',
-    patient_id: 'Patient ID',
-    created_by: 'Created By',
+    patient_id: 'Monitoree ID',
+    created_by: 'History Creator',
     history_type: 'History Type',
-    comment: 'Comment',
-    created_at: 'Created At',
-    updated_at: 'Updated At'
+    comment: 'History Comment',
+    created_at: 'History Created Date',
+    updated_at: 'History Updated Date'
   }.freeze
 
   ALL_FIELDS_NAMES = {
@@ -234,68 +222,73 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
             label: 'Enrollment Info',
             children: [
               {
-                value: 'patients-enrollment-identification',
-                label: 'Identification',
+                value: 'patients-enrollment-identification-and-demographics',
+                label: 'Identification and Demographics',
                 children: [
+                  rct_node(:patients, 'Identifiers', %i[id user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss]),
                   rct_node(:patients, 'Name', %i[first_name last_name middle_name]),
-                  rct_node(:patients, 'Date of Birth and Age', %i[date_of_birth age]),
-                  rct_node(:patients, 'Sex, Gender Identity, and Sexual Orientation', %i[sex gender_identity sexual_orientation]),
-                  rct_node(:patients, 'Race, Ethnicity, and Nationality', %i[white black_or_african_american american_indian_or_alaska_native asian
-                                                                             native_hawaiian_or_other_pacific_islander ethnicity nationality]),
-                  rct_node(:patients, 'Language', %i[primary_language secondary_language interpretation_required]),
-                  rct_node(:patients, 'State/Local, CDC, and NNDSS IDs', %i[user_defined_id_statelocal user_defined_id_cdc user_defined_id_nndss])
+                  rct_node(:patients, 'Date of Birth', %i[date_of_birth age]),
+                  { value: :sex, label: ALL_FIELDS_NAMES[:patients][:sex] },
+                  rct_node(:patients, 'Gender Identity and Sexual Orientation', %i[gender_identity sexual_orientation]),
+                  rct_node(:patients, 'Race, Ethnicity, and Nationality', %i[race ethnicity nationality]),
+                  rct_node(:patients, 'Language', %i[primary_language secondary_language interpretation_required])
                 ]
               },
               {
-                value: 'patients-enrollment-address',
-                label: 'Address',
+                value: 'patients-enrollment-home-and-monitored-address',
+                label: 'Home and Monitored Address',
                 children: [
-                  rct_node(:patients, 'Home Address (USA)', %i[address_line_1 address_city address_state address_line_2 address_zip address_county]),
-                  rct_node(:patients, 'Home Address (Foreign)', %i[foreign_address_line_1 foreign_address_city foreign_address_country foreign_address_line_2
+                  rct_node(:patients, 'Home Address (USA)', %i[address_line_1 address_line_2 address_city address_state address_zip address_county]),
+                  rct_node(:patients, 'Home Address (Foreign)', %i[foreign_address_line_1 foreign_address_line_2 foreign_address_city foreign_address_country
                                                                    foreign_address_zip foreign_address_line_3 foreign_address_state]),
-                  rct_node(:patients, 'Monitored Address (USA)', %i[monitored_address_line_1 monitored_address_city monitored_address_state
-                                                                    monitored_address_line_2 monitored_address_zip monitored_address_county]),
-                  rct_node(:patients, 'Monitored Address (Foreign)', %i[foreign_monitored_address_line_1 foreign_monitored_address_city
-                                                                        foreign_monitored_address_state foreign_monitored_address_line_2
+                  rct_node(:patients, 'Monitored Address (USA)', %i[monitored_address_line_1 monitored_address_line_2 monitored_address_city
+                                                                    monitored_address_state monitored_address_zip monitored_address_county]),
+                  rct_node(:patients, 'Monitored Address (Foreign)', %i[foreign_monitored_address_line_1 foreign_monitored_address_line_2
+                                                                        foreign_monitored_address_city foreign_monitored_address_state
                                                                         foreign_monitored_address_zip foreign_monitored_address_county])
                 ]
               },
               rct_node(:patients, 'Contact Information', %i[preferred_contact_method preferred_contact_time primary_telephone primary_telephone_type
                                                             secondary_telephone secondary_telephone_type email]),
-              rct_node(:patients, 'Arrival Information', %i[port_of_origin date_of_departure flight_or_vessel_number flight_or_vessel_carrier
-                                                            port_of_entry_into_usa date_of_arrival source_of_report source_of_report_specify
-                                                            travel_related_notes]),
-              rct_node(:patients, 'Additional Planned Travel', %i[additional_planned_travel_type additional_planned_travel_destination
-                                                                  additional_planned_travel_destination_state additional_planned_travel_destination_country
-                                                                  additional_planned_travel_port_of_departure additional_planned_travel_start_date
-                                                                  additional_planned_travel_end_date additional_planned_travel_related_notes]),
+              {
+                value: 'patients-enrollment-travel',
+                label: 'Travel',
+                children: [
+                  rct_node(:patients, 'Arrival Information', %i[port_of_origin date_of_departure flight_or_vessel_number flight_or_vessel_carrier
+                                                                port_of_entry_into_usa date_of_arrival source_of_report source_of_report_specify
+                                                                travel_related_notes]),
+                  rct_node(:patients, 'Additional Planned Travel', %i[additional_planned_travel_type additional_planned_travel_destination
+                                                                      additional_planned_travel_destination_state additional_planned_travel_destination_country
+                                                                      additional_planned_travel_port_of_departure additional_planned_travel_start_date
+                                                                      additional_planned_travel_end_date additional_planned_travel_related_notes])
+                ]
+              },
               {
                 value: 'patients-enrollment-potential_exposure_information',
                 label: 'Potential Exposure Information',
                 children: [
-                  rct_node(:patients, 'Exposure Location and Notes', %i[potential_exposure_location potential_exposure_country exposure_notes]),
+                  rct_node(:patients, 'Exposure Location and Notes', %i[potential_exposure_location potential_exposure_country]),
                   rct_node(:patients, 'Exposure Risk Factors', %i[contact_of_known_case contact_of_known_case_id travel_to_affected_country_or_area
                                                                   was_in_health_care_facility_with_known_cases
                                                                   was_in_health_care_facility_with_known_cases_facility_name laboratory_personnel
                                                                   laboratory_personnel_facility_name healthcare_personnel healthcare_personnel_facility_name
                                                                   crew_on_passenger_or_cargo_flight member_of_a_common_exposure_cohort
-                                                                  member_of_a_common_exposure_cohort_type])
+                                                                  member_of_a_common_exposure_cohort_type exposure_notes])
                 ]
               },
-              rct_node(:patients, 'Metadata', %i[creator created_at updated_at])
+              rct_node(:patients, 'Record Creation and Updates', %i[creator created_at updated_at])
             ]
           },
           {
             value: 'patients-monitoring',
             label: 'Monitoring Info',
             children: [
-              rct_node(:patients, 'Linelist Info', %i[name isolation status latest_assessment_at latest_fever_or_fever_reducer_at latest_positive_lab_at
-                                                      negative_lab_count latest_transfer_at latest_transfer_from latest_transfer_to]),
+              rct_node(:patients, 'Linelist Info', %i[workflow status]),
               rct_node(:patients, 'Monitoring Actions', %i[monitoring_status exposure_risk_assessment monitoring_plan case_status public_health_action
                                                            jurisdiction_path jurisdiction_name assigned_user]),
-              rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset user_defined_symptom_onset
+              rct_node(:patients, 'Monitoring Period', %i[last_date_of_exposure continuous_exposure symptom_onset symptom_onset_defined_by
                                                           extended_isolation end_of_monitoring closed_at monitoring_reason expected_purge_date]),
-              rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household contact_attempts pause_notifications last_assessment_reminder_sent])
+              rct_node(:patients, 'Reporting Info', %i[responder_id head_of_household pause_notifications last_assessment_reminder_sent])
             ]
           }
         ]
@@ -306,7 +299,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   ASSESSMENTS_EXPORT_OPTIONS = {
-    nodes: [rct_node(:assessments, 'Export Reports', %i[symptomatic who_reported created_at updated_at symptoms])],
+    nodes: [rct_node(:assessments, 'Export Reports', %i[id patient_id symptomatic who_reported created_at updated_at symptoms])],
     checked: [],
     expanded: %w[assessments],
     filters: {
@@ -327,7 +320,7 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   LABORATORIES_EXPORT_OPTIONS = {
-    nodes: [rct_node(:laboratories, 'Export Lab Results', %i[lab_type specimen_collection report result created_at updated_at])],
+    nodes: [rct_node(:laboratories, 'Export Lab Results', %i[id patient_id lab_type specimen_collection report result created_at updated_at])],
     checked: [],
     expanded: %w[laboratories],
     filters: {
@@ -358,7 +351,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   CLOSE_CONTACTS_EXPORT_OPTIONS = {
-    nodes: [rct_node(:close_contacts, 'Export Close Contacts', %i[first_name last_name primary_telephone email contact_attempts notes enrolled_id])],
+    nodes: [rct_node(:close_contacts, 'Export Close Contacts', %i[id patient_id first_name last_name primary_telephone email contact_attempts notes enrolled_id
+                                                                  created_at updated_at])],
     checked: [],
     expanded: %w[close_contacts],
     filters: {
@@ -373,14 +367,14 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
   }.freeze
 
   TRANSFERS_EXPORT_OPTIONS = {
-    nodes: [rct_node(:transfers, 'Export Transfers', %i[who from_jurisdiction to_jurisdiction created_at updated_at])],
+    nodes: [rct_node(:transfers, 'Export Transfers', %i[id patient_id who from_jurisdiction to_jurisdiction created_at updated_at])],
     checked: [],
     expanded: %w[transfers],
     filters: []
   }.freeze
 
   HISTORIES_EXPORT_OPTIONS = {
-    nodes: [rct_node(:histories, 'Export History', %i[created_by history_type comment created_at updated_at])],
+    nodes: [rct_node(:histories, 'Export History', %i[id patient_id created_by history_type comment created_at updated_at])],
     checked: [],
     expanded: %w[histories],
     filters: {

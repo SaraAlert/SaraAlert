@@ -27,7 +27,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
 
     # Validate user
     user = query[:user]
-    raise InvalidQueryError.new(:user, user) unless user.nil? || %w[all none].include?(user) || user.to_i.between?(1, 9999)
+    raise InvalidQueryError.new(:user, user) unless user.nil? || %w[none].include?(user) || user.to_i.between?(1, 9999)
 
     # Validate sort
     order = query[:order]
@@ -53,7 +53,7 @@ module PatientQueryHelper # rubocop:todo Metrics/ModuleLength
     end
 
     # Filter by assigned user
-    patients = patients.where(assigned_user: query[:user] == 'none' ? nil : query[:user].to_i) unless query[:user].nil? || query[:user] == 'all'
+    patients = patients.where(assigned_user: query[:user] == 'none' ? nil : query[:user].to_i) unless query[:user].nil?
 
     # Filter by search text
     patients = filter_by_text(patients, query[:search])
