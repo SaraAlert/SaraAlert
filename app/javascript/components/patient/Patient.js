@@ -69,14 +69,14 @@ class Patient extends React.Component {
       <React.Fragment>
         <Row id="monitoree-details-header">
           <Col className="mt-1">
-            <h4>
+            <h3>
               <span className="pr-2">
                 {`${this.props.details.first_name ? this.props.details.first_name : ''}${
                   this.props.details.middle_name ? ' ' + this.props.details.middle_name : ''
                 }${this.props.details.last_name ? ' ' + this.props.details.last_name : ''}`}
               </span>
               {this.props?.dependents && this.props?.dependents?.length > 0 && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
-            </h4>
+            </h3>
           </Col>
           <Col md="auto" className="jursdiction-user-box mr-3">
             <Row id="jurisdiction-path">
@@ -96,9 +96,9 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>
+                  <h4>
                     <b>IDENTIFICATION</b>
-                  </h5>
+                  </h4>
                 </div>
                 <div>
                   {this.props.goto && (
@@ -111,7 +111,7 @@ class Patient extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col className="text-truncate" md="auto">
+              <Col className="text-truncate pr-5" md="auto">
                 <Row>
                   <Col>
                     <b>DOB:</b> <span>{this.props.details.date_of_birth && moment(this.props.details.date_of_birth, 'YYYY-MM-DD').format('MM/DD/YYYY')}</span>
@@ -186,9 +186,9 @@ class Patient extends React.Component {
             <Row>
               <Col>
                 <div className="float-left">
-                  <h5>
+                  <h4>
                     <b>CONTACT INFORMATION</b>
-                  </h5>
+                  </h4>
                 </div>
                 <div>
                   {this.props.goto && (
@@ -257,9 +257,9 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
+                      <h4>
                         <b>ADDRESS</b>
-                      </h5>
+                      </h4>
                     </div>
                     <div>
                       {this.props.goto && (
@@ -346,9 +346,9 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
+                      <h4>
                         <b>ARRIVAL INFORMATION</b>
-                      </h5>
+                      </h4>
                     </div>
                     <div>
                       {this.props.goto && (
@@ -436,9 +436,9 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
+                      <h4>
                         <b>PLANNED TRAVEL</b>
-                      </h5>
+                      </h4>
                     </div>
                     <div>
                       {this.props.goto && (
@@ -508,9 +508,9 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
+                      <h4>
                         <b>POTENTIAL EXPOSURE INFORMATION</b>
-                      </h5>
+                      </h4>
                     </div>
                     <div>
                       {this.props.goto && (
@@ -616,9 +616,9 @@ class Patient extends React.Component {
                 <Row>
                   <Col>
                     <div className="float-left">
-                      <h5>
-                        <b>EXPOSURE NOTES</b>
-                      </h5>
+                      <h4>
+                        <b>NOTES</b>
+                      </h4>
                     </div>
                     <div className="clearfix"></div>
                   </Col>
@@ -659,15 +659,15 @@ class Patient extends React.Component {
                 </Row>
               </Col>
             </Row>
-            {(this.props.details.isolation || (!this.props.details.isolation && this.props.details.exposure_notes)) && (
+            {this.props.details.isolation && (
               <Row className="g-border-bottom-2 pb-4 mb-2 mt-4 mx-1">
                 <Col id="case-information" md="12">
                   <Row>
                     <Col>
                       <div className="float-left">
-                        <h5>
+                        <h4>
                           <b>CASE INFORMATION</b>
-                        </h5>
+                        </h4>
                       </div>
                       <div>
                         {this.props.goto && (
