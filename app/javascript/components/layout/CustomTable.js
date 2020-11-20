@@ -24,7 +24,7 @@ class CustomTable extends React.Component {
     this.setState(
       state => {
         const sortDirection = state.tableQuery.sortDirection === 'asc' ? 'desc' : 'asc';
-        const tableQuery = { ...state.tableQuery, sortDirection, orderBy: field };
+        const tableQuery = { ...state.tableQuery, sortDirection, orderBy: field, page: 0 };
         return { tableQuery };
       },
       () => {
