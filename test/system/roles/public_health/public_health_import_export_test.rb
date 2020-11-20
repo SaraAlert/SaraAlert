@@ -174,13 +174,15 @@ class PublicHealthTest < ApplicationSystemTestCase
     @@public_health_test_helper.import_and_cancel('locals2c4_epi', :exposure, 'Sara-Alert-Format-Exposure-Workflow.xlsx', 'Sara Alert Format')
   end
 
-  test 'import sara alert format to exposure and validate workflow specific fields' do
-    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :exposure, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :invalid_fields, [])
-  end
+  # TODO when workflow specific case status validation re-enabled: uncomment
+  # test 'import sara alert format to exposure and validate workflow specific fields' do
+  #   @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :exposure, 'Sara-Alert-Format-Isolation-Workflow.xlsx', :invalid_fields, [])
+  # end
 
-  test 'import sara alert format to isolation and validate workflow specific fields' do
-    @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :invalid_fields, [])
-  end
+  # TODO when workflow specific case status validation re-enabled: uncomment
+  # test 'import sara alert format to isolation and validate workflow specific fields' do
+  #   @@public_health_test_helper.import_sara_alert_format('state1_epi_enroller', :isolation, 'Sara-Alert-Format-Exposure-Workflow.xlsx', :invalid_fields, [])
+  # end
 
   # TODO: Re-enable when migrating away from GitHub LFS
   # test 'download sara alert format guidance from exposure workflow' do
