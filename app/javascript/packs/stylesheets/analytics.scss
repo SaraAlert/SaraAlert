@@ -106,3 +106,17 @@
   font-size: .8rem;
   font-weight: bold;
 }
+
+.custom-react-switch {
+  .react-switch-bg {
+    border-radius: 4px !important;
+  }
+  .react-switch-handle {
+    height: 20px !important;
+    top: 5px !important;
+    margin-left: 5px !important;
+    margin-right: 5px !important;
+    width: 20px !important;
+    border-radius: 4px !important;
+  }
+}
