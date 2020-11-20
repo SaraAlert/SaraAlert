@@ -15,7 +15,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
   end
 
-  def assert_eligibility(patient, exp_eligibility)
+  def expected_eligibility(patient, exp_eligibility)
     assert_eligible(patient) if exp_eligibility
     assert_ineligible(patient) unless exp_eligibility
   end
@@ -53,7 +53,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       responder: patient,
       continuous_exposure: true
     )
-    assert_eligibility(patient, exp_eligibility)
+    expected_eligibility(patient, exp_eligibility)
     dependent.destroy
   end
 
@@ -71,7 +71,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         closed_at: 1.day.ago
       }.merge(workflow_params)
       dependent = create(:patient, dependent_params)
-      assert_eligibility(patient, exp_eligibility)
+      expected_eligibility(patient, exp_eligibility)
       dependent.destroy
     end
   end
@@ -92,7 +92,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           closed_at: nil
         }.merge(workflow_params)
       )
-      assert_eligibility(patient, exp_eligibility)
+      expected_eligibility(patient, exp_eligibility)
       dependent.destroy
     end
   end
@@ -111,7 +111,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           closed_at: nil
         }.merge(workflow_params)
       )
-      assert_eligibility(patient, exp_eligibility)
+      expected_eligibility(patient, exp_eligibility)
       dependent.destroy
     end
   end
@@ -134,7 +134,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
             closed_at: nil
           }.merge(workflow_params)
         )
-        assert_eligibility(patient, exp_eligibility)
+        expected_eligibility(patient, exp_eligibility)
         # Creating an assessment from today SHOULD NOT affect eligibility
         create(
           :assessment,
@@ -142,7 +142,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           symptomatic: false,
           created_at: Time.now.getlocal('-04:00').beginning_of_day
         )
-        assert_eligibility(patient, exp_eligibility)
+        expected_eligibility(patient, exp_eligibility)
         dependent.destroy
       end
     end
@@ -396,5 +396,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
 
     assert_eligible(patient)
+  end
+
+  test 'configuring reporting period affects eligibility' do
+
   end
 end
