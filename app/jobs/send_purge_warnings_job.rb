@@ -9,13 +9,13 @@ class SendPurgeWarningsJob < ApplicationJob
     not_sent = []
 
     # Get admin users
-    recipients = User.with_any_role(:admin) | User.with_any_role(:super_user)
+    recipients = User.where(role: Roles::ADMIN) | User.where(role: Roles::SUPER_USER)
     eligible = recipients.count
 
     # Loop through and send each admin information about their purge eligible monitorees
     recipients.each do |user|
       # Skip for USA admins
-      next if user.jurisdiction&.name == 'USA'
+      next if !user.can_receive_purge_warning?
 
       # Get num purgeable underneath this admin's purview
       num_purgeable_records = user.viewable_patients.purge_eligible.size
