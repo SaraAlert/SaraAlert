@@ -74,6 +74,7 @@ class Demographics extends React.Component {
       });
       return retVal;
     });
+
   renderBarGraphs = () => (
     <div className="mx-3 mt-5">
       {this.barGraphData.map((graphData, i) => (
