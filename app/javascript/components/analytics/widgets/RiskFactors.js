@@ -26,13 +26,13 @@ class RiskFactors extends React.Component {
         total: _.sum(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country' && x.category === country).map(x => x.total)),
       };
     });
-    this.COUNTRY_HEADERS = topTenCountries
-      .sort((a, b) => b.total - a.total)
-      .map(x => x.country)
-      .slice(0, NUM_COUNTRIES_TO_SHOW);
+    this.COUNTRY_HEADERS = topTenCountries.sort((a, b) => b.total - a.total).map(x => x.country);
 
     this.rfData = this.parseOutFields(RISKFACTORS, 'Risk Factor');
     this.countryData = this.parseOutFields(this.COUNTRY_HEADERS, 'Exposure Country');
+
+    this.fullCountryData = _.cloneDeep(this.countryData); // Get the full countryData object for exporting
+    this.COUNTRY_HEADERS = this.COUNTRY_HEADERS.slice(0, NUM_COUNTRIES_TO_SHOW); // and trim the headers so it wont display all the countries
 
     // Map and translate all of the Tabular Data to the Chart Format
     this.rfChartData = this.mapToChartFormat(RISKFACTORS, this.rfData);
