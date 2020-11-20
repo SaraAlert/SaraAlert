@@ -650,7 +650,7 @@ namespace :demo do
       timestamp = Faker::Time.between_dates(from: today, to: today, period: :day)
       histories << History.new(
         patient_id: patient_id,
-        created_by: 'Sara Alert System',
+        created_by: rand < 0.7 ? User.all.select { |u| u.role?('public_health') }.sample[:email] : 'Sara Alert System',
         comment: "#{rand < 0.5 ? 'Successful' : 'Unsuccessful'} contact attempt.#{rand < 0.65 ? " #{Faker::Marketing.buzzwords}" : ''}",
         history_type: 'Contact Attempt',
         created_at: timestamp,
