@@ -394,6 +394,7 @@ class Fhir::R4::ApiController < ActionController::API
             interaction: [
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'read'),
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'update'),
+              FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'patch'),
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'create'),
               FHIR::CapabilityStatement::Rest::Resource::Interaction.new(code: 'search-type')
             ],
