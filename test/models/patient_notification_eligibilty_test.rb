@@ -20,14 +20,12 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     eligible = !Patient.reminder_eligible.find_by(id: patient.id).nil?
     puts "\nFailing eligible test with: #{format_patient_str(patient)}" unless eligible
     assert eligible
-    assert_equal 1, Patient.reminder_eligible.count
   end
 
   def assert_ineligible(patient)
     eligible = !Patient.reminder_eligible.find_by(id: patient.id).nil?
     puts "\nFailing ineligible test with: #{format_patient_str(patient)}" if eligible
     assert_not eligible
-    assert_equal 0, Patient.reminder_eligible.count
   end
 
   def format_patient_str(patient)
@@ -68,6 +66,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       }.merge(workflow_params)
       dependent = create(:patient, dependent_params)
       expected_eligibility(patient, exp_eligibility)
+      assert_ineligible(dependent)
       dependent.destroy
     end
   end
@@ -89,6 +88,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         }.merge(workflow_params)
       )
       expected_eligibility(patient, exp_eligibility)
+      assert_ineligible(dependent)
       dependent.destroy
     end
   end
@@ -108,12 +108,12 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         }.merge(workflow_params)
       )
       expected_eligibility(patient, exp_eligibility)
+      assert_ineligible(dependent)
       dependent.destroy
     end
   end
 
   test 'ignored dependent eligibility fields' do
-    Patient.destroy_all
     patient = create(:patient, preferred_contact_method: 'E-mailed Web Link', monitoring: false, closed_at: 1.day.ago)
     eligible_dependent_params = { continuous_exposure: true }
     ineligible_dependent_params = { monitoring: false, closed_at: 1.day.ago }
@@ -166,33 +166,12 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   end
 
   test 'HoH notification eligible because of dependent flows' do
-    ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |report_method|
-      [
-        { isolation: true },
-        { continuous_exposure: true },
-        { last_date_of_exposure: nil, created_at: 5.days.ago },
-        { last_date_of_exposure: 5.days.ago, created_at: 5.days.ago },
-        { last_date_of_exposure: 11.days.ago, created_at: 20.days.ago }
-      ].each do |workflow_params|
-        [
-          { monitoring: false, closed_at: 1.day.ago },
-          { last_assessment_reminder_sent: 11.hours.ago },
-          { isolation: false, continuous_exposure: false, last_date_of_exposure: nil, created_at: 15.days.ago },
-          { isolation: false, continuous_exposure: false, last_date_of_exposure: 15.days.ago, created_at: 20.days.ago }
-        ].each do |ineligible_params|
-          Patient.destroy_all
-          patient_args = {
-            preferred_contact_method: report_method
-          }.merge(workflow_params).merge(ineligible_params)
-          patient = create(:patient, patient_args)
-          assert_ineligible(patient)
-          continuous_exposure_dependent_test(patient)
-          closed_dependent_test(patient)
-          monitored_dependent_test(patient)
-          past_monitoring_period_dependent_test(patient)
-        end
-      end
-    end
+    patient = create(:patient, preferred_contact_method: 'SMS Text-message', monitoring: false, closed_at: 1.day.ago)
+    assert_ineligible(patient)
+    continuous_exposure_dependent_test(patient)
+    closed_dependent_test(patient)
+    monitored_dependent_test(patient)
+    past_monitoring_period_dependent_test(patient)
   end
 
   test 'HoH unconditionally ineligible flows' do
@@ -203,7 +182,6 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       { preferred_contact_method: '' },
       { preferred_contact_method: nil }
     ].each do |ineligible_params|
-      Patient.destroy_all
       patient = create(:patient, ineligible_params)
       assert_ineligible(patient)
       continuous_exposure_dependent_test(patient, exp_eligibility: false)
@@ -222,7 +200,6 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         { last_date_of_exposure: 5.days.ago, created_at: 5.days.ago },
         { last_date_of_exposure: 11.days.ago, created_at: 20.days.ago }
       ].each do |workflow_params|
-        Patient.destroy_all
         patient = create(
           :patient,
           {
@@ -272,7 +249,6 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           { preferred_contact_method: '' },
           { preferred_contact_method: nil }
         ].each do |ineligible_params|
-          Patient.destroy_all
           patient_args = {
             preferred_contact_method: report_method,
             pause_notifications: false,
@@ -293,7 +269,6 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         { last_date_of_exposure: 15.days.ago, created_at: 20.days.ago },
         { last_date_of_exposure: nil, created_at: 15.days.ago }
       ].each do |ineligible_params|
-        Patient.destroy_all
         patient_args = {
           preferred_contact_method: report_method,
           pause_notifications: false,
@@ -311,7 +286,6 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
 
   test 'isolation non reporting send report when latest assessment was more than 1 day ago' do
     # patient was created more than 24 hours ago
-    Patient.destroy_all
     patient = create(
       :patient,
       preferred_contact_method: 'E-mailed Web Link',
@@ -320,16 +294,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       isolation: true,
       created_at: 2.days.ago
     )
-
     # patient has asymptomatic assessment more than 24 hours ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 25.hours.ago)
-
     assert_eligible(patient)
   end
 
   test 'isolation non reporting send report when no assessments and patient was created more than 1 day ago' do
     # patient was created more than 24 hours ago
-    Patient.destroy_all
     patient = create(
       :patient,
       preferred_contact_method: 'E-mailed Web Link',
@@ -337,13 +308,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       purged: false,
       isolation: true, created_at: 2.days.ago
     )
-
     assert_eligible(patient)
   end
 
   test 'exposure send report when latest assessment was more than 1 day ago' do
     # patient was created more than 24 hours ago
-    Patient.destroy_all
     patient = create(
       :patient,
       preferred_contact_method: 'E-mailed Web Link',
@@ -353,16 +322,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       created_at: 20.days.ago,
       last_date_of_exposure: 14.days.ago
     )
-
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
-
     assert_eligible(patient)
   end
 
   test 'exposure send report when no assessments and patient was created more than 1 day ago' do
     # patient was created more than 24 hours ago
-    Patient.destroy_all
     patient = create(
       :patient,
       preferred_contact_method: 'E-mailed Web Link',
@@ -372,13 +338,11 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       created_at: 2.days.ago,
       last_date_of_exposure: 14.days.ago
     )
-
     assert_eligible(patient)
   end
 
   test 'exposure send report without continuous exposure' do
     # patient was created more than 24 hours ago
-    Patient.destroy_all
     patient = create(
       :patient,
       preferred_contact_method: 'E-mailed Web Link',
@@ -388,16 +352,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       created_at: 4.days.ago,
       last_date_of_exposure: 5.days.ago
     )
-
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
-
     assert_eligible(patient)
   end
 
   test 'exposure send report with continuous exposure' do
     # patient was created more than 24 hours ago
-    Patient.destroy_all
     patient = create(
       :patient,
       preferred_contact_method: 'E-mailed Web Link',
@@ -407,10 +368,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       created_at: 4.days.ago,
       continuous_exposure: true
     )
-
     # patient has asymptomatic assessment more than 1 day ago but less than 7 days ago
     create(:assessment, patient: patient, symptomatic: false, created_at: 2.days.ago)
-
     assert_eligible(patient)
   end
 
