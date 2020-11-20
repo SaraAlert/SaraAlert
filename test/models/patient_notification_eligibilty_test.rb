@@ -4,15 +4,11 @@ require 'test_case'
 
 class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   def setup
-    @default_purgeable_after = ADMIN_OPTIONS['purgeable_after']
-    @default_weekly_purge_warning_date = ADMIN_OPTIONS['weekly_purge_warning_date']
-    @default_weekly_purge_date = ADMIN_OPTIONS['weekly_purge_date']
+    @original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
   end
 
   def teardown
-    ADMIN_OPTIONS['purgeable_after'] = @default_purgeable_after
-    ADMIN_OPTIONS['weekly_purge_warning_date'] = @default_weekly_purge_warning_date
-    ADMIN_OPTIONS['weekly_purge_date'] = @default_weekly_purge_date
+    ADMIN_OPTIONS['reporting_period_minutes'] = @original_reporting_period
   end
 
   def expected_eligibility(patient, exp_eligibility)
@@ -116,35 +112,56 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     end
   end
 
-  def ignored_dependent_eligibility_fields_test(patient, exp_eligibility: true)
+  test 'ignored dependent eligibility fields' do
+    Patient.destroy_all
+    patient = create(:patient, preferred_contact_method: 'E-mailed Web Link', monitoring: false, closed_at: 1.day.ago)
+    eligible_dependent_params = { continuous_exposure: true }
+    ineligible_dependent_params = { monitoring: false, closed_at: 1.day.ago }
+    # Expect that the ignored params below will not affect the initial eligibilty found here.
     [
-      'E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call',
-      'SMS Text-message', 'Unknown', 'Opt-out', '', nil
-    ].each do |report_method|
-      [
-        { pause_notifications: true },
-        { last_assessment_reminder_sent: 1.hour.ago }
-      ].each do |workflow_params|
-        dependent = create(
-          :patient,
-          {
-            preferred_contact_method: report_method,
-            responder: patient,
-            monitoring: true,
-            closed_at: nil
-          }.merge(workflow_params)
-        )
-        expected_eligibility(patient, exp_eligibility)
-        # Creating an assessment from today SHOULD NOT affect eligibility
-        create(
-          :assessment,
-          patient: dependent,
-          symptomatic: false,
-          created_at: Time.now.getlocal('-04:00').beginning_of_day
-        )
-        expected_eligibility(patient, exp_eligibility)
-        dependent.destroy
-      end
+      { preferred_contact_method: 'E-mailed Web Link' },
+      { preferred_contact_method: 'SMS Texted Weblink' },
+      { preferred_contact_method: 'Telephone call' },
+      { preferred_contact_method: 'SMS Text-message' },
+      { preferred_contact_method: 'Unknown' },
+      { preferred_contact_method: 'Opt-out' },
+      { preferred_contact_method: '' },
+      { preferred_contact_method: nil },
+      { pause_notifications: true },
+      { last_assessment_reminder_sent: 1.hour.ago }
+    ].each do |ignored_params|
+      # Inegligible dependent should not become eligible
+      ineligible_dependent = create(
+        :patient,
+        { responder: patient }.merge(ineligible_dependent_params).merge(ignored_params)
+      )
+      expected_eligibility(patient, false)
+      # Creating an assessment from today SHOULD NOT affect eligibility
+      create(
+        :assessment,
+        patient: ineligible_dependent,
+        symptomatic: false,
+        created_at: Time.now.getlocal('-04:00').beginning_of_day
+      )
+      expected_eligibility(patient, false)
+
+      # Egligible dependent should not become ineligible
+      eligible_dependent = create(
+        :patient,
+        { responder: patient }.merge(eligible_dependent_params).merge(ignored_params)
+      )
+      expected_eligibility(patient, true)
+      # Creating an assessment from today SHOULD NOT affect eligibility
+      create(
+        :assessment,
+        patient: eligible_dependent,
+        symptomatic: false,
+        created_at: Time.now.getlocal('-04:00').beginning_of_day
+      )
+      expected_eligibility(patient, true)
+
+      ineligible_dependent.destroy
+      eligible_dependent.destroy
     end
   end
 
@@ -173,7 +190,6 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           closed_dependent_test(patient)
           monitored_dependent_test(patient)
           past_monitoring_period_dependent_test(patient)
-          ignored_dependent_eligibility_fields_test(patient)
         end
       end
     end
