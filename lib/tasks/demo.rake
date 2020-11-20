@@ -393,7 +393,7 @@ namespace :demo do
       # enrollment
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: 'User enrolled monitoree.',
         history_type: 'Enrollment',
         created_at: patient[:created_at],
@@ -402,7 +402,7 @@ namespace :demo do
       # monitoring status
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User changed monitoring status to \"Not Monitoring\". Reason: #{patient[:monitoring_reason]}",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -410,7 +410,7 @@ namespace :demo do
       ) unless patient[:monitoring]
       # exposure risk assessment
       histories << History.new(
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User changed exposure risk assessment to \"#{patient[:exposure_risk_assessment]}\".",
         patient_id: patient[:id],
         history_type: 'Monitoring Change',
@@ -420,7 +420,7 @@ namespace :demo do
       # case status
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User changed case status to \"#{patient[:case_status]}\", and chose to \"Continue Monitoring in Isolation Workflow\".",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -429,7 +429,7 @@ namespace :demo do
       # public health action
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User changed latest public health action to \"#{patient[:public_health_action]}\".",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -438,7 +438,7 @@ namespace :demo do
       # pause notifications
       histories << History.new(
         patient_id: patient[:id],
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('enroller') }.sample[:email],
         comment: "User paused notifications for this monitoree.",
         history_type: 'Monitoring Change',
         created_at: patient[:updated_at],
@@ -472,7 +472,7 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User created a new report.",
         history_type: 'Report Created',
         created_at: assessment_ts,
@@ -598,7 +598,7 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User added a new lab result.",
         history_type: 'Lab Result',
         created_at: lab_ts,
@@ -636,7 +636,7 @@ namespace :demo do
       )
       histories << History.new(
         patient_id: patient_id,
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User changed jurisdiction from \"#{jurisdiction_paths[jur_id]}\" to #{jurisdiction_paths[to_jurisdiction]}.",
         history_type: 'Monitoring Change',
         created_at: transfer_ts,
@@ -683,7 +683,7 @@ namespace :demo do
       close_contacts << close_contact
       histories << History.new(
         patient_id: patient_id,
-        created_by: 'Sara Alert System',
+        created_by: User.all.select { |u| u.role?('public_health') }.sample[:email],
         comment: "User created a new close contact.",
         history_type: 'Close Contact',
         created_at: close_contact_ts,
@@ -706,17 +706,21 @@ namespace :demo do
       successful = rand < 0.45
       note = rand < 0.65 ? " #{Faker::TvShows::GameOfThrones.quote}" : ''
       contact_attempt_ts = create_fake_timestamp(today, today)
-      contact_attempts << ContactAttempt.new(
-        patient_id: patient_id,
-        user_id: User.all.select { |u| u.role?('public_health') }.sample[:id],
-        successful: successful,
-        note: note,
-        created_at: contact_attempt_ts,
-        updated_at: contact_attempt_ts
-      )
+      user = User.all.select { |u| u.role?('public_health') }.sample
+      manual_attempt = rand < 0.7
+      if manual_attempt
+        contact_attempts << ContactAttempt.new(
+          patient_id: patient_id,
+          user_id: user[:id],
+          successful: successful,
+          note: note,
+          created_at: contact_attempt_ts,
+          updated_at: contact_attempt_ts
+        )
+      end
       histories << History.new(
         patient_id: patient_id,
-        created_by: rand < 0.7 ? User.all.select { |u| u.role?('public_health') }.sample[:email] : 'Sara Alert System',
+        created_by: manual_attempt ? user[:email] : 'Sara Alert System',
         comment: "#{successful ? 'Successful' : 'Unsuccessful'} contact attempt. Note: #{note}",
         history_type: 'Contact Attempt',
         created_at: contact_attempt_ts,
