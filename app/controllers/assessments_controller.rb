@@ -145,17 +145,17 @@ class AssessmentsController < ApplicationController
     # Figure out the change
     delta = []
     typed_reported_symptoms.each do |symptom|
-      case symptom
-      when BoolSymptom
+      case symptom.type
+      when 'BoolSymptom'
         new_val = symptom.bool_value
         old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.bool_value
         has_changed = [true, false].include?(new_val) && [true, false].include?(old_val) && new_val != old_val
         delta << symptom.name + '=' + (new_val ? 'Yes' : 'No') if has_changed
-      when FloatSymptom
+      when 'FloatSymptom'
         new_val = symptom.float_value
         old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.float_value
         delta << "#{symptom.name}=#{new_val}" if new_val != old_val
-      when IntegerSymptom
+      when 'IntegerSymptom'
         new_val = symptom.int_value
         old_val = assessment.reported_condition&.symptoms&.find_by(name: symptom.name)&.int_value
         delta << "#{symptom.name}=#{new_val}" if new_val != old_val
