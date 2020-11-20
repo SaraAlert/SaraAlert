@@ -402,6 +402,9 @@ A capability statement is available at `[base]/metadata`:
               "code": "update"
             },
             {
+              "code": "patch"
+            },
+            {
               "code": "create"
             },
             {
