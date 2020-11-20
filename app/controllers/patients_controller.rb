@@ -255,20 +255,20 @@ class PatientsController < ApplicationController
 
     # Determine if the user was removed from a household, added to a household, or a new HoH was selected
     if new_hoh_id == current_patient.id
-      comment = "User removed #{current_patient.last_name}, #{current_patient.first_name} from the household. #{old_hoh.last_name}, #{old_hoh.first_name}"\
+      comment = "User removed #{current_patient.first_name} #{current_patient.last_name} from the household. #{old_hoh.first_name} #{old_hoh.last_name}"\
                 ' will no longer be responsible for handling their reporting.'
       History.monitoring_change(patient: old_hoh, created_by: current_user.email, comment: comment)
-      comment = "User removed monitoree from a household. #{old_hoh.last_name}, #{old_hoh.first_name} will"\
+      comment = "User removed monitoree from a household. #{old_hoh.first_name} #{old_hoh.last_name} will"\
                 ' no longer be responsible for handling their reporting.'
     elsif household_ids != []
-      comment = "User changed head of household from #{old_hoh.last_name}, #{old_hoh.first_name} to #{new_hoh.last_name},"\
-                " #{new_hoh.first_name}. #{new_hoh.last_name}, #{new_hoh.first_name} will now be responsible for handling the reporting for the household."
+      comment = "User changed head of household from #{old_hoh.first_name} #{old_hoh.last_name} to #{new_hoh.first_name}"\
+                " #{new_hoh.last_name}. #{new_hoh.first_name} #{new_hoh.last_name} will now be responsible for handling the reporting for the household."
       History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
     else
-      comment = "User added #{current_patient.last_name}, #{current_patient.first_name} to the household. #{new_hoh.last_name}, #{new_hoh.first_name}"\
+      comment = "User added #{current_patient.first_name} #{current_patient.last_name} to the household. #{new_hoh.first_name} #{new_hoh.last_name}"\
                 ' will now be responsible for handling the reporting on their behalf.'
       History.monitoring_change(patient: new_hoh, created_by: current_user.email, comment: comment)
-      comment = "User added monitoree to a household. #{new_hoh.last_name}, #{new_hoh.first_name} will now be responsible"\
+      comment = "User added monitoree to a household. #{new_hoh.first_name} #{new_hoh.last_name} will now be responsible"\
                 ' for handling the reporting on their behalf.'
     end
     History.monitoring_change(patient: current_patient, created_by: current_user.email, comment: comment)
