@@ -156,6 +156,7 @@ class Patient < ApplicationRecord
           .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
           .where(pause_notifications: false)
           .where('dependents_patients.monitoring = ?', true)
+          .where('dependents_patients.purged = ?', false)
           .where(
             # This is basically the same as active_dependents()
             # but we cannot use it here because it's a method and even if it was, then

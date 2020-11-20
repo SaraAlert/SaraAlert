@@ -51,6 +51,20 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     dependent.destroy
   end
 
+  def purged_dependent_test(patient, exp_eligibility: false)
+    dependent = create(
+      :patient,
+      responder: patient,
+      continuous_exposure: true
+    )
+    expected_eligibility(patient, true)
+    assert_ineligible(dependent)
+    dependent.update(purged: true)
+    expected_eligibility(patient, exp_eligibility)
+    assert_ineligible(dependent)
+    dependent.destroy
+  end
+
   def closed_dependent_test(patient, exp_eligibility: false)
     [
       { isolation: true },
@@ -172,6 +186,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     closed_dependent_test(patient)
     monitored_dependent_test(patient)
     past_monitoring_period_dependent_test(patient)
+    purged_dependent_test(patient)
   end
 
   test 'HoH unconditionally ineligible flows' do
