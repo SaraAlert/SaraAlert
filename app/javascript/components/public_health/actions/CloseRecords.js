@@ -50,7 +50,7 @@ class CloseRecords extends React.Component {
     this.setState({ loading: true }, () => {
       axios.defaults.headers.common['X-CSRF-Token'] = this.props.authenticity_token;
       axios
-        .post(window.BASE_PATH + '/patients/bulk_edit/status', {
+        .post(window.BASE_PATH + '/patients/bulk_edit', {
           ids: idArray,
           monitoring: this.state.monitoring,
           monitoring_reason: this.state.monitoring_reason,

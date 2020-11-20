@@ -584,7 +584,7 @@ class PatientsTable extends React.Component {
                         <span className="ml-2">Update Case Status</span>
                       </Dropdown.Item>
                       <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Assigned User' })}>
-                        <i className="fas fa-user-edit text-center" style={{ width: '1em' }}></i>
+                        <i className="fas fa-users text-center" style={{ width: '1em' }}></i>
                         <span className="ml-2">Update Assigned User</span>
                       </Dropdown.Item>
                     </DropdownButton>
@@ -633,6 +633,7 @@ class PatientsTable extends React.Component {
               authenticity_token={this.props.authenticity_token}
               patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
               close={() => this.setState({ action: undefined })}
+              assigned_users={this.state.assigned_users}
             />
           )}
         </Modal>
