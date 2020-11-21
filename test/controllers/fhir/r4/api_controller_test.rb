@@ -694,6 +694,17 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unsupported_media_type
   end
 
+  test 'SYSTEM FLOW: should be bad request via create due to invalid JSON' do
+    post(
+      '/fhir/r4/Patient',
+      env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal 'Failed to parse JSON', json_response['issue'][0]['diagnostics']
+  end
+
   test 'SYSTEM FLOW: should be bad request via create due to non-FHIR' do
     post(
       '/fhir/r4/Patient',
@@ -844,6 +855,17 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     # Closed at date should have been set to today
     assert_equal DateTime.now.to_date, p.closed_at&.to_date
+  end
+
+  test 'SYSTEM FLOW: should be bad request via update due to invalid JSON' do
+    put(
+      '/fhir/r4/Patient/1',
+      env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
+      headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal 'Failed to parse JSON', json_response['issue'][0]['diagnostics']
   end
 
   test 'SYSTEM FLOW: should be bad request via update due to bad fhir' do
@@ -1628,6 +1650,17 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     assert_response :unsupported_media_type
   end
 
+  test 'USER FLOW: should be bad request via create due to invalid JSON' do
+    post(
+      '/fhir/r4/Patient',
+      env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal 'Failed to parse JSON', json_response['issue'][0]['diagnostics']
+  end
+
   test 'USER FLOW: should be bad request via create due to non-FHIR' do
     post(
       '/fhir/r4/Patient',
@@ -1787,6 +1820,17 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
 
     # Closed at date should have been set to today
     assert_equal DateTime.now.to_date, p.closed_at&.to_date
+  end
+
+  test 'USER FLOW: should be bad request via update due to invalid JSON' do
+    put(
+      '/fhir/r4/Patient/1',
+      env: { 'RAW_POST_DATA' => '{ "foo", "bar" }' },
+      headers: { 'Authorization': "Bearer #{@user_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
+    )
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+    assert_equal 'Failed to parse JSON', json_response['issue'][0]['diagnostics']
   end
 
   test 'USER FLOW: should be bad request via update due to bad fhir' do
