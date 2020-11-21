@@ -127,6 +127,8 @@ class Fhir::R4::ApiController < ActionController::API
     end
 
     status_ok(resource.as_fhir) && return
+  rescue JSON::ParserError
+    status_bad_request(['Failed to parse JSON'])
   rescue StandardError
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
@@ -209,6 +211,8 @@ class Fhir::R4::ApiController < ActionController::API
       History.enrollment(patient: resource, created_by: resource.creator&.email, comment: 'Monitoree enrolled via API.')
     end
     status_created(resource.as_fhir) && return
+  rescue JSON::ParserError
+    status_bad_request(['Failed to parse JSON'])
   rescue StandardError
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
