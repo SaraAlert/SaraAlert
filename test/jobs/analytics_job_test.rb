@@ -131,18 +131,18 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_snapshot(snapshots, 3, 'Last 7 Days', 12, 0, 0, 0)
     verify_snapshot(snapshots, 4, 'Last 14 Days', 18, 0, 1, 0)
     verify_snapshot(snapshots, 5, 'Last 14 Days', 13, 0, 0, 0)
-    verify_snapshot(snapshots, 6, 'Total', 24, 0, 3, 0)
-    verify_snapshot(snapshots, 7, 'Total', 0, 0, 0, 0)
+    verify_snapshot(snapshots, 6, 'Total', 29, 0, 3, 0)
+    verify_snapshot(snapshots, 7, 'Total', 15, 0, 0, 0)
 
     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, Patient.where(jurisdiction_id: 2), 2)
     verify_snapshot(snapshots, 0, 'Last 24 Hours', 0, 1, 1, 1)
     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0)
-    verify_snapshot(snapshots, 2, 'Last 7 Days', 0, 1, 0, 1)
-    verify_snapshot(snapshots, 3, 'Last 7 Days', 6, 0, 0, 0)
-    verify_snapshot(snapshots, 4, 'Last 14 Days', 2, 1, 0, 1)
-    verify_snapshot(snapshots, 5, 'Last 14 Days', 6, 0, 0, 0)
-    verify_snapshot(snapshots, 6, 'Total', 8, 2, 1, 2)
-    verify_snapshot(snapshots, 7, 'Total', 8, 0, 0, 0)
+    verify_snapshot(snapshots, 2, 'Last 7 Days', 5, 1, 0, 1)
+    verify_snapshot(snapshots, 3, 'Last 7 Days', 11, 0, 0, 0)
+    verify_snapshot(snapshots, 4, 'Last 14 Days', 7, 1, 0, 1)
+    verify_snapshot(snapshots, 5, 'Last 14 Days', 11, 0, 0, 0)
+    verify_snapshot(snapshots, 6, 'Total', 13, 2, 1, 2)
+    verify_snapshot(snapshots, 7, 'Total', 13, 0, 0, 0)
   end
 
   test 'state level maps' do
