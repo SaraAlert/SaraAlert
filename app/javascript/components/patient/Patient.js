@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Col, Row, Button, Collapse, Card, Table } from 'react-bootstrap';
+import { Col, Row, Button, Collapse, Card } from 'react-bootstrap';
 import moment from 'moment';
 
 class Patient extends React.Component {
