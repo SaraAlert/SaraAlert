@@ -209,7 +209,8 @@ class ImportController < ApplicationController
     normalized_value = unformat_enum_field(value)
     return NORMALIZED_ENUMS[field][normalized_value] if NORMALIZED_ENUMS[field].keys.include?(normalized_value)
 
-    err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}', acceptable values are: #{VALID_ENUMS[field].to_sentence}"
+    err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}',"\
+              " acceptable values are: #{VALID_ENUMS[field].reject(&:blank?).to_sentence}"
     raise ValidationError.new(err_msg, row_ind)
   end
 
