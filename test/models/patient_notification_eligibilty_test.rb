@@ -161,6 +161,16 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     query.close
   end
 
+  test 'MySQL hour works as expected' do
+    (0..23).each do |hour|
+      dt = Time.now.getlocal('-00:00').change(hour: hour)
+      query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT HOUR(?)')
+      results = query.execute(dt)
+      assert_equal hour, results.first.first
+      query.close
+    end
+  end
+
   test 'ignored dependent eligibility fields' do
     patient = create(:patient, preferred_contact_method: 'E-mailed Web Link', monitoring: false, closed_at: 1.day.ago)
     eligible_dependent_params = { continuous_exposure: true }
@@ -487,7 +497,147 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     assert_ineligible(patient)
   end
 
-  test 'within_preferred_contact_time scope' do
+  test 'morning preferred contact time' do
+    [
+      { monitored_address_state: 'Florida' },
+      { monitored_address_state: 'Colorado' },
+      { monitored_address_state: nil, address_state: 'California' },
+      {}
+    ].each do |patient_params|
+      patient = create(
+        :patient,
+        {
+          preferred_contact_method: 'E-mailed Web Link',
+          continuous_exposure: true,
+          preferred_contact_time: 'Morning'
+        }.merge(patient_params)
+      )
 
+      (0..7).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_ineligible(patient)
+        end
+      end
+
+      (8..11).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_eligible(patient)
+        end
+      end
+
+      (12..24).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_ineligible(patient)
+        end
+      end
+    end
+  end
+
+  test 'afternoon preferred contact time' do
+    [
+      { monitored_address_state: 'Florida' },
+      { monitored_address_state: 'Colorado' },
+      { monitored_address_state: nil, address_state: 'California' },
+      {}
+    ].each do |patient_params|
+      patient = create(
+        :patient,
+        {
+          preferred_contact_method: 'E-mailed Web Link',
+          continuous_exposure: true,
+          preferred_contact_time: 'Afternoon'
+        }.merge(patient_params)
+      )
+
+      (0..11).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_ineligible(patient)
+        end
+      end
+
+      (12..15).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_eligible(patient)
+        end
+      end
+
+      (16..24).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_ineligible(patient)
+        end
+      end
+    end
+  end
+
+  test 'evening preferred contact time' do
+    [
+      { monitored_address_state: 'Florida' },
+      { monitored_address_state: 'Colorado' },
+      { monitored_address_state: nil, address_state: 'California' },
+      {}
+    ].each do |patient_params|
+      patient = create(
+        :patient,
+        {
+          preferred_contact_method: 'E-mailed Web Link',
+          continuous_exposure: true,
+          preferred_contact_time: 'Evening'
+        }.merge(patient_params)
+      )
+
+      (0..15).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_ineligible(patient)
+        end
+      end
+
+      (16..18).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_eligible(patient)
+        end
+      end
+
+      (19..24).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_ineligible(patient)
+        end
+      end
+    end
+  end
+
+  test 'unspecified preferred contact time' do
+    [
+      { monitored_address_state: 'Florida' },
+      { monitored_address_state: 'Colorado' },
+      { monitored_address_state: nil, address_state: 'California' },
+      {}
+    ].each do |patient_params|
+      patient = create(
+        :patient,
+        {
+          preferred_contact_method: 'E-mailed Web Link',
+          continuous_exposure: true,
+          preferred_contact_time: nil
+        }.merge(patient_params)
+      )
+
+      (0..10).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_ineligible(patient)
+        end
+      end
+
+      (11..16).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_eligible(patient)
+        end
+      end
+
+      (17..24).each do |hour|
+        Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: hour)) do
+          assert_ineligible(patient)
+        end
+      end
+    end
   end
 end

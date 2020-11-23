@@ -215,15 +215,16 @@ class Patient < ApplicationRecord
       #  default    => 1100 - 1700
       '(patients.preferred_contact_time = "Morning"'\
       ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 8'\
-      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 12) '\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 11) '\
       'OR (patients.preferred_contact_time = "Afternoon"'\
       ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 12'\
-      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 16) '\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 15) '\
       'OR (patients.preferred_contact_time = "Evening"'\
       ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 16'\
-      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 19) '\
-      'OR (HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 11'\
-      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 17)',
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 18) '\
+      'OR (patients.preferred_contact_time IS NULL'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 11'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 16)',
       Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
       Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
       Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
