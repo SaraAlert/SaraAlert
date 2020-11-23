@@ -800,21 +800,33 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'SYSTEM FLOW: should be unprocessable entity via create with validation errors' do
-    bad_phone = '123'
-    bad_birth_date = '2000'
-    @patient_1.telecom[0].value = bad_phone
-    @patient_1.birthDate = bad_birth_date
     post(
       '/fhir/r4/Patient',
-      params: @patient_1.to_json,
+      params: IO.read(file_fixture('fhir_invalid_patient.json')),
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 3
-    assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
-    assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
-    assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    msg = 'Expected validation error on '
+    assert_equal 18, errors.length
+    assert(errors.any?(/Invalid.*Monitoring Plan/), msg + 'Monitoring Plan')
+    assert(errors.any?(/Old York.*State/), msg + 'State')
+    assert(errors.any?(/0000.*Ethnicity/), msg + 'Ethnicity')
+    assert(errors.any?(/High noon.*Preferred Contact Time/), msg + 'Preferred Contact Time')
+    assert(errors.any?(/On FHIR.*Sex/), msg + 'Sex')
+    assert(errors.any?(/Dumbphone.*Telephone Type/), msg + 'Phone Type')
+    assert(errors.any?(/123.*Primary Telephone/), msg + 'Primary Telephone')
+    assert(errors.any?(/Date of Birth/), msg + 'Date of Birth')
+    assert(errors.any?(/Last Date of Exposure/), msg + 'Last Date of Exposure')
+    assert(errors.any?(/1492.*Symptom Onset/), msg + 'Symptom Onset')
+    assert(errors.any?(/1776.*Additional Planned Travel Start Date/), msg + 'Additional Planned Travel Start Date')
+    assert(errors.any?(/2020-01-32.*Date of Departure/), msg + 'Date of Departure')
+    assert(errors.any?(/9999-99-99.*Date of Arrival/), msg + 'Date of Arrival')
+    assert(errors.any?(/Last Name/), msg + 'Last Name')
+    assert(errors.any?(/10000.*Assigned User/), msg + 'Assigned User')
+    assert(errors.any?(/Email.*Primary Contact Method/), msg + 'Email')
   end
 
   test 'SYSTEM FLOW: should be unauthorized via update' do
@@ -991,21 +1003,33 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'SYSTEM FLOW: should be unprocessable entity via update with validation errors' do
-    bad_phone = '123'
-    bad_birth_date = '2000'
-    @patient_1.telecom[0].value = bad_phone
-    @patient_1.birthDate = bad_birth_date
-    put(
-      '/fhir/r4/Patient/1',
-      params: @patient_1.to_json,
+    post(
+      '/fhir/r4/Patient',
+      params: IO.read(file_fixture('fhir_invalid_patient.json')),
       headers: { 'Authorization': "Bearer #{@system_patient_token_rw.token}", 'Content-Type': 'application/fhir+json' }
     )
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
-    assert_equal json_response['issue'].length, 3
-    assert_match(Regexp.new("#{bad_phone}.*Primary Telephone"), json_response['issue'][0]['diagnostics'])
-    assert_match(Regexp.new("#{bad_birth_date}.*Date of Birth"), json_response['issue'][1]['diagnostics'])
-    assert_match(Regexp.new('Date of Birth'), json_response['issue'][2]['diagnostics'])
+    errors = json_response['issue'].map { |i| i['diagnostics'] }
+
+    msg = 'Expected validation error on '
+    assert_equal 18, errors.length
+    assert(errors.any?(/Invalid.*Monitoring Plan/), msg + 'Monitoring Plan')
+    assert(errors.any?(/Old York.*State/), msg + 'State')
+    assert(errors.any?(/0000.*Ethnicity/), msg + 'Ethnicity')
+    assert(errors.any?(/High noon.*Preferred Contact Time/), msg + 'Preferred Contact Time')
+    assert(errors.any?(/On FHIR.*Sex/), msg + 'Sex')
+    assert(errors.any?(/Dumbphone.*Telephone Type/), msg + 'Phone Type')
+    assert(errors.any?(/123.*Primary Telephone/), msg + 'Primary Telephone')
+    assert(errors.any?(/Date of Birth/), msg + 'Date of Birth')
+    assert(errors.any?(/Last Date of Exposure/), msg + 'Last Date of Exposure')
+    assert(errors.any?(/1492.*Symptom Onset/), msg + 'Symptom Onset')
+    assert(errors.any?(/1776.*Additional Planned Travel Start Date/), msg + 'Additional Planned Travel Start Date')
+    assert(errors.any?(/2020-01-32.*Date of Departure/), msg + 'Date of Departure')
+    assert(errors.any?(/9999-99-99.*Date of Arrival/), msg + 'Date of Arrival')
+    assert(errors.any?(/Last Name/), msg + 'Last Name')
+    assert(errors.any?(/10000.*Assigned User/), msg + 'Assigned User')
+    assert(errors.any?(/Email.*Primary Contact Method/), msg + 'Email')
   end
 
   test 'SYSTEM FLOW: should be unprocessable entity via update with invalid jurisdiction path' do
