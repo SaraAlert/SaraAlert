@@ -1,13 +1,52 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import _ from 'lodash';
-import { Card, Table } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 
-const SYMPTOMLEVELS = ['Symptomatic', 'Non-Reporting', 'Asymptomatic'];
-const RISKLEVELS = ['High', 'Medium', 'Low', 'No Identified Risk', 'Missing']; // null will be mapped to `missing` later
+const WORKFLOWS = ['Exposure', 'Isolation'];
 
-const workflows = ['Exposure', 'Isolation'];
-const reportingMethods = ['email', ''];
+// Provide a separate array, as object-iteration order is not guaranteed in JS
+const CONTACT_METHOD_HEADERS = ['Email', 'SMS Weblink', 'SMS Text', 'Phone Call', 'Opt-Out', 'Unknown', 'Total'];
+
+// Maps the difference between what we have server-side and what we want to display to the client
+const CONTACT_METHOD_MAPPINGS = {
+  'E-mailed Web Link': 'Email',
+  'SMS Texted Weblink': 'SMS Weblink',
+  'SMS Text-message': 'SMS Text',
+  'Telephone call': 'Phone Call',
+  'Opt-out': 'Opt-Out',
+  Unknown: 'Unknown',
+};
+
+// The goal was to have as few hard-coded options as possisble.
+// Feedback was provided to tweak certain things (colors, wording) so this becomes a necessity
+const LINELIST_STYLE_OPTIONS = [
+  {
+    linelist: 'Symptomatic',
+    color: '#f5988c',
+  },
+  {
+    linelist: 'Non-Reporting',
+    color: '#ffe09e',
+  },
+  {
+    linelist: 'Asymptomatic',
+    color: '#d1e6a5',
+  },
+  {
+    linelist: 'PUI',
+    color: '#e2e2e2',
+  },
+  {
+    linelist: 'Requiring Review',
+    linelistRewording: 'Records Requiring Review',
+    color: '#f5988c',
+  },
+  {
+    linelist: 'Reporting',
+    color: '#d1e6a5',
+  },
+];
 
 class RiskStratification extends React.Component {
   constructor(props) {
@@ -63,19 +102,18 @@ class RiskStratification extends React.Component {
     return (
       <React.Fragment>
         <Card className="card-square text-center">
-          <div className="analytics-card-header font-weight-bold h5">Actively Monitored Individuals by Reporting Method (as of X) ​</div>
+          <div className="analytics-card-header font-weight-bold h5">Actively Monitored Individuals by Reporting Method</div>
           <Card.Body className="mt-4">
             <table className="analytics-table">
               <thead>
                 <tr>
                   <th></th>
-                  <th>Email</th>
-                  <th>SMS Weblink</th>
-                  <th>SMS Text</th>
-                  <th>Phone Call</th>
-                  <th>Opt-Out</th>
-                  <th>Unknown</th>
-                  <th>Total</th>
+                  {CONTACT_METHOD_HEADERS.map((contactMethodHeaders, index) => (
+                    <th key={index}>
+                      <div> {contactMethodHeaders} </div>
+                      <div className="text-secondary"> n (col %) </div>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               {this.tableData.map((workflow, index1) => (

@@ -28,7 +28,15 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   WORKFLOWS = %w[Exposure Isolation].freeze
-  LINELIST_STATUSES = ['Exposure Symptomatic', 'Exposure Non-Reporting', 'Exposure Asymptomatic', 'Exposure PUI', 'Isolation Requiring Review', 'Isolation Non-Reporting', 'Isolation Reporting'].freeze
+  LINELIST_STATUSES = [
+    'Exposure Symptomatic',
+    'Exposure Non-Reporting',
+    'Exposure Asymptomatic',
+    'Exposure PUI',
+    'Isolation Requiring Review',
+    'Isolation Non-Reporting',
+    'Isolation Reporting'
+  ].freeze
   RISK_FACTORS ||= {
     contact_of_known_case: 'Close Contact with Known Case',
     travel_to_affected_country_or_area: 'Travel from Affected Country or Area',
@@ -58,7 +66,7 @@ class CacheAnalyticsJob < ApplicationJob
     counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_exposure_country(analytic_id, monitorees))
 
-    # # Active and overall counts for date of last exposure
+    # Active and overall counts for date of last exposure
     counts.concat(monitoree_counts_by_last_exposure_date(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_last_exposure_week(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_last_exposure_month(analytic_id, monitorees))
@@ -121,7 +129,16 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(:sexual_orientation)
                 .size
                 .map do |sexual_orientation, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Sexual Orientation', sexual_orientation.nil? ? 'Missing' : sexual_orientation, total, workflow))
+                  counts.append(
+                    monitoree_count(
+                      analytic_id,
+                      true,
+                      'Sexual Orientation',
+                      sexual_orientation.nil? ? 'Missing' : sexual_orientation,
+                      total,
+                      workflow
+                    )
+                  )
                 end
     end
     counts
@@ -151,7 +168,14 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(Arel.sql(racial_groups))
                 .size
                 .map do |racial_group, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Race', racial_group.nil? ? 'Missing' : racial_group, total, workflow))
+                  counts.append(
+                    monitoree_count(analytic_id,
+                                    true,
+                                    'Race',
+                                    racial_group.nil? ? 'Missing' : racial_group,
+                                    total,
+                                    workflow)
+                  )
                 end
     end
     counts
@@ -166,7 +190,12 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(:ethnicity)
                 .size
                 .map do |(ethnicity), total|
-                  counts.append(monitoree_count(analytic_id, true, 'Ethnicity', ethnicity.nil? ? 'Missing' : ethnicity, total, workflow))
+                  counts.append(monitoree_count(analytic_id,
+                                                true,
+                                                'Ethnicity',
+                                                ethnicity.nil? ? 'Missing' : ethnicity,
+                                                total,
+                                                workflow))
                 end
     end
     counts
@@ -181,9 +210,17 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(:preferred_contact_method)
                 .size
                 .map do |preferred_contact_method, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Contact Method', preferred_contact_method.nil? ? 'Missing' : preferred_contact_method, total, linelist_status))
+                  counts.append(
+                    monitoree_count(analytic_id,
+                                    true,
+                                    'Contact Method',
+                                    preferred_contact_method.nil? ? 'Missing' : preferred_contact_method,
+                                    total,
+                                    linelist_status)
+                  )
                 end
     end
+    counts
   end
 
   # Monitoree counts by exposure risk factors
@@ -230,7 +267,7 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by last date of exposure by days
   def self.monitoree_counts_by_last_exposure_date(analytic_id, monitorees)
     counts = []
-    # WORKFLOWS.map do |workflow|
+
     monitorees.where(isolation: false)
               .monitoring_active(true)
               .exposed_in_time_frame(NUM_PAST_DAYS.days.ago.to_date.to_datetime)
@@ -240,6 +277,7 @@ class CacheAnalyticsJob < ApplicationJob
               .map do |date, total|
                 counts.append(monitoree_count(analytic_id, true, 'Last Exposure Date', date, total, 'Exposure'))
               end
+
     monitorees.where(isolation: true)
               .monitoring_active(true)
               .exposed_in_time_frame(NUM_PAST_DAYS.days.ago.to_date.to_datetime)
@@ -333,10 +371,23 @@ class CacheAnalyticsJob < ApplicationJob
         counts.append(MonitoreeSnapshot.new(
                         analytic_id: analytic_id,
                         time_frame: time_frame,
-                        new_enrollments: monitorees.where(isolation: workflow == 'Isolation').enrolled_in_time_frame(time_frame).size,
-                        transferred_in: Transfer.where_assoc_exists(:patient, isolation: workflow == 'Isolation').with_incoming_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
-                        closed: monitorees.where(isolation: workflow == 'Isolation').monitoring_closed.closed_in_time_frame(time_frame).size,
-                        transferred_out: Transfer.where_assoc_exists(:patient, isolation: workflow == 'Isolation').with_outgoing_jurisdiction_id(jurisdiction_id).in_time_frame(time_frame).size,
+                        new_enrollments: monitorees.where(isolation: workflow == 'Isolation')
+                        .enrolled_in_time_frame(time_frame)
+                        .size,
+                        transferred_in: Transfer.where_assoc_exists(:patient,
+                                                                    isolation: workflow == 'Isolation')
+                          .with_incoming_jurisdiction_id(jurisdiction_id)
+                          .in_time_frame(time_frame)
+                          .size,
+                        closed: monitorees.where(isolation: workflow == 'Isolation')
+                        .monitoring_closed
+                        .closed_in_time_frame(time_frame)
+                        .size,
+                        transferred_out: Transfer.where_assoc_exists(:patient,
+                                                                     isolation: workflow == 'Isolation')
+                          .with_outgoing_jurisdiction_id(jurisdiction_id)
+                          .in_time_frame(time_frame)
+                          .size,
                         status: workflow
                       ))
       end

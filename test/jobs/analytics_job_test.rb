@@ -55,32 +55,30 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 0, true, 'Age Group', '0-19', 7)
     verify_monitoree_count(active_counts, 1, true, 'Age Group', '20-29', 3)
     verify_monitoree_count(active_counts, 2, true, 'Age Group', '30-39', 3)
-    verify_monitoree_count(active_counts, 3, true, 'Age Group', '40-49', 5)
+    verify_monitoree_count(active_counts, 3, true, 'Age Group', '40-49', 10)
     verify_monitoree_count(active_counts, 4, true, 'Age Group', '50-59', 1)
     verify_monitoree_count(active_counts, 5, true, 'Age Group', '60-69', 1)
     verify_monitoree_count(active_counts, 6, true, 'Age Group', '>=80', 1)
     verify_monitoree_count(active_counts, 7, true, 'Age Group', '0-19', 2)
     verify_monitoree_count(active_counts, 8, true, 'Age Group', '20-29', 1)
     verify_monitoree_count(active_counts, 9, true, 'Age Group', '30-39', 2)
-    verify_monitoree_count(active_counts, 10, true, 'Age Group', '40-49', 1)
+    verify_monitoree_count(active_counts, 10, true, 'Age Group', '40-49', 6)
     verify_monitoree_count(active_counts, 11, true, 'Age Group', '50-59', 1)
     verify_monitoree_count(active_counts, 12, true, 'Age Group', '60-69', 2)
     verify_monitoree_count(active_counts, 13, true, 'Age Group', '70-79', 1)
     assert_equal(14, active_counts.length)
-
   end
 
   test 'monitoree counts by sex' do
     active_counts = CacheAnalyticsJob.monitoree_counts_by_sex(1, @@monitorees)
     verify_monitoree_count(active_counts, 0, true, 'Sex', 'Missing', 2)
-    verify_monitoree_count(active_counts, 1, true, 'Sex', 'Female', 8)
-    verify_monitoree_count(active_counts, 2, true, 'Sex', 'Male', 8)
+    verify_monitoree_count(active_counts, 1, true, 'Sex', 'Female', 10)
+    verify_monitoree_count(active_counts, 2, true, 'Sex', 'Male', 11)
     verify_monitoree_count(active_counts, 3, true, 'Sex', 'Unknown', 3)
-    verify_monitoree_count(active_counts, 4, true, 'Sex', 'Female', 4)
-    verify_monitoree_count(active_counts, 5, true, 'Sex', 'Male', 4)
+    verify_monitoree_count(active_counts, 4, true, 'Sex', 'Female', 6)
+    verify_monitoree_count(active_counts, 5, true, 'Sex', 'Male', 7)
     verify_monitoree_count(active_counts, 6, true, 'Sex', 'Unknown', 2)
     assert_equal(7, active_counts.length)
-
   end
 
   test 'monitoree counts by exposure country' do
@@ -91,7 +89,6 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 3, true, 'Exposure Country', 'Korea', 1)
     verify_monitoree_count(active_counts, 4, true, 'Exposure Country', 'Malaysia', 3)
     assert_equal(5, active_counts.length)
-
   end
 
   test 'monitoree counts by last exposure date' do
@@ -100,7 +97,7 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 1, true, 'Last Exposure Date', days_ago(26), 1)
     verify_monitoree_count(active_counts, 2, true, 'Last Exposure Date', days_ago(22), 2)
     verify_monitoree_count(active_counts, 3, true, 'Last Exposure Date', days_ago(11), 2)
-    verify_monitoree_count(active_counts, 4, true, 'Last Exposure Date', days_ago(5), 1)
+    verify_monitoree_count(active_counts, 4, true, 'Last Exposure Date', days_ago(5), 6)
     verify_monitoree_count(active_counts, 5, true, 'Last Exposure Date', days_ago(3), 1)
     verify_monitoree_count(active_counts, 6, true, 'Last Exposure Date', days_ago(1), 1)
     assert_equal(9, active_counts.length)
@@ -114,7 +111,6 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 3, true, 'Last Exposure Week', weeks_ago(3), 1)
     verify_monitoree_count(active_counts, 4, true, 'Last Exposure Week', weeks_ago(1), 1)
     assert_equal(5, active_counts.length)
-
   end
 
   test 'monitoree counts by last exposure month' do
@@ -125,19 +121,18 @@ class AnalyticsJobTest < ActiveSupport::TestCase
     verify_monitoree_count(active_counts, 3, true, 'Last Exposure Month', months_ago(2), 1)
     verify_monitoree_count(active_counts, 4, true, 'Last Exposure Month', months_ago(1), 2)
     assert_equal(5, active_counts.length)
-
   end
 
   test 'monitoree snapshots' do
     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, @@monitorees, 1)
     verify_snapshot(snapshots, 0, 'Last 24 Hours', 3, 0, 2, 0)
     verify_snapshot(snapshots, 1, 'Last 24 Hours', 2, 0, 0, 0)
-    verify_snapshot(snapshots, 2, 'Last 7 Days', 9, 0, 1, 0)
-    verify_snapshot(snapshots, 3, 'Last 7 Days', 7, 0, 0, 0)
-    verify_snapshot(snapshots, 4, 'Last 14 Days', 13, 0, 1, 0)
-    verify_snapshot(snapshots, 5, 'Last 14 Days', 8, 0, 0, 0)
+    verify_snapshot(snapshots, 2, 'Last 7 Days', 14, 0, 1, 0)
+    verify_snapshot(snapshots, 3, 'Last 7 Days', 12, 0, 0, 0)
+    verify_snapshot(snapshots, 4, 'Last 14 Days', 18, 0, 1, 0)
+    verify_snapshot(snapshots, 5, 'Last 14 Days', 13, 0, 0, 0)
     verify_snapshot(snapshots, 6, 'Total', 24, 0, 3, 0)
-    verify_snapshot(snapshots, 7, 'Total', 10, 0, 0, 0)
+    verify_snapshot(snapshots, 7, 'Total', 0, 0, 0, 0)
 
     snapshots = CacheAnalyticsJob.all_monitoree_snapshots(1, Patient.where(jurisdiction_id: 2), 2)
     verify_snapshot(snapshots, 0, 'Last 24 Hours', 0, 1, 1, 1)
