@@ -105,6 +105,7 @@ class Patient < ApplicationRecord
   has_many :laboratories
   has_many :close_contacts
 
+  before_save :set_time_zone_offset
   around_save :inform_responder, if: :responder_id_changed?
   around_destroy :inform_responder
 
@@ -138,9 +139,17 @@ class Patient < ApplicationRecord
         ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
       )
       .where(
-        'patients.latest_assessment_at < ? '\
+        # Converting to a timezone, then casting to date effectively gives us
+        # the start of the day in that timezone to make comparisons with.
+        'CONVERT_TZ(patients.latest_assessment_at, "+00:00", patients.time_zone_offset)'\
+        ' < DATE(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) '\
         'OR patients.latest_assessment_at IS NULL',
-        Time.now.getlocal('-04:00').beginning_of_day
+        # After converting TIMESTAMP to DATE in the query, the below should effectively become the
+        # beginning of the day of the current reporting period for the specific patient's timezone.
+        # Example: 1 day reporting period => was patient last assessment before midnight today?
+        # Example: 2 day reporting period => was patient last assessment before midnight yesterday?
+        # Example: 7 day reporting period => was patient last assessment before midnight 6 days ago?
+        (Time.now.getlocal('-00:00') + 1.day - ADMIN_OPTIONS['reporting_period_minutes'].minutes).utc
       )
       .where(
         'patients.last_assessment_reminder_sent <= ? '\
@@ -907,6 +916,10 @@ class Patient < ApplicationRecord
   # Override as_json to include linelist
   def as_json(options = {})
     super((options || {}).merge(methods: :linelist))
+  end
+
+  def set_time_zone_offset
+    self.time_zone_offset = address_timezone_offset
   end
 
   def address_timezone_offset

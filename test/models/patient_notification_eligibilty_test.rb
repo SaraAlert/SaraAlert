@@ -17,15 +17,23 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   end
 
   def assert_eligible(patient)
-    eligible = !Patient.reminder_eligible.find_by(id: patient.id).nil?
-    puts "\nFailing eligible test with: #{format_patient_str(patient)}" unless eligible
-    assert eligible
+    scope_eligible = !Patient.reminder_eligible.find_by(id: patient.id).nil?
+    puts "\nFailing eligible test with: #{format_patient_str(patient)}" unless scope_eligible
+    assert scope_eligible
+
+    method_eligible = patient.report_eligibility
+    puts "\nFailing method eligible test with: #{format_patient_str(patient)}" unless method_eligible
+    assert method_eligible
   end
 
   def assert_ineligible(patient)
-    eligible = !Patient.reminder_eligible.find_by(id: patient.id).nil?
-    puts "\nFailing ineligible test with: #{format_patient_str(patient)}" if eligible
-    assert_not eligible
+    scope_eligible = !Patient.reminder_eligible.find_by(id: patient.id).nil?
+    puts "\nFailing scope ineligible test with: #{format_patient_str(patient)}" if scope_eligible
+    assert_not scope_eligible
+
+    method_eligible = patient.report_eligibility
+    puts "\nFailing method ineligible test with: #{format_patient_str(patient)}" if method_eligible
+    assert_not method_eligible
   end
 
   def format_patient_str(patient)
@@ -34,7 +42,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       attributes = p.attributes.slice(
         'id', 'responder_id', 'head_of_household', 'preferred_contact_method', 'pause_notifications',
         'isolation', 'continuous_exposure', 'last_date_of_exposure', 'created_at',
-        'monitoring', 'closed_at', 'last_assessment_reminder_sent', 'latest_assessment_at', 'purged'
+        'monitoring', 'closed_at', 'last_assessment_reminder_sent', 'latest_assessment_at', 'purged',
+        'time_zone_offset'
       )
       result += "\n#{attributes}\n"
     end
@@ -411,8 +420,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
 
   test 'Patients in differing timezones are eligible when expected' do
     [
-      { monitored_address_state: 'Florida'},
-      { monitored_address_state: 'Colorado'},
+      { monitored_address_state: 'Florida' },
+      { monitored_address_state: 'Colorado' },
       { monitored_address_state: nil, address_state: 'California' },
       {}
     ].each do |patient_params|
@@ -424,6 +433,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         }.merge(patient_params)
       )
       assert_eligible(patient)
+      # assessment right before the start of the valid reporting period
       create(
         :assessment,
         patient: patient,
@@ -431,6 +441,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         created_at: Time.now.getlocal(patient.address_timezone_offset).yesterday.end_of_day.utc
       )
       assert_eligible(patient)
+      # assessment right after the start of the valid reporting period
       create(
         :assessment,
         patient: patient,
@@ -453,9 +464,19 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     )
     assert_eligible(patient)
     ADMIN_OPTIONS['reporting_period_minutes'] = 1440 * 7  # 1 week
-    create(:assessment, patient: patient, symptomatic: false, created_at: 7.days.ago.end_of_day)
+    create(
+      :assessment,
+      patient: patient,
+      symptomatic: false,
+      created_at: (Time.now.getlocal(patient.address_timezone_offset) - 7.days).end_of_day
+    )
     assert_eligible(patient)
-    create(:assessment, patient: patient, symptomatic: false, created_at: 6.days.ago.beginning_of_day)
+    create(
+      :assessment,
+      patient: patient,
+      symptomatic: false,
+      created_at: (Time.now.getlocal(patient.address_timezone_offset) - 6.days).beginning_of_day
+    )
     assert_ineligible(patient)
   end
 end

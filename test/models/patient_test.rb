@@ -21,6 +21,17 @@ class PatientTest < ActiveSupport::TestCase
     (offset.negative? ? '' : '+') + format('%<offset>.2d', offset: offset) + ':00'
   end
 
+  test 'set_time_zone_offset callback' do
+    patient = create(:patient)
+    assert_equal patient.timezone_for_state('massachusetts'), patient.time_zone_offset
+    patient = create(:patient, monitored_address_state: 'Florida')
+    assert_equal patient.timezone_for_state('florida'), patient.time_zone_offset
+    patient = create(:patient, monitored_address_state: 'Colorado')
+    assert_equal patient.timezone_for_state('colorado'), patient.time_zone_offset
+    patient = create(:patient, monitored_address_state: nil, address_state: 'California')
+    assert_equal patient.timezone_for_state('california'), patient.time_zone_offset
+  end
+
   test 'active dependents does NOT include dependents that are purged' do
     responder = create(:patient, purged: false, monitoring: true)
     dependent = create(:patient, purged: true, monitoring: false, responder_id: responder.id)
