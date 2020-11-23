@@ -21,7 +21,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     puts "\nFailing eligible test with: #{format_patient_str(patient)}" unless scope_eligible
     assert scope_eligible
 
-    method_eligible = patient.report_eligibility
+    method_eligible = patient.report_eligibility[:eligible]
     puts "\nFailing method eligible test with: #{format_patient_str(patient)}" unless method_eligible
     assert method_eligible
   end
@@ -31,7 +31,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     puts "\nFailing scope ineligible test with: #{format_patient_str(patient)}" if scope_eligible
     assert_not scope_eligible
 
-    method_eligible = patient.report_eligibility
+    method_eligible = patient.report_eligibility[:eligible]
     puts "\nFailing method ineligible test with: #{format_patient_str(patient)}" if method_eligible
     assert_not method_eligible
   end
@@ -464,6 +464,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     )
     assert_eligible(patient)
     ADMIN_OPTIONS['reporting_period_minutes'] = 1440 * 7  # 1 week
+
     create(
       :assessment,
       patient: patient,

@@ -649,29 +649,8 @@ class Patient < ApplicationRecord
   # Send a daily assessment to this monitoree (if currently eligible). By setting send_now to true, an assessment
   # will be sent immediately without any consideration of the monitoree's preferred_contact_time.
   def send_assessment(send_now: false)
-    return if ['Unknown', 'Opt-out', '', nil].include?(preferred_contact_method)
-
-    return if !last_assessment_reminder_sent.nil? && last_assessment_reminder_sent > 12.hours.ago
-
-    # Do not allow messages to go to household members
-    return unless responder_id == id
-
     # Stop execution if in CI
     return if Rails.env.test?
-
-    # Return UNLESS:
-    # - in exposure: NOT closed AND within monitoring period OR
-    # - in isolation: NOT closed (as patients on RRR linelist should receive notifications) OR
-    # - in continuous exposure OR
-    # - is a HoH with actively monitored dependents
-    # NOTE: We do not close out folks on the non-reporting line list in exposure (therefore monitoring will still be true for them),
-    # so we also have to check that someone receiving messages is not past they're monitoring period unless they're  in isolation,
-    # continuous exposure, or have active dependents.
-    start_of_exposure = last_date_of_exposure || created_at
-    return unless (monitoring && start_of_exposure >= ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day) ||
-                  (monitoring && isolation) ||
-                  (monitoring && continuous_exposure) ||
-                  active_dependents_exclude_self.exists?
 
     # Determine if it is yet an appropriate time to send this person a message.
     unless send_now
@@ -759,7 +738,7 @@ class Patient < ApplicationRecord
   # Determine if this patient is eligible for receiving daily report messages; return
   # a boolean result to switch on, and a tailored message useful for user interfaces.
   def report_eligibility
-    report_cutoff_time = Time.now.getlocal('-04:00').beginning_of_day
+    report_cutoff_time = (Time.now.getlocal(address_timezone_offset) + 1.day - ADMIN_OPTIONS['reporting_period_minutes'].minutes).beginning_of_day.utc
     reporting_period = (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago
     eligible = true
     sent = false
