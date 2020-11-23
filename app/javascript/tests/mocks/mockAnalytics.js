@@ -7,7 +7,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "Missing",
       "total": 74,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -18,7 +17,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "High",
       "total": 88,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -29,7 +27,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "Low",
       "total": 78,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -40,7 +37,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "Medium",
       "total": 90,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -51,7 +47,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "No Identified Risk",
       "total": 81,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -62,7 +57,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "Missing",
       "total": 77,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -73,7 +67,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "High",
       "total": 93,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -84,7 +77,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "Low",
       "total": 83,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -95,7 +87,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "Medium",
       "total": 92,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -106,7 +97,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Overall Total",
       "category": "Total",
-      "risk_level": "No Identified Risk",
       "total": 86,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -117,7 +107,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Symptomatic",
-      "risk_level": "Missing",
       "total": 21,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -128,7 +117,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Symptomatic",
-      "risk_level": "High",
       "total": 32,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -139,7 +127,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Symptomatic",
-      "risk_level": "Low",
       "total": 23,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -150,7 +137,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Symptomatic",
-      "risk_level": "Medium",
       "total": 26,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -161,7 +147,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Symptomatic",
-      "risk_level": "No Identified Risk",
       "total": 35,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -172,7 +157,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Non-Reporting",
-      "risk_level": "Missing",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -183,7 +167,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Non-Reporting",
-      "risk_level": "High",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -194,7 +177,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Non-Reporting",
-      "risk_level": "Low",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -205,7 +187,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Non-Reporting",
-      "risk_level": "Medium",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -216,7 +197,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Non-Reporting",
-      "risk_level": "No Identified Risk",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -227,7 +207,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Asymptomatic",
-      "risk_level": "Missing",
       "total": 45,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -238,7 +217,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Asymptomatic",
-      "risk_level": "High",
       "total": 36,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -249,7 +227,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Asymptomatic",
-      "risk_level": "Low",
       "total": 39,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -260,7 +237,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Asymptomatic",
-      "risk_level": "Medium",
       "total": 43,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -271,7 +247,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Monitoring Status",
       "category": "Asymptomatic",
-      "risk_level": "No Identified Risk",
       "total": 35,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -282,7 +257,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "Missing",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -293,7 +267,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "High",
       "total": 23,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -304,7 +277,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "Low",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -315,7 +287,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "Medium",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -326,7 +297,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "No Identified Risk",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -337,7 +307,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "Missing",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -348,7 +317,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "High",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -359,7 +327,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "Low",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -370,7 +337,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "Medium",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -381,7 +347,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "No Identified Risk",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -392,7 +357,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "Missing",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -403,7 +367,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "High",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -414,7 +377,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "Low",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -425,7 +387,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "Medium",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -436,7 +397,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -447,7 +407,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "Missing",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -458,7 +417,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "High",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -469,7 +427,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "Low",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -480,7 +437,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "Medium",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -491,7 +447,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "No Identified Risk",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -502,7 +457,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "Missing",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -513,7 +467,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "High",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -524,7 +477,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "Low",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -535,7 +487,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "Medium",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -546,7 +497,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "No Identified Risk",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -557,7 +507,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "Missing",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -568,7 +517,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "High",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -579,7 +527,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "Low",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -590,7 +537,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "Medium",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -601,7 +547,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "No Identified Risk",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -612,7 +557,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "Missing",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -623,7 +567,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "High",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -634,7 +577,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "Low",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -645,7 +587,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "Medium",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -656,7 +597,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "No Identified Risk",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -667,7 +607,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "Missing",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -678,7 +617,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "High",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -689,7 +627,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "Low",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -700,7 +637,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "Medium",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -711,7 +647,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "No Identified Risk",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -722,7 +657,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "Missing",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -733,7 +667,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "High",
       "total": 23,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -744,7 +677,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "Low",
       "total": 20,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -755,7 +687,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "Medium",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -766,7 +697,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "0-19",
-      "risk_level": "No Identified Risk",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -777,7 +707,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "Missing",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -788,7 +717,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "High",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -799,7 +727,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "Low",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -810,7 +737,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "Medium",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -821,7 +747,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "20-29",
-      "risk_level": "No Identified Risk",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -832,7 +757,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "Missing",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -843,7 +767,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "High",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -854,7 +777,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "Low",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -865,7 +787,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "Medium",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -876,7 +797,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "30-39",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -887,7 +807,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "Missing",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -898,7 +817,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "High",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -909,7 +827,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "Low",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -920,7 +837,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "Medium",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -931,7 +847,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "40-49",
-      "risk_level": "No Identified Risk",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -942,7 +857,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "Missing",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -953,7 +867,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "High",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -964,7 +877,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "Low",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -975,7 +887,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "Medium",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -986,7 +897,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "50-59",
-      "risk_level": "No Identified Risk",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -997,7 +907,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "Missing",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1008,7 +917,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "High",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1019,7 +927,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "Low",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1030,7 +937,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "Medium",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1041,7 +947,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "60-69",
-      "risk_level": "No Identified Risk",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1052,7 +957,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "Missing",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1063,7 +967,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "High",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1074,7 +977,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "Low",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1085,7 +987,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "Medium",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1096,7 +997,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": "70-79",
-      "risk_level": "No Identified Risk",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1107,7 +1007,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "Missing",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1118,7 +1017,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "High",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1129,7 +1027,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "Low",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1140,7 +1037,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "Medium",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1151,7 +1047,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Age Group",
       "category": ">=80",
-      "risk_level": "No Identified Risk",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1162,7 +1057,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1173,7 +1067,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "High",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1184,7 +1077,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "Low",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1195,7 +1087,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "Medium",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1206,7 +1097,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "No Identified Risk",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1217,7 +1107,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "Missing",
       "total": 38,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1228,7 +1117,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "High",
       "total": 32,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1239,7 +1127,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "Low",
       "total": 27,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1250,7 +1137,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "Medium",
       "total": 39,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1261,7 +1147,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "No Identified Risk",
       "total": 31,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1272,7 +1157,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "Missing",
       "total": 24,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1283,7 +1167,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "High",
       "total": 41,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1294,7 +1177,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "Low",
       "total": 36,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1305,7 +1187,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "Medium",
       "total": 36,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1316,7 +1197,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "No Identified Risk",
       "total": 30,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1327,7 +1207,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "Missing",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1338,7 +1217,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "High",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1349,7 +1227,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "Low",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1360,7 +1237,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "Medium",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1371,7 +1247,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "No Identified Risk",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1382,7 +1257,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "Missing",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1393,7 +1267,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "High",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1404,7 +1277,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "Low",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1415,7 +1287,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "Medium",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1426,7 +1297,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Missing",
-      "risk_level": "No Identified Risk",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1437,7 +1307,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "Missing",
       "total": 38,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1448,7 +1317,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "High",
       "total": 32,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1459,7 +1327,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "Low",
       "total": 29,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1470,7 +1337,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "Medium",
       "total": 40,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1481,7 +1347,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Female",
-      "risk_level": "No Identified Risk",
       "total": 35,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1492,7 +1357,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "Missing",
       "total": 26,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1503,7 +1367,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "High",
       "total": 45,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1514,7 +1377,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "Low",
       "total": 37,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1525,7 +1387,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "Medium",
       "total": 37,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1536,7 +1397,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Male",
-      "risk_level": "No Identified Risk",
       "total": 31,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1547,7 +1407,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "Missing",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1558,7 +1417,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "High",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1569,7 +1427,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "Low",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1580,7 +1437,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "Medium",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1591,7 +1447,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Sex",
       "category": "Unknown",
-      "risk_level": "No Identified Risk",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1602,7 +1457,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "Missing",
       "total": 23,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1613,7 +1467,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "High",
       "total": 21,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1624,7 +1477,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "Low",
       "total": 22,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1635,7 +1487,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "Medium",
       "total": 17,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1646,7 +1497,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "No Identified Risk",
       "total": 23,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1657,7 +1507,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "Missing",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1668,7 +1517,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "High",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1679,7 +1527,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "Low",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1690,7 +1537,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "Medium",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1701,7 +1547,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "No Identified Risk",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1712,7 +1557,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "Missing",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1723,7 +1567,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "High",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1734,7 +1577,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "Low",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1745,7 +1587,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "Medium",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1756,7 +1597,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "No Identified Risk",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1767,7 +1607,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "Missing",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1778,7 +1617,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "High",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1789,7 +1627,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "Low",
       "total": 16,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1800,7 +1637,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "Medium",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1811,7 +1647,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "No Identified Risk",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1822,7 +1657,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "Missing",
       "total": 25,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1833,7 +1667,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "High",
       "total": 20,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1844,7 +1677,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "Low",
       "total": 26,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1855,7 +1687,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "Medium",
       "total": 29,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1866,7 +1697,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "No Identified Risk",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1877,7 +1707,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "Missing",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1888,7 +1717,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "High",
       "total": 17,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1899,7 +1727,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "Low",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1910,7 +1737,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "Medium",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1921,7 +1747,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "No Identified Risk",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1932,7 +1757,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "Missing",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1943,7 +1767,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "High",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1954,7 +1777,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "Low",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1965,7 +1787,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "Medium",
       "total": 16,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1976,7 +1797,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "No Identified Risk",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1987,7 +1807,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "Missing",
       "total": 50,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -1998,7 +1817,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "High",
       "total": 59,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2009,7 +1827,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "Low",
       "total": 60,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2020,7 +1837,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "Medium",
       "total": 62,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2031,7 +1847,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "No Identified Risk",
       "total": 63,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2042,7 +1857,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "Missing",
       "total": 25,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2053,7 +1867,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "High",
       "total": 22,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2064,7 +1877,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "Low",
       "total": 23,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2075,7 +1887,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "Medium",
       "total": 17,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2086,7 +1897,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Close Contact with Known Case",
-      "risk_level": "No Identified Risk",
       "total": 24,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2097,7 +1907,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "Missing",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2108,7 +1917,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "High",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2119,7 +1927,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "Low",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2130,7 +1937,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "Medium",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2141,7 +1947,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Travel from Affected Country or Area",
-      "risk_level": "No Identified Risk",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2152,7 +1957,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "Missing",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2163,7 +1967,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "High",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2174,7 +1977,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "Low",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2185,7 +1987,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "Medium",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2196,7 +1997,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Was in Healthcare Facility with Known Cases",
-      "risk_level": "No Identified Risk",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2207,7 +2007,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "Missing",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2218,7 +2017,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "High",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2229,7 +2027,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "Low",
       "total": 16,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2240,7 +2037,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "Medium",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2251,7 +2047,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Healthcare Personnel",
-      "risk_level": "No Identified Risk",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2262,7 +2057,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "Missing",
       "total": 27,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2273,7 +2067,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "High",
       "total": 21,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2284,7 +2077,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "Low",
       "total": 28,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2295,7 +2087,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "Medium",
       "total": 29,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2306,7 +2097,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Common Exposure Cohort",
-      "risk_level": "No Identified Risk",
       "total": 23,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2317,7 +2107,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "Missing",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2328,7 +2117,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "High",
       "total": 17,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2339,7 +2127,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "Low",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2350,7 +2137,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "Medium",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2361,7 +2147,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Crew on Passenger or Cargo Flight",
-      "risk_level": "No Identified Risk",
       "total": 21,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2372,7 +2157,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "Missing",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2383,7 +2167,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "High",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2394,7 +2177,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "Low",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2405,7 +2187,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "Medium",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2416,7 +2197,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Laboratory Personnel",
-      "risk_level": "No Identified Risk",
       "total": 16,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2427,7 +2207,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "Missing",
       "total": 53,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2438,7 +2217,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "High",
       "total": 62,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2449,7 +2227,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "Low",
       "total": 62,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2460,7 +2237,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "Medium",
       "total": 64,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2471,7 +2247,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Risk Factor",
       "category": "Total",
-      "risk_level": "No Identified Risk",
       "total": 67,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2482,7 +2257,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Afghanistan",
-      "risk_level": "High",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2493,7 +2267,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Albania",
-      "risk_level": "High",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2504,7 +2277,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Albania",
-      "risk_level": "Low",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2515,7 +2287,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "American Samoa",
-      "risk_level": "High",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2526,7 +2297,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Andorra",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2537,7 +2307,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Angola",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2548,7 +2317,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "Missing",
       "total": 60,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2559,7 +2327,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "High",
       "total": 73,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2570,7 +2337,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "Low",
       "total": 58,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2581,7 +2347,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "Medium",
       "total": 67,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2592,7 +2357,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "No Identified Risk",
       "total": 65,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2603,7 +2367,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Afghanistan",
-      "risk_level": "High",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2614,7 +2377,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Albania",
-      "risk_level": "High",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2625,7 +2387,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Albania",
-      "risk_level": "Low",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2636,7 +2397,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "American Samoa",
-      "risk_level": "High",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2647,7 +2407,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Andorra",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2658,7 +2417,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Angola",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2669,7 +2427,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "Missing",
       "total": 63,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2680,7 +2437,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "High",
       "total": 78,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2691,7 +2447,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "Low",
       "total": 62,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2702,7 +2457,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "Medium",
       "total": 69,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2713,7 +2467,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Exposure Country",
       "category": "Total",
-      "risk_level": "No Identified Risk",
       "total": 70,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2724,7 +2477,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-25",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2735,7 +2487,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-25",
-      "risk_level": "No Identified Risk",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2746,7 +2497,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-26",
-      "risk_level": "Missing",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2757,7 +2507,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-26",
-      "risk_level": "High",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2768,7 +2517,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-26",
-      "risk_level": "Low",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2779,7 +2527,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-26",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2790,7 +2537,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "Missing",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2801,7 +2547,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "High",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2812,7 +2557,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "Low",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2823,7 +2567,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2834,7 +2577,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2845,7 +2587,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-28",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2856,7 +2597,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-28",
-      "risk_level": "High",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2867,7 +2607,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-28",
-      "risk_level": "Medium",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2878,7 +2617,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-28",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2889,7 +2627,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-29",
-      "risk_level": "High",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2900,7 +2637,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-29",
-      "risk_level": "Low",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2911,7 +2647,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-29",
-      "risk_level": "Medium",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2922,7 +2657,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-29",
-      "risk_level": "No Identified Risk",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2933,7 +2667,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "Missing",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2944,7 +2677,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "High",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2955,7 +2687,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "Low",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2966,7 +2697,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "Medium",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2977,7 +2707,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2988,7 +2717,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "Missing",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -2999,7 +2727,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "High",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3010,7 +2737,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "Low",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3021,7 +2747,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "Medium",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3032,7 +2757,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "No Identified Risk",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3043,7 +2767,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "Missing",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3054,7 +2777,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "High",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3065,7 +2787,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "Low",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3076,7 +2797,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "Medium",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3087,7 +2807,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3098,7 +2817,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3109,7 +2827,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "High",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3120,7 +2837,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "Low",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3131,7 +2847,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "Medium",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3142,7 +2857,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3153,7 +2867,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "Missing",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3164,7 +2877,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "High",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3175,7 +2887,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "Low",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3186,7 +2897,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "Medium",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3197,7 +2907,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3208,7 +2917,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3219,7 +2927,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "High",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3230,7 +2937,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "Low",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3241,7 +2947,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "Medium",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3252,7 +2957,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "No Identified Risk",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3263,7 +2967,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "Missing",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3274,7 +2977,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "High",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3285,7 +2987,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "Low",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3296,7 +2997,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "Medium",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3307,7 +3007,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "No Identified Risk",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3318,7 +3017,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "Missing",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3329,7 +3027,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "High",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3340,7 +3037,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "Low",
       "total": 11,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3351,7 +3047,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "Medium",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3362,7 +3057,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "No Identified Risk",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3373,7 +3067,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "Missing",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3384,7 +3077,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "High",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3395,7 +3087,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "Low",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3406,7 +3097,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "Medium",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3417,7 +3107,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "No Identified Risk",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3428,7 +3117,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "Missing",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3439,7 +3127,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "High",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3450,7 +3137,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "Low",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3461,7 +3147,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "Medium",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3472,7 +3157,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "No Identified Risk",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3483,7 +3167,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "Missing",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3494,7 +3177,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "High",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3505,7 +3187,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "Low",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3516,7 +3197,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "Medium",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3527,7 +3207,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "No Identified Risk",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3538,7 +3217,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3549,7 +3227,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "High",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3560,7 +3237,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "Low",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3571,7 +3247,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "Medium",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3582,7 +3257,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "No Identified Risk",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3593,7 +3267,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3604,7 +3277,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "High",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3615,7 +3287,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "Low",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3626,7 +3297,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3637,7 +3307,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3648,7 +3317,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-25",
-      "risk_level": "Medium",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3659,7 +3327,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-25",
-      "risk_level": "No Identified Risk",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3670,7 +3337,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-26",
-      "risk_level": "Missing",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3681,7 +3347,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-26",
-      "risk_level": "High",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3692,7 +3357,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-26",
-      "risk_level": "Low",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3703,7 +3367,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-26",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3714,7 +3377,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "Missing",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3725,7 +3387,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "High",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3736,7 +3397,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "Low",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3747,7 +3407,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3758,7 +3417,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-27",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3769,7 +3427,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-28",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3780,7 +3437,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-28",
-      "risk_level": "High",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3791,7 +3447,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-28",
-      "risk_level": "Medium",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3802,7 +3457,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-28",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3813,7 +3467,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-29",
-      "risk_level": "High",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3824,7 +3477,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-29",
-      "risk_level": "Low",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3835,7 +3487,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-29",
-      "risk_level": "Medium",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3846,7 +3497,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-29",
-      "risk_level": "No Identified Risk",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3857,7 +3507,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "Missing",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3868,7 +3517,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "High",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3879,7 +3527,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "Low",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3890,7 +3537,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "Medium",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3901,7 +3547,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-30",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3912,7 +3557,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "Missing",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3923,7 +3567,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "High",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3934,7 +3577,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "Low",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3945,7 +3587,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "Medium",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3956,7 +3597,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-07-31",
-      "risk_level": "No Identified Risk",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3967,7 +3607,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "Missing",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3978,7 +3617,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "High",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -3989,7 +3627,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "Low",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4000,7 +3637,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "Medium",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4011,7 +3647,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-01",
-      "risk_level": "No Identified Risk",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4022,7 +3657,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "Missing",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4033,7 +3667,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "High",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4044,7 +3677,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "Low",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4055,7 +3687,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "Medium",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4066,7 +3697,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-02",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4077,7 +3707,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "Missing",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4088,7 +3717,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "High",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4099,7 +3727,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "Low",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4110,7 +3737,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "Medium",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4121,7 +3747,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-03",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4132,7 +3757,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4143,7 +3767,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "High",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4154,7 +3777,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "Low",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4165,7 +3787,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "Medium",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4176,7 +3797,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-04",
-      "risk_level": "No Identified Risk",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4187,7 +3807,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "Missing",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4198,7 +3817,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "High",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4209,7 +3827,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "Low",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4220,7 +3837,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "Medium",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4231,7 +3847,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-05",
-      "risk_level": "No Identified Risk",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4242,7 +3857,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "Missing",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4253,7 +3867,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "High",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4264,7 +3877,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "Low",
       "total": 12,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4275,7 +3887,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "Medium",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4286,7 +3897,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-06",
-      "risk_level": "No Identified Risk",
       "total": 13,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4297,7 +3907,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "Missing",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4308,7 +3917,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "High",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4319,7 +3927,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "Low",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4330,7 +3937,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "Medium",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4341,7 +3947,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-07",
-      "risk_level": "No Identified Risk",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4352,7 +3957,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "Missing",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4363,7 +3967,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "High",
       "total": 9,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4374,7 +3977,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "Low",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4385,7 +3987,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "Medium",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4396,7 +3997,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-08",
-      "risk_level": "No Identified Risk",
       "total": 8,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4407,7 +4007,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "Missing",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4418,7 +4017,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "High",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4429,7 +4027,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "Low",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4440,7 +4037,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "Medium",
       "total": 6,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4451,7 +4047,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-09",
-      "risk_level": "No Identified Risk",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4462,7 +4057,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4473,7 +4067,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "High",
       "total": 10,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4484,7 +4077,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "Low",
       "total": 3,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4495,7 +4087,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "Medium",
       "total": 7,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4506,7 +4097,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-10",
-      "risk_level": "No Identified Risk",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4517,7 +4107,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "Missing",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4528,7 +4117,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "High",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4539,7 +4127,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "Low",
       "total": 5,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4550,7 +4137,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4561,7 +4147,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Date",
       "category": "2020-08-11",
-      "risk_level": "No Identified Risk",
       "total": 4,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4572,7 +4157,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-07-19",
-      "risk_level": "Medium",
       "total": 1,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4583,7 +4167,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-07-19",
-      "risk_level": "No Identified Risk",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4594,7 +4177,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "Missing",
       "total": 16,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4605,7 +4187,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "High",
       "total": 22,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4616,7 +4197,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "Low",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4627,7 +4207,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "Medium",
       "total": 28,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4638,7 +4217,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "No Identified Risk",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4649,7 +4227,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "Missing",
       "total": 44,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4660,7 +4237,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "High",
       "total": 52,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4671,7 +4247,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "Low",
       "total": 41,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4682,7 +4257,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "Medium",
       "total": 47,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4693,7 +4267,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "No Identified Risk",
       "total": 46,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4704,7 +4277,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "Missing",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4715,7 +4287,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "High",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4726,7 +4297,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "Low",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4737,7 +4307,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "Medium",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4748,7 +4317,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "No Identified Risk",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4759,7 +4327,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-07-19",
-      "risk_level": "Medium",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4770,7 +4337,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-07-19",
-      "risk_level": "No Identified Risk",
       "total": 2,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4781,7 +4347,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "Missing",
       "total": 16,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4792,7 +4357,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "High",
       "total": 24,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4803,7 +4367,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "Low",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4814,7 +4377,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "Medium",
       "total": 28,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4825,7 +4387,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-07-26",
-      "risk_level": "No Identified Risk",
       "total": 20,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4836,7 +4397,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "Missing",
       "total": 46,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4847,7 +4407,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "High",
       "total": 54,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4858,7 +4417,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "Low",
       "total": 46,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4869,7 +4427,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "Medium",
       "total": 48,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4880,7 +4437,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-02",
-      "risk_level": "No Identified Risk",
       "total": 50,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4891,7 +4447,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "Missing",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4902,7 +4457,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "High",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4913,7 +4467,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "Low",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4924,7 +4477,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "Medium",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4935,7 +4487,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Week",
       "category": "2020-08-09",
-      "risk_level": "No Identified Risk",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4946,7 +4497,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "Missing",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4957,7 +4507,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "High",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4968,7 +4517,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "Low",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4979,7 +4527,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "Medium",
       "total": 25,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -4990,7 +4537,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "No Identified Risk",
       "total": 18,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5001,7 +4547,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "Missing",
       "total": 60,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5012,7 +4557,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "High",
       "total": 70,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5023,7 +4567,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "Low",
       "total": 63,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5034,7 +4577,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "Medium",
       "total": 65,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5045,7 +4587,6 @@ export default {
       "active_monitoring": true,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "No Identified Risk",
       "total": 63,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5056,7 +4597,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "Missing",
       "total": 14,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5067,7 +4607,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "High",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5078,7 +4617,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "Low",
       "total": 15,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5089,7 +4627,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "Medium",
       "total": 26,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5100,7 +4637,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-07-01",
-      "risk_level": "No Identified Risk",
       "total": 19,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5111,7 +4647,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "Missing",
       "total": 63,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5122,7 +4657,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "High",
       "total": 74,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5133,7 +4667,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "Low",
       "total": 68,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5144,7 +4677,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "Medium",
       "total": 66,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
@@ -5155,7 +4687,6 @@ export default {
       "active_monitoring": false,
       "category_type": "Last Exposure Month",
       "category": "2020-08-01",
-      "risk_level": "No Identified Risk",
       "total": 67,
       "created_at": "2020-08-11T16:44:37.325Z",
       "updated_at": "2020-08-11T16:44:37.325Z"
