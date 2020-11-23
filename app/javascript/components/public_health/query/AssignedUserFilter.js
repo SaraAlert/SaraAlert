@@ -49,7 +49,13 @@ class AssignedUserFilter extends React.Component {
             );
           })}
         </datalist>
-        <OverlayTrigger overlay={<Tooltip>Search for {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'} with any or no assigned user</Tooltip>}>
+        <OverlayTrigger
+          overlay={
+            <Tooltip>
+              Search for {this.props.workflow === 'exposure' ? 'monitorees' : this.props.workflow === 'isolation' ? 'cases' : 'monitorees and cases'} with any
+              or no assigned user
+            </Tooltip>
+          }>
           <Button
             id="allAssignedUsers"
             size="sm"
@@ -59,7 +65,13 @@ class AssignedUserFilter extends React.Component {
             All
           </Button>
         </OverlayTrigger>
-        <OverlayTrigger overlay={<Tooltip>Search for {this.props.workflow === 'exposure' ? 'monitorees' : 'cases'} with no assigned user</Tooltip>}>
+        <OverlayTrigger
+          overlay={
+            <Tooltip>
+              Search for {this.props.workflow === 'exposure' ? 'monitorees' : this.props.workflow === 'isolation' ? 'cases' : 'monitorees and cases'} with no
+              assigned user
+            </Tooltip>
+          }>
           <Button
             id="noAssignedUser"
             size="sm"

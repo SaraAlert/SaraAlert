@@ -35,7 +35,7 @@ class JurisdictionsController < ApplicationController
 
     # Validate tab param
     tab = permitted_params[:tab].to_sym unless params.permit(:tab)[:tab].nil?
-    return head :bad_request if tab && workflow.nil? ||
+    return head :bad_request if tab && tab != :all && workflow.nil? ||
                                 workflow == :exposure && !%i[all symptomatic non_reporting asymptomatic pui closed transferred_in].include?(tab) ||
                                 workflow == :isolation && !%i[all requiring_review non_reporting reporting closed transferred_in].include?(tab)
 

@@ -170,7 +170,7 @@ class Export extends React.Component {
             jurisdiction={this.props.jurisdiction}
             tabs={this.props.tabs}
             preset={this.state.savedPreset}
-            query={this.props.query}
+            patient_filters={this.props.query}
             filtered_monitorees_count={this.props.filtered_monitorees_count}
             all_monitorees_count={this.props.all_monitorees_count}
             options={this.props.custom_export_options}

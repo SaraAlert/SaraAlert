@@ -342,7 +342,7 @@ class PatientsTable extends React.Component {
       });
   }, 500);
 
-  advancedFilterUpdate(filter) {
+  advancedFilterUpdate = filter => {
     localStorage.removeItem(`SaraPage`);
     this.setState(
       state => {
@@ -355,7 +355,7 @@ class PatientsTable extends React.Component {
         this.updateTable(this.state.query);
       }
     );
-  }
+  };
 
   updateAssignedUsers(jurisdiction_id, scope, workflow, tab) {
     if (tab !== 'transferred_out') {
