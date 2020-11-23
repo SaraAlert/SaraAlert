@@ -48,10 +48,11 @@ class UserMailer < ApplicationMailer
     mail(to: ADMIN_OPTIONS['job_run_email'], subject: "Sara Alert Cache Analytics Job Results (#{ActionMailer::Base.default_url_options[:host]})")
   end
 
-  def send_patient_digest_job_email(patients, user, eligible)
+  def send_patient_digest_job_email(patients, user)
     @patients = patients
-    @eligible = eligible
-    mail(to: user.email.strip, subject: "Sara Alert Recently Symptomatic Patients (#{ActionMailer::Base.default_url_options[:host]})")
+    mail(to: user.email.strip, subject: 'Sara Alert Recently Symptomatic Monitorees (last hour)') do |format|
+      format.html { render layout: 'main_mailer' }
+    end
   end
 
   def download_email(user, export_type, lookups, batch_size)

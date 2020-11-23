@@ -112,6 +112,7 @@
             webpage: 'www.example.com'
             email: 'contact@example.com'
             message: 'This Is a Custom Jurisdiction Message'
+            send_digest: true
             symptoms:
                 'Pulse Ox':
                     value: 90
