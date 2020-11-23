@@ -12,6 +12,7 @@ class ActiveSupport::TestCase
 
   def setup
     Sidekiq::Worker.clear_all
+    super
   end
 
   # Run tests in parallel with specified workers
