@@ -13,7 +13,7 @@ module ConsumeAssessmentsJobTestHelper
     end
 
     def reported_symptom_assessment(symptomatic: nil)
-      if symptomatic
+      unless symptomatic.nil?
         return {
           response_status: nil,
           threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
@@ -21,6 +21,8 @@ module ConsumeAssessmentsJobTestHelper
           patient_submission_token: @patient.submission_token
         }.to_json
       end
+      # If symptomatic is nil then we will include a reported_symptoms_array
+      # the reported_symptoms_array exists when assessments are completed in the web-form
       {
         response_status: nil,
         threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
@@ -33,7 +35,8 @@ module ConsumeAssessmentsJobTestHelper
             notes: 'Have you coughed today?'
           }
         ],
-        patient_submission_token: @patient.submission_token
+        patient_submission_token: @patient.submission_token,
+        experiencing_symptoms: nil
       }.to_json
     end
 
