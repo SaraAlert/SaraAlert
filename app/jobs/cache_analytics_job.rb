@@ -28,7 +28,6 @@ class CacheAnalyticsJob < ApplicationJob
   end
 
   WORKFLOWS = %w[Exposure Isolation].freeze
-  MONITORING_STATUSES ||= %w[Symptomatic Non-Reporting Asymptomatic].freeze
   LINELIST_STATUSES = ['Exposure Symptomatic', 'Exposure Non-Reporting', 'Exposure Asymptomatic', 'Exposure PUI', 'Isolation Requiring Review', 'Isolation Non-Reporting', 'Isolation Reporting'].freeze
   RISK_FACTORS ||= {
     contact_of_known_case: 'Close Contact with Known Case',
@@ -41,62 +40,28 @@ class CacheAnalyticsJob < ApplicationJob
   }.freeze
   MONITOREE_SNAPSHOT_TIME_FRAMES ||= ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Total'].freeze
   NUM_EXPOSURE_COUNTRIES ||= 5
-  NUM_PAST_EXPOSURE_DAYS ||= 28
-  NUM_PAST_EXPOSURE_WEEKS ||= 53
-  NUM_PAST_EXPOSURE_MONTHS ||= 13
+  NUM_PAST_DAYS ||= 28
+  NUM_PAST_WEEKS ||= 53
+  NUM_PAST_MONTHS ||= 13
 
   # Compute all monitoree counts
   def self.all_monitoree_counts(analytic_id, monitorees)
     counts = []
-    # TODO: Remmove risk stratification from all analytics schemas
-    # Active and overall total counts
-    counts.concat(monitoree_counts_by_total(analytic_id, monitorees, true))
-    counts.concat(monitoree_counts_by_total(analytic_id, monitorees, false))
-
-    # Monitoring status counts for today's reporting summary
-    counts.concat(monitoree_counts_by_monitoring_status(analytic_id, monitorees))
 
     # Active and overall counts for epidemiological summary
     counts.concat(monitoree_counts_by_age_group(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_sex(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_ethnicity(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_race(analytic_id, monitorees))
-    counts.concat(monitoree_counts_by_sexual_orientation(analytic_id, monitorees))
+    # counts.concat(monitoree_counts_by_sexual_orientation(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_reporting_method(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_risk_factor(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_exposure_country(analytic_id, monitorees))
 
-    # Active and overall counts for date of last exposure
+    # # Active and overall counts for date of last exposure
     counts.concat(monitoree_counts_by_last_exposure_date(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_last_exposure_week(analytic_id, monitorees))
     counts.concat(monitoree_counts_by_last_exposure_month(analytic_id, monitorees))
-
-    counts
-  end
-
-  # Total monitoree counts
-  def self.monitoree_counts_by_total(analytic_id, monitorees, active_monitoring)
-    monitorees.monitoring_active(active_monitoring)
-              .group(:exposure_risk_assessment)
-              .order(:exposure_risk_assessment)
-              .size
-              .map do |risk_level, total|
-                monitoree_count(analytic_id, active_monitoring, 'Overall Total', 'Total', risk_level, total)
-              end
-  end
-
-  # Monitoree counts by monitoring status (symptomatic, non-reporting, asymptomatic)
-  def self.monitoree_counts_by_monitoring_status(analytic_id, monitorees)
-    counts = []
-    MONITORING_STATUSES.each do |monitoring_status|
-      monitorees.monitoring_status(monitoring_status)
-                .group(:exposure_risk_assessment)
-                .order(:exposure_risk_assessment)
-                .size
-                .each do |risk_level, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Monitoring Status', monitoring_status, risk_level, total))
-                end
-    end
     counts
   end
 
@@ -126,7 +91,7 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(Arel.sql(age_groups))
                 .size
                 .map do |(age_group), total|
-                  counts.append(monitoree_count(analytic_id, true, 'Age Group', age_group, nil, total, workflow))
+                  counts.append(monitoree_count(analytic_id, true, 'Age Group', age_group, total, workflow))
                 end
     end
     counts
@@ -141,7 +106,7 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(:sex)
                 .size
                 .map do |sex, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Sex', sex.nil? ? 'Missing' : sex, nil, total, workflow))
+                  counts.append(monitoree_count(analytic_id, true, 'Sex', sex.nil? ? 'Missing' : sex, total, workflow))
                 end
     end
     counts
@@ -156,7 +121,7 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(:sexual_orientation)
                 .size
                 .map do |sexual_orientation, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Sexual Orientation', sexual_orientation.nil? ? 'Missing' : sexual_orientation, nil, total, workflow))
+                  counts.append(monitoree_count(analytic_id, true, 'Sexual Orientation', sexual_orientation.nil? ? 'Missing' : sexual_orientation, total, workflow))
                 end
     end
     counts
@@ -186,7 +151,7 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(Arel.sql(racial_groups))
                 .size
                 .map do |racial_group, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Race', racial_group.nil? ? 'Missing' : racial_group, nil, total, workflow))
+                  counts.append(monitoree_count(analytic_id, true, 'Race', racial_group.nil? ? 'Missing' : racial_group, total, workflow))
                 end
     end
     counts
@@ -201,7 +166,7 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(:ethnicity)
                 .size
                 .map do |(ethnicity), total|
-                  counts.append(monitoree_count(analytic_id, true, 'Ethnicity', ethnicity.nil? ? 'Missing' : ethnicity, nil, total, workflow))
+                  counts.append(monitoree_count(analytic_id, true, 'Ethnicity', ethnicity.nil? ? 'Missing' : ethnicity, total, workflow))
                 end
     end
     counts
@@ -216,7 +181,7 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(:preferred_contact_method)
                 .size
                 .map do |preferred_contact_method, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Contact Method', preferred_contact_method.nil? ? 'Missing' : preferred_contact_method, nil, total, linelist_status))
+                  counts.append(monitoree_count(analytic_id, true, 'Contact Method', preferred_contact_method.nil? ? 'Missing' : preferred_contact_method, total, linelist_status))
                 end
     end
   end
@@ -230,8 +195,8 @@ class CacheAnalyticsJob < ApplicationJob
                   .where(risk_factor => true)
                   .group(risk_factor)
                   .size
-                  .map do |(_, risk), total|
-                    counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, risk, total, workflow))
+                  .map do |(_), total|
+                    counts.append(monitoree_count(analytic_id, true, 'Risk Factor', label, total, workflow))
                   end
       end
     end
@@ -256,7 +221,7 @@ class CacheAnalyticsJob < ApplicationJob
                 .order(:potential_exposure_country)
                 .size
                 .map do |country, total|
-        counts.append(monitoree_count(analytic_id, true, 'Exposure Country', country, nil, total, workflow))
+        counts.append(monitoree_count(analytic_id, true, 'Exposure Country', country, total, workflow))
       end
     end
     counts
@@ -265,17 +230,25 @@ class CacheAnalyticsJob < ApplicationJob
   # Monitoree counts by last date of exposure by days
   def self.monitoree_counts_by_last_exposure_date(analytic_id, monitorees)
     counts = []
-    WORKFLOWS.map do |workflow|
-      monitorees.where(isolation: workflow == 'Isolation')
-                .monitoring_active(true)
-                .exposed_in_time_frame(NUM_PAST_EXPOSURE_DAYS.days.ago.to_date.to_datetime)
-                .group(:last_date_of_exposure)
-                .order(:last_date_of_exposure)
-                .size
-                .map do |date, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Last Exposure Date', date, false, total, workflow))
-                end
-    end
+    # WORKFLOWS.map do |workflow|
+    monitorees.where(isolation: false)
+              .monitoring_active(true)
+              .exposed_in_time_frame(NUM_PAST_DAYS.days.ago.to_date.to_datetime)
+              .group(:last_date_of_exposure)
+              .order(:last_date_of_exposure)
+              .size
+              .map do |date, total|
+                counts.append(monitoree_count(analytic_id, true, 'Last Exposure Date', date, total, 'Exposure'))
+              end
+    monitorees.where(isolation: true)
+              .monitoring_active(true)
+              .exposed_in_time_frame(NUM_PAST_DAYS.days.ago.to_date.to_datetime)
+              .group(:symptom_onset)
+              .order(:symptom_onset)
+              .size
+              .map do |date, total|
+                counts.append(monitoree_count(analytic_id, true, 'Last Exposure Date', date, total, 'Isolation'))
+              end
     counts
   end
 
@@ -285,17 +258,27 @@ class CacheAnalyticsJob < ApplicationJob
     exposure_weeks = <<-SQL
       DATE_ADD(last_date_of_exposure, INTERVAL(1 - DAYOFWEEK(last_date_of_exposure)) DAY)
     SQL
-    WORKFLOWS.map do |workflow|
-      monitorees.where(isolation: workflow == 'Isolation')
-                .monitoring_active(true)
-                .exposed_in_time_frame(NUM_PAST_EXPOSURE_WEEKS.weeks.ago.to_date.to_datetime)
-                .group(exposure_weeks)
-                .order(Arel.sql(exposure_weeks))
-                .size
-                .map do |week, total|
-                  counts.append(monitoree_count(analytic_id, true, 'Last Exposure Week', week, nil, total, workflow))
-                end
-    end
+    symptom_onset_weeks = <<-SQL
+      DATE_ADD(last_date_of_exposure, INTERVAL(1 - DAYOFWEEK(symptom_onset)) DAY)
+    SQL
+    monitorees.where(isolation: false)
+              .monitoring_active(true)
+              .exposed_in_time_frame(NUM_PAST_WEEKS.weeks.ago.to_date.to_datetime)
+              .group(exposure_weeks)
+              .order(Arel.sql(exposure_weeks))
+              .size
+              .map do |week, total|
+                counts.append(monitoree_count(analytic_id, true, 'Last Exposure Week', week, total, 'Exposure'))
+              end
+    monitorees.where(isolation: true)
+              .monitoring_active(true)
+              .exposed_in_time_frame(NUM_PAST_WEEKS.weeks.ago.to_date.to_datetime)
+              .group(symptom_onset_weeks)
+              .order(Arel.sql(symptom_onset_weeks))
+              .size
+              .map do |week, total|
+                counts.append(monitoree_count(analytic_id, true, 'Last Exposure Week', week, total, 'Isolation'))
+              end
     counts
   end
 
@@ -305,28 +288,38 @@ class CacheAnalyticsJob < ApplicationJob
     exposure_months = <<-SQL
       DATE_FORMAT(last_date_of_exposure ,'%Y-%m-01')
     SQL
-    WORKFLOWS.map do |workflow|
-      monitorees.where(isolation: workflow == 'Isolation')
-                .monitoring_active(true)
-                .exposed_in_time_frame(NUM_PAST_EXPOSURE_MONTHS.months.ago.to_date.to_datetime)
-                .group(exposure_months)
-                .order(Arel.sql(exposure_months))
-                .size
-                .map do |month, total|
-        counts.append(monitoree_count(analytic_id, true, 'Last Exposure Month', month, nil, total, workflow))
-      end
-    end
+    symptom_onset_months = <<-SQL
+      DATE_FORMAT(symptom_onset ,'%Y-%m-01')
+    SQL
+
+    monitorees.where(isolation: false)
+              .monitoring_active(true)
+              .exposed_in_time_frame(NUM_PAST_MONTHS.months.ago.to_date.to_datetime)
+              .group(exposure_months)
+              .order(Arel.sql(exposure_months))
+              .size
+              .map do |month, total|
+                counts.append(monitoree_count(analytic_id, true, 'Last Exposure Month', month, total, 'Exposure'))
+              end
+    monitorees.where(isolation: true)
+              .monitoring_active(true)
+              .exposed_in_time_frame(NUM_PAST_MONTHS.months.ago.to_date.to_datetime)
+              .group(symptom_onset_months)
+              .order(Arel.sql(symptom_onset_months))
+              .size
+              .map do |month, total|
+                counts.append(monitoree_count(analytic_id, true, 'Last Exposure Month', month, total, 'Isolation'))
+              end
     counts
   end
 
   # New monitoree count with given fields
-  def self.monitoree_count(analytic_id, active_monitoring, category_type, category, risk_level, total, status = nil) # rubocop:todo Metrics/ParameterLists
+  def self.monitoree_count(analytic_id, active_monitoring, category_type, category, total, status = nil) # rubocop:todo Metrics/ParameterLists
     MonitoreeCount.new(
       analytic_id: analytic_id,
       active_monitoring: active_monitoring,
       category_type: category_type,
       category: category,
-      risk_level: risk_level.nil? ? 'Missing' : risk_level,
       total: total,
       status: status.nil? ? 'Missing' : status
     )
