@@ -162,6 +162,7 @@ class Patient < ApplicationRecord
         'OR patients.last_assessment_reminder_sent IS NULL',
         12.hours.ago
       )
+      .within_preferred_contact_time
       .or(
         # This OR is checking if the HoH has any dependents that make them eligible to
         # recieve notifications on the dependent's behalf.
@@ -199,8 +200,35 @@ class Patient < ApplicationRecord
             ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day,
             ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
           )
+          .within_preferred_contact_time
       )
       .distinct
+  }
+
+  scope :within_preferred_contact_time, lambda {
+    where(
+      # If preferred contact time is X,
+      # then valid contact hours in patient's timezone are Y.
+      # 'Morning'   => 0800 - 1200
+      # 'Afternoon' => 1200 - 1600
+      # 'Evening'   => 1600 - 1900
+      #  default    => 1100 - 1700
+      '(patients.preferred_contact_time = "Morning"'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 8'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 12) '\
+      'OR (patients.preferred_contact_time = "Afternoon"'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 12'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 16) '\
+      'OR (patients.preferred_contact_time = "Evening"'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 16'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 19) '\
+      'OR (HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) >= 11'\
+      ' && HOUR(CONVERT_TZ(?, "+00:00", patients.time_zone_offset)) <= 17)',
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00'),
+      Time.now.getlocal('-00:00'), Time.now.getlocal('-00:00')
+    )
   }
 
   # All individuals currently being monitored
