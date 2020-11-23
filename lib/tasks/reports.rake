@@ -5,7 +5,7 @@ require 'redis-queue'
 
 namespace :reports do
   desc "Receive and Process Reports"
-  task receive_and_process_reports: :environment do
+  task queue_reports: :environment do
     Rails.logger.info('Starting the ConsumeAssessments task')
     queue = Redis::Queue.new('q_bridge', 'bp_q_bridge', redis: Rails.application.config.redis)
 

@@ -3,7 +3,7 @@
 # ConsumeAssessmentsJob: Pulls assessments created in the split instance and saves them
 class ConsumeAssessmentsWorker
   include Sidekiq::Worker
-  sidekiq_options queue: :default, retry: 2
+  sidekiq_options queue: :assessments, retry: 2
 
   def perform(msg)
     message = JSON.parse(msg)&.slice('threshold_condition_hash',
