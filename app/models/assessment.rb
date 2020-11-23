@@ -16,6 +16,12 @@ class Assessment < ApplicationRecord
   after_save :update_patient_linelist_after_save
   before_destroy :update_patient_linelist_before_destroy
 
+  # Assessments created in the last hour that are symptomatic
+  scope :symptomatic_last_hour, lambda {
+    where('created_at >= ?', 60.minutes.ago)
+      .where(symptomatic: true)
+  }
+
   def symptomatic?
     symptom_groups = []
     reported_condition.symptoms.each do |reported_symptom|
