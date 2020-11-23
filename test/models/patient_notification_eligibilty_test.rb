@@ -141,17 +141,17 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
     # effectively gives us the beginning of the day and is considered less than
     # one second past the beginning of the day
     dt = Time.now.getlocal('-00:00').beginning_of_day + 1.second
-    query = ActiveRecord::Base.connection.raw_connection.prepare("SELECT Date(?) < ?")
+    query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT Date(?) < ?')
     results = query.execute(dt, dt)
     assert_equal 1, results.first.first
     query.close
 
-    query = ActiveRecord::Base.connection.raw_connection.prepare("SELECT Date(?) > ?")
+    query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT Date(?) > ?')
     results = query.execute(dt, dt)
     assert_equal 0, results.first.first
     query.close
 
-    query = ActiveRecord::Base.connection.raw_connection.prepare("SELECT Date(?) != ?")
+    query = ActiveRecord::Base.connection.raw_connection.prepare('SELECT Date(?) != ?')
     results = query.execute(dt, dt)
     assert_equal 1, results.first.first
     query.close
