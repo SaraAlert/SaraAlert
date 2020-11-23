@@ -1,15 +1,16 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Badge, Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CheckboxTree from 'react-checkbox-tree';
 import Select from 'react-select';
 import axios from 'axios';
 import _ from 'lodash';
-
-import reportError from '../util/ReportError';
 import { toast } from 'react-toastify';
+
+import MonitoreesFilters from './custom_export/MonitoreesFilters';
+import reportError from '../util/ReportError';
 
 const rctIcons = {
   check: <FontAwesomeIcon fixedWidth icon={['far', 'check-square']} />,
@@ -33,14 +34,14 @@ class CustomExport extends React.Component {
           query:
             props.preset?.query ||
             props.preset?.query ||
-            _.pickBy(props.query, (_, key) => {
+            _.pickBy(props.patient_filters, (_, key) => {
               return ['workflow', 'tab', 'jurisdiction', 'scope', 'user', 'search', 'filter'].includes(key);
             }),
           queries: _.mapValues(props.options, (settings, type) => {
             return {
               checked: _.get(props.preset, type)?.queries.checked || settings?.checked || [],
               expanded: _.get(props.preset, type)?.queries.expanded || settings?.expanded || [],
-              filters: _.get(props.preset, type)?.queries.filters || [],
+              filters: _.get(props.preset, type)?.queries.filters || type === 'patients' ? props.patient_filters : [],
               order: _.get(props.preset, type)?.queries.order || [],
             };
           }),
@@ -101,12 +102,13 @@ class CustomExport extends React.Component {
   };
 
   // Update queries
-  handlePresetChange = (field, value) => {
+  handlePresetChange = (field, value, cb) => {
     this.setState(state => {
       const preset = state.preset;
       _.set(preset, field, value);
+      console.log(preset);
       return { preset };
-    });
+    }, cb);
   };
 
   render() {
@@ -118,68 +120,13 @@ class CustomExport extends React.Component {
         <Modal.Body className="p-0">
           <Row className="mx-3 pt-3 pb-1">
             <Col md={12} className="px-2 py-1">
-              <Form.Group>
-                <Form.Label className="nav-input-label mb-0">Select Monitorees:</Form.Label>
-                <div className="py-1">
-                  <Form.Check
-                    id="allMonitoreesBtn"
-                    type="radio"
-                    size="sm"
-                    label={`All Monitorees (${this.props.all_monitorees_count})`}
-                    checked={!this.state.preset?.config?.filtered}
-                    onChange={() => this.handlePresetChange(['config', 'filtered'], false)}
-                  />
-                  {!this.state.preset?.config?.filtered && (
-                    <div style={{ paddingLeft: '1.25rem' }}>
-                      <Badge variant="primary">Jurisdiction: {this.props.jurisdiction?.path} (all)</Badge>
-                    </div>
-                  )}
-                </div>
-                <div className="py-1">
-                  <Form.Check
-                    id="currentFilterMonitoreesBtn"
-                    type="radio"
-                    size="sm"
-                    label={`Current Filter (${this.props.filtered_monitorees_count})`}
-                    checked={!!this.state.preset?.config?.filtered}
-                    onChange={() => this.handlePresetChange(['config', 'filtered'], true)}
-                  />
-                  {this.state.preset?.config?.filtered && (
-                    <div style={{ paddingLeft: '1.25rem' }}>
-                      {this.state.preset?.config?.query?.jurisdiction && (
-                        <Badge variant="primary" className="mr-1">
-                          Jurisdiction: {this.props.jurisdiction_paths[this.state.preset?.config?.query?.jurisdiction]} (
-                          {this.state.preset?.config?.query?.scope})
-                        </Badge>
-                      )}
-                      {this.state.preset?.config?.query?.workflow && this.state.preset?.config?.query?.tab && (
-                        <Badge variant="primary" className="mr-1">
-                          {this.state.preset?.config?.query?.workflow === 'isolation' ? 'Isolation' : 'Exposure'} -{' '}
-                          {this.props.tabs[this.state.preset?.config?.query.tab]?.label}
-                        </Badge>
-                      )}
-                      {this.state.preset?.config?.query?.user && this.state.preset?.config?.query?.user !== 'all' && (
-                        <Badge variant="primary" className="mr-1">
-                          Assigned User: {this.state.preset?.config?.query?.user}
-                        </Badge>
-                      )}
-                      {this.state.preset?.config?.query?.search && this.state.preset?.config?.query?.search !== '' && (
-                        <Badge variant="primary" className="mr-1">
-                          Search: {this.state.preset?.config?.query?.search}
-                        </Badge>
-                      )}
-                      {this.state.preset?.config?.query?.filter &&
-                        this.state.preset?.config?.query?.filter.map(f => {
-                          return (
-                            <Badge variant="secondary" className="mr-1" key={f?.filterOption?.name}>
-                              {f?.filterOption?.title}: {f?.value?.toString()}
-                            </Badge>
-                          );
-                        })}
-                    </div>
-                  )}
-                </div>
-              </Form.Group>
+              <MonitoreesFilters
+                authenticity_token={this.props.authenticity_token}
+                jurisdiction_paths={this.props.jurisdiction_paths}
+                jurisdiction={this.props.jurisdiction}
+                filters={this.state.preset?.config?.queries?.patients?.filters}
+                onFiltersChange={(field, value, cb) => this.handlePresetChange(['config', 'queries', 'patients', 'filters', field], value, cb)}
+              />
             </Col>
             <Col md={12} className="px-0 py-1">
               <CheckboxTree
@@ -379,7 +326,7 @@ CustomExport.propTypes = {
   jurisdiction: PropTypes.object,
   tabs: PropTypes.object,
   preset: PropTypes.object,
-  query: PropTypes.object,
+  patient_filters: PropTypes.object,
   all_monitorees_count: PropTypes.number,
   filtered_monitorees_count: PropTypes.number,
   options: PropTypes.object,
