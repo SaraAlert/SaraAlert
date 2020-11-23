@@ -569,12 +569,12 @@ class AdminTable extends React.Component {
               <i className="fas fa-plus-circle"></i>
               &nbsp;Add User
             </Button>
-            <Button className="mx-1" size="md" variant="secondary" onClick={this.getCSVData}>
+            <Button className="mx-1" size="md" onClick={this.getCSVData}>
               <i className="fas fa-download"></i>
               &nbsp;Export All to CSV
             </Button>
             {this.props.is_usa_admin && (
-              <Button className="mx-1" size="md" variant="secondary" onClick={this.handleEmailAllClick}>
+              <Button className="mx-1" size="md" onClick={this.handleEmailAllClick}>
                 <i className="fas fa-envelope"></i>
                 &nbsp;Email All Unlocked Users
               </Button>
