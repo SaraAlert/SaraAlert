@@ -78,7 +78,7 @@ class Patient extends React.Component {
               {this.props?.dependents && this.props?.dependents?.length > 0 && <BadgeHOH patientId={String(this.props.details.id)} location={'right'} />}
             </h3>
           </Col>
-          <Col md="auto" className="jursdiction-user-box mr-3">
+          <Col md="auto" className="jurisdiction-user-box mr-3">
             <Row id="jurisdiction-path">
               <Col>
                 <b>Assigned Jurisdiction:</b> {this.props.jurisdiction_path || '--'}
