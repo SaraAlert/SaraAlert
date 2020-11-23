@@ -237,7 +237,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   end
 
   test 'non-HoH, eligible flows' do
-    ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |report_method|
+    ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |preferred_contact_method|
       [
         { isolation: true },
         { continuous_exposure: true },
@@ -248,7 +248,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         patient = create(
           :patient,
           {
-            preferred_contact_method: report_method,
+            preferred_contact_method: preferred_contact_method,
             pause_notifications: false,
             purged: false,
             monitoring: true,
@@ -277,7 +277,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   end
 
   test 'non-HoH, workflow-shared, non-eligible flows' do
-    ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |report_method|
+    ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |preferred_contact_method|
       [
         { isolation: true },
         { continuous_exposure: true },
@@ -295,7 +295,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           { preferred_contact_method: nil }
         ].each do |ineligible_params|
           patient_args = {
-            preferred_contact_method: report_method,
+            preferred_contact_method: preferred_contact_method,
             pause_notifications: false,
             purged: false,
             monitoring: true,
@@ -309,13 +309,13 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   end
 
   test 'non-HoH, special exposure workflow, non-eligible flows' do
-    ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |report_method|
+    ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |preferred_contact_method|
       [
         { last_date_of_exposure: 15.days.ago, created_at: 20.days.ago },
         { last_date_of_exposure: nil, created_at: 15.days.ago }
       ].each do |ineligible_params|
         patient_args = {
-          preferred_contact_method: report_method,
+          preferred_contact_method: preferred_contact_method,
           pause_notifications: false,
           purged: false,
           monitoring: true,
