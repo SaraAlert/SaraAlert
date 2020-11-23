@@ -6,7 +6,6 @@ import domtoimage from 'dom-to-image';
 import Switch from 'react-switch';
 import 'rc-slider/assets/index.css';
 
-import RiskStratificationTable from './widgets/RiskStratificationTable';
 import MonitoreeFlow from './widgets/MonitoreeFlow';
 import Demographics from './widgets/Demographics';
 import ExposureSummary from './widgets/ExposureSummary';
