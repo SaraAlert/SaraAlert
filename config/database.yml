@@ -8,14 +8,14 @@ default: &default
 
 development:
   <<: *default
-  database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'disease_trakker_development' %>
+  database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'savamc2-disease_trakker_development' %>
 
 test:
   <<: *default
-  database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'disease_trakker_test' %>
+  database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'savamc2-disease_trakker_test' %>
 
 production:
   <<: *default
-  database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'disease_trakker_production' %>
+  database: <%= ENV['DISEASE_TRAKKER_DATABASE_NAME'].presence || 'savamc2-disease_trakker_production' %>
   host: <%= ENV['DISEASE_TRAKKER_DATABASE_HOST'] || '' %>
   port: <%= ENV['DISEASE_TRAKKER_DATABASE_PORT'] || '' %>
