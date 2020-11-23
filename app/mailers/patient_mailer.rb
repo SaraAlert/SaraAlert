@@ -20,27 +20,7 @@ class PatientMailer < ApplicationMailer
   end
 
   def enrollment_sms_weblink(patient)
-    return if patient&.primary_telephone.blank?
-
-    lang = patient.select_language
-    url = new_patient_assessment_jurisdiction_lang_initials_url(patient.submission_token,
-                                                                patient.jurisdiction.unique_identifier,
-                                                                lang&.to_s || 'en',
-                                                                patient&.initials_age)
-    contents = "#{I18n.t('assessments.sms.weblink.intro', locale: lang)} #{patient&.initials_age('-')}: #{url}"
-    account_sid = ENV['TWILLIO_API_ACCOUNT']
-    auth_token = ENV['TWILLIO_API_KEY']
-    from = ENV['TWILLIO_SENDING_NUMBER']
-    client = Twilio::REST::Client.new(account_sid, auth_token)
-    client.messages.create(
-      from: from,
-      to: Phonelib.parse(patient.primary_telephone, 'US').full_e164,
-      body: contents
-    )
-  rescue Twilio::REST::RestError => e
-    Rails.logger.warn e.error_message
-    add_fail_history_sms(patient)
-    patient.update(last_assessment_reminder_sent: DateTime.now)
+    enrollment_sms_text_based(patient)
   end
 
   def enrollment_sms_text_based(patient)
