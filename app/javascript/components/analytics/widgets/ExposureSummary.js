@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Card } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import _ from 'lodash';
 
@@ -20,13 +20,13 @@ class ExposureSummary extends React.Component {
   constructor(props) {
     super(props);
 
-    let topTenCountries = _.uniq(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).map(country => {
+    this.allCountryData = _.uniq(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country').map(x => x.category)).map(country => {
       return {
         country,
         total: _.sum(props.stats.monitoree_counts.filter(x => x.category_type === 'Exposure Country' && x.category === country).map(x => x.total)),
       };
     });
-    this.COUNTRY_HEADERS = topTenCountries.sort((a, b) => b.total - a.total).map(x => x.country);
+    this.COUNTRY_HEADERS = this.allCountryData.sort((a, b) => b.total - a.total).map(x => x.country);
 
     this.rfData = this.parseOutFields(RISKFACTORS, 'Risk Factor');
     this.countryData = this.parseOutFields(this.COUNTRY_HEADERS, 'Exposure Country');
@@ -61,6 +61,20 @@ class ExposureSummary extends React.Component {
       });
       return retVal;
     });
+
+  exportFullCountryData = () => {
+    let topRow = ['\t', 'Exposure Workflow', 'Isolation Workflow', 'Total'];
+    let entryArray = this.fullCountryData.map((x, i) => _.join([this.allCountryData[Number(i)].country, ...x], ','));
+    let contentString = _.join(entryArray, '\n');
+    let csvContent = _.join([topRow, contentString], '\n');
+    const url = window.URL.createObjectURL(new Blob([csvContent]));
+    const link = document.createElement('a');
+    link.href = url;
+    self.csvFileName = `CompleteCountryData.csv`;
+    link.setAttribute('download', `${self.csvFileName}`);
+    document.body.appendChild(link);
+    link.click();
+  };
 
   renderBarGraphs = () => (
     <div className="mx-3 mt-5">
@@ -145,6 +159,10 @@ class ExposureSummary extends React.Component {
             </tbody>
           ))}
         </table>
+        <Button variant="primary" className="float-right mt-3 btn-square" onClick={this.exportFullCountryData}>
+          <i className="fas fa-download mr-1"></i>
+          Export Complete Country Data
+        </Button>
       </Card.Body>
     );
   };
