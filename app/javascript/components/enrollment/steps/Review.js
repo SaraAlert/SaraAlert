@@ -91,20 +91,8 @@ class Review extends React.Component {
                 Finish
               </Button>
             )}
-            {this.props.submit && this.props.currentState.responder_id === this.props.currentState.id && this.props.canAddGroup && (
-              <Button
-                variant="primary"
-                size="lg"
-                className="float-right btn-square px-5 mr-4"
-                disabled={this.state.submitDisabled}
-                onClick={this.toggleGroupAddNotification}>
-                Finish and Add a Household Member
-              </Button>
-            )}
           </Card.Body>
         </Card>
-        {this.state.showGroupAddNotification &&
-          this.createModal('Enroll Household Members', this.toggleGroupAddNotification, event => this.submit(event, true))}
       </React.Fragment>
     );
   }

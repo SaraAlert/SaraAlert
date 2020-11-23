@@ -224,50 +224,6 @@
 </div>
 <% end %>
 
-<% if current_user.can_view_patient_close_contacts? %>
-<div class="card mx-2 mt-3 mb-4 card-square">
-  <h5 class="card-header">
-    Close Contacts
-    <%= react_component('util/InfoTooltip', { tooltipTextKey: 'closeContacts', location: 'right' }, { style: 'display:inline' }) %>
-  </h5>
-  <div class="m-4">
-    <table class="cc_table table table-sm table-striped table-bordered table-hover table-smaller-font" style="width:100%">
-      <thead>
-        <tr>
-          <th class="DataTable-table-header">First Name</th>
-          <th class="DataTable-table-header">Last Name</th>
-          <th class="DataTable-table-header">Phone Number</th>
-          <th class="DataTable-table-header">Email</th>
-          <th class="DataTable-table-header">Contact Attempts</th>
-          <th class="DataTable-table-header">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @patient.close_contacts.order('created_at').each do |cc| -%>
-        <tr>
-          <td><%= cc.first_name %></td>
-          <td><%= cc.last_name %></td>
-          <td><%= cc.primary_telephone %></td>
-          <td><%= cc.email %></td>
-          <td><%= cc.contact_attempts %></td>
-          <td>
-            <div class="btn-group btn-group-sm" role="group">
-              <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: cc, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>
-            </div>
-          </td>
-        </tr>
-        <% end -%>
-      </tbody>
-    </table>
-    <div class="pb-1">
-      <div class="btn-group" role="group">
-        <%= react_component('close_contact/CloseContact', { authenticity_token: form_authenticity_token, patient: @patient, close_contact: CloseContact.new, can_enroll_patient_close_contacts: current_user.can_enroll_patient_close_contacts? }) %>
-      </div>
-    </div>
-  </div>
-</div>
-<% end %>
-
 <% if current_user.can_modify_subject_status? %>
   <%= react_component('history/HistoryComponent', { patient_id: @patient.id, histories: @patient.histories.order('created_at DESC'), authenticity_token: form_authenticity_token, history_types: @history_types }) %>
 <% end %>
