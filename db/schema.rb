@@ -157,7 +157,6 @@ ActiveRecord::Schema.define(version: 2020_11_23_184158) do
     t.boolean "active_monitoring"
     t.string "category_type"
     t.string "category"
-    t.string "risk_level"
     t.integer "total"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
