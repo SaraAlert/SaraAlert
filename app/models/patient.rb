@@ -141,8 +141,8 @@ class Patient < ApplicationRecord
         'OR (patients.last_date_of_exposure IS NULL AND patients.created_at >= ?)',
         true,
         true,
-        ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day,
-        ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
+        (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago.beginning_of_day,
+        (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago.beginning_of_day
       )
       .where(
         # Converting to a timezone, then casting to date effectively gives us
@@ -197,8 +197,8 @@ class Patient < ApplicationRecord
             'OR (dependents_patients.last_date_of_exposure IS NULL AND dependents_patients.created_at >= ?)',
             true,
             true,
-            ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day,
-            ADMIN_OPTIONS['monitoring_period_days'].days.ago.beginning_of_day
+            (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago.beginning_of_day,
+            (ADMIN_OPTIONS['monitoring_period_days'] + 1).days.ago.beginning_of_day
           )
           .within_preferred_contact_time
       )

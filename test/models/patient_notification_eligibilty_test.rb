@@ -4,11 +4,15 @@ require 'test_case'
 
 class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   def setup
+    # Assume that the default patient created here will have a nil preferred_contact_time
+    # and if it will be non-nil, then the specific test can change the Timecop time.
+    Timecop.freeze(Time.now.noon)
     @original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
   end
 
   def teardown
     ADMIN_OPTIONS['reporting_period_minutes'] = @original_reporting_period
+    Timecop.return
   end
 
   def expected_eligibility(patient, exp_eligibility)
@@ -43,7 +47,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
         'id', 'responder_id', 'head_of_household', 'preferred_contact_method', 'pause_notifications',
         'isolation', 'continuous_exposure', 'last_date_of_exposure', 'created_at',
         'monitoring', 'closed_at', 'last_assessment_reminder_sent', 'latest_assessment_at', 'purged',
-        'time_zone_offset'
+        'time_zone_offset', 'preferred_contact_time'
       )
       result += "\n#{attributes}\n"
     end
@@ -118,9 +122,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
 
   def past_monitoring_period_dependent_test(patient, exp_eligibility: false)
     [
-      { last_date_of_exposure: nil, created_at: 15.days.ago },
-      { last_date_of_exposure: 15.days.ago, created_at: 15.days.ago },
-      { last_date_of_exposure: 15.days.ago, created_at: 30.days.ago }
+      { last_date_of_exposure: nil, created_at: 16.days.ago },
+      { last_date_of_exposure: 16.days.ago, created_at: 16.days.ago },
+      { last_date_of_exposure: 16.days.ago, created_at: 30.days.ago }
     ].each do |workflow_params|
       dependent = create(
         :patient,
@@ -311,8 +315,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   test 'non-HoH, special exposure workflow, non-eligible flows' do
     ['E-mailed Web Link', 'SMS Texted Weblink', 'Telephone call', 'SMS Text-message'].each do |preferred_contact_method|
       [
-        { last_date_of_exposure: 15.days.ago, created_at: 20.days.ago },
-        { last_date_of_exposure: nil, created_at: 15.days.ago }
+        { last_date_of_exposure: 16.days.ago, created_at: 20.days.ago },
+        { last_date_of_exposure: nil, created_at: 16.days.ago }
       ].each do |ineligible_params|
         patient_args = {
           preferred_contact_method: preferred_contact_method,
@@ -432,22 +436,24 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
           continuous_exposure: true
         }.merge(patient_params)
       )
-      assert_eligible(patient)
-      # assessment right before the start of the valid reporting period
-      create(
-        :assessment,
-        patient: patient,
-        # converting to UTC because these DB times are assumed to be saved in UTC
-        created_at: Time.now.getlocal(patient.address_timezone_offset).yesterday.end_of_day.utc
-      )
-      assert_eligible(patient)
-      # assessment right after the start of the valid reporting period
-      create(
-        :assessment,
-        patient: patient,
-        created_at: Time.now.getlocal(patient.address_timezone_offset).beginning_of_day.utc
-      )
-      assert_ineligible(patient)
+      Timecop.freeze(Time.now.getlocal(patient.time_zone_offset).noon) do
+        assert_eligible(patient)
+        # assessment right before the start of the valid reporting period
+        create(
+          :assessment,
+          patient: patient,
+          # converting to UTC because these DB times are assumed to be saved in UTC
+          created_at: Time.now.getlocal(patient.address_timezone_offset).yesterday.end_of_day.utc
+        )
+        assert_eligible(patient)
+        # assessment right after the start of the valid reporting period
+        create(
+          :assessment,
+          patient: patient,
+          created_at: Time.now.getlocal(patient.address_timezone_offset).beginning_of_day.utc
+        )
+        assert_ineligible(patient)
+      end
     end
   end
 
@@ -479,5 +485,9 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
       created_at: (Time.now.getlocal(patient.address_timezone_offset) - 6.days).beginning_of_day
     )
     assert_ineligible(patient)
+  end
+
+  test 'within_preferred_contact_time scope' do
+
   end
 end
