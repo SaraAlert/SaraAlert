@@ -39,7 +39,7 @@ class Patient extends React.Component {
             </h4>
           </Col>
           <Col md="auto">
-            <span className="jursdiction-user-box">
+            <span className="jurisdiction-user-box">
               <span id="jurisdiction-path">
                 <b>Assigned Jurisdiction:</b> {this.props.jurisdiction_path ? this.props.jurisdiction_path : '--'}
               </span>

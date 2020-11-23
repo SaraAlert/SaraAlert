@@ -15,7 +15,7 @@ const hohTableHeaders = [ 'Name', 'Workflow', 'Monitoring Status', 'Continuous E
 const identificationFields = [ 'DOB', 'Age', 'Language', 'State/Local ID', 'CDC ID', 'NNDSS ID', 'Birth Sex', 'Gender Identity', 'Sexual Orientation', 'Race', 'Ethnicity', 'Nationality' ];
 const contactFields = [ 'Phone', 'Preferred Contact Time', 'Type', 'Email', 'Preferred Reporting Method' ];
 const additionalTravelFields = [ 'Type', 'Place', 'Port Of Departure', 'End Date', 'Start Date' ];
-const potentialExposureFields = [ 
+const potentialExposureFields = [
     'CLOSE CONTACT WITH A KNOWN CASE',
     'MEMBER OF A COMMON EXPOSURE COHORT',
     'TRAVEL FROM AFFECTED COUNTRY OR AREA',
@@ -33,7 +33,7 @@ describe('Patient', () => {
         expect(wrapper.find('#monitoree-details-header').exists()).toBeTruthy();
         expect(wrapper.find('#monitoree-details-header').find('h4').text().includes(nameFormatter(mockPatient1))).toBeTruthy();
         expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
-        expect(wrapper.find('.jursdiction-user-box').exists()).toBeTruthy();
+        expect(wrapper.find('.jurisdiction-user-box').exists()).toBeTruthy();
         expect(wrapper.find('#jurisdiction-path').text()).toEqual('Assigned Jurisdiction: USA, State 1, County 2');
         expect(wrapper.find('#assigned-user').text()).toEqual('Assigned User: ' + mockPatient1.assigned_user);
         expect(wrapper.find('#identification').exists()).toBeTruthy();
@@ -133,7 +133,7 @@ describe('Patient', () => {
     it('Properly renders HoH section and name HoH badge', () => {
         const wrapper = shallow(<Patient details={mockPatient1} dependents={[ mockPatient2, blankMockPatient ]} goto={goToMock} hideBody={true}
             jurisdiction_path="USA, State 1, County 2" authenticity_token={authyToken} />);
-        
+
         expect(wrapper.find('#monitoree-details-header').find(BadgeHOH).exists()).toBeTruthy();
         expect(wrapper.find('#head-of-household').exists()).toBeTruthy();
         expect(wrapper.find('#head-of-household').find(Row).at(1).text())
