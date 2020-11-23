@@ -122,6 +122,12 @@ class Patient < ApplicationRecord
   end
 
   # Patients who are eligible for reminders
+  #
+  # GENERAL SCOPE OVERVIEW:
+  # - Everything is before the OR is essentially checking if the HoH or the patient
+  #   who isn't in a household is eligible on their own.
+  # - Everything within the OR is checking if the HoH has any DEPENDENTS (excluding self)
+  #   that would make the HoH eligible to receive notifications for them.
   scope :reminder_eligible, lambda {
     monitoring_open
       .joins(:dependents)
@@ -157,19 +163,33 @@ class Patient < ApplicationRecord
         12.hours.ago
       )
       .or(
+        # This OR is checking if the HoH has any dependents that make them eligible to
+        # recieve notifications on the dependent's behalf.
+        # The joined table is referred to as `dependents_patients` and is used for all
+        # checks made on the dependents. Anywhere the `patients` table is specified or
+        # where a hash is used for a condition are checks made on the HoH.
         joins(:dependents)
           .where(purged: false)
           .where(head_of_household: true)
           .where('patients.id = patients.responder_id')
-          .where('dependents_patients.id != dependents_patients.responder_id')
-          .where.not(preferred_contact_method: ['Unknown', 'Opt-out', '', nil])
-          .where(pause_notifications: false)
+          .where(
+            # Ignore any joined rows where the dependents_patients is the HoH itself.
+            'dependents_patients.id != dependents_patients.responder_id'
+          )
+          .where.not(
+            # HoH is unconditionally ineligible if it has any of these preferred contact methods
+            preferred_contact_method: ['Unknown', 'Opt-out', '', nil]
+          )
+          .where(
+            # HoH is unconditionally ineligible if it has paused notifications
+            pause_notifications: false
+          )
           .where('dependents_patients.monitoring = ?', true)
           .where('dependents_patients.purged = ?', false)
           .where(
             # This is basically the same as active_dependents()
-            # but we cannot use it here because it's a method and even if it was, then
-            # it wouldnt use the join table, 'dependents_patients'.
+            # but we cannot use it here because it's a method, and even if it was a scope
+            # it wouldnt be using the join table, 'dependents_patients'.
             'dependents_patients.isolation = ? '\
             'OR dependents_patients.continuous_exposure = ? '\
             'OR dependents_patients.last_date_of_exposure >= ? '\
