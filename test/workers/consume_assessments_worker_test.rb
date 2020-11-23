@@ -9,7 +9,7 @@ class ConsumeAssessmentsWorkerTest < ActiveJob::TestCase
     @assessment_generator = ConsumeAssessmentsWorkerTestHelper::AssessmentGenerator.new(@patient)
   end
 
-  def teardown;  end
+  def teardown; end
 
   test 'consume assessment bad json' do
     # There are no other side effects to test except examining the logger.
@@ -59,15 +59,18 @@ class ConsumeAssessmentsWorkerTest < ActiveJob::TestCase
   test 'consume assessment patient not found by submission token' do
     assessment = @assessment_generator.invalid_submission_token
     parsed_assessment = JSON.parse(assessment)
+    message = "ConsumeAssessmentsJob: No patient found with submission_token: #{parsed_assessment['patient_submission_token']}"
     # There are no other side effects to test except examining the logger.
-    expect_any_instance_of(ActiveSupport::Logger).to(receive(:info).with("ConsumeAssessmentsJob: No patient found with submission_token: #{parsed_assessment['patient_submission_token']}"))
+    expect_any_instance_of(ActiveSupport::Logger).to(receive(:info).with(message))
     ConsumeAssessmentsWorker.perform_async(assessment)
   end
 
   test 'consume assessment no threshold condition' do
     assessment = @assessment_generator.missing_threshold_condition
     parsed_assessment = JSON.parse(assessment)
-    message = "ConsumeAssessmentsJob: No ThresholdCondition found (patient: #{@assessment_generator.patient.id}, threshold_condition_hash: #{parsed_assessment['threshold_condition_hash']})"
+    message = 'ConsumeAssessmentsJob: No ThresholdCondition found' \
+    " (patient: #{@assessment_generator.patient.id}, threshold_condition_hash: #{parsed_assessment['threshold_condition_hash']})"
+    # There are no other side effects to test except examining the logger.
     expect_any_instance_of(ActiveSupport::Logger).to(receive(:info).with(message))
     ConsumeAssessmentsWorker.perform_async(assessment)
   end

@@ -47,7 +47,7 @@ class ConsumeAssessmentsWorker
                               " number #{patient.primary_telephone} and nobody answered the phone.")
       unless dependents.blank?
         create_contact_attempt_history_for_dependents(dependents, "Sara Alert called this monitoree's head" \
-                                              " of household and nobody answered the phone.")
+                                              ' of household and nobody answered the phone.')
       end
 
       return
@@ -55,20 +55,20 @@ class ConsumeAssessmentsWorker
       # No need to wipe out last_assessment_reminder_sent so that another sms will be sent because the sms studio flow is kept open for 18hrs
       History.contact_attempt(patient: patient, comment: "Sara Alert texted this monitoree's primary telephone" \
                               " number #{patient.primary_telephone} during their preferred" \
-                              " contact time, but did not receive a response.")
+                              ' contact time, but did not receive a response.')
       unless dependents.blank?
         create_contact_attempt_history_for_dependents(dependents, "Sara Alert texted this monitoree's head of" \
-                                              " household and did not receive a response.")
+                                              ' household and did not receive a response.')
       end
 
       return
     when 'error_voice'
       # If there was an error in completeing the call, nil out the last_reminder_sent field so the system will try calling again
       patient.update(last_assessment_reminder_sent: nil)
-      History.contact_attempt(patient: patient, comment: "Sara Alert was unable to complete a call to this" \
+      History.contact_attempt(patient: patient, comment: 'Sara Alert was unable to complete a call to this' \
                              " monitoree's primary telephone number #{patient.primary_telephone}.")
       unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, "Sara Alert was unable to complete a call" \
+        create_contact_attempt_history_for_dependents(dependents, 'Sara Alert was unable to complete a call' \
                                               " to this monitoree's head of household.")
       end
 
@@ -79,7 +79,7 @@ class ConsumeAssessmentsWorker
       History.contact_attempt(patient: patient, comment: "Sara Alert was unable to send an SMS to this monitoree's" \
                               " primary telephone number #{patient.primary_telephone}.")
       unless dependents.blank?
-        create_contact_attempt_history_for_dependents(dependents, "Sara Alert was unable to send an SMS to" \
+        create_contact_attempt_history_for_dependents(dependents, 'Sara Alert was unable to send an SMS to' \
                                               " this monitoree's head of household.")
       end
 
