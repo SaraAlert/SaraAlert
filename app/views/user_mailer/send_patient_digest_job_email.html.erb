@@ -1,6 +1,6 @@
 <% content_for :body do %>
   <h3>
-    Sara Alert Recently Symptomatic Monitorees (last hour)
+    The following monitorees reported symptoms within the past hour that may require review by a public health user:
   </h3>
   <% @patients.each do |patient| %>
     <%= link_to url_for(patient), patient %><br />

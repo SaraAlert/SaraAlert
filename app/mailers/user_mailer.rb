@@ -50,7 +50,7 @@ class UserMailer < ApplicationMailer
 
   def send_patient_digest_job_email(patients, user)
     @patients = patients
-    mail(to: user.email.strip, subject: 'Sara Alert Recently Symptomatic Monitorees (last hour)') do |format|
+    mail(to: user.email.strip, subject: 'Sara Alert Monitoree Digest (last hour)') do |format|
       format.html { render layout: 'main_mailer' }
     end
   end
