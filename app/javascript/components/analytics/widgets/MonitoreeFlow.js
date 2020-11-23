@@ -18,10 +18,10 @@ class MonitoreeFlow extends React.Component {
         );
         return {
           time_frame,
-          new_enrollments: thisTimeFrameData.new_enrollments,
-          transferred_in: thisTimeFrameData.transferred_in,
-          closed: thisTimeFrameData.closed,
-          transferred_out: thisTimeFrameData.transferred_out,
+          new_enrollments: thisTimeFrameData?.new_enrollments || 0,
+          transferred_in: thisTimeFrameData?.transferred_in || 0,
+          closed: thisTimeFrameData?.closed || 0,
+          transferred_out: thisTimeFrameData?.transferred_out || 0,
         };
       });
     });
