@@ -13,31 +13,26 @@ module ConsumeAssessmentsJobTestHelper
     end
 
     def reported_symptom_assessment(symptomatic: nil)
-      unless symptomatic.nil?
-        return {
-          response_status: nil,
-          threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
-          experiencing_symptoms: symptomatic,
-          patient_submission_token: @patient.submission_token
-        }.to_json
-      end
-      # If symptomatic is nil then we will include a reported_symptoms_array
-      # the reported_symptoms_array exists when assessments are completed in the web-form
-      {
+      message = {
         response_status: nil,
         threshold_condition_hash: @patient.jurisdiction.hierarchical_symptomatic_condition.threshold_condition_hash,
-        reported_symptoms_array: [
-          {
-            name: 'Cough',
-            value: false,
-            type: 'BoolSymptom',
-            label: 'Cough',
-            notes: 'Have you coughed today?'
-          }
-        ],
-        patient_submission_token: @patient.submission_token,
-        experiencing_symptoms: nil
-      }.to_json
+        experiencing_symptoms: symptomatic,
+        patient_submission_token: @patient.submission_token
+      }
+
+      reported_symptoms_array = {
+        reported_symptoms_array: [{
+          name: 'Cough',
+          value: false,
+          type: 'BoolSymptom',
+          label: 'Cough',
+          notes: 'Have you coughed today?'
+        }]
+      }
+      # If symptomatic is nil then we will include a reported_symptoms_array
+      # the reported_symptoms_array exists when assessments are completed in the web-form
+      message.merge!(reported_symptoms_array) if symptomatic.nil?
+      message.to_json
     end
 
     def generic_assessment(symptomatic:)
