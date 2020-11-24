@@ -54,13 +54,17 @@ class ImportController < ApplicationController
           begin
             if format == :comprehensive_monitorees
               if col_num == 95
-                patient[:jurisdiction_id] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
+                patient[:jurisdiction_id], patient[:jurisdiction_path] = validate_jurisdiction(row[95], row_ind, valid_jurisdiction_ids)
               elsif col_num == 96
                 patient[:assigned_user] = validate_assigned_user(row[96], row_ind)
               elsif col_num == 85 && workflow == :isolation
                 patient[:user_defined_symptom_onset] = row[85].present?
                 patient[field] = validate_field(field, row[col_num], row_ind)
+              # TODO: when workflow specific case status validation re-enabled: uncomment
+              # elsif col_num == 86
+              #   patient[field] = validate_workflow_specific_enums(workflow, field, row[col_num], row_ind)
               else
+                # TODO: when workflow specific case status validation re-enabled: this line can be updated to not have to check the 86 col
                 patient[field] = validate_field(field, row[col_num], row_ind) unless [85, 86].include?(col_num) && workflow != :isolation
               end
             end
@@ -86,14 +90,15 @@ class ImportController < ApplicationController
           validate_required_primary_contact(patient, row_ind)
 
           # Validate using Patient model validators without saving
-          # NOTE: Using dummy values for rrequired fields to satisfy basic checks on those fields that will be added later outside of import
-          temp_patient_data = patient.merge({ responder_id: 1, creator_id: 1, jurisdiction_id: 1 })
-          temp_patient = Patient.new(temp_patient_data)
-          unless temp_patient.valid?
-            temp_patient.errors.messages.each_value do |err_message|
-              @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
-            end
-          end
+          # NOTE: Using dummy values for required fields to satisfy basic checks on those fields that will be added later outside of import
+          # NOTE: Commented out until additional testing
+          # temp_patient_data = patient.merge({ responder_id: 1, creator_id: 1, jurisdiction_id: 1 })
+          # temp_patient = Patient.new(temp_patient_data)
+          # unless temp_patient.valid?
+          #   temp_patient.errors.messages.each_value do |err_message|
+          #     @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
+          #   end
+          # end
 
           # Checking for duplicates under current user's viewable patients is acceptable because custom jurisdictions must fall under hierarchy
           patient[:duplicate_data] = current_user.viewable_patients.duplicate_data(patient[:first_name],
@@ -110,15 +115,16 @@ class ImportController < ApplicationController
 
             # Validate using Laboratory model validators without saving
             # NOTE: Using dummy values for patient to satisfy basic validation on that field
-            lab_results.each do |lab_data|
-              temp_lab_data = lab_data.merge({ patient_id: 1 })
-              temp_lab_result = Laboratory.new(temp_lab_data)
-              next if temp_lab_result.valid?
+            # NOTE: Commented out until additional testing
+            # lab_results.each do |lab_data|
+            #   temp_lab_data = lab_data.merge({ patient_id: 1 })
+            #   temp_lab_result = Laboratory.new(temp_lab_data)
+            #   next if temp_lab_result.valid?
 
-              temp_lab_result.errors.messages.each_value do |err_message|
-                @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
-              end
-            end
+            #   temp_lab_result.errors.messages.each_value do |err_message|
+            #     @errors << "Validation Error (row #{row_ind}): #{err_message[0]}"
+            #   end
+            # end
 
           end
         rescue ValidationError => e
@@ -284,7 +290,7 @@ class ImportController < ApplicationController
       raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path', please provide the full path instead of just the name", row_ind)
     end
 
-    return jurisdiction[:id] if valid_jurisdiction_ids.include?(jurisdiction[:id])
+    return jurisdiction[:id], jurisdiction[:path] if valid_jurisdiction_ids.include?(jurisdiction[:id])
 
     raise ValidationError.new("'#{value}' is not valid for 'Full Assigned Jurisdiction Path' because you do not have permission to import into it", row_ind)
   end
@@ -295,6 +301,24 @@ class ImportController < ApplicationController
     return value.to_i if value.to_i.between?(1, 9999)
 
     raise ValidationError.new("'#{value}' is not valid for 'Assigned User', acceptable values are numbers between 1-9999", row_ind)
+  end
+
+  def validate_workflow_specific_enums(workflow, field, value, row_ind)
+    return nil if value.blank?
+
+    normalized_value = unformat_enum_field(value)
+    if workflow == :exposure
+      return NORMALIZED_EXPOSURE_ENUMS[field][normalized_value] if NORMALIZED_EXPOSURE_ENUMS[field].keys.include?(normalized_value)
+
+      err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for monitorees imported into the Exposure workflow, "
+      err_msg += "acceptable values are: #{VALID_EXPOSURE_ENUMS[field].to_sentence}"
+    else
+      return NORMALIZED_ISOLATION_ENUMS[field][normalized_value] if NORMALIZED_ISOLATION_ENUMS[field].keys.include?(normalized_value)
+
+      err_msg = "'#{value}' is not an acceptable value for '#{VALIDATION[field][:label]}' for cases imported into the Isolation workflow, "
+      err_msg += "acceptable values are: #{VALID_ISOLATION_ENUMS[field].to_sentence}"
+    end
+    raise ValidationError.new(err_msg, row_ind)
   end
 
   def validate_required_primary_contact(patient, row_ind)

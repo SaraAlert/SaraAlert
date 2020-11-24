@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Navbar, Nav, Form } from 'react-bootstrap';
@@ -52,7 +53,12 @@ class Header extends React.Component {
               <Form inline className="ml-auto">
                 <Navbar.Text className="text-white py-0 px-3">
                   <i className="fas fa-user fa-fw mr-2"></i>
-                  {this.props.current_user?.email}
+                  {this.props.current_user?.email} (
+                  {this.props.current_user?.role
+                    ?.split('_')
+                    ?.map(_.capitalize)
+                    ?.join(' ')}
+                  )
                 </Navbar.Text>
                 <a className="white-border-right"></a>
                 <div className="dropdown">

@@ -420,7 +420,8 @@ module ImportExport # rubocop:todo Metrics/ModuleLength
         transferred_from: '',
         transferred_to: '',
         expected_purge_date: patient[:updated_at].nil? ? '' : ((patient[:updated_at] + ADMIN_OPTIONS['purgeable_after'].minutes)&.rfc2822 || ''),
-        extended_isolation: patient[:extended_isolation] || ''
+        symptom_onset: patient[:symptom_onset]&.strftime('%F') || '',
+        extended_isolation: patient[:extended_isolation]&.strftime('%F') || ''
       }
     end
     linelists

@@ -3,7 +3,6 @@ import { PropTypes } from 'prop-types';
 import { Alert, Button, Card, Col, ProgressBar, Row } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment-timezone';
-import _ from 'lodash';
 import confirmDialog from '../util/ConfirmDialog';
 import reportError from '../util/ReportError';
 
@@ -87,19 +86,7 @@ class Import extends React.Component {
         });
       })
       .catch(err => {
-        let validationErrors = [];
-        Object.keys(err.response.data).forEach(prop => {
-          validationErrors.push({
-            prop,
-            message: err.response.data[String(prop)],
-          });
-        });
-        const patientIndex = this.state.patients.findIndex(statePatient => _.isEqual(statePatient, patientData));
-        let patients = this.state.patients;
-        patientData.validationErrors = validationErrors;
-        patients[parseInt(patientIndex)] = patientData;
-        this.setState({ patients: patients });
-        reportError('Records did not pass data validation, see specific errors below.');
+        reportError(err);
       });
   };
 
@@ -175,41 +162,6 @@ class Import extends React.Component {
     );
   };
 
-  /**
-   * Gets rendered error text for when validation errors are present.
-   * @param {Object} listOfErrors - Array of validation error strings present on the patient.
-   */
-  getValidationErrorText(listOfErrors) {
-    let formattedErrorMessages = [];
-    listOfErrors.forEach(error => {
-      error.message.forEach(message => {
-        formattedErrorMessages.push(`${_.startCase(error.prop)} ${message}.`);
-      });
-    });
-
-    let prevent = 'prevents';
-    let errorWord = 'error';
-    if (formattedErrorMessages.length > 1) {
-      prevent = 'prevent';
-      errorWord = 'errors';
-    }
-
-    const heading = `${_.capitalize(errorWord)}: The following ${errorWord} ${prevent} this monitoree from being imported:`;
-
-    return (
-      <Alert variant="danger">
-        <span>
-          {heading}
-          <ul className="mb-0">
-            {formattedErrorMessages.map((message, index) => (
-              <li key={message.substring(0, 5) + index.toString()}>{message}</li>
-            ))}
-          </ul>
-        </span>
-      </Alert>
-    );
-  }
-
   render() {
     if (this.state.patients.length === this.state.accepted.length + this.state.rejected.length && this.state.errors.length == 0) {
       location.href = '/';
@@ -269,7 +221,6 @@ class Import extends React.Component {
                   bg="light"
                   border={this.state.accepted.includes(index) ? 'success' : this.state.rejected.includes(index) ? 'danger' : ''}>
                   <React.Fragment>
-                    {patient.validationErrors && this.getValidationErrorText(patient.validationErrors)}
                     {patient.duplicate_data.is_duplicate && this.getDuplicateWarningText(patient.duplicate_data.duplicate_field_data)}
                     {(patient.jurisdiction_path || patient.assigned_user) && (
                       <Alert variant="info">

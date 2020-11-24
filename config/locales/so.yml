@@ -94,7 +94,7 @@ so:
         dear: 'Gacaliye/Gacaliso'
         thank-you: 'Waad ku mahadsantahay ka qeyb qaadashada barnaamijka la socoshada Sara Alert. Fadlan buuxi warbixintaada maalinlaha ah adoo adeegsanaya xiriiriyaha hoose.'
         report: 'Warbixinta Maalinlaha ah'
-        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka.'
+        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka. Xogta gaarka ah iyo macluumaad dheeri ah, booqo saraalert.org.'
       enrollment:
         subject: 'Diiwaangelinta Sara Alert'
         header: 'Ku soo dhowow nidaamka Sara Alert!'
@@ -102,17 +102,17 @@ so:
         info1: 'Waa lagaa diiwaangeliyay nidaamka la socoshada Sara Alert. Waxaan kaa codsanaynaa inaad bixiso warbixinnada maalinlaha ah ee xaaladaada. Si fudud u guji badhanka hoose oo raac tallaabooyinka shaashada ku yaala.'
         info2: 'Waxaad heli doontaa xusuusin la mid ah maalin kasta ilaa muddada la socoshadaada ka dhammaato. Haddii aad qabtid wax su’aalo ah, fadlan la xiriir xirfadlaha daryeelka caafimaadka kaasoo kaa caawiyay in lagu diiwaangeliyo.'
         report: 'Warbixinta Maalinlaha'
-        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka.'
+        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka. Xogta gaarka ah iyo macluumaad dheeri ah, booqo saraalert.org.'
       closed:
         subject: 'Warbixintu Sara Alert way dhammaystiran tahay'
         header: 'Warbixintu Sara Alert way dhammaystiran tahay!'
         dear: 'Gacaliye/Gacaliso'
         thank-you: 'La socoshadaada Sara Alert hadda waa la dhammeystiray! Waad ku mahadsantahay ka qeyb qaadashadaada.'
-        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka.'
+        footer: 'Ha ka jawaabin iimaylkan, gudbi iimaylkan, ama wadaag xiriiriyaha. Fariintan waxaa si toos ah u soo saaray nidaamka Sara Alert waana mid gaar ah oo adiga kaliya laguugu talagalay. Haddii aad rabto inaad joojiso helitaanka fariimahan ama aad aaminsan tahay in si khaldan laguugu soo diro, fadlan la xiriir waaxda caafimaadka dadweynaha ee deegaanka. Xogta gaarka ah iyo macluumaad dheeri ah, booqo saraalert.org.'
     sms:
       prompt:
         intro1: 'Ku soo dhowow nidaamka Sara Alert, waxaan ku soo diri doonnaa warbixinadaada maalinlaha ah ee loogu talagalay'
-        intro2: 'lambarkan telefoon.'
+        intro2: 'lambarkan telefoon. Xogta gaarka ah iyo macluumaad dheeri ah, booqo saraalert.org.'
         reminder: 'Kani waa nidaamka Sara Alert oo ku xusuusinayo inaad fadlan jawaab ka bixiso fariimahayaga warbixinta maalinlaha ah.'
         daily1: 'Tani waa warbixinta maalinlaha ah ee Sara Alert ee loogu talagalay: '
         daily2-p: ' Miyuu mid ka mid ah dadkani '

@@ -9,7 +9,7 @@ class SendPurgeWarningsJob < ApplicationJob
     not_sent = []
 
     # Get admin users
-    recipients = User.with_any_role(:admin)
+    recipients = User.where(role: [Roles::ADMIN, Roles::SUPER_USER])
     eligible = recipients.count
 
     # Loop through and send each admin information about their purge eligible monitorees

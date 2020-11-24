@@ -18,13 +18,15 @@ import {
   Row,
 } from 'react-bootstrap';
 
-import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import moment from 'moment-timezone';
+import _ from 'lodash';
 
 import AdvancedFilter from './AdvancedFilter';
+import BadgeHOH from '../util/BadgeHOH';
 import CloseRecords from './actions/CloseRecords';
 import UpdateCaseStatus from './actions/UpdateCaseStatus';
+import UpdateAssignedUser from './actions/UpdateAssignedUser';
 import InfoTooltip from '../util/InfoTooltip';
 import CustomTable from '../layout/CustomTable';
 import EligibilityTooltip from '../util/EligibilityTooltip';
@@ -283,47 +285,50 @@ class PatientsTable extends React.Component {
     }
 
     this.setState({ query, cancelToken, loading: true }, () => {
-      axios
-        .post('/public_health/patients', {
-          workflow: this.props.workflow,
-          ...query,
-          filter: this.state.filter,
-          cancelToken: this.state.cancelToken.token,
-        })
-
-        .catch(error => {
-          if (!axios.isCancel(error)) {
-            this.setState(state => {
-              return {
-                table: { ...state.table, rowData: [], totalRows: 0 },
-                loading: false,
-              };
-            });
-          }
-        })
-        .then(response => {
-          if (response && response.data && response.data.linelist) {
-            this.setState(state => {
-              const displayedColData = this.state.table.colData.filter(colData => response.data.fields.includes(colData.field));
-              return {
-                table: { ...state.table, displayedColData, rowData: response.data.linelist, totalRows: response.data.total },
-                selectedPatients: [],
-                selectAll: false,
-                loading: false,
-                actionsEnabled: false,
-              };
-            });
-          } else {
-            this.setState({
-              selectedPatients: [],
-              selectAll: false,
-              actionsEnabled: false,
-              loading: false,
-            });
-          }
-        });
+      this.queryServer(query);
     });
   };
+
+  queryServer = _.debounce(query => {
+    axios
+      .post('/public_health/patients', {
+        workflow: this.props.workflow,
+        ...query,
+        filter: this.state.filter,
+        cancelToken: this.state.cancelToken.token,
+      })
+      .catch(error => {
+        if (!axios.isCancel(error)) {
+          this.setState(state => {
+            return {
+              table: { ...state.table, rowData: [], totalRows: 0 },
+              loading: false,
+            };
+          });
+        }
+      })
+      .then(response => {
+        if (response && response.data && response.data.linelist) {
+          this.setState(state => {
+            const displayedColData = this.state.table.colData.filter(colData => response.data.fields.includes(colData.field));
+            return {
+              table: { ...state.table, displayedColData, rowData: response.data.linelist, totalRows: response.data.total },
+              selectedPatients: [],
+              selectAll: false,
+              loading: false,
+              actionsEnabled: false,
+            };
+          });
+        } else {
+          this.setState({
+            selectedPatients: [],
+            selectAll: false,
+            actionsEnabled: false,
+            loading: false,
+          });
+        }
+      });
+  }, 500);
 
   advancedFilterUpdate(filter) {
     localStorage.removeItem(`SaraPage`);
@@ -365,14 +370,7 @@ class PatientsTable extends React.Component {
     if (isHoH) {
       return (
         <div>
-          <span data-for={`${id}-hoh`} data-tip="" className="badge-hoh ml-1">
-            <Badge variant="dark">
-              <span>HoH</span>
-            </Badge>
-          </span>
-          <ReactTooltip id={`${id}-hoh`} multiline={true} place="right" type="dark" effect="solid" className="tooltip-container">
-            <span>Monitoree is Head of Household that reports on behalf of household members</span>
-          </ReactTooltip>
+          <BadgeHOH patientId={id} customClass={'badge-hoh ml-1'} location={'right'} />
           <a href={`/patients/${id}`}>{name}</a>
         </div>
       );
@@ -585,6 +583,10 @@ class PatientsTable extends React.Component {
                         <i className="fas fa-clipboard-list text-center" style={{ width: '1em' }}></i>
                         <span className="ml-2">Update Case Status</span>
                       </Dropdown.Item>
+                      <Dropdown.Item className="px-3" onClick={() => this.setState({ action: 'Update Assigned User' })}>
+                        <i className="fas fa-users text-center" style={{ width: '1em' }}></i>
+                        <span className="ml-2">Update Assigned User</span>
+                      </Dropdown.Item>
                     </DropdownButton>
                   )}
                 </InputGroup>
@@ -624,6 +626,14 @@ class PatientsTable extends React.Component {
               authenticity_token={this.props.authenticity_token}
               patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
               close={() => this.setState({ action: undefined })}
+            />
+          )}
+          {this.state.action === 'Update Assigned User' && (
+            <UpdateAssignedUser
+              authenticity_token={this.props.authenticity_token}
+              patients={this.state.table.rowData.filter((_, index) => this.state.selectedPatients.includes(index))}
+              close={() => this.setState({ action: undefined })}
+              assigned_users={this.state.assigned_users}
             />
           )}
         </Modal>

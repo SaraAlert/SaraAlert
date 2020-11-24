@@ -1,6 +1,8 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Card } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 import Patient from './Patient';
 
@@ -28,7 +30,7 @@ class PatientPage extends React.Component {
             Monitoree Details {this.props.patient.user_defined_id ? `(ID: ${this.props.patient.user_defined_id})` : ''}{' '}
             {this.props.patient.id && <a href={window.BASE_PATH + '/patients/' + this.props.patient.id + '/edit'}>(edit details)</a>}
             <span className="float-right collapse-hover">
-              <i className="fas fa-bars"></i>
+              {this.state.hideBody ? <FontAwesomeIcon icon={faChevronDown} /> : <FontAwesomeIcon icon={faChevronUp} />}
             </span>
           </Card.Header>
           <Card.Body>

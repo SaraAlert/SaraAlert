@@ -87,6 +87,8 @@ if Rails.env.test? || Rails.env.development?
     dict.add('intentemoslo')
     dict.add('oxímetro')
     dict.add('recordándole')
+    dict.add('saraalert')
+    dict.add('org')
   end
 
 
@@ -95,6 +97,8 @@ if Rails.env.test? || Rails.env.development?
     dict.add('Sara')
     dict.add('Alert')
     dict.add('Other')
+    dict.add('saraalert')
+    dict.add('org')
   end
 
 
@@ -122,6 +126,8 @@ if Rails.env.test? || Rails.env.development?
     dict.add('uri')
     dict.add('urls')
     dict.add('webpage')
+    dict.add('saraalert')
+    dict.add('org')
   end
 
 

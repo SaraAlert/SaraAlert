@@ -79,7 +79,13 @@ class CaseStatus extends React.Component {
           modal_text: `The case status for the selected record will be updated to ${value} and moved to the appropriate line list in the Exposure Workflow.`,
         });
 
-        // changing case status to Unknown, Suspect or Not a Case in the exposure workflow
+        // changing case status to Unknown, Suspect or Not a Case while on the PUI line list in the exposure workflow
+      } else if (!confirmedOrProbable && !this.state.isolation && this.props.patient.public_health_action != 'None') {
+        this.setState({
+          isolation: false,
+          modal_text: `Are you sure you want to change case status to "${value}"? The monitoree will be placed in the symptomatic, non-reporting, or asymptomatic line list as appropriate to continue exposure monitoring and the Latest Public Health Action will be set to "None".`,
+        });
+        // changing case status to Unknown, Suspect or Not a Case while not on the PUI line list in the exposure workflow
       } else if (!confirmedOrProbable && !this.state.isolation) {
         this.setState({
           isolation: false,

@@ -93,9 +93,25 @@ module ValidationHelper # rubocop:todo Metrics/ModuleLength
     monitored_address_state: VALID_STATES
   }.freeze
 
-  NORMALIZED_ENUMS = VALID_ENUMS.transform_values do |values|
-    Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
+  VALID_EXPOSURE_ENUMS = {
+    case_status: ['Suspect', 'Unknown', 'Not a Case']
+  }.freeze
+
+  VALID_ISOLATION_ENUMS = {
+    case_status: %w[Confirmed Probable]
+  }.freeze
+
+  def self.normalize_enums(enums_dict)
+    enums_dict.transform_values do |values|
+      Hash[values.collect { |value| [value.to_s.downcase.gsub(/[ -.]/, ''), value] }]
+    end
   end
+
+  NORMALIZED_ENUMS = normalize_enums(VALID_ENUMS)
+
+  NORMALIZED_EXPOSURE_ENUMS = normalize_enums(VALID_EXPOSURE_ENUMS)
+
+  NORMALIZED_ISOLATION_ENUMS = normalize_enums(VALID_ISOLATION_ENUMS)
 
   VALIDATION = {
     first_name: { label: 'First Name', checks: [:required] },

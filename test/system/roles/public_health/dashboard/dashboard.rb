@@ -192,7 +192,7 @@ class PublicHealthDashboard < ApplicationSystemTestCase
   def select_monitorees_for_bulk_edit(workflow, tab, patient_labels)
     click_on 'Isolation Monitoring' if workflow == :isolation
     @@system_test_utils.go_to_tab(tab)
-    @@system_test_utils.go_to_tab(tab)
+    sleep(2)
     patient_labels.each { |patient| check_patient(patient) }
   end
 
@@ -215,6 +215,14 @@ class PublicHealthDashboard < ApplicationSystemTestCase
     click_on 'Close Records'
     select(monitoring_reason, from: 'monitoring_reason') unless monitoring_reason.blank?
     fill_in 'reasoning', with: reasoning
+    find_by_id('apply_to_household', { visible: :all }).check({ allow_label_click: true }) if apply_to_household
+    click_on 'Submit'
+  end
+
+  def bulk_edit_update_assigned_user(assigned_user, apply_to_household)
+    click_on 'Actions'
+    click_on 'Update Assigned User'
+    fill_in 'assigned_user_input', with: assigned_user
     find_by_id('apply_to_household', { visible: :all }).check({ allow_label_click: true }) if apply_to_household
     click_on 'Submit'
   end

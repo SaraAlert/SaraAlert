@@ -93,7 +93,9 @@ class Patient < ApplicationRecord
   validates :assigned_user, numericality: { only_integer: true, allow_nil: true, greater_than: 0, less_than_or_equal_to: 9999 }
 
   validates_with PrimaryContactValidator, on: :api
-  validates_with PatientDateValidator
+
+  # NOTE: Commented out until additional testing
+  # validates_with PatientDateValidator
 
   belongs_to :responder, class_name: 'Patient'
   belongs_to :creator, class_name: 'User'
@@ -447,6 +449,15 @@ class Patient < ApplicationRecord
            .where('patients.created_at < ?', ADMIN_OPTIONS['reporting_period_minutes'].minutes.ago)
          )
          .distinct
+  }
+
+  # Monitorees who have reported in the last hour that are considered symptomatic
+  scope :recently_symptomatic, lambda {
+    where(monitoring: true)
+      .where(purged: false)
+      .where('latest_assessment_at >= ?', 60.minutes.ago)
+      .where_assoc_exists(:assessments, &:symptomatic_last_hour)
+      .distinct
   }
 
   # All individuals currently being monitored if true, all individuals otherwise

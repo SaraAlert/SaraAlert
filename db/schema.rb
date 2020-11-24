@@ -110,6 +110,7 @@ ActiveRecord::Schema.define(version: 2020_11_21_134354) do
     t.string "email"
     t.string "webpage"
     t.string "message"
+    t.boolean "send_digest", default: false
     t.index ["ancestry"], name: "index_jurisdictions_on_ancestry"
   end
 
@@ -354,6 +355,7 @@ ActiveRecord::Schema.define(version: 2020_11_21_134354) do
     t.date "extended_isolation"
     t.boolean "head_of_household"
     t.string "time_zone_offset"
+    t.integer "contact_attempts", default: 0
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
