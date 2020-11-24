@@ -172,6 +172,10 @@ This application includes several Dockerfiles and Docker Compose configurations.
 * `docker-compose.yml`: This docker compose file sets up the numerous containers, networks, and volumes required for the split architecture.
 * `docker-compose.prod.yml`: The only difference between this file and the normal one is the overwriting of the `DevelopmentTest` image tag with the `latest` tag.
 
+##### Amazon S3 Usage
+
+To be filled out when the design is finalized.
+
 ##### Building
 
 * Create a `certs/` directory in the root of the project
