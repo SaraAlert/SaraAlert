@@ -654,8 +654,8 @@ class Patient < ApplicationRecord
       when 'evening'
         return unless evening.include? hour
       else
-        # Default to roughly afternoon if preferred contact time is not specified
-        return unless (11..17).include? hour
+        # Default to afternoon if preferred contact time is not specified
+        return unless (12..16).include? hour
       end
     end
 
