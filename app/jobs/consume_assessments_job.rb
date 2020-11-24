@@ -103,8 +103,6 @@ class ConsumeAssessmentsJob < ApplicationJob
           next
         when 'max_retries_sms'
           # Maximum amount of SMS response retries reached
-          # nil out the last_reminder_sent field so the system will try sending another SMS assessment
-          patient.update(last_assessment_reminder_sent: nil)
           History.contact_attempt(patient: patient, comment: "The system could not record a response because the monitoree exceeded the maximum number
              of daily report SMS response retries via primary telephone number #{patient.primary_telephone}.")
           unless dependents.blank?
