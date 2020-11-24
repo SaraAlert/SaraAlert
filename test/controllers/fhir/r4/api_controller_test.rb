@@ -702,7 +702,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
-    assert_equal 'Failed to parse JSON', json_response['issue'][0]['diagnostics']
+    assert_equal 'Invalid JSON in request body', json_response['issue'][0]['diagnostics']
   end
 
   test 'SYSTEM FLOW: should be bad request via create due to non-FHIR' do
@@ -865,7 +865,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
-    assert_equal 'Failed to parse JSON', json_response['issue'][0]['diagnostics']
+    assert_equal 'Invalid JSON in request body', json_response['issue'][0]['diagnostics']
   end
 
   test 'SYSTEM FLOW: should be bad request via update due to bad fhir' do
@@ -1658,7 +1658,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
-    assert_equal 'Failed to parse JSON', json_response['issue'][0]['diagnostics']
+    assert_equal 'Invalid JSON in request body', json_response['issue'][0]['diagnostics']
   end
 
   test 'USER FLOW: should be bad request via create due to non-FHIR' do
@@ -1830,7 +1830,7 @@ class ApiControllerTest < ActionDispatch::IntegrationTest
     )
     assert_response :bad_request
     json_response = JSON.parse(response.body)
-    assert_equal 'Failed to parse JSON', json_response['issue'][0]['diagnostics']
+    assert_equal 'Invalid JSON in request body', json_response['issue'][0]['diagnostics']
   end
 
   test 'USER FLOW: should be bad request via update due to bad fhir' do
