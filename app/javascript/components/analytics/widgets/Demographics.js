@@ -17,7 +17,7 @@ const RACES = [
   'More Than One Race',
   'Unknown',
 ];
-const SEXUAL_ORIENTATIONS = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'];
+// const SEXUAL_ORIENTATIONS = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'];
 
 class Demographics extends React.Component {
   constructor(props) {
@@ -26,7 +26,7 @@ class Demographics extends React.Component {
     this.sexData = this.parseOutFields(SEXES, 'Sex');
     this.ethnicityData = this.parseOutFields(ETHNICITIES, 'Ethnicity');
     this.raceData = this.parseOutFields(RACES, 'Race');
-    this.soData = this.parseOutFields(SEXUAL_ORIENTATIONS, 'Sexual Orientation');
+    // this.soData = this.parseOutFields(SEXUAL_ORIENTATIONS, 'Sexual Orientation');
     this.hasFakeBirthdateData = false;
     this.numberOfFakeBirthdates = 0;
 
@@ -46,13 +46,13 @@ class Demographics extends React.Component {
     this.sexChartData = this.mapToChartFormat(SEXES, this.sexData);
     this.ethnicityChartData = this.mapToChartFormat(ETHNICITIES, this.ethnicityData);
     this.raceChartData = this.mapToChartFormat(RACES, this.raceData);
-    this.soChartData = this.mapToChartFormat(SEXUAL_ORIENTATIONS, this.soData);
+    // this.soChartData = this.mapToChartFormat(SEXUAL_ORIENTATIONS, this.soData);
     this.barGraphData = [
       { title: 'Age (Years)', data: this.ageChartData },
       { title: 'Sex', data: this.sexChartData },
       { title: 'Race', data: this.ethnicityChartData },
       { title: 'Ethnicity', data: this.raceChartData },
-      { title: 'Sexual Orientation', data: this.soChartData },
+      // { title: 'Sexual Orientation', data: this.soChartData },
     ];
   }
 
