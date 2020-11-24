@@ -1,7 +1,16 @@
 test:
   service: Disk
-  root: <%= Rails.root.join("tmp/storage") %>
+  root: <%= Rails.root.join('tmp', 'test-storage') %>
 
-local:
+development:
   service: Disk
-  root: <%= Rails.root.join("storage") %>
+  root: <%= Rails.root.join('tmp', 'storage') %>
+
+production:
+  service: S3
+  access_key_id: <%= ENV.fetch("") { '' } %>
+  secret_access_key: <%= ENV.fetch("") { '' } %>
+  bucket: <%= ENV.fetch("") { '' } %>
+  region: <%= ENV.fetch("") { '' } %>
+  upload:
+    server_side_encryption: AES256

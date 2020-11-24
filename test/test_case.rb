@@ -23,3 +23,10 @@ end
 class ActionController::TestCase
   include Devise::Test::ControllerHelpers
 end
+
+class ActionDispatch::IntegrationTest
+  def after_teardown
+    super
+    FileUtils.rm_rf(Rails.root.join('tmp', 'storage'))
+  end
+end

@@ -92,6 +92,9 @@ gem 'fhir_models'
 # Split-arch queue support
 gem 'redis-queue'
 
+# Required for active storage
+gem 'aws-sdk-s3', require: false
+
 group :development, :test do
   gem 'brakeman'
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
