@@ -128,7 +128,7 @@ class Fhir::R4::ApiController < ActionController::API
 
     status_ok(resource.as_fhir) && return
   rescue JSON::ParserError
-    status_bad_request(['Failed to parse JSON'])
+    status_bad_request(['Invalid JSON in request body'])
   rescue StandardError
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
@@ -212,7 +212,7 @@ class Fhir::R4::ApiController < ActionController::API
     end
     status_created(resource.as_fhir) && return
   rescue JSON::ParserError
-    status_bad_request(['Failed to parse JSON'])
+    status_bad_request(['Invalid JSON in request body'])
   rescue StandardError
     render json: operation_outcome_fatal.to_json, status: :internal_server_error
   end
