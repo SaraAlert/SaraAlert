@@ -139,7 +139,9 @@ class Patient extends React.Component {
                 <br />
                 <b>Email:</b> <span>{`${this.props.details.email ? this.props.details.email : '--'}`}</span>
                 <br />
-                <span className="font-weight-normal">Preferred Reporting Method:</span>{' '}
+                <span className="font-weight-normal">
+                  <b>Preferred Reporting Method:</b>
+                </span>{' '}
                 {(!this.props.details.blocked_sms || !this.props.details.preferred_contact_method.includes('SMS')) && (
                   <span className="font-weight-light">{`${
                     this.props.details.preferred_contact_method ? this.props.details.preferred_contact_method : '--'
