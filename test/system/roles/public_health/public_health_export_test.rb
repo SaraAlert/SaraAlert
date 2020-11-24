@@ -12,14 +12,12 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   @@system_test_utils = SystemTestUtils.new(nil)
   def setup
     # Reset ENV variables and reload export job file which has constants dependent on these ENV variables
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10_000'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '500'
     load 'app/jobs/export_job.rb'
   end
 
   def teardown
     # Reset ENV variables and reload export job file which has constants dependent on these ENV variables
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = nil
     ENV['EXPORT_INNER_BATCH_SIZE'] = nil
     load 'app/jobs/export_job.rb'
 
@@ -64,7 +62,6 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   # ---- Test the same exports but with smaller batching so that the batching functionality can be tested ----
 
   test 'export line list csv (exposure) with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 
@@ -73,7 +70,6 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   end
 
   test 'export line list csv (isolation) with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 
@@ -82,7 +78,6 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   end
 
   test 'export sara alert format (exposure) with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 
@@ -91,7 +86,6 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   end
 
   test 'export sara alert format (isolation) with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 
@@ -100,7 +94,6 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   end
 
   test 'export full history purge-eligible monitorees with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 
@@ -109,7 +102,6 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   end
 
   test 'export full history all monitorees with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 
@@ -118,7 +110,6 @@ class PublicHealthImportExportTest < ApplicationSystemTestCase
   end
 
   test 'export full history single monitoree with batching' do
-    ENV['EXPORT_OUTER_BATCH_SIZE'] = '10'
     ENV['EXPORT_INNER_BATCH_SIZE'] = '2'
     load 'app/jobs/export_job.rb'
 

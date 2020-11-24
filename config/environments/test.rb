@@ -9,6 +9,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   config.cache_classes = false
+  config.action_view.cache_template_loading = true
 
   config.action_view.cache_template_loading = true
 
@@ -38,6 +39,7 @@ Rails.application.configure do
 
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
+  config.active_storage.resolve_model_to_route = :rails_storage_proxy
 
   config.action_mailer.perform_caching = false
 
@@ -64,4 +66,5 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   config.time_zone = 'UTC'
+  config.x.executing_system_tests = false
 end

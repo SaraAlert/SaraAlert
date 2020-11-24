@@ -1,5 +1,5 @@
 <% content_for :body do %>
-  <% if @lookups.empty? %>
+  <% if @downloads.empty? %>
     <p>
       Your request for export of &quot;<b><%= @export_label %></b>&quot; was received but no monitorees or monitoree data matched the selected export criteria. Therefore, no export file is available for download.
     </p>
@@ -10,11 +10,8 @@
     Please note that this export link is one-time use only. The system will delete a stored export file either once you've downloaded that file or whenever stored files are purged on Saturdays, whichever comes first. Once the file is deleted, it will no longer be accessible.
     These downloads will be invalid if you attempt another export of this type before retrieving the file(s). Exports will not work if forwarded to another user. You must be logged into Sara Alert to access exports.
     <br />
-    <br />
-    If your export exceeded <%= number_with_delimiter(@batch_size) %> records, you will see separate files below with each containing data for no more than <%= number_with_delimiter(@batch_size) %> monitorees.
-    Each file (e.g., monitorees, assessments, etc) belonging to the same batch will have the same number at the end of the filename.
-    <% @lookups.each do |lookup| %>
-      <%= render partial: 'main_mailer/responsive_button', locals: { link: export_download_url(lookup: lookup[:lookup]), text: "Click here to download #{lookup[:filename]}" } %>
+    <% @downloads.each do |download| %>
+      <%= render partial: 'main_mailer/responsive_button', locals: { link: rails_storage_proxy_url(download.export_files.first), text: "Click here to download #{download[:filename]}" } %>
       <br />
     <% end %>
   <% end %>

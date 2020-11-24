@@ -2,6 +2,7 @@
 
 # UserMailer: mailers for users
 class UserMailer < ApplicationMailer
+  include Rails.application.routes.url_helpers
   default from: 'notifications@saraalert.org'
 
   def assessment_job_email(sent, not_sent, eligible)
@@ -66,11 +67,10 @@ class UserMailer < ApplicationMailer
     end
   end
 
-  def download_email(user, export_label, lookups, batch_size)
+  def download_email(user, export_label, downloads)
     @user = user
     @export_label = export_label
-    @lookups = lookups
-    @batch_size = batch_size
+    @downloads = downloads
     mail(to: user.email.strip, subject: 'Your Sara Alert system export is ready') do |format|
       format.html { render layout: 'main_mailer' }
     end
