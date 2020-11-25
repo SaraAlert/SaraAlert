@@ -6,7 +6,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   def setup
     # Assume that the default patient created here will have a nil preferred_contact_time
     # and if it will be non-nil, then the specific test can change the Timecop time.
-    Timecop.freeze(Time.now.noon.utc)
+    # Default timezone is Eastern Time.
+    Timecop.freeze(Time.use_zone('Eastern Time (US & Canada)') { Time.now.noon }.utc)
     @original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
   end
 
