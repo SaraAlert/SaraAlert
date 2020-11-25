@@ -6,7 +6,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
   def setup
     # Assume that the default patient created here will have a nil preferred_contact_time
     # and if it will be non-nil, then the specific test can change the Timecop time.
-    Timecop.freeze(Time.now.noon)
+    Timecop.freeze(Time.now.noon.utc)
     @original_reporting_period = ADMIN_OPTIONS['reporting_period_minutes']
   end
 
@@ -22,7 +22,8 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
 
   def assert_eligible(patient)
     scope_eligible = !Patient.reminder_eligible.find_by(id: patient.id).nil?
-    puts "\nFailing eligible test with: #{format_patient_str(patient)}" unless scope_eligible
+    puts patient.report_eligibility unless scope_eligible
+    puts "\nFailing scope eligible test with: #{format_patient_str(patient)}" unless scope_eligible
     assert scope_eligible
 
     method_eligible = patient.report_eligibility[:eligible]
@@ -32,6 +33,7 @@ class PatientNotificationEligibilityTest < ActiveSupport::TestCase
 
   def assert_ineligible(patient)
     scope_eligible = !Patient.reminder_eligible.find_by(id: patient.id).nil?
+    puts patient.report_eligibility if scope_eligible
     puts "\nFailing scope ineligible test with: #{format_patient_str(patient)}" if scope_eligible
     assert_not scope_eligible
 
