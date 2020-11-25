@@ -3,6 +3,7 @@
 require 'chronic'
 
 # Patient: patient model
+# rubocop:disable Metrics/ClassLength
 class Patient < ApplicationRecord
   include PatientHelper
   include PatientDetailsHelper
@@ -828,21 +829,29 @@ class Patient < ApplicationRecord
 
     # Rough estimate of next contact time
     if eligible
-      local_time = Time.now.getlocal(self.time_zone_offset)
+      local_time = Time.now.getlocal(time_zone_offset)
       hour_in_timezone = local_time.hour
       case preferred_contact_time
       when 'Morning'
         eligible = false unless hour_in_timezone >= 8 && hour_in_timezone <= 11
-        messages << { message: "Monitoree should be contacted between 8:00 AM and 12:00 PM local time (Morning). Current local time: #{local_time.strftime("%I:%M %p")}"}
+        messages << {
+          message: "Monitoree should be contacted between 8:00 AM and 12:00 PM local time (Morning). Current local time: #{local_time.strftime('%I:%M %p')}"
+        }
       when 'Afternoon'
         eligible = false unless hour_in_timezone >= 12 && hour_in_timezone <= 15
-        messages << { message: "Monitoree should be contacted between 12:00 PM and 4:00 PM local time (Afternoon). Current local time: #{local_time.strftime("%I:%M %p")}"}
+        messages << {
+          message: "Monitoree should be contacted between 12:00 PM and 4:00 PM local time (Afternoon). Current local time: #{local_time.strftime('%I:%M %p')}"
+        }
       when 'Evening'
         eligible = false unless hour_in_timezone >= 16 && hour_in_timezone <= 18
-        messages << { message: "Monitoree should be contacted between 4:00 PM and 7:00 PM local time (Evening). Current local time: #{local_time.strftime("%I:%M %p")}"}
+        messages << {
+          message: "Monitoree should be contacted between 4:00 PM and 7:00 PM local time (Evening). Current local time: #{local_time.strftime('%I:%M %p')}"
+        }
       else
         eligible = false unless hour_in_timezone >= 11 && hour_in_timezone <= 16
-        messages << { message: "Monitoree should be contacted between 11:00 AM and 5:00 PM local time. Current local time: #{local_time.strftime("%I:%M %p")}"}
+        messages << {
+          message: "Monitoree should be contacted between 11:00 AM and 5:00 PM local time. Current local time: #{local_time.strftime('%I:%M %p')}"
+        }
       end
     end
 
@@ -1018,3 +1027,4 @@ class Patient < ApplicationRecord
     token
   end
 end
+# rubocop:enable Metrics/ClassLength

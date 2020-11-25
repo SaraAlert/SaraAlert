@@ -627,7 +627,6 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'already reported'
 
-
     patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Morning')
     Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 9)) do
       assert patient.report_eligibility[:eligible]
