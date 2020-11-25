@@ -627,21 +627,46 @@ class PatientTest < ActiveSupport::TestCase
     assert_not patient.report_eligibility[:eligible]
     assert patient.report_eligibility[:messages].join(' ').include? 'already reported'
 
+
     patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Morning')
-    assert patient.report_eligibility[:eligible]
-    assert patient.report_eligibility[:messages].join(' ').include? '8:00 AM local time (Morning)'
+    Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 9)) do
+      assert patient.report_eligibility[:eligible]
+      assert patient.report_eligibility[:messages].join(' ').include? '8:00 AM and 12:00 PM local time (Morning)'
+    end
+    Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 7)) do
+      assert_not patient.report_eligibility[:eligible]
+      assert patient.report_eligibility[:messages].join(' ').include? '8:00 AM and 12:00 PM local time (Morning)'
+    end
 
     patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Afternoon')
-    assert patient.report_eligibility[:eligible]
-    assert patient.report_eligibility[:messages].join(' ').include? '12:00 PM local time (Afternoon)'
+    Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 12)) do
+      assert patient.report_eligibility[:eligible]
+      assert patient.report_eligibility[:messages].join(' ').include? '12:00 PM and 4:00 PM local time (Afternoon)'
+    end
+    Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 19)) do
+      assert_not patient.report_eligibility[:eligible]
+      assert patient.report_eligibility[:messages].join(' ').include? '12:00 PM and 4:00 PM local time (Afternoon)'
+    end
 
     patient = create(:patient, preferred_contact_method: 'Telephone call', preferred_contact_time: 'Evening')
-    assert patient.report_eligibility[:eligible]
-    assert patient.report_eligibility[:messages].join(' ').include? '4:00 PM local time (Evening)'
+    Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 17)) do
+      assert patient.report_eligibility[:eligible]
+      assert patient.report_eligibility[:messages].join(' ').include? '4:00 PM and 7:00 PM local time (Evening)'
+    end
+    Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 1)) do
+      assert_not patient.report_eligibility[:eligible]
+      assert patient.report_eligibility[:messages].join(' ').include? '4:00 PM and 7:00 PM local time (Evening)'
+    end
 
     patient = create(:patient, preferred_contact_method: 'Telephone call')
-    assert patient.report_eligibility[:eligible]
-    assert patient.report_eligibility[:messages].join(' ').include? 'Today'
+    Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 12)) do
+      assert patient.report_eligibility[:eligible]
+      assert patient.report_eligibility[:messages].join(' ').include? '11:00 AM and 5:00 PM local time'
+    end
+    Timecop.freeze(Time.now.getlocal(patient.address_timezone_offset).change(hour: 17)) do
+      assert_not patient.report_eligibility[:eligible]
+      assert patient.report_eligibility[:messages].join(' ').include? '11:00 AM and 5:00 PM local time'
+    end
   end
 
   test 'monitoring open' do
