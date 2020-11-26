@@ -371,7 +371,6 @@ ActiveRecord::Schema.define(version: 2020_11_23_184158) do
     t.boolean "user_defined_symptom_onset"
     t.date "extended_isolation"
     t.boolean "head_of_household"
-    t.integer "contact_attempts", default: 0
     t.index ["assigned_user"], name: "index_patients_on_assigned_user"
     t.index ["creator_id"], name: "index_patients_on_creator_id"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
