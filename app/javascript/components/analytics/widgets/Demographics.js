@@ -17,7 +17,7 @@ const RACES = [
   'More Than One Race',
   'Unknown',
 ];
-// const SEXUAL_ORIENTATIONS = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'];
+const SEXUAL_ORIENTATIONS = ['Straight or Heterosexual', 'Lesbian, Gay, or Homosexual', 'Bisexual', 'Another', 'Choose not to disclose', 'Don’t know'];
 
 class Demographics extends React.Component {
   constructor(props) {
@@ -26,7 +26,7 @@ class Demographics extends React.Component {
     this.sexData = this.parseOutFields(SEXES, 'Sex');
     this.ethnicityData = this.parseOutFields(ETHNICITIES, 'Ethnicity');
     this.raceData = this.parseOutFields(RACES, 'Race');
-    // this.soData = this.parseOutFields(SEXUAL_ORIENTATIONS, 'Sexual Orientation');
+    this.soData = this.parseOutFields(SEXUAL_ORIENTATIONS, 'Sexual Orientation');
     this.hasFakeBirthdateData = false;
     this.numberOfFakeBirthdates = 0;
 
@@ -41,18 +41,21 @@ class Demographics extends React.Component {
       );
     }
 
+    // If the sum here is 0, means the jurisdiction doesnt track SO
+    this.showSexualOrientationData = !!_.sum(this.soData.map(x => _.last(x)));
+
     // Map and translate all of the Tabular Data to the Chart Format
     this.ageChartData = this.mapToChartFormat(_.initial(AGEGROUPS), this.ageData);
     this.sexChartData = this.mapToChartFormat(SEXES, this.sexData);
     this.ethnicityChartData = this.mapToChartFormat(ETHNICITIES, this.ethnicityData);
     this.raceChartData = this.mapToChartFormat(RACES, this.raceData);
-    // this.soChartData = this.mapToChartFormat(SEXUAL_ORIENTATIONS, this.soData);
+    this.soChartData = this.mapToChartFormat(SEXUAL_ORIENTATIONS, this.soData);
     this.barGraphData = [
       { title: 'Age (Years)', data: this.ageChartData },
       { title: 'Sex', data: this.sexChartData },
       { title: 'Race', data: this.ethnicityChartData },
       { title: 'Ethnicity', data: this.raceChartData },
-      // { title: 'Sexual Orientation', data: this.soChartData },
+      { title: 'Sexual Orientation', data: this.soChartData },
     ];
   }
 
@@ -213,28 +216,35 @@ class Demographics extends React.Component {
           </tbody>
         ))}
       </table>
-      {/* <h4 className="text-left mt-3 mb-n1">Sexual Orientation</h4>
-      <table className="analytics-table">
-        <thead>
-          <tr>
-            <th className="py-0"></th>
-            {WORKFLOWS.map((header, index) => (
-              <th key={index} className="font-weight-bold"> <u>{_.upperCase(header)}</u> </th>
+      {this.showSexualOrientationData && (
+        <div>
+          <h4 className="text-left mt-3 mb-n1">Sexual Orientation</h4>
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th className="py-0"></th>
+                {WORKFLOWS.map((header, index) => (
+                  <th key={index} className="font-weight-bold">
+                    {' '}
+                    <u>{_.upperCase(header)}</u>{' '}
+                  </th>
+                ))}
+                <th>Total</th>
+              </tr>
+            </thead>
+            {SEXUAL_ORIENTATIONS.map((val, index5) => (
+              <tbody key={`workflow-table-${index5}`}>
+                <tr className={index5 % 2 ? '' : 'analytics-zebra-bg'}>
+                  <td className="font-weight-bold"> {val} </td>
+                  {this.soData[Number(index5)].map((data, subIndex5) => (
+                    <td key={subIndex5}> {data} </td>
+                  ))}
+                </tr>
+              </tbody>
             ))}
-            <th>Total</th>
-          </tr>
-        </thead>
-        {SEXUAL_ORIENTATIONS.map((val, index5) => (
-          <tbody key={`workflow-table-${index5}`}>
-            <tr className={ index5 % 2 ? '' : 'analytics-zebra-bg' }>
-              <td className="font-weight-bold"> {val} </td>
-              {this.soData[index5].map((data, subIndex5) => (
-                <td key={subIndex5}> {data} </td>
-              ))}
-            </tr>
-          </tbody>
-          ))}
-      </table> */}
+          </table>
+        </div>
+      )}
     </Card.Body>
   );
 
